@@ -1,0 +1,127 @@
+/*
+ * Copyright (C) 2011 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+package org.juzu.impl.spi.fs.disk;
+
+import org.juzu.impl.spi.fs.Content;
+import org.juzu.impl.spi.fs.FileSystem;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class DiskFileSystem implements FileSystem<File, File, File>
+{
+
+   /** . */
+   private final File root;
+
+   public DiskFileSystem(File root)
+   {
+      this.root = root;
+   }
+
+   public boolean equals(File left, File right)
+   {
+      return left.equals(right);
+   }
+
+   public File getRoot() throws IOException
+   {
+      return root;
+   }
+
+   public File getParent(File path) throws IOException
+   {
+      if (path.equals(root))
+      {
+         return null;
+      }
+      else
+      {
+         return path.getParentFile();
+      }
+   }
+
+   public boolean isDir(File path) throws IOException
+   {
+      return path.isDirectory();
+   }
+
+   public boolean isFile(File path) throws IOException
+   {
+      return path.isFile();
+   }
+
+   public File asFile(File path) throws IOException
+   {
+      if (!path.isFile())
+      {
+         throw new IllegalArgumentException("File " + path + " is not a file");
+      }
+      return path;
+   }
+
+   public File asDir(File path) throws IOException
+   {
+      if (!path.isDirectory())
+      {
+         throw new IllegalArgumentException("File " + path + " is not a directory");
+      }
+      return path;
+   }
+
+   public String getName(File path) throws IOException
+   {
+      if (path.equals(root))
+      {
+         return "";
+      }
+      else
+      {
+         return path.getName();
+      }
+   }
+
+   public Iterator<File> getChildren(File dir) throws IOException
+   {
+      return Arrays.asList(dir.listFiles()).iterator();
+   }
+
+   public Content getContent(File file) throws IOException
+   {
+      FileReader reader = new FileReader(file);
+      StringBuilder content = new StringBuilder();
+      char[] buffer = new char[256];
+      for (int l = reader.read(buffer);l != -1;l = reader.read(buffer))
+      {
+         content.append(buffer, 0, l);
+      }
+
+      return new Content(file.lastModified(), content.toString());
+   }
+
+   public long getLastModified(File path) throws IOException
+   {
+      return path.lastModified();
+   }
+}
