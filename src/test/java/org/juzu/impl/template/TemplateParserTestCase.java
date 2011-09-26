@@ -16,9 +16,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.juzu.impl.template.parser;
+package org.juzu.impl.template;
 
 import junit.framework.TestCase;
+import org.juzu.template.Location;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,70 +38,70 @@ public class TemplateParserTestCase extends TestCase
 
    public void testEmpty() throws IOException
    {
-      assertEquals(Collections.<TemplateSection>emptyList(), parser.parse(""));
+      assertEquals(Collections.<ASTNode.Section>emptyList(), parser.parse("").getSections());
    }
 
    public void testText() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.STRING, "a")), parser.parse("a"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.STRING, "a")), parser.parse("a").getSections());
    }
 
    public void testSingleEmptyScriplet() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.SCRIPTLET, "")), parser.parse("<%%>"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.SCRIPTLET, "")), parser.parse("<%%>").getSections());
    }
 
    public void testSingleEmptyExpression() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.EXPR, "")), parser.parse("<%=%>"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.EXPR, "")), parser.parse("<%=%>").getSections());
    }
 
    public void testSingleScriplet() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.SCRIPTLET, "a")), parser.parse("<%a%>"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.SCRIPTLET, "a")), parser.parse("<%a%>").getSections());
    }
 
    public void testSingleExpression() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.EXPR, "a")), parser.parse("<%=a%>"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.EXPR, "a")), parser.parse("<%=a%>").getSections());
    }
 
    public void testPercentScriplet() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.SCRIPTLET, "%")), parser.parse("<%%%>"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.SCRIPTLET, "%")), parser.parse("<%%%>").getSections());
    }
 
    public void testPercentExpression() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.EXPR, "%")), parser.parse("<%=%%>"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.EXPR, "%")), parser.parse("<%=%%>").getSections());
    }
 
    public void testStartAngleBracketScriplet() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.SCRIPTLET, "<")), parser.parse("<%<%>"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.SCRIPTLET, "<")), parser.parse("<%<%>").getSections());
    }
 
    public void testStartAngleBracketExpression() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(new TemplateSection(SectionType.EXPR, "<")), parser.parse("<%=<%>"));
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.EXPR, "<")), parser.parse("<%=<%>").getSections());
    }
 
    public void testSimpleScript() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(
-         new TemplateSection(SectionType.STRING, "a"),
-         new TemplateSection(SectionType.SCRIPTLET, "b"),
-         new TemplateSection(SectionType.STRING, "c")
-         ), parser.parse("a<%b%>c"));
+      assertEquals(Arrays.<ASTNode.Section>asList(
+         new ASTNode.Section(SectionType.STRING, "a"),
+         new ASTNode.Section(SectionType.SCRIPTLET, "b"),
+         new ASTNode.Section(SectionType.STRING, "c")
+         ), parser.parse("a<%b%>c").getSections());
    }
 
    public void testSimpleScript2() throws IOException
    {
-      assertEquals(Arrays.<TemplateSection>asList(
-         new TemplateSection(SectionType.STRING, "a"),
-         new TemplateSection(SectionType.EXPR, "b"),
-         new TemplateSection(SectionType.STRING, "c")
-         ), parser.parse("a<%=b%>c"));
+      assertEquals(Arrays.<ASTNode.Section>asList(
+         new ASTNode.Section(SectionType.STRING, "a"),
+         new ASTNode.Section(SectionType.EXPR, "b"),
+         new ASTNode.Section(SectionType.STRING, "c")
+         ), parser.parse("a<%=b%>c").getSections());
    }
 
    public void testWindowsLineBreak() throws IOException
@@ -110,7 +111,7 @@ public class TemplateParserTestCase extends TestCase
 
    public void testPosition() throws IOException
    {
-      List<TemplateSection> sections = parser.parse("a\nb<%= foo %>d");
+      List<ASTNode.Section> sections = parser.parse("a\nb<%= foo %>d").getSections();
       assertEquals(new Location(1, 1), sections.get(0).getItems().get(0).getPosition());
       assertEquals(new Location(2, 1), sections.get(0).getItems().get(1).getPosition());
       assertEquals(new Location(1, 2), sections.get(0).getItems().get(2).getPosition());

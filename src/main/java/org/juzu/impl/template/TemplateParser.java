@@ -17,15 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.parser;
+package org.juzu.impl.template;
 
-import java.io.IOException;
-import java.io.PushbackReader;
-import java.io.Reader;
-import java.io.StringReader;
+import org.juzu.impl.utils.CharSequenceReader;
+import org.juzu.template.Location;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateParser
@@ -56,25 +54,14 @@ public class TemplateParser
       BACKSLASH
    }
 
-   public List<TemplateSection> parse(String s)
+   public ASTNode.Template parse(CharSequence s)
    {
-      try
-      {
-         return parse(new StringReader(s));
-      }
-      catch (IOException e)
-      {
-         throw new UnsupportedOperationException(e);
-      }
+      return parse(new CharSequenceReader(s));
    }
 
-   public List<TemplateSection> parse(Reader tmp) throws IOException
+   private ASTNode.Template parse(CharSequenceReader reader)
    {
-      PushbackReader reader = new PushbackReader(tmp);
-
-
-      //
-      ArrayList<TemplateSection> sections = new ArrayList<TemplateSection>();
+      ArrayList<ASTNode.Section> sections = new ArrayList<ASTNode.Section>();
       StringBuilder accumulator = new StringBuilder();
 
       //
@@ -172,7 +159,7 @@ public class TemplateParser
             case SCRIPLET_OR_EXPR:
                if (accumulator.length() > 0)
                {
-                  sections.add(new TemplateSection(SectionType.STRING, accumulator.toString(), pos));
+                  sections.add(new ASTNode.Section(SectionType.STRING, accumulator.toString(), pos));
                   accumulator.setLength(0);
                   pos = new Location(colNumber, lineNumber);
                }
@@ -193,7 +180,7 @@ public class TemplateParser
             case MAYBE_SCRIPLET_END:
                if (c == '>')
                {
-                  sections.add(new TemplateSection(SectionType.SCRIPTLET, accumulator.toString(), pos));
+                  sections.add(new ASTNode.Section(SectionType.SCRIPTLET, accumulator.toString(), pos));
                   accumulator.setLength(0);
                   pos = new Location(colNumber, lineNumber);
 
@@ -213,7 +200,7 @@ public class TemplateParser
             case MAYBE_EXPR_END:
                if (c == '>')
                {
-                  sections.add(new TemplateSection(SectionType.EXPR, accumulator.toString(), pos));
+                  sections.add(new ASTNode.Section(SectionType.EXPR, accumulator.toString(), pos));
                   accumulator.setLength(0);
                   pos = new Location(colNumber, lineNumber);
 
@@ -235,7 +222,7 @@ public class TemplateParser
                {
                   if (accumulator.length() > 0)
                   {
-                     sections.add(new TemplateSection(SectionType.STRING, accumulator.toString(), pos));
+                     sections.add(new ASTNode.Section(SectionType.STRING, accumulator.toString(), pos));
                      accumulator.setLength(0);
                      pos = new Location(colNumber, lineNumber);
                   }
@@ -245,7 +232,7 @@ public class TemplateParser
                {
                   if (accumulator.length() > 0)
                   {
-                     sections.add(new TemplateSection(SectionType.STRING, accumulator.toString(), pos));
+                     sections.add(new ASTNode.Section(SectionType.STRING, accumulator.toString(), pos));
                      accumulator.setLength(0);
                      pos = new Location(colNumber, lineNumber);
                   }
@@ -260,7 +247,7 @@ public class TemplateParser
             case GSTRING_CURLY_EXPR:
                if (c == '}')
                {
-                  sections.add(new TemplateSection(SectionType.EXPR, accumulator.toString(), pos));
+                  sections.add(new ASTNode.Section(SectionType.EXPR, accumulator.toString(), pos));
                   accumulator.setLength(0);
                   pos = new Location(colNumber, lineNumber);
 
@@ -279,7 +266,7 @@ public class TemplateParser
                }
                else
                {
-                  sections.add(new TemplateSection(SectionType.EXPR, accumulator.toString(), pos));
+                  sections.add(new ASTNode.Section(SectionType.EXPR, accumulator.toString(), pos));
                   accumulator.setLength(0);
                   pos = new Location(colNumber, lineNumber);
 
@@ -304,12 +291,12 @@ public class TemplateParser
          switch (status)
          {
             case TEXT:
-               sections.add(new TemplateSection(SectionType.STRING, accumulator.toString(), pos));
+               sections.add(new ASTNode.Section(SectionType.STRING, accumulator.toString(), pos));
                accumulator.setLength(0);
                pos = new Location(colNumber, lineNumber);
                break;
             case GSTRING_EXPR:
-               sections.add(new TemplateSection(SectionType.EXPR, accumulator.toString(), pos));
+               sections.add(new ASTNode.Section(SectionType.EXPR, accumulator.toString(), pos));
                accumulator.setLength(0);
                pos = new Location(colNumber, lineNumber);
                break;
@@ -319,6 +306,6 @@ public class TemplateParser
       }
 
       //
-      return Collections.unmodifiableList(sections);
+      return new ASTNode.Template(Collections.unmodifiableList(sections));
    }
 }

@@ -17,26 +17,62 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.parser;
+package org.juzu.template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LineBreakItem extends SectionItem
+public class Location
 {
 
-   public LineBreakItem(Location pos)
+   /** . */
+   private final int col;
+
+   /** . */
+   private final int line;
+
+   public Location(int col, int line)
    {
-      super(pos);
+      if (col < 0)
+      {
+         throw new IllegalArgumentException();
+      }
+      if (line < 0)
+      {
+         throw new IllegalArgumentException();
+      }
+
+      //
+      this.col = col;
+      this.line = line;
    }
 
-   @Override
-   public String toString()
+   public int getCol()
    {
-      return "LineBreak[position=" + getPosition() + "]";
+      return col;
+   }
+
+   public int getLine()
+   {
+      return line;
    }
 
    @Override
    public boolean equals(Object obj)
    {
-      return obj == this || obj instanceof LineBreakItem;
+      if (obj == this)
+      {
+         return true;
+      }
+      if (obj instanceof Location)
+      {
+         Location that = (Location)obj;
+         return col == that.col && line == that.line;
+      }
+      return false;
+   }
+
+   @Override
+   public String toString()
+   {
+      return "Location[col=" + col + ",line=" + line + "]";
    }
 }

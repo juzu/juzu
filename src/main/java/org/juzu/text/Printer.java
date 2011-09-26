@@ -17,52 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.parser;
+package org.juzu.text;
+
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TextItem extends SectionItem
+public interface Printer
 {
 
-   /** . */
-   private final String data;
+   void write(char c) throws IOException;
 
-   public TextItem(Location pos, String data)
-   {
-      super(pos);
+   void write(String s) throws IOException;
 
-      //
-      if (data == null)
-      {
-         throw new NullPointerException();
-      }
+   void write(CharArray chars) throws IOException;
 
-      //
-      this.data = data;
-   }
-
-   public String getData()
-   {
-      return data;
-   }
-
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == this)
-      {
-         return true;
-      }
-      if (obj instanceof TextItem)
-      {
-         TextItem that = (TextItem)obj;
-         return data.equals(that.data);
-      }
-      return false;
-   }
-
-   @Override
-   public String toString()
-   {
-      return "DataText[pos=" + getPosition() + ",data=" + data + "]";
-   }
 }

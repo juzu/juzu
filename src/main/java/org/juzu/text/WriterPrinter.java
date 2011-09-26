@@ -17,26 +17,41 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.parser;
+package org.juzu.text;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class SectionItem
+public class WriterPrinter implements Printer
 {
 
    /** . */
-   private final Location pos;
+   private final Writer writer;
 
-   protected SectionItem(Location pos)
+   public WriterPrinter(Writer writer)
    {
-      if (pos == null)
+      if (writer == null)
       {
-         throw new NullPointerException("No null position accepted");
+         throw new NullPointerException("No null writer accepted");
       }
-      this.pos = pos;
+
+      //
+      this.writer = writer;
    }
 
-   public Location getPosition()
+   public void write(char c) throws IOException
    {
-      return pos;
+      writer.write(c);
+   }
+
+   public void write(String s) throws IOException
+   {
+      writer.write(s);
+   }
+
+   public void write(CharArray chars) throws IOException
+   {
+      chars.write(writer);
    }
 }

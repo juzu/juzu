@@ -17,16 +17,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.parser;
+package org.juzu.template;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum SectionType
+import org.juzu.text.Printer;
+
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * This class represents a template.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public abstract class Template
 {
 
-   STRING,
+   /**
+    * Renders the template.
+    *
+    * @param printer the printer
+    * @param context the context
+    * @param locale the locale
+    * @throws TemplateExecutionException any execution exception
+    * @throws IOException any io exception
+    */
+   public abstract void render(
+      Printer printer,
+      Map<String, ?> context,
+      Locale locale
+   ) throws TemplateExecutionException, IOException;
 
-   SCRIPTLET,
-
-   EXPR
 
 }

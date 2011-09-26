@@ -17,62 +17,64 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.parser;
+package org.juzu.impl.utils;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Location
+public class CharSequenceReader
 {
 
    /** . */
-   private final int col;
+   private final CharSequence s;
 
    /** . */
-   private final int line;
+   private char[] unread;
 
-   public Location(int col, int line)
+   /** . */
+   private int pos;
+
+   /** . */
+   private int index;
+
+   public CharSequenceReader(CharSequence s)
    {
-      if (col < 0)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (line < 0)
-      {
-         throw new IllegalArgumentException();
-      }
-
-      //
-      this.col = col;
-      this.line = line;
+      this.s = s;
+      this.unread = null;
+      this.pos = 0;
+      this.index = 0;
    }
 
-   public int getCol()
+   public int read()
    {
-      return col;
-   }
-
-   public int getLine()
-   {
-      return line;
-   }
-
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == this)
+      if (pos > 0)
       {
-         return true;
+         return unread[--pos];
       }
-      if (obj instanceof Location)
+      else
       {
-         Location that = (Location)obj;
-         return col == that.col && line == that.line;
+         if (index < s.length())
+         {
+            return s.charAt(index++);
+         }
+         else
+         {
+            return -1;
+         }
       }
-      return false;
    }
 
-   @Override
-   public String toString()
+   public void unread(int c)
    {
-      return "Location[col=" + col + ",line=" + line + "]";
+      if (unread == null)
+      {
+         unread = new char[10];
+      }
+      if (pos + 1 < unread.length)
+      {
+         unread[pos++] = (char)c;
+      }
+      else
+      {
+         throw new IllegalStateException("Buffer full");
+      }
    }
 }
