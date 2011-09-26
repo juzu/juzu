@@ -1,0 +1,7 @@
+ide
+target
+release.properties
+*.releaseBackup
+.idea
+*.iml
+.DS_Store
