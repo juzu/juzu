@@ -26,7 +26,6 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,7 +44,7 @@ public class CompilerContext<P, D extends P, F extends P>
    private JavaCompiler compiler;
 
    /** . */
-   private VirtualFileManager fileManager;
+   private VirtualFileManager<P, D, F> fileManager;
 
    /** . */
    private Set<Processor> processors;
@@ -54,7 +53,7 @@ public class CompilerContext<P, D extends P, F extends P>
    {
       this.fs = fs;
       this.compiler = ToolProvider.getSystemJavaCompiler();
-      this.fileManager = new VirtualFileManager(compiler.getStandardFileManager(null, null, null));
+      this.fileManager = new VirtualFileManager<P, D, F>(fs, compiler.getStandardFileManager(null, null, null));
       this.processors = new HashSet<Processor>();
    }
 
@@ -69,14 +68,20 @@ public class CompilerContext<P, D extends P, F extends P>
 
    public Map<String, ClassFile> compile() throws IOException
    {
-      Collection<VirtualJavaFileObject.FileSystem<P, F>> sources = collectJavaFiles();
+      Collection<VirtualJavaFileObject.FileSystem<P, D, F>> sources = fileManager.collectJavaFiles();
+
+      //
+      fileManager.files.clear();
+      fileManager.resources.clear();
 
       // Filter compiled files
-      for (Iterator<VirtualJavaFileObject.FileSystem<P, F>> i = sources.iterator();i.hasNext();)
+      for (Iterator<VirtualJavaFileObject.FileSystem<P, D, F>> i = sources.iterator();i.hasNext();)
       {
-         VirtualJavaFileObject.FileSystem<P, F> source = i.next();
+         VirtualJavaFileObject.FileSystem<P, D, F> source = i.next();
          FileKey key = source.key;
          VirtualJavaFileObject.CompiledClass existing = (VirtualJavaFileObject.CompiledClass)fileManager.files.get(new FileKey(key.rawPath, JavaFileObject.Kind.CLASS));
+         // For now we don't support this feature
+/*
          if (existing != null)
          {
             ClassFile cf = existing.getFile();
@@ -85,6 +90,7 @@ public class CompilerContext<P, D extends P, F extends P>
                i.remove();
             }
          }
+*/
       }
 
       //
@@ -106,73 +112,5 @@ public class CompilerContext<P, D extends P, F extends P>
       {
          return null;
       }
-   }
-
-   public Collection<VirtualJavaFileObject.FileSystem<P, F>> collectJavaFiles() throws IOException
-   {
-      D root = fs.getRoot();
-      ArrayList<VirtualJavaFileObject.FileSystem<P, F>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<P, F>>();
-      collectJavaFiles(root, javaFiles);
-      return javaFiles;
-   }
-
-   private void collectJavaFiles(D dir, ArrayList<VirtualJavaFileObject.FileSystem<P, F>> javaFiles) throws IOException
-   {
-      for (Iterator<P> i = fs.getChildren(dir);i.hasNext();)
-      {
-         P child = i.next();
-         if (fs.isFile(child))
-         {
-            String name = fs.getName(child);
-            if (name.endsWith(".java"))
-            {
-               F javaFile = fs.asFile(child);
-               FileKey key = getURI(javaFile);
-               javaFiles.add(new VirtualJavaFileObject.FileSystem<P, F>(this, javaFile, key));
-            }
-         }
-         else
-         {
-            D childDir = fs.asDir(child);
-            collectJavaFiles(childDir, javaFiles);
-         }
-      }
-   }
-
-   private StringBuilder foo(P file) throws IOException
-   {
-      P parent = fs.getParent(file);
-      if (parent == null)
-      {
-         return new StringBuilder("/");
-      }
-      else if (fs.equals(parent, fs.getRoot()))
-      {
-         return new StringBuilder("/").append(fs.getName(file));
-      }
-      else
-      {
-         return foo(parent).append('/').append(fs.getName(file));
-      }
-   }
-
-   public FileKey getURI(F file) throws IOException
-   {
-      String name = fs.getName(file);
-      if (!name.endsWith(".java"))
-      {
-         throw new IllegalArgumentException("File " + name + " is not a java source file");
-      }
-      String rawName = name.substring(0, name.length() - ".java".length());
-      StringBuilder foo = foo(fs.getParent(file));
-      if (foo.length() == 1)
-      {
-         foo.append(rawName);
-      }
-      else
-      {
-         foo.append('/').append(rawName);
-      }
-      return new FileKey(foo.toString(), JavaFileObject.Kind.SOURCE);
    }
 }

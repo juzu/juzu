@@ -62,6 +62,11 @@ public class RAMFileSystem implements FileSystem<RAMPath, RAMDir, RAMFile>
       return dir.children.values().iterator();
    }
 
+   public RAMPath getChild(RAMDir dir, String name) throws IOException
+   {
+      return dir.children.get(name);
+   }
+
    public boolean isDir(RAMPath path) throws IOException
    {
       return path instanceof RAMDir;

@@ -1,5 +1,6 @@
 package org.juzu.impl.compiler;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMDir;
@@ -12,7 +13,9 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -34,7 +37,67 @@ public class CompilationTestCase extends TestCase
       assertEquals(1, files.size());
    }
 
-   public void testChange() throws Exception
+   public void testGetResourceFromProcessor() throws Exception
+   {
+      RAMFileSystem ramFS = new RAMFileSystem();
+      RAMDir root = ramFS.getRoot();
+      RAMDir foo = root.addDir("foo");
+      foo.addFile("A.java").update("package foo; public class A {}");
+      foo.addFile("A.txt").update("value");
+
+      //
+      @javax.annotation.processing.SupportedAnnotationTypes({"*"})
+      @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
+      class ProcessorImpl extends AbstractProcessor
+      {
+
+         /** . */
+         Object result = null;
+
+         @Override
+         public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
+         {
+            if (roundEnv.processingOver())
+            {
+               try
+               {
+                  Filer filer = processingEnv.getFiler();
+                  FileObject o = filer.getResource(StandardLocation.SOURCE_PATH, "foo", "A.txt");
+                  result = o.getCharContent(false);
+               }
+               catch (IOException e)
+               {
+                  result = e;
+               }
+            }
+            return false;
+         }
+      }
+
+      //
+      CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
+      ProcessorImpl processor = new ProcessorImpl();
+      compiler.addAnnotationProcessor(processor);
+      Map<String, ClassFile> res = compiler.compile();
+      assertEquals(1, res.size());
+      if (processor.result instanceof Exception)
+      {
+         AssertionFailedError afe = new AssertionFailedError();
+         afe.initCause((Throwable)processor.result);
+         throw afe;
+      }
+      else if (processor.result instanceof CharSequence)
+      {
+         assertEquals("value", processor.result.toString());
+      }
+      else
+      {
+         fail("Was not expecting result to be " + processor.result);
+      }
+   }
+
+   // For now we don't support this until we figure the feature fully
+   public void _testChange() throws Exception
    {
       RAMFileSystem ramFS = new RAMFileSystem();
       RAMDir root = ramFS.getRoot();

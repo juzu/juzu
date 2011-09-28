@@ -107,6 +107,12 @@ public class DiskFileSystem implements FileSystem<File, File, File>
       return Arrays.asList(dir.listFiles()).iterator();
    }
 
+   public File getChild(File dir, String name) throws IOException
+   {
+      File child = new File(dir, name);
+      return child.exists() ? child : null;
+   }
+
    public Content getContent(File file) throws IOException
    {
       FileReader reader = new FileReader(file);

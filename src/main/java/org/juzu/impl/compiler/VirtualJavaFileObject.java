@@ -48,14 +48,14 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
    /**
     * File system.
     */
-   static class FileSystem<P, F extends P> extends VirtualJavaFileObject
+   static class FileSystem<P, D extends P, F extends P> extends VirtualJavaFileObject
    {
 
       /** . */
       private final F file;
 
       /** . */
-      private final CompilerContext<P, ?, F> context;
+      private final org.juzu.impl.spi.fs.FileSystem<P, D, F> fs;
 
       /** . */
       private CharSequence content;
@@ -63,12 +63,12 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       /** . */
       private long lastModified;
 
-      FileSystem(CompilerContext<P, ?, F> context, F file, FileKey key) throws IOException
+      FileSystem(org.juzu.impl.spi.fs.FileSystem<P, D, F> fs, F file, FileKey key) throws IOException
       {
          super(key);
 
          //
-         this.context = context;
+         this.fs = fs;
          this.file = file;
       }
 
@@ -79,7 +79,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
          {
             try
             {
-               lastModified = context.fs.getLastModified(file);
+               lastModified = fs.getLastModified(file);
             }
             catch (IOException ignore)
             {
@@ -94,12 +94,12 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       @Override
       public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException
       {
-         long lastModified = context.fs.getLastModified(file);
+         long lastModified = fs.getLastModified(file);
 
          //
          if (content == null || this.lastModified < lastModified)
          {
-            Content content = context.fs.getContent(file);
+            Content content = fs.getContent(file);
             this.content = content.getValue();
             this.lastModified = content.getLastModified();
          }

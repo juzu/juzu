@@ -40,6 +40,8 @@ public interface FileSystem<P, D extends P, F extends P>
 
    Iterator<P> getChildren(D dir) throws IOException;
 
+   P getChild(D dir, String name) throws IOException;
+
    boolean isDir(P path) throws IOException;
 
    boolean isFile(P path) throws IOException;

@@ -19,6 +19,9 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.spi.fs.FileSystem;
+import org.juzu.impl.utils.Spliterator;
+
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaFileObject;
@@ -26,8 +29,10 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +41,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class VirtualFileManager extends ForwardingJavaFileManager<StandardJavaFileManager>
+class VirtualFileManager<P, D extends P, F extends P> extends ForwardingJavaFileManager<StandardJavaFileManager>
 {
+
+   /** . */
+   final FileSystem<P, D, F> fs;
 
    /** . */
    final Map<FileKey, VirtualJavaFileObject.Class> files;
@@ -45,14 +53,99 @@ class VirtualFileManager extends ForwardingJavaFileManager<StandardJavaFileManag
    /** . */
    final LinkedList<VirtualJavaFileObject.CompiledClass> modifications;
 
-   public VirtualFileManager(StandardJavaFileManager fileManager)
+   public VirtualFileManager( FileSystem<P, D, F> fs, StandardJavaFileManager fileManager)
    {
       super(fileManager);
 
       //
+      this.fs = fs;
       this.files = new HashMap<FileKey, VirtualJavaFileObject.Class>();
       this.modifications = new LinkedList<VirtualJavaFileObject.CompiledClass>();
    }
+
+
+   public Collection<VirtualJavaFileObject.FileSystem<P, D, F>> collectJavaFiles() throws IOException
+   {
+      D root = fs.getRoot();
+      ArrayList<VirtualJavaFileObject.FileSystem<P, D, F>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<P, D, F>>();
+      collectJavaFiles(root, javaFiles);
+      return javaFiles;
+   }
+
+   private void collectJavaFiles(D dir, ArrayList<VirtualJavaFileObject.FileSystem<P, D, F>> javaFiles) throws IOException
+   {
+      for (Iterator<P> i = fs.getChildren(dir);i.hasNext();)
+      {
+         P child = i.next();
+         if (fs.isFile(child))
+         {
+            String name = fs.getName(child);
+            if (name.endsWith(".java"))
+            {
+               F javaFile = fs.asFile(child);
+               FileKey key = getURI(javaFile);
+               javaFiles.add(new VirtualJavaFileObject.FileSystem<P, D, F>(fs, javaFile, key));
+            }
+         }
+         else
+         {
+            D childDir = fs.asDir(child);
+            collectJavaFiles(childDir, javaFiles);
+         }
+      }
+   }
+
+   private FileKey getURI(F file) throws IOException
+   {
+      String name = fs.getName(file);
+      JavaFileObject.Kind kind;
+      if (name.endsWith(".java"))
+      {
+         kind = JavaFileObject.Kind.SOURCE;
+      }
+      else if (name.endsWith(".class"))
+      {
+         kind = JavaFileObject.Kind.CLASS;
+      }
+      else if (name.endsWith(".html"))
+      {
+         kind = JavaFileObject.Kind.HTML;
+      }
+      else
+      {
+         kind = JavaFileObject.Kind.OTHER;
+      }
+      String rawName = name.substring(0, name.length() - kind.extension.length());
+      StringBuilder foo = foo(fs.getParent(file));
+      if (foo.length() == 1)
+      {
+         foo.append(rawName);
+      }
+      else
+      {
+         foo.append('/').append(rawName);
+      }
+      return new FileKey(foo.toString(), JavaFileObject.Kind.SOURCE);
+   }
+
+   private StringBuilder foo(P file) throws IOException
+   {
+      P parent = fs.getParent(file);
+      if (parent == null)
+      {
+         return new StringBuilder("/");
+      }
+      else if (fs.equals(parent, fs.getRoot()))
+      {
+         return new StringBuilder("/").append(fs.getName(file));
+      }
+      else
+      {
+         return foo(parent).append('/').append(fs.getName(file));
+      }
+   }
+
+   // **************
 
    @Override
    public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException
@@ -114,6 +207,44 @@ class VirtualFileManager extends ForwardingJavaFileManager<StandardJavaFileManag
       else
       {
          return super.inferBinaryName(location, file);
+      }
+   }
+
+   @Override
+   public FileObject getFileForOutput(Location location, String packageName, String relativeName, FileObject sibling) throws IOException
+   {
+      if (location == StandardLocation.SOURCE_PATH)
+      {
+         D current = fs.getRoot();
+         Spliterator s = new Spliterator(packageName, '.');
+         while (s.hasNext())
+         {
+            String name = s.next();
+            P child = fs.getChild(current, name);
+            if (child != null || fs.isDir(child))
+            {
+               current = fs.asDir(child);
+            }
+            else
+            {
+               current = null;
+               break;
+            }
+         }
+         if (current != null)
+         {
+            P child = fs.getChild(current, relativeName);
+            if (child != null && fs.isFile(child))
+            {
+               F file = fs.asFile(child);
+               return new VirtualJavaFileObject.FileSystem<P, D, F>(fs, file, getURI(file));
+            }
+         }
+         throw new IllegalArgumentException("Could not locate pkg=" + packageName + " name=" + relativeName + ")");
+      }
+      else
+      {
+         return super.getFileForOutput(location, packageName, relativeName, sibling);
       }
    }
 
