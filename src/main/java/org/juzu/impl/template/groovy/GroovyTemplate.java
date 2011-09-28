@@ -72,6 +72,11 @@ public class GroovyTemplate extends Template
       return scriptClass;
    }
 
+   public String getScript()
+   {
+      return script;
+   }
+
    public String getClassName()
    {
       return getScriptClass().getName();

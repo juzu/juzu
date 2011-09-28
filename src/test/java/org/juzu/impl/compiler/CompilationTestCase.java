@@ -129,7 +129,7 @@ public class CompilationTestCase extends TestCase
 
 
       res = compiler.compile();
-      assertEquals(1, res.size());
+      assertEquals("was not expecting to be " + res.keySet(), 1, res.size());
       bClass = res.get("foo.B");
       assertNotNull(bClass);
    }

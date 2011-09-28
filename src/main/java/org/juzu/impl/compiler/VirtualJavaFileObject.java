@@ -191,7 +191,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
    }
 
    /**
-    * Compiled class.
+    * Generated class.
     */
    static class GeneratedSource extends Class
    {
@@ -205,6 +205,49 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       GeneratedSource(String className, FileKey key) throws IOException
       {
          super(key, className);
+
+         //
+         this.content = null;
+         this.writer = null;
+      }
+
+      @Override
+      public Writer openWriter() throws IOException
+      {
+         content = null;
+         writer = new StringWriter() {
+            @Override
+            public void close() throws IOException
+            {
+               content = toString();
+               writer = null;
+            }
+         };
+         return writer;
+      }
+
+      @Override
+      public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException
+      {
+         return content;
+      }
+   }
+
+   /**
+    * Generated class.
+    */
+   static class GeneratedResource extends VirtualJavaFileObject
+   {
+
+      /** . */
+      private StringWriter writer;
+
+      /** . */
+      private String content;
+
+      GeneratedResource(FileKey key) throws IOException
+      {
+         super(key);
 
          //
          this.content = null;
