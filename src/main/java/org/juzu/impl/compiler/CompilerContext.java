@@ -28,8 +28,10 @@ import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -63,6 +65,16 @@ public class CompilerContext<P, D extends P, F extends P>
          throw new NullPointerException("No null processor allowed");
       }
       processors.add(annotationProcessorType);
+   }
+
+   public Map<String, Content<?>> getClassOutput()
+   {
+      Map<String, Content<?>> map = new HashMap<String, Content<?>>();
+      for (Map.Entry<FileKey, VirtualJavaFileObject.RandomAccess> entry : fileManager.classOutput.entrySet())
+      {
+         map.put(entry.getKey().uri.getPath(), entry.getValue().content);
+      }
+      return map;
    }
 
    public Set<FileKey> getClassOutputKeys()
