@@ -20,6 +20,7 @@
 package org.juzu.impl.compiler;
 
 import org.juzu.impl.spi.fs.FileSystem;
+import org.juzu.impl.utils.Content;
 
 import javax.annotation.processing.Processor;
 import javax.tools.JavaCompiler;
@@ -27,10 +28,8 @@ import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -71,7 +70,7 @@ public class CompilerContext<P, D extends P, F extends P>
       return fileManager.classOutput.keySet();
    }
 
-   public VirtualContent<?> getClassOutput(FileKey key)
+   public Content<?> getClassOutput(FileKey key)
    {
       VirtualJavaFileObject.RandomAccess file = fileManager.classOutput.get(key);
       return file != null ? file.content : null;
@@ -82,7 +81,7 @@ public class CompilerContext<P, D extends P, F extends P>
       return fileManager.sourceOutput.keySet();
    }
 
-   public VirtualContent<?> getSourceOutput(FileKey key)
+   public Content<?> getSourceOutput(FileKey key)
    {
       VirtualJavaFileObject.RandomAccess file = fileManager.sourceOutput.get(key);
       return file != null ? file.content : null;

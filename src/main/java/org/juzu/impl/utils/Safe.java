@@ -17,40 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.compiler;
+package org.juzu.impl.utils;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class VirtualContent<C>
+public class Safe
 {
 
-   /** . */
-   private final FileKey key;
-
-   /** . */
-   private final C value;
-
-   /** . */
-   private final long lastModified;
-
-   public VirtualContent(FileKey key, C value)
+   public static void close(Closeable closeable)
    {
-      this.key = key;
-      this.value = value;
-      this.lastModified = System.currentTimeMillis();
-   }
-
-   public long getLastModified()
-   {
-      return lastModified;
-   }
-
-   public String getFQN()
-   {
-      return key.fqn;
-   }
-
-   public C getValue()
-   {
-      return value;
+      if (closeable != null)
+      {
+         try
+         {
+            closeable.close();
+         }
+         catch (IOException ignore)
+         {
+         }
+      }
    }
 }

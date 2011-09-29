@@ -7,6 +7,7 @@ import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
+import org.juzu.impl.utils.Content;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -107,9 +108,9 @@ public class CompilationTestCase extends TestCase
       CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
       assertTrue(compiler.compile());
       assertEquals(2, compiler.getClassOutputKeys());
-      VirtualContent aClass = compiler.getClassOutput(FileKey.newJavaName("foo.A", JavaFileObject.Kind.CLASS));
+      Content aClass = compiler.getClassOutput(FileKey.newJavaName("foo.A", JavaFileObject.Kind.CLASS));
       assertNotNull(aClass);
-      VirtualContent bClass = compiler.getClassOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.CLASS));
+      Content bClass = compiler.getClassOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.CLASS));
       assertNotNull(bClass);
 
       //

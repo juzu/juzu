@@ -19,8 +19,9 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.utils.Content;
+
 import javax.tools.SimpleJavaFileObject;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,8 +98,8 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
          //
          if (content == null || this.lastModified < lastModified)
          {
-            org.juzu.impl.spi.fs.Content content = fs.getContent(file);
-            this.content = content.getValue();
+            Content content = fs.getContent(file);
+            this.content = content.getCharSequence();
             this.lastModified = content.getLastModified();
          }
 
@@ -111,7 +112,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
    {
 
       /** . */
-      protected VirtualContent<C> content;
+      protected Content<?> content;
 
       RandomAccess(FileKey key)
       {
@@ -152,7 +153,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
                @Override
                public void close() throws IOException
                {
-                  content = new VirtualContent<byte[]>(key, toByteArray());
+                  content = new Content.ByteArray(System.currentTimeMillis(), toByteArray());
                   out = null;
                }
             };
@@ -164,7 +165,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
          {
             if (content != null)
             {
-               return new ByteArrayInputStream(content.getValue());
+               return content.getInputStream();
             }
             else
             {
@@ -198,7 +199,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
                @Override
                public void close() throws IOException
                {
-                  content = new VirtualContent<CharSequence>(key, writer.toString());
+                  content = new Content.CharArray(System.currentTimeMillis(), writer.toString());
                   writer = null;
                }
             };
@@ -210,7 +211,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
          {
             if (content != null)
             {
-               return content.getValue();
+               return content.getCharSequence();
             }
             else
             {

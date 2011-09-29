@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.fs.ram;
 
-import org.juzu.impl.spi.fs.Content;
+import org.juzu.impl.utils.Content;
 
 import java.io.IOException;
 
@@ -55,8 +55,8 @@ public class RAMFile extends RAMPath
       return this;
    }
 
-   public Content getContent() throws IOException
+   public Content<?> getContent() throws IOException
    {
-      return new Content(getLastModified(), content);
+      return new Content.CharArray(getLastModified(), content);
    }
 }

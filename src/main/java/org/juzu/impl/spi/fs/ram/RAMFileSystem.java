@@ -19,8 +19,8 @@
 
 package org.juzu.impl.spi.fs.ram;
 
-import org.juzu.impl.spi.fs.Content;
 import org.juzu.impl.spi.fs.FileSystem;
+import org.juzu.impl.utils.Content;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -87,7 +87,7 @@ public class RAMFileSystem implements FileSystem<RAMPath, RAMDir, RAMFile>
       return (RAMDir)path;
    }
 
-   public Content getContent(RAMFile file) throws IOException
+   public Content<?> getContent(RAMFile file) throws IOException
    {
       return file.getContent();
    }

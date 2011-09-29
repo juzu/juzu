@@ -21,12 +21,12 @@ package org.juzu.impl.template;
 
 import junit.framework.TestCase;
 import org.juzu.impl.compiler.FileKey;
-import org.juzu.impl.compiler.VirtualContent;
 import org.juzu.impl.compiler.CompilerContext;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
+import org.juzu.impl.utils.Content;
 import org.juzu.template.Template;
 import org.juzu.text.WriterPrinter;
 
@@ -60,13 +60,13 @@ public class TemplateProcessorTestCase extends TestCase
       assertTrue(compiler.compile());
 
       //
-      VirtualContent content = compiler.getClassOutput(FileKey.newResourceName("foo", "B.groovy"));
+      Content<?> content = compiler.getClassOutput(FileKey.newResourceName("foo", "B.groovy"));
       assertNotNull(content);
       assertEquals(3, compiler.getClassOutputKeys().size());
 
       //
       assertEquals(1, compiler.getSourceOutputKeys().size());
-      VirtualContent content2 = compiler.getSourceOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.SOURCE));
+      Content<?> content2 = compiler.getSourceOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.SOURCE));
       assertNotNull(content2);
 
       ClassLoader cl = new ClassLoader(Thread.currentThread().getContextClassLoader())
@@ -90,7 +90,7 @@ public class TemplateProcessorTestCase extends TestCase
                   try
                   {
                      FileKey key = FileKey.newJavaName(name, JavaFileObject.Kind.CLASS);
-                     VirtualContent content = compiler.getClassOutput(key);
+                     Content content = compiler.getClassOutput(key);
                      if (content != null)
                      {
                         byte[] bytes = (byte[])content.getValue();
@@ -131,7 +131,7 @@ public class TemplateProcessorTestCase extends TestCase
                   String foo = name.substring(pos + 1);
                   key = FileKey.newResourceName(packageName, foo);
                }
-               final VirtualContent content = compiler.getClassOutput(key);
+               final Content content = compiler.getClassOutput(key);
                if (content != null)
                {
                   return new URL("foo", "foo", 0, name, new URLStreamHandler()
