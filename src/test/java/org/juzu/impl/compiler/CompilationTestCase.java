@@ -22,7 +22,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -33,8 +32,8 @@ public class CompilationTestCase extends TestCase
    {
       File root = new File(System.getProperty("test.resources"));
       CompilerContext<File, File, File> ctx = new CompilerContext<File, File, File>(new DiskFileSystem(root));
-      Map<String, ClassFile> files = ctx.compile();
-      assertEquals(1, files.size());
+      assertTrue(ctx.compile());
+      assertEquals(1, ctx.getClassOutputKeys().size());
    }
 
    public void testGetResourceFromProcessor() throws Exception
@@ -78,8 +77,8 @@ public class CompilationTestCase extends TestCase
       CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
-      Map<String, ClassFile> res = compiler.compile();
-      assertEquals(1, res.size());
+      assertTrue(compiler.compile());
+      assertEquals(1, compiler.getClassOutputKeys().size());
       if (processor.result instanceof Exception)
       {
          AssertionFailedError afe = new AssertionFailedError();
@@ -106,11 +105,11 @@ public class CompilationTestCase extends TestCase
       RAMFile b = foo.addFile("B.java").update("package foo; public class B {}");
 
       CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
-      Map<String, ClassFile> res = compiler.compile();
-      assertEquals(2, res.size());
-      ClassFile aClass = res.get("foo.A");
+      assertTrue(compiler.compile());
+      assertEquals(2, compiler.getClassOutputKeys());
+      VirtualContent aClass = compiler.getClassOutput(FileKey.newJavaName("foo.A", JavaFileObject.Kind.CLASS));
       assertNotNull(aClass);
-      ClassFile bClass = res.get("foo.B");
+      VirtualContent bClass = compiler.getClassOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.CLASS));
       assertNotNull(bClass);
 
       //
@@ -128,9 +127,9 @@ public class CompilationTestCase extends TestCase
       }
 
 
-      res = compiler.compile();
-      assertEquals("was not expecting to be " + res.keySet(), 1, res.size());
-      bClass = res.get("foo.B");
+      assertTrue(compiler.compile());
+      assertEquals("was not expecting to be " + compiler.getClassOutputKeys(), 1, compiler.getClassOutputKeys().size());
+      bClass = compiler.getClassOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.CLASS));
       assertNotNull(bClass);
    }
 
@@ -189,9 +188,9 @@ public class CompilationTestCase extends TestCase
       CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
-      Map<String, ClassFile> res = compiler.compile();
-      assertNotNull(res);
-      assertEquals(2, res.size());
+      assertTrue(compiler.compile());
+      assertEquals(2, compiler.getClassOutputKeys().size());
       assertEquals(Arrays.asList("A", "B"), processor.names);
+      assertEquals(1, compiler.getSourceOutputKeys().size());
    }
 }

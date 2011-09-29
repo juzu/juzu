@@ -26,10 +26,10 @@ class Tools
 {
 
    /** . */
-   private static Pattern EMPTY_NO_RECURSE = Pattern.compile("[^.]+");
+   private static Pattern EMPTY_NO_RECURSE = Pattern.compile("");
 
    /** . */
-   private static Pattern EMPTY_RECURSE = Pattern.compile(".+");
+   private static Pattern EMPTY_RECURSE = Pattern.compile(".*");
 
    public static Pattern getPackageMatcher(String packageName, boolean recurse)
    {
@@ -51,13 +51,18 @@ class Tools
          String regex;
          if (recurse)
          {
-            regex = packageName + "(\\..+).";
+            regex = Pattern.quote(packageName) + "(\\..*)?";
          }
          else
          {
-            regex = packageName + "\\.[^.]+";
+            regex = Pattern.quote(packageName);
          }
          return Pattern.compile(regex);
       }
+   }
+
+   public static boolean safeEquals(Object a, Object b)
+   {
+      return a == null ? b == null : b != null && a.equals(b);
    }
 }

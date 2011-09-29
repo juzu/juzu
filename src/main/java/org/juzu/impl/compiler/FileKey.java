@@ -25,16 +25,74 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class FileKey
+public class FileKey
 {
 
-   public static FileKey newClassKey(String className, JavaFileObject.Kind kind) throws IOException
+   public static FileKey newResourceName(String className) throws IOException
    {
-      return new FileKey("/" + className.replace('.', '/'), kind);
+      int pos = className.lastIndexOf('.');
+      if (pos == -1)
+      {
+         return new FileKey("", className, JavaFileObject.Kind.OTHER);
+      }
+      else
+      {
+         return new FileKey(className.substring(0, pos), className.substring(pos + 1), JavaFileObject.Kind.OTHER);
+      }
+   }
+
+   public static FileKey newResourceName(String packageName, String name) throws IOException
+   {
+      return new FileKey(packageName, name, JavaFileObject.Kind.OTHER);
+   }
+
+   public static FileKey newJavaName(String className, JavaFileObject.Kind kind) throws IOException
+   {
+      if (kind == JavaFileObject.Kind.SOURCE || kind == JavaFileObject.Kind.CLASS)
+      {
+         int pos = className.lastIndexOf('.');
+         if (pos == -1)
+         {
+            return new FileKey("", className, kind);
+         }
+         else
+         {
+            return new FileKey(className.substring(0, pos), className.substring(pos + 1), kind);
+         }
+      }
+      else
+      {
+         throw new IllegalArgumentException("Kind " + kind + " not accepted");
+      }
+   }
+
+   public static FileKey newJavaName(String packageName, String name) throws IOException
+   {
+      JavaFileObject.Kind kind;
+      if (name.endsWith(".java"))
+      {
+         kind = JavaFileObject.Kind.SOURCE;
+      }
+      else if (name.endsWith(".class"))
+      {
+         kind = JavaFileObject.Kind.CLASS;
+      }
+      else
+      {
+         throw new IllegalArgumentException("Illegal name " + name);
+      }
+      String rawName = name.substring(0, name.length() - kind.extension.length());
+      return new FileKey(packageName, rawName, kind);
    }
 
    /** . */
-   final String rawPath;
+   final String packageName;
+
+   /** . */
+   final String rawName;
+
+   /** . */
+   final String fqn;
 
    /** . */
    final URI uri;
@@ -42,25 +100,43 @@ class FileKey
    /** . */
    final JavaFileObject.Kind kind;
 
-   FileKey(String rawPath, JavaFileObject.Kind kind) throws IOException
+   private FileKey(String packageName, String rawName, JavaFileObject.Kind kind) throws IOException
    {
-      String path = rawPath + kind.extension;
+      String path;
+      String fqn;
+      if (packageName.length() == 0)
+      {
+         path = "/" + rawName + kind.extension;
+         fqn = rawName;
+      }
+      else
+      {
+         path = "/" + packageName.replace('.', '/') + '/' + rawName + kind.extension;
+         fqn = packageName + "." + rawName;
+      }
       try
       {
-         this.rawPath = rawPath;
+         this.packageName = packageName;
+         this.rawName = rawName;
          this.uri = new URI(path);
+         this.fqn = fqn;
          this.kind = kind;
       }
       catch (URISyntaxException e)
       {
-         throw new IOException("Could not create path " + rawPath, e);
+         throw new IOException("Could not create path " + path, e);
       }
+   }
+
+   public FileKey as(JavaFileObject.Kind kind) throws IOException
+   {
+      return new FileKey(packageName, rawName, kind);
    }
 
    @Override
    public final int hashCode()
    {
-      return uri.hashCode();
+      return packageName.hashCode() ^ rawName.hashCode() ^ kind.hashCode();
    }
 
    @Override
@@ -73,11 +149,17 @@ class FileKey
       else if (obj instanceof FileKey)
       {
          FileKey that = (FileKey)obj;
-         return uri.equals(that.uri);
+         return packageName.equals(that.packageName) && rawName.equals(that.rawName) && kind.equals(that.kind);
       }
       else
       {
          return false;
       }
+   }
+
+   @Override
+   public String toString()
+   {
+      return "FileKey[packageName=" + packageName + ",rawName=" + rawName + ",kind=" + kind + "]";
    }
 }

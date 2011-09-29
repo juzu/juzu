@@ -20,7 +20,7 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
-import org.juzu.impl.compiler.ClassFile;
+import org.juzu.impl.compiler.VirtualContent;
 import org.juzu.impl.compiler.CompilerContext;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
@@ -45,7 +45,7 @@ public class TemplateProcessorTestCase extends TestCase
       //
       CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
       compiler.addAnnotationProcessor(new TemplateProcessor());
-      Map<String, ClassFile> res = compiler.compile();
+      assertTrue(compiler.compile());
 
    }
 

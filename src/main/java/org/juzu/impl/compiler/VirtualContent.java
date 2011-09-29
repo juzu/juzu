@@ -20,22 +20,22 @@
 package org.juzu.impl.compiler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ClassFile
+public class VirtualContent<C>
 {
 
    /** . */
-   private final String fqn;
+   private final FileKey key;
 
    /** . */
-   private final byte[] bytes;
+   private final C value;
 
    /** . */
    private final long lastModified;
 
-   public ClassFile(String fqn, byte[] bytes)
+   public VirtualContent(FileKey key, C value)
    {
-      this.fqn = fqn;
-      this.bytes = bytes;
+      this.key = key;
+      this.value = value;
       this.lastModified = System.currentTimeMillis();
    }
 
@@ -46,11 +46,11 @@ public class ClassFile
 
    public String getFQN()
    {
-      return fqn;
+      return key.fqn;
    }
 
-   public byte[] getBytes()
+   public C getValue()
    {
-      return bytes;
+      return value;
    }
 }
