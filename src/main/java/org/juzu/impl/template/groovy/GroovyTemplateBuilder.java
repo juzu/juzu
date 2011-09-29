@@ -22,10 +22,13 @@ package org.juzu.impl.template.groovy;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.SectionType;
 import org.juzu.impl.template.TemplateBuilder;
+import org.juzu.template.Location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class GroovyTemplateBuilder extends TemplateBuilder<GroovyTemplate>
@@ -58,22 +61,72 @@ public class GroovyTemplateBuilder extends TemplateBuilder<GroovyTemplate>
    public String toString()
    {
       StringBuilder builder = new StringBuilder();
+
+      // Add main stuff
       builder.append(out.toString());
+
+      //
       builder.append("\n");
-      builder.append("public class Constants\n");
+      builder.append("public static class Constants\n");
       builder.append("{\n");
+
+      // Add text constant
       for (TextConstant method : textMethods)
       {
          builder.append(method.getDeclaration()).append("\n");
       }
+
+      // Add line table
+      builder.append("public static final Map<Integer, ").append(ASTNode.Text.class.getName()).append("> TABLE = ");
+      if (locationTable.isEmpty())
+      {
+         builder.append("[:]");
+      }
+      else
+      {
+         builder.append("[\n");
+         for (Iterator<Map.Entry<Integer, ASTNode.Text>> i = locationTable.entrySet().iterator();i.hasNext();)
+         {
+            Map.Entry<Integer, ASTNode.Text> entry = i.next();
+            ASTNode.Text text = entry.getValue();
+            Location location = text.getPosition();
+            builder.append(entry.getKey()).append(':').
+               append("new ").append(ASTNode.Text.class.getName()).append("(").
+               append("new ").append(Location.class.getName()).append("(").append(location.getCol()).append(',').append(location.getLine()).append("),").
+               append("'");
+            Tools.escape(text.getData(), builder);
+            builder.append("')");
+            if (i.hasNext())
+            {
+               builder.append(",\n");
+            }
+            else
+            {
+               builder.append(']');
+            }
+         }
+      }
+      builder.append(";\n");
+
+      // Close context
       builder.append("}\n");
+
+      //
       return builder.toString();
    }
 
    @Override
    public GroovyTemplate build()
    {
-      return new GroovyTemplate(templateId, toString(), locationTable);
+      final String script = toString();
+      return new GroovyTemplate(templateId)
+      {
+         @Override
+         public String getScript()
+         {
+            return script;
+         }
+      };
    }
 
    public void startScriptlet()
@@ -134,50 +187,4 @@ public class GroovyTemplateBuilder extends TemplateBuilder<GroovyTemplate>
             throw new AssertionError();
       }
    }
-
-      //   public String build()
-      //   {
-
-            //
-      /*
-            CompilerConfiguration config = new CompilerConfiguration();
-
-            //
-            byte[] bytes;
-            try
-            {
-               config.setScriptBaseClass(BaseScript.class.getName());
-               bytes = groovyText.getBytes(config.getSourceEncoding());
-            }
-            catch (UnsupportedEncodingException e)
-            {
-               throw new TemplateCompilationException(e, groovyText);
-            }
-
-            //
-            InputStream in = new ByteArrayInputStream(bytes);
-            GroovyCodeSource gcs = new GroovyCodeSource(in, templateName, "/groovy/shell");
-            GroovyClassLoader loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), config);
-            Class<?> scriptClass;
-            try
-            {
-               scriptClass = loader.parseClass(gcs, false);
-            }
-            catch (CompilationFailedException e)
-            {
-               throw new GroovyCompilationException(e, templateText, groovyText);
-            }
-            catch (ClassFormatError e)
-            {
-               throw new GroovyCompilationException(e, templateText, groovyText);
-            }
-
-            return new GroovyScript(
-               templateId,
-               script.toString(),
-               scriptClass,
-               Collections.unmodifiableMap(new HashMap<Integer, TextItem>(script.positionTable))
-            );
-      */
-      //   }
 }

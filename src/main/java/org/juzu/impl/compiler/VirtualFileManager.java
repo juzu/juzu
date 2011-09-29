@@ -271,6 +271,14 @@ class VirtualFileManager<P, D extends P, F extends P> extends ForwardingJavaFile
    }
 
    @Override
+   public boolean isSameFile(FileObject a, FileObject b)
+   {
+      VirtualJavaFileObject va = (VirtualJavaFileObject)a;
+      VirtualJavaFileObject vb = (VirtualJavaFileObject)b;
+      return va.key.equals(vb.key);
+   }
+
+   @Override
    public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException
    {
       if (location == StandardLocation.CLASS_OUTPUT && kind == JavaFileObject.Kind.CLASS)

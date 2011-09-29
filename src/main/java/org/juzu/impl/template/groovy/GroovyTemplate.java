@@ -30,20 +30,20 @@ import org.juzu.template.TemplateExecutionException;
 import org.juzu.text.Printer;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GroovyTemplate extends Template
+public abstract class GroovyTemplate extends Template
 {
 
    /** . */
-   private final String templateId;
-
-   /** . */
-   private String script;
+   protected final String templateId;
 
    /** . */
    private Class<?> scriptClass;
@@ -51,12 +51,16 @@ public class GroovyTemplate extends Template
    /** . */
    private HashMap<Integer, ASTNode.Text> locationTable;
 
-   public GroovyTemplate(String templateId, String script, HashMap<Integer, ASTNode.Text> locationTable)
+   protected GroovyTemplate()
+   {
+      this.templateId = getClass().getName();
+   }
+
+   public GroovyTemplate(String templateId)
    {
       this.templateId = templateId;
-      this.script = script;
       this.scriptClass = null;
-      this.locationTable = locationTable;
+      this.locationTable = null;
    }
 
    private Class<?> getScriptClass()
@@ -65,17 +69,24 @@ public class GroovyTemplate extends Template
       {
          CompilerConfiguration config = new CompilerConfiguration();
          config.setScriptBaseClass(BaseScript.class.getName());
+         String script = getScript();
          GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
          GroovyClassLoader loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), config);
-         scriptClass = loader.parseClass(gcs, false);
+         try
+         {
+            scriptClass = loader.parseClass(gcs, false);
+            Class<?> constants = scriptClass.getClassLoader().loadClass("Constants");
+            locationTable = (HashMap<Integer, ASTNode.Text>)constants.getField("TABLE").get(null);
+         }
+         catch (Exception e)
+         {
+            throw new UnsupportedOperationException("handle me gracefully", e);
+         }
       }
       return scriptClass;
    }
 
-   public String getScript()
-   {
-      return script;
-   }
+   public abstract String getScript();
 
    public String getClassName()
    {

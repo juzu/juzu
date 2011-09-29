@@ -28,19 +28,6 @@ import java.net.URISyntaxException;
 public class FileKey
 {
 
-   public static FileKey newResourceName(String className) throws IOException
-   {
-      int pos = className.lastIndexOf('.');
-      if (pos == -1)
-      {
-         return new FileKey("", className, JavaFileObject.Kind.OTHER);
-      }
-      else
-      {
-         return new FileKey(className.substring(0, pos), className.substring(pos + 1), JavaFileObject.Kind.OTHER);
-      }
-   }
-
    public static FileKey newResourceName(String packageName, String name) throws IOException
    {
       return new FileKey(packageName, name, JavaFileObject.Kind.OTHER);

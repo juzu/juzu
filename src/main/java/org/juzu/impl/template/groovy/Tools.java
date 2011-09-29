@@ -19,32 +19,27 @@
 
 package org.juzu.impl.template.groovy;
 
-import org.juzu.text.CharArray;
-
-/**
- * This object encapsulate the generation of a method that outputs the specified text.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-class TextConstant
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+class Tools
 {
 
-   /** . */
-   final String name;
-
-   /** . */
-   final String text;
-
-   TextConstant(String name, String text)
+   public static void escape(CharSequence s, StringBuilder appendable)
    {
-      this.name = name;
-      this.text = text;
+      for (int i = 0;i < s.length();i++)
+      {
+         char c = s.charAt(i);
+         if (c == '\n')
+         {
+            appendable.append("\\n");
+         }
+         else if (c == '\'')
+         {
+            appendable.append("\\\'");
+         }
+         else
+         {
+            appendable.append(c);
+         }
+      }
    }
-
-   String getDeclaration()
-   {
-      StringBuilder sb = new StringBuilder("");
-      Tools.escape(text, sb);
-      return "public static final " + CharArray.Simple.class.getName() + " " + name + " = new " + CharArray.Simple.class.getName() + "('" + sb + "');";
-   }
- }
+}
