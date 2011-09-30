@@ -17,18 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.template;
+package org.juzu.impl.spi.template.gtmpl;
 
-import javax.inject.Qualifier;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.juzu.text.CharArray;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface TemplateRef
+/**
+ * This object encapsulate the generation of a method that outputs the specified text.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+class TextConstant
 {
 
-   String value();
+   /** . */
+   final String name;
 
-}
+   /** . */
+   final String text;
+
+   TextConstant(String name, String text)
+   {
+      this.name = name;
+      this.text = text;
+   }
+
+   String getDeclaration()
+   {
+      StringBuilder sb = new StringBuilder("");
+      Tools.escape(text, sb);
+      return "public static final " + CharArray.Simple.class.getName() + " " + name + " = new " + CharArray.Simple.class.getName() + "('" + sb + "');";
+   }
+ }

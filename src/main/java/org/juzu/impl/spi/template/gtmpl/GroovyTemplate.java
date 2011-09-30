@@ -17,29 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.groovy;
+package org.juzu.impl.spi.template.gtmpl;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.template.ASTNode;
-import org.juzu.template.Template;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.text.Printer;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class GroovyTemplate extends Template
+public abstract class GroovyTemplate extends TemplateStub
 {
 
    /** . */

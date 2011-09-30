@@ -19,7 +19,7 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.template.groovy.GroovyTemplate;
+import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.text.WriterPrinter;
 

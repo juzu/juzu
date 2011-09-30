@@ -17,12 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.spi.template;
 
-import org.juzu.template.Template;
+import org.juzu.impl.template.ASTNode;
+import org.juzu.impl.template.SectionType;
+
+import javax.annotation.processing.Filer;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class TemplateBuilder<T extends Template>
+public abstract class TemplateGenerator
 {
 
    public abstract void startScriptlet();
@@ -41,6 +45,6 @@ public abstract class TemplateBuilder<T extends Template>
 
    public abstract void appendLineBreak(SectionType currentType);
 
-   public abstract T build();
+   public abstract void generate(Filer filer, String pkgName, String rawName) throws IOException;
 
 }

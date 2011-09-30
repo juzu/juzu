@@ -17,29 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.groovy;
+package org.juzu.impl.spi.template.gtmpl;
+
+import org.juzu.impl.spi.template.TemplateGenerator;
+import org.juzu.impl.spi.template.TemplateProvider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class Tools
+public class GroovyTemplateProvider extends TemplateProvider
 {
 
-   public static void escape(CharSequence s, StringBuilder appendable)
+   @Override
+   public TemplateGenerator newGenerator()
    {
-      for (int i = 0;i < s.length();i++)
-      {
-         char c = s.charAt(i);
-         if (c == '\n')
-         {
-            appendable.append("\\n");
-         }
-         else if (c == '\'')
-         {
-            appendable.append("\\\'");
-         }
-         else
-         {
-            appendable.append(c);
-         }
-      }
+      return new GroovyTemplateGenerator();
    }
 }

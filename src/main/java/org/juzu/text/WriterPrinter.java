@@ -27,9 +27,9 @@ public class WriterPrinter implements Printer
 {
 
    /** . */
-   private final Writer writer;
+   private final Appendable writer;
 
-   public WriterPrinter(Writer writer)
+   public WriterPrinter(Appendable writer)
    {
       if (writer == null)
       {
@@ -42,12 +42,12 @@ public class WriterPrinter implements Printer
 
    public void write(char c) throws IOException
    {
-      writer.write(c);
+      writer.append(c);
    }
 
    public void write(String s) throws IOException
    {
-      writer.write(s);
+      writer.append(s);
    }
 
    public void write(CharArray chars) throws IOException

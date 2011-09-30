@@ -23,13 +23,12 @@ import junit.framework.TestCase;
 import org.juzu.impl.classloading.RAMClassLoader;
 import org.juzu.impl.compiler.FileKey;
 import org.juzu.impl.compiler.CompilerContext;
-import org.juzu.impl.classloading.RAMURLStreamHandler;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
+import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Content;
-import org.juzu.template.Template;
 import org.juzu.text.WriterPrinter;
 
 import javax.tools.JavaFileObject;
@@ -45,7 +44,7 @@ public class TemplateProcessorTestCase extends TestCase
       RAMFileSystem ramFS = new RAMFileSystem();
       RAMDir root = ramFS.getRoot();
       RAMDir foo = root.addDir("foo");
-      RAMFile a = foo.addFile("A.java").update("package foo; public class A { @org.juzu.template.TemplateRef(\"B.gtmpl\") Object template; }");
+      RAMFile a = foo.addFile("A.java").update("package foo; public class A { @org.juzu.template.Template(\"B.gtmpl\") org.juzu.template.TemplateRenderer template; }");
       RAMFile b = foo.addFile("B.gtmpl").update("<% out.print('hello') %>");
 
       //
@@ -68,7 +67,7 @@ public class TemplateProcessorTestCase extends TestCase
 
       Class<?> aClass = cl.loadClass("foo.A");
       Class<?> bClass = cl.loadClass("foo.B");
-      Template template = (Template)bClass.newInstance();
+      TemplateStub template = (TemplateStub)bClass.newInstance();
       StringWriter out = new StringWriter();
       template.render(new WriterPrinter(out), null, null);
       assertEquals("hello", out.toString());

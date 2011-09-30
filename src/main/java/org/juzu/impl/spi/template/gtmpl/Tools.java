@@ -17,67 +17,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.groovy;
-
-import groovy.lang.Binding;
-import groovy.lang.Script;
-
-import java.io.IOException;
+package org.juzu.impl.spi.template.gtmpl;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class BaseScript extends Script
+class Tools
 {
 
-   /** . */
-   private GroovyPrinter printer;
-
-   protected BaseScript()
+   public static void escape(CharSequence s, StringBuilder appendable)
    {
-   }
-
-   protected BaseScript(Binding binding)
-   {
-      super(binding);
-   }
-
-   public GroovyPrinter getPrinter()
-   {
-      return printer;
-   }
-
-   public void setPrinter(GroovyPrinter printer)
-   {
-      this.printer = printer;
-   }
-
-   @Override
-   public Object getProperty(String property)
-   {
-      if ("out".equals(property))
+      for (int i = 0;i < s.length();i++)
       {
-         return printer;
+         char c = s.charAt(i);
+         if (c == '\n')
+         {
+            appendable.append("\\n");
+         }
+         else if (c == '\'')
+         {
+            appendable.append("\\\'");
+         }
+         else
+         {
+            appendable.append(c);
+         }
       }
-      else
-      {
-         return super.getProperty(property);
-      }
-   }
-
-   @Override
-   public void println(Object o)
-   {
-      printer.println(o);
-   }
-
-   @Override
-   public void println()
-   {
-      printer.println();
-   }
-
-   @Override
-   public void print(Object o)
-   {
-      printer.print(o);
    }
 }

@@ -17,30 +17,65 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.spi.template.gtmpl;
 
-import junit.framework.TestCase;
-import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
-import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
-import org.juzu.text.WriterPrinter;
-
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Random;
+import groovy.lang.Binding;
+import groovy.lang.Script;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateBuilderTestCase extends TestCase
+public abstract class BaseScript extends Script
 {
 
-   public void testFoo() throws Exception
+   /** . */
+   private GroovyPrinter printer;
+
+   protected BaseScript()
    {
-      TemplateParser parser = new TemplateParser();
-      GroovyTemplateGenerator template = new GroovyTemplateGenerator();
-      parser.parse("a<%=foo%>c").generate(template);
-      GroovyTemplate s = template.build("template_" + Math.abs(new Random().nextLong()));
-      StringWriter out = new StringWriter();
-      s.render(new WriterPrinter(out), Collections.<String, Object>singletonMap("foo", "b"), null);
-      assertEquals("abc", out.toString());
    }
 
+   protected BaseScript(Binding binding)
+   {
+      super(binding);
+   }
+
+   public GroovyPrinter getPrinter()
+   {
+      return printer;
+   }
+
+   public void setPrinter(GroovyPrinter printer)
+   {
+      this.printer = printer;
+   }
+
+   @Override
+   public Object getProperty(String property)
+   {
+      if ("out".equals(property))
+      {
+         return printer;
+      }
+      else
+      {
+         return super.getProperty(property);
+      }
+   }
+
+   @Override
+   public void println(Object o)
+   {
+      printer.println(o);
+   }
+
+   @Override
+   public void println()
+   {
+      printer.println();
+   }
+
+   @Override
+   public void print(Object o)
+   {
+      printer.print(o);
+   }
 }

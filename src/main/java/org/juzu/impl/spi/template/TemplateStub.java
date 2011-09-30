@@ -17,18 +17,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.template;
+package org.juzu.impl.spi.template;
 
-import javax.inject.Qualifier;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.juzu.template.TemplateExecutionException;
+import org.juzu.text.Printer;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Template
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * The stub for a template.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public abstract class TemplateStub
 {
 
-   String value();
+   /**
+    * Renders the template.
+    *
+    * @param printer the printer
+    * @param context the context
+    * @param locale the locale
+    * @throws org.juzu.template.TemplateExecutionException any execution exception
+    * @throws IOException any io exception
+    */
+   public abstract void render(
+      Printer printer,
+      Map<String, ?> context,
+      Locale locale
+   ) throws TemplateExecutionException, IOException;
 
 }
