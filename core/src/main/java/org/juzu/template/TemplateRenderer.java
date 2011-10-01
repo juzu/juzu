@@ -24,6 +24,7 @@ import org.juzu.text.Printer;
 import org.juzu.text.WriterPrinter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
@@ -41,6 +42,21 @@ public class TemplateRenderer
    {
       this.stub = null;
       this.templateId = templateId;
+   }
+
+   public void render() throws TemplateExecutionException, IOException
+   {
+      render(Collections.<String, Object>emptyMap(), null);
+   }
+
+   public void render(Locale locale) throws TemplateExecutionException, IOException
+   {
+      render(Collections.<String, Object>emptyMap(), locale);
+   }
+
+   public void render(Map<String, ?> context) throws TemplateExecutionException, IOException
+   {
+      render(context, null);
    }
 
    /**
@@ -75,4 +91,9 @@ public class TemplateRenderer
       stub.render(printer, context, locale);
    }
 
+   @Override
+   public String toString()
+   {
+      return "TemplateRenderer[" + templateId + "]";
+   }
 }

@@ -20,12 +20,12 @@
 package org.juzu.template;
 
 /**
- * A *checked* exception that denotes a template execution exception.
+ * An exception that denotes a template execution exception.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class TemplateExecutionException extends Exception
+public class TemplateExecutionException extends RuntimeException
 {
 
    /** . */

@@ -17,16 +17,46 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.template;
+package org.juzu.impl.spi.cdi;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.juzu.impl.spi.fs.ReadFileSystem;
+
+import javax.enterprise.inject.spi.BeanManager;
+import java.util.ArrayList;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Template
+public abstract class Container
 {
 
-   String value();
+   /** . */
+   private List<ReadFileSystem<?>> fileSystems;
 
+   protected Container()
+   {
+      this.fileSystems = new ArrayList<ReadFileSystem<?>>();
+   }
+
+   public abstract BeanManager getManager();
+
+   public abstract ClassLoader getClassLoader();
+
+   public void addFileSystem(ReadFileSystem<?> fileSystem)
+   {
+      fileSystems.add(fileSystem);
+   }
+
+   protected abstract void doStart(List<ReadFileSystem<?>> fileSystems) throws Exception;
+
+   protected abstract void doStop();
+
+   public void start() throws Exception
+   {
+      doStart(fileSystems);
+   }
+
+   public void stop()
+   {
+      doStop();
+   }
 }
