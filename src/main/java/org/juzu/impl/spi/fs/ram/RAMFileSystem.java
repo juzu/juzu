@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMFileSystem implements FileSystem<RAMPath, RAMDir, RAMFile>
+public class RAMFileSystem extends FileSystem<RAMPath, RAMDir, RAMFile>
 {
 
    /** . */

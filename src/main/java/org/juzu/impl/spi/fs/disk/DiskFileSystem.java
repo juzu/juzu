@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DiskFileSystem implements FileSystem<File, File, File>
+public class DiskFileSystem extends FileSystem<File, File, File>
 {
 
    /** . */

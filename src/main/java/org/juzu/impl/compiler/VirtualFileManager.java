@@ -96,7 +96,7 @@ class VirtualFileManager<P, D extends P, F extends P> extends ForwardingJavaFile
             if (name.endsWith(".java"))
             {
                F javaFile = fs.asFile(child);
-               FileKey key = FileKey.newJavaName(packageName(javaFile).toString(), fs.getName(javaFile));
+               FileKey key = FileKey.newJavaName(fs.packageName(javaFile).toString(), fs.getName(javaFile));
                javaFiles.add(new VirtualJavaFileObject.FileSystem<P, D, F>(fs, javaFile, key));
             }
          }
@@ -106,48 +106,6 @@ class VirtualFileManager<P, D extends P, F extends P> extends ForwardingJavaFile
             collectJavaFiles(childDir, javaFiles);
          }
       }
-   }
-
-   private StringBuilder packageName(P path) throws IOException
-   {
-      if (fs.isDir(path))
-      {
-         D parent = fs.getParent(path);
-         if (parent == null)
-         {
-            return new StringBuilder();
-         }
-         else
-         {
-            StringBuilder sb = packageName(parent);
-            String name = fs.getName(path);
-            if (sb.length() > 0)
-            {
-               sb.append('.');
-            }
-            sb.append(name);
-            return sb;
-         }
-      }
-      else
-      {
-         return packageName(fs.getParent(path));
-      }
-/*
-      P parent = fs.getParent(path);
-      if (parent == null)
-      {
-         return new StringBuilder("");
-      }
-      else if (fs.equals(parent, fs.getRoot()))
-      {
-         return new StringBuilder("").append(fs.getName(path));
-      }
-      else
-      {
-         return packageName(parent).append('.').append(fs.getName(path));
-      }
-*/
    }
 
    // **************
@@ -244,7 +202,7 @@ class VirtualFileManager<P, D extends P, F extends P> extends ForwardingJavaFile
             if (child != null && fs.isFile(child))
             {
                F file = fs.asFile(child);
-               FileKey uri = FileKey.newResourceName(packageName(file).toString(), fs.getName(file));
+               FileKey uri = FileKey.newResourceName(fs.packageName(file).toString(), fs.getName(file));
                return new VirtualJavaFileObject.FileSystem<P, D, F>(fs, file, uri);
             }
          }
