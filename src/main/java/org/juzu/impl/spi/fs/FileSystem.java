@@ -29,14 +29,14 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class FileSystem<P, D extends P, F extends P>
+public abstract class FileSystem<P>
 {
 
    public final StringBuilder packageName(P path) throws IOException
    {
       if (isDir(path))
       {
-         D parent = getParent(path);
+         P parent = getParent(path);
          if (parent == null)
          {
             return new StringBuilder();
@@ -61,25 +61,21 @@ public abstract class FileSystem<P, D extends P, F extends P>
 
    public abstract boolean equals(P left, P right);
 
-   public abstract D getRoot() throws IOException;
+   public abstract P getRoot() throws IOException;
 
-   public abstract D getParent(P path) throws IOException;
+   public abstract P getParent(P path) throws IOException;
 
    public abstract String getName(P path) throws IOException;
 
-   public abstract Iterator<P> getChildren(D dir) throws IOException;
+   public abstract Iterator<P> getChildren(P dir) throws IOException;
 
-   public abstract P getChild(D dir, String name) throws IOException;
+   public abstract P getChild(P dir, String name) throws IOException;
 
    public abstract boolean isDir(P path) throws IOException;
 
    public abstract boolean isFile(P path) throws IOException;
 
-   public abstract F asFile(P path) throws IllegalArgumentException, IOException;
-
-   public abstract D asDir(P path) throws IllegalArgumentException, IOException;
-
-   public abstract Content<?> getContent(F file) throws IOException;
+   public abstract Content<?> getContent(P file) throws IOException;
 
    public abstract long getLastModified(P path) throws IOException;
 

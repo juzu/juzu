@@ -32,7 +32,7 @@ public class CompilationTestCase extends TestCase
    public void testBar() throws Exception
    {
       File root = new File(System.getProperty("test.resources"));
-      CompilerContext<File, File, File> ctx = new CompilerContext<File, File, File>(new DiskFileSystem(root));
+      CompilerContext<File> ctx = new CompilerContext<File>(new DiskFileSystem(root));
       assertTrue(ctx.compile());
       assertEquals(1, ctx.getClassOutputKeys().size());
    }
@@ -75,7 +75,7 @@ public class CompilationTestCase extends TestCase
       }
 
       //
-      CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
+      CompilerContext<RAMPath> compiler = new CompilerContext<RAMPath>(ramFS);
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
       assertTrue(compiler.compile());
@@ -105,7 +105,7 @@ public class CompilationTestCase extends TestCase
       RAMFile a = foo.addFile("A.java").update("package foo; public class A {}");
       RAMFile b = foo.addFile("B.java").update("package foo; public class B {}");
 
-      CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
+      CompilerContext<RAMPath> compiler = new CompilerContext<RAMPath>(ramFS);
       assertTrue(compiler.compile());
       assertEquals(2, compiler.getClassOutputKeys());
       Content aClass = compiler.getClassOutput(FileKey.newJavaName("foo.A", JavaFileObject.Kind.CLASS));
@@ -186,7 +186,7 @@ public class CompilationTestCase extends TestCase
       RAMDir root = ramFS.getRoot();
       RAMFile a = root.addFile("A.java").update("public class A {}");
 
-      CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
+      CompilerContext<RAMPath> compiler = new CompilerContext<RAMPath>(ramFS);
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
       assertTrue(compiler.compile());

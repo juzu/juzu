@@ -48,7 +48,7 @@ public class TemplateProcessorTestCase extends TestCase
       RAMFile b = foo.addFile("B.gtmpl").update("<% out.print('hello') %>");
 
       //
-      final CompilerContext<RAMPath, RAMDir, RAMFile> compiler = new CompilerContext<RAMPath, RAMDir, RAMFile>(ramFS);
+      final CompilerContext<RAMPath> compiler = new CompilerContext<RAMPath>(ramFS);
       compiler.addAnnotationProcessor(new TemplateProcessor());
       assertTrue(compiler.compile());
 

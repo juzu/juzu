@@ -35,26 +35,26 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilerContext<P, D extends P, F extends P>
+public class CompilerContext<P>
 {
 
    /** . */
-   final FileSystem<P, D, F> fs;
+   final FileSystem<P> fs;
 
    /** . */
    private JavaCompiler compiler;
 
    /** . */
-   private VirtualFileManager<P, D, F> fileManager;
+   private VirtualFileManager<P> fileManager;
 
    /** . */
    private Set<Processor> processors;
 
-   public CompilerContext(FileSystem<P, D, F> fs)
+   public CompilerContext(FileSystem<P> fs)
    {
       this.fs = fs;
       this.compiler = ToolProvider.getSystemJavaCompiler();
-      this.fileManager = new VirtualFileManager<P, D, F>(fs, compiler.getStandardFileManager(null, null, null));
+      this.fileManager = new VirtualFileManager<P>(fs, compiler.getStandardFileManager(null, null, null));
       this.processors = new HashSet<Processor>();
    }
 
@@ -101,16 +101,16 @@ public class CompilerContext<P, D extends P, F extends P>
 
    public boolean compile() throws IOException
    {
-      Collection<VirtualJavaFileObject.FileSystem<P, D, F>> sources = fileManager.collectJavaFiles();
+      Collection<VirtualJavaFileObject.FileSystem<P, P, P>> sources = fileManager.collectJavaFiles();
 
       //
       fileManager.classOutput.clear();
       fileManager.sourceOutput.clear();
 
       // Filter compiled files
-      for (Iterator<VirtualJavaFileObject.FileSystem<P, D, F>> i = sources.iterator();i.hasNext();)
+      for (Iterator<VirtualJavaFileObject.FileSystem<P, P, P>> i = sources.iterator();i.hasNext();)
       {
-         VirtualJavaFileObject.FileSystem<P, D, F> source = i.next();
+         VirtualJavaFileObject.FileSystem<P, P, P> source = i.next();
          FileKey key = source.key;
          VirtualJavaFileObject.RandomAccess.Binary existing = (VirtualJavaFileObject.RandomAccess.Binary)fileManager.classOutput.get(key.as(JavaFileObject.Kind.CLASS));
          // For now we don't support this feature

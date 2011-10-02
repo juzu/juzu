@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DiskFileSystem extends FileSystem<File, File, File>
+public class DiskFileSystem extends FileSystem<File>
 {
 
    /** . */
@@ -72,24 +72,6 @@ public class DiskFileSystem extends FileSystem<File, File, File>
    public boolean isFile(File path) throws IOException
    {
       return path.isFile();
-   }
-
-   public File asFile(File path) throws IOException
-   {
-      if (!path.isFile())
-      {
-         throw new IllegalArgumentException("File " + path + " is not a file");
-      }
-      return path;
-   }
-
-   public File asDir(File path) throws IOException
-   {
-      if (!path.isDirectory())
-      {
-         throw new IllegalArgumentException("File " + path + " is not a directory");
-      }
-      return path;
    }
 
    public String getName(File path) throws IOException

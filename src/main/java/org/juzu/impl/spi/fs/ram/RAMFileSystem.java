@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMFileSystem extends FileSystem<RAMPath, RAMDir, RAMFile>
+public class RAMFileSystem extends FileSystem<RAMPath>
 {
 
    /** . */
@@ -57,14 +57,14 @@ public class RAMFileSystem extends FileSystem<RAMPath, RAMDir, RAMFile>
       return path.getName();
    }
 
-   public Iterator<RAMPath> getChildren(RAMDir dir) throws IOException
+   public Iterator<RAMPath> getChildren(RAMPath dir) throws IOException
    {
-      return dir.children.values().iterator();
+      return ((RAMDir)dir).children.values().iterator();
    }
 
-   public RAMPath getChild(RAMDir dir, String name) throws IOException
+   public RAMPath getChild(RAMPath dir, String name) throws IOException
    {
-      return dir.children.get(name);
+      return ((RAMDir)dir).children.get(name);
    }
 
    public boolean isDir(RAMPath path) throws IOException
@@ -77,19 +77,9 @@ public class RAMFileSystem extends FileSystem<RAMPath, RAMDir, RAMFile>
       return path instanceof RAMFile;
    }
 
-   public RAMFile asFile(RAMPath path) throws IllegalArgumentException, IOException
+   public Content<?> getContent(RAMPath file) throws IOException
    {
-      return (RAMFile)path;
-   }
-
-   public RAMDir asDir(RAMPath path) throws IllegalArgumentException, IOException
-   {
-      return (RAMDir)path;
-   }
-
-   public Content<?> getContent(RAMFile file) throws IOException
-   {
-      return file.getContent();
+      return ((RAMFile)file).getContent();
    }
 
    public long getLastModified(RAMPath path) throws IOException
