@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.fs.disk;
 
-import org.juzu.impl.spi.fs.FileSystem;
+import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.Safe;
 
@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DiskFileSystem extends FileSystem<File>
+public class DiskFileSystem extends ReadFileSystem<File>
 {
 
    /** . */

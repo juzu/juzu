@@ -19,7 +19,8 @@
 
 package org.juzu.impl.compiler;
 
-import org.juzu.impl.spi.fs.FileSystem;
+import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Spliterator;
 
 import javax.tools.FileObject;
@@ -40,11 +41,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileManager>
+class VirtualFileManager<I, O> extends ForwardingJavaFileManager<StandardJavaFileManager>
 {
 
    /** . */
-   final FileSystem<P> fs;
+   final ReadFileSystem<I> input;
 
    /** . */
    final Map<FileKey, VirtualJavaFileObject.RandomAccess> classOutput;
@@ -52,20 +53,24 @@ class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileMa
    /** . */
    final Map<FileKey, VirtualJavaFileObject.RandomAccess> sourceOutput;
 
-   public VirtualFileManager( FileSystem<P> fs, StandardJavaFileManager fileManager)
+   /** . */
+   final ReadWriteFileSystem<O> output;
+
+   public VirtualFileManager(ReadFileSystem<I> input, StandardJavaFileManager fileManager, ReadWriteFileSystem<O> output)
    {
       super(fileManager);
 
       //
-      this.fs = fs;
+      this.input = input;
       this.classOutput = new HashMap<FileKey, VirtualJavaFileObject.RandomAccess>();
       this.sourceOutput = new HashMap<FileKey, VirtualJavaFileObject.RandomAccess>();
+      this.output = output;
    }
 
-   public Collection<VirtualJavaFileObject.FileSystem<P, P, P>> collectJavaFiles() throws IOException
+   public Collection<VirtualJavaFileObject.FileSystem<I>> collectJavaFiles() throws IOException
    {
-      P root = fs.getRoot();
-      ArrayList<VirtualJavaFileObject.FileSystem<P, P, P>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<P, P, P>>();
+      I root = input.getRoot();
+      ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<I>>();
       collectJavaFiles(root, javaFiles);
       return javaFiles;
    }
@@ -85,18 +90,18 @@ class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileMa
       return null;
    }
 
-   private void collectJavaFiles(P dir, ArrayList<VirtualJavaFileObject.FileSystem<P, P, P>> javaFiles) throws IOException
+   private void collectJavaFiles(I dir, ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles) throws IOException
    {
-      for (Iterator<P> i = fs.getChildren(dir);i.hasNext();)
+      for (Iterator<I> i = input.getChildren(dir);i.hasNext();)
       {
-         P child = i.next();
-         if (fs.isFile(child))
+         I child = i.next();
+         if (input.isFile(child))
          {
-            String name = fs.getName(child);
+            String name = input.getName(child);
             if (name.endsWith(".java"))
             {
-               FileKey key = FileKey.newJavaName(fs.packageName(child).toString(), fs.getName(child));
-               javaFiles.add(new VirtualJavaFileObject.FileSystem<P, P, P>(fs, child, key));
+               FileKey key = FileKey.newJavaName(input.packageName(child).toString(), input.getName(child));
+               javaFiles.add(new VirtualJavaFileObject.FileSystem<I>(input, child, key));
             }
          }
          else
@@ -126,11 +131,11 @@ class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileMa
             {
                if (matcher == null)
                {
-                  matcher = pattern.matcher(file.key.packageName);
+                  matcher = pattern.matcher(file.key.packageFQN);
                }
                else
                {
-                  matcher.reset(file.key.packageName);
+                  matcher.reset(file.key.packageFQN);
                }
                if (matcher.matches())
                {
@@ -178,13 +183,13 @@ class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileMa
    {
       if (location == StandardLocation.SOURCE_PATH)
       {
-         P current = fs.getRoot();
+         I current = input.getRoot();
          Spliterator s = new Spliterator(packageName, '.');
          while (s.hasNext())
          {
             String name = s.next();
-            P child = fs.getChild(current, name);
-            if (child != null || fs.isDir(child))
+            I child = input.getChild(current, name);
+            if (child != null || input.isDir(child))
             {
                current = child;
             }
@@ -196,12 +201,11 @@ class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileMa
          }
          if (current != null)
          {
-            P child = fs.getChild(current, relativeName);
-            if (child != null && fs.isFile(child))
+            I child = input.getChild(current, relativeName);
+            if (child != null && input.isFile(child))
             {
-               P file = child;
-               FileKey uri = FileKey.newResourceName(fs.packageName(file).toString(), fs.getName(file));
-               return new VirtualJavaFileObject.FileSystem<P, P, P>(fs, file, uri);
+               FileKey uri = FileKey.newResourceName(input.packageName(child).toString(), input.getName(child));
+               return new VirtualJavaFileObject.FileSystem<I>(input, child, uri);
             }
          }
          throw new IllegalArgumentException("Could not locate pkg=" + packageName + " name=" + relativeName + ")");
@@ -215,7 +219,7 @@ class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileMa
             VirtualJavaFileObject.RandomAccess file = files.get(key);
             if (file == null)
             {
-               files.put(key, file = new VirtualJavaFileObject.RandomAccess.Text(key));
+               files.put(key, file = new VirtualJavaFileObject.RandomAccess.Text(this, key));
             }
             return file;
          }
@@ -243,7 +247,7 @@ class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileMa
          VirtualJavaFileObject.RandomAccess.Binary file = (VirtualJavaFileObject.RandomAccess.Binary)classOutput.get(key);
          if (file == null)
          {
-            classOutput.put(key, file = new VirtualJavaFileObject.RandomAccess.Binary(key));
+            classOutput.put(key, file = new VirtualJavaFileObject.RandomAccess.Binary(this, key));
          }
          return file;
       }
@@ -254,7 +258,7 @@ class VirtualFileManager<P> extends ForwardingJavaFileManager<StandardJavaFileMa
          VirtualJavaFileObject.RandomAccess.Text file = (VirtualJavaFileObject.RandomAccess.Text)sourceOutput.get(key);
          if (file == null)
          {
-            sourceOutput.put(key, file = new VirtualJavaFileObject.RandomAccess.Text(key));
+            sourceOutput.put(key, file = new VirtualJavaFileObject.RandomAccess.Text(this, key));
          }
          return file;
       }

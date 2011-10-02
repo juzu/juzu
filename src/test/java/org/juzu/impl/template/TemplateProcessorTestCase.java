@@ -20,7 +20,7 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
-import org.juzu.impl.classloading.RAMClassLoader;
+import org.juzu.impl.classloading.FileSystemClassLoader;
 import org.juzu.impl.compiler.FileKey;
 import org.juzu.impl.compiler.CompilerContext;
 import org.juzu.impl.spi.fs.ram.RAMDir;
@@ -48,7 +48,8 @@ public class TemplateProcessorTestCase extends TestCase
       RAMFile b = foo.addFile("B.gtmpl").update("<% out.print('hello') %>");
 
       //
-      final CompilerContext<RAMPath> compiler = new CompilerContext<RAMPath>(ramFS);
+      RAMFileSystem output = new RAMFileSystem();
+      final CompilerContext<RAMPath, ?> compiler = new CompilerContext<RAMPath, RAMPath>(ramFS, output);
       compiler.addAnnotationProcessor(new TemplateProcessor());
       assertTrue(compiler.compile());
 
@@ -63,7 +64,7 @@ public class TemplateProcessorTestCase extends TestCase
       assertNotNull(content2);
 
       //
-      ClassLoader cl = new RAMClassLoader(Thread.currentThread().getContextClassLoader(), compiler.getClassOutput());
+      ClassLoader cl = new FileSystemClassLoader<RAMPath>(Thread.currentThread().getContextClassLoader(), output);
 
       Class<?> aClass = cl.loadClass("foo.A");
       Class<?> bClass = cl.loadClass("foo.B");

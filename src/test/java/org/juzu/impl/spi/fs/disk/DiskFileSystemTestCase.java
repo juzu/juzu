@@ -1,7 +1,7 @@
 package org.juzu.impl.spi.fs.disk;
 
 import junit.framework.TestCase;
-import org.juzu.impl.spi.fs.FileSystem;
+import org.juzu.impl.spi.fs.ReadFileSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class DiskFileSystemTestCase extends TestCase
       doTest(new DiskFileSystem(root), root);
    }
    
-   private <P, D extends P, F extends P> void doTest(FileSystem<P> fs, D root) throws IOException
+   private <P> void doTest(ReadFileSystem<P> fs, P root) throws IOException
    {
       
       assertEquals(root, fs.getRoot());

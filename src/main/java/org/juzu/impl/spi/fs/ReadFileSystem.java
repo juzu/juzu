@@ -29,7 +29,7 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class FileSystem<P>
+public abstract class ReadFileSystem<P>
 {
 
    public final StringBuilder packageName(P path) throws IOException
@@ -57,6 +57,31 @@ public abstract class FileSystem<P>
       {
          return packageName(getParent(path));
       }
+   }
+
+   public final P getPath(Iterable<String> filePath) throws IOException
+   {
+      P current = getRoot();
+      for (String name : filePath)
+      {
+         if (isDir(current))
+         {
+            P child = getChild(current, name);
+            if (child != null)
+            {
+               current = child;
+            }
+            else
+            {
+               return null;
+            }
+         }
+         else
+         {
+            throw new UnsupportedOperationException("handle me gracefully");
+         }
+      }
+      return current;
    }
 
    public abstract boolean equals(P left, P right);

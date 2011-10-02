@@ -19,6 +19,7 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.utils.Content;
 
 import javax.tools.SimpleJavaFileObject;
@@ -47,14 +48,14 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
    /**
     * File system.
     */
-   static class FileSystem<P, D extends P, F extends P> extends VirtualJavaFileObject
+   static class FileSystem<P> extends VirtualJavaFileObject
    {
 
       /** . */
-      private final F file;
+      private final P file;
 
       /** . */
-      private final org.juzu.impl.spi.fs.FileSystem<P> fs;
+      private final ReadFileSystem<P> fs;
 
       /** . */
       private CharSequence content;
@@ -62,7 +63,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       /** . */
       private long lastModified;
 
-      FileSystem(org.juzu.impl.spi.fs.FileSystem<P> fs, F file, FileKey key) throws IOException
+      FileSystem(ReadFileSystem<P> fs, P file, FileKey key) throws IOException
       {
          super(key);
 
@@ -108,17 +109,21 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       }
    }
 
-   static class RandomAccess<C> extends VirtualJavaFileObject
+   static class RandomAccess<P, C> extends VirtualJavaFileObject
    {
+
+      /** . */
+      protected final VirtualFileManager<?, P> manager;
 
       /** . */
       protected Content<?> content;
 
-      RandomAccess(FileKey key)
+      RandomAccess(VirtualFileManager<?, P> manager, FileKey key)
       {
          super(key);
 
          //
+         this.manager = manager;
          this.content = null;
       }
 
@@ -131,15 +136,15 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       /**
        * Compiled class.
        */
-      static class Binary extends RandomAccess<byte[]>
+      static class Binary<P> extends RandomAccess<P, byte[]>
       {
 
          /** . */
          private ByteArrayOutputStream out;
 
-         Binary(FileKey key) throws IOException
+         Binary(VirtualFileManager<?, P> manager, FileKey key) throws IOException
          {
-            super(key);
+            super(manager, key);
 
             //
             this.out = null;
@@ -154,6 +159,8 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
                public void close() throws IOException
                {
                   content = new Content.ByteArray(System.currentTimeMillis(), toByteArray());
+                  P file = manager.output.makeFile(key.packageNames, key.name);
+                  manager.output.setContent(file, content);
                   out = null;
                }
             };
@@ -177,15 +184,15 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       /**
        * Generated class.
        */
-      static class Text extends RandomAccess<CharSequence>
+      static class Text<P> extends RandomAccess<P, CharSequence>
       {
 
          /** . */
          private StringWriter writer;
 
-         Text(FileKey key) throws IOException
+         Text(VirtualFileManager<?, P> manager, FileKey key) throws IOException
          {
-            super(key);
+            super(manager, key);
 
             //
             this.writer = null;
@@ -200,6 +207,8 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
                public void close() throws IOException
                {
                   content = new Content.CharArray(System.currentTimeMillis(), writer.toString());
+                  P file = manager.output.makeFile(key.packageNames, key.name);
+                  manager.output.setContent(file, content);
                   writer = null;
                }
             };

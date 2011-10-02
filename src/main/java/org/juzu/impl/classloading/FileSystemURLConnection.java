@@ -22,32 +22,39 @@ package org.juzu.impl.classloading;
 import org.juzu.impl.utils.Content;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMURLStreamHandler extends URLStreamHandler
+public class FileSystemURLConnection extends URLConnection
 {
 
    /** . */
-   private Map<String, Content<?>> contentMap;
+   private final Content<?> content;
 
-   public RAMURLStreamHandler(Map<String, Content<?>> contentMap)
+   public FileSystemURLConnection(URL url, Content<?> content)
    {
-      this.contentMap = contentMap;
+      super(url);
+
+      //
+      this.content = content;
    }
 
    @Override
-   protected URLConnection openConnection(URL u) throws IOException
+   public void connect() throws IOException
    {
-      String path = u.getPath();
-      Content<?> content = contentMap.get(path);
-      if (content == null)
-      {
-         throw new IOException("Could not connect to non existing content " + path);
-      }
-      return new RAMURLConnection(u, content);
+   }
+
+   @Override
+   public InputStream getInputStream() throws IOException
+   {
+      return content.getInputStream();
+   }
+
+   @Override
+   public long getLastModified()
+   {
+      return content.getLastModified();
    }
 }

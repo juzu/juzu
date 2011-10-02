@@ -29,11 +29,12 @@ public class RAMDir extends RAMPath
    final LinkedHashMap<String, RAMPath> children;
 
    /** . */
-   private String content;
+   private long lastModified;
 
    public RAMDir()
    {
       this.children = new LinkedHashMap<String, RAMPath>();
+      this.lastModified = System.currentTimeMillis();
    }
 
    public RAMDir(RAMDir parent, String name)
@@ -84,6 +85,18 @@ public class RAMDir extends RAMPath
       RAMDir dir = new RAMDir(this, name);
       children.put(name, dir);
       return dir;
+   }
+
+   @Override
+   public long getLastModified()
+   {
+      return lastModified;
+   }
+
+   @Override
+   public void touch()
+   {
+      lastModified = System.currentTimeMillis();
    }
 
    public RAMPath getChild(String name)

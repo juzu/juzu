@@ -19,10 +19,14 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.utils.Spliterator;
+
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FileKey
@@ -73,7 +77,10 @@ public class FileKey
    }
 
    /** . */
-   final String packageName;
+   final List<String> packageNames;
+
+   /** . */
+   final String packageFQN;
 
    /** . */
    final String rawName;
@@ -82,32 +89,38 @@ public class FileKey
    final String fqn;
 
    /** . */
+   final String name;
+
+   /** . */
    final URI uri;
 
    /** . */
    final JavaFileObject.Kind kind;
 
-   private FileKey(String packageName, String rawName, JavaFileObject.Kind kind) throws IOException
+   private FileKey(String packageFQN, String rawName, JavaFileObject.Kind kind) throws IOException
    {
+      String name = rawName + kind.extension;
       String path;
       String fqn;
-      if (packageName.length() == 0)
+      if (packageFQN.length() == 0)
       {
-         path = "/" + rawName + kind.extension;
+         path = "/" + name;
          fqn = rawName;
       }
       else
       {
-         path = "/" + packageName.replace('.', '/') + '/' + rawName + kind.extension;
-         fqn = packageName + "." + rawName;
+         path = "/" + packageFQN.replace('.', '/') + '/' + name;
+         fqn = packageFQN + "." + rawName;
       }
       try
       {
-         this.packageName = packageName;
+         this.packageNames = Collections.unmodifiableList(Spliterator.split(packageFQN, '.'));
+         this.packageFQN = packageFQN;
          this.rawName = rawName;
          this.uri = new URI(path);
          this.fqn = fqn;
          this.kind = kind;
+         this.name = name;
       }
       catch (URISyntaxException e)
       {
@@ -117,13 +130,13 @@ public class FileKey
 
    public FileKey as(JavaFileObject.Kind kind) throws IOException
    {
-      return new FileKey(packageName, rawName, kind);
+      return new FileKey(packageFQN, rawName, kind);
    }
 
    @Override
    public final int hashCode()
    {
-      return packageName.hashCode() ^ rawName.hashCode() ^ kind.hashCode();
+      return packageFQN.hashCode() ^ rawName.hashCode() ^ kind.hashCode();
    }
 
    @Override
@@ -136,7 +149,7 @@ public class FileKey
       else if (obj instanceof FileKey)
       {
          FileKey that = (FileKey)obj;
-         return packageName.equals(that.packageName) && rawName.equals(that.rawName) && kind.equals(that.kind);
+         return packageFQN.equals(that.packageFQN) && rawName.equals(that.rawName) && kind.equals(that.kind);
       }
       else
       {
@@ -147,6 +160,6 @@ public class FileKey
    @Override
    public String toString()
    {
-      return "FileKey[packageName=" + packageName + ",rawName=" + rawName + ",kind=" + kind + "]";
+      return "FileKey[packageName=" + packageFQN + ",rawName=" + rawName + ",kind=" + kind + "]";
    }
 }

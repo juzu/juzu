@@ -19,14 +19,14 @@
 
 package org.juzu.impl.spi.fs.ram;
 
-import org.juzu.impl.spi.fs.FileSystem;
+import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Content;
 
 import java.io.IOException;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMFileSystem extends FileSystem<RAMPath>
+public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
 {
 
    /** . */
@@ -35,6 +35,24 @@ public class RAMFileSystem extends FileSystem<RAMPath>
    public RAMFileSystem()
    {
       this.root = new RAMDir();
+   }
+
+   @Override
+   public RAMDir addDir(RAMPath parent, String name) throws IOException
+   {
+      return ((RAMDir)parent).addDir(name);
+   }
+
+   @Override
+   public RAMFile addFile(RAMPath parent, String name) throws IOException
+   {
+      return ((RAMDir)parent).addFile(name);
+   }
+
+   @Override
+   public void setContent(RAMPath file, Content<?> content) throws IOException
+   {
+      ((RAMFile)file).update(content);
    }
 
    public boolean equals(RAMPath left, RAMPath right)

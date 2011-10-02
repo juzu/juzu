@@ -19,42 +19,18 @@
 
 package org.juzu.impl.classloading;
 
-import org.juzu.impl.utils.Content;
+import org.juzu.impl.spi.fs.ReadFileSystem;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.URLClassLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMURLConnection extends URLConnection
+public class FileSystemClassLoader<P> extends URLClassLoader
 {
 
-   /** . */
-   private final Content<?> content;
-
-   public RAMURLConnection(URL url, Content<?> content)
+   public FileSystemClassLoader(ClassLoader parent, ReadFileSystem<P> fs) throws MalformedURLException
    {
-      super(url);
-
-      //
-      this.content = content;
-   }
-
-   @Override
-   public void connect() throws IOException
-   {
-   }
-
-   @Override
-   public InputStream getInputStream() throws IOException
-   {
-      return content.getInputStream();
-   }
-
-   @Override
-   public long getLastModified()
-   {
-      return content.getLastModified();
+      super(new URL[]{new URL("juzu", null, 0, "/", new FileSystemURLStreamHandler<P>(fs))}, parent);
    }
 }

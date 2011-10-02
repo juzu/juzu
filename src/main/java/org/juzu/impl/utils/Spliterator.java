@@ -20,17 +20,37 @@
 package org.juzu.impl.utils;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
  * An iterator that splits a string into chunks without requiring to allocate an array to hold
  * the various chunks of the splitted string.
  *
+ * <ul>
+ *    <li>"" -> ()</li>
+ *    <li>"." -> ("","")</li>
+ *    <li>"a" -> ("a")</li>
+ * </ul>
+ *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
 public class Spliterator implements Iterator<String>
 {
+
+   public static List<String> split(String s, char separator) throws NullPointerException
+   {
+      LinkedList<String> list = new LinkedList<String>();
+      Spliterator iterator = new Spliterator(s, separator);
+      while (iterator.hasNext())
+      {
+         String next = iterator.next();
+         list.add(next);
+      }
+      return list;
+   }
 
    /** . */
    private final String s;
@@ -61,7 +81,7 @@ public class Spliterator implements Iterator<String>
       //
       this.s = s;
       this.separator = separator;
-      this.from = 0;
+      this.from = s.length()  == 0 ? -1 : 0;
       this.to = null;
    }
 

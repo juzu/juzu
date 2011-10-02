@@ -19,7 +19,8 @@
 
 package org.juzu.impl.compiler;
 
-import org.juzu.impl.spi.fs.FileSystem;
+import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Content;
 
 import javax.annotation.processing.Processor;
@@ -35,26 +36,26 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilerContext<P>
+public class CompilerContext<I, O>
 {
 
    /** . */
-   final FileSystem<P> fs;
+   final ReadFileSystem<I> input;
 
    /** . */
    private JavaCompiler compiler;
 
    /** . */
-   private VirtualFileManager<P> fileManager;
+   private VirtualFileManager<I, O> fileManager;
 
    /** . */
    private Set<Processor> processors;
 
-   public CompilerContext(FileSystem<P> fs)
+   public CompilerContext(ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
    {
-      this.fs = fs;
+      this.input = input;
       this.compiler = ToolProvider.getSystemJavaCompiler();
-      this.fileManager = new VirtualFileManager<P>(fs, compiler.getStandardFileManager(null, null, null));
+      this.fileManager = new VirtualFileManager<I, O>(input, compiler.getStandardFileManager(null, null, null), output);
       this.processors = new HashSet<Processor>();
    }
 
@@ -65,16 +66,6 @@ public class CompilerContext<P>
          throw new NullPointerException("No null processor allowed");
       }
       processors.add(annotationProcessorType);
-   }
-
-   public Map<String, Content<?>> getClassOutput()
-   {
-      Map<String, Content<?>> map = new HashMap<String, Content<?>>();
-      for (Map.Entry<FileKey, VirtualJavaFileObject.RandomAccess> entry : fileManager.classOutput.entrySet())
-      {
-         map.put(entry.getKey().uri.getPath(), entry.getValue().content);
-      }
-      return map;
    }
 
    public Set<FileKey> getClassOutputKeys()
@@ -101,16 +92,16 @@ public class CompilerContext<P>
 
    public boolean compile() throws IOException
    {
-      Collection<VirtualJavaFileObject.FileSystem<P, P, P>> sources = fileManager.collectJavaFiles();
+      Collection<VirtualJavaFileObject.FileSystem<I>> sources = fileManager.collectJavaFiles();
 
       //
       fileManager.classOutput.clear();
       fileManager.sourceOutput.clear();
 
       // Filter compiled files
-      for (Iterator<VirtualJavaFileObject.FileSystem<P, P, P>> i = sources.iterator();i.hasNext();)
+      for (Iterator<VirtualJavaFileObject.FileSystem<I>> i = sources.iterator();i.hasNext();)
       {
-         VirtualJavaFileObject.FileSystem<P, P, P> source = i.next();
+         VirtualJavaFileObject.FileSystem<I> source = i.next();
          FileKey key = source.key;
          VirtualJavaFileObject.RandomAccess.Binary existing = (VirtualJavaFileObject.RandomAccess.Binary)fileManager.classOutput.get(key.as(JavaFileObject.Kind.CLASS));
          // For now we don't support this feature
