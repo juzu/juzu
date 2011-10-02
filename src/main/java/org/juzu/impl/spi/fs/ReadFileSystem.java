@@ -23,6 +23,7 @@ import org.juzu.impl.utils.Content;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * File system provider interface.
@@ -82,6 +83,32 @@ public abstract class ReadFileSystem<P>
          }
       }
       return current;
+   }
+
+   public void traverse(P path, Visitor<P> visitor) throws IOException
+   {
+      String name = getName(path);
+      if (isDir(path))
+      {
+         if (visitor.enterDir(path, name))
+         {
+            for (Iterator<P> i = getChildren(path);i.hasNext();)
+            {
+               P child = i.next();
+               traverse(child, visitor);
+            }
+            visitor.leaveDir(path, name);
+         }
+      }
+      else
+      {
+         visitor.file(path, name);
+      }
+   }
+
+   public void traverse(Visitor<P> visitor) throws IOException
+   {
+      traverse(getRoot(), visitor);
    }
 
    public abstract boolean equals(P left, P right);

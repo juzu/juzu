@@ -21,6 +21,7 @@ package org.juzu.impl.compiler;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
+import org.juzu.impl.spi.fs.Visitor;
 import org.juzu.impl.utils.Spliterator;
 
 import javax.tools.FileObject;
@@ -33,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,9 +69,18 @@ class VirtualFileManager<I, O> extends ForwardingJavaFileManager<StandardJavaFil
 
    public Collection<VirtualJavaFileObject.FileSystem<I>> collectJavaFiles() throws IOException
    {
-      I root = input.getRoot();
-      ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<I>>();
-      collectJavaFiles(root, javaFiles);
+      final ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<I>>();
+      input.traverse(new Visitor.Default<I>()
+      {
+         public void file(I file, String name) throws IOException
+         {
+            if (name.endsWith(".java"))
+            {
+               FileKey key = FileKey.newJavaName(input.packageName(file).toString(), name);
+               javaFiles.add(new VirtualJavaFileObject.FileSystem<I>(input, file, key));
+            }
+         }
+      });
       return javaFiles;
    }
 
@@ -88,27 +97,6 @@ class VirtualFileManager<I, O> extends ForwardingJavaFileManager<StandardJavaFil
          }
       }
       return null;
-   }
-
-   private void collectJavaFiles(I dir, ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles) throws IOException
-   {
-      for (Iterator<I> i = input.getChildren(dir);i.hasNext();)
-      {
-         I child = i.next();
-         if (input.isFile(child))
-         {
-            String name = input.getName(child);
-            if (name.endsWith(".java"))
-            {
-               FileKey key = FileKey.newJavaName(input.packageName(child).toString(), input.getName(child));
-               javaFiles.add(new VirtualJavaFileObject.FileSystem<I>(input, child, key));
-            }
-         }
-         else
-         {
-            collectJavaFiles(child, javaFiles);
-         }
-      }
    }
 
    // **************
