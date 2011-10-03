@@ -44,9 +44,16 @@ public class TemplateProcessorTestCase extends TestCase
 
       RAMFileSystem ramFS = new RAMFileSystem();
       RAMDir root = ramFS.getRoot();
-      RAMDir foo = root.addDir("foo");
-      RAMFile a = foo.addFile("A.java").update("package foo; public class A { @org.juzu.template.Template(\"B.gtmpl\") org.juzu.template.TemplateRenderer template; }");
-      RAMFile b = foo.addFile("B.gtmpl").update("<% out.print('hello') %>");
+      RAMDir bar = root.addDir("bar");
+      RAMDir templates = bar.addDir("templates");
+      RAMFile barPkgInfo = bar.addFile("package-info.java").update(
+         "@Application\n" +
+         "package bar;\n" +
+         "import org.juzu.Application;"
+      );
+      RAMDir foo = bar.addDir("foo");
+      RAMFile a = foo.addFile("A.java").update("package bar.foo; public class A { @org.juzu.Resource(\"B.gtmpl\") org.juzu.template.Template template; }");
+      RAMFile b = templates.addFile("B.gtmpl").update("<% out.print('hello') %>");
 
       //
       RAMFileSystem output = new RAMFileSystem();
@@ -55,20 +62,20 @@ public class TemplateProcessorTestCase extends TestCase
       assertTrue(compiler.compile());
 
       //
-      Content<?> content = compiler.getClassOutput(FileKey.newResourceName("foo", "B.groovy"));
+      Content<?> content = compiler.getClassOutput(FileKey.newResourceName("bar.templates", "B.groovy"));
       assertNotNull(content);
-      assertEquals(3, compiler.getClassOutputKeys().size());
+      assertEquals(4, compiler.getClassOutputKeys().size());
 
       //
       assertEquals(1, compiler.getSourceOutputKeys().size());
-      Content<?> content2 = compiler.getSourceOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.SOURCE));
+      Content<?> content2 = compiler.getSourceOutput(FileKey.newJavaName("bar.templates.B", JavaFileObject.Kind.SOURCE));
       assertNotNull(content2);
 
       //
       ClassLoader cl = new URLClassLoader(new URL[]{output.getURL()}, Thread.currentThread().getContextClassLoader());
 
-      Class<?> aClass = cl.loadClass("foo.A");
-      Class<?> bClass = cl.loadClass("foo.B");
+      Class<?> aClass = cl.loadClass("bar.foo.A");
+      Class<?> bClass = cl.loadClass("bar.templates.B");
       TemplateStub template = (TemplateStub)bClass.newInstance();
       StringWriter out = new StringWriter();
       template.render(new WriterPrinter(out), null, null);

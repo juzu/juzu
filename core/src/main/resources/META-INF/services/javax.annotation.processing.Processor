@@ -1,1 +1,2 @@
 org.juzu.impl.template.TemplateProcessor
+org.juzu.impl.application.ApplicationProcessor

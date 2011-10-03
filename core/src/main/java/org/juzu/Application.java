@@ -17,39 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.utils;
+package org.juzu;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.Method;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Safe
+/**
+ * Declares an application.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PACKAGE)
+public @interface Application
 {
 
-   public static void close(Closeable closeable)
-   {
-      if (closeable != null)
-      {
-         try
-         {
-            closeable.close();
-         }
-         catch (IOException ignore)
-         {
-         }
-      }
-   }
+   String name() default "";
 
-   public static Method getMethod(Class<?> type, String name, Class<?>... parameterTypes)
-   {
-      try
-      {
-         return type.getDeclaredMethod(name, parameterTypes);
-      }
-      catch (NoSuchMethodException e)
-      {
-         return null;
-      }
-   }
 }

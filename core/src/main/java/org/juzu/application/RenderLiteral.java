@@ -17,39 +17,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.utils;
+package org.juzu.application;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.Method;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Safe
+/**
+ * A render phase literal.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public class RenderLiteral extends PhaseLiteral
 {
 
-   public static void close(Closeable closeable)
+   /** . */
+   private final ControllerMethod descriptor;
+
+   public RenderLiteral(ControllerMethod descriptor)
    {
-      if (closeable != null)
+      if (descriptor == null)
       {
-         try
-         {
-            closeable.close();
-         }
-         catch (IOException ignore)
-         {
-         }
+         throw new NullPointerException();
       }
+      this.descriptor = descriptor;
    }
 
-   public static Method getMethod(Class<?> type, String name, Class<?>... parameterTypes)
+   public ControllerMethod getDescriptor()
    {
-      try
-      {
-         return type.getDeclaredMethod(name, parameterTypes);
-      }
-      catch (NoSuchMethodException e)
-      {
-         return null;
-      }
+      return descriptor;
    }
 }

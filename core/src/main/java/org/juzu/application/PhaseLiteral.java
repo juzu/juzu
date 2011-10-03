@@ -17,39 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.utils;
+package org.juzu.application;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.Method;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Safe
+/**
+ * A phase literal.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public class PhaseLiteral
 {
-
-   public static void close(Closeable closeable)
-   {
-      if (closeable != null)
-      {
-         try
-         {
-            closeable.close();
-         }
-         catch (IOException ignore)
-         {
-         }
-      }
-   }
-
-   public static Method getMethod(Class<?> type, String name, Class<?>... parameterTypes)
-   {
-      try
-      {
-         return type.getDeclaredMethod(name, parameterTypes);
-      }
-      catch (NoSuchMethodException e)
-      {
-         return null;
-      }
-   }
 }

@@ -105,7 +105,7 @@ public class JarPath
    {
       if (url == null)
       {
-         url = new URL("jar:/" + owner.jarURL + "!/" + entryName);
+         url = new URL("jar:" + owner.jarURL + "!/" + entryName);
       }
       return url;
    }

@@ -49,4 +49,13 @@ public class JarFileSystemTestCase extends TestCase
          }
       });
    }
+
+   public void testBaseURL() throws Exception
+   {
+      URL url = TestCase.class.getProtectionDomain().getCodeSource().getLocation();
+      JarFile file = new JarFile(new File(url.toURI()));
+      JarFileSystem filesystem = new JarFileSystem(file);
+      URL baseURL = filesystem.getURL();
+      assertNotNull(baseURL);
+   }
 }

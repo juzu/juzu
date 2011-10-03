@@ -32,6 +32,32 @@ import java.util.Iterator;
  */
 public abstract class ReadFileSystem<P>
 {
+   
+   public final void dump(Appendable appendable) throws IOException
+   {
+      dump(getRoot(), appendable);
+   }
+
+   public final void dump(P path, final Appendable appendable) throws IOException
+   {
+      final StringBuilder prefix = new StringBuilder();
+      traverse(path, new Visitor<P>()
+      {
+         public boolean enterDir(P dir, String name) throws IOException
+         {
+            prefix.append(name).append('/');
+            return true;
+         }
+         public void file(P file, String name) throws IOException
+         {
+            appendable.append(prefix).append(name).append("\n");
+         }
+         public void leaveDir(P dir, String name) throws IOException
+         {
+            prefix.setLength(prefix.length() - 1 - name.length());
+         }
+      });
+   }
 
    public final void pathOf(P path, char separator, Appendable appendable) throws IOException
    {
@@ -43,8 +69,16 @@ public abstract class ReadFileSystem<P>
       appendable.append(name);
    }
 
-   public final boolean packageOf(P path, char separator, Appendable appendable) throws IOException
+   public final boolean packageOf(P path, char separator, Appendable appendable) throws NullPointerException, IOException
    {
+      if (path == null)
+      {
+         throw new NullPointerException("No null path accepted");
+      }
+      if (appendable == null)
+      {
+         throw new NullPointerException("No null appendable accepted");
+      }
       if (isDir(path))
       {
          P parent = getParent(path);

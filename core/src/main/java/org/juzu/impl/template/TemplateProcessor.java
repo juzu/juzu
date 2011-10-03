@@ -19,9 +19,11 @@
 
 package org.juzu.impl.template;
 
+import org.juzu.Application;
+import org.juzu.Resource;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.spi.template.TemplateProvider;
-import org.juzu.template.Template;
+import org.juzu.impl.utils.PackageMap;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -41,7 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@javax.annotation.processing.SupportedAnnotationTypes({"org.juzu.template.Template"})
+@javax.annotation.processing.SupportedAnnotationTypes({"org.juzu.Resource"})
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
 public class TemplateProcessor extends AbstractProcessor
 {
@@ -56,6 +58,9 @@ public class TemplateProcessor extends AbstractProcessor
 
    /** . */
    private Map<String, TemplateProvider> providers;
+
+   /** . */
+   private PackageMap<PackageElement> packages;
 
    @Override
    public void init(ProcessingEnvironment processingEnv)
@@ -83,6 +88,7 @@ public class TemplateProcessor extends AbstractProcessor
 
       //
       this.providers = providers;
+      this.packages = new PackageMap<PackageElement>();
    }
 
    @Override
@@ -92,12 +98,21 @@ public class TemplateProcessor extends AbstractProcessor
       TemplateParser parser = new TemplateParser();
       Filer filer = processingEnv.getFiler();
 
-      for (Element elt : roundEnv.getElementsAnnotatedWith(Template.class))
+      // Fill in packages
+      for (Element elt : roundEnv.getElementsAnnotatedWith(Application.class))
+      {
+         PackageElement pkg = (PackageElement)elt;
+         String fqn = pkg.getQualifiedName().toString();
+         packages.putValue(fqn, pkg);
+      }
+
+      //
+      for (Element elt : roundEnv.getElementsAnnotatedWith(Resource.class))
       {
          PackageElement pkgElt = processingEnv.getElementUtils().getPackageOf(elt);
-         CharSequence pkgName = pkgElt.getQualifiedName().toString();
-         Template ref = elt.getAnnotation(Template.class);
+         Resource ref = elt.getAnnotation(Resource.class);
 
+         //
          String value = ref.value();
          Matcher matcher = NAME_PATTERN.matcher(value);
          if (!matcher.matches())
@@ -105,10 +120,24 @@ public class TemplateProcessor extends AbstractProcessor
             throw new UnsupportedOperationException("handle me gracefully for name " + value);
          }
 
+         // Find the closest enclosing application
+         PackageElement application = packages.resolveValue(pkgElt.getQualifiedName().toString());
+         if (application == null)
+         {
+            throw new UnsupportedOperationException("handle me gracefully");
+         }
+         StringBuilder templatesPkgSB = new StringBuilder(application.getQualifiedName().toString());
+         if (templatesPkgSB.length() > 0)
+         {
+            templatesPkgSB.append(".");
+         }
+         templatesPkgSB.append("templates");
+         String templatesPkgFQN = templatesPkgSB.toString();
+
          //
          try
          {
-            FileObject file = filer.getResource(StandardLocation.SOURCE_PATH, pkgName, value);
+            FileObject file = filer.getResource(StandardLocation.SOURCE_PATH, templatesPkgFQN, value);
             CharSequence content = file.getCharContent(false).toString();
 
             //
@@ -118,7 +147,7 @@ public class TemplateProcessor extends AbstractProcessor
             {
                TemplateGenerator generator = provider.newGenerator();
                parser.parse(content).generate(generator);
-               generator.generate(filer, pkgName.toString(), matcher.group(1));
+               generator.generate(filer, templatesPkgFQN, matcher.group(1));
             }
             else
             {

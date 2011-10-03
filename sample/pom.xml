@@ -4,6 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+  <packaging>war</packaging>
+
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
@@ -21,9 +23,16 @@
       <artifactId>juzu-core</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
+    <finalName>juzu-sample</finalName>
     <plugins>
       <plugin>
        <artifactId>maven-compiler-plugin</artifactId>

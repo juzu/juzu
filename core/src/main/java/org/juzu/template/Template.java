@@ -19,14 +19,88 @@
 
 package org.juzu.template;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.juzu.impl.spi.template.TemplateStub;
+import org.juzu.text.Printer;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Template
+public class Template
 {
 
-   String value();
+   /** . */
+   private final String templateId;
 
+   /** . */
+   private TemplateStub stub;
+
+   public Template(String templateId)
+   {
+      this.stub = null;
+      this.templateId = templateId;
+   }
+
+   public void render(Printer printer) throws TemplateExecutionException, IOException
+   {
+      render(printer, Collections.<String, Object>emptyMap(), null);
+   }
+
+   public void render(Printer printer,Locale locale) throws TemplateExecutionException, IOException
+   {
+      render(printer, Collections.<String, Object>emptyMap(), locale);
+   }
+
+   public void render(Printer printer,Map<String, ?> context) throws TemplateExecutionException, IOException
+   {
+      render(printer, context, null);
+   }
+
+   /**
+    * Renders the template.
+    *
+    * @param printer the printer
+    * @param context the context
+    * @param locale the locale
+    * @throws org.juzu.template.TemplateExecutionException any execution exception
+    * @throws java.io.IOException any io exception
+    */
+   public void render(
+      Printer printer,
+      Map<String, ?> context,
+      Locale locale
+   ) throws TemplateExecutionException, IOException {
+
+      if (printer == null)
+      {
+         // ???
+         throw new NullPointerException("No printer");
+      }
+
+      //
+      if (stub == null)
+      {
+         try
+         {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            Class<?> stubClass = cl.loadClass(templateId);
+            stub = (TemplateStub)stubClass.newInstance();
+         }
+         catch (Exception e)
+         {
+            throw new UnsupportedOperationException("handle me gracefully");
+         }
+      }
+
+      //
+      stub.render(printer, context, locale);
+   }
+
+   @Override
+   public String toString()
+   {
+      return "TemplateRenderer[" + templateId + "]";
+   }
 }
