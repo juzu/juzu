@@ -44,7 +44,7 @@ public class FileSystemURLStreamHandler<P> extends URLStreamHandler
    @Override
    protected URLConnection openConnection(URL u) throws IOException
    {
-      List<String> names = Spliterator.split(u.getPath().substring(1), '/');
+      Iterable<String> names = Spliterator.split(u.getPath().substring(1), '/');
       P path = fs.getPath(names);
       if (path != null && fs.isFile(path))
       {

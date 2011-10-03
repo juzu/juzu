@@ -77,7 +77,7 @@ public class FileKey
    }
 
    /** . */
-   final List<String> packageNames;
+   final Iterable<String> packageNames;
 
    /** . */
    final String packageFQN;
@@ -114,7 +114,7 @@ public class FileKey
       }
       try
       {
-         this.packageNames = Collections.unmodifiableList(Spliterator.split(packageFQN, '.'));
+         this.packageNames = Spliterator.split(packageFQN, '.')   ;
          this.packageFQN = packageFQN;
          this.rawName = rawName;
          this.uri = new URI(path);

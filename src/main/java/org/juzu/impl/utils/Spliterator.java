@@ -40,16 +40,15 @@ import java.util.NoSuchElementException;
 public class Spliterator implements Iterator<String>
 {
 
-   public static List<String> split(String s, char separator) throws NullPointerException
+   public static Iterable<String> split(final String s, final char separator) throws NullPointerException
    {
-      LinkedList<String> list = new LinkedList<String>();
-      Spliterator iterator = new Spliterator(s, separator);
-      while (iterator.hasNext())
+      return new Iterable<String>()
       {
-         String next = iterator.next();
-         list.add(next);
-      }
-      return list;
+         public Iterator<String> iterator()
+         {
+            return new Spliterator(s, separator);
+         }
+      };
    }
 
    /** . */
