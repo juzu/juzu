@@ -63,7 +63,7 @@ public class TemplateProcessor extends AbstractProcessor
       super.init(processingEnv);
 
       // Discover the template provider
-      ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class);
+      ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, TemplateProvider.class.getClassLoader());
 
       //
       Map<String, TemplateProvider> providers = new HashMap<String, TemplateProvider>();
