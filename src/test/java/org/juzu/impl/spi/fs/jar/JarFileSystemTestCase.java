@@ -20,7 +20,6 @@
 package org.juzu.impl.spi.fs.jar;
 
 import junit.framework.TestCase;
-import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.juzu.impl.spi.fs.Visitor;
 
 import java.io.File;
@@ -34,7 +33,7 @@ public class JarFileSystemTestCase extends TestCase
 
    public void testFoo() throws Exception
    {
-      URL url = Bootstrap.class.getProtectionDomain().getCodeSource().getLocation();
+      URL url = TestCase.class.getProtectionDomain().getCodeSource().getLocation();
       System.out.println("url = " + url);
       JarFile file = new JarFile(new File(url.toURI()));
       final JarFileSystem filesystem = new JarFileSystem(file);
@@ -43,7 +42,9 @@ public class JarFileSystemTestCase extends TestCase
          @Override
          public boolean enterDir(JarPath dir, String name) throws IOException
          {
-            System.out.println("dir " + filesystem.packageName(dir));
+            StringBuilder sb = new StringBuilder();
+            filesystem.packageOf(dir, '/', sb);
+            System.out.println("dir " + sb);
             return true;
          }
       });

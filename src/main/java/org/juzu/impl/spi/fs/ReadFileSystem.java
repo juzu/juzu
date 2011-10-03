@@ -22,8 +22,8 @@ package org.juzu.impl.spi.fs;
 import org.juzu.impl.utils.Content;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * File system provider interface.
@@ -33,30 +33,39 @@ import java.util.LinkedList;
 public abstract class ReadFileSystem<P>
 {
 
-   public final StringBuilder packageName(P path) throws IOException
+   public final void pathOf(P path, char separator, Appendable appendable) throws IOException
+   {
+      if (packageOf(path, separator, appendable))
+      {
+         appendable.append(separator);
+      }
+      String name = getName(path);
+      appendable.append(name);
+   }
+
+   public final boolean packageOf(P path, char separator, Appendable appendable) throws IOException
    {
       if (isDir(path))
       {
          P parent = getParent(path);
          if (parent == null)
          {
-            return new StringBuilder();
+            return false;
          }
          else
          {
-            StringBuilder sb = packageName(parent);
             String name = getName(path);
-            if (sb.length() > 0)
+            if (packageOf(parent, separator, appendable))
             {
-               sb.append('.');
+               appendable.append(separator);
             }
-            sb.append(name);
-            return sb;
+            appendable.append(name);
+            return true;
          }
       }
       else
       {
-         return packageName(getParent(path));
+         return packageOf(getParent(path), separator, appendable);
       }
    }
 
@@ -85,7 +94,7 @@ public abstract class ReadFileSystem<P>
       return current;
    }
 
-   public void traverse(P path, Visitor<P> visitor) throws IOException
+   public final void traverse(P path, Visitor<P> visitor) throws IOException
    {
       String name = getName(path);
       if (isDir(path))
@@ -106,9 +115,15 @@ public abstract class ReadFileSystem<P>
       }
    }
 
-   public void traverse(Visitor<P> visitor) throws IOException
+   public final void traverse(Visitor<P> visitor) throws IOException
    {
       traverse(getRoot(), visitor);
+   }
+
+   public final URL getURL() throws IOException
+   {
+      P root = getRoot();
+      return getURL(root);
    }
 
    public abstract boolean equals(P left, P right);
@@ -130,5 +145,7 @@ public abstract class ReadFileSystem<P>
    public abstract Content<?> getContent(P file) throws IOException;
 
    public abstract long getLastModified(P path) throws IOException;
+
+   public abstract URL getURL(P path) throws IOException;
 
 }

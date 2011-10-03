@@ -76,7 +76,9 @@ class VirtualFileManager<I, O> extends ForwardingJavaFileManager<StandardJavaFil
          {
             if (name.endsWith(".java"))
             {
-               FileKey key = FileKey.newJavaName(input.packageName(file).toString(), name);
+               StringBuilder sb = new StringBuilder();
+               input.packageOf(file, '.', sb);
+               FileKey key = FileKey.newJavaName(sb.toString(), name);
                javaFiles.add(new VirtualJavaFileObject.FileSystem<I>(input, file, key));
             }
          }
@@ -192,7 +194,9 @@ class VirtualFileManager<I, O> extends ForwardingJavaFileManager<StandardJavaFil
             I child = input.getChild(current, relativeName);
             if (child != null && input.isFile(child))
             {
-               FileKey uri = FileKey.newResourceName(input.packageName(child).toString(), input.getName(child));
+               StringBuilder sb = new StringBuilder();
+               input.packageOf(child, '.', sb);
+               FileKey uri = FileKey.newResourceName(sb.toString(), input.getName(child));
                return new VirtualJavaFileObject.FileSystem<I>(input, child, uri);
             }
          }

@@ -23,6 +23,7 @@ import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Content;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -32,9 +33,13 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
    /** . */
    private final RAMDir root;
 
-   public RAMFileSystem()
+   /** . */
+   private final URL contextURL;
+
+   public RAMFileSystem() throws IOException
    {
       this.root = new RAMDir();
+      this.contextURL = new URL("juzu", null, 0, "/", new RAMURLStreamHandler(this));
    }
 
    @Override
@@ -103,5 +108,14 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
    public long getLastModified(RAMPath path) throws IOException
    {
       return path.getLastModified();
+   }
+
+   @Override
+   public URL getURL(RAMPath path) throws IOException
+   {
+      StringBuilder sb = new StringBuilder();
+      pathOf(path, '/', sb);
+      String spec = sb.toString();
+      return new URL(contextURL, spec);
    }
 }

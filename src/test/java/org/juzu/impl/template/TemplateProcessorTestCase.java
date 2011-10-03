@@ -20,7 +20,6 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
-import org.juzu.impl.classloading.FileSystemClassLoader;
 import org.juzu.impl.compiler.FileKey;
 import org.juzu.impl.compiler.CompilerContext;
 import org.juzu.impl.spi.fs.ram.RAMDir;
@@ -33,6 +32,8 @@ import org.juzu.text.WriterPrinter;
 
 import javax.tools.JavaFileObject;
 import java.io.StringWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateProcessorTestCase extends TestCase
@@ -64,7 +65,7 @@ public class TemplateProcessorTestCase extends TestCase
       assertNotNull(content2);
 
       //
-      ClassLoader cl = new FileSystemClassLoader<RAMPath>(Thread.currentThread().getContextClassLoader(), output);
+      ClassLoader cl = new URLClassLoader(new URL[]{output.getURL()}, Thread.currentThread().getContextClassLoader());
 
       Class<?> aClass = cl.loadClass("foo.A");
       Class<?> bClass = cl.loadClass("foo.B");

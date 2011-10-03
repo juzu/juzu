@@ -21,6 +21,8 @@ package org.juzu.impl.spi.fs.jar;
 
 import org.juzu.impl.utils.Spliterator;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -29,6 +31,9 @@ import java.util.jar.JarEntry;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class JarPath
 {
+
+   /** . */
+   final JarFileSystem owner;
 
    /** . */
    final JarPath parent;
@@ -42,13 +47,16 @@ public class JarPath
    /** . */
    final boolean dir;
 
+   /** . */
+   URL url;
+
    /** The optional attached entry. */
    private JarEntry entry;
 
    /** . */
    private LinkedHashMap<String, JarPath> children;
 
-   public JarPath()
+   public JarPath(JarFileSystem owner)
    {
       this.entryName = "";
       this.name = "";
@@ -56,15 +64,17 @@ public class JarPath
       this.entry = null;
       this.children = null;
       this.parent = null;
+      this.owner = owner;
    }
 
-   public JarPath(JarPath parent, String entryName, String name, boolean dir)
+   public JarPath(JarFileSystem owner, JarPath parent, String entryName, String name, boolean dir)
    {
       this.parent = parent;
       this.entryName = entryName;
       this.name = name;
       this.dir = dir;
       this.children = null;
+      this.owner = owner;
    }
 
    Iterator<JarPath> getChildren()
@@ -91,6 +101,15 @@ public class JarPath
       }
    }
 
+   URL getURL() throws IOException
+   {
+      if (url == null)
+      {
+         url = new URL("jar:/" + owner.jarURL + "!/" + entryName);
+      }
+      return url;
+   }
+
    void append(JarEntry entry)
    {
       String entryName = entry.getName();
@@ -115,7 +134,7 @@ public class JarPath
             sb.append('/');
             if (existing == null)
             {
-               current.children.put(name, existing = new JarPath(current, sb.toString(), name, true));
+               current.children.put(name, existing = new JarPath(owner, current, sb.toString(), name, true));
             }
             current = existing;
          }
@@ -127,7 +146,7 @@ public class JarPath
                {
                   sb.append('/');
                }
-               current.children.put(name, existing = new JarPath(current, sb.toString(), name, dir));
+               current.children.put(name, existing = new JarPath(owner, current, sb.toString(), name, dir));
                existing.entry = entry;
             }
             else

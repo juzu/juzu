@@ -17,20 +17,41 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.classloading;
+package org.juzu.impl.spi.fs.ram;
 
-import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.utils.Content;
+import org.juzu.impl.utils.Spliterator;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FileSystemClassLoader<P> extends URLClassLoader
+class RAMURLStreamHandler extends URLStreamHandler
 {
 
-   public FileSystemClassLoader(ClassLoader parent, ReadFileSystem<P> fs) throws MalformedURLException
+   /** . */
+   private RAMFileSystem fs;
+
+   public RAMURLStreamHandler(RAMFileSystem fs)
    {
-      super(new URL[]{new URL("juzu", null, 0, "/", new FileSystemURLStreamHandler<P>(fs))}, parent);
+      this.fs = fs;
+   }
+
+   @Override
+   protected URLConnection openConnection(URL u) throws IOException
+   {
+      Iterable<String> names = Spliterator.split(u.getPath().substring(1), '/');
+      RAMPath path = fs.getPath(names);
+      if (path instanceof RAMFile)
+      {
+         Content<?> content = ((RAMFile)path).getContent();
+         if (content != null)
+         {
+            return new RAMURLConnection(u, content);
+         }
+      }
+      throw new IOException("Could not connect to non existing content " + names);
    }
 }

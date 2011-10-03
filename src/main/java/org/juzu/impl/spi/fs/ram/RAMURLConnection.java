@@ -17,43 +17,44 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.classloading;
+package org.juzu.impl.spi.fs.ram;
 
-import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.utils.Content;
-import org.juzu.impl.utils.Spliterator;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FileSystemURLStreamHandler<P> extends URLStreamHandler
+class RAMURLConnection extends URLConnection
 {
 
    /** . */
-   private ReadFileSystem<P> fs;
+   private final Content<?> content;
 
-   public FileSystemURLStreamHandler(ReadFileSystem<P> fs)
+   public RAMURLConnection(URL url, Content<?> content)
    {
-      this.fs = fs;
+      super(url);
+
+      //
+      this.content = content;
    }
 
    @Override
-   protected URLConnection openConnection(URL u) throws IOException
+   public void connect() throws IOException
    {
-      Iterable<String> names = Spliterator.split(u.getPath().substring(1), '/');
-      P path = fs.getPath(names);
-      if (path != null && fs.isFile(path))
-      {
-         Content<?> content = fs.getContent(path);
-         if (content != null)
-         {
-            return new FileSystemURLConnection(u, content);
-         }
-      }
-      throw new IOException("Could not connect to non existing content " + names);
+   }
+
+   @Override
+   public InputStream getInputStream() throws IOException
+   {
+      return content.getInputStream();
+   }
+
+   @Override
+   public long getLastModified()
+   {
+      return content.getLastModified();
    }
 }
