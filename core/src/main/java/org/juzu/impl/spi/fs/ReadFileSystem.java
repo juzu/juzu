@@ -59,6 +59,38 @@ public abstract class ReadFileSystem<P>
       });
    }
 
+   public final P getFile(Iterable<String> path, String name) throws IOException
+   {
+      P dir = getDir(path);
+      if (dir != null)
+      {
+         P child = getChild(dir, name);
+         if (isFile(child))
+         {
+            return child;
+         }
+      }
+      return null;
+   }
+
+   public final P getDir(Iterable<String> path) throws IOException
+   {
+      P current = getRoot();
+      for (String name : path)
+      {
+         P child = getChild(current, name);
+         if (child != null && isDir(child))
+         {
+            current = child;
+         }
+         else
+         {
+            return null;
+         }
+      }
+      return current;
+   }
+
    public final void pathOf(P path, char separator, Appendable appendable) throws IOException
    {
       if (packageOf(path, separator, appendable))

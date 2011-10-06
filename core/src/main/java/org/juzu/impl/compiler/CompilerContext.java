@@ -24,20 +24,29 @@ import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Content;
 
 import javax.annotation.processing.Processor;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class CompilerContext<I, O>
 {
+
+   /** . */
+   final List<URL> classPath;
 
    /** . */
    final ReadFileSystem<I> input;
@@ -53,6 +62,12 @@ public class CompilerContext<I, O>
 
    public CompilerContext(ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
    {
+      this(Collections.<URL>emptyList(), input, output);
+   }
+
+   public CompilerContext(List<URL> classPath, ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
+   {
+      this.classPath = classPath;
       this.input = input;
       this.compiler = ToolProvider.getSystemJavaCompiler();
       this.fileManager = new VirtualFileManager<I, O>(input, compiler.getStandardFileManager(null, null, null), output);
@@ -117,11 +132,42 @@ public class CompilerContext<I, O>
 */
       }
 
-      //
-      JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, null, null, sources);
-      task.setProcessors(processors);
+      // Build classpath
+      List<String> options = new ArrayList<String>();
+      if (classPath.size() > 0)
+      {
+         StringBuilder sb = new StringBuilder();
+         for (URL url : classPath)
+         {
+            sb.append(url.getFile()).append(File.pathSeparator);
+         }
+         options.add("-classpath");
+         options.add(sb.toString());
+      }
+
 
       //
-      return task.call();
+      final AtomicBoolean failed = new AtomicBoolean(false);
+      DiagnosticListener<JavaFileObject> listener = new DiagnosticListener<JavaFileObject>()
+      {
+         public void report(Diagnostic<? extends JavaFileObject> diagnostic)
+         {
+            if (diagnostic.getKind() == Diagnostic.Kind.ERROR)
+            {
+               failed.set(true);
+            }
+         }
+      };
+
+      //
+      JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, options, null, sources);
+      task.setProcessors(processors);
+
+      // We don't use the return value because sometime it says it is failed although
+      // it is not, need to investigate this at some piont
+      task.call();
+
+      //
+      return !failed.get();
    }
 }

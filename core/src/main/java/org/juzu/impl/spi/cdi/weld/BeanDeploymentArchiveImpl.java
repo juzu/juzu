@@ -19,7 +19,6 @@
 
 package org.juzu.impl.spi.cdi.weld;
 
-import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
@@ -32,7 +31,6 @@ import org.juzu.impl.spi.fs.Visitor;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +40,9 @@ import java.util.List;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class BeanDeploymentArchiveImpl implements BeanDeploymentArchive
 {
+
+   /** . */
+   private final WeldContainer owner;
 
    /** . */
    private final String id;
@@ -55,10 +56,10 @@ class BeanDeploymentArchiveImpl implements BeanDeploymentArchive
    /** . */
    private final ServiceRegistry registry;
 
-   /** . */
-   private final ClassLoader classLoader;
-
-   BeanDeploymentArchiveImpl(Bootstrap boostrap, String id, List<ReadFileSystem<?>> fileSystems) throws IOException
+   BeanDeploymentArchiveImpl(
+      WeldContainer owner,
+      String id,
+      List<ReadFileSystem<?>> fileSystems) throws IOException
    {
 
       // A bit unchecked but well it's ok here
@@ -87,7 +88,7 @@ class BeanDeploymentArchiveImpl implements BeanDeploymentArchive
          });
 
          //
-         fsURLs.add(fileSystem.getURL());
+         // fsURLs.add(fileSystem.getURL());
 
          //
          Object beansPath = fileSystem.getPath(Arrays.asList("META-INF", "beans.xml"));
@@ -98,11 +99,11 @@ class BeanDeploymentArchiveImpl implements BeanDeploymentArchive
       }
 
       //
-      BeansXml xml = boostrap.parse(xmlURLs);
+      BeansXml xml = owner.bootstrap.parse(xmlURLs);
 
       //
-      URLClassLoader classLoader = new URLClassLoader(fsURLs.toArray(new URL[fsURLs.size()]), Thread.currentThread().getContextClassLoader());
-      ResourceLoader loader = new ClassLoaderResourceLoader(classLoader);
+//      URLClassLoader classLoader = new URLClassLoader(fsURLs.toArray(new URL[fsURLs.size()]), owner.classLoader);
+      ResourceLoader loader = new ClassLoaderResourceLoader(owner.classLoader);
 
       //
       ServiceRegistry registry = new SimpleServiceRegistry();
@@ -113,12 +114,12 @@ class BeanDeploymentArchiveImpl implements BeanDeploymentArchive
       this.xml = xml;
       this.id = id;
       this.registry = registry;
-      this.classLoader = classLoader;
+      this.owner = owner;
    }
 
    public ClassLoader getClassLoader()
    {
-      return classLoader;
+      return owner.classLoader;
    }
 
    public Collection<BeanDeploymentArchive> getBeanDeploymentArchives()

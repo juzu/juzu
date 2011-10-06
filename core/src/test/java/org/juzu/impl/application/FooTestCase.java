@@ -31,6 +31,8 @@ import org.juzu.impl.spi.fs.ram.RAMPath;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -64,8 +66,11 @@ public class FooTestCase extends TestCase
       System.out.println("Compiled files in " + now + " ms");
 
       //
+      ClassLoader cl = new URLClassLoader(new URL[]{output.getURL()}, Thread.currentThread().getContextClassLoader());
+
+      //
       now = System.currentTimeMillis();
-      Container container = new WeldContainer();
+      Container container = new WeldContainer(cl);
       container.addFileSystem(output);
       container.start();
       now = System.currentTimeMillis() - now;

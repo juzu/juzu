@@ -99,6 +99,7 @@ public class ApplicationContext
       else
       {
          Class<?> type = method.getType();
+         System.out.println("type = " + type);
          BeanManager mgr = container.getManager();
          Set<? extends Bean> beans = mgr.getBeans(type);
 

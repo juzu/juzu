@@ -7,6 +7,10 @@ version="2.0"
    <portlet>
       <portlet-name>SamplePortlet</portlet-name>
       <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+      <init-param>
+         <name>juzu.run_mode</name>
+         <value>dev</value>
+      </init-param>
       <supports>
         <mime-type>text/html</mime-type>
       </supports>

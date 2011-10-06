@@ -43,6 +43,23 @@
        </configuration>
      </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <configuration>
+            <webResources>
+              <resource>
+                <targetPath>WEB-INF/src</targetPath>
+                <directory>src/main/java</directory>
+              </resource>
+            </webResources>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
   </build>
 
 </project>

@@ -184,7 +184,7 @@ public class CompilationTestCase extends TestCase
    {
       RAMFileSystem ramFS = new RAMFileSystem();
       RAMDir root = ramFS.getRoot();
-      RAMFile a = root.addFile("A.java").update("public class A {}");
+      root.addFile("A.java").update("public class A {}");
 
       CompilerContext<RAMPath, ?> compiler = new CompilerContext<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
       ProcessorImpl processor = new ProcessorImpl();
@@ -193,5 +193,16 @@ public class CompilationTestCase extends TestCase
       assertEquals(2, compiler.getClassOutputKeys().size());
       assertEquals(Arrays.asList("A", "B"), processor.names);
       assertEquals(1, compiler.getSourceOutputKeys().size());
+   }
+
+   public void testCompilationFailure() throws Exception
+   {
+      RAMFileSystem ramFS = new RAMFileSystem();
+      RAMDir root = ramFS.getRoot();
+      root.addFile("A.java").update("public class A {");
+
+      //
+      CompilerContext<RAMPath, ?> compiler = new CompilerContext<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      assertFalse(compiler.compile());
    }
 }

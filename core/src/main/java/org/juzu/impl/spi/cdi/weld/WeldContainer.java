@@ -42,23 +42,18 @@ public class WeldContainer extends Container
 {
 
    /** . */
-   private Bootstrap bootstrap;
+   final ClassLoader classLoader;
+
+   /** . */
+   final Bootstrap bootstrap;
 
    /** . */
    private BeanManager manager;
 
-   /** . */
-   private ClassLoader classLoader;
-
    @Override
    protected void doStart(List<ReadFileSystem<?>> fileSystems) throws Exception
    {
-
-      //
-      this.bootstrap = new WeldBootstrap();
-
-      //
-      final BeanDeploymentArchiveImpl bda = new BeanDeploymentArchiveImpl(bootstrap, "foo", fileSystems);
+      final BeanDeploymentArchiveImpl bda = new BeanDeploymentArchiveImpl(this, "foo", fileSystems);
 
       //
       Deployment deployment = new Deployment()
@@ -100,7 +95,12 @@ public class WeldContainer extends Container
 
       //
       manager = bootstrap.getManager(bda);
-      classLoader = bda.getClassLoader();
+   }
+
+   public WeldContainer(ClassLoader classLoader)
+   {
+      this.classLoader = classLoader;
+      this.bootstrap = new WeldBootstrap();
    }
 
    @Override
