@@ -7,6 +7,7 @@ import org.juzu.impl.utils.Safe;
 import javax.portlet.PortletContext;
 import javax.servlet.ServletContext;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -172,6 +173,8 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
 
    protected abstract URL doGetResource(String path) throws IOException;
 
+   protected abstract String doGetRealPath(String path) throws IOException;
+
    private Collection<String> getResourcePaths(String path) throws IOException
    {
       Set<String> resourcePaths = doGetResourcePaths(mountPoint + path);
@@ -188,6 +191,13 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
       {
          return Collections.emptyList();
       }
+   }
+
+   @Override
+   public File getFile(String path) throws IOException
+   {
+      String realPath = doGetRealPath(mountPoint + path);
+      return  realPath == null ? null : new File(realPath);
    }
 
    private URL getResource(String path) throws IOException
@@ -214,6 +224,11 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
          {
             return servletContext.getResource(path);
          }
+         @Override
+         protected String doGetRealPath(String path) throws IOException
+         {
+            return servletContext.getRealPath(path);
+         }
       };
    }
 
@@ -235,6 +250,11 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
          protected URL doGetResource(String path) throws IOException
          {
             return portletContext.getResource(path);
+         }
+         @Override
+         protected String doGetRealPath(String path) throws IOException
+         {
+            return portletContext.getRealPath(path);
          }
       };
    }

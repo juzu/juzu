@@ -23,7 +23,7 @@ import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.SectionType;
 import org.juzu.impl.utils.Safe;
-import org.juzu.template.Location;
+import org.juzu.utils.Location;
 
 import javax.annotation.processing.Filer;
 import javax.tools.FileObject;

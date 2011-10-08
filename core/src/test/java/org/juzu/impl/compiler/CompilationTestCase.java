@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -32,9 +33,9 @@ public class CompilationTestCase extends TestCase
    public void testBar() throws Exception
    {
       File root = new File(System.getProperty("test.resources"));
-      CompilerContext<File, ?> ctx = new CompilerContext<File, RAMPath>(new DiskFileSystem(root), new RAMFileSystem());
-      assertTrue(ctx.compile());
-      assertEquals(1, ctx.getClassOutputKeys().size());
+      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(new DiskFileSystem(root), new RAMFileSystem());
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
+      assertEquals(1, compiler.getClassOutputKeys().size());
    }
 
    public void testGetResourceFromProcessor() throws Exception
@@ -75,10 +76,10 @@ public class CompilationTestCase extends TestCase
       }
 
       //
-      CompilerContext<RAMPath, RAMPath> compiler = new CompilerContext<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
-      assertTrue(compiler.compile());
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
       assertEquals(1, compiler.getClassOutputKeys().size());
       if (processor.result instanceof Exception)
       {
@@ -105,8 +106,8 @@ public class CompilationTestCase extends TestCase
       RAMFile a = foo.addFile("A.java").update("package foo; public class A {}");
       RAMFile b = foo.addFile("B.java").update("package foo; public class B {}");
 
-      CompilerContext<RAMPath, ?> compiler = new CompilerContext<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
-      assertTrue(compiler.compile());
+      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
       assertEquals(2, compiler.getClassOutputKeys());
       Content aClass = compiler.getClassOutput(FileKey.newJavaName("foo.A", JavaFileObject.Kind.CLASS));
       assertNotNull(aClass);
@@ -127,8 +128,8 @@ public class CompilationTestCase extends TestCase
          }
       }
 
-
-      assertTrue(compiler.compile());
+      //
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
       assertEquals("was not expecting to be " + compiler.getClassOutputKeys(), 1, compiler.getClassOutputKeys().size());
       bClass = compiler.getClassOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.CLASS));
       assertNotNull(bClass);
@@ -186,10 +187,10 @@ public class CompilationTestCase extends TestCase
       RAMDir root = ramFS.getRoot();
       root.addFile("A.java").update("public class A {}");
 
-      CompilerContext<RAMPath, ?> compiler = new CompilerContext<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
-      assertTrue(compiler.compile());
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
       assertEquals(2, compiler.getClassOutputKeys().size());
       assertEquals(Arrays.asList("A", "B"), processor.names);
       assertEquals(1, compiler.getSourceOutputKeys().size());
@@ -202,7 +203,7 @@ public class CompilationTestCase extends TestCase
       root.addFile("A.java").update("public class A {");
 
       //
-      CompilerContext<RAMPath, ?> compiler = new CompilerContext<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
-      assertFalse(compiler.compile());
+      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      assertEquals(1, compiler.compile().size());
    }
 }

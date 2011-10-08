@@ -135,4 +135,10 @@ public class JarFileSystem extends ReadFileSystem<JarPath>
    {
       return path.getURL();
    }
+
+   @Override
+   public File getFile(JarPath path) throws IOException
+   {
+      return null;
+   }
 }

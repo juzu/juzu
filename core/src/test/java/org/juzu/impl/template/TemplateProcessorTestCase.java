@@ -20,8 +20,9 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
+import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.FileKey;
-import org.juzu.impl.compiler.CompilerContext;
+import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
@@ -34,6 +35,7 @@ import javax.tools.JavaFileObject;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateProcessorTestCase extends TestCase
@@ -57,9 +59,9 @@ public class TemplateProcessorTestCase extends TestCase
 
       //
       RAMFileSystem output = new RAMFileSystem();
-      final CompilerContext<RAMPath, ?> compiler = new CompilerContext<RAMPath, RAMPath>(ramFS, output);
+      final Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, output);
       compiler.addAnnotationProcessor(new TemplateProcessor());
-      assertTrue(compiler.compile());
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
 
       //
       Content<?> content = compiler.getClassOutput(FileKey.newResourceName("bar.templates", "B.groovy"));

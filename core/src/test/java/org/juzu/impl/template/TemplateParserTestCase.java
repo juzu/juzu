@@ -19,7 +19,7 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
-import org.juzu.template.Location;
+import org.juzu.utils.Location;
 
 import java.io.IOException;
 import java.util.Arrays;

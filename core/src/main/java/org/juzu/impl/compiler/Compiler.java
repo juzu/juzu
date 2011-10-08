@@ -22,6 +22,7 @@ package org.juzu.impl.compiler;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Content;
+import org.juzu.utils.Location;
 
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;
@@ -39,10 +40,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilerContext<I, O>
+public class Compiler<I, O>
 {
 
    /** . */
@@ -60,12 +60,12 @@ public class CompilerContext<I, O>
    /** . */
    private Set<Processor> processors;
 
-   public CompilerContext(ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
+   public Compiler(ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
    {
       this(Collections.<URL>emptyList(), input, output);
    }
 
-   public CompilerContext(List<URL> classPath, ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
+   public Compiler(List<URL> classPath, ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
    {
       this.classPath = classPath;
       this.input = input;
@@ -105,7 +105,7 @@ public class CompilerContext<I, O>
       return file != null ? file.content : null;
    }
 
-   public boolean compile() throws IOException
+   public List<CompilationError> compile() throws IOException
    {
       Collection<VirtualJavaFileObject.FileSystem<I>> sources = fileManager.collectJavaFiles();
 
@@ -147,14 +147,41 @@ public class CompilerContext<I, O>
 
 
       //
-      final AtomicBoolean failed = new AtomicBoolean(false);
+      final List<CompilationError> errors = new ArrayList<CompilationError>();
       DiagnosticListener<JavaFileObject> listener = new DiagnosticListener<JavaFileObject>()
       {
          public void report(Diagnostic<? extends JavaFileObject> diagnostic)
          {
             if (diagnostic.getKind() == Diagnostic.Kind.ERROR)
             {
-               failed.set(true);
+               Location location = new Location((int)diagnostic.getColumnNumber(), (int)diagnostic.getLineNumber());
+               String message = diagnostic.getMessage(null);
+               JavaFileObject obj = diagnostic.getSource();
+
+               //
+               File resolvedFile = null;
+               if (obj instanceof VirtualJavaFileObject.FileSystem)
+               {
+                  VirtualJavaFileObject.FileSystem foo = (VirtualJavaFileObject.FileSystem)obj;
+                  try
+                  {
+                     resolvedFile = foo.getFile();
+                  }
+                  catch (Exception e)
+                  {
+                  }
+               }
+
+               //
+               CompilationError error = new CompilationError(
+                  obj.getName().toString(),
+                  resolvedFile,
+                  location,
+                  message
+               );
+
+               //
+               errors.add(error);
             }
          }
       };
@@ -168,6 +195,6 @@ public class CompilerContext<I, O>
       task.call();
 
       //
-      return !failed.get();
+      return errors;
    }
 }

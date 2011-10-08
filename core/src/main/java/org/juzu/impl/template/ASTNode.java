@@ -20,7 +20,7 @@
 package org.juzu.impl.template;
 
 import org.juzu.impl.spi.template.TemplateGenerator;
-import org.juzu.template.Location;
+import org.juzu.utils.Location;
 
 import java.util.ArrayList;
 import java.util.Collections;

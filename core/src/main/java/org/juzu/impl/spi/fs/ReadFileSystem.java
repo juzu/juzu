@@ -21,6 +21,7 @@ package org.juzu.impl.spi.fs;
 
 import org.juzu.impl.utils.Content;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
@@ -213,5 +214,14 @@ public abstract class ReadFileSystem<P>
    public abstract long getLastModified(P path) throws IOException;
 
    public abstract URL getURL(P path) throws IOException;
+
+   /**
+    * Attempt to return a {@link java.io.File} associated with this file or null if no physical file exists.
+    *
+    * @param path the path
+    * @return the file system object
+    * @throws IOException
+    */
+   public abstract File getFile(P path) throws IOException;
 
 }

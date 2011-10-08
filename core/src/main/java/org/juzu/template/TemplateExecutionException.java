@@ -19,6 +19,8 @@
 
 package org.juzu.template;
 
+import org.juzu.utils.Location;
+
 /**
  * An exception that denotes a template execution exception.
  *

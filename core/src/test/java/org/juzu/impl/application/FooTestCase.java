@@ -20,7 +20,8 @@
 package org.juzu.impl.application;
 
 import junit.framework.TestCase;
-import org.juzu.impl.compiler.CompilerContext;
+import org.juzu.impl.compiler.*;
+import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.cdi.weld.WeldContainer;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
@@ -33,6 +34,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -60,8 +62,8 @@ public class FooTestCase extends TestCase
       //
       long now = System.currentTimeMillis();
       final ReadWriteFileSystem<RAMPath> output = new RAMFileSystem();
-      final CompilerContext<?, ?> ctx = new CompilerContext<RAMPath, RAMPath>(ramFS, output);
-      assertTrue(ctx.compile());
+      final org.juzu.impl.compiler.Compiler<?, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, output);
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
       now = System.currentTimeMillis() - now;
       System.out.println("Compiled files in " + now + " ms");
 
