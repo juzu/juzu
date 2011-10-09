@@ -2,11 +2,11 @@ package org.juzu.application;
 
 import org.juzu.Resource;
 import org.juzu.impl.cdi.Export;
-import org.juzu.impl.cdi.InvocationContext;
-import org.juzu.impl.cdi.InvocationScoped;
+import org.juzu.impl.cdi.ScopeController;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.request.ActionContext;
 import org.juzu.request.RenderContext;
+import org.juzu.request.RenderScoped;
 import org.juzu.request.RequestContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
@@ -78,7 +78,7 @@ public class ApplicationContext
       try
       {
          current.set(context);
-         InvocationContext.start();
+         ScopeController.start(context.getPhase());
 
          //
          if (context instanceof RenderContext)
@@ -97,7 +97,7 @@ public class ApplicationContext
       finally
       {
          current.set(null);
-         InvocationContext.stop();
+         ScopeController.stop();
       }
    }
 
@@ -139,7 +139,7 @@ public class ApplicationContext
    }
 
    @Produces
-   @InvocationScoped
+   @RenderScoped
    public Printer getPrinter()
    {
       RequestContext context = current.get();
@@ -149,7 +149,7 @@ public class ApplicationContext
       }
       else
       {
-         throw new UnsupportedOperationException("handle me gracefully");
+         throw new AssertionError("does not make sense");
       }
    }
 
