@@ -5,6 +5,7 @@ import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.InvocationContext;
 import org.juzu.impl.cdi.InvocationScoped;
 import org.juzu.impl.spi.cdi.Container;
+import org.juzu.request.ActionContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.template.Template;
@@ -16,7 +17,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +26,11 @@ import java.util.Set;
 public class ApplicationContext
 {
 
+   public static RequestContext getCurrentRequest()
+   {
+      return current.get();
+   }
+
    /** . */
    private final ApplicationDescriptor descriptor;
 
@@ -33,7 +38,7 @@ public class ApplicationContext
    private final Container container;
 
    /** . */
-   private final ThreadLocal<RequestContext> current = new ThreadLocal<RequestContext>();
+   private static final ThreadLocal<RequestContext> current = new ThreadLocal<RequestContext>();
 
    public ApplicationContext()
    {
@@ -52,15 +57,21 @@ public class ApplicationContext
    /**
     * For now pretty simple resolution algorithm.
     *
+    * @param phase the expected phase
     * @param data the data
     * @return the render descriptor or null if nothing could be resolved
     */
-   public ControllerMethod resolve(Map<String, String[]> data)
+   public ControllerMethod resolve(Phase phase, Map<String, String[]> data)
    {
-      List<ControllerMethod> renders = descriptor.getControllerMethods();
-      return renders.isEmpty() ? null : renders.get(0);
+      for (ControllerMethod method : descriptor.getControllerMethods())
+      {
+         if (method.getPhase() == phase)
+         {
+            return method;
+         }
+      }
+      return null;
    }
-
 
    public void invoke(RequestContext context)
    {
@@ -72,7 +83,11 @@ public class ApplicationContext
          //
          if (context instanceof RenderContext)
          {
-            invoke((RenderContext)context);
+            doInvoke(context);
+         }
+         else if (context instanceof ActionContext)
+         {
+            doInvoke(context);
          }
          else
          {
@@ -87,9 +102,9 @@ public class ApplicationContext
    }
 
 
-   private void invoke(RenderContext renderContext)
+   private void doInvoke(RequestContext context)
    {
-      ControllerMethod method = resolve(renderContext.getParameters());
+      ControllerMethod method = resolve(context.getPhase(), context.getParameters());
 
       //
       if (method == null)

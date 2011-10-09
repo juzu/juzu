@@ -1,5 +1,8 @@
 package org.juzu.request;
 
+import org.juzu.URLBuilder;
+import org.juzu.application.ControllerMethod;
+import org.juzu.application.Phase;
 import org.juzu.text.Printer;
 
 import java.util.Map;
@@ -11,10 +14,27 @@ public final class RenderContext extends RequestContext
    /** . */
    private final Printer printer;
 
-   public RenderContext(Map<String, String[]> parameters, Printer printer)
+   /** . */
+   private URLBuilderContext urlBuilderContext;
+
+   public RenderContext(Map<String, String[]> parameters, Printer printer, URLBuilderContext urlBuilderContext)
    {
       super(parameters);
+
+      //
       this.printer = printer;
+      this.urlBuilderContext = urlBuilderContext;
+   }
+
+   @Override
+   public Phase getPhase()
+   {
+      return Phase.RENDER;
+   }
+
+   public URLBuilder createURLBuilder(ControllerMethod method)
+   {
+      return urlBuilderContext.createURLBuilder(method.getPhase());
    }
 
    /**

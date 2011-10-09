@@ -47,4 +47,10 @@ public class CompilationError
    {
       return sourceFile;
    }
+
+   @Override
+   public String toString()
+   {
+      return "CompilationError[source=" + source +  ",message=" + message + "location=" + location + "]";
+   }
 }

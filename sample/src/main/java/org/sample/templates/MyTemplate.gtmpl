@@ -1,1 +1,2 @@
-<%out.print("hello");%>
+<a href="<%= action %>">Action</a>
+<a href="<%= render %>">Render</a>

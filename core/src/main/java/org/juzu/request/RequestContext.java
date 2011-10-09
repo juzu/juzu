@@ -1,5 +1,7 @@
 package org.juzu.request;
 
+import org.juzu.application.Phase;
+
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -13,6 +15,8 @@ public abstract class RequestContext
    {
       this.parameters = parameters;
    }
+
+   public abstract Phase getPhase();
 
    /**
     * Returns the request parameters.

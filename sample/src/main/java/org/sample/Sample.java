@@ -3,6 +3,7 @@ package org.sample;
 import org.juzu.Action;
 import org.juzu.Render;
 import org.juzu.Resource;
+import org.juzu.URLBuilder;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.application.RenderLiteral;
 import org.juzu.template.Template;
@@ -10,6 +11,9 @@ import org.juzu.text.Printer;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Sample
@@ -42,6 +46,9 @@ public class Sample
       org.sample.templates.MyTemplate literal;
 
       // Render template
-      template.render(printer);
+      Map<String, Object> data = new HashMap<String, Object>();
+      data.put("action", "" + Sample_.actionURL());
+      data.put("render", "" + Sample_.renderURL());
+      template.render(printer, data);
    }
 }
