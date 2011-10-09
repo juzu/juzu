@@ -1,4 +1,4 @@
-package org.juzu.request;
+package org.juzu;
 
 import javax.enterprise.context.NormalScope;
 import java.lang.annotation.Retention;

@@ -1,9 +1,9 @@
 package org.juzu.impl.cdi;
 
+import org.juzu.ActionScoped;
+import org.juzu.RenderScoped;
+import org.juzu.RequestScoped;
 import org.juzu.application.Phase;
-import org.juzu.request.ActionScoped;
-import org.juzu.request.RenderScoped;
-import org.juzu.request.RequestScoped;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.Contextual;

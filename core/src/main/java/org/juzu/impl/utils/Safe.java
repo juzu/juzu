@@ -22,10 +22,19 @@ package org.juzu.impl.utils;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Safe
 {
+
+   public static boolean equals(Object o1, Object o2)
+   {
+      return o1 == null ? o2 == null : (o2 != null && o1.equals(o2));
+   }
 
    public static void close(Closeable closeable)
    {
@@ -50,6 +59,23 @@ public class Safe
       catch (NoSuchMethodException e)
       {
          return null;
+      }
+   }
+
+   public static <T> List<T> unmodifiableList(T... list)
+   {
+      return unmodifiableList(Arrays.asList(list));
+   }
+
+   public static <T> List<T> unmodifiableList(List<T> list)
+   {
+      if (list == null || list.isEmpty())
+      {
+         return Collections.emptyList();
+      }
+      else
+      {
+         return Collections.unmodifiableList(new ArrayList<T>(list));
       }
    }
 }

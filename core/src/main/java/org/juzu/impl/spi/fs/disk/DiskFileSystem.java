@@ -26,6 +26,7 @@ import org.juzu.impl.utils.Safe;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -38,9 +39,35 @@ public class DiskFileSystem extends ReadFileSystem<File>
    /** . */
    private final File root;
 
+   /** . */
+   private final FilenameFilter filter;
+
    public DiskFileSystem(File root)
    {
+      this(root, new FilenameFilter()
+      {
+         public boolean accept(File dir, String name)
+         {
+            return true;
+         }
+      });
+   }
+
+   public DiskFileSystem(File root, FilenameFilter filter)
+   {
       this.root = root;
+      this.filter = filter;
+   }
+
+   public DiskFileSystem(final File root, final String rootName)
+   {
+      this(root, new FilenameFilter()
+      {
+         public boolean accept(File dir, String name)
+         {
+            return !(dir == root && !name.equals(rootName));
+         }
+      });
    }
 
    @Override
@@ -96,14 +123,21 @@ public class DiskFileSystem extends ReadFileSystem<File>
    @Override
    public Iterator<File> getChildren(File dir) throws IOException
    {
-      return Arrays.asList(dir.listFiles()).iterator();
+      return Arrays.asList(dir.listFiles(filter)).iterator();
    }
 
    @Override
    public File getChild(File dir, String name) throws IOException
    {
-      File child = new File(dir, name);
-      return child.exists() ? child : null;
+      if (filter.accept(dir, name))
+      {
+         File child = new File(dir, name);
+         if (child.exists())
+         {
+            return child;
+         }
+      }
+      return null;
    }
 
    @Override

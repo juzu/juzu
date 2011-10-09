@@ -33,7 +33,7 @@ public class CompilationTestCase extends TestCase
    public void testBar() throws Exception
    {
       File root = new File(System.getProperty("test.resources"));
-      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(new DiskFileSystem(root), new RAMFileSystem());
+      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(new DiskFileSystem(root, "org"), new RAMFileSystem());
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
       assertEquals(1, compiler.getClassOutputKeys().size());
    }

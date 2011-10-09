@@ -1,4 +1,4 @@
-package org.juzu.request;
+package org.juzu.impl.request;
 
 import org.juzu.URLBuilder;
 import org.juzu.application.Phase;

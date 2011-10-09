@@ -12,7 +12,7 @@ public abstract class AbstractTestCase extends TestCase
     *
     * @return the time captured after the wait
     */
-   protected final long waitForOneMillis()
+   public static long waitForOneMillis()
    {
       long snapshot = System.currentTimeMillis();
       while (true)
@@ -37,5 +37,17 @@ public abstract class AbstractTestCase extends TestCase
             throw afe;
          }
       }
+   }
+
+   public static void fail(Throwable t)
+   {
+      throw failure(t);
+   }
+
+   public static AssertionFailedError failure(Throwable t)
+   {
+      AssertionFailedError afe = new AssertionFailedError();
+      afe.initCause(t);
+      return afe;
    }
 }

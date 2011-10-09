@@ -1,5 +1,6 @@
-package org.juzu.application;
+package org.juzu.impl.application;
 
+import org.juzu.application.ApplicationDescriptor;
 import org.juzu.impl.spi.cdi.Container;
 
 import javax.enterprise.context.spi.CreationalContext;

@@ -16,6 +16,12 @@ class PortletURLBuilder implements URLBuilder
       this.url = url;
    }
 
+   public URLBuilder setParameter(String name, String value)
+   {
+      url.setParameter(name, value);
+      return this;
+   }
+
    @Override
    public String toString()
    {

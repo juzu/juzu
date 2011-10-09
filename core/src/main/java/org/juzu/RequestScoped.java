@@ -1,4 +1,4 @@
-package org.juzu.request;
+package org.juzu;
 
 import javax.enterprise.context.NormalScope;
 import java.lang.annotation.Retention;
@@ -11,6 +11,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @NormalScope
 @Target( { TYPE, METHOD, FIELD })
 @Retention(RUNTIME)
-public @interface ActionScoped
+public @interface RequestScoped
 {
 }

@@ -20,8 +20,8 @@
 package org.juzu.impl.application.simple;
 
 import junit.framework.TestCase;
-import org.juzu.application.ControllerMethod;
-import org.juzu.application.RenderLiteral;
+import org.juzu.impl.request.ControllerMethod;
+import org.juzu.application.PhaseLiteral;
 import org.juzu.impl.application.ApplicationProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
@@ -29,6 +29,7 @@ import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
+import org.juzu.impl.request.ControllerParameter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -74,7 +75,7 @@ public class SimpleApplicationTestCase extends TestCase
       Class aClass = cl.loadClass("foo.A");
       Class a_Class = cl.loadClass("foo.A_");
       Field f = a_Class.getDeclaredField("render");
-      RenderLiteral l = (RenderLiteral)f.get(null);
+      PhaseLiteral l = (PhaseLiteral)f.get(null);
       assertNotNull(l);
       ControllerMethod d = l.getDescriptor();
       assertSame(aClass, d.getType());
@@ -83,7 +84,7 @@ public class SimpleApplicationTestCase extends TestCase
       assertEquals("render", method.getName());
       assertSame(aClass, method.getDeclaringClass());
       assertEquals(Arrays.<Class<?>>asList((Class)String.class), Arrays.asList(method.getParameterTypes()));
-      assertEquals(Arrays.asList("name"), d.getNames());
+      assertEquals(Arrays.asList(new ControllerParameter("name")), d.getArgumentParameters());
 
 //      RAMFile a = foo.addFile("A.java").update("package foo; public class A { @org.juzu.template.Template(\"B.gtmpl\") org.juzu.template.TemplateRenderer template; }");
 //      RAMFile b = foo.addFile("B.gtmpl").update("<% out.print('hello') %>");

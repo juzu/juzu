@@ -18,7 +18,7 @@ public class DiskFileSystemTestCase extends TestCase
       assertNotNull(root.isDirectory());
 
       //
-      doTest(new DiskFileSystem(root), root);
+      doTest(new DiskFileSystem(root, "org"), root);
    }
    
    private <P> void doTest(ReadFileSystem<P> fs, P root) throws IOException

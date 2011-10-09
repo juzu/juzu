@@ -19,6 +19,8 @@
 
 package org.juzu.application;
 
+import org.juzu.impl.request.ControllerMethod;
+
 /**
  * A phase literal.
  *
@@ -26,4 +28,21 @@ package org.juzu.application;
  */
 public class PhaseLiteral
 {
+
+   /** . */
+   private final ControllerMethod descriptor;
+
+   public PhaseLiteral(ControllerMethod descriptor)
+   {
+      if (descriptor == null)
+      {
+         throw new NullPointerException();
+      }
+      this.descriptor = descriptor;
+   }
+
+   public ControllerMethod getDescriptor()
+   {
+      return descriptor;
+   }
 }

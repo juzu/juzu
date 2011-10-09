@@ -2,7 +2,7 @@ package org.juzu.portlet;
 
 import org.juzu.URLBuilder;
 import org.juzu.application.Phase;
-import org.juzu.request.URLBuilderContext;
+import org.juzu.impl.request.URLBuilderContext;
 
 import javax.portlet.RenderResponse;
 

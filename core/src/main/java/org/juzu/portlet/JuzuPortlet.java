@@ -1,8 +1,8 @@
 package org.juzu.portlet;
 
-import org.juzu.application.ApplicationContext;
+import org.juzu.impl.application.ApplicationContext;
 import org.juzu.application.ApplicationDescriptor;
-import org.juzu.application.Bootstrap;
+import org.juzu.impl.application.Bootstrap;
 import org.juzu.impl.application.ApplicationProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
@@ -16,8 +16,8 @@ import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.fs.war.WarFileSystem;
 import org.juzu.impl.template.TemplateProcessor;
 import org.juzu.impl.utils.DevClassLoader;
-import org.juzu.request.ActionContext;
-import org.juzu.request.RenderContext;
+import org.juzu.impl.request.ActionContext;
+import org.juzu.impl.request.RenderContext;
 import org.juzu.text.Printer;
 import org.juzu.text.WriterPrinter;
 

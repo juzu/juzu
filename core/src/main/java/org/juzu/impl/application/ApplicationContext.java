@@ -1,13 +1,17 @@
-package org.juzu.application;
+package org.juzu.impl.application;
 
+import org.juzu.RenderScoped;
 import org.juzu.Resource;
+import org.juzu.application.ApplicationDescriptor;
+import org.juzu.application.Phase;
 import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.ScopeController;
+import org.juzu.impl.request.ControllerParameter;
 import org.juzu.impl.spi.cdi.Container;
-import org.juzu.request.ActionContext;
-import org.juzu.request.RenderContext;
-import org.juzu.request.RenderScoped;
-import org.juzu.request.RequestContext;
+import org.juzu.impl.request.ActionContext;
+import org.juzu.impl.request.ControllerMethod;
+import org.juzu.impl.request.RenderContext;
+import org.juzu.impl.request.RequestContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
@@ -17,6 +21,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,6 +43,9 @@ public class ApplicationContext
    private final Container container;
 
    /** . */
+   private final ControllerResolver controllerResolver;
+
+   /** . */
    private static final ThreadLocal<RequestContext> current = new ThreadLocal<RequestContext>();
 
    public ApplicationContext()
@@ -47,30 +55,12 @@ public class ApplicationContext
       //
       this.descriptor = bootstrap.descriptor;
       this.container = bootstrap.container;
+      this.controllerResolver = new ControllerResolver(bootstrap.descriptor);
    }
 
    public ApplicationDescriptor getDescriptor()
    {
       return descriptor;
-   }
-
-   /**
-    * For now pretty simple resolution algorithm.
-    *
-    * @param phase the expected phase
-    * @param data the data
-    * @return the render descriptor or null if nothing could be resolved
-    */
-   public ControllerMethod resolve(Phase phase, Map<String, String[]> data)
-   {
-      for (ControllerMethod method : descriptor.getControllerMethods())
-      {
-         if (method.getPhase() == phase)
-         {
-            return method;
-         }
-      }
-      return null;
    }
 
    public void invoke(RequestContext context)
@@ -104,7 +94,7 @@ public class ApplicationContext
 
    private void doInvoke(RequestContext context)
    {
-      ControllerMethod method = resolve(context.getPhase(), context.getParameters());
+      ControllerMethod method = controllerResolver.resolve(context.getPhase(), context.getParameters());
 
       //
       if (method == null)
@@ -114,7 +104,6 @@ public class ApplicationContext
       else
       {
          Class<?> type = method.getType();
-         System.out.println("type = " + type);
          BeanManager mgr = container.getManager();
          Set<? extends Bean> beans = mgr.getBeans(type);
 
@@ -127,8 +116,17 @@ public class ApplicationContext
                CreationalContext<?> cc = mgr.createCreationalContext(bean);
                Object o = mgr.getReference(bean, type, cc);
 
+               // Prepare method parameters
+               List<ControllerParameter> params = method.getArgumentParameters();
+               Object[] args = new Object[params.size()];
+               for (int i = 0;i < args.length;i++)
+               {
+                  String[] values = context.getParameters().get(params.get(i).getName());
+                  args[i] = values[0];
+               }
+
                // For now we do only zero arg invocations
-               method.getMethod().invoke(o);
+               method.getMethod().invoke(o, args);
             }
             catch (Exception e)
             {

@@ -29,7 +29,12 @@ public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P>
 
    public final P makeFile(Iterable<String> path, String name) throws IOException
    {
-      P dir = makeDir(path);
+      return makeFile(getRoot(), path, name);
+   }
+
+   public final P makeFile(P dir, Iterable<String> path, String name) throws IllegalArgumentException, IOException
+   {
+      dir = makeDir(dir, path);
       P child = getChild(dir, name);
       if (child == null)
       {
@@ -47,24 +52,32 @@ public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P>
 
    public final P makeDir(Iterable<String> path) throws IOException
    {
-      P current = getRoot();
+      return makeDir(getRoot(), path);
+   }
+
+   public final P makeDir(P dir, Iterable<String> path) throws IllegalArgumentException, IOException
+   {
+      if (!isDir(dir))
+      {
+         throw new IllegalArgumentException("Dir is not an effective dir");
+      }
       for (String name : path)
       {
-         P child = getChild(current, name);
+         P child = getChild(dir, name);
          if (child == null)
          {
-            current = addDir(current, name);
+            dir = addDir(dir, name);
          }
          else if (isDir(child))
          {
-            current = child;
+            dir = child;
          }
          else
          {
             throw new UnsupportedOperationException("handle me gracefully");
          }
       }
-      return current;
+      return dir;
    }
 
    public abstract P addDir(P parent, String name) throws IOException;

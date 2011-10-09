@@ -1,5 +1,7 @@
 package org.juzu.application;
 
+import org.juzu.impl.request.ControllerMethod;
+
 import java.util.Collections;
 import java.util.List;
 
