@@ -1,0 +1,85 @@
+#{decorate path=main.gtmpl/}
+
+<h1>Search Hotels</h1>
+
+<p>
+    <input type="text" id="search" size="30">
+    <input type="submit" id="submit" value="Find Hotels">
+    <input type="hidden" id="page" value="0">
+    <br>
+
+    Maximum results: 
+    <select id="size">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+    </select>
+</p>
+
+<div id="result">
+</div>
+
+<script type="text/javascript" charset="utf-8">
+
+    // Search function
+    var search = function() {
+        var listAction = "@{list()}"
+        $('#result').load(listAction, {search : $('#search').val(), size : $('#size').val(), page : $('#page').val()}, function() {
+           $('#content').css('visibility', 'visible')
+        })
+    }
+    
+    // Events handler
+    $('#submit').click(function() {
+        $('#page').val(0)
+        search()
+    })
+    $('#search').keyup(function() {
+        $('#page').val(0)
+        search()
+    })
+    $('#nextPage').live('click', function(e) {
+        var p = $(this).attr('href')
+        $('#page').val(p)
+        e.preventDefault()
+        search()        
+    })
+    
+</script>
+
+<h1>Current Hotel Bookings</h1>
+
+<% if (bookings.empty) { %>
+    <p>
+        No Bookings Found
+    </p>
+<% } else { %>
+   <table>
+       <thead>
+           <tr>
+               <th>Name</th>
+               <th>Address</th>
+               <th>City, State</th>
+               <th>Check in</th>
+               <th>Check out</th>
+               <th>Confirmation number</th>
+               <th>Action</th>
+           </tr>
+       </thead>
+       <tbody>
+           <% for (def booking : bookings ) { %>
+               <tr>
+                   <td>${booking.hotel.name}</td>
+                   <td>${booking.hotel.address}</td>
+                   <td>${booking.hotel.city}, ${booking.hotel.state}, ${booking.hotel.country}</td>
+                   <td>${booking.checkinDate}</td>
+                   <td>${booking.checkoutDate}</td>
+                   <td>${booking.id}</td>
+                   <td>
+                        <a href="@{Hotels.cancelBooking(id = booking.id)}">Cancel</a>
+                   </td>
+               </tr>
+           <% } %>
+       </tbody>
+   </table> 
+<% } %>

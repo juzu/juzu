@@ -1,0 +1,53 @@
+#{decorate path=main.gtmpl/}
+
+<h1>Confirm hotel booking</h1>
+
+<form action="@{processConfirmBooking(id = hotel.id)}" method="post">
+    <p>
+        <strong>Name:</strong> ${hotel.name}
+    </p>
+    <p>
+        <strong>Address:</strong> ${hotel.address}
+    </p>
+    <p>
+        <strong>City:</strong> ${hotel.city}
+    </p>
+    <p>
+        <strong>State:</strong> ${hotel.state}
+    </p>
+    <p>
+        <strong>Zip:</strong> ${hotel.zip}
+    </p>
+    <p>
+        <strong>Country:</strong> ${hotel.country}
+    </p>
+    <p>
+        <strong>Nightly rate:</strong> ${hotel.price}
+    </p>
+    <p>
+        <strong>Beds:</strong> ${beds}
+        <input type="hidden" name="beds" value="${beds}">
+    </p>
+    <p>
+        <strong>Total:</strong> ${total}
+    </p>
+    <p>
+        <strong>Check in date:</strong> ${checkinDate}
+        <input type="hidden" name="checkinDate" value="${checkinDate}">
+    </p>
+    <p>
+        <strong>Check out date:</strong> ${checkoutDate.format('yyyy-MM-dd')}
+        <input type="hidden" name="checkoutDate" value="${checkoutDate}">
+    </p>
+    <p>
+        <strong>Credit card #:</strong> ${creditCard}
+        <input type="hidden" name="creditCard" value="${creditCard}">
+        <input type="hidden" name="creditCardName" value="${creditCardName}">
+        <input type="hidden" name="creditCardExpiryMonth" value="${creditCardExpiryMonth}">
+        <input type="hidden" name="creditCardExpiryYear" value="${creditCardExpiryYear}">
+    </p>
+
+    <p class="buttons">
+        <input type="submit" value="Confirm" name="confirm"> <input type="submit" value="Revise" name="revise"> <a href="@{show(id = hotel.id)}">Cancel</a>
+    </p>
+</form>

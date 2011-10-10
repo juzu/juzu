@@ -1,0 +1,88 @@
+#{decorate path=main.gtmpl/}
+
+<h1>Book hotel</h1>
+
+<form action="@{processConfirmBooking(id = hotel.id)}" method="post">
+    <p>
+        <strong>Name:</strong> ${hotel.name}
+    </p>
+    <p>
+        <strong>Address:</strong> ${hotel.address}
+    </p>
+    <p>
+        <strong>City:</strong> ${hotel.city}
+    </p>
+    <p>
+        <strong>State:</strong> ${hotel.state}
+    </p>
+    <p>
+        <strong>Zip:</strong> ${hotel.zip}
+    </p>
+    <p>
+        <strong>Country:</strong> ${hotel.country}
+    </p>
+    <p>
+        <strong>Nightly rate:</strong> ${hotel.price}
+    </p>
+        <p>
+            <strong>Check In Date:</strong> <input type="text" size="10" name="checkinDate" class="datepicker" value=""> *
+            <span class="error"></span>
+        </p>
+        <p class="">
+            <strong>Check Out Date:</strong> <input type="text" size="10" name="checkoutDate" class="datepicker" value=""> *
+            <span class="error"></span>
+        </p>
+    <p>
+        <strong>Room preference:</strong>
+        <select name="beds">
+            <option value="1">One king-size bed</option>
+            <option value="2">Two double beds</option>
+            <option value="3">Three beds</option>
+        </select>
+    </p>
+    <p>
+        <strong>Smoking preference:</strong>
+        <input type="radio" name="smoking" value="true" checked> Smoking
+        <input type="radio" name="smoking" value="false"> Non smoking
+    </p>
+        <p>
+            <strong>Credit Card #:</strong> <input type="text" name="creditCard" size="16" value=""> *
+            <span class="error"></span>
+        </p>
+        <p>
+            <strong>Credit Card Name:</strong> <input type="text" name="creditCardName" size="16" value=""> *
+            <span class="error"></span>
+        </p>
+    <p>
+        <strong>Credit Card Expiry:</strong>
+        <select name="creditCardExpiryMonth">
+            <option value="1">Jan#</option>
+            <option value="2">Feb#</option>
+            <option value="3">Mar#</option>
+            <option value="4">Apr#</option>
+            <option value="5">May#</option>
+            <option value="6">Jun#</option>
+            <option value="7">Jul#</option>
+            <option value="8">Aug#</option>
+            <option value="9">Sep#</option>
+            <option value="10">Oct#</option>
+            <option value="11">Nov#</option>
+            <option value="112">Dec#</option>
+        </select>
+        <select name="creditCardExpiryYear">
+            <option value="2011">2011#</option>
+            <option value="2012">2012#</option>
+            <option value="2013">2013#</option>
+            <option value="2014">2014#</option>
+        </select>
+    </p>
+    <p class="buttons">
+        <input type="submit" value="Proceed"> <a href="@{show(id = hotel.id)}">Cancel</a>
+    </p>
+</form>
+
+<script type="text/javascript" charset="utf-8">
+    $(function() {
+		$(".datepicker").datepicker({dateFormat: 'yy-mm-dd'});
+	});
+</script>

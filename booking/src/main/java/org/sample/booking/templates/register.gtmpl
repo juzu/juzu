@@ -1,0 +1,25 @@
+#{decorate path=main.gtmpl/}
+
+<h1>Register</h1>
+
+<form action="@{Application.saveUser()}" method="post">
+        <p>
+            <strong>Username:</strong> <input type="text" name="username" size="16" value=""> *
+            <span class="error"></span>
+        </p>
+        <p>
+            <strong>Real name:</strong> <input type="text" name="name" size="16" value=""> *
+            <span class="error"></span>
+        </p>
+        <p>
+            <strong>Password:</strong> <input type="password" name="password" size="16" value=""> *
+            <span class="error"></span>
+        </p>
+        <p>
+            <strong>Verify password:</strong> <input type="password" name="verifyPassword" size="16" value=""> *
+            <span class="error"></span>
+        </p>
+    <p class="buttons">
+        <input type="submit" value="Register"> <a href="@{Application.index()}">Cancel</a>
+    </p>
+</form>
