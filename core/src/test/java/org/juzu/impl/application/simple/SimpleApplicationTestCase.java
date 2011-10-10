@@ -73,6 +73,8 @@ public class SimpleApplicationTestCase extends TestCase
       //
       ClassLoader cl = new URLClassLoader(new URL[]{out.getURL()}, Thread.currentThread().getContextClassLoader());
       Class aClass = cl.loadClass("foo.A");
+
+      //
       Class a_Class = cl.loadClass("foo.A_");
       Field f = a_Class.getDeclaredField("render");
       PhaseLiteral l = (PhaseLiteral)f.get(null);
@@ -86,8 +88,9 @@ public class SimpleApplicationTestCase extends TestCase
       assertEquals(Arrays.<Class<?>>asList((Class)String.class), Arrays.asList(method.getParameterTypes()));
       assertEquals(Arrays.asList(new ControllerParameter("name")), d.getArgumentParameters());
 
-//      RAMFile a = foo.addFile("A.java").update("package foo; public class A { @org.juzu.template.Template(\"B.gtmpl\") org.juzu.template.TemplateRenderer template; }");
-//      RAMFile b = foo.addFile("B.gtmpl").update("<% out.print('hello') %>");
-
+      //
+      Class applicationClass = cl.loadClass("foo.FooApplication");
+      Method renderMethod = applicationClass.getMethod("renderURL", String.class);
+      assertEquals("renderURL", renderMethod.getName());
    }
 }

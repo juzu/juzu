@@ -1,4 +1,4 @@
-package org.sample;
+package org.sample.controllers;
 
 import org.juzu.Action;
 import org.juzu.Render;
@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.sample.*;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Sample
 {
@@ -20,7 +22,7 @@ public class Sample
    static
    {
       // Generated
-      ApplicationDescriptor desc = SampleApplication.DESCRIPTOR;
+      ApplicationDescriptor desc = org.sample.SampleApplication.DESCRIPTOR;
    }
 
    @Inject
@@ -45,20 +47,19 @@ public class Sample
 
       // Render template
       Map<String, Object> data = new HashMap<String, Object>();
-      data.put("action", "" + Sample_.actionURL());
-      data.put("render", "" + Sample_.renderURL());
-      data.put("foo", "" + Sample_.fooURL("bar"));
+      data.put("action", "" + SampleApplication.actionURL());
+      data.put("render", "" + SampleApplication.renderURL());
+      data.put("foo", "" + SampleApplication.fooURL("bar"));
       template.render(printer, data);
    }
 
    @Render
    public void foo(String name) throws IOException
    {
-      System.out.println("foo");
       Map<String, Object> data = new HashMap<String, Object>();
-      data.put("action", "" + Sample_.actionURL());
-      data.put("render", "" + Sample_.renderURL());
-      data.put("foo", "" + Sample_.fooURL("bar"));
+      data.put("action", "" + SampleApplication.actionURL());
+      data.put("render", "" + SampleApplication.renderURL());
+      data.put("foo", "" + SampleApplication.fooURL("bar"));
       template.render(printer, data);
    }
 }
