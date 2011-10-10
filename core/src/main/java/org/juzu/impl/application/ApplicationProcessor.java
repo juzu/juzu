@@ -29,7 +29,7 @@ import org.juzu.impl.request.ControllerMethod;
 import org.juzu.application.Phase;
 import org.juzu.application.PhaseLiteral;
 import org.juzu.impl.utils.PackageMap;
-import org.juzu.impl.utils.Safe;
+import org.juzu.impl.utils.Tools;
 import org.juzu.impl.request.ControllerParameter;
 import org.juzu.impl.request.RenderContext;
 
@@ -78,6 +78,9 @@ public class ApplicationProcessor extends AbstractProcessor
 
    /** . */
    private static final String CONTROLLER_PARAMETER = ControllerParameter.class.getSimpleName();
+
+   /** . */
+   private static final String TOOLS = Tools.class.getSimpleName();
 
    /**
     * Application meta data.
@@ -324,7 +327,7 @@ public class ApplicationProcessor extends AbstractProcessor
             }
             finally
             {
-               Safe.close(writer);
+               Tools.safeClose(writer);
             }
          }
          catch (IOException e)
@@ -349,7 +352,7 @@ public class ApplicationProcessor extends AbstractProcessor
             }
             finally
             {
-               Safe.close(writer);
+               Tools.safeClose(writer);
             }
          }
          catch (IOException e)
@@ -373,7 +376,7 @@ public class ApplicationProcessor extends AbstractProcessor
                writer.append("import ").append(PhaseLiteral.class.getName()).append(";\n");
                writer.append("import ").append(ControllerMethod.class.getName()).append(";\n");
                writer.append("import ").append(ControllerParameter.class.getName()).append(";\n");
-               writer.append("import ").append(Safe.class.getName()).append(";\n");
+               writer.append("import ").append(Tools.class.getName()).append(";\n");
                writer.append("import ").append(Arrays.class.getName()).append(";\n");
                writer.append("import ").append(Phase.class.getName()).append(";\n");
                writer.append("import ").append(URLBuilder.class.getName()).append(";\n");
@@ -386,13 +389,13 @@ public class ApplicationProcessor extends AbstractProcessor
                for (MethodMetaData method : entry.getValue().methods)
                {
                   // Method
-                  writer.append("private static final ControllerMethod method_").append(String.valueOf(index)).append(" = ");
+                  writer.append("private static final ").append(CONTROLLER_METHOD).append(" method_").append(String.valueOf(index)).append(" = ");
                   writer.append("new ").append(CONTROLLER_METHOD).append("(");
                   writer.append(PHASE).append(".").append(method.phase.name());
                   writer.append(",");
                   writer.append(entry.getKey()).append(".class");
                   writer.append(",");
-                  writer.append("Safe.getMethod(").append(type).append(".class,\"").append(method.getName()).append("\"");
+                  writer.append(TOOLS).append(".safeGetMethod(").append(type).append(".class,\"").append(method.getName()).append("\"");
                   for (TypeMirror foo : method.type.getParameterTypes())
                   {
                      TypeMirror erased = processingEnv.getTypeUtils().erasure(foo);
@@ -480,7 +483,7 @@ public class ApplicationProcessor extends AbstractProcessor
             }
             finally
             {
-               Safe.close(writer);
+               Tools.safeClose(writer);
             }
          }
          catch (IOException e)

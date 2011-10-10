@@ -21,7 +21,7 @@ package org.juzu.impl.spi.fs.disk;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.utils.Content;
-import org.juzu.impl.utils.Safe;
+import org.juzu.impl.utils.Tools;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -156,7 +156,7 @@ public class DiskFileSystem extends ReadFileSystem<File>
       }
       finally
       {
-         Safe.close(in);
+         Tools.safeClose(in);
       }
    }
 

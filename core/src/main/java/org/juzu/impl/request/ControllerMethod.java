@@ -20,7 +20,7 @@
 package org.juzu.impl.request;
 
 import org.juzu.application.Phase;
-import org.juzu.impl.utils.Safe;
+import org.juzu.impl.utils.Tools;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -67,8 +67,8 @@ public final class ControllerMethod
       this.phase = phase;
       this.type = type;
       this.method = method;
-      this.annotationParameters = Safe.unmodifiableList(boundParameters);
-      this.argumentParameters = Safe.unmodifiableList(argumentParameters);
+      this.annotationParameters = Tools.safeUnmodifiableList(boundParameters);
+      this.argumentParameters = Tools.safeUnmodifiableList(argumentParameters);
    }
 
    public Phase getPhase()

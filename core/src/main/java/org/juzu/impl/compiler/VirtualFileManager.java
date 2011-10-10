@@ -22,7 +22,7 @@ package org.juzu.impl.compiler;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.Visitor;
-import org.juzu.impl.utils.Spliterator;
+import org.juzu.impl.utils.*;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
@@ -113,7 +113,7 @@ class VirtualFileManager<I, O> extends ForwardingJavaFileManager<StandardJavaFil
       Map<FileKey, VirtualJavaFileObject.RandomAccess> files = getFiles(location);
       if (files != null)
       {
-         Pattern pattern = Tools.getPackageMatcher(packageName, recurse);
+         Pattern pattern = org.juzu.impl.utils.Tools.getPackageMatcher(packageName, recurse);
          Matcher matcher = null;
          for (VirtualJavaFileObject file : files.values())
          {

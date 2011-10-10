@@ -2,7 +2,7 @@ package org.juzu.impl.spi.fs.war;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.utils.Content;
-import org.juzu.impl.utils.Safe;
+import org.juzu.impl.utils.Tools;
 
 import javax.portlet.PortletContext;
 import javax.servlet.ServletContext;
@@ -146,7 +146,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
          }
          finally
          {
-            Safe.close(in);
+            Tools.safeClose(in);
          }
       }
       else

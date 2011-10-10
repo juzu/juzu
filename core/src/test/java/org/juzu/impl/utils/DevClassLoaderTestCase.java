@@ -78,10 +78,10 @@ public class DevClassLoaderTestCase extends TestCase
       assertNotSame(libClass, Lib.class);
       InputStream classesResource = cl.getResourceAsStream("classes_resource");
       assertNotNull(classesResource);
-      assertEquals("classes_resource_value", IO.read(classesResource));
+      assertEquals("classes_resource_value", Tools.read(classesResource));
       InputStream libResource = cl.getResourceAsStream("lib_resource");
       assertNotNull(libResource);
-      assertEquals("lib_resource_value", IO.read(libResource));
+      assertEquals("lib_resource_value", Tools.read(libResource));
 
       //
       DevClassLoader devCL = new DevClassLoader(cl);
@@ -98,6 +98,6 @@ public class DevClassLoaderTestCase extends TestCase
       assertNull(classesResource);
       libResource = devCL.getResourceAsStream("lib_resource");
       assertNotNull(libResource);
-      assertEquals("lib_resource_value", IO.read(libResource));
+      assertEquals("lib_resource_value", Tools.read(libResource));
    }
 }

@@ -1,4 +1,4 @@
-package org.juzu.impl.compiler;
+package org.juzu.impl.utils;
 
 import junit.framework.TestCase;
 

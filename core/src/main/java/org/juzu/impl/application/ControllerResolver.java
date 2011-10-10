@@ -5,7 +5,7 @@ import org.juzu.application.ApplicationDescriptor;
 import org.juzu.application.Phase;
 import org.juzu.impl.request.ControllerMethod;
 import org.juzu.impl.request.ControllerParameter;
-import org.juzu.impl.utils.Safe;
+import org.juzu.impl.utils.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class ControllerResolver
 
    public ControllerResolver(ControllerMethod... methods)
    {
-      this.methods = Safe.unmodifiableList(methods);
+      this.methods = Tools.safeUnmodifiableList(methods);
    }
 
    // Longuest path ?

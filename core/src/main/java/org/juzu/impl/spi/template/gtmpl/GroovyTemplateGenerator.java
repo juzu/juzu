@@ -22,7 +22,7 @@ package org.juzu.impl.spi.template.gtmpl;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.SectionType;
-import org.juzu.impl.utils.Safe;
+import org.juzu.impl.utils.Tools;
 import org.juzu.utils.Location;
 
 import javax.annotation.processing.Filer;
@@ -202,7 +202,7 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       }
       finally
       {
-         Safe.close(writer);
+         Tools.safeClose(writer);
       }
 
       // Create the class associated with the template

@@ -44,7 +44,7 @@ class TextConstant
    String getDeclaration()
    {
       StringBuilder sb = new StringBuilder("");
-      Tools.escape(text, sb);
+      org.juzu.impl.utils.Tools.escape(text, sb);
       return "public static final " + CharArray.Simple.class.getName() + " " + name + " = new " + CharArray.Simple.class.getName() + "('" + sb + "');";
    }
  }

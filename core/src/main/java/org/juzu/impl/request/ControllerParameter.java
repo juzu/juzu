@@ -1,6 +1,6 @@
 package org.juzu.impl.request;
 
-import org.juzu.impl.utils.Safe;
+import org.juzu.impl.utils.Tools;
 
 /**
  * A parameter of a controller
@@ -63,7 +63,7 @@ public class ControllerParameter
       else if (obj instanceof ControllerParameter)
       {
          ControllerParameter that = (ControllerParameter)obj;
-         return name.equals(that.name) && Safe.equals(value, that.value);
+         return name.equals(that.name) && Tools.safeEquals(value, that.value);
       }
       else
       {
