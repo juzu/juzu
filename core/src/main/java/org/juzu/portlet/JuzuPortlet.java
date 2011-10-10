@@ -80,6 +80,7 @@ public class JuzuPortlet implements Portlet
 
    private Collection<CompilationError> boot() throws PortletException
    {
+      boolean wasNull = applicationContext == null;
       long t = -System.currentTimeMillis();
       if (prod)
       {
@@ -106,6 +107,7 @@ public class JuzuPortlet implements Portlet
                Map<String, Change> changes =  devScanner.scan();
                if (changes.size() > 0)
                {
+                  System.out.println("Detected changes : " + changes);
                   applicationContext = null;
                }
             }
@@ -113,7 +115,7 @@ public class JuzuPortlet implements Portlet
             //
             if (applicationContext == null)
             {
-               System.out.println("Building dev application");
+               System.out.println("Building application");
 
                //
                List<URL> classPath = new ArrayList<URL>();
@@ -152,7 +154,10 @@ public class JuzuPortlet implements Portlet
 
       //
       t += System.currentTimeMillis();
-      System.out.println("Booted in " + t + " ms");
+      if (wasNull && applicationContext != null)
+      {
+         System.out.println("Booted in " + t + " ms");
+      }
       return Collections.emptyList();
    }
 
