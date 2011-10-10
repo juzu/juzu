@@ -1,5 +1,7 @@
 package org.juzu.impl.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -28,38 +30,66 @@ public class DevClassLoader extends ClassLoader
       {
          String classPath = name.replace('.', '/') + ".class";
          URL url = getResource(classPath);
-
-         // Unwrap until we get the file location
-         String protocol = url.getProtocol();
-         if ("file".equals(protocol))
+         if (url == null)
          {
-            String path = url.getPath();
-            if (path.endsWith("/WEB-INF/classes/" + classPath))
-            {
-               throw new ClassNotFoundException();
-            }
-         }
-         else if ("jar".equals(protocol))
-         {
-            String path = url.getPath();
-            int index = path.indexOf("!/");
-            String nested = path.substring(0, index);
-            if (nested.endsWith(".jar"))
-            {
-               // Return found
-            }
-            else
-            {
-               throw new UnsupportedOperationException("handle me gracefully " + url);
-            }
-         }
-         else
-         {
-            throw new UnsupportedOperationException("handle me gracefully " + url);
+            throw new ClassNotFoundException();
          }
       }
 
       //
       return found;
    }
+
+   @Override
+   public URL getResource(String name)
+   {
+      URL url = super.getResource(name);
+
+      //
+      if (url != null && shouldLoad(url, name))
+      {
+         return url;
+      }
+      else
+      {
+         return null;
+      }
+   }
+
+   private boolean shouldLoad(URL url, String name)
+   {
+      // Unwrap until we get the file location
+      String protocol = url.getProtocol();
+      if ("file".equals(protocol))
+      {
+         String path = url.getPath();
+         if (path.endsWith("/WEB-INF/classes/" + name))
+         {
+            return false;
+         }
+         else
+         {
+            return true;
+         }
+      }
+      else if ("jar".equals(protocol))
+      {
+         String path = url.getPath();
+         int index = path.indexOf("!/");
+         String nested = path.substring(0, index);
+         if (nested.endsWith(".jar"))
+         {
+            return true;
+         }
+         else
+         {
+            throw new UnsupportedOperationException("handle me gracefully " + url);
+         }
+      }
+      else
+      {
+         throw new UnsupportedOperationException("handle me gracefully " + url);
+      }
+   }
+
 }
