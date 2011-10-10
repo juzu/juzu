@@ -61,6 +61,9 @@ public class JuzuPortlet implements Portlet
    /** . */
    private FileSystemScanner<String> devScanner;
 
+   /** . */
+   private ClassLoader classLoader;
+
    public void init(PortletConfig config) throws PortletException
    {
       String runMode = config.getInitParameter("juzu.run_mode");
@@ -197,11 +200,12 @@ public class JuzuPortlet implements Portlet
       Bootstrap boot = new Bootstrap(container, descriptor);
       boot.start();
       applicationContext = boot.getContext();
+      classLoader = cl;
    }
 
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
    {
-      ActionContext actionContext = new ActionContext(request.getParameterMap());
+      ActionContext actionContext = new ActionContext(classLoader, request.getParameterMap());
 
       //
       applicationContext.invoke(actionContext);
@@ -219,6 +223,7 @@ public class JuzuPortlet implements Portlet
 
          //
          RenderContext renderContext = new RenderContext(
+            classLoader,
             request.getParameterMap(),
             printer,
             new PortletURLBuilderContext(response)

@@ -8,9 +8,9 @@ import java.util.Map;
 public final class ActionContext extends RequestContext
 {
 
-   public ActionContext(Map<String, String[]> parameters)
+   public ActionContext(ClassLoader classLoader, Map<String, String[]> parameters)
    {
-      super(parameters);
+      super(classLoader, parameters);
    }
 
    @Override

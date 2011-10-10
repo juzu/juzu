@@ -17,9 +17,9 @@ public final class RenderContext extends RequestContext
    /** . */
    private URLBuilderContext urlBuilderContext;
 
-   public RenderContext(Map<String, String[]> parameters, Printer printer, URLBuilderContext urlBuilderContext)
+   public RenderContext(ClassLoader classLoader, Map<String, String[]> parameters, Printer printer, URLBuilderContext urlBuilderContext)
    {
-      super(parameters);
+      super(classLoader, parameters);
 
       //
       this.printer = printer;

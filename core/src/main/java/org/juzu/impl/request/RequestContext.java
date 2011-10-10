@@ -8,12 +8,21 @@ import java.util.Map;
 public abstract class RequestContext
 {
 
+   /** The request classloader. */
+   protected final ClassLoader classLoader;
+
    /** . */
    protected final Map<String, String[]> parameters;
 
-   public RequestContext(Map<String, String[]> parameters)
+   public RequestContext(ClassLoader classLoader, Map<String, String[]> parameters)
    {
+      this.classLoader = classLoader;
       this.parameters = parameters;
+   }
+
+   public final ClassLoader getClassLoader()
+   {
+      return classLoader;
    }
 
    public abstract Phase getPhase();

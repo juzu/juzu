@@ -65,8 +65,10 @@ public class ApplicationContext
 
    public void invoke(RequestContext context)
    {
+      ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
       try
       {
+         Thread.currentThread().setContextClassLoader(context.getClassLoader());
          current.set(context);
          ScopeController.start(context.getPhase());
 
@@ -88,6 +90,7 @@ public class ApplicationContext
       {
          current.set(null);
          ScopeController.stop();
+         Thread.currentThread().setContextClassLoader(oldCL);
       }
    }
 
