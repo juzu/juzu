@@ -95,7 +95,7 @@ public class TemplateProcessor extends AbstractProcessor
    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
    {
 
-      TemplateParser parser = new TemplateParser();
+      ASTBuilder parser = new ASTBuilder();
       Filer filer = processingEnv.getFiler();
 
       // Fill in packages

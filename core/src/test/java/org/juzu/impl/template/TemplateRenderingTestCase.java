@@ -75,7 +75,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
    public void testDate2() throws Exception
    {
       Date dateToTest = new Date(0);
-      String template = "<% def date = new Date(0) %>$date";
+      String template = "<% def date = new Date(0) %>${date}";
       assertEquals(dateFormatFR.format(dateToTest), render(template, Locale.FRENCH));
       assertEquals(dateFormatEN.format(dateToTest), render(template, Locale.ENGLISH));
       assertEquals(dateToTest.toString(), render(template));
@@ -161,24 +161,6 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       context.put("foo", "bar");
       String s = render(template, context);
       assertEquals("bar", s);
-   }
-
-   public void testGString() throws Exception
-   {
-      String template = "$foo";
-      Map<String, String> context = new HashMap<String, String>();
-      context.put("foo", "bar");
-      String s = render(template, context);
-      assertEquals("bar", s);
-   }
-
-   public void testQuoteAfterGString() throws Exception
-   {
-      String template = "$foo\"";
-      Map<String, String> context = new HashMap<String, String>();
-      context.put("foo", "bar");
-      String s = render(template, context);
-      assertEquals("bar\"", s);
    }
 
    public void testDollarInExpression() throws Exception

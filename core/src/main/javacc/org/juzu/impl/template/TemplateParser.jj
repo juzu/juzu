@@ -1,0 +1,63 @@
+PARSER_BEGIN(TemplateParser)
+
+package org.juzu.impl.template;
+
+import java.util.ArrayList;
+
+/** Simple brace matcher. */
+public class TemplateParser {
+
+  /** . */
+  private Token head;
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+//    Simple1 parser = new Simple1(System.in);
+//    parser.Input();
+  }
+
+}
+
+PARSER_END(TemplateParser)
+
+<DEFAULT> TOKEN :
+{
+< OPEN_SCRIPTLET : "<%" > : IN_SCRIPTLET |
+< OPEN_EXPR : "<%=" > : IN_EXPR |
+< OPEN_CURLY_EXPR : "${" > : IN_CURLY_EXPR |
+< DATA : ~[] >
+}
+
+<IN_SCRIPTLET> TOKEN :
+{
+< CLOSE_SCRIPTLET : "%>" > : DEFAULT |
+< SCRIPTLET_DATA : ~[] >
+}
+
+<IN_EXPR> TOKEN :
+{
+< CLOSE_EXPR : "%>" > : DEFAULT |
+< EXPR_DATA : ~[] >
+}
+
+<IN_CURLY_EXPR> TOKEN :
+{
+< CLOSE_CURLY_EXPR : "}" > : DEFAULT |
+< CURLY_EXPR_DATA : ~[] >
+}
+
+Token parse() :
+{
+   head = token;
+}
+{
+  (
+     ( <OPEN_SCRIPTLET> ( <SCRIPTLET_DATA> ) * <CLOSE_SCRIPTLET> ) |
+     ( <OPEN_EXPR> ( <EXPR_DATA> ) * <CLOSE_EXPR> ) |
+     ( <OPEN_CURLY_EXPR> ( <CURLY_EXPR_DATA> ) * <CLOSE_CURLY_EXPR> ) |
+     <DATA>
+  ) *
+  {
+     return head;
+  }
+}

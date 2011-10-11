@@ -34,7 +34,7 @@ public class TemplateBuilderTestCase extends TestCase
 
    public void testFoo() throws Exception
    {
-      TemplateParser parser = new TemplateParser();
+      ASTBuilder parser = new ASTBuilder();
       GroovyTemplateGenerator template = new GroovyTemplateGenerator();
       parser.parse("a<%=foo%>c").generate(template);
       GroovyTemplate s = template.build("template_" + Math.abs(new Random().nextLong()));

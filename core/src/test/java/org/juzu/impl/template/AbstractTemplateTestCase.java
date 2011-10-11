@@ -37,7 +37,7 @@ public abstract class AbstractTemplateTestCase extends TestCase
 
    public GroovyTemplate template(String text)
    {
-      TemplateParser parser = new TemplateParser();
+      ASTBuilder parser = new ASTBuilder();
       GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator();
       parser.parse(text).generate(templateWriter);
       return templateWriter.build("template_" + Math.abs(new Random().nextLong()));

@@ -34,7 +34,7 @@ public class TemplateParserTestCase extends TestCase
 {
 
    /** . */
-   private TemplateParser parser = new TemplateParser();
+   private ASTBuilder parser = new ASTBuilder();
 
    public void testEmpty() throws IOException
    {
@@ -86,6 +86,11 @@ public class TemplateParserTestCase extends TestCase
       assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.EXPR, "<")), parser.parse("<%=<%>").getSections());
    }
 
+   public void testCurlyExpression() throws IOException
+   {
+      assertEquals(Arrays.<ASTNode.Section>asList(new ASTNode.Section(SectionType.EXPR, "a")), parser.parse("${a}").getSections());
+   }
+
    public void testSimpleScript() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Section>asList(
@@ -115,7 +120,7 @@ public class TemplateParserTestCase extends TestCase
       assertEquals(new Location(1, 1), sections.get(0).getItems().get(0).getPosition());
       assertEquals(new Location(2, 1), sections.get(0).getItems().get(1).getPosition());
       assertEquals(new Location(1, 2), sections.get(0).getItems().get(2).getPosition());
-      assertEquals(new Location(5, 2), sections.get(1).getItems().get(0).getPosition());
+      assertEquals(new Location(2, 2), sections.get(1).getItems().get(0).getPosition());
       assertEquals(new Location(12, 2), sections.get(2).getItems().get(0).getPosition());
 
    }
