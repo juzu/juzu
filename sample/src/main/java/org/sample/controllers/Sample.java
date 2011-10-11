@@ -47,19 +47,14 @@ public class Sample
 
       // Render template
       Map<String, Object> data = new HashMap<String, Object>();
-      data.put("action", "" + SampleApplication.actionURL());
-      data.put("render", "" + SampleApplication.renderURL());
-      data.put("foo", "" + SampleApplication.fooURL("bar"));
       template.render(printer, data);
    }
 
    @Render
    public void foo(String name) throws IOException
    {
+      System.out.println("foo : " + name);
       Map<String, Object> data = new HashMap<String, Object>();
-      data.put("action", "" + SampleApplication.actionURL());
-      data.put("render", "" + SampleApplication.renderURL());
-      data.put("foo", "" + SampleApplication.fooURL("bar"));
       template.render(printer, data);
    }
 }

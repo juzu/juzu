@@ -50,4 +50,9 @@ public abstract class AbstractTestCase extends TestCase
       afe.initCause(t);
       return afe;
    }
+
+   public static AssertionFailedError failure(String msg)
+   {
+      return new AssertionFailedError(msg);
+   }
 }

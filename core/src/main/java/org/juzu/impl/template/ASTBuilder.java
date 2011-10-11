@@ -53,29 +53,29 @@ public class ASTBuilder
       }
 
       //
-      List<ASTNode.Section> sections = new ArrayList<ASTNode.Section>();
+      List<ASTNode.Block> blocks = new ArrayList<ASTNode.Block>();
       int previousOffset = 0;
       Location previousPosition = new Location(1, 1);
       for (int i = 0;i < parser.list.size();i++)
       {
-         ASTNode.Section section = parser.list.get(i);
-         if (section.getBeginOffset() > previousOffset)
+         ASTNode.Block block = parser.list.get(i);
+         if (block.getBeginOffset() > previousOffset)
          {
-            sections.add(new ASTNode.Section(
+            blocks.add(new ASTNode.Section(
                SectionType.STRING,
                previousOffset,
-               section.getBeginOffset(),
-               s.subSequence(previousOffset, section.getBeginOffset()).toString(),
+               block.getBeginOffset(),
+               s.subSequence(previousOffset, block.getBeginOffset()).toString(),
                previousPosition,
-               section.getEndPosition()));
+               block.getEndPosition()));
          }
-         sections.add(section);
-         previousOffset = section.getEndOffset();
-         previousPosition = section.getEndPosition();
+         blocks.add(block);
+         previousOffset = block.getEndOffset();
+         previousPosition = block.getEndPosition();
       }
       if (previousOffset < s.length())
       {
-         sections.add(new ASTNode.Section(
+         blocks.add(new ASTNode.Section(
             SectionType.STRING,
             previousOffset,
             s.length(),
@@ -85,6 +85,6 @@ public class ASTBuilder
       }
 
       //
-      return new ASTNode.Template(Collections.unmodifiableList(sections));
+      return new ASTNode.Template(Collections.unmodifiableList(blocks));
    }
 }

@@ -1,7 +1,7 @@
 package org.juzu.test;
 
-import org.juzu.impl.application.ApplicationProcessor;
-import org.juzu.impl.compiler.*;
+import org.juzu.impl.apt.JuzuProcessor;
+import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
@@ -43,7 +43,7 @@ public class CompilerHelper<S>
       try
       {
          Compiler<S, RAMPath> compiler = new org.juzu.impl.compiler.Compiler<S, RAMPath>(in, out);
-         compiler.addAnnotationProcessor(new ApplicationProcessor());
+         compiler.addAnnotationProcessor(new JuzuProcessor());
          AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
          cl = new URLClassLoader(new URL[]{out.getURL()}, Thread.currentThread().getContextClassLoader());
       }

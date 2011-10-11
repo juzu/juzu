@@ -4,6 +4,7 @@ import org.juzu.impl.application.ApplicationContext;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.impl.application.Bootstrap;
 import org.juzu.impl.application.ApplicationProcessor;
+import org.juzu.impl.apt.JuzuProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
@@ -132,8 +133,7 @@ public class JuzuPortlet implements Portlet
 
                //
                Compiler<String, RAMPath> compiler = new Compiler<String, RAMPath>(classPath, fs, classes);
-               compiler.addAnnotationProcessor(new TemplateProcessor());
-               compiler.addAnnotationProcessor(new ApplicationProcessor());
+               compiler.addAnnotationProcessor(new JuzuProcessor());
                List<CompilationError> res = compiler.compile();
                if (res.isEmpty())
                {

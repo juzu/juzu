@@ -9,21 +9,13 @@ package org.juzu.impl.template;
 
 import java.util.ArrayList;
 import org.juzu.utils.Location;
+import java.util.HashMap;
 
 /** Simple brace matcher. */
 public class TemplateParser {
 
   /** . */
-  private Token head;
-
-  /** . */
-  public ArrayList<ASTNode.Section> list = new ArrayList<ASTNode.Section>();
-
-  /** Main entry point. */
-  public static void main(String args[]) throws ParseException {
-//    Simple1 parser = new Simple1(System.in);
-//    parser.Input();
-  }
+  public ArrayList<ASTNode.Block> list = new ArrayList<ASTNode.Block>();
 
 }
 
@@ -34,6 +26,7 @@ PARSER_END(TemplateParser)
 < OPEN_SCRIPTLET : "<%" > : IN_SCRIPTLET |
 < OPEN_EXPR : "<%=" > : IN_EXPR |
 < OPEN_CURLY_EXPR : "${" > : IN_CURLY_EXPR |
+< OPEN_URL : "@{" > : IN_URL |
 < DATA : ~[] >
 }
 
@@ -55,21 +48,31 @@ PARSER_END(TemplateParser)
 < CURLY_EXPR_DATA : ~[] >
 }
 
-Token parse() :
+<IN_URL> TOKEN :
 {
-   head = token;
-   Token t;
-   StringBuilder acc = new StringBuilder();
+< METHOD_NAME : ["$","A"-"Z","_","a"-"z"] ( ["$","0"-"9","A"-"Z","_","a"-"z"] ) * > |
+< OPEN_METHOD : "(" > : IN_URL_ARGS |
+< CLOSE_URL : "}" > : DEFAULT
 }
+
+<IN_URL_ARGS> TOKEN :
+{
+< ARG_SEPARATOR : "," > |
+< ARG_NAME : ["$","A"-"Z","_","a"-"z"] ( ["$","0"-"9","A"-"Z","_","a"-"z"] ) * > |
+< ARG_VALUE : "=" ( ~[",",")"] ) + > |
+< CLOSE_METHOD : ")" > : IN_URL
+}
+
+void parse() : { }
 {
   (
      parseScriptlet() |
      parseExpression() |
      parseCurlyExpression() |
+     parseURL() |
      <DATA>
   ) *
   {
-     return head;
   }
 }
 
@@ -112,5 +115,30 @@ void parseCurlyExpression() : { Token o,t,p; StringBuilder acc = new StringBuild
          acc.toString(),
          new Location(o.beginColumn, o.beginLine),
          new Location(p.endColumn, p.endLine)));
+   }
+}
+
+void parseURL() : { Token t,m,p; HashMap.SimpleEntry a; HashMap args = new HashMap(); }
+{
+   t = <OPEN_URL> m = <METHOD_NAME> <OPEN_METHOD>
+      ( a = parseArg() { args.put(a.getKey(), a.getValue());  } ( <ARG_SEPARATOR> a = parseArg() { args.put(a.getKey(), a.getValue()); }  ) * ) ?
+   <CLOSE_METHOD> p = <CLOSE_URL>
+   {
+      String s = args.toString();
+      list.add(new ASTNode.URL(
+         m.image,
+         args,
+         t.beginOffset,
+         p.endOffset,
+         new Location(t.endColumn, t.endLine),
+         new Location(p.endColumn, p.endLine)));
+   }
+}
+
+HashMap.SimpleEntry parseArg() : { Token n,v; }
+{
+   n = <ARG_NAME> v = <ARG_VALUE>
+   {
+      return new HashMap.SimpleEntry(n.image.trim(),v.image.substring(1).trim());
    }
 }

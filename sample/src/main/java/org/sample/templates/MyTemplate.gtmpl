@@ -1,3 +1,4 @@
-<a href="<%= action %>">Action</a>
-<a href="<%= render %>">Render</a>
-<a href="<%= foo %>">Foo</a>
+<a href="@{action()}">Action</a>
+<a href="@{render()}">Render</a>
+<a href="@{foo()}">Render</a>
+<a href="@{foo(name='bar')}">Render</a>

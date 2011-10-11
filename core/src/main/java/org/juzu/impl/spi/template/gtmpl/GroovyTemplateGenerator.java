@@ -19,8 +19,9 @@
 
 package org.juzu.impl.spi.template.gtmpl;
 
+import org.juzu.impl.spi.template.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
-import org.juzu.impl.template.ASTNode;
+import org.juzu.impl.spi.template.TemplateGeneratorContext;
 import org.juzu.impl.template.SectionType;
 import org.juzu.impl.utils.Tools;
 import org.juzu.utils.Location;
@@ -50,13 +51,21 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    private int methodCount = 0;
 
    /** The line number table. */
-   private HashMap<Integer, ASTNode.Text> locationTable = new HashMap<Integer, ASTNode.Text>();
+   private HashMap<Integer, Foo> locationTable = new HashMap<Integer, Foo>();
 
    /** The current line number. */
    private int lineNumber = 1;
 
-   public GroovyTemplateGenerator()
+   /** . */
+   private Location pos;
+
+   /** . */
+   private final TemplateGeneratorContext context;
+
+   public GroovyTemplateGenerator(TemplateGeneratorContext context)
    {
+      this.pos = null;
+      this.context = context;
    }
 
    @Override
@@ -79,7 +88,7 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       }
 
       // Add line table
-      builder.append("public static final Map<Integer, ").append(ASTNode.Text.class.getName()).append("> TABLE = ");
+      builder.append("public static final Map<Integer, ").append(Foo.class.getName()).append("> TABLE = ");
       if (locationTable.isEmpty())
       {
          builder.append("[:]");
@@ -87,16 +96,16 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       else
       {
          builder.append("[\n");
-         for (Iterator<Map.Entry<Integer, ASTNode.Text>> i = locationTable.entrySet().iterator();i.hasNext();)
+         for (Iterator<Map.Entry<Integer, Foo>> i = locationTable.entrySet().iterator();i.hasNext();)
          {
-            Map.Entry<Integer, ASTNode.Text> entry = i.next();
-            ASTNode.Text text = entry.getValue();
-            Location location = text.getBeginPosition();
+            Map.Entry<Integer, Foo> entry = i.next();
+            Foo text = entry.getValue();
+            Location location = text.getPosition();
             builder.append(entry.getKey()).append(':').
-               append("new ").append(ASTNode.Text.class.getName()).append("(").
+               append("new ").append(Foo.class.getName()).append("(").
                append("new ").append(Location.class.getName()).append("(").append(location.getCol()).append(',').append(location.getLine()).append("),").
                append("'");
-            Tools.escape(text.getData(), builder);
+            Tools.escape(text.getValue(), builder);
             builder.append("')");
             if (i.hasNext())
             {
@@ -130,14 +139,15 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       };
    }
 
-   public void startScriptlet()
+   public void startScriptlet(Location beginPosition)
    {
+      pos = beginPosition;
    }
 
-   public void appendScriptlet(ASTNode.Text scriptlet)
+   public void appendScriptlet(String scriptlet)
    {
-      out.append(scriptlet.getData());
-      locationTable.put(lineNumber, scriptlet);
+      out.append(scriptlet);
+      locationTable.put(lineNumber, new Foo(pos, scriptlet));
    }
 
    public void endScriptlet()
@@ -147,15 +157,16 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       lineNumber++;
    }
 
-   public void startExpression()
+   public void startExpression(Location beginPosition)
    {
+      pos = beginPosition;
       out.append(";out.print(\"${");
    }
 
-   public void appendExpression(ASTNode.Text expr)
+   public void appendExpression(String expr)
    {
-      out.append(expr.getData());
-      locationTable.put(lineNumber, expr);
+      out.append(expr);
+      locationTable.put(lineNumber, new Foo(pos, expr));
    }
 
    public void endExpression()
@@ -172,8 +183,9 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       lineNumber++;
    }
 
-   public void appendLineBreak(SectionType currentType)
+   public void appendLineBreak(SectionType currentType, Location position)
    {
+      this.pos = new Location(1, position.getLine() + 1);
       switch (currentType)
       {
          case SCRIPTLET:
@@ -186,6 +198,30 @@ public class GroovyTemplateGenerator extends TemplateGenerator
             break;
          default:
             throw new AssertionError();
+      }
+   }
+
+   @Override
+   public void url(String name, Map<String, String> args)
+   {
+      if (context != null)
+      {
+         MethodInvocation mi = context.resolveMethodInvocation(name, args);
+         out.append(";out.print(");
+         out.append(mi.getClassName());
+         out.append(".");
+         out.append(mi.getMethodName());
+         out.append("(");
+         for (int i = 0;i < mi.getMethodArguments().size();i++)
+         {
+            if (i > 0)
+            {
+               out.append(",");
+            }
+            String methodArg = mi.getMethodArguments().get(i);
+            out.append(methodArg);
+         }
+         out.append("));");
       }
    }
 

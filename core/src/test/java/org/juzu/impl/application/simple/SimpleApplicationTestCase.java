@@ -20,6 +20,7 @@
 package org.juzu.impl.application.simple;
 
 import junit.framework.TestCase;
+import org.juzu.impl.apt.JuzuProcessor;
 import org.juzu.impl.request.ControllerMethod;
 import org.juzu.application.PhaseLiteral;
 import org.juzu.impl.application.ApplicationProcessor;
@@ -67,7 +68,7 @@ public class SimpleApplicationTestCase extends TestCase
 
       //
       Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(in, out);
-      compiler.addAnnotationProcessor(new ApplicationProcessor());
+      compiler.addAnnotationProcessor(new JuzuProcessor());
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
 
       //

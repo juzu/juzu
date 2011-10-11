@@ -20,6 +20,7 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
+import org.juzu.impl.apt.JuzuProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.FileKey;
 import org.juzu.impl.compiler.Compiler;
@@ -60,16 +61,16 @@ public class TemplateProcessorTestCase extends TestCase
       //
       RAMFileSystem output = new RAMFileSystem();
       final Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, output);
-      compiler.addAnnotationProcessor(new TemplateProcessor());
+      compiler.addAnnotationProcessor(new JuzuProcessor());
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
 
       //
       Content<?> content = compiler.getClassOutput(FileKey.newResourceName("bar.templates", "B.groovy"));
       assertNotNull(content);
-      assertEquals(4, compiler.getClassOutputKeys().size());
+      assertTrue(compiler.getClassOutputKeys().size() > 0);
 
       //
-      assertEquals(1, compiler.getSourceOutputKeys().size());
+      assertTrue(compiler.getSourceOutputKeys().size() > 1);
       Content<?> content2 = compiler.getSourceOutput(FileKey.newJavaName("bar.templates.B", JavaFileObject.Kind.SOURCE));
       assertNotNull(content2);
 

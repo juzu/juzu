@@ -20,25 +20,50 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
+import org.juzu.impl.spi.template.MethodInvocation;
+import org.juzu.impl.spi.template.TemplateGeneratorContext;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
 import org.juzu.template.TemplateExecutionException;
+import org.juzu.test.AbstractTestCase;
 import org.juzu.text.WriterPrinter;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractTemplateTestCase extends TestCase
+public abstract class AbstractTemplateTestCase extends AbstractTestCase
 {
 
    public GroovyTemplate template(String text)
    {
       ASTBuilder parser = new ASTBuilder();
-      GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator();
+      GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator(new TemplateGeneratorContext()
+      {
+         public MethodInvocation resolveMethodInvocation(String name, Map<String, String> parameterMap)
+         {
+            if (parameterMap.size() > 0)
+            {
+               throw failure("Unexpected non empty parameter map");
+            }
+            Class clazz = AbstractTemplateTestCase.this.getClass();
+            try
+            {
+               Method m = clazz.getMethod(name);
+               return new MethodInvocation(clazz.getName(), m.getName(), Collections.<String>emptyList());
+            }
+            catch (NoSuchMethodException e)
+            {
+               throw failure(e);
+            }
+         }
+      });
       parser.parse(text).generate(templateWriter);
       return templateWriter.build("template_" + Math.abs(new Random().nextLong()));
    }

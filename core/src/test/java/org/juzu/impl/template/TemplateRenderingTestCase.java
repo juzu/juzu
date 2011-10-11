@@ -215,6 +215,28 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("\"", s);
    }
 
+   public void testNoArgURL() throws Exception
+   {
+      String s = render("@{foo()}");
+      assertEquals("foo_value", s);
+   }
+
+//   public void testSingleArgURL() throws Exception
+//   {
+//      String s = render("@{echo('julien')}");
+//      assertEquals("julien", s);
+//   }
+
+   public static String foo()
+   {
+      return "foo_value";
+   }
+
+   public static String echo(String s)
+   {
+      return s;
+   }
+
 /*
    public void testFooFoo() throws Exception
    {
