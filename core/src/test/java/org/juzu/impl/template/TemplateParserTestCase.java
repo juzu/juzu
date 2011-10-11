@@ -117,11 +117,11 @@ public class TemplateParserTestCase extends TestCase
    public void testPosition() throws IOException
    {
       List<ASTNode.Section> sections = parser.parse("a\nb<%= foo %>d").getSections();
-      assertEquals(new Location(1, 1), sections.get(0).getItems().get(0).getPosition());
-      assertEquals(new Location(2, 1), sections.get(0).getItems().get(1).getPosition());
-      assertEquals(new Location(1, 2), sections.get(0).getItems().get(2).getPosition());
-      assertEquals(new Location(2, 2), sections.get(1).getItems().get(0).getPosition());
-      assertEquals(new Location(12, 2), sections.get(2).getItems().get(0).getPosition());
+      assertEquals(new Location(1, 1), sections.get(0).getItems().get(0).getBeginPosition());
+      assertEquals(new Location(2, 1), sections.get(0).getItems().get(1).getBeginPosition());
+      assertEquals(new Location(1, 2), sections.get(0).getItems().get(2).getBeginPosition());
+      assertEquals(new Location(2, 2), sections.get(1).getItems().get(0).getBeginPosition());
+      assertEquals(new Location(11, 2), sections.get(2).getItems().get(0).getBeginPosition());
 
    }
 }

@@ -91,7 +91,7 @@ public class GroovyTemplateGenerator extends TemplateGenerator
          {
             Map.Entry<Integer, ASTNode.Text> entry = i.next();
             ASTNode.Text text = entry.getValue();
-            Location location = text.getPosition();
+            Location location = text.getBeginPosition();
             builder.append(entry.getKey()).append(':').
                append("new ").append(ASTNode.Text.class.getName()).append("(").
                append("new ").append(Location.class.getName()).append("(").append(location.getCol()).append(',').append(location.getLine()).append("),").

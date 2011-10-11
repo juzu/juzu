@@ -141,7 +141,7 @@ public abstract class GroovyTemplate extends TemplateStub
             int templateLineNumber;
             if (item != null)
             {
-               templateLineNumber = item.getPosition().getLine();
+               templateLineNumber = item.getBeginPosition().getLine();
                if (firstItem == null)
                {
                   firstItem = item;
@@ -166,7 +166,7 @@ public abstract class GroovyTemplate extends TemplateStub
       //
       if (firstItem != null)
       {
-         return new TemplateExecutionException(templateId, firstItem.getPosition(), firstItem.getData(), t);
+         return new TemplateExecutionException(templateId, firstItem.getBeginPosition(), firstItem.getData(), t);
       }
       else
       {

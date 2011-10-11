@@ -24,6 +24,7 @@ import org.juzu.utils.Location;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ASTBuilder
@@ -31,20 +32,19 @@ public class ASTBuilder
 
    public ASTNode.Template parse(CharSequence s)
    {
-      return build(new CharSequenceReader(s));
+      return build(s, new CharSequenceReader(s));
    }
 
-   private ASTNode.Template build(CharSequenceReader reader)
+   private ASTNode.Template build(CharSequence s, CharSequenceReader reader)
    {
 
-      ArrayList<ASTNode.Section> sections = new ArrayList<ASTNode.Section>();
+      //
+      TemplateParser parser = new TemplateParser(new OffsetTokenManager(new OffsetCharStream(reader)));
 
-      TemplateParser simple = new TemplateParser(reader);
-
-      Token token;
+      //
       try
       {
-         token = simple.parse();
+         parser.parse();
       }
       catch (ParseException e)
       {
@@ -53,76 +53,38 @@ public class ASTBuilder
       }
 
       //
-      StringBuilder accumulator = new StringBuilder();
-      Location pos = null;
-
-      //
-      for (;token != null;token = token.next)
+      List<ASTNode.Section> sections = new ArrayList<ASTNode.Section>();
+      int previousOffset = 0;
+      Location previousPosition = new Location(1, 1);
+      for (int i = 0;i < parser.list.size();i++)
       {
-         switch (token.kind)
+         ASTNode.Section section = parser.list.get(i);
+         if (section.getBeginOffset() > previousOffset)
          {
-
-            //
-            case TemplateParserConstants.EOF:
-               break;
-
-            //
-            case TemplateParserConstants.DATA:
-               if (pos == null)
-               {
-                  pos = new Location(token.beginColumn, token.beginLine);
-               }
-               accumulator.append(token.image.charAt(0));
-               break;
-
-            //
-            case TemplateParserConstants.OPEN_EXPR:
-            case TemplateParserConstants.OPEN_CURLY_EXPR:
-            case TemplateParserConstants.OPEN_SCRIPTLET:
-               if (accumulator.length()  > 0)
-               {
-                  sections.add(new ASTNode.Section(SectionType.STRING, accumulator.toString(), pos));
-                  accumulator.setLength(0);
-               }
-               pos = new Location(token.beginColumn, token.beginLine);
-               break;
-
-            //
-            case TemplateParserConstants.EXPR_DATA:
-            case TemplateParserConstants.CURLY_EXPR_DATA:
-            case TemplateParserConstants.SCRIPTLET_DATA:
-               accumulator.append(token.image.charAt(0));
-               break;
-
-            //
-            case TemplateParserConstants.CLOSE_EXPR:
-            case TemplateParserConstants.CLOSE_CURLY_EXPR:
-               sections.add(new ASTNode.Section(SectionType.EXPR, accumulator.toString(), pos));
-               accumulator.setLength(0);
-               pos = null;
-               break;
-
-            //
-            case TemplateParserConstants.CLOSE_SCRIPTLET:
-               sections.add(new ASTNode.Section(SectionType.SCRIPTLET, accumulator.toString(), pos));
-               accumulator.setLength(0);
-               pos = null;
-               break;
-
-            //
-            default:
-               throw new AssertionError("Unexpected kind " + token.kind);
+            sections.add(new ASTNode.Section(
+               SectionType.STRING,
+               previousOffset,
+               section.getBeginOffset(),
+               s.subSequence(previousOffset, section.getBeginOffset()).toString(),
+               previousPosition,
+               section.getEndPosition()));
          }
+         sections.add(section);
+         previousOffset = section.getEndOffset();
+         previousPosition = section.getEndPosition();
+      }
+      if (previousOffset < s.length())
+      {
+         sections.add(new ASTNode.Section(
+            SectionType.STRING,
+            previousOffset,
+            s.length(),
+            s.subSequence(previousOffset, s.length()).toString(),
+            previousPosition,
+            new Location(parser.token.endColumn, parser.token.endLine)));
       }
 
       //
-      if (accumulator.length()  > 0)
-      {
-         sections.add(new ASTNode.Section(SectionType.STRING, accumulator.toString(), pos));
-         accumulator.setLength(0);
-      }
-
-     //
       return new ASTNode.Template(Collections.unmodifiableList(sections));
    }
 }

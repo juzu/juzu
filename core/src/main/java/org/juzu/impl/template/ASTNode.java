@@ -31,20 +31,20 @@ public abstract class ASTNode
 {
 
    /** . */
-   private final Location pos;
+   private final Location beginPosition;
 
-   protected ASTNode(Location pos)
+   protected ASTNode(Location beginPosition)
    {
-      if (pos == null)
+      if (beginPosition == null)
       {
          throw new NullPointerException("No null position accepted");
       }
-      this.pos = pos;
+      this.beginPosition = beginPosition;
    }
 
-   public Location getPosition()
+   public Location getBeginPosition()
    {
-      return pos;
+      return beginPosition;
    }
 
    public static class Template extends ASTNode
@@ -71,7 +71,7 @@ public abstract class ASTNode
          GeneratorContext ctx = new GeneratorContext(generator);
          for (ASTNode.Section section : sections)
          {
-            ctx.begin(section.getType(), section.getItems().get(0).getPosition());
+            ctx.begin(section.getType(), section.getItems().get(0).getBeginPosition());
             for (ASTNode item : section.getItems())
             {
                ctx.append(item);
@@ -241,11 +241,11 @@ public abstract class ASTNode
       @Override
       public String toString()
       {
-         return getClass().getSimpleName() +  "[pos=" + getPosition() + ",data=" + data + "]";
+         return getClass().getSimpleName() +  "[pos=" + getBeginPosition() + ",data=" + data + "]";
       }
    }
 
-   public static class Section
+   public static class Section extends ASTNode
    {
 
       /** . */
@@ -254,18 +254,25 @@ public abstract class ASTNode
       /** . */
       private final List<ASTNode> items;
 
-      Section(SectionType type, String text)
+      /** . */
+      private final int beginOffset;
+
+      /** . */
+      private final int endOffset;
+
+      /** . */
+      private Location endPosition;
+
+      public Section(SectionType type, String text)
       {
-         this(type, text, 0, 0);
+         this(type, 0, text.length(), text, new Location(1, 1), new Location(1, 1));
       }
 
-      Section(SectionType type, String text, Location pos)
+      public Section(SectionType type, int beginOffset, int endOffset,  String text, Location beginPosition, Location endPosition)
       {
-         this(type, text, pos.getCol(), pos.getLine());
-      }
+         super(beginPosition);
 
-      Section(SectionType type, String text, int colNumber, int lineNumber)
-      {
+         //
          if (type == null)
          {
             throw new NullPointerException();
@@ -277,6 +284,8 @@ public abstract class ASTNode
 
          // Now we process the line breaks
          ArrayList<ASTNode> sections = new ArrayList<ASTNode>();
+         int lineNumber = beginPosition.getLine();
+         int colNumber = beginPosition.getCol();
 
          //
          int from = 0;
@@ -307,8 +316,26 @@ public abstract class ASTNode
          }
 
          //
+         this.beginOffset = beginOffset;
+         this.endOffset = endOffset;
          this.type = type;
+         this.endPosition = endPosition;
          this.items = Collections.unmodifiableList(sections);
+      }
+
+      public int getBeginOffset()
+      {
+         return beginOffset;
+      }
+
+      public int getEndOffset()
+      {
+         return endOffset;
+      }
+
+      public Location getEndPosition()
+      {
+         return endPosition;
       }
 
       public SectionType getType()
@@ -354,7 +381,7 @@ public abstract class ASTNode
       @Override
       public String toString()
       {
-         return getClass().getSimpleName() + "[position=" + getPosition() + "]";
+         return getClass().getSimpleName() + "[position=" + getBeginPosition() + "]";
       }
 
       @Override

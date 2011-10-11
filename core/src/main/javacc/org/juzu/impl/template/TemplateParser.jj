@@ -1,14 +1,23 @@
+options
+{
+   TOKEN_EXTENDS = "OffsetToken";
+}
+
 PARSER_BEGIN(TemplateParser)
 
 package org.juzu.impl.template;
 
 import java.util.ArrayList;
+import org.juzu.utils.Location;
 
 /** Simple brace matcher. */
 public class TemplateParser {
 
   /** . */
   private Token head;
+
+  /** . */
+  public ArrayList<ASTNode.Section> list = new ArrayList<ASTNode.Section>();
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException {
@@ -49,15 +58,59 @@ PARSER_END(TemplateParser)
 Token parse() :
 {
    head = token;
+   Token t;
+   StringBuilder acc = new StringBuilder();
 }
 {
   (
-     ( <OPEN_SCRIPTLET> ( <SCRIPTLET_DATA> ) * <CLOSE_SCRIPTLET> ) |
-     ( <OPEN_EXPR> ( <EXPR_DATA> ) * <CLOSE_EXPR> ) |
-     ( <OPEN_CURLY_EXPR> ( <CURLY_EXPR_DATA> ) * <CLOSE_CURLY_EXPR> ) |
+     parseScriptlet() |
+     parseExpression() |
+     parseCurlyExpression() |
      <DATA>
   ) *
   {
      return head;
   }
+}
+
+void parseScriptlet() : { Token o,t,p; StringBuilder acc = new StringBuilder(); }
+{
+   o = <OPEN_SCRIPTLET> ( t = <SCRIPTLET_DATA> { acc.append(t.image.charAt(0)); } ) * p = <CLOSE_SCRIPTLET>
+   {
+      list.add(new ASTNode.Section(
+         SectionType.SCRIPTLET,
+         o.beginOffset,
+         p.endOffset,
+         acc.toString(),
+         new Location(o.beginColumn, o.beginLine),
+         new Location(p.endColumn, p.endLine)));
+   }
+}
+
+void parseExpression() : { Token o,t,p; StringBuilder acc = new StringBuilder(); }
+{
+   o = <OPEN_EXPR> ( t = <EXPR_DATA> { acc.append(t.image.charAt(0)); } ) * p = <CLOSE_EXPR>
+   {
+      list.add(new ASTNode.Section(
+         SectionType.EXPR,
+         o.beginOffset,
+         p.endOffset,
+         acc.toString(),
+         new Location(o.beginColumn, o.beginLine),
+         new Location(p.endColumn, p.endLine)));
+   }
+}
+
+void parseCurlyExpression() : { Token o,t,p; StringBuilder acc = new StringBuilder(); }
+{
+   o = <OPEN_CURLY_EXPR> ( t = <CURLY_EXPR_DATA> { acc.append(t.image.charAt(0)); } ) * p = <CLOSE_CURLY_EXPR>
+   {
+      list.add(new ASTNode.Section(
+         SectionType.EXPR,
+         o.beginOffset,
+         p.endOffset,
+         acc.toString(),
+         new Location(o.beginColumn, o.beginLine),
+         new Location(p.endColumn, p.endLine)));
+   }
 }
