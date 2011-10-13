@@ -97,6 +97,23 @@ public class TemplateParserTestCase extends TestCase
       assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Collections.<String, String>emptyMap())), parser.parse("@{a()}").getSections());
       assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a=b)}").getSections());
       assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b,c=d)}").getSections());
+
+      //
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Collections.<String, String>emptyMap())), parser.parse("@{a( )}").getSections());
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Collections.singletonMap("a", "b"))), parser.parse("@{a( a=b)}").getSections());
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a =b)}").getSections());
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a= b)}").getSections());
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a=b )}").getSections());
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b ,c=d)}").getSections());
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b, c=d)}").getSections());
+
+      //
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Builder.map("a", "'b '").build())), parser.parse("@{a(a='b ')}").getSections());
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Builder.map("a", "'b '").build())), parser.parse("@{a(a= 'b ' )}").getSections());
+
+      //
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Builder.map("a", "\"b \"").build())), parser.parse("@{a(a=\"b \")}").getSections());
+      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", Builder.map("a", "\"b \"").build())), parser.parse("@{a(a= \"b \" )}").getSections());
    }
 
    public void testSimpleScript() throws IOException

@@ -63,6 +63,11 @@ PARSER_END(TemplateParser)
 < CLOSE_METHOD : ")" > : IN_URL
 }
 
+<IN_URL_ARGS> SKIP :
+{
+" " | "\t"
+}
+
 void parse() : { }
 {
   (
