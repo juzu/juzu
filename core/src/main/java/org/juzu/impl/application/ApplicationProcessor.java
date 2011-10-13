@@ -20,6 +20,7 @@
 package org.juzu.impl.application;
 
 import org.juzu.Action;
+import org.juzu.AmbiguousResolutionException;
 import org.juzu.Application;
 import org.juzu.Binding;
 import org.juzu.Render;
@@ -118,7 +119,7 @@ public class ApplicationProcessor extends ProcessorPlugin
          this.controllers = new ArrayList<ControllerMetaData>();
       }
 
-      public MethodMetaData resolve(String name, Set<String> parameterNames)
+      public MethodMetaData resolve(String name, Set<String> parameterNames) throws AmbiguousResolutionException
       {
          TreeSet<MethodMetaData> set = new TreeSet<MethodMetaData>(
             new Comparator<MethodMetaData>()
@@ -139,7 +140,18 @@ public class ApplicationProcessor extends ProcessorPlugin
                }
             }
          }
-         return set.iterator().next();
+         if (set.isEmpty())
+         {
+            return null;
+         }
+         else if (set.size() == 1)
+         {
+            return set.iterator().next();
+         }
+         else
+         {
+            throw new AmbiguousResolutionException();
+         }
       }
 
       public String getPackageName()

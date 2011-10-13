@@ -51,6 +51,6 @@ public class CompilationError
    @Override
    public String toString()
    {
-      return "CompilationError[source=" + source +  ",message=" + message + "location=" + location + "]";
+      return "CompilationError[source=" + source +  ",message=" + message + ",location=" + location + "]";
    }
 }

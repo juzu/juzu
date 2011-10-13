@@ -1,4 +1,4 @@
-package template_url;
+package template.url.invalid_method_args;
 
 import org.juzu.Render;
 import org.juzu.Resource;
@@ -13,8 +13,5 @@ public class A
 
    @Render
    public void foo() { }
-
-   @Render
-   public void bar(String s) { }
 
 }

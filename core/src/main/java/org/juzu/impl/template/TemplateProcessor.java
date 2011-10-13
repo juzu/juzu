@@ -19,8 +19,10 @@
 
 package org.juzu.impl.template;
 
+import org.juzu.AmbiguousResolutionException;
 import org.juzu.Resource;
 import org.juzu.impl.application.ApplicationProcessor;
+import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ProcessorPlugin;
 import org.juzu.impl.spi.template.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
@@ -94,7 +96,7 @@ public class TemplateProcessor extends ProcessorPlugin
       ASTBuilder parser = new ASTBuilder();
 
       //
-      for (Element elt : getElementsAnnotatedWith(Resource.class))
+      for (final Element elt : getElementsAnnotatedWith(Resource.class))
       {
          PackageElement packageElt = getPackageOf(elt);
          Resource ref = elt.getAnnotation(Resource.class);
@@ -138,14 +140,29 @@ public class TemplateProcessor extends ProcessorPlugin
                {
                   public MethodInvocation resolveMethodInvocation(String name, Map<String, String> parameterMap)
                   {
-                     ApplicationProcessor.MethodMetaData methodMD = application.resolve(name, parameterMap.keySet());
-                     List<String> args = new ArrayList<String>();
-                     for (VariableElement ve : methodMD.getElement().getParameters())
+                     ApplicationProcessor.MethodMetaData methodMD = null;
+                     try
                      {
-                        String value = parameterMap.get(ve.getSimpleName().toString());
-                        args.add(value);
+                        methodMD = application.resolve(name, parameterMap.keySet());
                      }
-                     return new MethodInvocation(application.getClassName(), methodMD.getName() + "URL", args);
+                     catch (AmbiguousResolutionException e)
+                     {
+                        throw new CompilationException(elt, "Could not resolve method arguments " + name + parameterMap);
+                     }
+                     if (methodMD != null)
+                     {
+                        List<String> args = new ArrayList<String>();
+                        for (VariableElement ve : methodMD.getElement().getParameters())
+                        {
+                           String value = parameterMap.get(ve.getSimpleName().toString());
+                           args.add(value);
+                        }
+                        return new MethodInvocation(application.getClassName(), methodMD.getName() + "URL", args);
+                     }
+                     else
+                     {
+                        throw new CompilationException(elt, "Could not resolve method name " + name + parameterMap);
+                     }
                   }
                });
                parser.parse(content).generate(generator);

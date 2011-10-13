@@ -1,3 +1,3 @@
 @Application
-package template_url;
+package template.url.invalid_method_args;
 import org.juzu.Application;

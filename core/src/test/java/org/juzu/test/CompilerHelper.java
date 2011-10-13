@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class CompilerHelper<S>
@@ -31,6 +32,22 @@ public class CompilerHelper<S>
       {
          this.in = in;
          this.out = new RAMFileSystem();
+      }
+      catch (IOException e)
+      {
+         throw AbstractTestCase.failure(e);
+      }
+   }
+
+   public List<CompilationError> failCompile()
+   {
+      try
+      {
+         Compiler<S, RAMPath> compiler = new org.juzu.impl.compiler.Compiler<S, RAMPath>(in, out);
+         compiler.addAnnotationProcessor(new JuzuProcessor());
+         List<CompilationError> errors = compiler.compile();
+         AbstractTestCase.assertTrue("Was expecting compilation to fail", errors.size() > 0);
+         return errors;
       }
       catch (IOException e)
       {
