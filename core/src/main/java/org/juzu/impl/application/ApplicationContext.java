@@ -83,18 +83,18 @@ public class ApplicationContext
       {
          Thread.currentThread().setContextClassLoader(context.getClassLoader());
          current.set(context);
-         ScopeController.start(context.getPhase());
+         ScopeController.begin(context);
          return doInvoke(context);
       }
       finally
       {
          current.set(null);
-         ScopeController.stop();
+         ScopeController.end();
          Thread.currentThread().setContextClassLoader(oldCL);
       }
    }
 
-   private Object doInvoke(RequestContext context)
+   private Object doInvoke(RequestContext<?> context)
    {
       ControllerMethod method = controllerResolver.resolve(context.getPhase(), context.getParameters());
 

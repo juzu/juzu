@@ -5,15 +5,19 @@ import org.juzu.application.Phase;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestContext
+public abstract class RequestContext<B extends RequestBridge>
 {
 
    /** The request classloader. */
    protected final ClassLoader classLoader;
 
-   public RequestContext(ClassLoader classLoader)
+   /** The request bridge. */
+   protected final B bridge;
+
+   public RequestContext(ClassLoader classLoader, B bridge)
    {
       this.classLoader = classLoader;
+      this.bridge = bridge;
    }
 
    public final ClassLoader getClassLoader()
@@ -21,12 +25,13 @@ public abstract class RequestContext
       return classLoader;
    }
 
+   public final Map<String, String[]> getParameters()
+   {
+      return bridge.getParameters();
+   }
+
    public abstract Phase getPhase();
 
-   /**
-    * Returns the request parameters.
-    *
-    * @return the request parameters
-    */
-   public abstract Map<String, String[]> getParameters();
+   public abstract Map<Object, Object> getContext(Scope scope);
+
 }

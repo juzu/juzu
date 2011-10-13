@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RenderContext extends RequestContext
+public final class RenderContext extends RequestContext<RenderBridge>
 {
 
-   public RenderContext(ClassLoader classLoader)
+   public RenderContext(ClassLoader classLoader, RenderBridge bridge)
    {
-      super(classLoader);
+      super(classLoader, bridge);
    }
 
    @Override
@@ -22,11 +22,9 @@ public abstract class RenderContext extends RequestContext
       return Phase.RENDER;
    }
 
-   protected abstract URLBuilder createURLBuilder(Phase phase);
-
-   public final URLBuilder createURLBuilder(ControllerMethod method)
+   public URLBuilder createURLBuilder(ControllerMethod method)
    {
-      URLBuilder builder = createURLBuilder(method.getPhase());
+      URLBuilder builder = bridge.createURLBuilder(method.getPhase());
 
       // Fill in bound parameters
       List<ControllerParameter> parameters = method.getAnnotationParameters();
@@ -41,7 +39,7 @@ public abstract class RenderContext extends RequestContext
       return builder;
    }
 
-   public final URLBuilder createURLBuilder(ControllerMethod method, Object arg)
+   public URLBuilder createURLBuilder(ControllerMethod method, Object arg)
    {
       URLBuilder builder = createURLBuilder(method);
 
@@ -77,5 +75,29 @@ public abstract class RenderContext extends RequestContext
     *
     * @return the printer
     */
-   public abstract Printer getPrinter();
+   public Printer getPrinter()
+   {
+      return bridge.getPrinter();
+   }
+
+   @Override
+   public Map<Object, Object> getContext(Scope scope)
+   {
+      switch (scope)
+      {
+         case FLASH:
+            return bridge.getFlashContext();
+         case RENDER:
+         case REQUEST:
+            return bridge.getRequestContext();
+         case ACTION:
+            return null;
+         case SESSION:
+            return bridge.getSessionContext();
+         case IDENTITY:
+            return bridge.getIdentityContext();
+         default:
+            throw new AssertionError();
+      }
+   }
 }

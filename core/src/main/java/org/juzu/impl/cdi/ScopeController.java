@@ -2,14 +2,15 @@ package org.juzu.impl.cdi;
 
 import org.juzu.ActionScoped;
 import org.juzu.RenderScoped;
-import org.juzu.RequestScoped;
-import org.juzu.application.Phase;
+import org.juzu.impl.request.RequestContext;
+import org.juzu.impl.request.Scope;
 
 import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -23,43 +24,46 @@ public class ScopeController
    static final ScopeController INSTANCE = new ScopeController();
 
    /** . */
-   final ThreadLocal<Map<Contextual<?>, Object>> current = new ThreadLocal<Map<Contextual<?>, Object>>();
+   final ContextImpl requestContext = new ContextImpl(this, Scope.REQUEST, RequestScoped.class);
 
    /** . */
-   final ThreadLocal<Phase> currentPhase = new ThreadLocal<Phase>();
+   final ContextImpl actionContext = new ContextImpl(this, Scope.ACTION, ActionScoped.class);
 
    /** . */
-   final ContextImpl requestContext = new ContextImpl(this, null, RequestScoped.class);
+   final ContextImpl renderContext = new ContextImpl(this, Scope.RENDER, RenderScoped.class);
 
    /** . */
-   final ContextImpl actionContext = new ContextImpl(this, Phase.ACTION, ActionScoped.class);
+   final ContextImpl sessionContext = new ContextImpl(this, Scope.SESSION, SessionScoped.class);
 
    /** . */
-   final ContextImpl renderContext = new ContextImpl(this, Phase.RENDER, RenderScoped.class);
+   final ThreadLocal<RequestContext> currentContext = new ThreadLocal<RequestContext>();
 
-   public static void start(Phase phase) throws IllegalStateException
+   public static void begin(RequestContext context) throws IllegalStateException
    {
-      if (phase == null)
+      if (context == null)
       {
          throw new NullPointerException();
       }
-      if (INSTANCE.current.get() != null)
+      if (INSTANCE.currentContext.get() != null)
       {
          throw new IllegalStateException("Already started");
       }
-      INSTANCE.current.set(EMPTY_MAP);
-      INSTANCE.currentPhase.set(phase);
+      INSTANCE.currentContext.set(context);
    }
 
-   public static void stop()
+   public static void end()
    {
-      INSTANCE.current.set(null);
-      INSTANCE.currentPhase.set(null);
+      INSTANCE.currentContext.set(null);
    }
 
-   public <T> T get(Phase phase, Contextual<T> contextual, CreationalContext<T> creationalContext)
+   public <T> T get(Scope scope, Contextual<T> contextual, CreationalContext<T> creationalContext)
    {
-      Map<Contextual<?>, Object> map = current.get();
+      RequestContext ctx = currentContext.get();
+      if (ctx == null)
+      {
+         throw new ContextNotActiveException();
+      }
+      Map<Object, Object> map = ctx.getContext(scope);
       if (map == null)
       {
          throw new ContextNotActiveException();
@@ -70,18 +74,19 @@ public class ScopeController
          if (creationalContext != null)
          {
             o = contextual.create(creationalContext);
-            if (map == EMPTY_MAP)
-            {
-               current.set(map = new HashMap<Contextual<?>, Object>());
-            }
             map.put(contextual, o);
          }
       }
       return (T)o;
    }
 
-   public boolean isActive(Phase phase)
+   public boolean isActive(Scope scope)
    {
-      return phase == null || currentPhase.get() == phase;
+      RequestContext ctx = currentContext.get();
+      if (ctx == null)
+      {
+         throw new ContextNotActiveException();
+      }
+      return ctx.getContext(scope) != null;
    }
 }

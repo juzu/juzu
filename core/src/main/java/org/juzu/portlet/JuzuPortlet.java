@@ -17,8 +17,6 @@ import org.juzu.impl.spi.fs.war.WarFileSystem;
 import org.juzu.impl.utils.DevClassLoader;
 import org.juzu.impl.request.ActionContext;
 import org.juzu.impl.request.RenderContext;
-import org.juzu.text.Printer;
-import org.juzu.text.WriterPrinter;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.inject.Inject;
@@ -203,7 +201,7 @@ public class JuzuPortlet implements Portlet
 
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
    {
-      ActionContext actionContext = new PortletActionContext(classLoader, request, response);
+      ActionContext actionContext = new ActionContext(classLoader, new PortletActionBridge(request, response));
 
       //
       applicationContext.invoke(actionContext);
@@ -216,11 +214,7 @@ public class JuzuPortlet implements Portlet
       //
       if (errors.isEmpty())
       {
-         //
-         Printer printer = new WriterPrinter(response.getWriter());
-
-         //
-         RenderContext renderContext = new PortletRenderContext(classLoader, request, response);
+         RenderContext renderContext = new RenderContext(classLoader, new PortletRenderBridge(request, response));
 
          //
          applicationContext.invoke(renderContext);

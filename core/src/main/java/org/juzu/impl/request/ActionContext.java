@@ -3,17 +3,16 @@ package org.juzu.impl.request;
 import org.juzu.Response;
 import org.juzu.application.Phase;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ActionContext extends RequestContext
+public final class ActionContext extends RequestContext<ActionBridge>
 {
 
-   public ActionContext(ClassLoader classLoader)
+   public ActionContext(ClassLoader classLoader, ActionBridge bridge)
    {
-      super(classLoader);
+      super(classLoader, bridge);
    }
 
    @Override
@@ -68,5 +67,29 @@ public abstract class ActionContext extends RequestContext
       return response;
    }
 
-   public abstract Response createResponse();
+   @Override
+   public Map<Object, Object> getContext(Scope scope)
+   {
+      switch (scope)
+      {
+         case FLASH:
+            return bridge.getFlashContext();
+         case ACTION:
+         case REQUEST:
+            return bridge.getRequestContext();
+         case RENDER:
+            return null;
+         case SESSION:
+            return bridge.getSessionContext();
+         case IDENTITY:
+            return bridge.getIdentityContext();
+         default:
+            throw new AssertionError();
+      }
+   }
+
+   public Response createResponse()
+   {
+      return bridge.createResponse();
+   }
 }

@@ -2,3 +2,6 @@
 <a href="@{render()}">Render</a>
 <a href="@{foo()}">Render</a>
 <a href="@{foo(name='bar')}">Render</a>
+
+Counter : ${counter}
+<a href="@{increment()}">Increment</a>
