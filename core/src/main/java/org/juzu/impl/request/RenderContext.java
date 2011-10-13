@@ -4,7 +4,6 @@ import org.juzu.URLBuilder;
 import org.juzu.application.Phase;
 import org.juzu.text.Printer;
 
-import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -26,14 +25,8 @@ public final class RenderContext extends RequestContext<RenderBridge>
    {
       URLBuilder builder = bridge.createURLBuilder(method.getPhase());
 
-      // Fill in bound parameters
-      List<ControllerParameter> parameters = method.getAnnotationParameters();
-      int size = parameters.size();
-      for (int i = 0;i < size;i++)
-      {
-         ControllerParameter parameter = parameters.get(i);
-         builder.setParameter(parameter.getName(), parameter.getValue());
-      }
+      //
+      builder.setParameter("op", method.getMethodName());
 
       //
       return builder;

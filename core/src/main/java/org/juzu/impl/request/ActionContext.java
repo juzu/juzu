@@ -23,12 +23,7 @@ public final class ActionContext extends RequestContext<ActionBridge>
 
    public void map(Response response, ControllerMethod method)
    {
-      List<ControllerParameter> annotationParameters = method.getAnnotationParameters();
-      for (int i = 0;i < annotationParameters.size();i++)
-      {
-         ControllerParameter annotationParameter = annotationParameters.get(i);
-         response.setParameter(annotationParameter.getName(), annotationParameter.getValue());
-      }
+      response.setParameter("op", method.getMethodName());
    }
 
    public Response createResponse(ControllerMethod method)

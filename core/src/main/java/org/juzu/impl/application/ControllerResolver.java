@@ -69,18 +69,30 @@ public class ControllerResolver
     * @param phase the expected phase
     * @param parameters the parameters
     * @return the render descriptor or null if nothing could be resolved
+    * @throws AmbiguousResolutionException when more than one controller method is resolved
     */
    public ControllerMethod resolve(Phase phase, Map<String, String[]> parameters) throws AmbiguousResolutionException
    {
+      String methodName;
+      String[] op = parameters.get("op");
+      if (op != null && op.length > 0)
+      {
+         methodName = op[0];
+      }
+      else
+      {
+         methodName = "index";
+      }
+
+      //
       TreeMap<Integer, List<Match>> matches = new TreeMap<Integer, List<Match>>();
       out:
       for (ControllerMethod method : methods)
       {
-         if (method.getPhase() == phase)
+         if (method.getPhase() == phase && methodName.equals(method.getMethodName()))
          {
             int score = 0;
             List<List<ControllerParameter>> listList = new ArrayList<List<ControllerParameter>>(2);
-            listList.add(method.getAnnotationParameters());
             listList.add(method.getArgumentParameters());
             for (List<ControllerParameter> list : listList)
             {

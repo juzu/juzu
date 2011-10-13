@@ -1,9 +1,7 @@
 package org.sample.controllers;
 
 import org.juzu.Action;
-import org.juzu.Binding;
 import org.juzu.Render;
-import org.juzu.Response;
 import org.juzu.Resource;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.template.Template;
@@ -44,7 +42,7 @@ public class Sample
    }
 
    @Render
-   public void render() throws IOException
+   public void index() throws IOException
    {
       // A generated template literal for MyTemplate
       org.sample.templates.MyTemplate literal;
@@ -63,10 +61,10 @@ public class Sample
       template.render(printer, data);
    }
 
-   @Action(parameters = @Binding(name = "op", value = "increment"))
+   @Action
    public void increment() throws IOException
    {
       counter.increment();
-      org.sample.SampleApplication.render();
+      org.sample.SampleApplication.index();
    }
 }

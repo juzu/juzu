@@ -31,28 +31,23 @@ public class ControllerResolverTestCase extends AbstractTestCase
       ControllerResolver resolver = new ControllerResolver(desc);
 
       //
-      ControllerMethod cm1 = resolver.resolve(Phase.RENDER, Collections.<String, String[]>emptyMap());
+      ControllerMethod cm1 = resolver.resolve(Phase.RENDER, Collections.<String, String[]>singletonMap("op", new String[]{"noArg"}));
       assertNotNull(cm1);
       assertEquals("noArg", cm1.getMethodName());
 
       //
-      ControllerMethod cm2 = resolver.resolve(Phase.RENDER, Collections.singletonMap("foo", new String[]{"bar"}));
+      ControllerMethod cm2 = resolver.resolve(Phase.RENDER, Builder.map("op", new String[]{"fooArg"}).put("foo", new String[]{"bar"}).build());
       assertNotNull(cm2);
       assertEquals("fooArg", cm2.getMethodName());
 
       //
-      ControllerMethod cm3 = resolver.resolve(Phase.RENDER, Collections.singletonMap("foo", new String[]{"foo_value"}));
-      assertNotNull(cm3);
-      assertEquals("fooBinding", cm3.getMethodName());
-
-      //
-      try
-      {
-         resolver.resolve(Phase.RENDER, Builder.map("foo", new String[]{"foo_value"}).put("bar", new String[]{"bar_value"}).build());
-         fail();
-      }
-      catch (AmbiguousResolutionException ignore)
-      {
-      }
+//      try
+//      {
+//         resolver.resolve(Phase.RENDER, Builder.map("foo", new String[]{"foo_value"}).put("bar", new String[]{"bar_value"}).build());
+//         fail();
+//      }
+//      catch (AmbiguousResolutionException ignore)
+//      {
+//      }
    }
 }

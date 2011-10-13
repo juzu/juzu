@@ -41,7 +41,6 @@ public class RenderMethodTestCase extends TestCase
       ControllerMethod cm = l.getDescriptor();
       assertEquals("noArg", cm.getMethodName());
       assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArgumentParameters());
-      assertEquals(Collections.<ControllerParameter>emptyList(), cm.getAnnotationParameters());
    }
 
    public void testStringArg() throws Exception
@@ -53,30 +52,5 @@ public class RenderMethodTestCase extends TestCase
       ControllerMethod cm = l.getDescriptor();
       assertEquals("oneArg", cm.getMethodName());
       assertEquals(Arrays.asList(new ControllerParameter("foo")), cm.getArgumentParameters());
-      assertEquals(Collections.<ControllerParameter>emptyList(), cm.getAnnotationParameters());
-   }
-
-   public void testBinding() throws Exception
-   {
-      Field f = a_Class.getDeclaredField("binding");
-      PhaseLiteral l = (PhaseLiteral)f.get(null);
-
-      //
-      ControllerMethod cm = l.getDescriptor();
-      assertEquals("binding", cm.getMethodName());
-      assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArgumentParameters());
-      assertEquals(Arrays.asList(new ControllerParameter("foo", "foo_value")), cm.getAnnotationParameters());
-   }
-
-   public void testBindingOneArg() throws Exception
-   {
-      Field f = a_Class.getDeclaredField("bindingOneArg");
-      PhaseLiteral l = (PhaseLiteral)f.get(null);
-
-      //
-      ControllerMethod cm = l.getDescriptor();
-      assertEquals("bindingOneArg", cm.getMethodName());
-      assertEquals(Arrays.asList(new ControllerParameter("bar")), cm.getArgumentParameters());
-      assertEquals(Arrays.asList(new ControllerParameter("foo", "foo_value")), cm.getAnnotationParameters());
    }
 }

@@ -33,12 +33,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Render
 {
-
-   /**
-    * Returns the parameter bindings.
-    *
-    * @return the parameter bindings
-    */
-   Binding[] parameters() default {};
-
 }

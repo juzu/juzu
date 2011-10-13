@@ -23,9 +23,7 @@ import org.juzu.application.Phase;
 import org.juzu.impl.utils.Tools;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A controller method.
@@ -45,15 +43,12 @@ public final class ControllerMethod
    private final Method method;
 
    /** . */
-   private final List<ControllerParameter> annotationParameters;
-
-   /** . */
    private final List<ControllerParameter> argumentParameters;
 
    public ControllerMethod(
-      Phase phase, Class<?> type,
+      Phase phase,
+      Class<?> type,
       Method method,
-      List<ControllerParameter> boundParameters,
       List<ControllerParameter> argumentParameters)
    {
       if (type == null)
@@ -69,7 +64,6 @@ public final class ControllerMethod
       this.phase = phase;
       this.type = type;
       this.method = method;
-      this.annotationParameters = Tools.safeUnmodifiableList(boundParameters);
       this.argumentParameters = Tools.safeUnmodifiableList(argumentParameters);
    }
 
@@ -91,11 +85,6 @@ public final class ControllerMethod
    public String getMethodName()
    {
       return method.getName();
-   }
-
-   public List<ControllerParameter> getAnnotationParameters()
-   {
-      return annotationParameters;
    }
 
    public List<ControllerParameter> getArgumentParameters()
