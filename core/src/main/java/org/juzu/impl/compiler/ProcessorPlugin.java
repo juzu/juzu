@@ -1,4 +1,4 @@
-package org.juzu.impl.apt;
+package org.juzu.impl.compiler;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
@@ -25,13 +25,12 @@ public class ProcessorPlugin
    {
    }
 
-   public void process()
+   public void process() throws CompilationException
    {
    }
 
-   public void over()
+   public void over() throws CompilationException
    {
-
    }
 
    public void destroy()

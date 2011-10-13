@@ -20,10 +20,9 @@
 package org.juzu.impl.application.simple;
 
 import junit.framework.TestCase;
-import org.juzu.impl.apt.JuzuProcessor;
+import org.juzu.impl.application.JuzuProcessor;
 import org.juzu.impl.request.ControllerMethod;
 import org.juzu.application.PhaseLiteral;
-import org.juzu.impl.application.ApplicationProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.fs.ram.RAMDir;

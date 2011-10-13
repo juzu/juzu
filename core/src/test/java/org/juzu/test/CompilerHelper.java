@@ -1,6 +1,6 @@
 package org.juzu.test;
 
-import org.juzu.impl.apt.JuzuProcessor;
+import org.juzu.impl.application.JuzuProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.fs.ReadFileSystem;

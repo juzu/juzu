@@ -19,15 +19,13 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.Application;
 import org.juzu.Resource;
 import org.juzu.impl.application.ApplicationProcessor;
-import org.juzu.impl.apt.ProcessorPlugin;
+import org.juzu.impl.compiler.ProcessorPlugin;
 import org.juzu.impl.spi.template.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.spi.template.TemplateGeneratorContext;
 import org.juzu.impl.spi.template.TemplateProvider;
-import org.juzu.impl.utils.PackageMap;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;

@@ -154,34 +154,34 @@ public class Compiler<I, O>
          {
             if (diagnostic.getKind() == Diagnostic.Kind.ERROR)
             {
-               Location location = new Location((int)diagnostic.getColumnNumber(), (int)diagnostic.getLineNumber());
+               int columnNumber = (int)diagnostic.getColumnNumber();
+               int lineNumber = (int)diagnostic.getLineNumber();
+               Location location = (columnNumber > 0 && lineNumber > 0) ? new Location(columnNumber, lineNumber) : null;
                String message = diagnostic.getMessage(null);
-               JavaFileObject obj = diagnostic.getSource();
 
                //
+               JavaFileObject obj = diagnostic.getSource();
+               String source = null;
                File resolvedFile = null;
-               if (obj instanceof VirtualJavaFileObject.FileSystem)
+               if (obj != null)
                {
-                  VirtualJavaFileObject.FileSystem foo = (VirtualJavaFileObject.FileSystem)obj;
-                  try
+                  source = obj.getName().toString();
+                  if (obj instanceof VirtualJavaFileObject.FileSystem)
                   {
-                     resolvedFile = foo.getFile();
-                  }
-                  catch (Exception e)
-                  {
+                     VirtualJavaFileObject.FileSystem foo = (VirtualJavaFileObject.FileSystem)obj;
+                     try
+                     {
+                        resolvedFile = foo.getFile();
+                     }
+                     catch (Exception e)
+                     {
+                     }
+
                   }
                }
 
                //
-               CompilationError error = new CompilationError(
-                  obj.getName().toString(),
-                  resolvedFile,
-                  location,
-                  message
-               );
-
-               //
-               errors.add(error);
+               errors.add(new CompilationError(source, resolvedFile, location, message));
             }
          }
       };

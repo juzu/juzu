@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -205,5 +206,60 @@ public class CompilationTestCase extends TestCase
       //
       Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
       assertEquals(1, compiler.compile().size());
+   }
+
+   public void testAnnotationException() throws Exception
+   {
+      RAMFileSystem ramFS = new RAMFileSystem();
+      RAMDir root = ramFS.getRoot();
+      root.addFile("A.java").update("@Deprecated public class A { }");
+
+      //
+      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      ProcessorPlugin plugin = new ProcessorPlugin()
+      {
+         @Override
+         public void process() throws CompilationException
+         {
+            Set<? extends Element> elements = getElementsAnnotatedWith(Deprecated.class);
+            if (elements.size() == 1)
+            {
+               Element elt = elements.iterator().next();
+               throw new CompilationException(elt, "the_message");
+            }
+         }
+      };
+      compiler.addAnnotationProcessor(new Processor(plugin));
+      List<CompilationError> errors = compiler.compile();
+      assertEquals(1, errors.size());
+      CompilationError error = errors.get(0);
+      assertEquals("/A.java", error.getSource());
+      assertTrue(error.getMessage().contains("the_message"));
+      assertNull(error.getSourceFile());
+      assertNotNull(error.getLocation());
+
+      //
+      compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      plugin = new ProcessorPlugin()
+      {
+         boolean failed = false;
+         @Override
+         public void process() throws CompilationException
+         {
+            if (!failed)
+            {
+               failed = true;
+               throw new NoSuchElementException("the_message");
+            }
+         }
+      };
+      compiler.addAnnotationProcessor(new Processor(plugin));
+      errors = compiler.compile();
+      assertEquals(1, errors.size());
+      error = errors.get(0);
+      assertEquals(null, error.getSource());
+      assertTrue(error.getMessage().contains("the_message"));
+      assertNull(error.getSourceFile());
+      assertNull(error.getLocation());
    }
 }

@@ -25,7 +25,7 @@ import org.juzu.Binding;
 import org.juzu.Render;
 import org.juzu.URLBuilder;
 import org.juzu.application.ApplicationDescriptor;
-import org.juzu.impl.apt.ProcessorPlugin;
+import org.juzu.impl.compiler.ProcessorPlugin;
 import org.juzu.impl.request.ControllerMethod;
 import org.juzu.application.Phase;
 import org.juzu.application.PhaseLiteral;
