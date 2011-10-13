@@ -5,13 +5,13 @@ import org.juzu.URLBuilder;
 import javax.portlet.PortletURL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class PortletURLBuilder implements URLBuilder
+class URLBuilderImpl implements URLBuilder
 {
 
    /** . */
    private final PortletURL url;
 
-   PortletURLBuilder(PortletURL url)
+   URLBuilderImpl(PortletURL url)
    {
       this.url = url;
    }

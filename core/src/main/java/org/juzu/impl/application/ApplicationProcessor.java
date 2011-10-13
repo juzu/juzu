@@ -24,9 +24,11 @@ import org.juzu.AmbiguousResolutionException;
 import org.juzu.Application;
 import org.juzu.Binding;
 import org.juzu.Render;
+import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.impl.compiler.ProcessorPlugin;
+import org.juzu.impl.request.ActionContext;
 import org.juzu.impl.request.ControllerMethod;
 import org.juzu.application.Phase;
 import org.juzu.application.PhaseLiteral;
@@ -81,6 +83,9 @@ public class ApplicationProcessor extends ProcessorPlugin
 
    /** . */
    private static final String TOOLS = Tools.class.getSimpleName();
+
+   /** . */
+   private static final String RESPONSE = Response.class.getSimpleName();
 
    /**
     * Application meta data.
@@ -391,6 +396,8 @@ public class ApplicationProcessor extends ProcessorPlugin
                writer.append("import ").append(URLBuilder.class.getName()).append(";\n");
                writer.append("import ").append(ApplicationContext.class.getName()).append(";\n");
                writer.append("import ").append(RenderContext.class.getName()).append(";\n");
+               writer.append("import ").append(ActionContext.class.getName()).append(";\n");
+               writer.append("import ").append(Response.class.getName()).append(";\n");
 
                // Open class declaration
                writer.append("public class ").append(foo.name).append(" {\n");
@@ -465,10 +472,52 @@ public class ApplicationProcessor extends ProcessorPlugin
                      writer.append(")");
                      writer.append(");\n");
 
-                     // URL builder
-                     writer.append("public static URLBuilder ").append(method.getName()).append("URL").append("(");
+                     //
                      List<? extends VariableElement> argDecls = method.element.getParameters();
                      List<? extends TypeMirror> argTypes = method.type.getParameterTypes();
+
+                     // Response literal
+                     if (method.phase == Phase.RENDER)
+                     {
+                        writer.append("public static ").append(RESPONSE).append(" ").append(method.getName()).append("(");
+                        for (int j = 0;j < argDecls.size();j++)
+                        {
+                           if (j > 0)
+                           {
+                              writer.append(',');
+                           }
+                           TypeMirror argumentType = argTypes.get(j);
+                           VariableElement argDecl = argDecls.get(j);
+                           writer.append(argumentType.toString()).append(" ").append(argDecl.getSimpleName().toString());
+                        }
+                        writer.append(") { return ((ActionContext)ApplicationContext.getCurrentRequest()).createResponse(method_");
+                        writer.append(Integer.toString(index));
+                        switch (argDecls.size())
+                        {
+                           case 0:
+                              break;
+                           case 1:
+                              writer.append(",(Object)").append(argDecls.get(0).getSimpleName());
+                              break;
+                           default:
+                              writer.append(",new Object[]{");
+                              for (int j = 0;j < argDecls.size();j++)
+                              {
+                                 if (j > 0)
+                                 {
+                                    writer.append(",");
+                                 }
+                                 VariableElement argDecl = argDecls.get(j);
+                                 writer.append(argDecl.getSimpleName());
+                              }
+                              writer.append("}");
+                              break;
+                        }
+                        writer.append("); }\n");
+                     }
+
+                     // URL builder literal
+                     writer.append("public static URLBuilder ").append(method.getName()).append("URL").append("(");
                      for (int j = 0;j < argDecls.size();j++)
                      {
                         if (j > 0)

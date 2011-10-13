@@ -1,9 +1,9 @@
 package org.juzu.impl.application;
 
+import org.juzu.Response;
 import org.juzu.RenderScoped;
 import org.juzu.Resource;
 import org.juzu.application.ApplicationDescriptor;
-import org.juzu.application.Phase;
 import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.ScopeController;
 import org.juzu.impl.request.ControllerParameter;
@@ -22,7 +22,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -63,7 +62,21 @@ public class ApplicationContext
       return descriptor;
    }
 
-   public void invoke(RequestContext context)
+   public void invoke(ActionContext renderContext)
+   {
+      Object ret = invoke((RequestContext)renderContext);
+      if (ret instanceof Response)
+      {
+         Response renderPhase;
+      }
+   }
+
+   public void invoke(RenderContext renderContext)
+   {
+      invoke((RequestContext)renderContext);
+   }
+
+   private Object invoke(RequestContext context)
    {
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
       try
@@ -71,20 +84,7 @@ public class ApplicationContext
          Thread.currentThread().setContextClassLoader(context.getClassLoader());
          current.set(context);
          ScopeController.start(context.getPhase());
-
-         //
-         if (context instanceof RenderContext)
-         {
-            doInvoke(context);
-         }
-         else if (context instanceof ActionContext)
-         {
-            doInvoke(context);
-         }
-         else
-         {
-            throw new UnsupportedOperationException();
-         }
+         return doInvoke(context);
       }
       finally
       {
@@ -94,8 +94,7 @@ public class ApplicationContext
       }
    }
 
-
-   private void doInvoke(RequestContext context)
+   private Object doInvoke(RequestContext context)
    {
       ControllerMethod method = controllerResolver.resolve(context.getPhase(), context.getParameters());
 
@@ -129,7 +128,7 @@ public class ApplicationContext
                }
 
                // For now we do only zero arg invocations
-               method.getMethod().invoke(o, args);
+               return method.getMethod().invoke(o, args);
             }
             catch (Exception e)
             {
@@ -137,6 +136,9 @@ public class ApplicationContext
             }
          }
       }
+
+      // Should do something else instead
+      return null;
    }
 
    @Produces

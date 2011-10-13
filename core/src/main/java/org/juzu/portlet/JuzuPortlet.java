@@ -203,7 +203,7 @@ public class JuzuPortlet implements Portlet
 
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
    {
-      ActionContext actionContext = new ActionContext(classLoader, request.getParameterMap());
+      ActionContext actionContext = new PortletActionContext(classLoader, request, response);
 
       //
       applicationContext.invoke(actionContext);
@@ -220,12 +220,7 @@ public class JuzuPortlet implements Portlet
          Printer printer = new WriterPrinter(response.getWriter());
 
          //
-         RenderContext renderContext = new RenderContext(
-            classLoader,
-            request.getParameterMap(),
-            printer,
-            new PortletURLBuilderContext(response)
-         );
+         RenderContext renderContext = new PortletRenderContext(classLoader, request, response);
 
          //
          applicationContext.invoke(renderContext);

@@ -11,13 +11,9 @@ public abstract class RequestContext
    /** The request classloader. */
    protected final ClassLoader classLoader;
 
-   /** . */
-   protected final Map<String, String[]> parameters;
-
-   public RequestContext(ClassLoader classLoader, Map<String, String[]> parameters)
+   public RequestContext(ClassLoader classLoader)
    {
       this.classLoader = classLoader;
-      this.parameters = parameters;
    }
 
    public final ClassLoader getClassLoader()
@@ -32,8 +28,5 @@ public abstract class RequestContext
     *
     * @return the request parameters
     */
-   public final Map<String, String[]> getParameters()
-   {
-      return parameters;
-   }
+   public abstract Map<String, String[]> getParameters();
 }

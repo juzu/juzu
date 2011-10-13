@@ -23,7 +23,9 @@ import org.juzu.application.Phase;
 import org.juzu.impl.utils.Tools;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A controller method.
