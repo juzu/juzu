@@ -1,4 +1,4 @@
-package controller2;
+package request.render;
 
 import org.juzu.Render;
 

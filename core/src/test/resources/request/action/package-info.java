@@ -1,3 +1,3 @@
 @Application
-package controller_resolver;
+package request.action;
 import org.juzu.Application;

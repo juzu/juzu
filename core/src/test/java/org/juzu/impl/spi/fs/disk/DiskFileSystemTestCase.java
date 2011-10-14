@@ -18,7 +18,7 @@ public class DiskFileSystemTestCase extends TestCase
       assertNotNull(root.isDirectory());
 
       //
-      doTest(new DiskFileSystem(root, "org"), root);
+      doTest(new DiskFileSystem(root, "compiler", "disk"), root);
    }
    
    private <P> void doTest(ReadFileSystem<P> fs, P root) throws IOException
@@ -33,33 +33,33 @@ public class DiskFileSystemTestCase extends TestCase
       assertEquals(null, fs.getParent(root));
       Iterator<P> rootChildren = fs.getChildren(root);
       assertTrue(rootChildren.hasNext());
-      P org = rootChildren.next();
+      P compiler = rootChildren.next();
       assertFalse(rootChildren.hasNext());
 
       //
-      assertTrue(fs.isDir(org));
-      assertFalse(fs.isFile(org));
-      assertEquals("org", fs.getName(org));
-      assertEquals(root, fs.getParent(org));
-      Iterator<P> orgChildren = fs.getChildren(org);
-      assertTrue(orgChildren.hasNext());
-      P juzu = orgChildren.next();
-      assertFalse(orgChildren.hasNext());
+      assertTrue(fs.isDir(compiler));
+      assertFalse(fs.isFile(compiler));
+      assertEquals("compiler", fs.getName(compiler));
+      assertEquals(root, fs.getParent(compiler));
+      Iterator<P> compilerChildren = fs.getChildren(compiler);
+      assertTrue(compilerChildren.hasNext());
+      P disk = compilerChildren.next();
+      assertFalse(compilerChildren.hasNext());
 
       //
-      assertTrue(fs.isDir(juzu));
-      assertFalse(fs.isFile(juzu));
-      assertEquals("juzu", fs.getName(juzu));
-      assertEquals(org, fs.getParent(juzu));
-      Iterator<P> juzuChildren = fs.getChildren(juzu);
-      assertTrue(juzuChildren.hasNext());
-      P a = juzuChildren.next();
-      assertFalse(juzuChildren.hasNext());
+      assertTrue(fs.isDir(disk));
+      assertFalse(fs.isFile(disk));
+      assertEquals("disk", fs.getName(disk));
+      assertEquals(compiler, fs.getParent(disk));
+      Iterator<P> diskChildren = fs.getChildren(disk);
+      assertTrue(diskChildren.hasNext());
+      P a = diskChildren.next();
+      assertFalse(diskChildren.hasNext());
 
       //
       assertFalse(fs.isDir(a));
       assertTrue(fs.isFile(a));
       assertEquals("A.java", fs.getName(a));
-      assertEquals(juzu, fs.getParent(a));
+      assertEquals(disk, fs.getParent(a));
    }
 }

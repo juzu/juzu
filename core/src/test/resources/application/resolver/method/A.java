@@ -1,4 +1,4 @@
-package controller_resolver;
+package application.resolver.method;
 
 import org.juzu.Render;
 

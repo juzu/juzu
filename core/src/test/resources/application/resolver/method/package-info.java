@@ -1,3 +1,3 @@
 @Application
-package controller1;
+package application.resolver.method;
 import org.juzu.Application;

@@ -1,15 +1,15 @@
-package controller1;
+package request.action;
 
-import org.juzu.Render;
+import org.juzu.Action;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A
 {
 
-   @Render
+   @Action
    public void noArg() { }
 
-   @Render
+   @Action
    public void oneArg(String foo) { }
 
 }
