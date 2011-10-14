@@ -6,7 +6,6 @@ import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.CompilerHelper;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -40,14 +39,14 @@ public class ActionMethodTestCase extends TestCase
    public void testNoArg() throws Exception
    {
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "noArg");
-      assertEquals("noArg", cm.getMethodName());
+      assertEquals("noArg", cm.getName());
       assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArgumentParameters());
    }
 
    public void testStringArg() throws Exception
    {
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "oneArg", String.class);
-      assertEquals("oneArg", cm.getMethodName());
+      assertEquals("oneArg", cm.getName());
       assertEquals(Arrays.asList(new ControllerParameter("foo")), cm.getArgumentParameters());
    }
 }

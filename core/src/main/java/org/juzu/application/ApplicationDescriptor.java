@@ -17,6 +17,9 @@ public class ApplicationDescriptor
    private final String name;
 
    /** . */
+   private Class<?> defaultController;
+
+   /** . */
    private final List<ControllerMethod> controllerMethods;
 
    /** . */
@@ -25,9 +28,11 @@ public class ApplicationDescriptor
    public ApplicationDescriptor(
       String packageName,
       String name,
+      Class<?> defaultController,
       String templatesPackageName,
       List<ControllerMethod> controllerMethods)
    {
+      this.defaultController = defaultController;
       this.packageName = packageName;
       this.name = name;
       this.templatesPackageName = templatesPackageName;
@@ -42,6 +47,11 @@ public class ApplicationDescriptor
    public String getName()
    {
       return name;
+   }
+
+   public Class<?> getDefaultController()
+   {
+      return defaultController;
    }
 
    public List<ControllerMethod> getControllerMethods()

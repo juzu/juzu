@@ -1,6 +1,5 @@
 package org.juzu.impl.application;
 
-import org.juzu.AmbiguousResolutionException;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.application.Phase;
 import org.juzu.impl.request.ControllerMethod;
@@ -26,19 +25,22 @@ public class ControllerResolverTestCase extends AbstractTestCase
       compiler.assertCompile();
 
       //
+      Class<?> aClass = compiler.assertClass("controller_resolver.A");
       Class<?> clazz = compiler.assertClass("controller_resolver.Controller_resolverApplication");
       ApplicationDescriptor desc = (ApplicationDescriptor)clazz.getField("DESCRIPTOR").get(null);
       ControllerResolver resolver = new ControllerResolver(desc);
+      ControllerMethod cm1_ = desc.getControllerMethod(aClass, "noArg");
+      ControllerMethod cm2_ = desc.getControllerMethod(aClass, "fooArg", String.class);
 
       //
-      ControllerMethod cm1 = resolver.resolve(Phase.RENDER, Collections.<String, String[]>singletonMap("op", new String[]{"noArg"}));
+      ControllerMethod cm1 = resolver.resolve(Phase.RENDER, Collections.<String, String[]>singletonMap("op", new String[]{cm1_.getId()}));
       assertNotNull(cm1);
-      assertEquals("noArg", cm1.getMethodName());
+      assertEquals("noArg", cm1.getName());
 
       //
-      ControllerMethod cm2 = resolver.resolve(Phase.RENDER, Builder.map("op", new String[]{"fooArg"}).put("foo", new String[]{"bar"}).build());
+      ControllerMethod cm2 = resolver.resolve(Phase.RENDER, Collections.<String, String[]>singletonMap("op", new String[]{cm2_.getId()}));
       assertNotNull(cm2);
-      assertEquals("fooArg", cm2.getMethodName());
+      assertEquals("fooArg", cm2.getName());
 
       //
 //      try

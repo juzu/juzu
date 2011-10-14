@@ -34,6 +34,18 @@ import java.lang.annotation.Target;
 public @interface Application
 {
 
+   /**
+    * Returns an optional application name.
+    *
+    * @return the application name
+    */
    String name() default "";
+
+   /**
+    * Returns an optional default controller class.
+    *
+    * @return the default controller
+    */
+   Class<?> defaultController() default Object.class;
 
 }

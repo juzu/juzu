@@ -4,13 +4,9 @@ import org.juzu.AmbiguousResolutionException;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.application.Phase;
 import org.juzu.impl.request.ControllerMethod;
-import org.juzu.impl.request.ControllerParameter;
-import org.juzu.impl.utils.Tools;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Resolves a controller for a given input.
@@ -23,6 +19,9 @@ public class ControllerResolver
    /** . */
    private final List<ControllerMethod> methods;
 
+   /** . */
+   private final ApplicationDescriptor desc;
+
    public ControllerResolver(ApplicationDescriptor desc) throws NullPointerException
    {
       if (desc == null)
@@ -31,34 +30,8 @@ public class ControllerResolver
       }
 
       //
+      this.desc = desc;
       this.methods = desc.getControllerMethods();
-   }
-
-   public ControllerResolver(ControllerMethod... methods)
-   {
-      this.methods = Tools.safeUnmodifiableList(methods);
-   }
-
-   // Longuest path ?
-   // Order
-
-   // foo=bar juu=daa
-   // foo=bar
-
-   private static class Match
-   {
-
-      /** . */
-      private final ControllerMethod method;
-
-      /** . */
-      private final int score;
-
-      private Match(ControllerMethod method, int score)
-      {
-         this.method = method;
-         this.score = score;
-      }
    }
 
    /**
@@ -73,61 +46,47 @@ public class ControllerResolver
     */
    public ControllerMethod resolve(Phase phase, Map<String, String[]> parameters) throws AmbiguousResolutionException
    {
-      String methodName;
+      ControllerMethod found = null;
+
+      //
       String[] op = parameters.get("op");
       if (op != null && op.length > 0)
       {
-         methodName = op[0];
-      }
-      else
-      {
-         methodName = "index";
-      }
-
-      //
-      TreeMap<Integer, List<Match>> matches = new TreeMap<Integer, List<Match>>();
-      out:
-      for (ControllerMethod method : methods)
-      {
-         if (method.getPhase() == phase && methodName.equals(method.getMethodName()))
+         for (ControllerMethod method : methods)
          {
-            int score = 0;
-            List<List<ControllerParameter>> listList = new ArrayList<List<ControllerParameter>>(2);
-            listList.add(method.getArgumentParameters());
-            for (List<ControllerParameter> list : listList)
+            if (method.getId().equals(op[0]))
             {
-               for (ControllerParameter cp : list)
+               found = method;
+               break;
+            }
+         }
+      }
+      else if (phase == Phase.RENDER)
+      {
+         for (ControllerMethod method : methods)
+         {
+            if (
+               method.getPhase() == Phase.RENDER &&
+               method.getName().equals("index") &&
+               method.getArgumentParameters().isEmpty())
+            {
+               if (desc.getDefaultController() == method.getType())
                {
-                  String[] val = parameters.get(cp.getName());
-                  if (val == null || val.length == 0 || (cp.getValue() != null && !cp.getValue().equals(val[0])))
-                  {
-                     continue out;
-                  }
-                  score += cp.getValue() == null ? 1 : 2;
+                  return method;
+               }
+               else if (found == null)
+               {
+                  found = method;
+               }
+               else
+               {
+                  throw new AmbiguousResolutionException();
                }
             }
-            List<Match> scoreMatches = matches.get(score);
-            if (scoreMatches == null)
-            {
-               matches.put(score, scoreMatches = new ArrayList<Match>());
-            }
-            scoreMatches.add(new Match(method, score));
          }
-      }
-
-      // Returns the best match
-      Map.Entry<Integer, List<Match>> a = matches.lastEntry();
-      if (a != null)
-      {
-         List<Match> b = a.getValue();
-         if (b.size() > 1)
-         {
-            throw new AmbiguousResolutionException("Could not resolve resolution");
-         }
-         return b.get(0).method;
       }
 
       //
-      return null;
+      return found;
    }
 }
