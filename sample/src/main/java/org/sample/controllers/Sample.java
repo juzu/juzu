@@ -38,7 +38,7 @@ public class Sample
    public void action()
    {
       // Render phase
-      org.sample.SampleApplication.foo("bar");
+      Sample_.foo("bar");
    }
 
    @Render
@@ -65,6 +65,6 @@ public class Sample
    public void increment() throws IOException
    {
       counter.increment();
-      org.sample.SampleApplication.index();
+      Sample_.index();
    }
 }

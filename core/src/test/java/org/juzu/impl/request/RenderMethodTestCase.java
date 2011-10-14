@@ -1,12 +1,11 @@
 package org.juzu.impl.request;
 
 import junit.framework.TestCase;
-import org.juzu.application.PhaseLiteral;
+import org.juzu.application.ApplicationDescriptor;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.CompilerHelper;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -23,33 +22,30 @@ public class RenderMethodTestCase extends TestCase
       //
       CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
       compiler.assertCompile();
-      compiler.assertClass("controller1.A");
+      aClass = compiler.assertClass("controller1.A");
+      compiler.assertClass("controller1.A_");
 
       //
-      a_Class = compiler.assertClass("controller1.A_");
+      Class<?> appClass = compiler.assertClass("controller1.Controller1Application");
+      descriptor = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
    }
 
    /** . */
-   private Class<?> a_Class;
+   private Class<?> aClass;
+
+   /** . */
+   private ApplicationDescriptor descriptor;
 
    public void testNoArg() throws Exception
    {
-      Field f = a_Class.getDeclaredField("noArg");
-      PhaseLiteral l = (PhaseLiteral)f.get(null);
-
-      //
-      ControllerMethod cm = l.getDescriptor();
+      ControllerMethod cm = descriptor.getControllerMethod(aClass, "noArg");
       assertEquals("noArg", cm.getMethodName());
       assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArgumentParameters());
    }
 
    public void testStringArg() throws Exception
    {
-      Field f = a_Class.getDeclaredField("oneArg");
-      PhaseLiteral l = (PhaseLiteral)f.get(null);
-
-      //
-      ControllerMethod cm = l.getDescriptor();
+      ControllerMethod cm = descriptor.getControllerMethod(aClass, "oneArg", String.class);
       assertEquals("oneArg", cm.getMethodName());
       assertEquals(Arrays.asList(new ControllerParameter("foo")), cm.getArgumentParameters());
    }

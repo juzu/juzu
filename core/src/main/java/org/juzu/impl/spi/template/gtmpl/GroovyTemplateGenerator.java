@@ -202,11 +202,11 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    }
 
    @Override
-   public void url(String name, Map<String, String> args)
+   public void url(String typeName, String methodName, Map<String, String> args)
    {
       if (context != null)
       {
-         MethodInvocation mi = context.resolveMethodInvocation(name, args);
+         MethodInvocation mi = context.resolveMethodInvocation(typeName, methodName, args);
          out.append(";out.print(");
          out.append(mi.getClassName());
          out.append(".");

@@ -20,9 +20,9 @@
 package org.juzu.impl.application.simple;
 
 import junit.framework.TestCase;
+import org.juzu.application.ApplicationDescriptor;
 import org.juzu.impl.application.JuzuProcessor;
 import org.juzu.impl.request.ControllerMethod;
-import org.juzu.application.PhaseLiteral;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.fs.ram.RAMDir;
@@ -31,7 +31,6 @@ import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.request.ControllerParameter;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -73,13 +72,12 @@ public class SimpleApplicationTestCase extends TestCase
       //
       ClassLoader cl = new URLClassLoader(new URL[]{out.getURL()}, Thread.currentThread().getContextClassLoader());
       Class aClass = cl.loadClass("foo.A");
+      Class a_Class = cl.loadClass("foo.A_");
+      Class applicationClass = cl.loadClass("foo.FooApplication");
+      ApplicationDescriptor desc = (ApplicationDescriptor)applicationClass.getDeclaredField("DESCRIPTOR").get(null);
 
       //
-      Class a_Class = cl.loadClass("foo.A_");
-      Field f = a_Class.getDeclaredField("render");
-      PhaseLiteral l = (PhaseLiteral)f.get(null);
-      assertNotNull(l);
-      ControllerMethod d = l.getDescriptor();
+      ControllerMethod d = desc.getControllerMethod(aClass, "render", String.class);
       assertSame(aClass, d.getType());
       assertSame("render", d.getMethodName());
       Method method = d.getMethod();
@@ -89,8 +87,7 @@ public class SimpleApplicationTestCase extends TestCase
       assertEquals(Arrays.asList(new ControllerParameter("name")), d.getArgumentParameters());
 
       //
-      Class applicationClass = cl.loadClass("foo.FooApplication");
-      Method renderMethod = applicationClass.getMethod("renderURL", String.class);
+      Method renderMethod = a_Class.getMethod("renderURL", String.class);
       assertEquals("renderURL", renderMethod.getName());
    }
 }

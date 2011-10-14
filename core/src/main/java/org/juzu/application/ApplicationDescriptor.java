@@ -2,6 +2,7 @@ package org.juzu.application;
 
 import org.juzu.impl.request.ControllerMethod;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +47,31 @@ public class ApplicationDescriptor
    public List<ControllerMethod> getControllerMethods()
    {
       return controllerMethods;
+   }
+
+   public ControllerMethod getControllerMethod(Class<?> type, String name, Class<?>... parameterTypes)
+   {
+      for (int i = 0;i < controllerMethods.size();i++)
+      {
+         ControllerMethod cm = controllerMethods.get(i);
+         Method m = cm.getMethod();
+         if (type.equals(cm.getType()) && m.getName().equals(name))
+         {
+            Class<?>[] a = m.getParameterTypes();
+            if (a.length == parameterTypes.length)
+            {
+               for (int j = 0;j < parameterTypes.length;j++)
+               {
+                  if (!a[j].equals(parameterTypes[j]))
+                  {
+                     continue;
+                  }
+               }
+               return cm;
+            }
+         }
+      }
+      return null;
    }
 
    public String getTemplatesPackageName()

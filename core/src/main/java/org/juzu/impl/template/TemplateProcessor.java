@@ -138,16 +138,16 @@ public class TemplateProcessor extends ProcessorPlugin
             {
                TemplateGenerator generator = provider.newGenerator(new TemplateGeneratorContext()
                {
-                  public MethodInvocation resolveMethodInvocation(String name, Map<String, String> parameterMap)
+                  public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
                   {
-                     ApplicationProcessor.MethodMetaData methodMD = null;
+                     ApplicationProcessor.MethodMetaData methodMD;
                      try
                      {
-                        methodMD = application.resolve(name, parameterMap.keySet());
+                        methodMD = application.resolve(typeName, methodName, parameterMap.keySet());
                      }
                      catch (AmbiguousResolutionException e)
                      {
-                        throw new CompilationException(elt, "Could not resolve method arguments " + name + parameterMap);
+                        throw new CompilationException(elt, "Could not resolve method arguments " + methodName + parameterMap);
                      }
                      if (methodMD != null)
                      {
@@ -157,11 +157,11 @@ public class TemplateProcessor extends ProcessorPlugin
                            String value = parameterMap.get(ve.getSimpleName().toString());
                            args.add(value);
                         }
-                        return new MethodInvocation(application.getClassName(), methodMD.getName() + "URL", args);
+                        return new MethodInvocation(methodMD.getController().getClassName() + "_", methodMD.getName() + "URL", args);
                      }
                      else
                      {
-                        throw new CompilationException(elt, "Could not resolve method name " + name + parameterMap);
+                        throw new CompilationException(elt, "Could not resolve method name " + methodName + parameterMap);
                      }
                   }
                });

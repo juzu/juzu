@@ -19,7 +19,6 @@
 
 package org.juzu.impl.template;
 
-import junit.framework.TestCase;
 import org.juzu.impl.spi.template.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGeneratorContext;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
@@ -32,7 +31,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -46,7 +44,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
       ASTBuilder parser = new ASTBuilder();
       GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator(new TemplateGeneratorContext()
       {
-         public MethodInvocation resolveMethodInvocation(String name, Map<String, String> parameterMap)
+         public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
          {
             if (parameterMap.size() > 0)
             {
@@ -55,7 +53,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
             Class clazz = AbstractTemplateTestCase.this.getClass();
             try
             {
-               Method m = clazz.getMethod(name);
+               Method m = clazz.getMethod(methodName);
                return new MethodInvocation(clazz.getName(), m.getName(), Collections.<String>emptyList());
             }
             catch (NoSuchMethodException e)

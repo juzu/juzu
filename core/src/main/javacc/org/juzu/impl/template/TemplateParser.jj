@@ -51,6 +51,7 @@ PARSER_END(TemplateParser)
 <IN_URL> TOKEN :
 {
 < METHOD_NAME : ["$","A"-"Z","_","a"-"z"] ( ["$","0"-"9","A"-"Z","_","a"-"z"] ) * > |
+< DOT : "." > |
 < OPEN_METHOD : "(" > : IN_URL_ARGS |
 < CLOSE_URL : "}" > : DEFAULT
 }
@@ -123,14 +124,15 @@ void parseCurlyExpression() : { Token o,t,p; StringBuilder acc = new StringBuild
    }
 }
 
-void parseURL() : { Token t,m,p; HashMap.SimpleEntry a; HashMap args = new HashMap(); }
+void parseURL() : { Token t,m,p,tn = null; HashMap.SimpleEntry a; HashMap args = new HashMap(); }
 {
-   t = <OPEN_URL> m = <METHOD_NAME> <OPEN_METHOD>
+   t = <OPEN_URL> ( tn = <METHOD_NAME> <DOT> ) ? m = <METHOD_NAME> <OPEN_METHOD>
       ( a = parseArg() { args.put(a.getKey(), a.getValue());  } ( <ARG_SEPARATOR> a = parseArg() { args.put(a.getKey(), a.getValue()); }  ) * ) ?
    <CLOSE_METHOD> p = <CLOSE_URL>
    {
       String s = args.toString();
       list.add(new ASTNode.URL(
+         tn != null ? tn.image : null,
          m.image,
          args,
          t.beginOffset,
