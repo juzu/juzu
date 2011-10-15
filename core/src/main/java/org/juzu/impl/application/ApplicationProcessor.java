@@ -31,10 +31,10 @@ import org.juzu.impl.compiler.ProcessorPlugin;
 import org.juzu.impl.request.ActionContext;
 import org.juzu.impl.request.ControllerMethod;
 import org.juzu.application.Phase;
+import org.juzu.impl.request.MimeContext;
 import org.juzu.impl.utils.PackageMap;
 import org.juzu.impl.utils.Tools;
 import org.juzu.impl.request.ControllerParameter;
-import org.juzu.impl.request.RenderContext;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -430,7 +430,7 @@ public class ApplicationProcessor extends ProcessorPlugin
                writer.append("import ").append(Phase.class.getName()).append(";\n");
                writer.append("import ").append(URLBuilder.class.getName()).append(";\n");
                writer.append("import ").append(ApplicationContext.class.getName()).append(";\n");
-               writer.append("import ").append(RenderContext.class.getName()).append(";\n");
+               writer.append("import ").append(MimeContext.class.getName()).append(";\n");
 
                // Open class declaration
                writer.append("public class ").append(foo.name).append(" {\n");
@@ -453,7 +453,7 @@ public class ApplicationProcessor extends ProcessorPlugin
                   writer2.append("import ").append(Phase.class.getName()).append(";\n");
                   writer2.append("import ").append(URLBuilder.class.getName()).append(";\n");
                   writer2.append("import ").append(ApplicationContext.class.getName()).append(";\n");
-                  writer2.append("import ").append(RenderContext.class.getName()).append(";\n");
+                  writer2.append("import ").append(MimeContext.class.getName()).append(";\n");
                   writer2.append("import ").append(ActionContext.class.getName()).append(";\n");
                   writer2.append("import ").append(Response.class.getName()).append(";\n");
                   writer2.append("import ").append(foo.className).append(";\n");
@@ -548,7 +548,7 @@ public class ApplicationProcessor extends ProcessorPlugin
                            VariableElement argDecl = argDecls.get(j);
                            writer2.append(argumentType.toString()).append(" ").append(argDecl.getSimpleName().toString());
                         }
-                        writer2.append(") { return ((RenderContext)ApplicationContext.getCurrentRequest()).createURLBuilder(").append(foo.name).append(".").append(method.id);
+                        writer2.append(") { return ((MimeContext)ApplicationContext.getCurrentRequest()).createURLBuilder(").append(foo.name).append(".").append(method.id);
                         switch (argDecls.size())
                         {
                            case 0:
