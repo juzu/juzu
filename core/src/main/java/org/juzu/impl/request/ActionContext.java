@@ -23,7 +23,7 @@ public final class ActionContext extends RequestContext<ActionBridge>
 
    public void map(Response response, ControllerMethod method)
    {
-      response.setParameter("op", method.getName());
+      response.setParameter("op", method.getId());
    }
 
    public Response createResponse(ControllerMethod method)
