@@ -22,9 +22,13 @@ package org.juzu;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * A path.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Resource
+public @interface Path
 {
 
    String value();

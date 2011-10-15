@@ -47,13 +47,13 @@ public class FooTestCase extends TestCase
       RAMDir root = ramFS.getRoot();
       RAMDir foo = root.addDir("foo");
       foo.addFile("A.java").update("package foo; @javax.inject.Named(\"bar\") public class A {" +
-         "@javax.inject.Inject @org.juzu.Resource(\"my_template\") public org.juzu.template.Template template;" +
+         "@javax.inject.Inject @org.juzu.Path(\"my_template\") public org.juzu.template.Template template;" +
          "}");
       foo.addFile("B.java").update("package foo; public class B {\n" +
          "@javax.enterprise.inject.Produces\n" +
          "public org.juzu.template.Template getTemplate(javax.enterprise.inject.spi.InjectionPoint injection) {\n" +
          "javax.enterprise.inject.spi.Annotated annotated = injection.getAnnotated();\n" +
-         "org.juzu.Resource template = annotated.getAnnotation(org.juzu.Resource.class);\n" +
+         "org.juzu.Path template = annotated.getAnnotation(org.juzu.Path.class);\n" +
          "return new org.juzu.template.Template(template.value());\n" +
          "}\n" +
          "}");

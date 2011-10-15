@@ -55,7 +55,7 @@ public class TemplateProcessorTestCase extends TestCase
          "import org.juzu.Application;"
       );
       RAMDir foo = bar.addDir("foo");
-      RAMFile a = foo.addFile("A.java").update("package bar.foo; public class A { @org.juzu.Resource(\"B.gtmpl\") org.juzu.template.Template template; }");
+      RAMFile a = foo.addFile("A.java").update("package bar.foo; public class A { @org.juzu.Path(\"B.gtmpl\") org.juzu.template.Template template; }");
       RAMFile b = templates.addFile("B.gtmpl").update("<% out.print('hello') %>");
 
       //

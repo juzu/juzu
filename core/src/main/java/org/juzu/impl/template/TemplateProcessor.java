@@ -20,7 +20,7 @@
 package org.juzu.impl.template;
 
 import org.juzu.AmbiguousResolutionException;
-import org.juzu.Resource;
+import org.juzu.Path;
 import org.juzu.impl.application.ApplicationProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ProcessorPlugin;
@@ -96,10 +96,10 @@ public class TemplateProcessor extends ProcessorPlugin
       ASTBuilder parser = new ASTBuilder();
 
       //
-      for (final Element elt : getElementsAnnotatedWith(Resource.class))
+      for (final Element elt : getElementsAnnotatedWith(Path.class))
       {
          PackageElement packageElt = getPackageOf(elt);
-         Resource ref = elt.getAnnotation(Resource.class);
+         Path ref = elt.getAnnotation(Path.class);
 
          //
          String value = ref.value();

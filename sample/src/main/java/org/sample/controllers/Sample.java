@@ -2,7 +2,7 @@ package org.sample.controllers;
 
 import org.juzu.Action;
 import org.juzu.Render;
-import org.juzu.Resource;
+import org.juzu.Path;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
@@ -24,7 +24,7 @@ public class Sample
    }
 
    @Inject
-   @Resource("MyTemplate.gtmpl")
+   @Path("MyTemplate.gtmpl")
    private Template template;
 
    @Inject

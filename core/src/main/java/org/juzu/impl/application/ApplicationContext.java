@@ -2,7 +2,7 @@ package org.juzu.impl.application;
 
 import org.juzu.Response;
 import org.juzu.RenderScoped;
-import org.juzu.Resource;
+import org.juzu.Path;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.ScopeController;
@@ -160,7 +160,7 @@ public class ApplicationContext
    public Template getRenderer(InjectionPoint point)
    {
       Bean<?> bean = point.getBean();
-      Resource template = point.getAnnotated().getAnnotation(Resource.class);
+      Path template = point.getAnnotated().getAnnotation(Path.class);
       StringBuilder id = new StringBuilder(descriptor.getTemplatesPackageName());
       if (id.length() > 0)
       {

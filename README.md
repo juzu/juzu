@@ -53,7 +53,7 @@ Validates various things during at build time.
 
 A template declaration
 
-    @Resource("myTemplate.gtml")
+    @Path("myTemplate.gtml")
     private Template myTemplate;
 
 Takes the corresponding template file and generates the corresponding Groovy source code to be compiled.
@@ -127,7 +127,7 @@ The template system is extensible and provides an initial support with the Groov
 
 #### Compiler integration
 
-The `TemplateProcessor` plugin is triggered by the `@Resource` annotation, it will lookup a template provide based on the
+The `TemplateProcessor` plugin is triggered by the `@Path` annotation, it will lookup a template provide based on the
 template extension (for instance `gtmpl` -> `GroovyTemplateProvider`). Templates are located in the template folder
 of the application which is by default the `templates` child package of the application.
 
