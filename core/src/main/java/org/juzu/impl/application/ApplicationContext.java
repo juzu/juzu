@@ -140,7 +140,7 @@ public class ApplicationContext
                for (int i = 0;i < args.length;i++)
                {
                   String[] values = context.getParameters().get(params.get(i).getName());
-                  args[i] = values[0];
+                  args[i] = (values != null && values.length > 0) ? values[0] : null;
                }
 
                // For now we do only zero arg invocations
