@@ -22,7 +22,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -103,7 +105,19 @@ public class ApplicationContext
       //
       if (method == null)
       {
-         throw new UnsupportedOperationException("handle me gracefully : no method could be resolved");
+         StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
+            "phase=" + context.getPhase() + " and parameters={");
+         int index = 0;
+         for (Map.Entry<String, String[]> entry : context.getParameters().entrySet())
+         {
+            if (index++ > 0)
+            {
+               sb.append(',');
+            }
+            sb.append(entry.getKey()).append('=').append(Arrays.asList(entry.getValue()));
+         }
+         sb.append("}");
+         throw new UnsupportedOperationException(sb.toString());
       }
       else
       {
