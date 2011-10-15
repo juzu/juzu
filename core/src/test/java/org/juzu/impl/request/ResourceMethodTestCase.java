@@ -11,23 +11,23 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ActionMethodTestCase extends TestCase
+public class ResourceMethodTestCase extends TestCase
 {
 
    @Override
    protected void setUp() throws Exception
    {
       final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "request", "action");
+      DiskFileSystem fs = new DiskFileSystem(root, "request", "resource");
 
       //
       CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
       compiler.assertCompile();
-      aClass = compiler.assertClass("request.action.A");
-      compiler.assertClass("request.action.A_");
+      aClass = compiler.assertClass("request.resource.A");
+      compiler.assertClass("request.resource.A_");
 
       //
-      Class<?> appClass = compiler.assertClass("request.action.ActionApplication");
+      Class<?> appClass = compiler.assertClass("request.resource.ResourceApplication");
       descriptor = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
    }
 
@@ -41,7 +41,7 @@ public class ActionMethodTestCase extends TestCase
    {
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "noArg");
       assertEquals("noArg", cm.getName());
-      assertEquals(Phase.ACTION, cm.getPhase());
+      assertEquals(Phase.RESOURCE, cm.getPhase());
       assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArgumentParameters());
    }
 
@@ -49,7 +49,7 @@ public class ActionMethodTestCase extends TestCase
    {
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "oneArg", String.class);
       assertEquals("oneArg", cm.getName());
-      assertEquals(Phase.ACTION, cm.getPhase());
+      assertEquals(Phase.RESOURCE, cm.getPhase());
       assertEquals(Arrays.asList(new ControllerParameter("foo")), cm.getArgumentParameters());
    }
 }

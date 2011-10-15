@@ -23,6 +23,7 @@ import org.juzu.Action;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.Application;
 import org.juzu.Render;
+import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.application.ApplicationDescriptor;
@@ -344,15 +345,10 @@ public class ApplicationProcessor extends ProcessorPlugin
       Map<String, ControllerMetaData> controllerMap = new HashMap<String, ControllerMetaData>();
       Set<? extends Element> actions = getElementsAnnotatedWith(Action.class);
       Set<? extends Element> renders = getElementsAnnotatedWith(Render.class);
-      Set<? extends Element> intersection = new HashSet<Element>(actions);
-      intersection.retainAll(renders);
-      if (intersection.size() > 0)
-      {
-         throw new UnsupportedOperationException("handle me gracefully " + renders);
-      }
+      Set<? extends Element> resources = getElementsAnnotatedWith(Resource.class);
 
       //
-      for (Set<? extends Element> elts : Arrays.asList(actions, renders))
+      for (Set<? extends Element> elts : Arrays.asList(actions, renders, resources))
       {
          for (Element elt : elts)
          {
@@ -385,15 +381,19 @@ public class ApplicationProcessor extends ProcessorPlugin
             }
 
             //
-            Phase phase;
-            if (elts == actions)
+            List<Phase> determined = new ArrayList<Phase>();
+            for (Phase phase : Phase.values())
             {
-               phase = Phase.ACTION;
+               if (elt.getAnnotation(phase.annotation) != null)
+               {
+                  determined.add(phase);
+               }
             }
-            else
+            if (determined.size() > 1)
             {
-               phase = Phase.RENDER;
+               throw new UnsupportedOperationException("handle me gracefully " + renders);
             }
+            Phase phase = determined.get(0);
 
             //
             a.methods.add(new MethodMetaData(a, "method_" + methodCount++, phase, executableElt));

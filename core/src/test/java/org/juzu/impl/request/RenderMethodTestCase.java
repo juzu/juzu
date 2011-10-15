@@ -2,6 +2,7 @@ package org.juzu.impl.request;
 
 import junit.framework.TestCase;
 import org.juzu.application.ApplicationDescriptor;
+import org.juzu.application.Phase;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.CompilerHelper;
 
@@ -40,6 +41,7 @@ public class RenderMethodTestCase extends TestCase
    {
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "noArg");
       assertEquals("noArg", cm.getName());
+      assertEquals(Phase.RENDER, cm.getPhase());
       assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArgumentParameters());
    }
 
@@ -47,6 +49,7 @@ public class RenderMethodTestCase extends TestCase
    {
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "oneArg", String.class);
       assertEquals("oneArg", cm.getName());
+      assertEquals(Phase.RENDER, cm.getPhase());
       assertEquals(Arrays.asList(new ControllerParameter("foo")), cm.getArgumentParameters());
    }
 }
