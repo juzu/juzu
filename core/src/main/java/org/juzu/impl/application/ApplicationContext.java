@@ -1,12 +1,13 @@
 package org.juzu.impl.application;
 
-import org.juzu.Response;
-import org.juzu.RenderScoped;
+import org.juzu.MimeScoped;
 import org.juzu.Path;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.ScopeController;
 import org.juzu.impl.request.ControllerParameter;
+import org.juzu.impl.request.MimeContext;
+import org.juzu.impl.request.ResourceContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.request.ActionContext;
 import org.juzu.impl.request.ControllerMethod;
@@ -64,16 +65,17 @@ public class ApplicationContext
 
    public void invoke(ActionContext renderContext)
    {
-      Object ret = invoke((RequestContext)renderContext);
-      if (ret instanceof Response)
-      {
-         Response renderPhase;
-      }
+      invoke((RequestContext)renderContext);
    }
 
    public void invoke(RenderContext renderContext)
    {
       invoke((RequestContext)renderContext);
+   }
+
+   public void invoke(ResourceContext resourceContext)
+   {
+      invoke((RequestContext)resourceContext);
    }
 
    private Object invoke(RequestContext context)
@@ -142,13 +144,13 @@ public class ApplicationContext
    }
 
    @Produces
-   @RenderScoped
+   @MimeScoped
    public Printer getPrinter()
    {
       RequestContext context = current.get();
-      if (context instanceof RenderContext)
+      if (context instanceof MimeContext)
       {
-         return ((RenderContext)context).getPrinter();
+         return ((MimeContext)context).getPrinter();
       }
       else
       {

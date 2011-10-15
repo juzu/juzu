@@ -8,6 +8,7 @@ import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
 import org.juzu.impl.fs.FileSystemScanner;
+import org.juzu.impl.request.ResourceContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
@@ -27,6 +28,9 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+import javax.portlet.ResourceServingPortlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +47,7 @@ import java.util.Properties;
 import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JuzuPortlet implements Portlet
+public class JuzuPortlet implements Portlet, ResourceServingPortlet
 {
 
    /** . */
@@ -215,6 +219,44 @@ public class JuzuPortlet implements Portlet
       if (errors.isEmpty())
       {
          RenderContext renderContext = new RenderContext(classLoader, new PortletRenderBridge(request, response));
+
+         //
+         applicationContext.invoke(renderContext);
+      }
+      else
+      {
+//         Element linkElt = response.createElement("link");
+//         linkElt.setAttribute("rel", "stylesheet");
+//         linkElt.setAttribute("href", "http://twitter.github.com/bootstrap/1.3.0/bootstrap.min.css");
+//         response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, linkElt);
+
+         // Basic error reporting for now
+         StringBuilder sb = new StringBuilder();
+         for (CompilationError error : errors)
+         {
+
+            String at = error.getSource();
+
+            //
+            sb.append("<p>");
+            sb.append("<div>Compilation error at ").append(at).append(" ").append(error.getLocation()).append("</div>");
+            sb.append("<div>");
+            sb.append(error.getMessage());
+            sb.append("</div>");
+            sb.append("</p>");
+         }
+         response.getWriter().print(sb);
+      }
+   }
+
+   public void serveResource(ResourceRequest request, ResourceResponse response) throws PortletException, IOException
+   {
+      Collection<CompilationError> errors = boot();
+
+      //
+      if (errors.isEmpty())
+      {
+         ResourceContext renderContext = new ResourceContext(classLoader, new PortletResourceBridge(request, response));
 
          //
          applicationContext.invoke(renderContext);

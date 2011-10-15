@@ -73,6 +73,8 @@ public final class ActionContext extends RequestContext<ActionBridge>
          case REQUEST:
             return bridge.getRequestContext();
          case RENDER:
+         case RESOURCE:
+         case MIME:
             return null;
          case SESSION:
             return bridge.getSessionContext();

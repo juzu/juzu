@@ -5,10 +5,10 @@ import org.juzu.application.Phase;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class RenderContext extends MimeContext<RenderBridge>
+public final class ResourceContext extends MimeContext<ResourceBridge>
 {
 
-   public RenderContext(ClassLoader classLoader, RenderBridge bridge)
+   public ResourceContext(ClassLoader classLoader, ResourceBridge bridge)
    {
       super(classLoader, bridge);
    }
@@ -16,7 +16,7 @@ public final class RenderContext extends MimeContext<RenderBridge>
    @Override
    public Phase getPhase()
    {
-      return Phase.RENDER;
+      return Phase.RESOURCE;
    }
 
    @Override
@@ -26,12 +26,12 @@ public final class RenderContext extends MimeContext<RenderBridge>
       {
          case FLASH:
             return bridge.getFlashContext();
-         case MIME:
-         case RENDER:
-         case REQUEST:
-            return bridge.getRequestContext();
-         case ACTION:
          case RESOURCE:
+         case REQUEST:
+         case MIME:
+            return bridge.getRequestContext();
+         case RENDER:
+         case ACTION:
             return null;
          case SESSION:
             return bridge.getSessionContext();

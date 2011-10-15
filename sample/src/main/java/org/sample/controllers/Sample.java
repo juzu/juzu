@@ -3,6 +3,7 @@ package org.sample.controllers;
 import org.juzu.Action;
 import org.juzu.Render;
 import org.juzu.Path;
+import org.juzu.Resource;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
@@ -66,5 +67,17 @@ public class Sample
    {
       counter.increment();
       Sample_.index();
+   }
+
+   @Resource
+   public void serve() throws IOException
+   {
+      printer.write("" +
+         "<html>" +
+         "<head></head>" +
+         "<body>" +
+         "resource serving" +
+         "</body>" +
+         "</html>");
    }
 }

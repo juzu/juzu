@@ -2,16 +2,16 @@ package org.juzu.portlet;
 
 import org.juzu.URLBuilder;
 
-import javax.portlet.PortletURL;
+import javax.portlet.BaseURL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class URLBuilderImpl implements URLBuilder
 {
 
    /** . */
-   private final PortletURL url;
+   private final BaseURL url;
 
-   URLBuilderImpl(PortletURL url)
+   URLBuilderImpl(BaseURL url)
    {
       this.url = url;
    }
