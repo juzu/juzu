@@ -27,7 +27,7 @@ public class WriterPrinter implements Printer
 {
 
    /** . */
-   private final Appendable writer;
+   protected final Appendable writer;
 
    public WriterPrinter(Appendable writer)
    {

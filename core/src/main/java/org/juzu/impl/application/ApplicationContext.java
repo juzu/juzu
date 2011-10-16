@@ -7,11 +7,8 @@ import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.ScopeController;
 import org.juzu.impl.request.ControllerParameter;
 import org.juzu.impl.request.MimeContext;
-import org.juzu.impl.request.ResourceContext;
 import org.juzu.impl.spi.cdi.Container;
-import org.juzu.impl.request.ActionContext;
 import org.juzu.impl.request.ControllerMethod;
-import org.juzu.impl.request.RenderContext;
 import org.juzu.impl.request.RequestContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
@@ -65,22 +62,7 @@ public class ApplicationContext
       return descriptor;
    }
 
-   public void invoke(ActionContext renderContext)
-   {
-      invoke((RequestContext)renderContext);
-   }
-
-   public void invoke(RenderContext renderContext)
-   {
-      invoke((RequestContext)renderContext);
-   }
-
-   public void invoke(ResourceContext resourceContext)
-   {
-      invoke((RequestContext)resourceContext);
-   }
-
-   private Object invoke(RequestContext context)
+   public void invoke(RequestContext context)
    {
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
       try
@@ -88,7 +70,7 @@ public class ApplicationContext
          Thread.currentThread().setContextClassLoader(context.getClassLoader());
          current.set(context);
          ScopeController.begin(context);
-         return doInvoke(context);
+         doInvoke(context);
       }
       finally
       {
@@ -98,7 +80,7 @@ public class ApplicationContext
       }
    }
 
-   private Object doInvoke(RequestContext<?> context)
+   private void doInvoke(RequestContext<?> context)
    {
       ControllerMethod method = controllerResolver.resolve(context.getPhase(), context.getParameters());
 
@@ -143,8 +125,8 @@ public class ApplicationContext
                   args[i] = (values != null && values.length > 0) ? values[0] : null;
                }
 
-               // For now we do only zero arg invocations
-               return method.getMethod().invoke(o, args);
+               //
+               method.getMethod().invoke(o, args);
             }
             catch (Exception e)
             {
@@ -152,9 +134,6 @@ public class ApplicationContext
             }
          }
       }
-
-      // Should do something else instead
-      return null;
    }
 
    @Produces

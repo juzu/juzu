@@ -13,12 +13,20 @@ public interface RequestBridge
     */
    Map<String, String[]> getParameters();
 
-   Map<Object, Object> getFlashContext();
+   Object getFlashValue(Object key);
 
-   Map<Object, Object> getRequestContext();
+   void setFlashValue(Object key, Object value);
 
-   Map<Object, Object> getSessionContext();
+   Object getRequestValue(Object key);
 
-   Map<Object, Object> getIdentityContext();
+   void setRequestValue(Object key, Object value);
+
+   Object getSessionValue(Object key);
+
+   void setSessionValue(Object key, Object value);
+
+   Object getIdentityValue(Object key);
+
+   void setIdentityValue(Object key, Object value);
 
 }

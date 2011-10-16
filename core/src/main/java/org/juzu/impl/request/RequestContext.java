@@ -32,6 +32,49 @@ public abstract class RequestContext<B extends RequestBridge>
 
    public abstract Phase getPhase();
 
-   public abstract Map<Object, Object> getContext(Scope scope);
+   public final Object getContextualValue(Scope scope, Object key)
+   {
+      switch (scope)
+      {
+         case FLASH:
+            return bridge.getFlashValue(key);
+         case REQUEST:
+         case MIME:
+         case RENDER:
+         case ACTION:
+         case RESOURCE:
+            return bridge.getRequestValue(key);
+         case SESSION:
+            return bridge.getSessionValue(key);
+         case IDENTITY:
+            return bridge.getIdentityValue(key);
+         default:
+            throw new AssertionError();
+      }
+   }
 
+   public final void setContextualValue(Scope scope, Object key, Object value)
+   {
+      switch (scope)
+      {
+         case FLASH:
+            bridge.setFlashValue(key, value);
+            break;
+         case ACTION:
+         case RESOURCE:
+         case MIME:
+         case RENDER:
+         case REQUEST:
+            bridge.setRequestValue(key, value);
+            break;
+         case SESSION:
+            bridge.setSessionValue(key, value);
+            break;
+         case IDENTITY:
+            bridge.setIdentityValue(key, value);
+            break;
+         default:
+            throw new AssertionError();
+      }
+   }
 }

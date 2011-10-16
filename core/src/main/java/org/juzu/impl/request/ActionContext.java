@@ -62,29 +62,6 @@ public final class ActionContext extends RequestContext<ActionBridge>
       return response;
    }
 
-   @Override
-   public Map<Object, Object> getContext(Scope scope)
-   {
-      switch (scope)
-      {
-         case FLASH:
-            return bridge.getFlashContext();
-         case ACTION:
-         case REQUEST:
-            return bridge.getRequestContext();
-         case RENDER:
-         case RESOURCE:
-         case MIME:
-            return null;
-         case SESSION:
-            return bridge.getSessionContext();
-         case IDENTITY:
-            return bridge.getIdentityContext();
-         default:
-            throw new AssertionError();
-      }
-   }
-
    public Response createResponse()
    {
       return bridge.createResponse();

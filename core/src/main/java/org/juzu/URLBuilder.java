@@ -6,4 +6,6 @@ public interface URLBuilder
 
    URLBuilder setParameter(String name, String value);
 
+   String toString();
+
 }

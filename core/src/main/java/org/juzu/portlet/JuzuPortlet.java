@@ -26,6 +26,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
@@ -222,6 +223,13 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
          //
          applicationContext.invoke(renderContext);
+
+         // Clean up flash scope
+         PortletSession session = request.getPortletSession(false);
+         if (session != null)
+         {
+            session.removeAttribute("flash");
+         }
       }
       else
       {
