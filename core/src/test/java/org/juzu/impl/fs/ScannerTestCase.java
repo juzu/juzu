@@ -4,12 +4,13 @@ import junit.framework.TestCase;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
+import org.juzu.test.AbstractTestCase;
 
 import java.io.IOException;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScannerTestCase extends TestCase
+public class ScannerTestCase extends AbstractTestCase
 {
 
    public void testFoo() throws IOException
@@ -26,18 +27,20 @@ public class ScannerTestCase extends TestCase
 
       //
       RAMFile bar = fs.addFile(foo, "bar.txt");
+      waitForOneMillis();
       assertEquals(Collections.singletonMap("foo/bar.txt", Change.ADD), scanner.scan());
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
 
       //
       bar.update("value");
+      waitForOneMillis();
       assertEquals(Collections.singletonMap("foo/bar.txt", Change.UPDATE), scanner.scan());
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
 
       //
       bar.remove();
+      waitForOneMillis();
       assertEquals(Collections.singletonMap("foo/bar.txt", Change.REMOVE), scanner.scan());
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
    }
-
 }
