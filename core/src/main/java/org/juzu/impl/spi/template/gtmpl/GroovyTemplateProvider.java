@@ -20,7 +20,6 @@
 package org.juzu.impl.spi.template.gtmpl;
 
 import org.juzu.impl.spi.template.TemplateGenerator;
-import org.juzu.impl.spi.template.TemplateGeneratorContext;
 import org.juzu.impl.spi.template.TemplateProvider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -28,8 +27,8 @@ public class GroovyTemplateProvider extends TemplateProvider
 {
 
    @Override
-   public TemplateGenerator newGenerator(TemplateGeneratorContext context)
+   public TemplateGenerator newGenerator()
    {
-      return new GroovyTemplateGenerator(context);
+      return new GroovyTemplateGenerator();
    }
 }

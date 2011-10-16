@@ -40,9 +40,19 @@ public class WriterPrinter implements Printer
       this.writer = writer;
    }
 
+   public Appendable getWriter()
+   {
+      return writer;
+   }
+
    public void write(char c) throws IOException
    {
       writer.append(c);
+   }
+
+   public void write(CharSequence s) throws IOException
+   {
+      writer.append(s);
    }
 
    public void write(String s) throws IOException

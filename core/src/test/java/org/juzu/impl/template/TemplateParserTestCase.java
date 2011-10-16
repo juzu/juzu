@@ -20,7 +20,6 @@ package org.juzu.impl.template;
 
 import junit.framework.TestCase;
 import org.juzu.impl.utils.Builder;
-import org.juzu.utils.Location;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,117 +38,136 @@ public class TemplateParserTestCase extends TestCase
 
    public void testEmpty() throws IOException
    {
-      assertEquals(Collections.<ASTNode.Block>emptyList(), parser.parse("").getSections());
+      assertEquals(Collections.<ASTNode.Block<?>>emptyList(), parser.parse("").getChildren());
    }
 
    public void testText() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.STRING, "a")), parser.parse("a").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.STRING, "a")), parser.parse("a").getChildren());
    }
 
    public void testSingleEmptyScriplet() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.SCRIPTLET, "")), parser.parse("<%%>").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.SCRIPTLET, "")), parser.parse("<%%>").getChildren());
    }
 
    public void testSingleEmptyExpression() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.EXPR, "")), parser.parse("<%=%>").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "")), parser.parse("<%=%>").getChildren());
    }
 
    public void testSingleScriplet() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.SCRIPTLET, "a")), parser.parse("<%a%>").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.SCRIPTLET, "a")), parser.parse("<%a%>").getChildren());
    }
 
    public void testSingleExpression() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.EXPR, "a")), parser.parse("<%=a%>").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "a")), parser.parse("<%=a%>").getChildren());
    }
 
    public void testPercentScriplet() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.SCRIPTLET, "%")), parser.parse("<%%%>").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.SCRIPTLET, "%")), parser.parse("<%%%>").getChildren());
    }
 
    public void testPercentExpression() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.EXPR, "%")), parser.parse("<%=%%>").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "%")), parser.parse("<%=%%>").getChildren());
    }
 
    public void testStartAngleBracketScriplet() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.SCRIPTLET, "<")), parser.parse("<%<%>").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.SCRIPTLET, "<")), parser.parse("<%<%>").getChildren());
    }
 
    public void testStartAngleBracketExpression() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.EXPR, "<")), parser.parse("<%=<%>").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "<")), parser.parse("<%=<%>").getChildren());
    }
 
    public void testCurlyExpression() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.Section(SectionType.EXPR, "a")), parser.parse("${a}").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "a")), parser.parse("${a}").getChildren());
    }
 
    public void testParseURL() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parser.parse("@{a()}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a=b)}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b,c=d)}").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parser.parse("@{a()}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a=b)}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b,c=d)}").getChildren());
 
       //
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parser.parse("@{a( )}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a( a=b)}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a =b)}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a= b)}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a=b )}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b ,c=d)}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b, c=d)}").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parser.parse("@{a( )}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a( a=b)}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a =b)}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a= b)}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parser.parse("@{a(a=b )}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b ,c=d)}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parser.parse("@{a(a=b, c=d)}").getChildren());
 
       //
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Builder.map("a", "'b '").build())), parser.parse("@{a(a='b ')}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Builder.map("a", "'b '").build())), parser.parse("@{a(a= 'b ' )}").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "'b '").build())), parser.parse("@{a(a='b ')}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "'b '").build())), parser.parse("@{a(a= 'b ' )}").getChildren());
 
       //
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Builder.map("a", "\"b \"").build())), parser.parse("@{a(a=\"b \")}").getSections());
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL(null, "a", Builder.map("a", "\"b \"").build())), parser.parse("@{a(a= \"b \" )}").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "\"b \"").build())), parser.parse("@{a(a=\"b \")}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "\"b \"").build())), parser.parse("@{a(a= \"b \" )}").getChildren());
 
       //
-      assertEquals(Arrays.<ASTNode.Block>asList(new ASTNode.URL("a", "b", Collections.<String, String>emptyMap())), parser.parse("@{a.b()}").getSections());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL("a", "b", Collections.<String, String>emptyMap())), parser.parse("@{a.b()}").getChildren());
+   }
+
+   public void testParseTag() throws IOException
+   {
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo")), parser.parse("#{foo/}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo")), parser.parse("#{foo /}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", "b"))), parser.parse("#{foo a=b/}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", "b"))), parser.parse("#{foo a=b /}").getChildren());
+//      parser.parse("#{foo}");
+//      parser.parse("#{foo   }#{/foo}");
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo").addChild(new ASTNode.Section(SectionType.STRING, ""))), parser.parse("#{foo}#{/foo}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo").addChild(new ASTNode.Section(SectionType.STRING, ""))), parser.parse("#{foo }#{/foo}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo").addChild(new ASTNode.Section(SectionType.STRING, ""))), parser.parse("#{foo}#{/foo}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", "b")).addChild(new ASTNode.Section(SectionType.STRING, ""))), parser.parse("#{foo a=b}#{/foo}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", "b")).addChild(new ASTNode.Section(SectionType.STRING, ""))), parser.parse("#{foo a =b}#{/foo}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", "b")).addChild(new ASTNode.Section(SectionType.STRING, ""))), parser.parse("#{foo a= b}#{/foo}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", "b")).addChild(new ASTNode.Section(SectionType.STRING, ""))), parser.parse("#{foo a=b }#{/foo}").getChildren());
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", "' '")).addChild(new ASTNode.Section(SectionType.STRING, ""))), parser.parse("#{foo a=' '}#{/foo}").getChildren());
+   }
+
+   public void testParseNestedTag() throws IOException
+   {
+      ASTNode.Template o = parser.parse("#{foo} ${bar} #{/foo}");
+      List<ASTNode.Block<?>> expected = Collections.<ASTNode.Block<?>>singletonList(
+         new ASTNode.Tag("foo").
+            addChild(new ASTNode.Section(SectionType.STRING, " ")).
+            addChild(new ASTNode.Section(SectionType.EXPR, "bar")).
+            addChild(new ASTNode.Section(SectionType.STRING, " "))
+      );
+      assertEquals(expected, o.getChildren());
    }
 
    public void testSimpleScript() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Section>asList(
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(
          new ASTNode.Section(SectionType.STRING, "a"),
          new ASTNode.Section(SectionType.SCRIPTLET, "b"),
          new ASTNode.Section(SectionType.STRING, "c")
-         ), parser.parse("a<%b%>c").getSections());
+         ), parser.parse("a<%b%>c").getChildren());
    }
 
    public void testSimpleScript2() throws IOException
    {
-      assertEquals(Arrays.<ASTNode.Section>asList(
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(
          new ASTNode.Section(SectionType.STRING, "a"),
          new ASTNode.Section(SectionType.EXPR, "b"),
          new ASTNode.Section(SectionType.STRING, "c")
-         ), parser.parse("a<%=b%>c").getSections());
+         ), parser.parse("a<%=b%>c").getChildren());
    }
 
    public void testWindowsLineBreak() throws IOException
    {
-
-   }
-
-   public void testPosition() throws IOException
-   {
-      List<ASTNode.Block> sections = parser.parse("a\nb<%= foo %>d").getSections();
-      assertEquals(new Location(1, 1), ((ASTNode.Section)sections.get(0)).getItems().get(0).getBeginPosition());
-      assertEquals(new Location(2, 1), ((ASTNode.Section)sections.get(0)).getItems().get(1).getBeginPosition());
-      assertEquals(new Location(1, 2), ((ASTNode.Section)sections.get(0)).getItems().get(2).getBeginPosition());
-      assertEquals(new Location(2, 2), ((ASTNode.Section)sections.get(1)).getItems().get(0).getBeginPosition());
-      assertEquals(new Location(11, 2), ((ASTNode.Section)sections.get(2)).getItems().get(0).getBeginPosition());
 
    }
 }

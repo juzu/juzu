@@ -19,29 +19,44 @@
 
 package org.juzu.impl.template;
 
+import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.utils.Tools;
+import org.juzu.template.TagHandler;
+import org.juzu.utils.Coordinate;
 import org.juzu.utils.Location;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ASTNode
+public abstract class ASTNode<N extends ASTNode<N>>
 {
+
+   /** . */
+   private static final Coordinate DUMB = new Coordinate(0, new Location(1, 1));
 
    /** . */
    private final Location beginPosition;
 
-   protected ASTNode(Location beginPosition)
+   /** . */
+   protected final List<Block<?>> children;
+
+   /** . */
+   private final List<Block<?>> unmodifiableChildren;
+
+   protected ASTNode(Location beginPosition, List<ASTNode.Block<?>> children)
    {
       if (beginPosition == null)
       {
          throw new NullPointerException("No null position accepted");
       }
       this.beginPosition = beginPosition;
+      this.children = children;
+      this.unmodifiableChildren = children != null ? Collections.unmodifiableList(children) : Collections.<Block<?>>emptyList();
    }
 
    public Location getBeginPosition()
@@ -49,44 +64,192 @@ public abstract class ASTNode
       return beginPosition;
    }
 
-   public static class Template extends ASTNode
+   public List<Block<?>> getChildren()
+   {
+      return unmodifiableChildren;
+   }
+
+   public N addChildren(Iterable<Block<?>> children)
+   {
+      for (Block child : children)
+      {
+         addChild(child);
+      }
+      return (N)this;
+   }
+
+   public N addChild(Block<?> child)
+   {
+      if (children == null)
+      {
+         throw new IllegalStateException("Node " + this + " cannot have children");
+      }
+      if (child.parent != null)
+      {
+         child.parent.children.remove(child);
+         child.parent = null;
+      }
+      child.parent = this;
+      children.add(child);
+      return (N)this;
+   }
+
+   public static class Template extends ASTNode<Template>
    {
 
-      /** . */
-      private final List<ASTNode.Block> sections;
-
-      Template(List<Block> sections)
+      Template()
       {
-         super(new Location(0, 0));
-
-         //
-         this.sections = sections;
+         super(new Location(0, 0), new ArrayList<Block<?>>());
       }
 
-      public List<Block> getSections()
+      public void generate(TemplateGenerator generator, TemplateCompilationContext tcc) throws IOException
       {
-         return sections;
+         attribute(tcc);
+         process(tcc);
+         emit(generator, tcc);
       }
 
-      public void generate(TemplateGenerator generator)
+      private void attribute(TemplateCompilationContext tcc)
       {
-         GeneratorContext ctx = new GeneratorContext(generator);
-         for (ASTNode.Block block : sections)
+         attribute(tcc, this);
+      }
+
+      private void attribute(TemplateCompilationContext tcc, ASTNode<?> node)
+      {
+         if (node instanceof Template)
+         {
+            for (ASTNode.Block child : node.getChildren())
+            {
+               attribute(tcc, child);
+            }
+         }
+         else if (node instanceof Section)
+         {
+            // Do nothing
+         }
+         else if (node instanceof URL)
+         {
+            // Do nothing
+         }
+         else if (node instanceof Tag)
+         {
+            Tag nodeTag = (Tag)node;
+            TagHandler handler = tcc.resolve(nodeTag.name);
+            if (handler == null)
+            {
+               throw new UnsupportedOperationException("handle me gracefully " + nodeTag.name);
+            }
+            nodeTag.handler = handler;
+            for (ASTNode.Block<?> child : nodeTag.children)
+            {
+               attribute(tcc, child);
+            }
+         }
+      }
+
+      private void process(TemplateCompilationContext tcc)
+      {
+         process(tcc, this);
+      }
+
+      private void process(TemplateCompilationContext tcc, ASTNode<?> node)
+      {
+         if (node instanceof Template)
+         {
+            for (ASTNode.Block child : node.getChildren())
+            {
+               process(tcc, child);
+            }
+         }
+         else if (node instanceof Section)
+         {
+            // Do nothing
+         }
+         else if (node instanceof URL)
+         {
+            // Do nothing
+         }
+         else if (node instanceof Tag)
+         {
+            Tag nodeTag = (Tag)node;
+            if (nodeTag.handler instanceof ExtendedTagHandler)
+            {
+               ((ExtendedTagHandler)nodeTag.handler).process(nodeTag);
+            }
+            for (ASTNode.Block child : nodeTag.children)
+            {
+               process(tcc, child);
+            }
+         }
+      }
+
+      private void emit(TemplateGenerator generator, TemplateCompilationContext tcc) throws IOException
+      {
+         emit(new GeneratorContext(generator), tcc, getChildren());
+      }
+
+      private void emit(GeneratorContext ctx, TemplateCompilationContext tagGen, List<Block<?>> blocks) throws IOException
+      {
+         for (ASTNode.Block block : blocks)
          {
             if (block instanceof Section)
             {
                Section section = (Section)block;
-               ctx.begin(section.getType(), section.getItems().get(0).getBeginPosition());
-               for (ASTNode item : section.getItems())
+               ctx.begin(section.getType(), section.getBeginPosition());
+               int lineNumber = section.getBegin().getPosition().getLine();
+               int colNumber = section.getBegin().getPosition().getCol();
+               String text = section.text;
+               int from = 0;
+               while (true)
                {
-                  ctx.append(item);
+                  int to = text.indexOf('\n', from);
+                  if (to != -1)
+                  {
+                     String chunk = text.substring(from, to);
+                     ctx.appendText(chunk);
+                     ctx.appendLineBreak(new Location(colNumber + (to - from), lineNumber));
+                     from = to + 1;
+                     lineNumber++;
+                     colNumber = 1;
+                  }
+                  else
+                  {
+                     String chunk = text.substring(from);
+                     ctx.appendText(chunk);
+                     break;
+                  }
                }
                ctx.end();
             }
             else if (block instanceof URL)
             {
                URL url = (URL)block;
-               ctx.writer.url(url.typeName, url.methodName, url.args);
+               MethodInvocation mi = tagGen.resolveMethodInvocation(url.typeName, url.methodName, url.args);
+               if (mi == null)
+               {
+                  throw new UnsupportedOperationException("handle me gracefully");
+               }
+               ctx.writer.url(mi.getClassName(), mi.getMethodName(), mi.getMethodArguments());
+            }
+            else if (block instanceof Tag)
+            {
+               Tag tag = (Tag)block;
+               if (tag.handler instanceof ExtendedTagHandler)
+               {
+                  ExtendedTagHandler etag = (ExtendedTagHandler)tag.handler;
+                  etag.compile(tagGen, tag.args);
+               }
+               String className = tag.handler.getClass().getName();
+               if (tag.children != null)
+               {
+                  ctx.writer.openTag(className, tag.args);
+                  emit(ctx, tagGen, tag.children);
+                  ctx.writer.closeTag(className, tag.args);
+               }
+               else
+               {
+                  ctx.writer.tag(className, tag.args);
+               }
             }
             else
             {
@@ -142,43 +305,35 @@ public abstract class ASTNode
             }
          }
 
-         void append(ASTNode item)
+         void appendText(String text)
          {
-            if (item instanceof ASTNode.Text)
+            switch (currentType)
             {
-               ASTNode.Text textItem = (ASTNode.Text)item;
-               String text = textItem.getData();
-               switch (currentType)
-               {
-                  case STRING:
-                     accumulatedText.append(text);
-                     break;
-                  case SCRIPTLET:
-                     writer.appendScriptlet(textItem.getData());
-                     break;
-                  case EXPR:
-                     writer.appendExpression(textItem.getData());
-                     break;
-               }
+               case STRING:
+                  accumulatedText.append(text);
+                  break;
+               case SCRIPTLET:
+                  writer.appendScriptlet(text);
+                  break;
+               case EXPR:
+                  writer.appendExpression(text);
+                  break;
             }
-            else if (item instanceof ASTNode.LineBreak)
+         }
+
+         void appendLineBreak(Location position)
+         {
+            switch (currentType)
             {
-               switch (currentType)
-               {
-                  case STRING:
-                     accumulatedText.append("\n");
-                     break;
-                  case SCRIPTLET:
-                     writer.appendLineBreak(currentType, item.getBeginPosition());
-                     break;
-                  case EXPR:
-                     writer.appendLineBreak(currentType, item.getBeginPosition());
-                     break;
-               }
-            }
-            else
-            {
-               throw new AssertionError();
+               case STRING:
+                  accumulatedText.append("\n");
+                  break;
+               case SCRIPTLET:
+                  writer.appendLineBreak(currentType, position);
+                  break;
+               case EXPR:
+                  writer.appendLineBreak(currentType, position);
+                  break;
             }
          }
 
@@ -213,29 +368,110 @@ public abstract class ASTNode
       }
    }
 
-   public static class Text extends ASTNode
+   public abstract static class Block<B extends Block<B>> extends ASTNode<B>
    {
 
       /** . */
-      private final String data;
+      private final Coordinate begin;
 
-      Text(Location pos, String data)
+      /** . */
+      private final Coordinate end;
+
+      /** . */
+      private ASTNode<?> parent;
+
+      protected Block(Coordinate begin, Coordinate end, List<Block<?>> children)
       {
-         super(pos);
+         super(begin.getPosition(), children);
 
          //
-         if (data == null)
-         {
-            throw new NullPointerException();
-         }
-
-         //
-         this.data = data;
+         this.begin = begin;
+         this.end = end;
+         this.parent = null;
       }
 
-      public String getData()
+      public ASTNode<?> getParent()
       {
-         return data;
+         return parent;
+      }
+
+      public void addAfter(Block sibling)
+      {
+         if (sibling.parent != null)
+         {
+            sibling.parent.children.remove(sibling);
+            sibling.parent = null;
+         }
+         int index = parent.children.indexOf(this);
+         parent.children.add(index + 1, sibling);
+         sibling.parent = parent;
+      }
+
+      public Coordinate getBegin()
+      {
+         return begin;
+      }
+
+      public Coordinate getEnd()
+      {
+         return end;
+      }
+
+      public int getBeginOffset()
+      {
+         return begin.getOffset();
+      }
+
+      public int getEndOffset()
+      {
+         return end.getOffset();
+      }
+
+      public Location getEndPosition()
+      {
+         return end.getPosition();
+      }
+   }
+
+   public static class Tag extends Block<Tag>
+   {
+
+      /** The tag name. */
+      private final String name;
+
+      /** . */
+      private final Map<String, String> args;
+
+      /** . */
+      private TagHandler handler;
+
+      public Tag(String name)
+      {
+         this(name, Collections.<String, String>emptyMap());
+      }
+
+      public Tag(String name, Map<String, String> args)
+      {
+         this(DUMB, DUMB, name, args);
+      }
+
+      public Tag(Coordinate begin, Coordinate end, String name, Map<String, String> args)
+      {
+         super(begin, end, new ArrayList<Block<?>>());
+
+         //
+         this.name = name;
+         this.args = args;
+      }
+
+      public String getName()
+      {
+         return name;
+      }
+
+      public Map<String, String> getArgs()
+      {
+         return args;
       }
 
       @Override
@@ -245,10 +481,10 @@ public abstract class ASTNode
          {
             return true;
          }
-         if (obj instanceof Text)
+         if (obj instanceof Tag)
          {
-            Text that = (Text)obj;
-            return data.equals(that.data);
+            Tag that = (Tag)obj;
+            return name.equals(name) && args.equals(that.args) && children.equals(that.children);
          }
          return false;
       }
@@ -256,49 +492,11 @@ public abstract class ASTNode
       @Override
       public String toString()
       {
-         return getClass().getSimpleName() +  "[pos=" + getBeginPosition() + ",data=" + data + "]";
+         return getClass().getSimpleName() +  "[name=" + name + ",args=" + args + "]";
       }
    }
 
-   public abstract static class Block extends ASTNode
-   {
-
-      /** . */
-      private final int beginOffset;
-
-      /** . */
-      private final int endOffset;
-
-      /** . */
-      private Location endPosition;
-
-      protected Block(int beginOffset, int endOffset, Location beginPosition, Location endPosition)
-      {
-         super(beginPosition);
-
-         //
-         this.beginOffset = beginOffset;
-         this.endOffset = endOffset;
-         this.endPosition = endPosition;
-      }
-
-      public int getBeginOffset()
-      {
-         return beginOffset;
-      }
-
-      public int getEndOffset()
-      {
-         return endOffset;
-      }
-
-      public Location getEndPosition()
-      {
-         return endPosition;
-      }
-   }
-
-   public static class URL extends Block
+   public static class URL extends Block<URL>
    {
 
       /** . */
@@ -312,12 +510,12 @@ public abstract class ASTNode
 
       public URL(String typeName, String methodName, Map<String, String> args)
       {
-         this(typeName, methodName, args, 0, 0, new Location(1, 1), new Location(1, 1));
+         this(DUMB, DUMB, typeName, methodName, args);
       }
 
-      public URL(String typeName, String methodName, Map<String, String> args, int beginOffset, int endOffset, Location beginPosition, Location endPosition)
+      public URL(Coordinate begin, Coordinate end, String typeName, String methodName, Map<String, String> args)
       {
-         super(beginOffset, endOffset, beginPosition, endPosition);
+         super(begin, end, null);
 
          //
          this.typeName = typeName;
@@ -362,23 +560,23 @@ public abstract class ASTNode
       }
    }
 
-   public static class Section extends Block
+   public static class Section extends Block<Section>
    {
 
       /** . */
       private final SectionType type;
 
       /** . */
-      private final List<ASTNode> items;
+      private final String text;
 
       public Section(SectionType type, String text)
       {
-         this(type, 0, 0, text, new Location(1, 1), new Location(1, 1));
+         this(DUMB, DUMB, type, text);
       }
 
-      public Section(SectionType type, int beginOffset, int endOffset, String text, Location beginPosition, Location endPosition)
+      public Section(Coordinate begin, Coordinate end, SectionType type, String text)
       {
-         super(beginOffset, endOffset, beginPosition, endPosition);
+         super(begin, end, null);
 
          //
          if (type == null)
@@ -390,52 +588,15 @@ public abstract class ASTNode
             throw new NullPointerException();
          }
 
-         // Now we process the line breaks
-         ArrayList<ASTNode> sections = new ArrayList<ASTNode>();
-         int lineNumber = beginPosition.getLine();
-         int colNumber = beginPosition.getCol();
 
          //
-         int from = 0;
-         while (true)
-         {
-            int to = text.indexOf('\n', from);
-
-            //
-            if (to != -1)
-            {
-               String chunk = text.substring(from, to);
-               sections.add(new Text(new Location(colNumber, lineNumber), chunk));
-
-               //
-               sections.add(new LineBreak(new Location(colNumber + (to - from), lineNumber)));
-
-               //
-               from = to + 1;
-               lineNumber++;
-               colNumber = 1;
-            }
-            else
-            {
-               String chunk = text.substring(from);
-               sections.add(new Text(new Location(colNumber, lineNumber), chunk));
-               break;
-            }
-         }
-
-         //
+         this.text = text;
          this.type = type;
-         this.items = Collections.unmodifiableList(sections);
       }
 
       public SectionType getType()
       {
          return type;
-      }
-
-      public List<ASTNode> getItems()
-      {
-         return items;
       }
 
       @Override
@@ -448,7 +609,7 @@ public abstract class ASTNode
          if (obj instanceof Section)
          {
             Section that = (Section)obj;
-            return type == that.type && items.equals(that.items);
+            return type == that.type && text.equals(that.text);
          }
          return false;
       }
@@ -456,28 +617,7 @@ public abstract class ASTNode
       @Override
       public String toString()
       {
-         return getClass().getSimpleName() +  "[type=" + type + ",text=" + items + "]";
-      }
-   }
-
-   public static class LineBreak extends ASTNode
-   {
-
-      LineBreak(Location pos)
-      {
-         super(pos);
-      }
-
-      @Override
-      public String toString()
-      {
-         return getClass().getSimpleName() + "[position=" + getBeginPosition() + "]";
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         return obj == this || obj instanceof LineBreak;
+         return getClass().getSimpleName() +  "[type=" + type + ",text=" + text + "]";
       }
    }
 }

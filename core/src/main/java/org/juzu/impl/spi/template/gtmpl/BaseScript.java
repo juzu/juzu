@@ -21,6 +21,7 @@ package org.juzu.impl.spi.template.gtmpl;
 
 import groovy.lang.Binding;
 import groovy.lang.Script;
+import org.juzu.impl.application.ApplicationTemplateRenderContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class BaseScript extends Script
@@ -28,6 +29,9 @@ public abstract class BaseScript extends Script
 
    /** . */
    private GroovyPrinter printer;
+
+   /** . */
+   private ApplicationTemplateRenderContext renderContext;
 
    protected BaseScript()
    {
@@ -54,6 +58,10 @@ public abstract class BaseScript extends Script
       if ("out".equals(property))
       {
          return printer;
+      }
+      else if ("renderContext".equals(property))
+      {
+         return renderContext;
       }
       else
       {

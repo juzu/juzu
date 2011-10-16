@@ -10,6 +10,7 @@ import org.juzu.impl.request.MimeContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.request.ControllerMethod;
 import org.juzu.impl.request.RequestContext;
+import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
@@ -151,17 +152,31 @@ public class ApplicationContext
       }
    }
 
+   public TemplateStub resolveTemplateStub(String path)
+   {
+      try
+      {
+         StringBuilder id = new StringBuilder(descriptor.getTemplatesPackageName());
+         if (id.length() > 0)
+         {
+            id.append('.');
+         }
+         id.append(path, 0, path.indexOf('.'));
+         ClassLoader cl = Thread.currentThread().getContextClassLoader();
+         Class<?> stubClass = cl.loadClass(id.toString());
+         return(TemplateStub)stubClass.newInstance();
+      }
+      catch (Exception e)
+      {
+         throw new UnsupportedOperationException("handle me gracefully");
+      }
+   }
+
    @Produces
-   public Template getRenderer(InjectionPoint point)
+   public Template resolveTemplate(InjectionPoint point)
    {
       Bean<?> bean = point.getBean();
-      Path template = point.getAnnotated().getAnnotation(Path.class);
-      StringBuilder id = new StringBuilder(descriptor.getTemplatesPackageName());
-      if (id.length() > 0)
-      {
-         id.append('.');
-      }
-      id.append(template.value(), 0, template.value().indexOf('.'));
-      return new Template(id.toString());
+      Path path = point.getAnnotated().getAnnotation(Path.class);
+      return new Template(this, path.value());
    }
 }

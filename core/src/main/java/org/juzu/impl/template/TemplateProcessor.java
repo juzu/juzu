@@ -19,25 +19,15 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.AmbiguousResolutionException;
 import org.juzu.Path;
 import org.juzu.impl.application.ApplicationProcessor;
-import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ProcessorPlugin;
-import org.juzu.impl.spi.template.MethodInvocation;
-import org.juzu.impl.spi.template.TemplateGenerator;
-import org.juzu.impl.spi.template.TemplateGeneratorContext;
 import org.juzu.impl.spi.template.TemplateProvider;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.VariableElement;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.regex.Matcher;
@@ -55,10 +45,7 @@ public class TemplateProcessor extends ProcessorPlugin
    );
 
    /** . */
-   private static final Pattern NAME_PATTERN = Pattern.compile("([^.]+)\\.([a-zA-Z]+)");
-
-   /** . */
-   private Map<String, TemplateProvider> providers;
+   Map<String, TemplateProvider> providers;
 
    /** . */
    private ApplicationProcessor applicationPlugin;
@@ -93,85 +80,25 @@ public class TemplateProcessor extends ProcessorPlugin
    @Override
    public void process()
    {
-      ASTBuilder parser = new ASTBuilder();
-
-      //
       for (final Element elt : getElementsAnnotatedWith(Path.class))
       {
          PackageElement packageElt = getPackageOf(elt);
          Path ref = elt.getAnnotation(Path.class);
 
          //
-         String value = ref.value();
-         Matcher matcher = NAME_PATTERN.matcher(value);
-         if (!matcher.matches())
-         {
-            throw new UnsupportedOperationException("handle me gracefully for name " + value);
-         }
-
-         //
-         final ApplicationProcessor.ApplicationMetaData application = applicationPlugin.getApplication(packageElt);
+         ApplicationProcessor.ApplicationMetaData application = applicationPlugin.getApplication(packageElt);
          if (application == null)
          {
             throw new UnsupportedOperationException("handle me gracefully");
          }
 
          //
-         StringBuilder templatesPkgSB = new StringBuilder(application.getPackageName());
-         if (templatesPkgSB.length() > 0)
-         {
-            templatesPkgSB.append(".");
-         }
-         templatesPkgSB.append("templates");
-         String templatesPkgFQN = templatesPkgSB.toString();
+         TemplateCompiler compiler = new TemplateCompiler(this, application, getFiler());
 
          //
          try
          {
-            FileObject file = getResource(StandardLocation.SOURCE_PATH, templatesPkgFQN, value);
-            CharSequence content = file.getCharContent(false).toString();
-
-            //
-            String extension = matcher.group(2);
-            TemplateProvider provider = providers.get(extension);
-            if (provider != null)
-            {
-               TemplateGenerator generator = provider.newGenerator(new TemplateGeneratorContext()
-               {
-                  public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
-                  {
-                     ApplicationProcessor.MethodMetaData methodMD;
-                     try
-                     {
-                        methodMD = application.resolve(typeName, methodName, parameterMap.keySet());
-                     }
-                     catch (AmbiguousResolutionException e)
-                     {
-                        throw new CompilationException(elt, "Could not resolve method arguments " + methodName + parameterMap);
-                     }
-                     if (methodMD != null)
-                     {
-                        List<String> args = new ArrayList<String>();
-                        for (VariableElement ve : methodMD.getElement().getParameters())
-                        {
-                           String value = parameterMap.get(ve.getSimpleName().toString());
-                           args.add(value);
-                        }
-                        return new MethodInvocation(methodMD.getController().getClassName() + "_", methodMD.getName() + "URL", args);
-                     }
-                     else
-                     {
-                        throw new CompilationException(elt, "Could not resolve method name " + methodName + parameterMap);
-                     }
-                  }
-               });
-               parser.parse(content).generate(generator);
-               generator.generate(getFiler(), templatesPkgFQN, matcher.group(1));
-            }
-            else
-            {
-               throw new UnsupportedOperationException("handle me gracefully");
-            }
+            compiler.compile(elt, ref.value());
          }
          catch (IOException e)
          {

@@ -29,6 +29,8 @@ public interface Printer
 
    void write(String s) throws IOException;
 
+   void write(CharSequence s) throws IOException;
+
    void write(CharArray chars) throws IOException;
 
 }

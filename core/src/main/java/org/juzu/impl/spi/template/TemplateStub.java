@@ -19,12 +19,10 @@
 
 package org.juzu.impl.spi.template;
 
+import org.juzu.template.TemplateRenderContext;
 import org.juzu.template.TemplateExecutionException;
-import org.juzu.text.Printer;
 
 import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * The stub for a template.
@@ -37,16 +35,10 @@ public abstract class TemplateStub
    /**
     * Renders the template.
     *
-    * @param printer the printer
-    * @param context the context
-    * @param locale the locale
+    * @param renderContext the render context
     * @throws org.juzu.template.TemplateExecutionException any execution exception
     * @throws IOException any io exception
     */
-   public abstract void render(
-      Printer printer,
-      Map<String, ?> context,
-      Locale locale
-   ) throws TemplateExecutionException, IOException;
+   public abstract void render(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException;
 
 }

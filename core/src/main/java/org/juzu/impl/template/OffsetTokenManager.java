@@ -17,4 +17,9 @@ public class OffsetTokenManager extends TemplateParserTokenManager
       return t;
    }
 
+   public OffsetCharStream getStream()
+   {
+      return (OffsetCharStream)input_stream;
+   }
+
 }

@@ -21,6 +21,8 @@ package org.juzu.impl.template;
 
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
 import org.juzu.template.TemplateExecutionException;
+import org.juzu.template.TemplateRenderContext;
+import org.juzu.test.request.MockPrinter;
 import org.juzu.text.WriterPrinter;
 
 import java.awt.*;
@@ -343,7 +345,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       out = null;
       Writer writer = new StringWriter();
       GroovyTemplate template = template("<% " + TemplateRenderingTestCase.class.getName() + ".out = out; %>");
-      template.render(new WriterPrinter(writer), null, null);
+      template.render(new TemplateRenderContext(new WriterPrinter(writer)));
       assertNotNull(out);
    }
 
@@ -352,7 +354,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       GroovyTemplate template = template(script);
       try
       {
-         template.render(new WriterPrinter(new StringWriter()), null, null);
+         template.render(new TemplateRenderContext(new MockPrinter()));
          fail();
       }
       catch (TemplateExecutionException t)

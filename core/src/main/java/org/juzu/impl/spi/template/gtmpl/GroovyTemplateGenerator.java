@@ -19,9 +19,7 @@
 
 package org.juzu.impl.spi.template.gtmpl;
 
-import org.juzu.impl.spi.template.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
-import org.juzu.impl.spi.template.TemplateGeneratorContext;
 import org.juzu.impl.template.SectionType;
 import org.juzu.impl.utils.Tools;
 import org.juzu.utils.Location;
@@ -59,13 +57,9 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    /** . */
    private Location pos;
 
-   /** . */
-   private final TemplateGeneratorContext context;
-
-   public GroovyTemplateGenerator(TemplateGeneratorContext context)
+   public GroovyTemplateGenerator()
    {
       this.pos = null;
-      this.context = context;
    }
 
    @Override
@@ -178,7 +172,7 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    public void appendText(String text)
    {
       TextConstant m = new TextConstant("s" + methodCount++, text);
-      out.append("out.print(Constants.").append(m.name).append(");\n");
+      out.append(";out.print(Constants.").append(m.name).append(");\n");
       textMethods.add(m);
       lineNumber++;
    }
@@ -202,30 +196,64 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    }
 
    @Override
-   public void url(String typeName, String methodName, Map<String, String> args)
+   public void url(String typeName, String methodName, List<String> args)
    {
-      if (context != null)
+      out.append(";out.print(");
+      out.append(typeName);
+      out.append(".");
+      out.append(methodName);
+      out.append("(");
+      for (int i = 0;i < args.size();i++)
       {
-         MethodInvocation mi = context.resolveMethodInvocation(typeName, methodName, args);
-         out.append(";out.print(");
-         out.append(mi.getClassName());
-         out.append(".");
-         out.append(mi.getMethodName());
-         out.append("(");
-         for (int i = 0;i < mi.getMethodArguments().size();i++)
+         if (i > 0)
          {
-            if (i > 0)
+            out.append(",");
+         }
+         String methodArg = args.get(i);
+         out.append(methodArg);
+      }
+      out.append("));");
+   }
+
+   @Override
+   public void openTag(String className, Map<String, String> args) throws IOException
+   {
+      out.append("; def closure = { ");
+   }
+
+   @Override
+   public void closeTag(String className, Map<String, String> args) throws IOException
+   {
+      out.append("; } as org.juzu.template.Body;");
+      out.append("; new ").append(className).append("().render(out.renderContext, closure,");
+      if (args == null || args.isEmpty())
+      {
+         out.append("null");
+      }
+      else
+      {
+         out.append("[");
+         int index = 0;
+         for (Map.Entry<String, String> entry : args.entrySet())
+         {
+            if (index++ > 0)
             {
                out.append(",");
             }
-            String methodArg = mi.getMethodArguments().get(i);
-            out.append(methodArg);
+            out.append("\"").append(entry.getKey()).append("\":\"").append(entry.getValue()).append("\"");
          }
-         out.append("));");
+         out.append("]");
       }
+      out.append(");");
    }
 
-   public void generate(Filer filer, String pkgName, String rawName) throws IOException
+   @Override
+   public void tag(String tagName, Map<String, String> args)
+   {
+      // throw new UnsupportedOperationException();
+   }
+
+   public String generate(Filer filer, String pkgName, String rawName) throws IOException
    {
       String script = toString();
 
@@ -259,5 +287,8 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       {
          writer.close();
       }
+
+      //
+      return fqn;
    }
 }

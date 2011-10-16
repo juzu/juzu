@@ -19,6 +19,8 @@
 
 package org.juzu.template;
 
+import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.application.ApplicationTemplateRenderContext;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.text.Printer;
 
@@ -32,15 +34,15 @@ public class Template
 {
 
    /** . */
-   private final String templateId;
+   private final String path;
 
    /** . */
-   private TemplateStub stub;
+   private final ApplicationContext applicationContext;
 
-   public Template(String templateId)
+   public Template(ApplicationContext applicationContext, String path)
    {
-      this.stub = null;
-      this.templateId = templateId;
+      this.applicationContext = applicationContext;
+      this.path = path;
    }
 
    public void render(Printer printer) throws TemplateExecutionException, IOException
@@ -62,14 +64,14 @@ public class Template
     * Renders the template.
     *
     * @param printer the printer
-    * @param context the context
+    * @param attributes the attributes
     * @param locale the locale
     * @throws org.juzu.template.TemplateExecutionException any execution exception
     * @throws java.io.IOException any io exception
     */
    public void render(
       Printer printer,
-      Map<String, ?> context,
+      Map<String, ?> attributes,
       Locale locale
    ) throws TemplateExecutionException, IOException {
 
@@ -80,27 +82,15 @@ public class Template
       }
 
       //
-      if (stub == null)
-      {
-         try
-         {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            Class<?> stubClass = cl.loadClass(templateId);
-            stub = (TemplateStub)stubClass.newInstance();
-         }
-         catch (Exception e)
-         {
-            throw new UnsupportedOperationException("handle me gracefully");
-         }
-      }
+      TemplateStub stub = applicationContext.resolveTemplateStub(path);
 
       //
-      stub.render(printer, context, locale);
+      stub.render(new ApplicationTemplateRenderContext(applicationContext, printer, attributes, locale));
    }
 
    @Override
    public String toString()
    {
-      return "TemplateRenderer[" + templateId + "]";
+      return getClass().getSimpleName() + "[path=" + path + "]";
    }
 }

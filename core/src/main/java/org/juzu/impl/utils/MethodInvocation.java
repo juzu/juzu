@@ -1,4 +1,4 @@
-package org.juzu.impl.spi.template;
+package org.juzu.impl.utils;
 
 import java.util.List;
 

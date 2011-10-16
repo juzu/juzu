@@ -25,14 +25,12 @@ import groovy.lang.GroovyCodeSource;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.juzu.impl.spi.template.TemplateStub;
+import org.juzu.template.TemplateRenderContext;
 import org.juzu.template.TemplateExecutionException;
-import org.juzu.text.Printer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class GroovyTemplate extends TemplateStub
@@ -90,11 +88,11 @@ public abstract class GroovyTemplate extends TemplateStub
    }
 
    @Override
-   public void render(Printer printer, Map<String, ?> context, Locale locale) throws TemplateExecutionException, IOException
+   public void render(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException
    {
       Class<?> scriptClass = getScriptClass();
-      BaseScript script = (BaseScript)InvokerHelper.createScript(scriptClass, context != null ? new Binding(context) : new Binding());
-      script.setPrinter(new GroovyPrinter(printer, locale));
+      BaseScript script = (BaseScript)InvokerHelper.createScript(scriptClass, renderContext.getAttributes() != null ? new Binding(renderContext.getAttributes()) : new Binding());
+      script.setPrinter(new GroovyPrinter(renderContext));
 
       //
       try

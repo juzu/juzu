@@ -20,6 +20,11 @@ public class MockMimeBridge extends MockRequestBridge implements MimeBridge
       printer = new MockPrinter();
    }
 
+   public String getContent()
+   {
+      return printer.getContent().toString();
+   }
+
    public URLBuilder createURLBuilder(Phase phase)
    {
       return new MockURLBuilder(phase);

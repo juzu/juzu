@@ -30,6 +30,7 @@ import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Content;
+import org.juzu.template.TemplateRenderContext;
 import org.juzu.text.WriterPrinter;
 
 import javax.tools.JavaFileObject;
@@ -81,7 +82,7 @@ public class TemplateProcessorTestCase extends TestCase
       Class<?> bClass = cl.loadClass("bar.templates.B");
       TemplateStub template = (TemplateStub)bClass.newInstance();
       StringWriter out = new StringWriter();
-      template.render(new WriterPrinter(out), null, null);
+      template.render(new TemplateRenderContext(new WriterPrinter(out)));
       assertEquals("hello", out.toString());
    }
 

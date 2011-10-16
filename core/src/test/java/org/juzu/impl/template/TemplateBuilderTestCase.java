@@ -22,6 +22,7 @@ package org.juzu.impl.template;
 import junit.framework.TestCase;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
+import org.juzu.template.TemplateRenderContext;
 import org.juzu.text.WriterPrinter;
 
 import java.io.StringWriter;
@@ -35,11 +36,11 @@ public class TemplateBuilderTestCase extends TestCase
    public void testFoo() throws Exception
    {
       ASTBuilder parser = new ASTBuilder();
-      GroovyTemplateGenerator template = new GroovyTemplateGenerator(null);
-      parser.parse("a<%=foo%>c").generate(template);
+      GroovyTemplateGenerator template = new GroovyTemplateGenerator();
+      parser.parse("a<%=foo%>c").generate(template, new TemplateCompilationContext());
       GroovyTemplate s = template.build("template_" + Math.abs(new Random().nextLong()));
       StringWriter out = new StringWriter();
-      s.render(new WriterPrinter(out), Collections.<String, Object>singletonMap("foo", "b"), null);
+      s.render(new TemplateRenderContext(new WriterPrinter(out), Collections.singletonMap("foo", "b")));
       assertEquals("abc", out.toString());
    }
 

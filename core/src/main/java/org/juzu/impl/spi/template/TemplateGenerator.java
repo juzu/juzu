@@ -24,6 +24,7 @@ import org.juzu.utils.Location;
 
 import javax.annotation.processing.Filer;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -46,8 +47,14 @@ public abstract class TemplateGenerator
 
    public abstract void appendLineBreak(SectionType currentType, Location position);
 
-   public abstract void url(String typeName, String methodName, Map<String, String> args);
+   public abstract void url(String typeName, String methodName, List<String> args);
 
-   public abstract void generate(Filer filer, String pkgName, String rawName) throws IOException;
+   public abstract void openTag(String className, Map<String, String> args) throws IOException;
+
+   public abstract void closeTag(String tagName, Map<String, String> args) throws IOException;
+
+   public abstract void tag(String tagName, Map<String, String> args);
+
+   public abstract String generate(Filer filer, String pkgName, String rawName) throws IOException;
 
 }

@@ -13,7 +13,7 @@ public class OffsetCharStream extends SimpleCharStream
    /** . */
    public int currentOffset;
 
-   public OffsetCharStream(Reader r)
+   public OffsetCharStream(OffsetReader r)
    {
       super(r);
    }
@@ -38,4 +38,8 @@ public class OffsetCharStream extends SimpleCharStream
       currentOffset -= amount;
    }
 
+   public CharSequence getData()
+   {
+      return ((OffsetReader)inputStream).getData();
+   }
 }

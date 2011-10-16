@@ -19,8 +19,8 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.spi.template.MethodInvocation;
-import org.juzu.impl.spi.template.TemplateGeneratorContext;
+import org.juzu.impl.application.ApplicationTemplateRenderContext;
+import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
 import org.juzu.template.TemplateExecutionException;
@@ -39,11 +39,13 @@ import java.util.Random;
 public abstract class AbstractTemplateTestCase extends AbstractTestCase
 {
 
-   public GroovyTemplate template(String text)
+   public GroovyTemplate template(String text) throws IOException
    {
       ASTBuilder parser = new ASTBuilder();
-      GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator(new TemplateGeneratorContext()
+      GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator();
+      parser.parse(text).generate(templateWriter, new TemplateCompilationContext()
       {
+         @Override
          public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
          {
             if (parameterMap.size() > 0)
@@ -62,7 +64,6 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
             }
          }
       });
-      parser.parse(text).generate(templateWriter);
       return templateWriter.build("template_" + Math.abs(new Random().nextLong()));
    }
 
@@ -76,16 +77,17 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
       return render(template, null, locale);
    }
 
-   public String render(String text, Map<String, ?> binding, Locale locale) throws IOException, TemplateExecutionException
+   public String render(String text, Map<String, ?> attributes, Locale locale) throws IOException, TemplateExecutionException
    {
       GroovyTemplate template = template(text);
       StringWriter out = new StringWriter();
-      template.render(new WriterPrinter(out), binding, locale);
+      ApplicationTemplateRenderContext renderContext = new ApplicationTemplateRenderContext(null, new WriterPrinter(out), attributes, locale);
+      template.render(renderContext);
       return out.toString();
    }
 
-   public String render(String template, Map<String, ?> binding) throws IOException, TemplateExecutionException
+   public String render(String template, Map<String, ?> attributes) throws IOException, TemplateExecutionException
    {
-      return render(template, binding, null);
+      return render(template, attributes, null);
    }
 }

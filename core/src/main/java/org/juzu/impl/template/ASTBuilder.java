@@ -39,52 +39,17 @@ public class ASTBuilder
    {
 
       //
-      TemplateParser parser = new TemplateParser(new OffsetTokenManager(new OffsetCharStream(reader)));
+      TemplateParser parser = new TemplateParser(new OffsetTokenManager(new OffsetCharStream(new OffsetReader(reader))));
 
       //
       try
       {
-         parser.parse();
+         return parser.parse();
       }
       catch (ParseException e)
       {
          // todo
          throw new AssertionError(e);
       }
-
-      //
-      List<ASTNode.Block> blocks = new ArrayList<ASTNode.Block>();
-      int previousOffset = 0;
-      Location previousPosition = new Location(1, 1);
-      for (int i = 0;i < parser.list.size();i++)
-      {
-         ASTNode.Block block = parser.list.get(i);
-         if (block.getBeginOffset() > previousOffset)
-         {
-            blocks.add(new ASTNode.Section(
-               SectionType.STRING,
-               previousOffset,
-               block.getBeginOffset(),
-               s.subSequence(previousOffset, block.getBeginOffset()).toString(),
-               previousPosition,
-               block.getEndPosition()));
-         }
-         blocks.add(block);
-         previousOffset = block.getEndOffset();
-         previousPosition = block.getEndPosition();
-      }
-      if (previousOffset < s.length())
-      {
-         blocks.add(new ASTNode.Section(
-            SectionType.STRING,
-            previousOffset,
-            s.length(),
-            s.subSequence(previousOffset, s.length()).toString(),
-            previousPosition,
-            new Location(parser.token.endColumn, parser.token.endLine)));
-      }
-
-      //
-      return new ASTNode.Template(Collections.unmodifiableList(blocks));
-   }
+  }
 }

@@ -22,8 +22,8 @@ package org.juzu.impl.spi.template.gtmpl;
 import groovy.lang.GString;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
+import org.juzu.template.TemplateRenderContext;
 import org.juzu.text.CharArray;
-import org.juzu.text.Printer;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -35,31 +35,17 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
 {
 
    /** . */
-   private final Printer printer;
+   final TemplateRenderContext renderContext;
 
-   /** An optional locale. */
-   private final Locale locale;
-
-   public GroovyPrinter(Printer printer, Locale locale) throws NullPointerException
+   public GroovyPrinter(TemplateRenderContext renderContext) throws NullPointerException
    {
-      if (printer == null)
+      if (renderContext == null)
       {
-         throw new NullPointerException("No null printer accepted");
+         throw new NullPointerException("No null render context accepted");
       }
 
       //
-      this.printer = printer;
-      this.locale = locale;
-   }
-
-   public GroovyPrinter(Printer printer)
-   {
-      this(printer, null);
-   }
-
-   public Locale getLocale()
-   {
-      return locale;
+      this.renderContext = renderContext;
    }
 
    /**
@@ -105,7 +91,7 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
    {
       try
       {
-         printer.write('\n');
+         renderContext.getPrinter().write('\n');
       }
       catch (IOException ignore)
       {
@@ -122,6 +108,7 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
    {
       if (o instanceof Date)
       {
+         Locale locale = renderContext.getLocale();
          if (locale != null)
          {
             DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
@@ -156,7 +143,7 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
       {
          if (o instanceof CharArray)
          {
-            printer.write((CharArray)o);
+            renderContext.getPrinter().write((CharArray)o);
          }
          else if (o instanceof GString)
          {
@@ -166,11 +153,11 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
             {
                values[i] = format(values[i]);
             }
-            printer.write(o.toString());
+            renderContext.getPrinter().write(o.toString());
          }
          else
          {
-            printer.write(toString(o));
+            renderContext.getPrinter().write(toString(o));
          }
       }
       catch (IOException ignore)
