@@ -31,17 +31,19 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
    public void setFlashValue(Object key, Object value)
    {
-      Map<Object, Object> flash = (Map<Object, Object>)getSessionValue("flash");
-      if (flash == null)
+      if (value == null)
       {
-         setSessionValue("flash", flash = new HashMap<Object, Object>());
+         getFlashContext().remove(key);
       }
-      flash.put(key, value);
+      else
+      {
+         getFlashContext().put(key, value);
+      }
    }
 
    public Object getFlashValue(Object key)
    {
-      Map<Object, Object> flash = (Map<Object, Object>)getSessionValue("flash");
+      Map<Object, Object> flash = getFlashContext();
       return flash != null ? flash.get(key) : null;
    }
 
@@ -96,6 +98,17 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
       if (store == null)
       {
          session.setAttribute("org.juzu.session_scope", store = new HashMap<Object, Object>());
+      }
+      return store;
+   }
+
+   private Map<Object, Object> getFlashContext()
+   {
+      PortletSession session = request.getPortletSession();
+      Map<Object, Object> store = (Map<Object, Object>)session.getAttribute("org.juzu.flash_scope");
+      if (store == null)
+      {
+         session.setAttribute("org.juzu.flash_scope", store = new HashMap<Object, Object>());
       }
       return store;
    }

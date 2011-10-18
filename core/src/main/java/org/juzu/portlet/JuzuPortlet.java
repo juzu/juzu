@@ -228,7 +228,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          PortletSession session = request.getPortletSession(false);
          if (session != null)
          {
-            session.removeAttribute("flash");
+            session.removeAttribute("org.juzu.flash_scope");
          }
       }
       else
