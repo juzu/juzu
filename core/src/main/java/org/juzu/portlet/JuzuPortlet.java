@@ -104,8 +104,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    private Collection<CompilationError> boot() throws PortletException
    {
-      boolean wasNull = applicationContext == null;
-      long t = -System.currentTimeMillis();
       if (prod)
       {
          if (applicationContext == null)
@@ -121,6 +119,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                throw new PortletException("Could not find an application to start", e);
             }
          }
+         return null;
       }
       else
       {
@@ -162,11 +161,16 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                   boot(classes, cl2);
                   devScanner = new FileSystemScanner<String>(fs);
                   devScanner.scan();
+                  return Collections.emptyList();
                }
                else
                {
                   return res;
                }
+            }
+            else
+            {
+               return null;
             }
          }
          catch (Exception e)
@@ -174,14 +178,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             throw new PortletException(e);
          }
       }
-
-      //
-      t += System.currentTimeMillis();
-      if (wasNull && applicationContext != null)
-      {
-         System.out.println("Booted in " + t + " ms");
-      }
-      return Collections.emptyList();
    }
 
    private <P, D> void boot(ReadFileSystem<P> classes, ClassLoader cl) throws Exception
@@ -236,8 +232,14 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       Collection<CompilationError> errors = boot();
 
       //
-      if (errors.isEmpty())
+      if (errors == null || errors.isEmpty())
       {
+         if (errors != null)
+         {
+            request.getPortletSession().invalidate();
+         }
+
+         //
          RenderContext renderContext = new RenderContext(classLoader, new PortletRenderBridge(request, response));
 
          //
@@ -281,8 +283,14 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       Collection<CompilationError> errors = boot();
 
       //
-      if (errors.isEmpty())
+      if (errors == null || errors.isEmpty())
       {
+         if (errors != null)
+         {
+            request.getPortletSession().invalidate();
+         }
+
+         //
          ResourceContext renderContext = new ResourceContext(classLoader, new PortletResourceBridge(request, response));
 
          //
