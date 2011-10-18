@@ -160,6 +160,11 @@ PARSER_END(TemplateParser)
 " " | "\t"
 }
 
+< * > TOKEN :
+{
+< UNEXPECTED_CHAR : ~[] >
+}
+
 ASTNode.Template parse() : { list.addLast(new ArrayList<ASTNode.Block<?>>()); }
 {
   (

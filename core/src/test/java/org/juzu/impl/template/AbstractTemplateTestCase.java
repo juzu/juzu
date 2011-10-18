@@ -41,29 +41,35 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
 
    public GroovyTemplate template(String text) throws IOException
    {
-      ASTBuilder parser = new ASTBuilder();
       GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator();
-      parser.parse(text).generate(templateWriter, new TemplateCompilationContext()
+      try
       {
-         @Override
-         public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
+         ASTNode.Template.parse(text).generate(templateWriter, new TemplateCompilationContext()
          {
-            if (parameterMap.size() > 0)
+            @Override
+            public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
             {
-               throw failure("Unexpected non empty parameter map");
+               if (parameterMap.size() > 0)
+               {
+                  throw failure("Unexpected non empty parameter map");
+               }
+               Class clazz = AbstractTemplateTestCase.this.getClass();
+               try
+               {
+                  Method m = clazz.getMethod(methodName);
+                  return new MethodInvocation(clazz.getName(), m.getName(), Collections.<String>emptyList());
+               }
+               catch (NoSuchMethodException e)
+               {
+                  throw failure(e);
+               }
             }
-            Class clazz = AbstractTemplateTestCase.this.getClass();
-            try
-            {
-               Method m = clazz.getMethod(methodName);
-               return new MethodInvocation(clazz.getName(), m.getName(), Collections.<String>emptyList());
-            }
-            catch (NoSuchMethodException e)
-            {
-               throw failure(e);
-            }
-         }
-      });
+         });
+      }
+      catch (ParseException e)
+      {
+         throw failure(e);
+      }
       return templateWriter.build("template_" + Math.abs(new Random().nextLong()));
    }
 

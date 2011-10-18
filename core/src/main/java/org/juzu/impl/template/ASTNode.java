@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template;
 
+import org.apache.commons.io.input.CharSequenceReader;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.utils.Tools;
@@ -96,6 +97,12 @@ public abstract class ASTNode<N extends ASTNode<N>>
 
    public static class Template extends ASTNode<Template>
    {
+
+      public static Template parse(CharSequence s) throws ParseException
+      {
+         TemplateParser parser = new TemplateParser(new OffsetTokenManager(new OffsetCharStream(new OffsetReader(new CharSequenceReader(s)))));
+         return parser.parse();
+      }
 
       Template()
       {

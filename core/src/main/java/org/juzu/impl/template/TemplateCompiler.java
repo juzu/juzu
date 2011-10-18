@@ -136,14 +136,18 @@ class TemplateCompiler
       if (provider != null)
       {
          TemplateGenerator generator = provider.newGenerator();
-         ASTBuilder parser = new ASTBuilder();
-         parser.parse(content).generate(generator, tgc);
+
          try
          {
+            ASTNode.Template.parse(content).generate(generator, tgc);
             building.add(path);
             String ret = generator.generate(filer, templatesPkgFQN, matcher.group(1));
             cache.put(path, ret);
             return ret;
+         }
+         catch (ParseException e)
+         {
+            throw new CompilationException(element, "Could not compile template " + path, e);
          }
          finally
          {
