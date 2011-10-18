@@ -1,10 +1,25 @@
 # Juzu
 
-Juzu Web is a web framework matching portlet MVC.
+Juzu Web is a web framework matching portlet MVC. A 0.1 sample can be downloaded [available](https://github.com/downloads/juzu/juzu/juzu-booking.war) and
+deployed in a portal server (only tested with GateIn trunk / Tomcat at the moment).
 
 # Status
 
-Inception and prototyping phase.
+- 0.1 milestone reached : booking demo adapted from Play!
+- 0.2-SNAPSHOT in progress
+
+# Todo
+
+Various things to do, not exhaustive
+
+- event for begin/end with CDI eventing
+- parse error in template parser
+- bean mapping on render parameter
+- stack trace sanitization
+- tag lib to set title (page title or portlet title) (so put that in RenderContext)
+- consider resolving a template via its variable name instead of @Path
+- honour life cycle of objects (specially flash scope)
+- @Controller stereotype -> scoped to RenderScope ????
 
 # Principles
 
@@ -23,6 +38,30 @@ Controller are methods annotated with @Action or @Render
     @Render
     public void showProduct(String productId) { ... }
 
+## Compile time validation
+
+Juzu integrates at the heart of the Java compiler thanks to Annotation Processing Tools (APT). APT allows to perform
+code generation in a fully portable manner, it just work with the Java compiler in a very transparent manner
+and thus is integrated with any build system or IDE that uses a Java 6 compiler.
+
+### Template URL resolution
+
+Juzu validates the application templates during the compilation phase and will attempt to resolve any link against
+ a controller method: application links are validated at compilation time.
+
+### Build time validation
+
+Validates various things during at build time.
+
+### Template compilation
+
+A template declaration
+
+    @Path("myTemplate.gtml")
+    private Template myTemplate;
+
+Takes the corresponding template file and generates the corresponding Groovy source code to be compiled.
+
 ## Injection
 
 Juzu leverages the Context and Dependency Injection framework to bring type safe injection.
@@ -39,24 +78,6 @@ Juzu leverages the Context and Dependency Injection framework to bring type safe
     private Printer printer;
 
 ## Compiler integration
-
-Juzu integrates at the heart of the Java compiler thanks to Annotation Processing Tools (APT). APT allows to perform
-code generation in a fully portable manner, it just work with the Java compiler in a very transparent manner
-and thus is integrated with any build system or IDE that uses a Java 6 compiler. Juzu uses APT for
-various features.
-
-### Build time validation
-
-Validates various things during at build time.
-
-### Template compilation
-
-A template declaration
-
-    @Path("myTemplate.gtml")
-    private Template myTemplate;
-
-Takes the corresponding template file and generates the corresponding Groovy source code to be compiled.
 
 ### URL literal generation
 
@@ -135,6 +156,10 @@ of the application which is by default the `templates` child package of the appl
 
 Template providers are located using the java service loader mechanism.
 
+### Tag library
+
+To describe
+
 ### Context and Dependency Injection
 
 #### Provider
@@ -145,12 +170,18 @@ For now CDI support is provided by the Weld reference implementation which is ab
 
 ##### Bean visibility
 
+
 By default CDI consider that any class can be a managed bean, we want to restrict that in Juzu and instead decide which beans
-can be seen or not. The `@Export` annotation is used to declare the classes seen by CDI.
+can be seen or not. The `@Export` annotation is used to declare the classes seen by CDI. This apply to Juzu classes.
+
+Application classes are all exposed to CDI by default.
 
 ##### Invocation scopes
 
-Three scopes exist matching the various portlet life cycles
-- @RequestScoped : similar to the spec one
-- @ActionScoped : valid during process action
-- @RenderScoped : valid during render action
+- @RequestScope: a request scope is available, subdivided into three finer scopes
+    - @ActionScoped : valid during process action phase
+    - @MimeScoped : valid during process render or resource phase
+    - @RenderScoped : valid during render phase
+    - @ResourceScoped : valid during resource phase
+- @FlashScoped : propagate an object from an action to a render phase.
+- @SessionScoped : bound to the portlet session life cycle
