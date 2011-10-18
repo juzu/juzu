@@ -99,7 +99,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             }
             catch (Exception e)
             {
-               throw new PortletException("Could not find an application to start");
+               throw new PortletException("Could not find an application to start", e);
             }
          }
       }
