@@ -1,5 +1,6 @@
 package org.juzu.impl.application;
 
+import org.juzu.AmbiguousResolutionException;
 import org.juzu.MimeScoped;
 import org.juzu.Path;
 import org.juzu.application.ApplicationDescriptor;
@@ -81,6 +82,23 @@ public class ApplicationContext
       }
    }
 
+   public Object resolveBean(String name)
+   {
+      BeanManager mgr = container.getManager();
+      Set<Bean<?>> beans = mgr.getBeans(name);
+      switch (beans.size())
+      {
+         case 0:
+            return null;
+         case 1:
+            Bean<?> bean = beans.iterator().next();
+            CreationalContext<?> cc = mgr.createCreationalContext(bean);
+            return mgr.getReference(bean, bean.getBeanClass(), cc);
+         default:
+            throw new AmbiguousResolutionException();
+      }
+   }
+
    private void doInvoke(RequestContext<?> context)
    {
       ControllerMethod method = controllerResolver.resolve(context.getPhase(), context.getParameters());
@@ -116,6 +134,8 @@ public class ApplicationContext
                // Get the bean
                Bean bean = beans.iterator().next();
                cc = mgr.createCreationalContext(bean);
+
+               // Get a reference
                Object o = mgr.getReference(bean, type, cc);
 
                // Prepare method parameters
@@ -183,7 +203,6 @@ public class ApplicationContext
    @Produces
    public Template resolveTemplate(InjectionPoint point)
    {
-      Bean<?> bean = point.getBean();
       Path path = point.getAnnotated().getAnnotation(Path.class);
       return new Template(this, path.value());
    }

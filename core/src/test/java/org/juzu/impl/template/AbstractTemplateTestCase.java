@@ -24,6 +24,7 @@ import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
 import org.juzu.template.TemplateExecutionException;
+import org.juzu.template.TemplateRenderContext;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.text.WriterPrinter;
 
@@ -87,7 +88,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
    {
       GroovyTemplate template = template(text);
       StringWriter out = new StringWriter();
-      ApplicationTemplateRenderContext renderContext = new ApplicationTemplateRenderContext(null, new WriterPrinter(out), attributes, locale);
+      TemplateRenderContext renderContext = new TemplateRenderContext(new WriterPrinter(out), attributes, locale);
       template.render(renderContext);
       return out.toString();
    }

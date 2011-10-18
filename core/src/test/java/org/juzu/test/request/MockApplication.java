@@ -3,17 +3,10 @@ package org.juzu.test.request;
 import org.juzu.application.ApplicationDescriptor;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.Bootstrap;
-import org.juzu.impl.request.ActionBridge;
-import org.juzu.impl.request.ActionContext;
-import org.juzu.impl.request.RenderBridge;
-import org.juzu.impl.request.RenderContext;
 import org.juzu.impl.request.RequestContext;
-import org.juzu.impl.request.ResourceBridge;
-import org.juzu.impl.request.ResourceContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.File;
@@ -23,7 +16,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
-import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockApplication<P>
@@ -36,7 +28,7 @@ public class MockApplication<P>
    final ClassLoader classLoader;
 
    /** . */
-   private ApplicationContext applicationContext;
+   private ApplicationContext context;
 
    public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader)
    {
@@ -82,12 +74,17 @@ public class MockApplication<P>
 
       Bootstrap boot = new Bootstrap(container, descriptor);
       boot.start();
-      applicationContext = boot.getContext();
+      context = boot.getContext();
+   }
+
+   public ApplicationContext getContext()
+   {
+      return context;
    }
 
    void invoke(RequestContext<?> context)
    {
-      applicationContext.invoke(context);
+      this.context.invoke(context);
    }
 
    public MockClient client()

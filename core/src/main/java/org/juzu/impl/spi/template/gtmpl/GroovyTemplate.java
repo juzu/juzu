@@ -92,7 +92,7 @@ public abstract class GroovyTemplate extends TemplateStub
    {
       Class<?> scriptClass = getScriptClass();
       BaseScript script = (BaseScript)InvokerHelper.createScript(scriptClass, renderContext.getAttributes() != null ? new Binding(renderContext.getAttributes()) : new Binding());
-      script.setPrinter(new GroovyPrinter(renderContext));
+      script.init(renderContext);
 
       //
       try

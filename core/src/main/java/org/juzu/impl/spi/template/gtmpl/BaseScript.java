@@ -21,7 +21,7 @@ package org.juzu.impl.spi.template.gtmpl;
 
 import groovy.lang.Binding;
 import groovy.lang.Script;
-import org.juzu.impl.application.ApplicationTemplateRenderContext;
+import org.juzu.template.TemplateRenderContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class BaseScript extends Script
@@ -31,7 +31,7 @@ public abstract class BaseScript extends Script
    private GroovyPrinter printer;
 
    /** . */
-   private ApplicationTemplateRenderContext renderContext;
+   private TemplateRenderContext renderContext;
 
    protected BaseScript()
    {
@@ -42,31 +42,33 @@ public abstract class BaseScript extends Script
       super(binding);
    }
 
-   public GroovyPrinter getPrinter()
+   public void init(TemplateRenderContext renderContext)
    {
-      return printer;
-   }
-
-   public void setPrinter(GroovyPrinter printer)
-   {
-      this.printer = printer;
+      this.printer = new GroovyPrinter(renderContext);
+      this.renderContext = renderContext;
    }
 
    @Override
    public Object getProperty(String property)
    {
+      Object value;
       if ("out".equals(property))
       {
-         return printer;
+         value = printer;
       }
       else if ("renderContext".equals(property))
       {
-         return renderContext;
+         value = renderContext;
       }
       else
       {
-         return super.getProperty(property);
+         value = renderContext.resolveBean(property);
+         if (value == null)
+         {
+            value = super.getProperty(property);
+         }
       }
+      return value;
    }
 
    @Override

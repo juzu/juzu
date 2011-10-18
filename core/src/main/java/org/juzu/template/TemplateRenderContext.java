@@ -61,4 +61,9 @@ public class TemplateRenderContext
    {
       return null;
    }
+
+   public Object resolveBean(String expression)
+   {
+      return null;
+   }
 }

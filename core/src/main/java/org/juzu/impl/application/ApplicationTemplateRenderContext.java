@@ -27,4 +27,10 @@ public class ApplicationTemplateRenderContext extends TemplateRenderContext
    {
       return applicationContext.resolveTemplateStub(path);
    }
+
+   @Override
+   public Object resolveBean(String name)
+   {
+      return applicationContext.resolveBean(name);
+   }
 }
