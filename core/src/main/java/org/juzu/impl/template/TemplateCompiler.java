@@ -6,6 +6,8 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.spi.template.TemplateProvider;
+import org.juzu.impl.utils.Spliterator;
+import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
@@ -80,15 +82,35 @@ class TemplateCompiler
          throw new UnsupportedOperationException("circulariry detected (not handled for now)");
       }
 
-      //
-      Matcher matcher = NAME_PATTERN.matcher(path);
-      if (!matcher.matches())
+      // Resolve the template fqn and the template name
+      Spliterator s = new Spliterator(path, '/');
+      String templatePkgFQN = templatesPkgFQN;
+      String templateName = null;
+      while (s.hasNext())
       {
-         throw new UnsupportedOperationException("handle me gracefully for name " + path);
+         if (templateName != null)
+         {
+            if (templatePkgFQN.length() == 0)
+            {
+               templatePkgFQN = templateName;
+            }
+            else
+            {
+               templatePkgFQN = templatePkgFQN + "." +  templateName;
+            }
+         }
+         templateName = s.next();
       }
 
       //
-      FileObject file = filer.getResource(StandardLocation.SOURCE_PATH, templatesPkgFQN, path);
+      Matcher matcher = NAME_PATTERN.matcher(templateName);
+      if (!matcher.matches())
+      {
+         throw new UnsupportedOperationException("wrong template path " + path);
+      }
+
+      //
+      FileObject file = filer.getResource(StandardLocation.SOURCE_PATH, templatePkgFQN, templateName);
       CharSequence content = file.getCharContent(false).toString();
 
       //
@@ -141,7 +163,7 @@ class TemplateCompiler
          {
             ASTNode.Template.parse(content).generate(generator, tgc);
             building.add(path);
-            String ret = generator.generate(filer, templatesPkgFQN, matcher.group(1));
+            String ret = generator.generate(filer, templatePkgFQN, matcher.group(1));
             cache.put(path, ret);
             return ret;
          }

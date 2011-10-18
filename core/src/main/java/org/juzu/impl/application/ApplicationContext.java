@@ -12,6 +12,7 @@ import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.request.ControllerMethod;
 import org.juzu.impl.request.RequestContext;
 import org.juzu.impl.spi.template.TemplateStub;
+import org.juzu.impl.utils.Spliterator;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
@@ -185,11 +186,15 @@ public class ApplicationContext
       try
       {
          StringBuilder id = new StringBuilder(descriptor.getTemplatesPackageName());
-         if (id.length() > 0)
+         String relativePath = path.substring(0, path.indexOf('.'));
+         for (String name : Spliterator.split(relativePath, '/'))
          {
-            id.append('.');
+            if (id.length() > 0)
+            {
+               id.append('.');
+            }
+            id.append(name);
          }
-         id.append(path, 0, path.indexOf('.'));
          ClassLoader cl = Thread.currentThread().getContextClassLoader();
          Class<?> stubClass = cl.loadClass(id.toString());
          return(TemplateStub)stubClass.newInstance();
