@@ -74,7 +74,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
    public void setSessionValue(Object key, Object value)
    {
-      if (value != null)
+      if (value == null)
       {
          getSessionContext().remove(key);
       }
