@@ -1,5 +1,7 @@
 package org.juzu.test;
 
+import org.juzu.impl.utils.Tools;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,20 @@ public class Registry
       @SuppressWarnings("unchecked")
       T t = (T)state.get(key);
       return t;
+   }
+
+   public static <T> T compareAndSet(Object key, T expectedValue,T value)
+   {
+      if (key == null)
+      {
+         throw new NullPointerException();
+      }
+      T previous = (T)state.get(key);
+      if (Tools.safeEquals(previous, expectedValue))
+      {
+         state.put(key, value);
+      }
+      return previous;
    }
 
    public static <T> void set(Object key, T value)
@@ -50,7 +66,7 @@ public class Registry
       return (T)state.remove(key);
    }
 
-   public void clear()
+   public static void clear()
    {
       state.clear();
    }

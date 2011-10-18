@@ -110,11 +110,12 @@ public class ApplicationContext
 
          if (beans.size() == 1)
          {
+            CreationalContext<?> cc = null;
             try
             {
                // Get the bean
                Bean bean = beans.iterator().next();
-               CreationalContext<?> cc = mgr.createCreationalContext(bean);
+               cc = mgr.createCreationalContext(bean);
                Object o = mgr.getReference(bean, type, cc);
 
                // Prepare method parameters
@@ -132,6 +133,13 @@ public class ApplicationContext
             catch (Exception e)
             {
                throw new UnsupportedOperationException("handle me gracefully", e);
+            }
+            finally
+            {
+               if (cc != null)
+               {
+                  cc.release();
+               }
             }
          }
       }
