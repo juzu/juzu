@@ -118,7 +118,6 @@
   
   <modules>
     <module>core</module>
-    <module>sample</module>
     <module>booking</module>
   </modules>
 
