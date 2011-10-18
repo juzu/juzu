@@ -16,6 +16,10 @@ public class A
    @Inject
    Template index;
 
+   @Path("foo.gtmpl")
+   @Inject
+   Template foo;
+
    @Inject
    Printer printer;
 

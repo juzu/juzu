@@ -80,6 +80,9 @@ public class TemplateProcessor extends ProcessorPlugin
    @Override
    public void process()
    {
+      Map<ApplicationProcessor.ApplicationMetaData, TemplateCompiler> compilerMap = new HashMap<ApplicationProcessor.ApplicationMetaData, TemplateCompiler>();
+
+      //
       for (final Element elt : getElementsAnnotatedWith(Path.class))
       {
          PackageElement packageElt = getPackageOf(elt);
@@ -93,7 +96,11 @@ public class TemplateProcessor extends ProcessorPlugin
          }
 
          //
-         TemplateCompiler compiler = new TemplateCompiler(this, application, getFiler());
+         TemplateCompiler compiler = compilerMap.get(application);
+         if (compiler == null)
+         {
+            compilerMap.put(application, compiler = new TemplateCompiler(this, application, getFiler()));
+         }
 
          //
          try
