@@ -9,12 +9,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-booking</artifactId>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
 
   <dependencies>
 
