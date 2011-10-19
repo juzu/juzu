@@ -37,16 +37,16 @@ public class RenderMethodTestCase extends TestCase
    protected void setUp() throws Exception
    {
       final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "request", "render");
+      DiskFileSystem fs = new DiskFileSystem(root, "request", "method", "render");
 
       //
       CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
       compiler.assertCompile();
-      aClass = compiler.assertClass("request.render.A");
-      compiler.assertClass("request.render.A_");
+      aClass = compiler.assertClass("request.method.render.A");
+      compiler.assertClass("request.method.render.A_");
 
       //
-      Class<?> appClass = compiler.assertClass("request.render.RenderApplication");
+      Class<?> appClass = compiler.assertClass("request.method.render.RenderApplication");
       descriptor = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
    }
 

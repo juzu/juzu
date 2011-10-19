@@ -17,18 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package request.render;
-
-import org.juzu.Render;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-
-   @Render
-   public void noArg() { }
-
-   @Render
-   public void oneArg(String foo) { }
-
-}
+@Application
+package request.method.resource;
+import org.juzu.Application;

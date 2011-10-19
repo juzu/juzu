@@ -18,5 +18,5 @@
  */
 
 @Application
-package request.render;
+package request.method.render;
 import org.juzu.Application;

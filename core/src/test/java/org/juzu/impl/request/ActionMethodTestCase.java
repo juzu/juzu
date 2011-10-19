@@ -37,16 +37,16 @@ public class ActionMethodTestCase extends TestCase
    protected void setUp() throws Exception
    {
       final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "request", "action");
+      DiskFileSystem fs = new DiskFileSystem(root, "request", "method", "action");
 
       //
       CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
       compiler.assertCompile();
-      aClass = compiler.assertClass("request.action.A");
-      compiler.assertClass("request.action.A_");
+      aClass = compiler.assertClass("request.method.action.A");
+      compiler.assertClass("request.method.action.A_");
 
       //
-      Class<?> appClass = compiler.assertClass("request.action.ActionApplication");
+      Class<?> appClass = compiler.assertClass("request.method.action.ActionApplication");
       descriptor = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
    }
 
