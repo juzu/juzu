@@ -24,7 +24,6 @@ import org.juzu.Path;
 import org.juzu.Render;
 import org.juzu.Resource;
 import org.juzu.template.Template;
-import org.juzu.text.Printer;
 import org.sample.booking.Flash;
 import org.sample.booking.models.Booking;
 import org.sample.booking.models.Hotel;
@@ -55,9 +54,6 @@ public class Hotels // extends Application
 */
 
    @Inject
-   Printer printer;
-
-   @Inject
    Login login;
 
    @Inject
@@ -70,7 +66,7 @@ public class Hotels // extends Application
       String username = login.getUserName();
       List<Booking> bookings = Booking.findByUser(username);
       Map<String, Object> context = Collections.<String, Object>singletonMap("bookings", bookings);
-      index.render(printer, context);
+      index.render(context);
    }
 
    @Inject
@@ -99,7 +95,7 @@ public class Hotels // extends Application
       Map<String, Object> context = new HashMap<String, Object>();
       context.put("hotels", hotels);
       context.put("page", _page);
-      list.render(printer, context);
+      list.render(context);
    }
 
    @Inject
@@ -112,7 +108,7 @@ public class Hotels // extends Application
       Hotel hotel = Hotel.findById(id);
       Map<String, Object> context = new HashMap<String, Object>();
       context.put("hotel", hotel);
-      show.render(printer, context);
+      show.render(context);
    }
 
    @Inject
@@ -125,7 +121,7 @@ public class Hotels // extends Application
       Hotel hotel = Hotel.findById(id);
       Map<String, Object> context = new HashMap<String, Object>();
       context.put("hotel", hotel);
-      book.render(printer, context);
+      book.render(context);
    }
 
    @Action
@@ -214,7 +210,7 @@ public class Hotels // extends Application
       context.put("creditCardName", creditCardName);
       context.put("creditCardExpiryMonth", creditCardExpiryMonth);
       context.put("creditCardExpiryYear", creditCardExpiryYear);
-      confirmBooking.render(printer, context);
+      confirmBooking.render(context);
    }
 
    @Action

@@ -23,7 +23,6 @@ import org.juzu.Action;
 import org.juzu.Path;
 import org.juzu.Render;
 import org.juzu.template.Template;
-import org.juzu.text.Printer;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -58,9 +57,6 @@ public class Application
    // ~~
    */
 
-   @Inject
-   Printer printer;
-
    @Inject @Path("index.gtmpl")
    Template index;
 
@@ -85,14 +81,14 @@ public class Application
       }
       else
       {
-         index.render(printer);
+         index.render();
       }
    }
 
    @Render
    public void register() throws IOException
    {
-      register.render(printer);
+      register.render();
    }
 
    @Action
