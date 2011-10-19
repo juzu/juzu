@@ -23,11 +23,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.juzu.Phase;
 import org.juzu.impl.request.ActionBridge;
-import org.juzu.impl.request.ActionContext;
+import org.juzu.request.ActionContext;
 import org.juzu.impl.request.RenderBridge;
-import org.juzu.impl.request.RenderContext;
+import org.juzu.request.RenderContext;
 import org.juzu.impl.request.ResourceBridge;
-import org.juzu.impl.request.ResourceContext;
+import org.juzu.request.ResourceContext;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.Collections;
@@ -144,17 +144,17 @@ public class MockClient
    {
       if (request instanceof MockActionBridge)
       {
-         application.invoke(new ActionContext(application.classLoader, (ActionBridge)request));
+         application.invoke(request);
       }
       else if (request instanceof MockRenderBridge)
       {
-         application.invoke(new RenderContext(application.classLoader, (RenderBridge)request));
+         application.invoke(request);
          flashHistory.addFirst(flash != null ? flash : Collections.emptyMap());
          flash = null;
       }
       else
       {
-         application.invoke(new ResourceContext(application.classLoader, (ResourceBridge)request));
+         application.invoke(request);
       }
    }
 

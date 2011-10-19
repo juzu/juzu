@@ -21,7 +21,9 @@ package org.juzu.impl.request;
 
 import junit.framework.TestCase;
 import org.juzu.Phase;
-import org.juzu.application.ApplicationDescriptor;
+import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.metadata.ControllerMethod;
+import org.juzu.metadata.ControllerParameter;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.CompilerHelper;
 

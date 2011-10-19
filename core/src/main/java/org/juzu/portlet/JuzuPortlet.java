@@ -19,15 +19,17 @@
 
 package org.juzu.portlet;
 
-import org.juzu.impl.application.ApplicationContext;
-import org.juzu.application.ApplicationDescriptor;
+import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.impl.application.InternalApplicationContext;
+import org.juzu.request.ActionContext;
 import org.juzu.impl.application.Bootstrap;
 import org.juzu.impl.application.JuzuProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
 import org.juzu.impl.fs.FileSystemScanner;
-import org.juzu.impl.request.ResourceContext;
+import org.juzu.request.RenderContext;
+import org.juzu.request.ResourceContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
@@ -35,8 +37,6 @@ import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.fs.war.WarFileSystem;
 import org.juzu.impl.utils.DevClassLoader;
-import org.juzu.impl.request.ActionContext;
-import org.juzu.impl.request.RenderContext;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.inject.Inject;
@@ -71,7 +71,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 {
 
    /** . */
-   private ApplicationContext applicationContext;
+   private InternalApplicationContext applicationContext;
 
    /** . */
    private boolean prod;
@@ -221,10 +221,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
    {
-      ActionContext actionContext = new ActionContext(classLoader, new PortletActionBridge(request, response));
-
-      //
-      applicationContext.invoke(actionContext);
+      applicationContext.invoke(new PortletActionBridge(request, response));
    }
 
    public void render(RenderRequest request, RenderResponse response) throws PortletException, IOException
@@ -240,10 +237,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          }
 
          //
-         RenderContext renderContext = new RenderContext(classLoader, new PortletRenderBridge(request, response));
-
-         //
-         applicationContext.invoke(renderContext);
+         applicationContext.invoke(new PortletRenderBridge(request, response));
 
          // Clean up flash scope
          PortletSession session = request.getPortletSession(false);
@@ -291,10 +285,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          }
 
          //
-         ResourceContext renderContext = new ResourceContext(classLoader, new PortletResourceBridge(request, response));
-
-         //
-         applicationContext.invoke(renderContext);
+         applicationContext.invoke(new PortletResourceBridge(request, response));
       }
       else
       {

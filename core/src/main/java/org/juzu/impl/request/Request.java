@@ -19,52 +19,63 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.Phase;
-
-import java.util.Map;
+import org.juzu.request.ActionContext;
+import org.juzu.request.RenderContext;
+import org.juzu.request.RequestContext;
+import org.juzu.request.ResourceContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestContext
+public class Request
 {
 
-   /** The request classloader. */
-   protected final ClassLoader classLoader;
+   /** . */
+   private final RequestBridge bridge;
 
-   public RequestContext(ClassLoader classLoader)
+   /** . */
+   private final RequestContext context;
+
+   public Request(ClassLoader classLoader, RequestBridge bridge)
    {
-      this.classLoader = classLoader;
+      RequestContext context;
+      if (bridge instanceof RenderBridge)
+      {
+         context = new RenderContext(classLoader, (RenderBridge)bridge);
+      }
+      else if (bridge instanceof ActionBridge)
+      {
+         context = new ActionContext(classLoader, (ActionBridge)bridge);
+      }
+      else
+      {
+         context = new ResourceContext(classLoader, (ResourceBridge)bridge);
+      }
+
+      
+      this.context = context;
+      this.bridge = bridge;
    }
 
-   public final ClassLoader getClassLoader()
+   public RequestContext getContext()
    {
-      return classLoader;
+      return context;
    }
-
-   public final Map<String, String[]> getParameters()
-   {
-      return getBridge().getParameters();
-   }
-
-   public abstract Phase getPhase();
-
-   protected abstract RequestBridge getBridge();
 
    public final Object getContextualValue(Scope scope, Object key)
    {
       switch (scope)
       {
          case FLASH:
-            return getBridge().getFlashValue(key);
+            return bridge.getFlashValue(key);
          case REQUEST:
          case MIME:
          case RENDER:
          case ACTION:
          case RESOURCE:
-            return getBridge().getRequestValue(key);
+            return bridge.getRequestValue(key);
          case SESSION:
-            return getBridge().getSessionValue(key);
+            return bridge.getSessionValue(key);
          case IDENTITY:
-            return getBridge().getIdentityValue(key);
+            return bridge.getIdentityValue(key);
          default:
             throw new AssertionError();
       }
@@ -75,20 +86,20 @@ public abstract class RequestContext
       switch (scope)
       {
          case FLASH:
-            getBridge().setFlashValue(key, value);
+            bridge.setFlashValue(key, value);
             break;
          case ACTION:
          case RESOURCE:
          case MIME:
          case RENDER:
          case REQUEST:
-            getBridge().setRequestValue(key, value);
+            bridge.setRequestValue(key, value);
             break;
          case SESSION:
-            getBridge().setSessionValue(key, value);
+            bridge.setSessionValue(key, value);
             break;
          case IDENTITY:
-            getBridge().setIdentityValue(key, value);
+            bridge.setIdentityValue(key, value);
             break;
          default:
             throw new AssertionError();

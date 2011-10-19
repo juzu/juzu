@@ -17,9 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.application;
-
-import org.juzu.impl.request.ControllerMethod;
+package org.juzu.metadata;
 
 import java.lang.reflect.Method;
 import java.util.Collections;

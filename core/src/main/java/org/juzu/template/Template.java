@@ -19,9 +19,7 @@
 
 package org.juzu.template;
 
-import org.juzu.impl.application.ApplicationContext;
-import org.juzu.impl.application.ApplicationTemplateRenderContext;
-import org.juzu.impl.spi.template.TemplateStub;
+import org.juzu.request.ApplicationContext;
 import org.juzu.text.Printer;
 
 import java.io.IOException;
@@ -43,6 +41,11 @@ public class Template
    {
       this.applicationContext = applicationContext;
       this.path = path;
+   }
+
+   public String getPath()
+   {
+      return path;
    }
 
    public void render() throws TemplateExecutionException, IOException
@@ -95,18 +98,7 @@ public class Template
       Map<String, ?> attributes,
       Locale locale
    ) throws TemplateExecutionException, IOException {
-
-      if (printer == null)
-      {
-         // ???
-         throw new NullPointerException("No printer");
-      }
-
-      //
-      TemplateStub stub = applicationContext.resolveTemplateStub(path);
-
-      //
-      stub.render(new ApplicationTemplateRenderContext(applicationContext, printer, attributes, locale));
+      applicationContext.render(this, printer, attributes, locale);
    }
 
    @Override

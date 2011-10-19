@@ -28,25 +28,25 @@ public enum Scope
    RENDER()
    {
       @Override
-      public boolean isActive(RequestContext context)
+      public boolean isActive(Request context)
       {
-         return context.getPhase() == Phase.RENDER;
+         return context.getContext().getPhase() == Phase.RENDER;
       }
    },
 
    ACTION()
    {
       @Override
-      public boolean isActive(RequestContext context)
+      public boolean isActive(Request context)
       {
-         return context.getPhase() == Phase.ACTION;
+         return context.getContext().getPhase() == Phase.ACTION;
       }
    },
 
    REQUEST()
    {
       @Override
-      public boolean isActive(RequestContext context)
+      public boolean isActive(Request context)
       {
          return true;
       }
@@ -55,25 +55,25 @@ public enum Scope
    RESOURCE()
    {
       @Override
-      public boolean isActive(RequestContext context)
+      public boolean isActive(Request context)
       {
-         return context.getPhase() == Phase.RESOURCE;
+         return context.getContext().getPhase() == Phase.RESOURCE;
       }
    },
 
    MIME()
    {
       @Override
-      public boolean isActive(RequestContext context)
+      public boolean isActive(Request context)
       {
-         return context.getPhase() == Phase.RENDER || context.getPhase() == Phase.RESOURCE;
+         return context.getContext().getPhase() == Phase.RENDER || context.getContext().getPhase() == Phase.RESOURCE;
       }
    },
 
    SESSION()
    {
       @Override
-      public boolean isActive(RequestContext context)
+      public boolean isActive(Request context)
       {
          return true;
       }
@@ -86,7 +86,7 @@ public enum Scope
    FLASH()
    {
       @Override
-      public boolean isActive(RequestContext context)
+      public boolean isActive(Request context)
       {
          return true;
       }
@@ -95,12 +95,12 @@ public enum Scope
    IDENTITY()
    {
       @Override
-      public boolean isActive(RequestContext context)
+      public boolean isActive(Request request)
       {
          return false;
       }
    };
    
-   public abstract boolean isActive(RequestContext context);
+   public abstract boolean isActive(Request context);
 
 }

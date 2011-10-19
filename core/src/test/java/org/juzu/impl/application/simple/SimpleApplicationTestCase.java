@@ -20,16 +20,16 @@
 package org.juzu.impl.application.simple;
 
 import junit.framework.TestCase;
-import org.juzu.application.ApplicationDescriptor;
+import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.metadata.ControllerMethod;
+import org.juzu.metadata.ControllerParameter;
 import org.juzu.impl.application.JuzuProcessor;
-import org.juzu.impl.request.ControllerMethod;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
-import org.juzu.impl.request.ControllerParameter;
 
 import java.lang.reflect.Method;
 import java.net.URL;

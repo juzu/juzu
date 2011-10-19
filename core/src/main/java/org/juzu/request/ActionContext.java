@@ -17,10 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
+package org.juzu.request;
 
 import org.juzu.Phase;
 import org.juzu.Response;
+import org.juzu.metadata.ControllerMethod;
+import org.juzu.metadata.ControllerParameter;
+import org.juzu.impl.request.ActionBridge;
 
 import java.util.List;
 
@@ -40,7 +43,7 @@ public final class ActionContext extends RequestContext
    }
 
    @Override
-   protected RequestBridge getBridge()
+   protected ActionBridge getBridge()
    {
       return bridge;
    }

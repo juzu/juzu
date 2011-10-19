@@ -19,10 +19,11 @@
 
 package org.juzu.test.request;
 
-import org.juzu.application.ApplicationDescriptor;
-import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.request.RequestBridge;
+import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.impl.application.InternalApplicationContext;
+import org.juzu.request.ApplicationContext;
 import org.juzu.impl.application.Bootstrap;
-import org.juzu.impl.request.RequestContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
@@ -47,7 +48,7 @@ public class MockApplication<P>
    final ClassLoader classLoader;
 
    /** . */
-   private ApplicationContext context;
+   private InternalApplicationContext context;
 
    public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader)
    {
@@ -101,9 +102,9 @@ public class MockApplication<P>
       return context;
    }
 
-   void invoke(RequestContext context)
+   void invoke(RequestBridge bridge)
    {
-      this.context.invoke(context);
+      this.context.invoke(bridge);
    }
 
    public MockClient client()

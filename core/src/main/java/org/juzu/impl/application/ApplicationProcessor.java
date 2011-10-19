@@ -27,14 +27,15 @@ import org.juzu.Render;
 import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
-import org.juzu.application.ApplicationDescriptor;
+import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.metadata.ControllerMethod;
+import org.juzu.metadata.ControllerParameter;
 import org.juzu.impl.compiler.ProcessorPlugin;
-import org.juzu.impl.request.ActionContext;
-import org.juzu.impl.request.ControllerMethod;
-import org.juzu.impl.request.MimeContext;
+import org.juzu.request.ActionContext;
+import org.juzu.request.ApplicationContext;
+import org.juzu.request.MimeContext;
 import org.juzu.impl.utils.PackageMap;
 import org.juzu.impl.utils.Tools;
-import org.juzu.impl.request.ControllerParameter;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -451,7 +452,7 @@ public class ApplicationProcessor extends ProcessorPlugin
                   writer2.append("import ").append(Arrays.class.getName()).append(";\n");
                   writer2.append("import ").append(Phase.class.getName()).append(";\n");
                   writer2.append("import ").append(URLBuilder.class.getName()).append(";\n");
-                  writer2.append("import ").append(ApplicationContext.class.getName()).append(";\n");
+                  writer2.append("import ").append(InternalApplicationContext.class.getName()).append(";\n");
                   writer2.append("import ").append(MimeContext.class.getName()).append(";\n");
                   writer2.append("import ").append(ActionContext.class.getName()).append(";\n");
                   writer2.append("import ").append(Response.class.getName()).append(";\n");
@@ -510,7 +511,7 @@ public class ApplicationProcessor extends ProcessorPlugin
                               VariableElement argDecl = argDecls.get(j);
                               writer2.append(argumentType.toString()).append(" ").append(argDecl.getSimpleName().toString());
                            }
-                           writer2.append(") { return ((ActionContext)ApplicationContext.getCurrentRequest()).createResponse(").append(foo.name).append(".").append(method.id);
+                           writer2.append(") { return ((ActionContext)InternalApplicationContext.getCurrentRequest()).createResponse(").append(foo.name).append(".").append(method.id);
                            switch (argDecls.size())
                            {
                               case 0:
@@ -547,7 +548,7 @@ public class ApplicationProcessor extends ProcessorPlugin
                            VariableElement argDecl = argDecls.get(j);
                            writer2.append(argumentType.toString()).append(" ").append(argDecl.getSimpleName().toString());
                         }
-                        writer2.append(") { return ((MimeContext)ApplicationContext.getCurrentRequest()).createURLBuilder(").append(foo.name).append(".").append(method.id);
+                        writer2.append(") { return ((MimeContext)InternalApplicationContext.getCurrentRequest()).createURLBuilder(").append(foo.name).append(".").append(method.id);
                         switch (argDecls.size())
                         {
                            case 0:

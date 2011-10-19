@@ -17,39 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.application;
+package org.juzu.request;
 
-import org.juzu.impl.spi.template.TemplateStub;
-import org.juzu.template.TemplateRenderContext;
-import org.juzu.text.Printer;
-
-import java.util.Locale;
-import java.util.Map;
+import org.juzu.Phase;
+import org.juzu.impl.request.ResourceBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationTemplateRenderContext extends TemplateRenderContext
+public final class ResourceContext extends MimeContext
 {
 
    /** . */
-   private final InternalApplicationContext applicationContext;
+   private final ResourceBridge bridge;
 
-   public ApplicationTemplateRenderContext(InternalApplicationContext applicationContext, Printer printer, Map<String, ?> attributes, Locale locale)
+   public ResourceContext(ClassLoader classLoader, ResourceBridge bridge)
    {
-      super(printer, attributes, locale);
+      super(classLoader);
 
-      //
-      this.applicationContext = applicationContext;
+      this.bridge = bridge;
    }
 
    @Override
-   public TemplateStub resolveTemplate(String path)
+   protected ResourceBridge getBridge()
    {
-      return applicationContext.resolveTemplateStub(path);
+      return bridge;
    }
 
    @Override
-   public Object resolveBean(String name)
+   public Phase getPhase()
    {
-      return applicationContext.resolveBean(name);
+      return Phase.RESOURCE;
    }
 }

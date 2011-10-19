@@ -21,8 +21,8 @@ package org.juzu.impl.application;
 
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.Phase;
-import org.juzu.application.ApplicationDescriptor;
-import org.juzu.impl.request.ControllerMethod;
+import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.metadata.ControllerMethod;
 
 import java.util.List;
 import java.util.Map;

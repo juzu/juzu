@@ -17,9 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
+package org.juzu.request;
 
 import org.juzu.Phase;
+import org.juzu.impl.request.RenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public final class RenderContext extends MimeContext
@@ -37,7 +38,7 @@ public final class RenderContext extends MimeContext
    }
 
    @Override
-   protected MimeBridge getBridge()
+   protected RenderBridge getBridge()
    {
       return bridge;
    }

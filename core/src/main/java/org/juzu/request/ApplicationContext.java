@@ -17,33 +17,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.application;
+package org.juzu.request;
 
 import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.template.Template;
+import org.juzu.text.Printer;
 
-import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerTestCase extends AbstractTestCase
+public abstract class ApplicationContext
 {
 
-   public void testDefaultController() throws Exception
+   public ApplicationContext()
    {
-      final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "application", "default_controller");
-
-      //
-      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
-      compiler.assertCompile();
-      Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
-      Class<?> aClass = compiler.assertClass("application.default_controller.A");
-
-      //
-      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      assertSame(aClass, desc.getDefaultController());
    }
+
+   public abstract ApplicationDescriptor getDescriptor();
+
+   public abstract Object resolveBean(String name);
+
+   public abstract Printer getPrinter();
+
+   public abstract void render(Template template, Printer printer, Map<String, ?> attributes, Locale locale) throws IOException;
 
 }

@@ -22,14 +22,17 @@ package org.juzu.impl.application;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.MimeScoped;
 import org.juzu.Path;
-import org.juzu.application.ApplicationDescriptor;
+import org.juzu.impl.request.Request;
+import org.juzu.impl.request.RequestBridge;
+import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.metadata.ControllerMethod;
+import org.juzu.metadata.ControllerParameter;
 import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.ScopeController;
-import org.juzu.impl.request.ControllerParameter;
-import org.juzu.impl.request.MimeContext;
+import org.juzu.request.ApplicationContext;
+import org.juzu.request.MimeContext;
+import org.juzu.request.RequestContext;
 import org.juzu.impl.spi.cdi.Container;
-import org.juzu.impl.request.ControllerMethod;
-import org.juzu.impl.request.RequestContext;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Spliterator;
 import org.juzu.template.Template;
@@ -41,35 +44,37 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
 @Singleton
-public class ApplicationContext
+public class InternalApplicationContext extends ApplicationContext
 {
 
    public static RequestContext getCurrentRequest()
    {
-      return current.get();
+      return current.get().getContext();
    }
 
    /** . */
    private final ApplicationDescriptor descriptor;
 
    /** . */
-   private final Container container;
+   final Container container;
 
    /** . */
    private final ControllerResolver controllerResolver;
 
    /** . */
-   private static final ThreadLocal<RequestContext> current = new ThreadLocal<RequestContext>();
+   private static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
-   public ApplicationContext()
+   public InternalApplicationContext()
    {
       Bootstrap bootstrap = Bootstrap.foo.get();
 
@@ -84,15 +89,21 @@ public class ApplicationContext
       return descriptor;
    }
 
-   public void invoke(RequestContext context)
+   public void invoke(RequestBridge bridge)
    {
+      ClassLoader classLoader = container.getClassLoader();
+
+      //
+      Request request = new Request(classLoader, bridge);
+
+      //
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
       try
       {
-         Thread.currentThread().setContextClassLoader(context.getClassLoader());
-         current.set(context);
-         ScopeController.begin(context);
-         doInvoke(context);
+         Thread.currentThread().setContextClassLoader(classLoader);
+         current.set(request);
+         ScopeController.begin(request);
+         doInvoke(request);
       }
       finally
       {
@@ -119,8 +130,11 @@ public class ApplicationContext
       }
    }
 
-   private void doInvoke(RequestContext context)
+   private void doInvoke(Request request)
    {
+      RequestContext context = request.getContext();
+
+      //
       ControllerMethod method = controllerResolver.resolve(context.getPhase(), context.getParameters());
 
       //
@@ -189,7 +203,8 @@ public class ApplicationContext
    @MimeScoped
    public Printer getPrinter()
    {
-      RequestContext context = current.get();
+      Request req = current.get();
+      RequestContext context = req.getContext();
       if (context instanceof MimeContext)
       {
          return ((MimeContext)context).getPrinter();
@@ -229,5 +244,21 @@ public class ApplicationContext
    {
       Path path = point.getAnnotated().getAnnotation(Path.class);
       return new Template(this, path.value());
+   }
+
+   @Override
+   public void render(Template template, Printer printer, Map<String, ?> attributes, Locale locale) throws IOException
+   {
+      if (printer == null)
+      {
+         // ???
+         throw new NullPointerException("No printer");
+      }
+
+      //
+      TemplateStub stub = resolveTemplateStub(template.getPath());
+
+      //
+      stub.render(new ApplicationTemplateRenderContext(this, printer, attributes, locale));
    }
 }

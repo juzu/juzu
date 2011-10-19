@@ -24,7 +24,7 @@ import org.juzu.FlashScoped;
 import org.juzu.MimeScoped;
 import org.juzu.RenderScoped;
 import org.juzu.ResourceScoped;
-import org.juzu.impl.request.RequestContext;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.request.Scope;
 
 import javax.enterprise.context.ContextNotActiveException;
@@ -62,44 +62,44 @@ public class ScopeController
    final ContextImpl sessionContext = new ContextImpl(this, Scope.SESSION, SessionScoped.class);
 
    /** . */
-   final ThreadLocal<RequestContext> currentContext = new ThreadLocal<RequestContext>();
+   final ThreadLocal<Request> currentRequest = new ThreadLocal<Request>();
 
-   public static void begin(RequestContext context) throws IllegalStateException
+   public static void begin(Request context) throws IllegalStateException
    {
       if (context == null)
       {
          throw new NullPointerException();
       }
-      if (INSTANCE.currentContext.get() != null)
+      if (INSTANCE.currentRequest.get() != null)
       {
          throw new IllegalStateException("Already started");
       }
-      INSTANCE.currentContext.set(context);
+      INSTANCE.currentRequest.set(context);
    }
 
    public static void end()
    {
-      INSTANCE.currentContext.set(null);
+      INSTANCE.currentRequest.set(null);
    }
 
    public <T> T get(Scope scope, Contextual<T> contextual, CreationalContext<T> creationalContext)
    {
-      RequestContext ctx = currentContext.get();
-      if (ctx == null)
+      Request req = currentRequest.get();
+      if (req == null)
       {
          throw new ContextNotActiveException();
       }
-      if (!scope.isActive(ctx))
+      if (!scope.isActive(req))
       {
          throw new ContextNotActiveException();
       }
-      Object o = ctx.getContextualValue(scope, contextual);
+      Object o = req.getContextualValue(scope, contextual);
       if (o == null)
       {
          if (creationalContext != null)
          {
             o = contextual.create(creationalContext);
-            ctx.setContextualValue(scope, contextual, o);
+            req.setContextualValue(scope, contextual, o);
          }
       }
       return (T)o;
@@ -107,11 +107,11 @@ public class ScopeController
 
    public boolean isActive(Scope scope)
    {
-      RequestContext ctx = currentContext.get();
-      if (ctx == null)
+      Request req = currentRequest.get();
+      if (req == null)
       {
          throw new ContextNotActiveException();
       }
-      return scope.isActive(ctx);
+      return scope.isActive(req);
    }
 }

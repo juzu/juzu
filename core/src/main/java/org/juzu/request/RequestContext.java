@@ -17,33 +17,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
+package org.juzu.request;
 
 import org.juzu.Phase;
+import org.juzu.impl.request.RequestBridge;
+import org.juzu.impl.request.Scope;
+
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class ResourceContext extends MimeContext
+public abstract class RequestContext
 {
 
-   /** . */
-   private final ResourceBridge bridge;
+   /** The request classloader. */
+   protected final ClassLoader classLoader;
 
-   public ResourceContext(ClassLoader classLoader, ResourceBridge bridge)
+   public RequestContext(ClassLoader classLoader)
    {
-      super(classLoader);
-
-      this.bridge = bridge;
+      this.classLoader = classLoader;
    }
 
-   @Override
-   protected MimeBridge getBridge()
+   public final ClassLoader getClassLoader()
    {
-      return bridge;
+      return classLoader;
    }
 
-   @Override
-   public Phase getPhase()
+   public final Map<String, String[]> getParameters()
    {
-      return Phase.RESOURCE;
+      return getBridge().getParameters();
    }
+
+   public abstract Phase getPhase();
+
+   protected abstract RequestBridge getBridge();
+
 }

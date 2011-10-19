@@ -19,7 +19,8 @@
 
 package org.juzu.impl.application;
 
-import org.juzu.application.ApplicationDescriptor;
+import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.request.ApplicationContext;
 import org.juzu.impl.spi.cdi.Container;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -31,16 +32,16 @@ public class Bootstrap
 {
 
    /** . */
-   static final ThreadLocal<Bootstrap> foo = new ThreadLocal<Bootstrap>();
+   public static final ThreadLocal<Bootstrap> foo = new ThreadLocal<Bootstrap>();
 
    /** . */
-   final Container container;
+   public final Container container;
 
    /** . */
-   final ApplicationDescriptor descriptor;
+   public final ApplicationDescriptor descriptor;
 
    /** . */
-   private ApplicationContext context;
+   private InternalApplicationContext context;
 
    public Bootstrap(Container container, ApplicationDescriptor descriptor)
    {
@@ -60,7 +61,7 @@ public class Bootstrap
          BeanManager mgr = container.getManager();
          Bean bean = mgr.getBeans(ApplicationContext.class).iterator().next();
          CreationalContext<?> cc = mgr.createCreationalContext(bean);
-         this.context = (ApplicationContext)mgr.getReference(bean, ApplicationContext.class, cc);
+         this.context = (InternalApplicationContext)mgr.getReference(bean, InternalApplicationContext.class, cc);
       }
       finally
       {
@@ -68,7 +69,7 @@ public class Bootstrap
       }
    }
 
-   public ApplicationContext getContext()
+   public InternalApplicationContext getContext()
    {
       return context;
    }
