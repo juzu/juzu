@@ -19,7 +19,7 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.application.Phase;
+import org.juzu.Phase;
 
 import java.util.Map;
 

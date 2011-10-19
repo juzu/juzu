@@ -19,8 +19,8 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.Phase;
 import org.juzu.URLBuilder;
-import org.juzu.application.Phase;
 import org.juzu.text.Printer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

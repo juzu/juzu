@@ -21,12 +21,11 @@ package org.juzu.test.request;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.juzu.application.Phase;
+import org.juzu.Phase;
 import org.juzu.impl.request.ActionBridge;
 import org.juzu.impl.request.ActionContext;
 import org.juzu.impl.request.RenderBridge;
 import org.juzu.impl.request.RenderContext;
-import org.juzu.impl.request.RequestContext;
 import org.juzu.impl.request.ResourceBridge;
 import org.juzu.impl.request.ResourceContext;
 import org.juzu.test.AbstractTestCase;

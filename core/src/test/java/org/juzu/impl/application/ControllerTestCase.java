@@ -19,16 +19,12 @@
 
 package org.juzu.impl.application;
 
-import org.juzu.AmbiguousResolutionException;
 import org.juzu.application.ApplicationDescriptor;
-import org.juzu.application.Phase;
-import org.juzu.impl.request.ControllerMethod;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
 import java.io.File;
-import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerTestCase extends AbstractTestCase

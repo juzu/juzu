@@ -19,7 +19,7 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.application.Phase;
+import org.juzu.Phase;
 import org.juzu.impl.utils.Tools;
 
 import java.lang.reflect.Method;

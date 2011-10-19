@@ -19,8 +19,8 @@
 
 package org.juzu.test.request;
 
+import org.juzu.Phase;
 import org.juzu.URLBuilder;
-import org.juzu.application.Phase;
 import org.juzu.impl.request.MimeBridge;
 import org.juzu.text.Printer;
 

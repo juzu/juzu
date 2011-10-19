@@ -19,8 +19,8 @@
 
 package org.juzu.portlet;
 
+import org.juzu.Phase;
 import org.juzu.URLBuilder;
-import org.juzu.application.Phase;
 import org.juzu.impl.request.RenderBridge;
 import org.juzu.text.Printer;
 import org.juzu.text.WriterPrinter;

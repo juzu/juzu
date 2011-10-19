@@ -19,9 +19,7 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.application.Phase;
-
-import java.util.Map;
+import org.juzu.Phase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public final class RenderContext extends MimeContext<RenderBridge>

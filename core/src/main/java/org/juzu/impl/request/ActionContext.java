@@ -19,11 +19,10 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.Phase;
 import org.juzu.Response;
-import org.juzu.application.Phase;
 
 import java.util.List;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public final class ActionContext extends RequestContext<ActionBridge>

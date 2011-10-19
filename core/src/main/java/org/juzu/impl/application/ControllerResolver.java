@@ -20,8 +20,8 @@
 package org.juzu.impl.application;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.Phase;
 import org.juzu.application.ApplicationDescriptor;
-import org.juzu.application.Phase;
 import org.juzu.impl.request.ControllerMethod;
 
 import java.util.List;

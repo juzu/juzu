@@ -20,8 +20,8 @@
 package org.juzu.impl.request;
 
 import junit.framework.TestCase;
+import org.juzu.Phase;
 import org.juzu.application.ApplicationDescriptor;
-import org.juzu.application.Phase;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.CompilerHelper;
 
