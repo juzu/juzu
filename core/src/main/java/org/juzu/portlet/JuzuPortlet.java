@@ -189,15 +189,24 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       Properties props = new Properties();
       props.load(in);
 
-      //
-      if (props.size() != 1)
+      // Find the first valid application for now
+      String fqn = null;
+      for (Map.Entry<Object, Object> entry : props.entrySet())
+      {
+         String a = entry.getKey().toString();
+         String b = entry.getValue().toString();
+         if (a.length() > 0 && b.length() > 0)
+         {
+            fqn = b;
+            break;
+         }
+      }
+      if (fqn == null)
       {
          throw new Exception("Could not find an application to start " + props);
       }
-      Map.Entry<Object, Object> entry = props.entrySet().iterator().next();
 
       //
-      String fqn = entry.getValue().toString();
       System.out.println("loading class descriptor " + fqn);
       Class<?> clazz = cl.loadClass(fqn);
       Field field = clazz.getDeclaredField("DESCRIPTOR");
