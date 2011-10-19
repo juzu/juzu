@@ -25,12 +25,24 @@ import org.juzu.Response;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class ActionContext extends RequestContext<ActionBridge>
+public final class ActionContext extends RequestContext
 {
+
+   /** . */
+   private final ActionBridge bridge;
 
    public ActionContext(ClassLoader classLoader, ActionBridge bridge)
    {
-      super(classLoader, bridge);
+      super(classLoader);
+
+      //
+      this.bridge = bridge;
+   }
+
+   @Override
+   protected RequestBridge getBridge()
+   {
+      return bridge;
    }
 
    @Override

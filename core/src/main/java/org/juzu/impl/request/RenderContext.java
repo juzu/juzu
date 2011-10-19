@@ -22,12 +22,24 @@ package org.juzu.impl.request;
 import org.juzu.Phase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class RenderContext extends MimeContext<RenderBridge>
+public final class RenderContext extends MimeContext
 {
+
+   /** . */
+   private final RenderBridge bridge;
 
    public RenderContext(ClassLoader classLoader, RenderBridge bridge)
    {
-      super(classLoader, bridge);
+      super(classLoader);
+
+      //
+      this.bridge = bridge;
+   }
+
+   @Override
+   protected MimeBridge getBridge()
+   {
+      return bridge;
    }
 
    @Override

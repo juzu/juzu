@@ -119,7 +119,7 @@ public class ApplicationContext
       }
    }
 
-   private void doInvoke(RequestContext<?> context)
+   private void doInvoke(RequestContext context)
    {
       ControllerMethod method = controllerResolver.resolve(context.getPhase(), context.getParameters());
 

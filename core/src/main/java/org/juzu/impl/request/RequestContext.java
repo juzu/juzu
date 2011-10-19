@@ -24,19 +24,15 @@ import org.juzu.Phase;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestContext<B extends RequestBridge>
+public abstract class RequestContext
 {
 
    /** The request classloader. */
    protected final ClassLoader classLoader;
 
-   /** The request bridge. */
-   protected final B bridge;
-
-   public RequestContext(ClassLoader classLoader, B bridge)
+   public RequestContext(ClassLoader classLoader)
    {
       this.classLoader = classLoader;
-      this.bridge = bridge;
    }
 
    public final ClassLoader getClassLoader()
@@ -46,27 +42,29 @@ public abstract class RequestContext<B extends RequestBridge>
 
    public final Map<String, String[]> getParameters()
    {
-      return bridge.getParameters();
+      return getBridge().getParameters();
    }
 
    public abstract Phase getPhase();
+
+   protected abstract RequestBridge getBridge();
 
    public final Object getContextualValue(Scope scope, Object key)
    {
       switch (scope)
       {
          case FLASH:
-            return bridge.getFlashValue(key);
+            return getBridge().getFlashValue(key);
          case REQUEST:
          case MIME:
          case RENDER:
          case ACTION:
          case RESOURCE:
-            return bridge.getRequestValue(key);
+            return getBridge().getRequestValue(key);
          case SESSION:
-            return bridge.getSessionValue(key);
+            return getBridge().getSessionValue(key);
          case IDENTITY:
-            return bridge.getIdentityValue(key);
+            return getBridge().getIdentityValue(key);
          default:
             throw new AssertionError();
       }
@@ -77,20 +75,20 @@ public abstract class RequestContext<B extends RequestBridge>
       switch (scope)
       {
          case FLASH:
-            bridge.setFlashValue(key, value);
+            getBridge().setFlashValue(key, value);
             break;
          case ACTION:
          case RESOURCE:
          case MIME:
          case RENDER:
          case REQUEST:
-            bridge.setRequestValue(key, value);
+            getBridge().setRequestValue(key, value);
             break;
          case SESSION:
-            bridge.setSessionValue(key, value);
+            getBridge().setSessionValue(key, value);
             break;
          case IDENTITY:
-            bridge.setIdentityValue(key, value);
+            getBridge().setIdentityValue(key, value);
             break;
          default:
             throw new AssertionError();

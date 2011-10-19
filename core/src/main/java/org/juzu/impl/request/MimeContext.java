@@ -23,17 +23,20 @@ import org.juzu.URLBuilder;
 import org.juzu.text.Printer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MimeContext<B extends MimeBridge> extends RequestContext<B>
+public abstract class MimeContext extends RequestContext
 {
 
-   protected MimeContext(ClassLoader classLoader, B bridge)
+   protected MimeContext(ClassLoader classLoader)
    {
-      super(classLoader, bridge);
+      super(classLoader);
    }
+
+   @Override
+   protected abstract MimeBridge getBridge();
 
    public final URLBuilder createURLBuilder(ControllerMethod method)
    {
-      URLBuilder builder = bridge.createURLBuilder(method.getPhase());
+      URLBuilder builder = getBridge().createURLBuilder(method.getPhase());
 
       //
       builder.setParameter("op", method.getId());
@@ -80,6 +83,6 @@ public abstract class MimeContext<B extends MimeBridge> extends RequestContext<B
     */
    public final Printer getPrinter()
    {
-      return bridge.getPrinter();
+      return getBridge().getPrinter();
    }
 }

@@ -101,7 +101,7 @@ public class MockApplication<P>
       return context;
    }
 
-   void invoke(RequestContext<?> context)
+   void invoke(RequestContext context)
    {
       this.context.invoke(context);
    }

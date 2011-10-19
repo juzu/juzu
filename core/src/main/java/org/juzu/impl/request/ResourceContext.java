@@ -22,12 +22,23 @@ package org.juzu.impl.request;
 import org.juzu.Phase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class ResourceContext extends MimeContext<ResourceBridge>
+public final class ResourceContext extends MimeContext
 {
+
+   /** . */
+   private final ResourceBridge bridge;
 
    public ResourceContext(ClassLoader classLoader, ResourceBridge bridge)
    {
-      super(classLoader, bridge);
+      super(classLoader);
+
+      this.bridge = bridge;
+   }
+
+   @Override
+   protected MimeBridge getBridge()
+   {
+      return bridge;
    }
 
    @Override

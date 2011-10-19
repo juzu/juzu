@@ -28,7 +28,7 @@ public enum Scope
    RENDER()
    {
       @Override
-      public boolean isActive(RequestContext<?> context)
+      public boolean isActive(RequestContext context)
       {
          return context.getPhase() == Phase.RENDER;
       }
@@ -37,7 +37,7 @@ public enum Scope
    ACTION()
    {
       @Override
-      public boolean isActive(RequestContext<?> context)
+      public boolean isActive(RequestContext context)
       {
          return context.getPhase() == Phase.ACTION;
       }
@@ -46,7 +46,7 @@ public enum Scope
    REQUEST()
    {
       @Override
-      public boolean isActive(RequestContext<?> context)
+      public boolean isActive(RequestContext context)
       {
          return true;
       }
@@ -55,7 +55,7 @@ public enum Scope
    RESOURCE()
    {
       @Override
-      public boolean isActive(RequestContext<?> context)
+      public boolean isActive(RequestContext context)
       {
          return context.getPhase() == Phase.RESOURCE;
       }
@@ -64,7 +64,7 @@ public enum Scope
    MIME()
    {
       @Override
-      public boolean isActive(RequestContext<?> context)
+      public boolean isActive(RequestContext context)
       {
          return context.getPhase() == Phase.RENDER || context.getPhase() == Phase.RESOURCE;
       }
@@ -73,7 +73,7 @@ public enum Scope
    SESSION()
    {
       @Override
-      public boolean isActive(RequestContext<?> context)
+      public boolean isActive(RequestContext context)
       {
          return true;
       }
@@ -86,7 +86,7 @@ public enum Scope
    FLASH()
    {
       @Override
-      public boolean isActive(RequestContext<?> context)
+      public boolean isActive(RequestContext context)
       {
          return true;
       }
@@ -95,12 +95,12 @@ public enum Scope
    IDENTITY()
    {
       @Override
-      public boolean isActive(RequestContext<?> context)
+      public boolean isActive(RequestContext context)
       {
          return false;
       }
    };
    
-   public abstract boolean isActive(RequestContext<?> context);
+   public abstract boolean isActive(RequestContext context);
 
 }
