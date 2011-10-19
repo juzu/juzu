@@ -63,4 +63,19 @@ public class ToolsTestCase extends TestCase
       assertFalse(p.matcher("bar").matches());
       assertFalse(p.matcher("foobar").matches());
    }
+
+   public void testUnquote()
+   {
+      assertEquals("", Tools.unquote(""));
+      assertEquals("'", Tools.unquote("'"));
+      assertEquals("\"", Tools.unquote("\""));
+      assertEquals("'\"", Tools.unquote("'\""));
+      assertEquals("\"'", Tools.unquote("\"'"));
+      assertEquals("", Tools.unquote("''"));
+      assertEquals("", Tools.unquote("\"\""));
+      assertEquals("a", Tools.unquote("'a'"));
+      assertEquals("a", Tools.unquote("\"a\""));
+      assertEquals("'a\"", Tools.unquote("'a\""));
+      assertEquals("\"a'", Tools.unquote("\"a'"));
+   }
 }

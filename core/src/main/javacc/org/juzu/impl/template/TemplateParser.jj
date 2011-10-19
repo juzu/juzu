@@ -10,6 +10,7 @@ package org.juzu.impl.template;
 import java.util.ArrayList;
 import org.juzu.text.Location;
 import org.juzu.text.Coordinate;
+import org.juzu.impl.utils.Tools;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -252,7 +253,7 @@ void parseStartOrEmptyTag() : { Token t,u,c,v,z = null; HashMap<String, String> 
             <ENTER_START_OR_EMPTY_TAG_ARGS>
                ( t = <START_OR_EMPTY_TAG_ARG_NAME> <START_OR_EMPTY_TAG_ARG_EQ> v = <START_OR_EMPTY_TAG_ARG_VALUE>
                 {
-                   args.put(t.image, v.image);
+                   args.put(t.image, Tools.unquote(v.image));
                 }
                 ) *
             c = <CLOSE_START_OR_EMPTY_TAG_ARGS>

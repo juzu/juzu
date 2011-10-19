@@ -153,4 +153,22 @@ public class Tools
       }
       return baos.toString();
    }
+
+   public static String unquote(String s) throws NullPointerException
+   {
+      if (s == null)
+      {
+         throw new NullPointerException("Can't unquote null string");
+      }
+      if (s.length() > 1)
+      {
+         char c1 = s.charAt(0);
+         char c2 = s.charAt(s.length() - 1);
+         if ((c1 == '\'' || c1 == '"') && c1 == c2)
+         {
+            return s.substring(1, s.length() - 1);
+         }
+      }
+      return s;
+   }
 }
