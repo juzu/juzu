@@ -24,8 +24,22 @@ import org.juzu.impl.request.RenderBridge;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockRenderBridge extends MockMimeBridge implements RenderBridge
 {
+
+   /** . */
+   private String title;
+
    public MockRenderBridge(MockClient client)
    {
       super(client);
+   }
+
+   public String getTitle()
+   {
+      return title;
+   }
+
+   public void setTitle(String title)
+   {
+      this.title = title;
    }
 }

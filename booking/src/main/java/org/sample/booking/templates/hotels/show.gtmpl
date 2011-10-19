@@ -1,4 +1,5 @@
 #{decorate path=main.gtmpl/}
+#{title value=$hotel.name/}
 
 <h1>View hotel</h1>
 

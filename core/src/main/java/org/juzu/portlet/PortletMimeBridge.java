@@ -21,7 +21,7 @@ package org.juzu.portlet;
 
 import org.juzu.Phase;
 import org.juzu.URLBuilder;
-import org.juzu.impl.request.RenderBridge;
+import org.juzu.impl.request.MimeBridge;
 import org.juzu.text.Printer;
 import org.juzu.text.WriterPrinter;
 
@@ -30,7 +30,7 @@ import javax.portlet.PortletRequest;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements RenderBridge
+abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge
 {
 
    /** . */

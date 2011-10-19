@@ -17,40 +17,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.test.request;
+package template.tag.title;
 
-import org.juzu.Phase;
-import org.juzu.URLBuilder;
-import org.juzu.impl.request.MimeBridge;
-import org.juzu.text.Printer;
+import org.juzu.Path;
+import org.juzu.Render;
+import org.juzu.template.Template;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge
+public class A
 {
 
-   /** . */
-   private final MockPrinter printer;
+   @Path("index.gtmpl")
+   @Inject
+   Template index;
 
-   public MockMimeBridge(MockClient client)
+   @Path("dynamic.gtmpl")
+   @Inject
+   Template dynamic;
+
+   @Render
+   public void index() throws IOException
    {
-      super(client);
-
-      //
-      printer = new MockPrinter();
+      index.render();
    }
 
-   public String getContent()
+   @Render
+   public void dynamic() throws IOException
    {
-      return printer.getContent().toString();
-   }
-
-   public URLBuilder createURLBuilder(Phase phase)
-   {
-      return new MockURLBuilder(phase);
-   }
-
-   public Printer getPrinter()
-   {
-      return printer;
+      dynamic.render(Collections.singletonMap("expression", "4"));
    }
 }

@@ -59,7 +59,7 @@ public class MockClient
                request = new MockActionBridge(this);
                break;
             case RENDER:
-               request =  new MockRequestBridge(this);
+               request =  new MockRenderBridge(this);
                break;
             case RESOURCE:
                request =  new MockResourceBridge(this);
@@ -120,10 +120,11 @@ public class MockClient
       return render;
    }
 
-   public void invoke(String url)
+   public MockRequestBridge invoke(String url)
    {
       MockRequestBridge request = create(url);
       invoke(request);
+      return request;
    }
 
    public Object getFlashValue(Object key)

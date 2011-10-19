@@ -1,4 +1,5 @@
 #{decorate path=main.gtmpl/}
+#{title value=Home/}
 
 <div id="login">
 

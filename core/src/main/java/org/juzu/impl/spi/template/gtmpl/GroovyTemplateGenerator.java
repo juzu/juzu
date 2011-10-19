@@ -240,7 +240,7 @@ public class GroovyTemplateGenerator extends TemplateGenerator
             {
                out.append(",");
             }
-            out.append("\"").append(entry.getKey()).append("\":\"").append(entry.getValue()).append("\"");
+            out.append("\"").append(entry.getKey()).append("\":\"").append(entry.getValue()).append("\".toString()");
          }
          out.append("]");
       }

@@ -17,40 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.test.request;
-
-import org.juzu.Phase;
-import org.juzu.URLBuilder;
-import org.juzu.impl.request.MimeBridge;
-import org.juzu.text.Printer;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge
-{
-
-   /** . */
-   private final MockPrinter printer;
-
-   public MockMimeBridge(MockClient client)
-   {
-      super(client);
-
-      //
-      printer = new MockPrinter();
-   }
-
-   public String getContent()
-   {
-      return printer.getContent().toString();
-   }
-
-   public URLBuilder createURLBuilder(Phase phase)
-   {
-      return new MockURLBuilder(phase);
-   }
-
-   public Printer getPrinter()
-   {
-      return printer;
-   }
-}
+@Application
+package template.tag.title;
+import org.juzu.Application;

@@ -17,40 +17,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.test.request;
+package org.juzu.impl.tags;
 
-import org.juzu.Phase;
-import org.juzu.URLBuilder;
-import org.juzu.impl.request.MimeBridge;
-import org.juzu.text.Printer;
+import org.juzu.template.Body;
+import org.juzu.template.TagHandler;
+import org.juzu.template.TemplateRenderContext;
+
+import java.io.IOException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge
+public class TitleTag extends TagHandler
 {
 
-   /** . */
-   private final MockPrinter printer;
-
-   public MockMimeBridge(MockClient client)
+   @Override
+   public void render(TemplateRenderContext context, Body body, Map<String, String> args) throws IOException
    {
-      super(client);
+      String title = args.get("value");
 
       //
-      printer = new MockPrinter();
-   }
+      if (title != null)
+      {
+         context.setTitle(title);
+      }
 
-   public String getContent()
-   {
-      return printer.getContent().toString();
-   }
-
-   public URLBuilder createURLBuilder(Phase phase)
-   {
-      return new MockURLBuilder(phase);
-   }
-
-   public Printer getPrinter()
-   {
-      return printer;
+      //
+      body.render(context);
    }
 }

@@ -65,8 +65,7 @@ public class Template
 
    public void render(Map<String, ?> context, Locale locale) throws TemplateExecutionException, IOException
    {
-      Printer printer = applicationContext.getPrinter();
-      render(printer, context, null);
+      render(null, context, null);
    }
 
    public void render(Printer printer) throws TemplateExecutionException, IOException

@@ -39,6 +39,9 @@ public class TemplateRenderContext
    /** . */
    private final Locale locale;
 
+   /** . */
+   private String title;
+
    public TemplateRenderContext(Printer printer)
    {
       this(printer, Collections.<String, Object>emptyMap());
@@ -74,6 +77,16 @@ public class TemplateRenderContext
    public Printer getPrinter()
    {
       return printer;
+   }
+
+   public String getTitle()
+   {
+      return title;
+   }
+
+   public void setTitle(String title)
+   {
+      this.title = title;
    }
 
    public TemplateStub resolveTemplate(String path)

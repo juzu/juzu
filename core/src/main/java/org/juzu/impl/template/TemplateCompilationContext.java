@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template;
 
+import org.juzu.impl.tags.TitleTag;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.tags.DecorateTag;
 import org.juzu.impl.tags.IncludeTag;
@@ -43,6 +44,7 @@ public class TemplateCompilationContext
       tags.put("include", new IncludeTag());
       tags.put("insert", new InsertTag());
       tags.put("decorate", new DecorateTag());
+      tags.put("title", new TitleTag());
    }
 
    public TagHandler resolve(String name)

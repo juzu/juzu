@@ -1,4 +1,5 @@
 #{decorate path=main.gtmpl/}
+#{title value='Confirm $hotel.name booking'/}
 
 <h1>Confirm hotel booking</h1>
 

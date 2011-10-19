@@ -103,4 +103,29 @@ public class TagTestCase extends AbstractTestCase
       String out = render.getContent();
       assertEquals("foo", out);
    }
+
+   public void testTitle() throws Exception
+   {
+      final File root = new File(System.getProperty("test.resources"));
+      DiskFileSystem fs = new DiskFileSystem(root, "template", "tag", "title");
+
+      //
+      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
+      compiler.assertCompile();
+
+      //
+      ClassLoader cl2 = new URLClassLoader(new URL[]{compiler.getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
+
+      //
+      MockApplication<RAMPath> app = new MockApplication<RAMPath>(compiler.getOutput(), cl2);
+      app.init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      String url = render.getContent();
+      assertEquals("the_title", render.getTitle());
+      render = (MockRenderBridge)client.invoke(url);
+      assertEquals("4", render.getTitle());
+   }
 }

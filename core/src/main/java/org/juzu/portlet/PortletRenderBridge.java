@@ -33,4 +33,9 @@ class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderRespons
    {
       super(request, response);
    }
+
+   public void setTitle(String title)
+   {
+      response.setTitle(title);
+   }
 }

@@ -31,6 +31,7 @@ import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.ScopeController;
 import org.juzu.request.ApplicationContext;
 import org.juzu.request.MimeContext;
+import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.template.TemplateStub;
@@ -249,16 +250,26 @@ public class InternalApplicationContext extends ApplicationContext
    @Override
    public void render(Template template, Printer printer, Map<String, ?> attributes, Locale locale) throws IOException
    {
-      if (printer == null)
-      {
-         // ???
-         throw new NullPointerException("No printer");
-      }
+      Printer toUse = printer != null ? printer : getPrinter();
 
       //
       TemplateStub stub = resolveTemplateStub(template.getPath());
 
       //
-      stub.render(new ApplicationTemplateRenderContext(this, printer, attributes, locale));
+      ApplicationTemplateRenderContext context = new ApplicationTemplateRenderContext(this, toUse, attributes, locale);
+
+      //
+      stub.render(context);
+
+      //
+      String title = context.getTitle();
+      if (printer == null && title != null)
+      {
+         RequestContext ctx = current.get().getContext();
+         if (ctx instanceof RenderContext)
+         {
+            ((RenderContext)ctx).setTitle(title);
+         }
+      }
    }
 }
