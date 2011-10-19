@@ -45,17 +45,38 @@ public class Template
       this.path = path;
    }
 
+   public void render() throws TemplateExecutionException, IOException
+   {
+      render(Collections.<String, Object>emptyMap(), null);
+   }
+
+   public void render(Locale locale) throws TemplateExecutionException, IOException
+   {
+      render(Collections.<String, Object>emptyMap(), locale);
+   }
+
+   public void render(Map<String, ?> context) throws TemplateExecutionException, IOException
+   {
+      render(context, null);
+   }
+
+   public void render(Map<String, ?> context, Locale locale) throws TemplateExecutionException, IOException
+   {
+      Printer printer = applicationContext.getPrinter();
+      render(printer, context, null);
+   }
+
    public void render(Printer printer) throws TemplateExecutionException, IOException
    {
       render(printer, Collections.<String, Object>emptyMap(), null);
    }
 
-   public void render(Printer printer,Locale locale) throws TemplateExecutionException, IOException
+   public void render(Printer printer, Locale locale) throws TemplateExecutionException, IOException
    {
       render(printer, Collections.<String, Object>emptyMap(), locale);
    }
 
-   public void render(Printer printer,Map<String, ?> context) throws TemplateExecutionException, IOException
+   public void render(Printer printer, Map<String, ?> context) throws TemplateExecutionException, IOException
    {
       render(printer, context, null);
    }
