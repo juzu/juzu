@@ -30,13 +30,13 @@ import javax.portlet.PortletRequest;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements RenderBridge
+abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements RenderBridge
 {
 
    /** . */
    private final Printer printer;
 
-   public PortletMimeBridge(Rq request, Rs response) throws IOException
+   PortletMimeBridge(Rq request, Rs response) throws IOException
    {
       super(request, response);
 

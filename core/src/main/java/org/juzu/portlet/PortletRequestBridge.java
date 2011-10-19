@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge
+abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge
 {
 
    /** . */
@@ -37,7 +37,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
    /** . */
    protected final Rs response;
 
-   public PortletRequestBridge(Rq request, Rs response)
+   PortletRequestBridge(Rq request, Rs response)
    {
       this.request = request;
       this.response = response;
