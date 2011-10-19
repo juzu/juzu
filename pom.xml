@@ -6,7 +6,7 @@
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-parent</artifactId>
-  <version>0.2</version>
+  <version>0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <dependencyManagement>
@@ -14,12 +14,12 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
-        <version>0.2</version>
+        <version>0.3-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
-        <version>0.2</version>
+        <version>0.3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
