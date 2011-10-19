@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.template.gtmpl;
 
-import org.juzu.utils.Location;
+import org.juzu.text.Location;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Foo

@@ -22,7 +22,7 @@ package org.juzu.impl.compiler;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Content;
-import org.juzu.utils.Location;
+import org.juzu.text.Location;
 
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;

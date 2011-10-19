@@ -8,8 +8,8 @@ PARSER_BEGIN(TemplateParser)
 package org.juzu.impl.template;
 
 import java.util.ArrayList;
-import org.juzu.utils.Location;
-import org.juzu.utils.Coordinate;
+import org.juzu.text.Location;
+import org.juzu.text.Coordinate;
 import java.util.HashMap;
 import java.util.LinkedList;
 

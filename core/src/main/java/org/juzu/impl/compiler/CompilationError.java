@@ -19,7 +19,7 @@
 
 package org.juzu.impl.compiler;
 
-import org.juzu.utils.Location;
+import org.juzu.text.Location;
 
 import java.io.File;
 

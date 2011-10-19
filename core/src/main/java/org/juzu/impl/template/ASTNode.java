@@ -23,8 +23,8 @@ import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.utils.Tools;
 import org.juzu.template.TagHandler;
-import org.juzu.utils.Coordinate;
-import org.juzu.utils.Location;
+import org.juzu.text.Coordinate;
+import org.juzu.text.Location;
 
 import java.io.IOException;
 import java.io.StringReader;

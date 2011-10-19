@@ -22,7 +22,7 @@ package org.juzu.impl.spi.template.gtmpl;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.template.SectionType;
 import org.juzu.impl.utils.Tools;
-import org.juzu.utils.Location;
+import org.juzu.text.Location;
 
 import javax.annotation.processing.Filer;
 import javax.tools.FileObject;
