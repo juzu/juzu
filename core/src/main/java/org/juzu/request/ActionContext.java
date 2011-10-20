@@ -25,6 +25,7 @@ import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.impl.request.ActionBridge;
 
+import java.io.IOException;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -33,6 +34,9 @@ public class ActionContext extends RequestContext
 
    /** . */
    private ActionBridge bridge;
+
+   /** . */
+   private boolean sent;
 
    protected ActionContext()
    {
@@ -44,6 +48,7 @@ public class ActionContext extends RequestContext
 
       //
       this.bridge = bridge;
+      this.sent = false;
    }
 
    @Override
@@ -65,17 +70,38 @@ public class ActionContext extends RequestContext
 
    private Response createResponse()
    {
-      return bridge.createResponse();
+      if (sent)
+      {
+         throw new IllegalStateException("Response already created");
+      }
+      Response response = bridge.createResponse();
+      sent = true;
+      return response;
    }
 
-   public Response createResponse(ControllerMethod method)
+   public void redirect(String location) throws IOException
+   {
+      if (sent)
+      {
+         throw new IllegalStateException("Response already created");
+      }
+      bridge.redirect(location);
+      sent = true;
+   }
+
+   public boolean isSent()
+   {
+      return sent;
+   }
+
+   public Response createResponse(ControllerMethod method) throws IllegalStateException
    {
       Response response = createResponse();
       map(response, method);
       return response;
    }
 
-   public Response createResponse(ControllerMethod method, Object arg)
+   public Response createResponse(ControllerMethod method, Object arg) throws IllegalStateException
    {
       Response response = createResponse();
       map(response, method);
@@ -87,7 +113,7 @@ public class ActionContext extends RequestContext
       return response;
    }
 
-   public Response createResponse(ControllerMethod method, Object[] args)
+   public Response createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
    {
       Response response = createResponse();
       map(response, method);

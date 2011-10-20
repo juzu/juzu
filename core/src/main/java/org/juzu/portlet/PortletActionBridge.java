@@ -24,28 +24,34 @@ import org.juzu.impl.request.ActionBridge;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge
 {
 
    /** . */
-   private ResponseImpl response;
+   private ResponseImpl ri;
 
    PortletActionBridge(ActionRequest actionRequest, ActionResponse actionResponse)
    {
       super(actionRequest, actionResponse);
 
       //
-      this.response = null;
+      this.ri = null;
    }
 
    public Response createResponse()
    {
-      if (response == null)
+      if (ri == null)
       {
-         response = new ResponseImpl(super.response);
+         ri = new ResponseImpl(super.response);
       }
-      return response;
+      return ri;
+   }
+
+   public void redirect(String location) throws IOException
+   {
+      response.sendRedirect(location);
    }
 }

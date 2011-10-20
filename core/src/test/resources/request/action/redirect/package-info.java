@@ -17,18 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
-
-import org.juzu.Response;
-
-import java.io.IOException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ActionBridge extends RequestBridge
-{
-
-   Response createResponse();
-
-   void redirect(String location) throws IOException;
-
-}
+@Application
+package request.action.redirect;
+import org.juzu.Application;

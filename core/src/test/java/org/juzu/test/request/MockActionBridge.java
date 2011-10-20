@@ -21,6 +21,7 @@ package org.juzu.test.request;
 
 import org.juzu.Response;
 import org.juzu.impl.request.ActionBridge;
+import org.juzu.test.AbstractTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
 {
 
    /** . */
-   private final List<MockResponse> responses = new ArrayList<MockResponse>();
+   private final List<Object> responses = new ArrayList<Object>();
 
    public MockActionBridge(MockClient client)
    {
@@ -42,5 +43,28 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
       MockResponse response = new MockResponse();
       responses.add(response);
       return response;
+   }
+
+   public void redirect(String location)
+   {
+      responses.add(location);
+   }
+
+   public void assertNoResponse()
+   {
+      AbstractTestCase.assertEquals("Was expecting no response instead of " +
+         responses, 0, responses.size());
+   }
+
+   public void assertRedirect(String location)
+   {
+      assertResponse(location);
+   }
+
+   private void assertResponse(Object expectedResponse)
+   {
+      AbstractTestCase.assertEquals("Was expecting a single response " + expectedResponse + " instead of " +
+         responses, 1, responses.size());
+      AbstractTestCase.assertEquals(expectedResponse, responses.get(0));
    }
 }
