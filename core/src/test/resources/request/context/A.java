@@ -17,38 +17,39 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
+package request.context;
 
-import org.juzu.Phase;
-import org.juzu.impl.request.ResourceBridge;
+import org.juzu.Action;
+import org.juzu.Render;
+import org.juzu.RenderScoped;
+import org.juzu.request.ActionContext;
+import org.juzu.request.RenderContext;
+import org.juzu.test.Registry;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResourceContext extends MimeContext
+public class A
 {
 
-   /** . */
-   private ResourceBridge bridge;
+   @Inject
+   RenderContext renderContext;
 
-   protected ResourceContext()
+   @Inject
+   ActionContext actionContext;
+
+   @Render
+   public void index() throws IOException
    {
+      renderContext.getPrinter().write("render_phase");
+      renderContext.setTitle(A_.actionURL().toString());
    }
 
-   public ResourceContext(ClassLoader classLoader, ResourceBridge bridge)
+   @Action
+   public void action()
    {
-      super(classLoader);
-
-      this.bridge = bridge;
-   }
-
-   @Override
-   protected ResourceBridge getBridge()
-   {
-      return bridge;
-   }
-
-   @Override
-   public Phase getPhase()
-   {
-      return Phase.RESOURCE;
    }
 }

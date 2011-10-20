@@ -21,8 +21,8 @@ package request.render.explicitprinter;
 
 import org.juzu.Path;
 import org.juzu.Render;
+import org.juzu.request.RenderContext;
 import org.juzu.template.Template;
-import org.juzu.text.Printer;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -36,11 +36,11 @@ public class A
    Template index;
 
    @Inject
-   Printer printer;
+   RenderContext context;
 
    @Render
    public void index() throws IOException
    {
-      index.render(printer);
+      index.render(context.getPrinter());
    }
 }

@@ -19,9 +19,12 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.ActionScoped;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.MimeScoped;
 import org.juzu.Path;
+import org.juzu.RenderScoped;
+import org.juzu.ResourceScoped;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.request.RequestBridge;
 import org.juzu.metadata.ApplicationDescriptor;
@@ -29,6 +32,7 @@ import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.impl.cdi.Export;
 import org.juzu.impl.cdi.ScopeController;
+import org.juzu.request.ActionContext;
 import org.juzu.request.ApplicationContext;
 import org.juzu.request.MimeContext;
 import org.juzu.request.RenderContext;
@@ -36,6 +40,7 @@ import org.juzu.request.RequestContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Spliterator;
+import org.juzu.request.ResourceContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
@@ -200,8 +205,6 @@ public class InternalApplicationContext extends ApplicationContext
       }
    }
 
-   @Produces
-   @MimeScoped
    public Printer getPrinter()
    {
       Request req = current.get();
@@ -245,6 +248,27 @@ public class InternalApplicationContext extends ApplicationContext
    {
       Path path = point.getAnnotated().getAnnotation(Path.class);
       return new Template(this, path.value());
+   }
+
+   @Produces
+   @RenderScoped
+   public RenderContext getRenderContext()
+   {
+      return (RenderContext)current.get().getContext();
+   }
+
+   @Produces
+   @ActionScoped
+   public ActionContext getActionContext()
+   {
+      return (ActionContext)current.get().getContext();
+   }
+
+   @Produces
+   @ResourceScoped
+   public ResourceContext getResourceContext()
+   {
+      return (ResourceContext)current.get().getContext();
    }
 
    @Override

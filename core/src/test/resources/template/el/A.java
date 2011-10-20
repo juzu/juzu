@@ -22,7 +22,6 @@ package template.el;
 import org.juzu.Path;
 import org.juzu.Render;
 import org.juzu.template.Template;
-import org.juzu.text.Printer;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -39,9 +38,6 @@ public class A
    @Path("index.gtmpl")
    Template index;
 
-   @Inject
-   Printer printer;
-
    String value;
 
    public String getValue()
@@ -53,6 +49,6 @@ public class A
    public void index() throws IOException
    {
       value = "A";
-      index.render(printer);
+      index.render();
    }
 }

@@ -28,11 +28,15 @@ import org.juzu.impl.request.ActionBridge;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class ActionContext extends RequestContext
+public class ActionContext extends RequestContext
 {
 
    /** . */
-   private final ActionBridge bridge;
+   private ActionBridge bridge;
+
+   protected ActionContext()
+   {
+   }
 
    public ActionContext(ClassLoader classLoader, ActionBridge bridge)
    {

@@ -29,6 +29,11 @@ import org.juzu.text.Printer;
 public abstract class MimeContext extends RequestContext
 {
 
+   protected MimeContext()
+   {
+      super();
+   }
+
    protected MimeContext(ClassLoader classLoader)
    {
       super(classLoader);
@@ -37,7 +42,7 @@ public abstract class MimeContext extends RequestContext
    @Override
    protected abstract MimeBridge getBridge();
 
-   public final URLBuilder createURLBuilder(ControllerMethod method)
+   public URLBuilder createURLBuilder(ControllerMethod method)
    {
       URLBuilder builder = getBridge().createURLBuilder(method.getPhase());
 
@@ -48,7 +53,7 @@ public abstract class MimeContext extends RequestContext
       return builder;
    }
 
-   public final URLBuilder createURLBuilder(ControllerMethod method, Object arg)
+   public URLBuilder createURLBuilder(ControllerMethod method, Object arg)
    {
       URLBuilder builder = createURLBuilder(method);
 
@@ -63,7 +68,7 @@ public abstract class MimeContext extends RequestContext
       return builder;
    }
 
-   public final URLBuilder createURLBuilder(ControllerMethod method, Object[] args)
+   public URLBuilder createURLBuilder(ControllerMethod method, Object[] args)
    {
       URLBuilder builder = createURLBuilder(method);
 
@@ -84,7 +89,7 @@ public abstract class MimeContext extends RequestContext
     *
     * @return the printer
     */
-   public final Printer getPrinter()
+   public Printer getPrinter()
    {
       return getBridge().getPrinter();
    }

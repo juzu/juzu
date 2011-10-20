@@ -30,19 +30,23 @@ public abstract class RequestContext
 {
 
    /** The request classloader. */
-   protected final ClassLoader classLoader;
+   protected ClassLoader classLoader;
+
+   protected RequestContext()
+   {
+   }
 
    public RequestContext(ClassLoader classLoader)
    {
       this.classLoader = classLoader;
    }
 
-   public final ClassLoader getClassLoader()
+   public ClassLoader getClassLoader()
    {
       return classLoader;
    }
 
-   public final Map<String, String[]> getParameters()
+   public Map<String, String[]> getParameters()
    {
       return getBridge().getParameters();
    }

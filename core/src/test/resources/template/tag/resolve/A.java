@@ -39,12 +39,9 @@ public class A
    @Inject
    Template foo;
 
-   @Inject
-   Printer printer;
-
    @Render
    public void index() throws IOException
    {
-      index.render(printer);
+      index.render();
    }
 }

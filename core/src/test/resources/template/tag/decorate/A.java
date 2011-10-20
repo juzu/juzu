@@ -22,7 +22,6 @@ package template.tag.decorate;
 import org.juzu.Path;
 import org.juzu.Render;
 import org.juzu.template.Template;
-import org.juzu.text.Printer;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -35,12 +34,9 @@ public class A
    @Inject
    Template index;
 
-   @Inject
-   Printer printer;
-
    @Render
    public void index() throws IOException
    {
-      index.render(printer);
+      index.render();
    }
 }
