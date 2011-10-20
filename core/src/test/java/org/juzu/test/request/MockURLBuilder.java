@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.juzu.Phase;
 import org.juzu.URLBuilder;
+import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.HashMap;
@@ -33,14 +34,14 @@ public class MockURLBuilder implements URLBuilder
 {
 
    /** . */
-   private final Phase phase;
+   private final ControllerMethod method;
 
    /** . */
    private final Map<String, String> parameters;
 
-   public MockURLBuilder(Phase phase)
+   public MockURLBuilder(ControllerMethod method)
    {
-      this.phase = phase;
+      this.method = method;
       this.parameters = new HashMap<String, String>();
    }
 
@@ -64,7 +65,7 @@ public class MockURLBuilder implements URLBuilder
       try
       {
          JSONObject url = new JSONObject();
-         url.put("phase", phase);
+         url.put("op", method.getId());
          url.put("parameters", parameters);
          return url.toString();
       }

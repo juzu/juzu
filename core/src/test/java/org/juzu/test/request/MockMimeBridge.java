@@ -19,9 +19,9 @@
 
 package org.juzu.test.request;
 
-import org.juzu.Phase;
 import org.juzu.URLBuilder;
 import org.juzu.impl.request.MimeBridge;
+import org.juzu.metadata.ControllerMethod;
 import org.juzu.text.Printer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -31,9 +31,9 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
    /** . */
    private final MockPrinter printer;
 
-   public MockMimeBridge(MockClient client)
+   public MockMimeBridge(MockClient client, String methodId)
    {
-      super(client);
+      super(client, methodId);
 
       //
       printer = new MockPrinter();
@@ -44,9 +44,9 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
       return printer.getContent().toString();
    }
 
-   public URLBuilder createURLBuilder(Phase phase)
+   public URLBuilder createURLBuilder(ControllerMethod method)
    {
-      return new MockURLBuilder(phase);
+      return new MockURLBuilder(method);
    }
 
    public Printer getPrinter()

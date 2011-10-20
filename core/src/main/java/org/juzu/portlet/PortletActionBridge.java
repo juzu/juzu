@@ -21,6 +21,7 @@ package org.juzu.portlet;
 
 import org.juzu.Response;
 import org.juzu.impl.request.ActionBridge;
+import org.juzu.metadata.ControllerMethod;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -41,10 +42,11 @@ class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResp
       this.ri = null;
    }
 
-   public Response createResponse()
+   public Response createResponse(ControllerMethod method)
    {
       if (ri == null)
       {
+         super.response.setRenderParameter("op", method.getId());
          ri = new ResponseImpl(super.response);
       }
       return ri;

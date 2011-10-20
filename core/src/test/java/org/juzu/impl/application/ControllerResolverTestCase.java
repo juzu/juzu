@@ -52,12 +52,12 @@ public class ControllerResolverTestCase extends AbstractTestCase
       ControllerMethod cm2_ = desc.getControllerMethod(aClass, "fooArg", String.class);
 
       //
-      ControllerMethod cm1 = resolver.resolve(Phase.RENDER, Collections.<String, String[]>singletonMap("op", new String[]{cm1_.getId()}));
+      ControllerMethod cm1 = resolver.resolve(Phase.RENDER, cm1_.getId());
       assertNotNull(cm1);
       assertEquals("noArg", cm1.getName());
 
       //
-      ControllerMethod cm2 = resolver.resolve(Phase.RENDER, Collections.<String, String[]>singletonMap("op", new String[]{cm2_.getId()}));
+      ControllerMethod cm2 = resolver.resolve(Phase.RENDER, cm2_.getId());
       assertNotNull(cm2);
       assertEquals("fooArg", cm2.getName());
 
@@ -85,7 +85,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
       ControllerResolver resolver = new ControllerResolver(desc);
-      ControllerMethod method = resolver.resolve(Phase.RENDER, Collections.<String, String[]>emptyMap());
+      ControllerMethod method = resolver.resolve(Phase.RENDER, null);
       assertEquals("index", method.getName());
    }
 
@@ -104,7 +104,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       ControllerResolver resolver = new ControllerResolver(desc);
       try
       {
-         resolver.resolve(Phase.RENDER, Collections.<String, String[]>emptyMap());
+         resolver.resolve(Phase.RENDER, null);
          fail();
       }
       catch (AmbiguousResolutionException e)
@@ -126,7 +126,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
       ControllerResolver resolver = new ControllerResolver(desc);
-      ControllerMethod method = resolver.resolve(Phase.RENDER, Collections.<String, String[]>emptyMap());
+      ControllerMethod method = resolver.resolve(Phase.RENDER, null);
       assertEquals("index", method.getName());
       assertSame(aClass, method.getMethod().getDeclaringClass());
    }

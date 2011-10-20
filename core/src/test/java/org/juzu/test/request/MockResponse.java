@@ -20,18 +20,24 @@
 package org.juzu.test.request;
 
 import org.juzu.Response;
-import org.juzu.impl.utils.Builder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockResponse implements Response
 {
 
    /** . */
-   private final Builder.Map<String, String> parameters;
+   private final String methodId;
 
-   public MockResponse()
+   /** . */
+   private final Map<String, String> parameters;
+
+   public MockResponse(String methodId)
    {
-      this.parameters = new Builder.Map<String, String>();
+      this.methodId = methodId;
+      this.parameters = new HashMap<String, String>();
    }
 
    public void setParameter(String parameterName, String parameterValue)

@@ -25,7 +25,6 @@ import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Resolves a controller for a given input.
@@ -53,27 +52,18 @@ public class ControllerResolver
       this.methods = desc.getControllerMethods();
    }
 
-   /**
-    * Initial implementation:
-    * - simple routing based on phase and best score
-    * - not optimized
-    *
-    * @param phase the expected phase
-    * @param parameters the parameters
-    * @return the render descriptor or null if nothing could be resolved
-    * @throws AmbiguousResolutionException when more than one controller method is resolved
-    */
-   public ControllerMethod resolve(Phase phase, Map<String, String[]> parameters) throws AmbiguousResolutionException
+   public ControllerMethod resolve(Phase phase, String methodId) throws AmbiguousResolutionException
    {
       ControllerMethod found = null;
 
       //
-      String[] op = parameters.get("op");
-      if (op != null && op.length > 0)
+
+      //
+      if (methodId != null)
       {
          for (ControllerMethod method : methods)
          {
-            if (method.getId().equals(op[0]))
+            if (method.getId().equals(methodId))
             {
                found = method;
                break;

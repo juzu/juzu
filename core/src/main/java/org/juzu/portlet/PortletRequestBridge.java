@@ -37,15 +37,38 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
    /** . */
    protected final Rs response;
 
+   /** . */
+   protected final String methodId;
+
+   /** . */
+   protected final Map<String, String[]> parameters;
+
    PortletRequestBridge(Rq request, Rs response)
    {
+      Map<String, String[]> parameters = request.getParameterMap();
+      String methodId= request.getParameter("op");
+      if (methodId != null)
+      {
+         parameters = new HashMap<String, String[]>(parameters);
+         parameters.remove("op");
+      }
+
+
+      //
       this.request = request;
       this.response = response;
+      this.methodId = methodId;
+      this.parameters = parameters;
+   }
+
+   public String getMethodId()
+   {
+      return methodId;
    }
 
    public final Map<String, String[]> getParameters()
    {
-      return request.getParameterMap();
+      return parameters;
    }
 
    public void setFlashValue(Object key, Object value)

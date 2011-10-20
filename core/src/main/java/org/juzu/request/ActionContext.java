@@ -63,22 +63,6 @@ public class ActionContext extends RequestContext
       return Phase.ACTION;
    }
 
-   private void map(Response response, ControllerMethod method)
-   {
-      response.setParameter("op", method.getId());
-   }
-
-   private Response createResponse()
-   {
-      if (sent)
-      {
-         throw new IllegalStateException("Response already created");
-      }
-      Response response = bridge.createResponse();
-      sent = true;
-      return response;
-   }
-
    public void redirect(String location) throws IOException
    {
       if (sent)
@@ -96,15 +80,18 @@ public class ActionContext extends RequestContext
 
    public Response createResponse(ControllerMethod method) throws IllegalStateException
    {
-      Response response = createResponse();
-      map(response, method);
+      if (sent)
+      {
+         throw new IllegalStateException("Response already created");
+      }
+      Response response = bridge.createResponse(method);
+      sent = true;
       return response;
    }
 
    public Response createResponse(ControllerMethod method, Object arg) throws IllegalStateException
    {
-      Response response = createResponse();
-      map(response, method);
+      Response response = createResponse(method);
       List<ControllerParameter> argumentParameters = method.getArgumentParameters();
       if (arg != null)
       {
@@ -115,8 +102,7 @@ public class ActionContext extends RequestContext
 
    public Response createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
    {
-      Response response = createResponse();
-      map(response, method);
+      Response response = createResponse(method);
       List<ControllerParameter> argumentParameters = method.getArgumentParameters();
       for (int i = 0;i < argumentParameters.size();i++)
       {

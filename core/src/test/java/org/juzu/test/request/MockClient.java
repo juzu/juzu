@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.juzu.Phase;
 import org.juzu.impl.request.ActionBridge;
+import org.juzu.metadata.ControllerMethod;
 import org.juzu.request.ActionContext;
 import org.juzu.impl.request.RenderBridge;
 import org.juzu.request.RenderContext;
@@ -47,22 +48,24 @@ public class MockClient
    private MockRequestBridge create(String url)
    {
       MockRequestBridge request;
-      Phase phase;
+      ControllerMethod method;
       JSONObject json;
       try
       {
          json = new JSONObject(url);
-         phase = Phase.valueOf(json.getString("phase"));
+         method = application.getContext().getDescriptor().getControllerMethodById(json.getString("op"));
+         Phase phase = method.getPhase();
+         String methodId = method.getId();
          switch (phase)
          {
             case ACTION:
-               request = new MockActionBridge(this);
+               request = new MockActionBridge(this, methodId);
                break;
             case RENDER:
-               request =  new MockRenderBridge(this);
+               request =  new MockRenderBridge(this, methodId);
                break;
             case RESOURCE:
-               request =  new MockResourceBridge(this);
+               request =  new MockResourceBridge(this, methodId);
                break;
             default:
                throw AbstractTestCase.failure("Not yet supported " + phase);

@@ -20,6 +20,7 @@
 package org.juzu.impl.request;
 
 import org.juzu.Response;
+import org.juzu.metadata.ControllerMethod;
 
 import java.io.IOException;
 
@@ -27,7 +28,7 @@ import java.io.IOException;
 public interface ActionBridge extends RequestBridge
 {
 
-   Response createResponse();
+   Response createResponse(ControllerMethod method);
 
    void redirect(String location) throws IOException;
 

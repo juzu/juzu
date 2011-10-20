@@ -24,8 +24,8 @@ import org.juzu.impl.request.ResourceBridge;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
 {
-   public MockResourceBridge(MockClient client)
+   public MockResourceBridge(MockClient client, String methodId)
    {
-      super(client);
+      super(client, methodId);
    }
 }

@@ -21,12 +21,15 @@ package org.juzu.impl.application;
 
 import org.juzu.ActionScoped;
 import org.juzu.AmbiguousResolutionException;
-import org.juzu.MimeScoped;
 import org.juzu.Path;
+import org.juzu.Phase;
 import org.juzu.RenderScoped;
 import org.juzu.ResourceScoped;
+import org.juzu.impl.request.ActionBridge;
+import org.juzu.impl.request.RenderBridge;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.request.RequestBridge;
+import org.juzu.impl.request.ResourceBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
@@ -100,6 +103,26 @@ public class InternalApplicationContext extends ApplicationContext
       ClassLoader classLoader = container.getClassLoader();
 
       //
+      Phase phase;
+      if (bridge instanceof RenderBridge)
+      {
+         phase = Phase.RENDER;
+      }
+      else if (bridge instanceof ActionBridge)
+      {
+         phase = Phase.ACTION;
+      }
+      else if (bridge instanceof ResourceBridge)
+      {
+         phase = Phase.RESOURCE;
+      }
+      else
+      {
+         throw new AssertionError();
+      }
+      ControllerMethod method = controllerResolver.resolve(phase, bridge.getMethodId());
+
+      //
       Request request = new Request(classLoader, bridge);
 
       //
@@ -109,7 +132,7 @@ public class InternalApplicationContext extends ApplicationContext
          Thread.currentThread().setContextClassLoader(classLoader);
          current.set(request);
          ScopeController.begin(request);
-         doInvoke(request);
+         doInvoke(request, method);
       }
       finally
       {
@@ -136,12 +159,9 @@ public class InternalApplicationContext extends ApplicationContext
       }
    }
 
-   private void doInvoke(Request request)
+   private void doInvoke(Request request, ControllerMethod method)
    {
       RequestContext context = request.getContext();
-
-      //
-      ControllerMethod method = controllerResolver.resolve(context.getPhase(), context.getParameters());
 
       //
       if (method == null)

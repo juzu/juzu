@@ -28,9 +28,14 @@ public class MockRenderBridge extends MockMimeBridge implements RenderBridge
    /** . */
    private String title;
 
+   public MockRenderBridge(MockClient client, String methodId)
+   {
+      super(client, methodId);
+   }
+
    public MockRenderBridge(MockClient client)
    {
-      super(client);
+      this(client, null);
    }
 
    public String getTitle()

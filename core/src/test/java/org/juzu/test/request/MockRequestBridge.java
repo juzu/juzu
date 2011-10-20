@@ -29,6 +29,9 @@ public abstract class MockRequestBridge implements RequestBridge
 {
 
    /** . */
+   private final String methodId;
+
+   /** . */
    private final MockClient client;
 
    /** . */
@@ -37,12 +40,17 @@ public abstract class MockRequestBridge implements RequestBridge
    /** . */
    private final Map<Object, Object> attributes;
 
-   public MockRequestBridge(MockClient client)
+   public MockRequestBridge(MockClient client, String methodId)
    {
       this.client = client;
       this.parameters = new HashMap<String, String[]>();
       this.attributes = new HashMap<Object, Object>();
+      this.methodId = methodId;
+   }
 
+   public String getMethodId()
+   {
+      return methodId;
    }
 
    public Map<Object, Object> getAttributes()

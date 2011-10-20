@@ -21,6 +21,7 @@ package org.juzu.test.request;
 
 import org.juzu.Response;
 import org.juzu.impl.request.ActionBridge;
+import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.ArrayList;
@@ -33,14 +34,14 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
    /** . */
    private final List<Object> responses = new ArrayList<Object>();
 
-   public MockActionBridge(MockClient client)
+   public MockActionBridge(MockClient client, String methodId)
    {
-      super(client);
+      super(client, methodId);
    }
 
-   public Response createResponse()
+   public Response createResponse(ControllerMethod method)
    {
-      MockResponse response = new MockResponse();
+      MockResponse response = new MockResponse(method.getId());
       responses.add(response);
       return response;
    }

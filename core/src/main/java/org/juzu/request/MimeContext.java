@@ -44,13 +44,7 @@ public abstract class MimeContext extends RequestContext
 
    public URLBuilder createURLBuilder(ControllerMethod method)
    {
-      URLBuilder builder = getBridge().createURLBuilder(method.getPhase());
-
-      //
-      builder.setParameter("op", method.getId());
-
-      //
-      return builder;
+      return getBridge().createURLBuilder(method);
    }
 
    public URLBuilder createURLBuilder(ControllerMethod method, Object arg)

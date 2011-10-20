@@ -25,6 +25,8 @@ import java.util.Map;
 public interface RequestBridge
 {
 
+   String getMethodId();
+
    /**
     * Returns the request parameters.
     *

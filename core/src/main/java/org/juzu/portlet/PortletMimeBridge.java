@@ -22,9 +22,11 @@ package org.juzu.portlet;
 import org.juzu.Phase;
 import org.juzu.URLBuilder;
 import org.juzu.impl.request.MimeBridge;
+import org.juzu.metadata.ControllerMethod;
 import org.juzu.text.Printer;
 import org.juzu.text.WriterPrinter;
 
+import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
 import java.io.IOException;
@@ -49,19 +51,26 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       return printer;
    }
 
-   public URLBuilder createURLBuilder(Phase phase)
+   public URLBuilder createURLBuilder(ControllerMethod method)
    {
+      Phase phase = method.getPhase();
+      BaseURL url;
       switch (phase)
       {
          case ACTION:
-            return new URLBuilderImpl(response.createActionURL());
+            url = response.createActionURL();
+            break;
          case RENDER:
-            return new URLBuilderImpl(response.createRenderURL());
+            url = response.createRenderURL();
+            break;
          case RESOURCE:
-            return new URLBuilderImpl(response.createResourceURL());
+            url = response.createResourceURL();
+            break;
          default:
             throw new AssertionError("Unexpected phase " + phase);
       }
+      url.setParameter("op", method.getId());
+      return new URLBuilderImpl(url);
    }
 
 }
