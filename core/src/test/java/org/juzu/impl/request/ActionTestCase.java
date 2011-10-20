@@ -31,6 +31,7 @@ import org.juzu.test.request.MockRenderBridge;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ActionTestCase extends AbstractTestCase
@@ -82,4 +83,27 @@ public class ActionTestCase extends AbstractTestCase
       action.assertRedirect("http://www.julienviet.com");
    }
 
+   public void testRender() throws Exception
+   {
+      final File root = new File(System.getProperty("test.resources"));
+      DiskFileSystem fs = new DiskFileSystem(root, "request", "action", "render");
+
+      //
+      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
+      compiler.assertCompile();
+
+      //
+      ClassLoader cl2 = new URLClassLoader(new URL[]{compiler.getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
+
+      //
+      MockApplication<RAMPath> app = new MockApplication<RAMPath>(compiler.getOutput(), cl2);
+      app.init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      MockActionBridge action = (MockActionBridge)client.invoke(render.getContent());
+      action.assertRender("render", Collections.singletonMap("arg", "arg_value"));
+
+   }
 }

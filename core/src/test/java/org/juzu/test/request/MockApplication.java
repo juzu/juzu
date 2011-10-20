@@ -48,7 +48,7 @@ public class MockApplication<P>
    final ClassLoader classLoader;
 
    /** . */
-   private InternalApplicationContext context;
+   InternalApplicationContext context;
 
    public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader)
    {

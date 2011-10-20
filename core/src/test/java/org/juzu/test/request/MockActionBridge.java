@@ -26,6 +26,7 @@ import org.juzu.test.AbstractTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockActionBridge extends MockRequestBridge implements ActionBridge
@@ -60,6 +61,12 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
    public void assertRedirect(String location)
    {
       assertResponse(location);
+   }
+
+   public void assertRender(String expectedMethodId, Map<String, String> expectedArguments)
+   {
+      MockResponse resp = new MockResponse(expectedMethodId, expectedArguments);
+      assertResponse(resp);
    }
 
    private void assertResponse(Object expectedResponse)

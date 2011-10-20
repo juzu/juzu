@@ -35,8 +35,9 @@ class ResponseImpl implements Response
       this.response = response;
    }
 
-   public void setParameter(String parameterName, String parameterValue)
+   public Response setParameter(String parameterName, String parameterValue)
    {
       response.setRenderParameter(parameterName, parameterValue);
+      return this;
    }
 }

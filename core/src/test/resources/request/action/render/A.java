@@ -17,12 +17,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu;
+package request.action.render;
+
+import org.juzu.Action;
+import org.juzu.Render;
+import org.juzu.request.ActionContext;
+import org.juzu.request.RenderContext;
+
+import javax.inject.Inject;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Response
+public class A
 {
 
-   Response setParameter(String parameterName, String parameterValue);
+   @Inject
+   RenderContext renderContext;
 
+   @Inject
+   ActionContext actionContext;
+
+   @Render
+   public void index() throws IOException
+   {
+      renderContext.getPrinter().write(A_.actionURL().toString());
+   }
+
+   @Action
+   public void action() throws IOException
+   {
+      A_.render("arg_value");
+   }
+
+   @Render(id = "render")
+   public void render(String arg)
+   {
+   }
 }

@@ -97,7 +97,7 @@ public class MockClient
    }
 
    /** . */
-   private final MockApplication<?> application;
+   final MockApplication<?> application;
 
    /** . */
    private final Map<Object, Object> session;

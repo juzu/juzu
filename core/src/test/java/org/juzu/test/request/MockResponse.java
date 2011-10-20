@@ -34,13 +34,18 @@ public class MockResponse implements Response
    /** . */
    private final Map<String, String> parameters;
 
-   public MockResponse(String methodId)
+   public MockResponse(String methodId, Map<String, String> parameters)
    {
       this.methodId = methodId;
-      this.parameters = new HashMap<String, String>();
+      this.parameters = parameters;
    }
 
-   public void setParameter(String parameterName, String parameterValue)
+   public MockResponse(String methodId)
+   {
+      this(methodId, new HashMap<String, String>());
+   }
+
+   public Response setParameter(String parameterName, String parameterValue)
    {
       if (parameterName == null)
       {
@@ -51,5 +56,27 @@ public class MockResponse implements Response
          throw new NullPointerException();
       }
       parameters.put(parameterName, parameterValue);
+      return this;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (obj == this)
+      {
+         return true;
+      }
+      if (obj instanceof MockResponse)
+      {
+         MockResponse that = (MockResponse)obj;
+         return methodId.equals(that.methodId) && parameters.equals(that.parameters);
+      }
+      return false;
+   }
+
+   @Override
+   public String toString()
+   {
+      return "MockResponse[methodId=" + methodId + ",parameters" + parameters + "]";
    }
 }

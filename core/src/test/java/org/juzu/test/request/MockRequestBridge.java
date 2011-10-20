@@ -32,7 +32,7 @@ public abstract class MockRequestBridge implements RequestBridge
    private final String methodId;
 
    /** . */
-   private final MockClient client;
+   protected final MockClient client;
 
    /** . */
    private final Map<String, String[]> parameters;
