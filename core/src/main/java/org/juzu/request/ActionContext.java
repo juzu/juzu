@@ -58,9 +58,14 @@ public class ActionContext extends RequestContext
       return Phase.ACTION;
    }
 
-   public void map(Response response, ControllerMethod method)
+   private void map(Response response, ControllerMethod method)
    {
       response.setParameter("op", method.getId());
+   }
+
+   private Response createResponse()
+   {
+      return bridge.createResponse();
    }
 
    public Response createResponse(ControllerMethod method)
@@ -97,10 +102,5 @@ public class ActionContext extends RequestContext
          }
       }
       return response;
-   }
-
-   public Response createResponse()
-   {
-      return bridge.createResponse();
    }
 }
