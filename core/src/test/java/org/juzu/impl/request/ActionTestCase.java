@@ -36,6 +36,29 @@ import java.net.URLClassLoader;
 public class ActionTestCase extends AbstractTestCase
 {
 
+   public void testNoOp() throws Exception
+   {
+      final File root = new File(System.getProperty("test.resources"));
+      DiskFileSystem fs = new DiskFileSystem(root, "request", "action", "noop");
+
+      //
+      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
+      compiler.assertCompile();
+
+      //
+      ClassLoader cl2 = new URLClassLoader(new URL[]{compiler.getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
+
+      //
+      MockApplication<RAMPath> app = new MockApplication<RAMPath>(compiler.getOutput(), cl2);
+      app.init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      MockActionBridge action = (MockActionBridge)client.invoke(render.getContent());
+      action.assertNoResponse();
+   }
+
    public void testRedirect() throws Exception
    {
       final File root = new File(System.getProperty("test.resources"));
