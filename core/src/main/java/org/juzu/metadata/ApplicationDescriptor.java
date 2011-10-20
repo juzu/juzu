@@ -101,6 +101,19 @@ public class ApplicationDescriptor
       return null;
    }
 
+   public ControllerMethod getControllerMethodById(String methodId)
+   {
+      for (int i = 0;i < controllerMethods.size();i++)
+      {
+         ControllerMethod cm = controllerMethods.get(i);
+         if (cm.getId().equals(methodId))
+         {
+            return cm;
+         }
+      }
+      return null;
+   }
+
    public String getTemplatesPackageName()
    {
       return templatesPackageName;

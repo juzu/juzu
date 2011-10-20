@@ -17,17 +17,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu;
+package application.method.id;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.juzu.Action;
+import org.juzu.Render;
+import org.juzu.Resource;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Action
+public class A
 {
-   String id() default "";
+   @Render(id = "foo")
+   public void a()
+   {
+   }
+   @Action(id = "bar")
+   public void b()
+   {
+   }
+   @Resource(id = "juu")
+   public void c()
+   {
+   }
 }

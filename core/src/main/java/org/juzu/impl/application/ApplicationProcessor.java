@@ -27,6 +27,7 @@ import org.juzu.Render;
 import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
+import org.juzu.impl.compiler.CompilationException;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
@@ -51,10 +52,12 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -98,9 +101,6 @@ public class ApplicationProcessor extends ProcessorPlugin
       private final String className;
 
       /** . */
-      private final String prefix;
-
-      /** . */
       private final String name;
 
       /** . */
@@ -108,6 +108,12 @@ public class ApplicationProcessor extends ProcessorPlugin
 
       /** . */
       private final String defaultController;
+
+      /** . */
+      public int methodCount;
+
+      /** . */
+      private final Set<String> methodIds;
 
       /** . */
       private final List<ControllerMetaData> controllers;
@@ -121,9 +127,10 @@ public class ApplicationProcessor extends ProcessorPlugin
          this.className = packageName + "." + applicationName;
          this.name = applicationName;
          this.packageName = packageName;
-         this.prefix = packageName + ".";
          this.defaultController = defaultController;
+         this.methodIds = new HashSet<String>();
          this.controllers = new ArrayList<ControllerMetaData>();
+         this.methodCount = 0;
       }
 
       public MethodMetaData resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException
@@ -187,13 +194,17 @@ public class ApplicationProcessor extends ProcessorPlugin
    {
 
       /** . */
+      private final ApplicationMetaData application;
+
+      /** . */
       private final TypeElement typeElt;
 
       /** . */
       private final List<MethodMetaData> methods;
 
-      ControllerMetaData(TypeElement typeElt)
+      ControllerMetaData(TypeElement typeElt, ApplicationMetaData application)
       {
+         this.application = application;
          this.typeElt = typeElt;
          this.methods = new ArrayList<MethodMetaData>();
       }
@@ -273,9 +284,6 @@ public class ApplicationProcessor extends ProcessorPlugin
 
    /** . */
    private PackageMap<ApplicationMetaData> applications = new PackageMap<ApplicationMetaData>();
-
-   /** . */
-   private int methodCount = 0;
 
    public ApplicationMetaData getApplication(PackageElement packageElt)
    {
@@ -362,8 +370,6 @@ public class ApplicationProcessor extends ProcessorPlugin
             ControllerMetaData a = controllerMap.get(typeName);
             if (a == null)
             {
-               controllerMap.put(typeName, a = new ControllerMetaData(type));
-
                // Find the matching application
                PackageElement pkg = getPackageOf(type);
                String fqn = pkg.getQualifiedName().toString();
@@ -376,27 +382,43 @@ public class ApplicationProcessor extends ProcessorPlugin
                }
                else
                {
+                  controllerMap.put(typeName, a = new ControllerMetaData(type, application));
                   application.controllers.add(a);
                }
             }
 
             //
-            List<Phase> determined = new ArrayList<Phase>();
+            Phase determined = null;
+            String id = null;
             for (Phase phase : Phase.values())
             {
-               if (elt.getAnnotation(phase.annotation) != null)
+               Annotation annotation = elt.getAnnotation(phase.annotation);
+               if (annotation != null)
                {
-                  determined.add(phase);
+                  if (determined != null)
+                  {
+                     throw new CompilationException(elt, "Controller method cannot be involved in more than one phase : {" + determined + ", " + phase + "}");
+                  }
+                  determined = phase;
+                  id = phase.id(annotation);
                }
             }
-            if (determined.size() > 1)
-            {
-               throw new UnsupportedOperationException("handle me gracefully " + renders);
-            }
-            Phase phase = determined.get(0);
 
             //
-            a.methods.add(new MethodMetaData(a, "method_" + methodCount++, phase, executableElt));
+            if (id.length() == 0)
+            {
+               id = "method_" + a.application.methodCount++;
+            }
+            else
+            if (a.application.methodIds.contains(id))
+            {
+               throw new CompilationException(elt, "Duplicate controller method name " + id);
+            }
+            a.application.methodIds.add(id);
+
+            //
+            a.application.methodIds.add(id);
+            a.methods.add(new MethodMetaData(a, id, determined, executableElt));
          }
       }
 

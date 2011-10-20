@@ -32,17 +32,38 @@ public enum Phase
    /**
     * Action phase.
     */
-   ACTION(Action.class),
+   ACTION(Action.class)
+   {
+      @Override
+      public String id(Annotation annotation) throws ClassCastException
+      {
+         return ((Action)annotation).id();
+      }
+   },
 
    /**
     * Render phase.
     */
-   RENDER(Render.class),
+   RENDER(Render.class)
+   {
+      @Override
+      public String id(Annotation annotation) throws ClassCastException
+      {
+         return ((Render)annotation).id();
+      }
+   },
 
    /**
     * Resource phase.
     */
-   RESOURCE(Resource.class);
+   RESOURCE(Resource.class)
+   {
+      @Override
+      public String id(Annotation annotation) throws ClassCastException
+      {
+         return ((Resource)annotation).id();
+      }
+   };
 
    /** . */
    public final Class<? extends Annotation> annotation;
@@ -51,4 +72,6 @@ public enum Phase
    {
       this.annotation = annotation;
    }
+
+   public abstract String id(Annotation annotation) throws ClassCastException;
 }

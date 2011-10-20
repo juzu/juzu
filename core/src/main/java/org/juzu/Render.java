@@ -33,4 +33,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Render
 {
+   String id() default "";
 }
