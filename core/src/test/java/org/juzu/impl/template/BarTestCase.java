@@ -20,11 +20,8 @@
 package org.juzu.impl.template;
 
 import org.juzu.impl.compiler.CompilationError;
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
-
-import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BarTestCase extends AbstractTestCase
@@ -32,20 +29,20 @@ public class BarTestCase extends AbstractTestCase
 
    public void testResolution() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("template", "url", "resolution");
+      CompilerHelper<?, ?> compiler = compiler("template", "url", "resolution");
       compiler.assertCompile();
    }
 
    public void testInvalidMethodName() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("template", "url", "invalid_method_name");
+      CompilerHelper<?, ?> compiler = compiler("template", "url", "invalid_method_name");
       CompilationError error = compiler.failCompile().get(0);
       assertEquals("/template/url/invalid_method_name/A.java", error.getSource());
    }
 
    public void testInvalidMethodArgs() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("template", "url", "invalid_method_args");
+      CompilerHelper<?, ?> compiler = compiler("template", "url", "invalid_method_args");
       CompilationError error = compiler.failCompile().get(0);
       assertEquals("/template/url/invalid_method_args/A.java", error.getSource());
    }

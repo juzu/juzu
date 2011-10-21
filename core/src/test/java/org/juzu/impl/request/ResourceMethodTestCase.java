@@ -20,7 +20,6 @@
 package org.juzu.impl.request;
 
 import org.juzu.Phase;
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
@@ -37,7 +36,7 @@ public class ResourceMethodTestCase extends AbstractTestCase
    @Override
    protected void setUp() throws Exception
    {
-      CompilerHelper<?, RAMPath> compiler = compiler("request", "method", "resource");
+      CompilerHelper<?, ?> compiler = compiler("request", "method", "resource");
       compiler.assertCompile();
 
       //

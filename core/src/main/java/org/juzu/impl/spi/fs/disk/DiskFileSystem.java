@@ -19,15 +19,17 @@
 
 package org.juzu.impl.spi.fs.disk;
 
-import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.Tools;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DiskFileSystem extends ReadFileSystem<File>
+public class DiskFileSystem extends ReadWriteFileSystem<File>
 {
 
    /** . */
@@ -192,5 +194,34 @@ public class DiskFileSystem extends ReadFileSystem<File>
    public File getFile(File path) throws IOException
    {
       return path;
+   }
+
+   @Override
+   public File addDir(File parent, String name) throws IOException
+   {
+      File dir = new File(parent, name);
+      dir.mkdir();
+      return dir;
+   }
+
+   @Override
+   public File addFile(File parent, String name) throws IOException
+   {
+      return new File(parent, name);
+   }
+
+   @Override
+   public void setContent(File file, Content<?> content) throws IOException
+   {
+      InputStream in = content.getInputStream();
+      FileOutputStream out = new FileOutputStream(file);
+      try
+      {
+         Tools.copy(in, out);
+      }
+      finally
+      {
+         Tools.safeClose(out);
+      }
    }
 }

@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,13 +146,18 @@ public class Tools
 
    public static String read(InputStream in, String charsetName) throws IOException
    {
-      byte[] buffer = new byte[256];
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      copy(in, baos);
+      return baos.toString();
+   }
+
+   public static void copy(InputStream in, OutputStream out) throws IOException
+   {
+      byte[] buffer = new byte[256];
       for (int l;(l = in.read(buffer)) != -1;)
       {
-         baos.write(buffer, 0, l);
+         out.write(buffer, 0, l);
       }
-      return baos.toString();
    }
 
    public static String unquote(String s) throws NullPointerException
@@ -170,5 +176,27 @@ public class Tools
          }
       }
       return s;
+   }
+
+   public static String join(char separator, String... names)
+   {
+      switch (names.length)
+      {
+         case 0:
+            return "";
+         case 1:
+            return names[0];
+         default:
+            StringBuilder sb = new StringBuilder();
+            for (String name : names)
+            {
+               if (sb.length() > 0)
+               {
+                  sb.append(".");
+               }
+               sb.append(name);
+            }
+            return sb.toString();
+      }
    }
 }

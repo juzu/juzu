@@ -21,7 +21,6 @@ package org.juzu.impl.template;
 
 import org.juzu.impl.compiler.FileKey;
 import org.juzu.impl.compiler.Compiler;
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Content;
 import org.juzu.template.TemplateRenderContext;
@@ -30,7 +29,6 @@ import org.juzu.test.CompilerHelper;
 import org.juzu.text.WriterPrinter;
 
 import javax.tools.JavaFileObject;
-import java.io.File;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -41,7 +39,7 @@ public class TemplateTestCase extends AbstractTestCase
 
    public void testSimple() throws Exception
    {
-      CompilerHelper<File, RAMPath> helper = compiler("template", "simple");
+      CompilerHelper<?, ?> helper = compiler("template", "simple");
       Compiler<?, ?> compiler = helper.assertCompile();
 
       //
@@ -68,7 +66,7 @@ public class TemplateTestCase extends AbstractTestCase
 
    public void testResolution() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("template", "relativepath");
+      CompilerHelper<?, ?> compiler = compiler("template", "relativepath");
       compiler.assertCompile();
    }
 }

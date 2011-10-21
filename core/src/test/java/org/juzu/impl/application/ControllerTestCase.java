@@ -19,12 +19,9 @@
 
 package org.juzu.impl.application;
 
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
-
-import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerTestCase extends AbstractTestCase
@@ -32,7 +29,7 @@ public class ControllerTestCase extends AbstractTestCase
 
    public void testDefaultController() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("application", "default_controller");
+      CompilerHelper<?, ?> compiler = compiler("application", "default_controller");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
       Class<?> aClass = compiler.assertClass("application.default_controller.A");

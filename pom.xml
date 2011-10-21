@@ -110,6 +110,10 @@
               <name>test.resources</name>
               <value>${basedir}/src/test/resources</value>
             </property>
+            <property>
+              <name>test.generated.classes</name>
+              <value>${project.build.directory}/generated-test-classes</value>
+            </property>
           </systemProperties>
         </configuration>
       </plugin>

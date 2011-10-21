@@ -20,14 +20,12 @@
 package org.juzu.impl.request;
 
 import org.juzu.Phase;
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -38,7 +36,7 @@ public class ActionMethodTestCase extends AbstractTestCase
    @Override
    protected void setUp() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("request", "method", "action");
+      CompilerHelper<?, ?> compiler = compiler("request", "method", "action");
       compiler.assertCompile();
       aClass = compiler.assertClass("request.method.action.A");
       compiler.assertClass("request.method.action.A_");

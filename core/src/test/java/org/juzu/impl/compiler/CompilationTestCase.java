@@ -210,7 +210,7 @@ public class CompilationTestCase extends AbstractTestCase
 
    public void testCompilationFailure() throws Exception
    {
-      CompilerHelper<?, RAMPath> compiler = compiler("compiler", "failure");
+      CompilerHelper<?, ?> compiler = compiler("compiler", "failure");
       assertEquals(1, compiler.failCompile().size());
    }
 

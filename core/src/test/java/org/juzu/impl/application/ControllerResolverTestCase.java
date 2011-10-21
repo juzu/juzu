@@ -21,7 +21,6 @@ package org.juzu.impl.application;
 
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.Phase;
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
@@ -35,7 +34,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
    public void testResolution() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("application", "resolver", "method");
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "method");
       compiler.assertCompile();
 
       //
@@ -69,7 +68,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
    public void testResolverDefaultMethod() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("application", "resolver", "default_method");
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_method");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.default_method.Default_methodApplication");
 
@@ -82,7 +81,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
    public void testResolverAmbiguousMethod() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("application", "resolver", "ambiguous_method");
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "ambiguous_method");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.ambiguous_method.Ambiguous_methodApplication");
 
@@ -101,7 +100,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
    public void testResolverDefaultController() throws Exception
    {
-      CompilerHelper<File, RAMPath> compiler = compiler("application", "resolver", "default_controller");
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_controller");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Default_controllerApplication");
       Class<?> aClass = compiler.assertClass("application.resolver.default_controller.A");

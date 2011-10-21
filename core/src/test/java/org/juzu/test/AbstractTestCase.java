@@ -22,7 +22,7 @@ package org.juzu.test;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.impl.spi.fs.ram.RAMPath;
+import org.juzu.impl.utils.Tools;
 import org.juzu.test.request.MockApplication;
 
 import java.io.File;
@@ -86,15 +86,65 @@ public abstract class AbstractTestCase extends TestCase
       return new DiskFileSystem(root, packageName);
    }
 
-   public static CompilerHelper<File, RAMPath> compiler(String... packageName)
+   public static CompilerHelper<File, File> compiler(String... packageName)
    {
-      DiskFileSystem fs = diskFS(packageName);
-      return CompilerHelper.create(fs);
+      DiskFileSystem input = diskFS(packageName);
+
+      if (packageName.length == 0)
+      {
+         throw failure("Cannot compile empty package");
+      }
+
+      //
+      String outputPath = System.getProperty("test.generated.classes");
+      File a = new File(outputPath);
+      if (a.exists())
+      {
+         if (a.isFile())
+         {
+            throw failure("File " + outputPath + " already exist and is a file");
+         }
+      }
+      else
+      {
+         if (!a.mkdirs())
+         {
+            throw failure("Could not create test generated source directory " + outputPath);
+         }
+      }
+
+      // Find
+      File f2;
+      String pkg = Tools.join('.', packageName);
+      f2 = new File(a, pkg);
+      for (int count = 0;;count++)
+      {
+         if (!f2.exists())
+         {
+            break;
+         }
+         else
+         {
+            f2 = new File(a, pkg + "-" + count);
+         }
+      }
+
+      //
+      if (!f2.mkdirs())
+      {
+         throw failure("Could not create test generated source directory " + f2.getAbsolutePath());
+      }
+
+      //
+      DiskFileSystem output = new DiskFileSystem(f2);
+
+      //
+      return new CompilerHelper<File, File>(input, output);
    }
 
    public static MockApplication<?> application(String... packageName)
    {
-      CompilerHelper<File, RAMPath> helper = compiler(packageName);
+      CompilerHelper<File, File> helper = compiler(packageName);
       helper.assertCompile();
       return helper.application();
    }
