@@ -38,8 +38,6 @@ import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.fs.war.WarFileSystem;
 import org.juzu.impl.utils.DevClassLoader;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.inject.Inject;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
@@ -62,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -86,20 +85,41 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
    /** . */
    private ClassLoader classLoader;
 
+   /** The jars in WEB-INF/lib . */
+   private List<URL> jarURLs;
+
    public void init(PortletConfig config) throws PortletException
    {
-      String runMode = config.getInitParameter("juzu.run_mode");
-      runMode = runMode == null ? "prod" : runMode.trim().toLowerCase();
-
-      //
-      this.config = config;
-      this.prod = !("dev".equals(runMode));
-
-      //
-      Collection<CompilationError> errors = boot();
-      if (errors != null && errors.size() > 0)
+      try
       {
-         System.out.println("Error when compiling application " + errors);
+         String runMode = config.getInitParameter("juzu.run_mode");
+         runMode = runMode == null ? "prod" : runMode.trim().toLowerCase();
+
+         //
+         List<URL> jars = new ArrayList<URL>();
+         WarFileSystem bah = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/lib/");
+         for (Iterator<String> i = bah.getChildren(bah.getRoot());i.hasNext();)
+         {
+            String s = i.next();
+            URL url = bah.getURL(s);
+            jars.add(url);
+         }
+
+         //
+         this.config = config;
+         this.prod = !("dev".equals(runMode));
+         this.jarURLs = jars;
+
+         //
+         Collection<CompilationError> errors = boot();
+         if (errors != null && errors.size() > 0)
+         {
+            System.out.println("Error when compiling application " + errors);
+         }
+      }
+      catch (IOException e)
+      {
+         throw new PortletException(e);
       }
    }
 
@@ -141,11 +161,20 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             {
                System.out.println("Building application");
 
-               //
+               // Build the classpath
                List<URL> classPath = new ArrayList<URL>();
-               classPath.add(Inject.class.getProtectionDomain().getCodeSource().getLocation());
-               classPath.add(Bean.class.getProtectionDomain().getCodeSource().getLocation());
-               classPath.add(JuzuPortlet.class.getProtectionDomain().getCodeSource().getLocation());
+               for (URL jarURL : jarURLs)
+               {
+                  URL configURL = new URL("jar:" + jarURL.toString() + "!/org/juzu/config.properties");
+                  try
+                  {
+                     configURL.openStream();
+                  }
+                  catch (IOException e)
+                  {
+                     classPath.add(jarURL);
+                  }
+               }
 
                //
                WarFileSystem fs = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
@@ -176,7 +205,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          }
          catch (Exception e)
          {
-            throw new PortletException(e);
+            throw e instanceof PortletException ? (PortletException)e : new PortletException(e);
          }
       }
    }
@@ -213,13 +242,26 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       Field field = clazz.getDeclaredField("DESCRIPTOR");
       ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 
-      //
-      String location = Bootstrap.class.getProtectionDomain().getCodeSource().getLocation().toString();
-      if (location.startsWith("jar:") && location.endsWith("!/"))
+      // Find the juzu jar
+      URL mainURL = null;
+      for (URL jarURL : jarURLs)
       {
-         location = location.substring(4, location.length() - 2);
+         URL configURL = new URL("jar:" + jarURL.toString() + "!/org/juzu/impl/application/Bootstrap.class");
+         try
+         {
+            configURL.openStream();
+            mainURL = jarURL;
+            break;
+         }
+         catch (IOException ignore)
+         {
+         }
       }
-      JarFileSystem libs = new JarFileSystem(new JarFile(new File(new URI(location))));
+      if (mainURL == null)
+      {
+         throw new PortletException("Cannot find juzu jar among " + jarURLs);
+      }
+      JarFileSystem libs = new JarFileSystem(new JarFile(new File(mainURL.toURI())));
 
       //
       Container container = new org.juzu.impl.spi.cdi.weld.WeldContainer(cl);
