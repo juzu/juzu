@@ -21,6 +21,7 @@ package request.action.render;
 
 import org.juzu.Action;
 import org.juzu.Render;
+import org.juzu.Response;
 import org.juzu.request.ActionContext;
 import org.juzu.request.RenderContext;
 
@@ -44,9 +45,9 @@ public class A
    }
 
    @Action
-   public void action() throws IOException
+   public Response.Render action() throws IOException
    {
-      A_.render("arg_value");
+      return A_.render("arg_value");
    }
 
    @Render(id = "render")

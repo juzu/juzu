@@ -19,8 +19,8 @@
 
 package org.juzu.request;
 
-import org.juzu.Phase;
 import org.juzu.Response;
+import org.juzu.Phase;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.impl.request.ActionBridge;
@@ -63,14 +63,9 @@ public class ActionContext extends RequestContext
       return Phase.ACTION;
    }
 
-   public void redirect(String location) throws IOException
+   public Response.Redirect redirect(String location) throws IOException
    {
-      if (sent)
-      {
-         throw new IllegalStateException("Response already created");
-      }
-      bridge.redirect(location);
-      sent = true;
+      return bridge.redirect(location);
    }
 
    public boolean isSent()
@@ -78,20 +73,20 @@ public class ActionContext extends RequestContext
       return sent;
    }
 
-   public Response createResponse(ControllerMethod method) throws IllegalStateException
+   public Response.Render createResponse(ControllerMethod method) throws IllegalStateException
    {
       if (sent)
       {
          throw new IllegalStateException("Response already created");
       }
-      Response response = bridge.createResponse(method);
+      Response.Render response = bridge.createResponse(method);
       sent = true;
       return response;
    }
 
-   public Response createResponse(ControllerMethod method, Object arg) throws IllegalStateException
+   public Response.Render createResponse(ControllerMethod method, Object arg) throws IllegalStateException
    {
-      Response response = createResponse(method);
+      Response.Render response = createResponse(method);
       List<ControllerParameter> argumentParameters = method.getArgumentParameters();
       if (arg != null)
       {
@@ -100,9 +95,9 @@ public class ActionContext extends RequestContext
       return response;
    }
 
-   public Response createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
+   public Response.Render createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
    {
-      Response response = createResponse(method);
+      Response.Render response = createResponse(method);
       List<ControllerParameter> argumentParameters = method.getArgumentParameters();
       for (int i = 0;i < argumentParameters.size();i++)
       {

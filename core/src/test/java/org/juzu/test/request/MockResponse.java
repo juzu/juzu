@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockResponse implements Response
+public class MockResponse implements Response.Render
 {
 
    /** . */
@@ -45,7 +45,7 @@ public class MockResponse implements Response
       this(methodId, new HashMap<String, String>());
    }
 
-   public Response setParameter(String parameterName, String parameterValue)
+   public Response.Render setParameter(String parameterName, String parameterValue)
    {
       if (parameterName == null)
       {

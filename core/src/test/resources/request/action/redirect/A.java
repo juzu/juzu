@@ -21,6 +21,7 @@ package request.action.redirect;
 
 import org.juzu.Action;
 import org.juzu.Render;
+import org.juzu.Response;
 import org.juzu.request.ActionContext;
 import org.juzu.request.RenderContext;
 
@@ -44,8 +45,8 @@ public class A
    }
 
    @Action
-   public void action() throws IOException
+   public Response.Redirect action() throws IOException
    {
-      actionContext.redirect("http://www.julienviet.com");
+      return actionContext.redirect("http://www.julienviet.com");
    }
 }

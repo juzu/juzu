@@ -26,34 +26,54 @@ import org.juzu.metadata.ControllerMethod;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge
 {
 
    /** . */
-   private ResponseImpl ri;
+   private boolean done;
 
    PortletActionBridge(ActionRequest actionRequest, ActionResponse actionResponse)
    {
       super(actionRequest, actionResponse);
 
       //
-      this.ri = null;
+      this.done = false;
    }
 
-   public Response createResponse(ControllerMethod method)
+   public Response.Render createResponse(ControllerMethod method)
    {
-      if (ri == null)
+      return  new RenderImpl(method.getId());
+   }
+
+   public Response.Redirect redirect(String location)
+   {
+      return new RedirectImpl(location);
+   }
+
+   public void setResponse(Response response) throws IllegalStateException, IOException
+   {
+      if (done)
       {
-         super.response.setRenderParameter("op", method.getId());
-         ri = new ResponseImpl(super.response);
+         throw new IllegalStateException();
       }
-      return ri;
-   }
-
-   public void redirect(String location) throws IOException
-   {
-      response.sendRedirect(location);
+      if (response instanceof RenderImpl)
+      {
+         done = true;
+         RenderImpl render = (RenderImpl)response;
+         super.response.setRenderParameter("op", render.methodId);
+         for (Map.Entry<String, String> entry : render.parameters.entrySet())
+         {
+            super.response.setRenderParameter(entry.getKey(), entry.getValue());
+         }
+      }
+      else
+      {
+         done = true;
+         RedirectImpl redirect = (RedirectImpl)response;
+         super.response.sendRedirect(redirect.location);
+      }
    }
 }

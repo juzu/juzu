@@ -17,19 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu;
+package org.juzu.portlet;
+
+import org.juzu.Response;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Response
+class RedirectImpl implements Response.Redirect
 {
-   interface Render extends Response
+
+   /** . */
+   final String location;
+
+   RedirectImpl(String location)
    {
-
-      Render setParameter(String parameterName, String parameterValue);
-
-   }
-
-   interface Redirect extends Response
-   {
+      this.location = location;
    }
 }

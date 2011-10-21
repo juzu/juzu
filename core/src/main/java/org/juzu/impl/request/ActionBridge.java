@@ -28,8 +28,10 @@ import java.io.IOException;
 public interface ActionBridge extends RequestBridge
 {
 
-   Response createResponse(ControllerMethod method);
+   Response.Render createResponse(ControllerMethod method);
 
-   void redirect(String location) throws IOException;
+   Response.Redirect redirect(String location);
+
+   void setResponse(Response response) throws IllegalStateException, IOException;
 
 }

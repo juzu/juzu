@@ -22,22 +22,36 @@ package org.juzu.portlet;
 import org.juzu.Response;
 
 import javax.portlet.ActionResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class ResponseImpl implements Response
+class RenderImpl implements Response.Render
 {
 
    /** . */
-   private final ActionResponse response;
+   final String methodId;
 
-   ResponseImpl(ActionResponse response)
+   /** . */
+   final Map<String, String> parameters;
+
+   RenderImpl(String methodId)
    {
-      this.response = response;
+      this.methodId = methodId;
+      this.parameters = new HashMap<String, String>();
    }
 
-   public Response setParameter(String parameterName, String parameterValue)
+   public Response.Render setParameter(String parameterName, String parameterValue)
    {
-      response.setRenderParameter(parameterName, parameterValue);
+      if (parameterName == null)
+      {
+         throw new NullPointerException();
+      }
+      if (parameterValue == null)
+      {
+         throw new NullPointerException();
+      }
+      this.parameters.put(parameterName, parameterValue);
       return this;
    }
 }

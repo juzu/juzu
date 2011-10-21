@@ -24,8 +24,7 @@ import org.juzu.impl.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -33,34 +32,31 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
 {
 
    /** . */
-   private final List<Object> responses = new ArrayList<Object>();
+   private Response response;
 
    public MockActionBridge(MockClient client, String methodId)
    {
       super(client, methodId);
    }
 
-   public Response createResponse(ControllerMethod method)
+   public Response.Render createResponse(ControllerMethod method)
    {
-      MockResponse response = new MockResponse(method.getId());
-      responses.add(response);
-      return response;
+      return new MockResponse(method.getId());
    }
 
-   public void redirect(String location)
+   public Response.Redirect redirect(String location)
    {
-      responses.add(location);
+      return new MockRedirect(location);
    }
 
    public void assertNoResponse()
    {
-      AbstractTestCase.assertEquals("Was expecting no response instead of " +
-         responses, 0, responses.size());
+      assertResponse(null);
    }
 
    public void assertRedirect(String location)
    {
-      assertResponse(location);
+      assertResponse(new MockRedirect(location));
    }
 
    public void assertRender(String expectedMethodId, Map<String, String> expectedArguments)
@@ -69,10 +65,21 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
       assertResponse(resp);
    }
 
-   private void assertResponse(Object expectedResponse)
+   private void assertResponse(Response expectedResponse)
    {
-      AbstractTestCase.assertEquals("Was expecting a single response " + expectedResponse + " instead of " +
-         responses, 1, responses.size());
-      AbstractTestCase.assertEquals(expectedResponse, responses.get(0));
+      AbstractTestCase.assertEquals("Was expecting a response " + expectedResponse + " instead of  " + response,
+         expectedResponse,
+         response);
+   }
+
+   public void setResponse(Response response) throws IllegalStateException, IOException
+   {
+      if (this.response != null)
+      {
+         throw new IllegalStateException();
+      }
+
+      //
+      this.response = response;
    }
 }

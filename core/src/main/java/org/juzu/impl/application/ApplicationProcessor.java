@@ -22,10 +22,9 @@ package org.juzu.impl.application;
 import org.juzu.Action;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.Application;
-import org.juzu.Phase;
-import org.juzu.Render;
-import org.juzu.Resource;
 import org.juzu.Response;
+import org.juzu.Phase;
+import org.juzu.Resource;
 import org.juzu.URLBuilder;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.metadata.ApplicationDescriptor;
@@ -86,7 +85,7 @@ public class ApplicationProcessor extends ProcessorPlugin
    private static final String TOOLS = Tools.class.getSimpleName();
 
    /** . */
-   private static final String RESPONSE = Response.class.getSimpleName();
+   private static final String RESPONSE = Response.Render.class.getSimpleName();
 
    /**
     * Application meta data.
@@ -352,7 +351,7 @@ public class ApplicationProcessor extends ProcessorPlugin
       // Collect controller methods
       Map<String, ControllerMetaData> controllerMap = new HashMap<String, ControllerMetaData>();
       Set<? extends Element> actions = getElementsAnnotatedWith(Action.class);
-      Set<? extends Element> renders = getElementsAnnotatedWith(Render.class);
+      Set<? extends Element> renders = getElementsAnnotatedWith(org.juzu.Render.class);
       Set<? extends Element> resources = getElementsAnnotatedWith(Resource.class);
 
       //
@@ -477,7 +476,7 @@ public class ApplicationProcessor extends ProcessorPlugin
                   writer2.append("import ").append(Tools.getImport(InternalApplicationContext.class)).append(";\n");
                   writer2.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
                   writer2.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
-                  writer2.append("import ").append(Tools.getImport(Response.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(Response.Render.class)).append(";\n");
                   writer2.append("import ").append(foo.className).append(";\n");
                   writer2.append("public class ").append(controller.typeElt.getSimpleName()).append("_ {\n");
 

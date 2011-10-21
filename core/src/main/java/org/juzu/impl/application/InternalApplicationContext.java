@@ -25,6 +25,7 @@ import org.juzu.Path;
 import org.juzu.Phase;
 import org.juzu.RenderScoped;
 import org.juzu.ResourceScoped;
+import org.juzu.Response;
 import org.juzu.impl.request.ActionBridge;
 import org.juzu.impl.request.RenderBridge;
 import org.juzu.impl.request.Request;
@@ -132,7 +133,18 @@ public class InternalApplicationContext extends ApplicationContext
          Thread.currentThread().setContextClassLoader(classLoader);
          current.set(request);
          ScopeController.begin(request);
-         doInvoke(request, method);
+         Object ret = doInvoke(request, method);
+         if (phase == Phase.ACTION && ret != null && ret instanceof Response)
+         {
+            try
+            {
+               ((ActionBridge)bridge).setResponse((Response)ret);
+            }
+            catch (IOException e)
+            {
+               throw new UnsupportedOperationException("handle me gracefully");
+            }
+         }
       }
       finally
       {
@@ -159,7 +171,7 @@ public class InternalApplicationContext extends ApplicationContext
       }
    }
 
-   private void doInvoke(Request request, ControllerMethod method)
+   private Object doInvoke(Request request, ControllerMethod method)
    {
       RequestContext context = request.getContext();
 
@@ -208,7 +220,7 @@ public class InternalApplicationContext extends ApplicationContext
                }
 
                //
-               method.getMethod().invoke(o, args);
+               return method.getMethod().invoke(o, args);
             }
             catch (Exception e)
             {
@@ -221,6 +233,10 @@ public class InternalApplicationContext extends ApplicationContext
                   cc.release();
                }
             }
+         }
+         else
+         {
+            return null;
          }
       }
    }

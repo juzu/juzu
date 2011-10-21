@@ -17,19 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu;
+package org.juzu.test.request;
+
+import org.juzu.Response;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Response
+class MockRedirect implements Response.Redirect
 {
-   interface Render extends Response
+
+   /** . */
+   private final String location;
+
+   MockRedirect(String location)
    {
-
-      Render setParameter(String parameterName, String parameterValue);
-
+      this.location = location;
    }
 
-   interface Redirect extends Response
+   @Override
+   public boolean equals(Object obj)
    {
+      if (obj == this)
+      {
+         return true;
+      }
+      if (obj instanceof MockRedirect)
+      {
+         MockRedirect that = (MockRedirect)obj;
+         return location.equals(that.location);
+      }
+      return false;
    }
 }
