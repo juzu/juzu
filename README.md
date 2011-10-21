@@ -12,13 +12,11 @@ deployed in a portal server (only tested with GateIn trunk / Tomcat at the momen
 
 Various things to do, not exhaustive
 
-- return response instance of state modifying response (gives more flexibility)
 - UndeclaredIOException
 - event for begin/end with CDI eventing
 - parse error in template parser
 - bean mapping on render parameter
 - stack trace sanitization
-- tag lib to set title (page title or portlet title) (so put that in RenderContext)
 - consider resolving a template via its variable name instead of @Path
 - honour life cycle of objects (specially flash scope)
 
