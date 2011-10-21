@@ -2,6 +2,7 @@ sources
 ide
 target
 release.properties
+*.versionsBackup
 *.releaseBackup
 .idea
 *.iml
