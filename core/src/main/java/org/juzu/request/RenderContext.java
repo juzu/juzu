@@ -20,7 +20,7 @@
 package org.juzu.request;
 
 import org.juzu.Phase;
-import org.juzu.impl.request.RenderBridge;
+import org.juzu.impl.spi.request.RenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 //@RenderScoped

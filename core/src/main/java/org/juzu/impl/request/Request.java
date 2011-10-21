@@ -19,6 +19,10 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.impl.spi.request.ActionBridge;
+import org.juzu.impl.spi.request.RenderBridge;
+import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.impl.spi.request.ResourceBridge;
 import org.juzu.request.ActionContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;

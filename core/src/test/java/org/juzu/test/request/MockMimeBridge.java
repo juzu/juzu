@@ -20,7 +20,7 @@
 package org.juzu.test.request;
 
 import org.juzu.URLBuilder;
-import org.juzu.impl.request.MimeBridge;
+import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.text.Printer;
 

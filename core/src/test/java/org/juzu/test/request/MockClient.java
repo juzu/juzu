@@ -22,13 +22,7 @@ package org.juzu.test.request;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.juzu.Phase;
-import org.juzu.impl.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
-import org.juzu.request.ActionContext;
-import org.juzu.impl.request.RenderBridge;
-import org.juzu.request.RenderContext;
-import org.juzu.impl.request.ResourceBridge;
-import org.juzu.request.ResourceContext;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.Collections;

@@ -19,7 +19,7 @@
 
 package org.juzu.test.request;
 
-import org.juzu.impl.request.RequestBridge;
+import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.request.ApplicationContext;

@@ -17,12 +17,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
+package org.juzu.impl.spi.request.portlet;
+
+import org.juzu.impl.spi.request.RenderBridge;
+
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RenderBridge extends MimeBridge
+public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
 {
 
-   void setTitle(String title);
+   public PortletRenderBridge(RenderRequest request, RenderResponse response) throws IOException
+   {
+      super(request, response);
+   }
 
+   public void setTitle(String title)
+   {
+      response.setTitle(title);
+   }
 }

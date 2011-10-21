@@ -17,20 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.portlet;
+package org.juzu.impl.spi.request;
 
-import org.juzu.impl.request.ResourceBridge;
+import org.juzu.Response;
+import org.juzu.metadata.ControllerMethod;
 
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge
+public interface ActionBridge extends RequestBridge
 {
 
-   PortletResourceBridge(ResourceRequest request, ResourceResponse response) throws IOException
-   {
-      super(request, response);
-   }
+   Response.Render createResponse(ControllerMethod method);
+
+   Response.Redirect redirect(String location);
+
+   void setResponse(Response response) throws IllegalStateException, IOException;
+
 }

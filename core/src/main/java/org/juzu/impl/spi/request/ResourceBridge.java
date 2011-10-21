@@ -17,19 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
-
-import org.juzu.Phase;
-import org.juzu.URLBuilder;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.text.Printer;
+package org.juzu.impl.spi.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface MimeBridge extends RequestBridge
+public interface ResourceBridge extends MimeBridge
 {
-
-   URLBuilder createURLBuilder(ControllerMethod method);
-
-   Printer getPrinter();
-
 }

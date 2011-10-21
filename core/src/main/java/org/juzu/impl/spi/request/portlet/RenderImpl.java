@@ -17,25 +17,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.portlet;
+package org.juzu.impl.spi.request.portlet;
 
-import org.juzu.impl.request.RenderBridge;
+import org.juzu.Response;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
+class RenderImpl implements Response.Render
 {
 
-   PortletRenderBridge(RenderRequest request, RenderResponse response) throws IOException
+   /** . */
+   final String methodId;
+
+   /** . */
+   final Map<String, String> parameters;
+
+   RenderImpl(String methodId)
    {
-      super(request, response);
+      this.methodId = methodId;
+      this.parameters = new HashMap<String, String>();
    }
 
-   public void setTitle(String title)
+   public Response.Render setParameter(String parameterName, String parameterValue)
    {
-      response.setTitle(title);
+      if (parameterName == null)
+      {
+         throw new NullPointerException();
+      }
+      if (parameterValue == null)
+      {
+         throw new NullPointerException();
+      }
+      this.parameters.put(parameterName, parameterValue);
+      return this;
    }
 }

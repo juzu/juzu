@@ -17,21 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
+package org.juzu.impl.spi.request;
 
-import org.juzu.Response;
+import org.juzu.URLBuilder;
 import org.juzu.metadata.ControllerMethod;
-
-import java.io.IOException;
+import org.juzu.text.Printer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ActionBridge extends RequestBridge
+public interface MimeBridge extends RequestBridge
 {
 
-   Response.Render createResponse(ControllerMethod method);
+   URLBuilder createURLBuilder(ControllerMethod method);
 
-   Response.Redirect redirect(String location);
-
-   void setResponse(Response response) throws IllegalStateException, IOException;
+   Printer getPrinter();
 
 }

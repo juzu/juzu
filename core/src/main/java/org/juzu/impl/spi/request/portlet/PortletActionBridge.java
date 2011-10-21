@@ -17,10 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.portlet;
+package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
-import org.juzu.impl.request.ActionBridge;
+import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
 
 import javax.portlet.ActionRequest;
@@ -29,13 +29,13 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge
+public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge
 {
 
    /** . */
    private boolean done;
 
-   PortletActionBridge(ActionRequest actionRequest, ActionResponse actionResponse)
+   public PortletActionBridge(ActionRequest actionRequest, ActionResponse actionResponse)
    {
       super(actionRequest, actionResponse);
 

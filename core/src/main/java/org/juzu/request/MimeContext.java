@@ -20,9 +20,9 @@
 package org.juzu.request;
 
 import org.juzu.URLBuilder;
+import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
-import org.juzu.impl.request.MimeBridge;
 import org.juzu.text.Printer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

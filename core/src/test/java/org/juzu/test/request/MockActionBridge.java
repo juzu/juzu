@@ -20,7 +20,7 @@
 package org.juzu.test.request;
 
 import org.juzu.Response;
-import org.juzu.impl.request.ActionBridge;
+import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 

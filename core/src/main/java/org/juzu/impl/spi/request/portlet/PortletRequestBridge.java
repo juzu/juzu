@@ -17,9 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.portlet;
+package org.juzu.impl.spi.request.portlet;
 
-import org.juzu.impl.request.RequestBridge;
+import org.juzu.impl.spi.request.RequestBridge;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;

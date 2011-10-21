@@ -17,41 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.portlet;
-
-import org.juzu.Response;
-
-import javax.portlet.ActionResponse;
-import java.util.HashMap;
-import java.util.Map;
+package org.juzu.impl.spi.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class RenderImpl implements Response.Render
+public interface RenderBridge extends MimeBridge
 {
 
-   /** . */
-   final String methodId;
+   void setTitle(String title);
 
-   /** . */
-   final Map<String, String> parameters;
-
-   RenderImpl(String methodId)
-   {
-      this.methodId = methodId;
-      this.parameters = new HashMap<String, String>();
-   }
-
-   public Response.Render setParameter(String parameterName, String parameterValue)
-   {
-      if (parameterName == null)
-      {
-         throw new NullPointerException();
-      }
-      if (parameterValue == null)
-      {
-         throw new NullPointerException();
-      }
-      this.parameters.put(parameterName, parameterValue);
-      return this;
-   }
 }

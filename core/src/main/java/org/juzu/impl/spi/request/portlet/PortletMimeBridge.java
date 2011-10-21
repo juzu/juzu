@@ -17,11 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.portlet;
+package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Phase;
 import org.juzu.URLBuilder;
-import org.juzu.impl.request.MimeBridge;
+import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.text.Printer;
 import org.juzu.text.WriterPrinter;

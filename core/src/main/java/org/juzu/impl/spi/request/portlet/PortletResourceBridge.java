@@ -17,37 +17,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
+package org.juzu.impl.spi.request.portlet;
 
-import java.util.Map;
+import org.juzu.impl.spi.request.ResourceBridge;
+
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestBridge
+public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge
 {
 
-   String getMethodId();
-
-   /**
-    * Returns the request parameters.
-    *
-    * @return the request parameters
-    */
-   Map<String, String[]> getParameters();
-
-   Object getFlashValue(Object key);
-
-   void setFlashValue(Object key, Object value);
-
-   Object getRequestValue(Object key);
-
-   void setRequestValue(Object key, Object value);
-
-   Object getSessionValue(Object key);
-
-   void setSessionValue(Object key, Object value);
-
-   Object getIdentityValue(Object key);
-
-   void setIdentityValue(Object key, Object value);
-
+   public PortletResourceBridge(ResourceRequest request, ResourceResponse response) throws IOException
+   {
+      super(request, response);
+   }
 }

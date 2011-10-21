@@ -21,9 +21,9 @@ package org.juzu.request;
 
 import org.juzu.Response;
 import org.juzu.Phase;
+import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
-import org.juzu.impl.request.ActionBridge;
 
 import java.io.IOException;
 import java.util.List;

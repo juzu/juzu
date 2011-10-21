@@ -19,17 +19,17 @@
 
 package org.juzu.portlet;
 
+import org.juzu.impl.spi.request.portlet.PortletActionBridge;
+import org.juzu.impl.spi.request.portlet.PortletRenderBridge;
+import org.juzu.impl.spi.request.portlet.PortletResourceBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.impl.application.InternalApplicationContext;
-import org.juzu.request.ActionContext;
 import org.juzu.impl.application.Bootstrap;
 import org.juzu.impl.application.JuzuProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
 import org.juzu.impl.fs.FileSystemScanner;
-import org.juzu.request.RenderContext;
-import org.juzu.request.ResourceContext;
 import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
