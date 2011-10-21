@@ -55,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
       //
       Collection<CompilationError> errors = boot();
-      if (errors.size() > 0)
+      if (errors != null && errors.size() > 0)
       {
          System.out.println("Error when compiling application " + errors);
       }
@@ -213,7 +214,12 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 
       //
-      JarFileSystem libs = new JarFileSystem(new JarFile(new File(Bootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI())));
+      String location = Bootstrap.class.getProtectionDomain().getCodeSource().getLocation().toString();
+      if (location.startsWith("jar:") && location.endsWith("!/"))
+      {
+         location = location.substring(4, location.length() - 2);
+      }
+      JarFileSystem libs = new JarFileSystem(new JarFile(new File(new URI(location))));
 
       //
       Container container = new org.juzu.impl.spi.cdi.weld.WeldContainer(cl);
