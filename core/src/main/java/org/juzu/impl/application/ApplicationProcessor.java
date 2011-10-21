@@ -444,15 +444,15 @@ public class ApplicationProcessor extends ProcessorPlugin
                writer.append("package ").append(foo.packageElt.getQualifiedName()).append(";\n");
 
                // Imports
-               writer.append("import ").append(ApplicationDescriptor.class.getName()).append(";\n");
-               writer.append("import ").append(ControllerMethod.class.getName()).append(";\n");
-               writer.append("import ").append(ControllerParameter.class.getName()).append(";\n");
-               writer.append("import ").append(Tools.class.getName()).append(";\n");
-               writer.append("import ").append(Arrays.class.getName()).append(";\n");
-               writer.append("import ").append(Phase.class.getName()).append(";\n");
-               writer.append("import ").append(URLBuilder.class.getName()).append(";\n");
-               writer.append("import ").append(ApplicationContext.class.getName()).append(";\n");
-               writer.append("import ").append(MimeContext.class.getName()).append(";\n");
+               writer.append("import ").append(Tools.getImport(ApplicationDescriptor.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(ControllerMethod.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(ControllerParameter.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(Tools.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(URLBuilder.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
 
                // Open class declaration
                writer.append("public class ").append(foo.name).append(" {\n");
@@ -468,16 +468,16 @@ public class ApplicationProcessor extends ProcessorPlugin
 
                   //
                   writer2.append("package ").append(fooElt.getQualifiedName()).append(";\n");
-                  writer2.append("import ").append(ControllerMethod.class.getName()).append(";\n");
-                  writer2.append("import ").append(ControllerParameter.class.getName()).append(";\n");
-                  writer2.append("import ").append(Tools.class.getName()).append(";\n");
-                  writer2.append("import ").append(Arrays.class.getName()).append(";\n");
-                  writer2.append("import ").append(Phase.class.getName()).append(";\n");
-                  writer2.append("import ").append(URLBuilder.class.getName()).append(";\n");
-                  writer2.append("import ").append(InternalApplicationContext.class.getName()).append(";\n");
-                  writer2.append("import ").append(MimeContext.class.getName()).append(";\n");
-                  writer2.append("import ").append(ActionContext.class.getName()).append(";\n");
-                  writer2.append("import ").append(Response.class.getName()).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(ControllerMethod.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(ControllerParameter.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(Tools.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(URLBuilder.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(InternalApplicationContext.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
+                  writer2.append("import ").append(Tools.getImport(Response.class)).append(";\n");
                   writer2.append("import ").append(foo.className).append(";\n");
                   writer2.append("public class ").append(controller.typeElt.getSimpleName()).append("_ {\n");
 

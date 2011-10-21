@@ -199,4 +199,34 @@ public class Tools
             return sb.toString();
       }
    }
+
+   public static String getImport(Class<?> clazz)
+   {
+      if (clazz.isLocalClass() || clazz.isAnonymousClass())
+      {
+         throw new IllegalArgumentException("Cannot use local or anonymous class");
+      }
+      else if (clazz.isMemberClass())
+      {
+         StringBuilder sb = new StringBuilder();
+         while (clazz.isMemberClass())
+         {
+            sb.insert(0, clazz.getSimpleName());
+            sb.insert(0, '.');
+            clazz = clazz.getEnclosingClass();
+         }
+         sb.insert(0, clazz.getSimpleName());
+         String pkg = clazz.getPackage().getName();
+         if (pkg.length() > 0)
+         {
+            sb.insert(0, '.');
+            sb.insert(0, pkg);
+         }
+         return sb.toString();
+      }
+      else
+      {
+         return clazz.getName();
+      }
+   }
 }
