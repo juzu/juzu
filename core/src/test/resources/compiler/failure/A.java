@@ -17,28 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.application;
-
-import org.juzu.impl.spi.fs.ram.RAMPath;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
-
-import java.io.File;
+package compiler.failure;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerTestCase extends AbstractTestCase
+public class A
 {
 
-   public void testDefaultController() throws Exception
-   {
-      CompilerHelper<File, RAMPath> compiler = compiler("application", "default_controller");
-      compiler.assertCompile();
-      Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
-      Class<?> aClass = compiler.assertClass("application.default_controller.A");
-
-      //
-      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      assertSame(aClass, desc.getDefaultController());
-   }
-}

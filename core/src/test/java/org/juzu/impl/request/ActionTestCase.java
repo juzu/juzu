@@ -19,18 +19,12 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
 import org.juzu.test.request.MockActionBridge;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -39,19 +33,7 @@ public class ActionTestCase extends AbstractTestCase
 
    public void testNoOp() throws Exception
    {
-      final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "request", "action", "noop");
-
-      //
-      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
-      compiler.assertCompile();
-
-      //
-      ClassLoader cl2 = new URLClassLoader(new URL[]{compiler.getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
-
-      //
-      MockApplication<RAMPath> app = new MockApplication<RAMPath>(compiler.getOutput(), cl2);
-      app.init();
+      MockApplication<?> app = application("request", "action", "noop");
 
       //
       MockClient client = app.client();
@@ -62,19 +44,7 @@ public class ActionTestCase extends AbstractTestCase
 
    public void testRedirect() throws Exception
    {
-      final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "request", "action", "redirect");
-
-      //
-      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
-      compiler.assertCompile();
-
-      //
-      ClassLoader cl2 = new URLClassLoader(new URL[]{compiler.getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
-
-      //
-      MockApplication<RAMPath> app = new MockApplication<RAMPath>(compiler.getOutput(), cl2);
-      app.init();
+      MockApplication<?> app = application("request", "action", "redirect");
 
       //
       MockClient client = app.client();
@@ -85,25 +55,12 @@ public class ActionTestCase extends AbstractTestCase
 
    public void testRender() throws Exception
    {
-      final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "request", "action", "render");
-
-      //
-      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
-      compiler.assertCompile();
-
-      //
-      ClassLoader cl2 = new URLClassLoader(new URL[]{compiler.getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
-
-      //
-      MockApplication<RAMPath> app = new MockApplication<RAMPath>(compiler.getOutput(), cl2);
-      app.init();
+      MockApplication<?> app = application("request", "action", "render");
 
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
       MockActionBridge action = (MockActionBridge)client.invoke(render.getContent());
       action.assertRender("render", Collections.singletonMap("arg", "arg_value"));
-
    }
 }

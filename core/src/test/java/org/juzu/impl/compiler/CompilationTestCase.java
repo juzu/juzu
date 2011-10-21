@@ -20,13 +20,14 @@
 package org.juzu.impl.compiler;
 
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.utils.Content;
+import org.juzu.test.AbstractTestCase;
+import org.juzu.test.CompilerHelper;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -47,24 +48,18 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilationTestCase extends TestCase
+public class CompilationTestCase extends AbstractTestCase
 {
 
    public void testBar() throws Exception
    {
-      File root = new File(System.getProperty("test.resources"));
-      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(new DiskFileSystem(root, "compiler", "disk"), new RAMFileSystem());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-      assertEquals(1, compiler.getClassOutputKeys().size());
+      Compiler<?, ?> compiler = compiler("compiler", "disk").assertCompile();
+      assertEquals("Was expecting 2 entries instead of 2 : " + compiler.getClassOutputKeys(), 2, compiler.getClassOutputKeys().size());
    }
 
    public void testGetResourceFromProcessor() throws Exception
    {
-      RAMFileSystem ramFS = new RAMFileSystem();
-      RAMDir root = ramFS.getRoot();
-      RAMDir foo = root.addDir("foo");
-      foo.addFile("A.java").update("package foo; public class A {}");
-      foo.addFile("A.txt").update("value");
+      DiskFileSystem input = diskFS("compiler", "getresource");
 
       //
       @javax.annotation.processing.SupportedAnnotationTypes({"*"})
@@ -83,7 +78,7 @@ public class CompilationTestCase extends TestCase
                try
                {
                   Filer filer = processingEnv.getFiler();
-                  FileObject o = filer.getResource(StandardLocation.SOURCE_PATH, "foo", "A.txt");
+                  FileObject o = filer.getResource(StandardLocation.SOURCE_PATH, "compiler.getresource", "A.txt");
                   result = o.getCharContent(false);
                }
                catch (IOException e)
@@ -96,7 +91,7 @@ public class CompilationTestCase extends TestCase
       }
 
       //
-      Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      Compiler<File, RAMPath> compiler = new Compiler<File, RAMPath>(input, new RAMFileSystem());
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
@@ -184,9 +179,9 @@ public class CompilationTestCase extends TestCase
             try
             {
                Filer filer = processingEnv.getFiler();
-               JavaFileObject b = filer.createSourceFile("B");
+               JavaFileObject b = filer.createSourceFile("compiler.processor.B");
                PrintWriter writer = new PrintWriter(b.openWriter());
-               writer.println("public class B { }");
+               writer.println("package compiler.processor; public class B { }");
                writer.close();
                done = true;
             }
@@ -203,38 +198,28 @@ public class CompilationTestCase extends TestCase
 
    public void testProcessor() throws Exception
    {
-      RAMFileSystem ramFS = new RAMFileSystem();
-      RAMDir root = ramFS.getRoot();
-      root.addFile("A.java").update("public class A {}");
-
-      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      DiskFileSystem ramFS = diskFS("compiler", "processor");
+      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(ramFS, new RAMFileSystem());
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
       assertEquals(2, compiler.getClassOutputKeys().size());
-      assertEquals(Arrays.asList("A", "B"), processor.names);
+      assertEquals(Arrays.asList("compiler.processor.A", "compiler.processor.B"), processor.names);
       assertEquals(1, compiler.getSourceOutputKeys().size());
    }
 
    public void testCompilationFailure() throws Exception
    {
-      RAMFileSystem ramFS = new RAMFileSystem();
-      RAMDir root = ramFS.getRoot();
-      root.addFile("A.java").update("public class A {");
-
-      //
-      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
-      assertEquals(1, compiler.compile().size());
+      CompilerHelper<?, RAMPath> compiler = compiler("compiler", "failure");
+      assertEquals(1, compiler.failCompile().size());
    }
 
    public void testAnnotationException() throws Exception
    {
-      RAMFileSystem ramFS = new RAMFileSystem();
-      RAMDir root = ramFS.getRoot();
-      root.addFile("A.java").update("@Deprecated public class A { }");
+      DiskFileSystem fs = diskFS("compiler", "annotationexception");
 
       //
-      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(fs, new RAMFileSystem());
       ProcessorPlugin plugin = new ProcessorPlugin()
       {
          @Override
@@ -252,13 +237,14 @@ public class CompilationTestCase extends TestCase
       List<CompilationError> errors = compiler.compile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
-      assertEquals("/A.java", error.getSource());
+      assertEquals("/compiler/annotationexception/A.java", error.getSource());
       assertTrue(error.getMessage().contains("the_message"));
-      assertNull(error.getSourceFile());
+      assertNotNull(error.getSourceFile());
+      assertTrue(error.getSourceFile().getAbsolutePath().endsWith("compiler/annotationexception/A.java"));
       assertNotNull(error.getLocation());
 
       //
-      compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      compiler = new Compiler<File, RAMPath>(fs, new RAMFileSystem());
       plugin = new ProcessorPlugin()
       {
          boolean failed = false;

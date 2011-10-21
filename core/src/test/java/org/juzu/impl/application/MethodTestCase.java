@@ -20,7 +20,7 @@
 package org.juzu.impl.application;
 
 import org.juzu.impl.compiler.CompilationError;
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
@@ -35,11 +35,7 @@ public class MethodTestCase extends AbstractTestCase
 
    public void testId() throws Exception
    {
-      final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "application", "method", "id");
-
-      //
-      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
+      CompilerHelper<File, RAMPath> compiler = compiler("application", "method", "id");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.method.id.IdApplication");
       Class<?> aClass = compiler.assertClass("application.method.id.A");
@@ -63,11 +59,7 @@ public class MethodTestCase extends AbstractTestCase
 
    public void testDuplicate() throws Exception
    {
-      final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "application", "method", "duplicate");
-
-      //
-      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
+      CompilerHelper<File, RAMPath> compiler = compiler("application", "method", "duplicate");
       List<CompilationError> errors = compiler.failCompile();
       assertEquals(1, errors.size());
       assertEquals("/application/method/duplicate/A.java", errors.get(0).getSource());

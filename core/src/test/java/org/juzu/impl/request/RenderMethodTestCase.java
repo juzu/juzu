@@ -19,30 +19,25 @@
 
 package org.juzu.impl.request;
 
-import junit.framework.TestCase;
 import org.juzu.Phase;
+import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderMethodTestCase extends TestCase
+public class RenderMethodTestCase extends AbstractTestCase
 {
 
    @Override
    protected void setUp() throws Exception
    {
-      final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "request", "method", "render");
-
-      //
-      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
+      CompilerHelper<?, RAMPath> compiler = compiler("request", "method", "render");
       compiler.assertCompile();
       aClass = compiler.assertClass("request.method.render.A");
       compiler.assertClass("request.method.render.A_");

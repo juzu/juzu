@@ -19,23 +19,56 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.impl.compiler.FileKey;
+import org.juzu.impl.compiler.Compiler;
+import org.juzu.impl.spi.fs.ram.RAMPath;
+import org.juzu.impl.spi.template.TemplateStub;
+import org.juzu.impl.utils.Content;
+import org.juzu.template.TemplateRenderContext;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
+import org.juzu.text.WriterPrinter;
 
+import javax.tools.JavaFileObject;
 import java.io.File;
+import java.io.StringWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateTestCase extends AbstractTestCase
 {
 
-   public void testResolution() throws Exception
+   public void testSimple() throws Exception
    {
-      final File root = new File(System.getProperty("test.resources"));
-      DiskFileSystem fs = new DiskFileSystem(root, "template", "relativepath");
+      CompilerHelper<File, RAMPath> helper = compiler("template", "simple");
+      Compiler<?, ?> compiler = helper.assertCompile();
 
       //
-      CompilerHelper<File> compiler = new CompilerHelper<File>(fs);
+      Content<?> content = compiler.getClassOutput(FileKey.newResourceName("template.simple.templates", "index.groovy"));
+      assertNotNull(content);
+      assertTrue(compiler.getClassOutputKeys().size() > 0);
+
+      //
+      assertTrue(compiler.getSourceOutputKeys().size() > 1);
+      Content<?> content2 = compiler.getSourceOutput(FileKey.newJavaName("template.simple.templates.index", JavaFileObject.Kind.SOURCE));
+      assertNotNull(content2);
+
+      //
+      ClassLoader cl = new URLClassLoader(new URL[]{helper.getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
+
+      //
+      Class<?> aClass = cl.loadClass("template.simple.A");
+      Class<?> bClass = cl.loadClass("template.simple.templates.index");
+      TemplateStub template = (TemplateStub)bClass.newInstance();
+      StringWriter out = new StringWriter();
+      template.render(new TemplateRenderContext(new WriterPrinter(out)));
+      assertEquals("hello", out.toString());
+   }
+
+   public void testResolution() throws Exception
+   {
+      CompilerHelper<File, RAMPath> compiler = compiler("template", "relativepath");
       compiler.assertCompile();
    }
 }

@@ -17,24 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
-
-import org.juzu.test.AbstractTestCase;
-import org.juzu.test.request.MockApplication;
-import org.juzu.test.request.MockClient;
-import org.juzu.test.request.MockRenderBridge;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ELTestCase extends AbstractTestCase
-{
-
-   public void testResolveBean() throws Exception
-   {
-      MockApplication<?> app = application("template", "el");
-
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals("A", render.getContent());
-   }
-}
+@Application
+package template.simple;
+import org.juzu.Application;

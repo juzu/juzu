@@ -21,6 +21,11 @@ package org.juzu.test;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.impl.spi.fs.ram.RAMPath;
+import org.juzu.test.request.MockApplication;
+
+import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractTestCase extends TestCase
@@ -73,5 +78,24 @@ public abstract class AbstractTestCase extends TestCase
    public static AssertionFailedError failure(String msg)
    {
       return new AssertionFailedError(msg);
+   }
+
+   public static DiskFileSystem diskFS(String... packageName)
+   {
+      File root = new File(System.getProperty("test.resources"));
+      return new DiskFileSystem(root, packageName);
+   }
+
+   public static CompilerHelper<File, RAMPath> compiler(String... packageName)
+   {
+      DiskFileSystem fs = diskFS(packageName);
+      return CompilerHelper.create(fs);
+   }
+
+   public static MockApplication<?> application(String... packageName)
+   {
+      CompilerHelper<File, RAMPath> helper = compiler(packageName);
+      helper.assertCompile();
+      return helper.application();
    }
 }
