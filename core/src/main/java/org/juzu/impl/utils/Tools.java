@@ -192,7 +192,7 @@ public class Tools
             {
                if (sb.length() > 0)
                {
-                  sb.append(".");
+                  sb.append(separator);
                }
                sb.append(name);
             }

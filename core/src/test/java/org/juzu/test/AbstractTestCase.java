@@ -115,7 +115,7 @@ public abstract class AbstractTestCase extends TestCase
 
       // Find
       File f2;
-      String pkg = Tools.join('.', packageName);
+      String pkg = Tools.join('_', packageName);
       f2 = new File(a, pkg);
       for (int count = 0;;count++)
       {
