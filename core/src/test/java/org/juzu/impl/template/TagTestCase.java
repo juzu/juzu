@@ -19,13 +19,13 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.test.AbstractTestCase;
+import org.juzu.test.AbstractDITestCase;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TagTestCase extends AbstractTestCase
+public class TagTestCase extends AbstractDITestCase
 {
 
    public void _testSimple() throws Exception

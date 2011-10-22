@@ -19,10 +19,12 @@
 
 package org.juzu.impl.application;
 
-import org.juzu.AmbiguousResolutionException;
 import org.juzu.Controller;
 import org.juzu.Phase;
 import org.juzu.Response;
+import org.juzu.impl.inject.Export;
+import org.juzu.impl.inject.ScopeController;
+import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.impl.request.Request;
@@ -31,30 +33,24 @@ import org.juzu.impl.spi.request.ResourceBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
-import org.juzu.impl.cdi.Export;
-import org.juzu.impl.cdi.ScopeController;
 import org.juzu.request.ActionContext;
 import org.juzu.request.ApplicationContext;
 import org.juzu.request.MimeContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
-import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Spliterator;
 import org.juzu.request.ResourceContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
@@ -71,22 +67,20 @@ public class InternalApplicationContext extends ApplicationContext
    private final ApplicationDescriptor descriptor;
 
    /** . */
-   final Container container;
+   final InjectManager manager;
 
    /** . */
    private final ControllerResolver controllerResolver;
 
    /** . */
-   private static final ThreadLocal<Request> current = new ThreadLocal<Request>();
+   static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
-   public InternalApplicationContext()
+   @Inject
+   public InternalApplicationContext(InjectManager manager, ApplicationDescriptor descriptor)
    {
-      Bootstrap bootstrap = Bootstrap.foo.get();
-
-      //
-      this.descriptor = bootstrap.descriptor;
-      this.container = bootstrap.container;
-      this.controllerResolver = new ControllerResolver(bootstrap.descriptor);
+      this.descriptor = descriptor;
+      this.manager = manager;
+      this.controllerResolver = new ControllerResolver(descriptor);
    }
 
    public ApplicationDescriptor getDescriptor()
@@ -96,7 +90,7 @@ public class InternalApplicationContext extends ApplicationContext
 
    public void invoke(RequestBridge bridge)
    {
-      ClassLoader classLoader = container.getClassLoader();
+      ClassLoader classLoader = manager.getClassLoader();
 
       //
       Phase phase;
@@ -128,7 +122,7 @@ public class InternalApplicationContext extends ApplicationContext
          Thread.currentThread().setContextClassLoader(classLoader);
          current.set(request);
          ScopeController.begin(request);
-         Object ret = doInvoke(request, method);
+         Object ret = doInvoke(manager, request, method);
          if (phase == Phase.ACTION && ret != null && ret instanceof Response)
          {
             try
@@ -151,22 +145,24 @@ public class InternalApplicationContext extends ApplicationContext
 
    public Object resolveBean(String name)
    {
-      BeanManager mgr = container.getManager();
-      Set<Bean<?>> beans = mgr.getBeans(name);
-      switch (beans.size())
+      return resolveBean(manager, name);
+   }
+
+   private <B, I> Object resolveBean(InjectManager<B, I> manager, String name)
+   {
+      B bean = manager.resolveBean(name);
+      if (bean != null)
       {
-         case 0:
-            return null;
-         case 1:
-            Bean<?> bean = beans.iterator().next();
-            CreationalContext<?> cc = mgr.createCreationalContext(bean);
-            return mgr.getReference(bean, bean.getBeanClass(), cc);
-         default:
-            throw new AmbiguousResolutionException();
+         I cc = manager.create(bean);
+         return manager.get(bean, cc);
+      }
+      else
+      {
+         return null;
       }
    }
 
-   private Object doInvoke(Request request, ControllerMethod method)
+   private <B, I> Object doInvoke(InjectManager<B, I> manager, Request request, ControllerMethod method)
    {
       RequestContext context = request.getContext();
 
@@ -190,20 +186,18 @@ public class InternalApplicationContext extends ApplicationContext
       else
       {
          Class<?> type = method.getType();
-         BeanManager mgr = container.getManager();
-         Set<? extends Bean> beans = mgr.getBeans(type);
+         B bean = manager.resolveBean(type);
 
-         if (beans.size() == 1)
+         if (bean != null)
          {
-            CreationalContext<?> cc = null;
+            I instance = null;
             try
             {
                // Get the bean
-               Bean bean = beans.iterator().next();
-               cc = mgr.createCreationalContext(bean);
+               instance = manager.create(bean);
 
                // Get a reference
-               Object o = mgr.getReference(bean, type, cc);
+               Object o = manager.get(bean, instance);
 
                //
                if (o instanceof Controller)
@@ -244,9 +238,9 @@ public class InternalApplicationContext extends ApplicationContext
             }
             finally
             {
-               if (cc != null)
+               if (instance != null)
                {
-                  cc.release();
+                  manager.release(instance);
                }
             }
          }

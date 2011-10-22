@@ -23,7 +23,6 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.utils.Tools;
-import org.juzu.test.request.MockApplication;
 
 import java.io.File;
 
@@ -140,12 +139,5 @@ public abstract class AbstractTestCase extends TestCase
 
       //
       return new CompilerHelper<File, File>(input, output);
-   }
-
-   public static MockApplication<?> application(String... packageName)
-   {
-      CompilerHelper<File, File> helper = compiler(packageName);
-      helper.assertCompile();
-      return helper.application();
    }
 }

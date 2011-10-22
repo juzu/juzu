@@ -19,18 +19,21 @@
 
 package org.juzu.portlet;
 
+import org.jboss.weld.bootstrap.api.Bootstrap;
+import org.juzu.impl.application.ApplicationBootstrap;
 import org.juzu.impl.processing.MainProcessor;
+import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
+import org.juzu.impl.spi.inject.guice.GuiceBootstrap;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
 import org.juzu.impl.spi.request.portlet.PortletRenderBridge;
 import org.juzu.impl.spi.request.portlet.PortletResourceBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.impl.application.InternalApplicationContext;
-import org.juzu.impl.application.Bootstrap;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
 import org.juzu.impl.fs.FileSystemScanner;
-import org.juzu.impl.spi.cdi.Container;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
@@ -245,7 +248,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       URL mainURL = null;
       for (URL jarURL : jarURLs)
       {
-         URL configURL = new URL("jar:" + jarURL.toString() + "!/org/juzu/impl/application/Bootstrap.class");
+         URL configURL = new URL("jar:" + jarURL.toString() + "!/org/juzu/impl/application/ApplicationBootstrap.class");
          try
          {
             configURL.openStream();
@@ -260,19 +263,25 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       {
          throw new PortletException("Cannot find juzu jar among " + jarURLs);
       }
-      System.out.println("mainURL = " + mainURL);
       JarFileSystem libs = new JarFileSystem(new JarFile(new File(mainURL.toURI())));
 
       //
-      Container container = new org.juzu.impl.spi.cdi.weld.WeldContainer(cl);
-      container.addFileSystem(classes);
-      container.addFileSystem(libs);
+      InjectBootstrap injectBootstrap = new CDIBootstrap();
+//      InjectBootstrap injectBootstrap = new GuiceBootstrap();
+      injectBootstrap.addFileSystem(classes);
+      injectBootstrap.addFileSystem(libs);
+      injectBootstrap.setClassLoader(cl);
+
+      //
+      ApplicationBootstrap bootstrap = new ApplicationBootstrap(
+         injectBootstrap,
+         descriptor
+      );
 
       //
       System.out.println("Starting application [" + descriptor.getName() + "]");
-      Bootstrap boot = new Bootstrap(container, descriptor);
-      boot.start();
-      applicationContext = boot.getContext();
+      bootstrap.start();
+      applicationContext = bootstrap.getContext();
       classLoader = cl;
    }
 

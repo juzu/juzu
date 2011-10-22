@@ -22,6 +22,7 @@ package org.juzu.test;
 import org.juzu.impl.processing.MainProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
+import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
@@ -57,7 +58,7 @@ public class CompilerHelper<I, O>
    private ReadWriteFileSystem<O> output;
 
    /** . */
-   private ClassLoader cl;
+   private ClassLoader classLoader;
 
    /** . */
    private Compiler<?, ?> compiler;
@@ -71,6 +72,11 @@ public class CompilerHelper<I, O>
    public ReadWriteFileSystem<O> getOutput()
    {
       return output;
+   }
+
+   public ClassLoader getClassLoader()
+   {
+      return classLoader;
    }
 
    public List<CompilationError> failCompile()
@@ -89,12 +95,12 @@ public class CompilerHelper<I, O>
       }
    }
 
-   public MockApplication<?> application()
+   public MockApplication<?> application(InjectBootstrap bootstrap)
    {
       try
       {
          ClassLoader classLoader = new URLClassLoader(new URL[]{getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
-         MockApplication<O> app = new MockApplication<O>(getOutput(), classLoader);
+         MockApplication<O> app = new MockApplication<O>(getOutput(), classLoader, bootstrap);
          app.init();
          return app;
       }
@@ -111,7 +117,7 @@ public class CompilerHelper<I, O>
          Compiler<I, O> compiler = new org.juzu.impl.compiler.Compiler<I, O>(input, output);
          compiler.addAnnotationProcessor(new MainProcessor());
          AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-         cl = new URLClassLoader(new URL[]{output.getURL()}, Thread.currentThread().getContextClassLoader());
+         classLoader = new URLClassLoader(new URL[]{output.getURL()}, Thread.currentThread().getContextClassLoader());
          return compiler;
       }
       catch (IOException e)
@@ -124,7 +130,7 @@ public class CompilerHelper<I, O>
    {
       try
       {
-         return cl.loadClass(className);
+         return classLoader.loadClass(className);
       }
       catch (ClassNotFoundException e)
       {

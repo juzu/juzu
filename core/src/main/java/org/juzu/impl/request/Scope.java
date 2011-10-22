@@ -19,11 +19,18 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.FlashScoped;
+import org.juzu.IdentityScoped;
+import org.juzu.RequestScoped;
+import org.juzu.SessionScoped;
+
+import java.lang.annotation.Annotation;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum Scope
 {
 
-   REQUEST()
+   REQUEST(RequestScoped.class)
    {
       @Override
       public boolean isActive(Request context)
@@ -32,7 +39,7 @@ public enum Scope
       }
    },
 
-   SESSION()
+   SESSION(SessionScoped.class)
    {
       @Override
       public boolean isActive(Request context)
@@ -45,7 +52,7 @@ public enum Scope
     * todo : study more in depth how flash scoped is propagated to other phase, specially the resource phase
     * todo : that should kind of have an ID.
     */
-   FLASH()
+   FLASH(FlashScoped.class)
    {
       @Override
       public boolean isActive(Request context)
@@ -54,7 +61,7 @@ public enum Scope
       }
    },
 
-   IDENTITY()
+   IDENTITY(IdentityScoped.class)
    {
       @Override
       public boolean isActive(Request request)
@@ -63,6 +70,18 @@ public enum Scope
       }
    };
    
+   /** . */
+   private final Class<? extends Annotation> annotationType;
+
+   Scope(Class<? extends Annotation> annotationType)
+   {
+      this.annotationType = annotationType;
+   }
+
    public abstract boolean isActive(Request context);
 
+   public Class<? extends Annotation> getAnnotationType()
+   {
+      return annotationType;
+   }
 }

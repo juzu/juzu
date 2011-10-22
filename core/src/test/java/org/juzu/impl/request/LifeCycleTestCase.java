@@ -19,24 +19,28 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.test.AbstractTestCase;
+import org.juzu.test.AbstractDITestCase;
+import org.juzu.test.DIImplementation;
 import org.juzu.test.Registry;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LifeCycleTestCase extends AbstractTestCase
+public class LifeCycleTestCase extends AbstractDITestCase
 {
 
    public void testRenderPhase() throws Exception
    {
-      MockApplication<?> app = application("request", "lifecycle");
+      if (getDI() == DIImplementation.CDI_WELD)
+      {
+         MockApplication<?> app = application("request", "lifecycle");
 
-      //
-      MockClient client = app.client();
-      Registry.clear();
-      client.render();
-      Integer count = Registry.get("count");
-      assertEquals((Integer)2, count);
+         //
+         MockClient client = app.client();
+         Registry.clear();
+         client.render();
+         Integer count = Registry.get("count");
+         assertEquals((Integer)2, count);
+      }
    }
 }

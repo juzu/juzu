@@ -19,6 +19,7 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.impl.inject.ScopingContext;
 import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.impl.spi.request.RequestBridge;
@@ -30,7 +31,7 @@ import org.juzu.request.RequestContext;
 import org.juzu.request.ResourceContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Request
+public class Request implements ScopingContext
 {
 
    /** . */
@@ -101,5 +102,10 @@ public class Request
          default:
             throw new AssertionError();
       }
+   }
+
+   public boolean isActive(Scope scope)
+   {
+      return scope.isActive(this);
    }
 }

@@ -19,27 +19,26 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.test.AbstractTestCase;
+import org.juzu.test.AbstractDITestCase;
 import org.juzu.test.Registry;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
-import org.juzu.test.support.Car;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopeTestCase extends AbstractTestCase
+public class ScopeTestCase extends AbstractDITestCase
 {
 
-   public void testRenderScope() throws Exception
+   public void testRequestScope() throws Exception
    {
-      MockApplication<?> app = application("request", "scope", "render");
+      MockApplication<?> app = application("request", "scope", "request");
 
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
       assertEquals(1, render.getAttributes().size());
       long identity = Registry.<Long>unset("car");
-      Car car = (Car)render.getAttributes().values().iterator().next();
+      request.scope.request.Car car = (request.scope.request.Car)render.getAttributes().values().iterator().next();
       assertEquals(car.getIdentityHashCode(), identity);
 
       //
@@ -60,7 +59,7 @@ public class ScopeTestCase extends AbstractTestCase
       MockRenderBridge render = client.render();
       long identity1 = Registry.<Long>unset("car");
       assertEquals(1, client.getFlash(1).size());
-      Car car1 = (Car)client.getFlash(1).values().iterator().next();
+      request.scope.flash.Car car1 = (request.scope.flash.Car)client.getFlash(1).values().iterator().next();
       assertEquals(car1.getIdentityHashCode(), identity1);
 
       //
@@ -68,7 +67,7 @@ public class ScopeTestCase extends AbstractTestCase
       long identity2 = Registry.<Long>unset("car");
       assertNotSame(identity1, identity2);
       assertEquals(1, client.getFlash(0).size());
-      Car car2 = (Car)client.getFlash(0).values().iterator().next();
+      request.scope.flash.Car car2 = (request.scope.flash.Car)client.getFlash(0).values().iterator().next();
       assertNotSame(car1, car2);
 
       //
@@ -76,7 +75,7 @@ public class ScopeTestCase extends AbstractTestCase
       long identity3 = Registry.<Long>unset("car");
       assertEquals(identity2, identity3);
       assertEquals(1, client.getFlash(1).size());
-      Car car3 = (Car)client.getFlash(1).values().iterator().next();
+      request.scope.flash.Car car3 = (request.scope.flash.Car)client.getFlash(1).values().iterator().next();
       assertSame(car2, car3);
    }
 }

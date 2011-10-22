@@ -19,7 +19,7 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.test.AbstractTestCase;
+import org.juzu.test.AbstractDITestCase;
 import org.juzu.test.request.MockActionBridge;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
@@ -28,7 +28,7 @@ import org.juzu.test.request.MockRenderBridge;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ActionTestCase extends AbstractTestCase
+public class ActionTestCase extends AbstractDITestCase
 {
 
    public void testNoOp() throws Exception

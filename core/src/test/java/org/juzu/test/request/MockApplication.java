@@ -19,12 +19,12 @@
 
 package org.juzu.test.request;
 
+import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.request.ApplicationContext;
-import org.juzu.impl.application.Bootstrap;
-import org.juzu.impl.spi.cdi.Container;
+import org.juzu.impl.application.ApplicationBootstrap;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.AbstractTestCase;
@@ -42,6 +42,9 @@ public class MockApplication<P>
 {
 
    /** . */
+   private final InjectBootstrap bootstrap;
+
+   /** . */
    private final ReadFileSystem<P> classes;
 
    /** . */
@@ -50,10 +53,11 @@ public class MockApplication<P>
    /** . */
    InternalApplicationContext context;
 
-   public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader)
+   public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectBootstrap bootstrap)
    {
       this.classes = classes;
       this.classLoader = classLoader;
+      this.bootstrap = bootstrap;
    }
 
    public void init() throws Exception
@@ -85,15 +89,18 @@ public class MockApplication<P>
       ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 
       //
-      DiskFileSystem libs = new DiskFileSystem(new File(Bootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
+      DiskFileSystem libs = new DiskFileSystem(new File(ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
 
       //
-      Container container = new org.juzu.impl.spi.cdi.weld.WeldContainer(classLoader);
-      container.addFileSystem(classes);
-      container.addFileSystem(libs);
+      bootstrap.addFileSystem(classes);
+      bootstrap.addFileSystem(libs);
+      bootstrap.setClassLoader(classLoader);
 
-      Bootstrap boot = new Bootstrap(container, descriptor);
+      //
+      ApplicationBootstrap boot = new ApplicationBootstrap(bootstrap, descriptor);
       boot.start();
+
+      //
       context = boot.getContext();
    }
 

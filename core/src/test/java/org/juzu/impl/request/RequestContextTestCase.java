@@ -19,14 +19,14 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.test.AbstractTestCase;
+import org.juzu.test.AbstractDITestCase;
 import org.juzu.test.request.MockActionBridge;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RequestContextTestCase extends AbstractTestCase
+public class RequestContextTestCase extends AbstractDITestCase
 {
 
    public void testInjection() throws Exception
