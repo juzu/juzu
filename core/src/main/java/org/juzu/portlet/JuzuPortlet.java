@@ -261,6 +261,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       {
          throw new PortletException("Cannot find juzu jar among " + jarURLs);
       }
+      System.out.println("mainURL = " + mainURL);
       JarFileSystem libs = new JarFileSystem(new JarFile(new File(mainURL.toURI())));
 
       //

@@ -241,7 +241,15 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
          @Override
          protected URL doGetResource(String path) throws IOException
          {
-            return servletContext.getResource(path);
+            String realPath = servletContext.getRealPath(path);
+            if (realPath != null)
+            {
+               return new File(realPath).toURI().toURL();
+            }
+            else
+            {
+               return servletContext.getResource(path);
+            }
          }
          @Override
          protected String doGetRealPath(String path) throws IOException
@@ -268,7 +276,15 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
          @Override
          protected URL doGetResource(String path) throws IOException
          {
-            return portletContext.getResource(path);
+            String realPath = portletContext.getRealPath(path);
+            if (realPath != null)
+            {
+               return new File(realPath).toURI().toURL();
+            }
+            else
+            {
+               return portletContext.getResource(path);
+            }
          }
          @Override
          protected String doGetRealPath(String path) throws IOException

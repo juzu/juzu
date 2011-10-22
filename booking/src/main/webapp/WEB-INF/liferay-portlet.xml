@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<liferay-portlet-app>
+  <portlet>
+    <portlet-name>BookingPortlet</portlet-name>
+    <header-portlet-css>/public/stylesheets/main.css</header-portlet-css>
+    <header-portlet-css>/public/ui-lightness/jquery-ui-1.7.2.custom.css</header-portlet-css>
+    <header-portlet-javascript>/public/javascripts/jquery-1.3.2.min.js</header-portlet-javascript>
+    <header-portlet-javascript>/public/javascripts/jquery-ui-1.7.2.custom.min.js"</header-portlet-javascript>
+  </portlet>
+</liferay-portlet-app>
