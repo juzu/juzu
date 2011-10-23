@@ -21,10 +21,17 @@ package org.juzu.impl.spi.template.gtmpl;
 
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.spi.template.TemplateProvider;
+import org.juzu.impl.spi.template.TemplateStub;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class GroovyTemplateProvider extends TemplateProvider
 {
+
+   @Override
+   public Class<? extends TemplateStub> getTemplateStubType()
+   {
+      return GroovyTemplateLiteral.class;
+   }
 
    @Override
    public TemplateGenerator newGenerator()

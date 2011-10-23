@@ -19,6 +19,7 @@
 
 package org.juzu;
 
+import javax.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -28,6 +29,7 @@ import java.lang.annotation.RetentionPolicy;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Qualifier
 public @interface Path
 {
 

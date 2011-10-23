@@ -55,6 +55,6 @@ public abstract class TemplateGenerator
 
    public abstract void tag(String tagName, Map<String, String> args);
 
-   public abstract String generate(Filer filer, String pkgName, String rawName) throws IOException;
+   public abstract void generate(Filer filer, String pkgName, String rawName) throws IOException;
 
 }

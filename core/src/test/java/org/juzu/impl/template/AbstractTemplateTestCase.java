@@ -19,9 +19,8 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.application.ApplicationTemplateRenderContext;
 import org.juzu.impl.utils.MethodInvocation;
-import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
+import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.template.TemplateRenderContext;
@@ -40,7 +39,7 @@ import java.util.Random;
 public abstract class AbstractTemplateTestCase extends AbstractTestCase
 {
 
-   public GroovyTemplate template(String text) throws IOException
+   public GroovyTemplateStub template(String text) throws IOException
    {
       GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator();
       try
@@ -86,7 +85,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
 
    public String render(String text, Map<String, ?> attributes, Locale locale) throws IOException, TemplateExecutionException
    {
-      GroovyTemplate template = template(text);
+      GroovyTemplateStub template = template(text);
       StringWriter out = new StringWriter();
       TemplateRenderContext renderContext = new TemplateRenderContext(new WriterPrinter(out), attributes, locale);
       template.render(renderContext);

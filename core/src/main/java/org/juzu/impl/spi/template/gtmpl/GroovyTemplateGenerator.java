@@ -120,10 +120,10 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       return builder.toString();
    }
 
-   public GroovyTemplate build(String templateId)
+   public GroovyTemplateStub build(String templateId)
    {
       final String script = toString();
-      return new GroovyTemplate(templateId)
+      return new GroovyTemplateStub(templateId)
       {
          @Override
          public String getScript()
@@ -253,7 +253,7 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       // throw new UnsupportedOperationException();
    }
 
-   public String generate(Filer filer, String pkgName, String rawName) throws IOException
+   public void generate(Filer filer, String pkgName, String rawName) throws IOException
    {
       String script = toString();
 
@@ -268,27 +268,5 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       {
          Tools.safeClose(writer);
       }
-
-      // Create the class associated with the template
-      String fqn = pkgName.length() == 0 ? rawName : (pkgName + "." + rawName);
-      FileObject fof = filer.createSourceFile(fqn);
-      writer = fof.openWriter();
-      try
-      {
-         writer.append("package ").append(pkgName).append(";\n");
-         writer.append("public class ").append(rawName).append(" extends ").append(GroovyTemplateLiteral.class.getName()).append("\n");
-         writer.append("{\n");
-         writer.append("public ").append(rawName).append("()\n");
-         writer.append("{\n");
-         writer.append("}\n");
-         writer.append("}\n");
-      }
-      finally
-      {
-         writer.close();
-      }
-
-      //
-      return fqn;
    }
 }

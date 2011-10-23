@@ -52,7 +52,6 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Arrays;
@@ -275,15 +274,8 @@ public class InternalApplicationContext extends ApplicationContext
       }
       catch (Exception e)
       {
-         throw new UnsupportedOperationException("handle me gracefully");
+         throw new UnsupportedOperationException("handle me gracefully", e);
       }
-   }
-
-   @Produces
-   public Template resolveTemplate(InjectionPoint point)
-   {
-      Path path = point.getAnnotated().getAnnotation(Path.class);
-      return new Template(this, path.value());
    }
 
    @Produces

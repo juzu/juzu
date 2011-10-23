@@ -20,7 +20,7 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
-import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
+import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.text.WriterPrinter;
@@ -37,7 +37,7 @@ public class TemplateBuilderTestCase extends TestCase
    {
       GroovyTemplateGenerator template = new GroovyTemplateGenerator();
       ASTNode.Template.parse("a<%=foo%>c").generate(template, new TemplateCompilationContext());
-      GroovyTemplate s = template.build("template_" + Math.abs(new Random().nextLong()));
+      GroovyTemplateStub s = template.build("template_" + Math.abs(new Random().nextLong()));
       StringWriter out = new StringWriter();
       s.render(new TemplateRenderContext(new WriterPrinter(out), Collections.singletonMap("foo", "b")));
       assertEquals("abc", out.toString());

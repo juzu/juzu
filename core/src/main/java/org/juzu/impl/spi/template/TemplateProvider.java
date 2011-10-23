@@ -27,6 +27,8 @@ package org.juzu.impl.spi.template;
 public abstract class TemplateProvider
 {
 
+   public abstract Class<? extends TemplateStub> getTemplateStubType();
+
    public abstract TemplateGenerator newGenerator();
 
 }

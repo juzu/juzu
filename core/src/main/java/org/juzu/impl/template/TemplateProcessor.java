@@ -24,6 +24,7 @@ import org.juzu.impl.application.ApplicationProcessor;
 import org.juzu.impl.compiler.ProcessorPlugin;
 import org.juzu.impl.spi.template.TemplateProvider;
 
+import javax.annotation.Generated;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import java.io.IOException;
@@ -85,31 +86,34 @@ public class TemplateProcessor extends ProcessorPlugin
       //
       for (final Element elt : getElementsAnnotatedWith(Path.class))
       {
-         PackageElement packageElt = getPackageOf(elt);
-         Path ref = elt.getAnnotation(Path.class);
+         if (elt.getAnnotation(Generated.class) == null)
+         {
+            PackageElement packageElt = getPackageOf(elt);
+            Path ref = elt.getAnnotation(Path.class);
 
-         //
-         ApplicationProcessor.ApplicationMetaData application = applicationPlugin.getApplication(packageElt);
-         if (application == null)
-         {
-            throw new UnsupportedOperationException("handle me gracefully");
-         }
+            //
+            ApplicationProcessor.ApplicationMetaData application = applicationPlugin.getApplication(packageElt);
+            if (application == null)
+            {
+               throw new UnsupportedOperationException("handle me gracefully");
+            }
 
-         //
-         TemplateCompiler compiler = compilerMap.get(application);
-         if (compiler == null)
-         {
-            compilerMap.put(application, compiler = new TemplateCompiler(this, application, getFiler()));
-         }
+            //
+            TemplateCompiler compiler = compilerMap.get(application);
+            if (compiler == null)
+            {
+               compilerMap.put(application, compiler = new TemplateCompiler(this, application, getFiler()));
+            }
 
-         //
-         try
-         {
-            compiler.compile(elt, ref.value());
-         }
-         catch (IOException e)
-         {
-            e.printStackTrace();
+            //
+            try
+            {
+               compiler.compile(elt, ref.value());
+            }
+            catch (IOException e)
+            {
+               e.printStackTrace();
+            }
          }
       }
    }

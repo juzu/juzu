@@ -19,7 +19,7 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.spi.template.gtmpl.GroovyTemplate;
+import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.test.request.MockPrinter;
@@ -344,14 +344,14 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
    {
       out = null;
       Writer writer = new StringWriter();
-      GroovyTemplate template = template("<% " + TemplateRenderingTestCase.class.getName() + ".out = out; %>");
+      GroovyTemplateStub template = template("<% " + TemplateRenderingTestCase.class.getName() + ".out = out; %>");
       template.render(new TemplateRenderContext(new WriterPrinter(writer)));
       assertNotNull(out);
    }
 
    private void assertLineNumber(int expectedLineNumber, String expectedText, String script) throws IOException
    {
-      GroovyTemplate template = template(script);
+      GroovyTemplateStub template = template(script);
       try
       {
          template.render(new TemplateRenderContext(new MockPrinter()));

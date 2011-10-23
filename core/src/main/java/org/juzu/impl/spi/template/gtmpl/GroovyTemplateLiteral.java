@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class GroovyTemplateLiteral extends GroovyTemplate
+public abstract class GroovyTemplateLiteral extends GroovyTemplateStub
 {
    public GroovyTemplateLiteral()
    {

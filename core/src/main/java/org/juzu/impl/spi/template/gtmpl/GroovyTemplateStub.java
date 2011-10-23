@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class GroovyTemplate extends TemplateStub
+public abstract class GroovyTemplateStub extends TemplateStub
 {
 
    /** . */
@@ -45,12 +45,12 @@ public abstract class GroovyTemplate extends TemplateStub
    /** . */
    private HashMap<Integer, Foo> locationTable;
 
-   protected GroovyTemplate()
+   protected GroovyTemplateStub()
    {
       this.templateId = getClass().getName();
    }
 
-   public GroovyTemplate(String templateId)
+   public GroovyTemplateStub(String templateId)
    {
       this.templateId = templateId;
       this.scriptClass = null;
