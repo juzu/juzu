@@ -21,6 +21,7 @@ package org.juzu.impl.cdi;
 
 import org.juzu.impl.request.Scope;
 
+import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -53,7 +54,23 @@ final class ContextImpl implements Context
 
    public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext)
    {
-      return controller.get(scope, contextual, creationalContext);
+      try
+      {
+         Object o = controller.get(scope, contextual);
+         if (o == null)
+         {
+            if (creationalContext != null)
+            {
+               o = contextual.create(creationalContext);
+               controller.put(scope, contextual, o);
+            }
+         }
+         return (T)o;
+      }
+      catch (IllegalStateException e)
+      {
+         throw new ContextNotActiveException("Context not active for scope=" + scope + " contextual=" + contextual, e);
+      }
    }
 
    public <T> T get(Contextual<T> contextual)

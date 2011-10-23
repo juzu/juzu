@@ -27,11 +27,8 @@ import org.juzu.ResourceScoped;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.request.Scope;
 
-import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.context.spi.CreationalContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ScopeController
@@ -82,36 +79,59 @@ public class ScopeController
       INSTANCE.currentRequest.set(null);
    }
 
-   public <T> T get(Scope scope, Contextual<T> contextual, CreationalContext<T> creationalContext)
+   /**
+    * Obtain a scoped object.
+    *
+    * @param scope the scope
+    * @param key the key
+    * @return the scoped object or null
+    * @throws IllegalStateException if the scope is not active
+    */
+   public Object get(Scope scope, Object key) throws IllegalStateException
    {
       Request req = currentRequest.get();
       if (req == null)
       {
-         throw new ContextNotActiveException();
+         throw new IllegalStateException("Context not active");
       }
       if (!scope.isActive(req))
       {
-         throw new ContextNotActiveException();
+         throw new IllegalStateException("Context not active");
       }
-      Object o = req.getContextualValue(scope, contextual);
-      if (o == null)
-      {
-         if (creationalContext != null)
-         {
-            o = contextual.create(creationalContext);
-            req.setContextualValue(scope, contextual, o);
-         }
-      }
-      return (T)o;
+      return req.getContextualValue(scope, key);
    }
 
-   public boolean isActive(Scope scope)
+   /**
+    * Scope an object.
+    *
+    * @param scope the scope
+    * @param key the key
+    * @param object the value
+    * @throws IllegalStateException if the scope is not active
+    */
+   public void put(Scope scope, Object key, Object object) throws IllegalStateException
    {
       Request req = currentRequest.get();
       if (req == null)
       {
-         throw new ContextNotActiveException();
+         throw new IllegalStateException("Context not active");
       }
-      return scope.isActive(req);
+      if (!scope.isActive(req))
+      {
+         throw new IllegalStateException("Context not active");
+      }
+      req.setContextualValue(scope, key, object);
+   }
+
+   /**
+    * Tells if a scope is active or not.
+    *
+    * @param scope the scope
+    * @return true if the scope is active
+    */
+   public boolean isActive(Scope scope)
+   {
+      Request req = currentRequest.get();
+      return req != null && scope.isActive(req);
    }
 }
