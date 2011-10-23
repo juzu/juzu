@@ -71,10 +71,6 @@ public class Request
          case FLASH:
             return bridge.getFlashValue(key);
          case REQUEST:
-         case MIME:
-         case RENDER:
-         case ACTION:
-         case RESOURCE:
             return bridge.getRequestValue(key);
          case SESSION:
             return bridge.getSessionValue(key);
@@ -92,10 +88,6 @@ public class Request
          case FLASH:
             bridge.setFlashValue(key, value);
             break;
-         case ACTION:
-         case RESOURCE:
-         case MIME:
-         case RENDER:
          case REQUEST:
             bridge.setRequestValue(key, value);
             break;

@@ -22,8 +22,6 @@ package request.scope.flash;
 import org.juzu.Action;
 import org.juzu.FlashScoped;
 import org.juzu.Render;
-import org.juzu.RenderScoped;
-import org.juzu.Resource;
 import org.juzu.test.Registry;
 import org.juzu.test.support.Car;
 

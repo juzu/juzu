@@ -44,11 +44,11 @@ public class ScopeTestCase extends AbstractTestCase
 
       //
       client.invoke(Registry.<String>unset("action"));
-      assertNull(Registry.get("car"));
+      assertNotNull(Registry.get("car"));
 
       //
       client.invoke(Registry.<String>unset("resource"));
-      assertNull(Registry.get("car"));
+      assertNotNull(Registry.get("car"));
    }
 
    public void testFlashScope() throws Exception

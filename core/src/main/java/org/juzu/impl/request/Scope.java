@@ -19,29 +19,9 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.Phase;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum Scope
 {
-
-   RENDER()
-   {
-      @Override
-      public boolean isActive(Request context)
-      {
-         return context.getContext().getPhase() == Phase.RENDER;
-      }
-   },
-
-   ACTION()
-   {
-      @Override
-      public boolean isActive(Request context)
-      {
-         return context.getContext().getPhase() == Phase.ACTION;
-      }
-   },
 
    REQUEST()
    {
@@ -49,24 +29,6 @@ public enum Scope
       public boolean isActive(Request context)
       {
          return true;
-      }
-   },
-
-   RESOURCE()
-   {
-      @Override
-      public boolean isActive(Request context)
-      {
-         return context.getContext().getPhase() == Phase.RESOURCE;
-      }
-   },
-
-   MIME()
-   {
-      @Override
-      public boolean isActive(Request context)
-      {
-         return context.getContext().getPhase() == Phase.RENDER || context.getContext().getPhase() == Phase.RESOURCE;
       }
    },
 

@@ -19,12 +19,8 @@
 
 package org.juzu.impl.application;
 
-import org.juzu.ActionScoped;
 import org.juzu.AmbiguousResolutionException;
-import org.juzu.Path;
 import org.juzu.Phase;
-import org.juzu.RenderScoped;
-import org.juzu.ResourceScoped;
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.impl.spi.request.RenderBridge;
@@ -48,6 +44,7 @@ import org.juzu.request.ResourceContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
@@ -279,21 +276,21 @@ public class InternalApplicationContext extends ApplicationContext
    }
 
    @Produces
-   @RenderScoped
+   @RequestScoped
    public RenderContext getRenderContext()
    {
       return (RenderContext)current.get().getContext();
    }
 
    @Produces
-   @ActionScoped
+   @RequestScoped
    public ActionContext getActionContext()
    {
       return (ActionContext)current.get().getContext();
    }
 
    @Produces
-   @ResourceScoped
+   @RequestScoped
    public ResourceContext getResourceContext()
    {
       return (ResourceContext)current.get().getContext();

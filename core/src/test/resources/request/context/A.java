@@ -21,13 +21,9 @@ package request.context;
 
 import org.juzu.Action;
 import org.juzu.Render;
-import org.juzu.RenderScoped;
 import org.juzu.request.ActionContext;
 import org.juzu.request.RenderContext;
-import org.juzu.test.Registry;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.IOException;
 

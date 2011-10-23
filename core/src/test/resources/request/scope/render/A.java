@@ -21,13 +21,13 @@ package request.scope.render;
 
 import org.juzu.Action;
 import org.juzu.Render;
-import org.juzu.RenderScoped;
 import org.juzu.Resource;
 import org.juzu.URLBuilder;
 import org.juzu.test.Registry;
 import org.juzu.test.support.Car;
 
 import javax.enterprise.context.ContextNotActiveException;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
@@ -36,7 +36,7 @@ public class A
 {
 
    @Produces
-   @RenderScoped
+   @RequestScoped
    public static Car create()
    {
       return new Car();

@@ -19,11 +19,7 @@
 
 package org.juzu.impl.cdi;
 
-import org.juzu.ActionScoped;
 import org.juzu.FlashScoped;
-import org.juzu.MimeScoped;
-import org.juzu.RenderScoped;
-import org.juzu.ResourceScoped;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.request.Scope;
 
@@ -42,18 +38,6 @@ public class ScopeController
 
    /** . */
    final ContextImpl requestContext = new ContextImpl(this, Scope.REQUEST, RequestScoped.class);
-
-   /** . */
-   final ContextImpl actionContext = new ContextImpl(this, Scope.ACTION, ActionScoped.class);
-
-   /** . */
-   final ContextImpl renderContext = new ContextImpl(this, Scope.RENDER, RenderScoped.class);
-
-   /** . */
-   final ContextImpl resourceContext = new ContextImpl(this, Scope.RESOURCE, ResourceScoped.class);
-
-   /** . */
-   final ContextImpl mimeContext = new ContextImpl(this, Scope.MIME, MimeScoped.class);
 
    /** . */
    final ContextImpl sessionContext = new ContextImpl(this, Scope.SESSION, SessionScoped.class);
