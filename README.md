@@ -6,7 +6,15 @@ deployed in a portal server (only tested with GateIn trunk / Tomcat at the momen
 # Status
 
 - 0.1 milestone reached : booking demo adapted from Play!
-- 0.2-SNAPSHOT in progress
+- 0.2 milestone reached
+- 0.3 milestone reached : deploy on liferay 6.10 now
+- 0.4-SNAPSHOT in progress
+
+# Deploy on
+
+- GateIn/Tomcat
+- GateIn/JBoss5.1 requires to remove the seam and cdi deployer in AS5.1
+- Liferay/Tomcat tested on Liferay 6.10
 
 # Todo
 
