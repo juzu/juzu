@@ -26,6 +26,8 @@ import org.juzu.impl.utils.Content;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
+import org.juzu.test.request.MockApplication;
+import org.juzu.test.request.MockClient;
 import org.juzu.text.WriterPrinter;
 
 import javax.tools.JavaFileObject;
@@ -64,9 +66,11 @@ public class TemplateTestCase extends AbstractTestCase
       assertEquals("hello", out.toString());
    }
 
-   public void testResolution() throws Exception
+   public void testRelativePath() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("template", "relativepath");
-      compiler.assertCompile();
+      MockApplication<?> app = application("template", "relativepath");
+      MockClient client = app.client();
+      assertEquals("relative_path_template", client.render().getContent());
+
    }
 }

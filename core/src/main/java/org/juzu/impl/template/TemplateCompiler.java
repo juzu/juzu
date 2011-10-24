@@ -230,7 +230,7 @@ class TemplateCompiler
                writer2.append("import ").append(Tools.getImport(Inject.class)).append(";\n");
                writer2.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
                writer2.append("@Generated({})\n");
-               writer2.append("@Path(\"").append(templateName).append("\")\n");
+               writer2.append("@Path(\"").append(path).append("\")\n");
                writer2.append("public class ").append(rawName).append("_ extends ").append(Template.class.getName()).append("\n");
                writer2.append("{\n");
                writer2.append("@Inject\n");
@@ -238,7 +238,7 @@ class TemplateCompiler
                   append(ApplicationContext.class.getSimpleName()).append(" applicationContext").
                   append(")\n");
                writer2.append("{\n");
-               writer2.append("super(applicationContext, \"").append(templateName).append("\");\n");
+               writer2.append("super(applicationContext, \"").append(path).append("\");\n");
                writer2.append("}\n");
                writer2.append("}\n");
             }
