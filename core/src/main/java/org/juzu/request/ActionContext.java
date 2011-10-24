@@ -42,9 +42,9 @@ public class ActionContext extends RequestContext
    {
    }
 
-   public ActionContext(ClassLoader classLoader, ActionBridge bridge)
+   public ActionContext(ControllerMethod method, ClassLoader classLoader, ActionBridge bridge)
    {
-      super(classLoader);
+      super(method, classLoader);
 
       //
       this.bridge = bridge;

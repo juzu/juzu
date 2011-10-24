@@ -23,6 +23,7 @@ import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.spi.request.ResourceBridge;
+import org.juzu.metadata.ControllerMethod;
 import org.juzu.request.ActionContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
@@ -38,20 +39,20 @@ public class Request
    /** . */
    private final RequestContext context;
 
-   public Request(ClassLoader classLoader, RequestBridge bridge)
+   public Request(ControllerMethod method, ClassLoader classLoader, RequestBridge bridge)
    {
       RequestContext context;
       if (bridge instanceof RenderBridge)
       {
-         context = new RenderContext(classLoader, (RenderBridge)bridge);
+         context = new RenderContext(method, classLoader, (RenderBridge)bridge);
       }
       else if (bridge instanceof ActionBridge)
       {
-         context = new ActionContext(classLoader, (ActionBridge)bridge);
+         context = new ActionContext(method, classLoader, (ActionBridge)bridge);
       }
       else
       {
-         context = new ResourceContext(classLoader, (ResourceBridge)bridge);
+         context = new ResourceContext(method, classLoader, (ResourceBridge)bridge);
       }
 
       

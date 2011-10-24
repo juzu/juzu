@@ -19,28 +19,25 @@
 
 package request.render.explicitprinter;
 
+import org.juzu.Controller;
 import org.juzu.Path;
 import org.juzu.Render;
-import org.juzu.request.RenderContext;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
+public class A extends Controller
 {
 
    @Inject
    @Path("index.gtmpl")
    Template index;
 
-   @Inject
-   RenderContext context;
-
    @Render
    public void index() throws IOException
    {
-      index.render(context.getPrinter());
+      index.render(renderContext.getPrinter());
    }
 }

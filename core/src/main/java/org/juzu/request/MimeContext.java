@@ -34,9 +34,9 @@ public abstract class MimeContext extends RequestContext
       super();
    }
 
-   protected MimeContext(ClassLoader classLoader)
+   protected MimeContext(ControllerMethod method, ClassLoader classLoader)
    {
-      super(classLoader);
+      super(method, classLoader);
    }
 
    @Override

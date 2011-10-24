@@ -21,6 +21,7 @@ package org.juzu.request;
 
 import org.juzu.Phase;
 import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.metadata.ControllerMethod;
 
 import java.util.Map;
 
@@ -31,13 +32,23 @@ public abstract class RequestContext
    /** The request classloader. */
    protected ClassLoader classLoader;
 
+   /** . */
+   protected ControllerMethod method;
+
+   /** . */
    protected RequestContext()
    {
    }
 
-   public RequestContext(ClassLoader classLoader)
+   public RequestContext(ControllerMethod method, ClassLoader classLoader)
    {
+      this.method = method;
       this.classLoader = classLoader;
+   }
+
+   public ControllerMethod getMethod()
+   {
+      return method;
    }
 
    public ClassLoader getClassLoader()

@@ -21,6 +21,7 @@ package org.juzu.request;
 
 import org.juzu.Phase;
 import org.juzu.impl.spi.request.ResourceBridge;
+import org.juzu.metadata.ControllerMethod;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ResourceContext extends MimeContext
@@ -33,10 +34,11 @@ public class ResourceContext extends MimeContext
    {
    }
 
-   public ResourceContext(ClassLoader classLoader, ResourceBridge bridge)
+   public ResourceContext(ControllerMethod method, ClassLoader classLoader, ResourceBridge bridge)
    {
-      super(classLoader);
+      super(method, classLoader);
 
+      //
       this.bridge = bridge;
    }
 

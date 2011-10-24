@@ -20,22 +20,14 @@
 package request.action.noop;
 
 import org.juzu.Action;
+import org.juzu.Controller;
 import org.juzu.Render;
-import org.juzu.request.ActionContext;
-import org.juzu.request.RenderContext;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
+public class A extends Controller
 {
-
-   @Inject
-   RenderContext renderContext;
-
-   @Inject
-   ActionContext actionContext;
 
    @Render
    public void index() throws IOException

@@ -21,6 +21,7 @@ package org.juzu.request;
 
 import org.juzu.Phase;
 import org.juzu.impl.spi.request.RenderBridge;
+import org.juzu.metadata.ControllerMethod;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 //@RenderScoped
@@ -35,9 +36,9 @@ public class RenderContext extends MimeContext
       super();
    }
 
-   public RenderContext(ClassLoader classLoader, RenderBridge bridge)
+   public RenderContext(ControllerMethod method, ClassLoader classLoader, RenderBridge bridge)
    {
-      super(classLoader);
+      super(method, classLoader);
 
       //
       this.bridge = bridge;

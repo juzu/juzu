@@ -20,6 +20,7 @@
 package org.juzu.impl.application;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.Controller;
 import org.juzu.Phase;
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
@@ -44,9 +45,7 @@ import org.juzu.request.ResourceContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
-import org.juzu.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Singleton;
@@ -120,7 +119,7 @@ public class InternalApplicationContext extends ApplicationContext
       ControllerMethod method = controllerResolver.resolve(phase, bridge.getMethodId());
 
       //
-      Request request = new Request(classLoader, bridge);
+      Request request = new Request(method, classLoader, bridge);
 
       //
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
@@ -206,17 +205,38 @@ public class InternalApplicationContext extends ApplicationContext
                // Get a reference
                Object o = mgr.getReference(bean, type, cc);
 
-               // Prepare method parameters
-               List<ControllerParameter> params = method.getArgumentParameters();
-               Object[] args = new Object[params.size()];
-               for (int i = 0;i < args.length;i++)
-               {
-                  String[] values = context.getParameters().get(params.get(i).getName());
-                  args[i] = (values != null && values.length > 0) ? values[0] : null;
-               }
-
                //
-               return method.getMethod().invoke(o, args);
+               if (o instanceof Controller)
+               {
+                  Controller controller = (Controller)o;
+                  switch (request.getContext().getPhase())
+                  {
+                     case ACTION:
+                        return controller.processAction((ActionContext)context);
+                     case RENDER:
+                        controller.render((RenderContext)context);
+                        return null;
+                     case RESOURCE:
+                        controller.serveResource((ResourceContext)context);
+                        return null;
+                     default:
+                        throw new AssertionError();
+                  }
+               }
+               else
+               {
+                  // Prepare method parameters
+                  List<ControllerParameter> params = method.getArgumentParameters();
+                  Object[] args = new Object[params.size()];
+                  for (int i = 0;i < args.length;i++)
+                  {
+                     String[] values = context.getParameters().get(params.get(i).getName());
+                     args[i] = (values != null && values.length > 0) ? values[0] : null;
+                  }
+
+                  //
+                  return method.getMethod().invoke(o, args);
+               }
             }
             catch (Exception e)
             {
@@ -273,27 +293,6 @@ public class InternalApplicationContext extends ApplicationContext
       {
          throw new UnsupportedOperationException("handle me gracefully", e);
       }
-   }
-
-   @Produces
-   @RequestScoped
-   public RenderContext getRenderContext()
-   {
-      return (RenderContext)current.get().getContext();
-   }
-
-   @Produces
-   @RequestScoped
-   public ActionContext getActionContext()
-   {
-      return (ActionContext)current.get().getContext();
-   }
-
-   @Produces
-   @RequestScoped
-   public ResourceContext getResourceContext()
-   {
-      return (ResourceContext)current.get().getContext();
    }
 
    @Override
