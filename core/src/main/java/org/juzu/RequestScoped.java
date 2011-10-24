@@ -17,34 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.sample.booking.controllers;
+package org.juzu;
 
-import org.juzu.SessionScoped;
+import javax.enterprise.context.NormalScope;
+import javax.inject.Scope;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import javax.inject.Named;
-import java.io.Serializable;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Named("login")
-@SessionScoped
-public class Login implements Serializable
+@Scope
+@NormalScope
+@Target( { TYPE, METHOD, FIELD })
+@Retention(RUNTIME)
+public @interface RequestScoped
 {
-
-   /** . */
-   private String userName;
-
-   public boolean isConnected()
-   {
-      return userName != null;
-   }
-
-   public String getUserName()
-   {
-      return userName;
-   }
-
-   public void setUserName(String userName)
-   {
-      this.userName = userName;
-   }
 }

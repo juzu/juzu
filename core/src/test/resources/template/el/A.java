@@ -21,9 +21,9 @@ package template.el;
 
 import org.juzu.Path;
 import org.juzu.Render;
+import org.juzu.RequestScoped;
 import org.juzu.template.Template;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;

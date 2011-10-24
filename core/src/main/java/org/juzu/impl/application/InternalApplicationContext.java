@@ -44,7 +44,7 @@ import org.juzu.request.ResourceContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
-import javax.enterprise.context.RequestScoped;
+import org.juzu.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.Bean;

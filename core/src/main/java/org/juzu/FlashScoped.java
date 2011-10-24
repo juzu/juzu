@@ -20,6 +20,7 @@
 package org.juzu;
 
 import javax.enterprise.context.NormalScope;
+import javax.inject.Scope;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -27,6 +28,7 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@Scope
 @NormalScope
 @Target( { TYPE, METHOD, FIELD })
 @Retention(RUNTIME)

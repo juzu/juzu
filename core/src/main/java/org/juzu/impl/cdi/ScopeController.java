@@ -20,11 +20,10 @@
 package org.juzu.impl.cdi;
 
 import org.juzu.FlashScoped;
+import org.juzu.RequestScoped;
+import org.juzu.SessionScoped;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.request.Scope;
-
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ScopeController
