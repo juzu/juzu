@@ -17,13 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.processing;
 
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.Path;
-import org.juzu.impl.application.ApplicationProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.spi.template.TemplateStub;
+import org.juzu.impl.template.ASTNode;
+import org.juzu.impl.template.ParseException;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.spi.template.TemplateProvider;
@@ -61,7 +62,7 @@ class TemplateCompiler
    private TemplateProcessor processor;
 
    /** . */
-   private final ApplicationProcessor.ApplicationMetaData application;
+   private final ApplicationMetaData application;
 
    /** . */
    private final Filer filer;
@@ -77,10 +78,10 @@ class TemplateCompiler
 
    TemplateCompiler(
       TemplateProcessor processor,
-      ApplicationProcessor.ApplicationMetaData application,
+      ApplicationMetaData application,
       Filer filer)
    {
-      StringBuilder templatesPkgSB = new StringBuilder(application.getPackageName());
+      StringBuilder templatesPkgSB = new StringBuilder(application.packageName);
       if (templatesPkgSB.length() > 0)
       {
          templatesPkgSB.append(".");
@@ -154,7 +155,7 @@ class TemplateCompiler
          @Override
          public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
          {
-            ApplicationProcessor.MethodMetaData methodMD;
+            MethodMetaData methodMD;
             try
             {
                methodMD = application.resolve(typeName, methodName, parameterMap.keySet());
@@ -166,12 +167,12 @@ class TemplateCompiler
             if (methodMD != null)
             {
                List<String> args = new ArrayList<String>();
-               for (VariableElement ve : methodMD.getElement().getParameters())
+               for (VariableElement ve : methodMD.element.getParameters())
                {
                   String value = parameterMap.get(ve.getSimpleName().toString());
                   args.add(value);
                }
-               return new MethodInvocation(methodMD.getController().getClassName() + "_", methodMD.getName() + "URL", args);
+               return new MethodInvocation(methodMD.controller.getClassName() + "_", methodMD.getName() + "URL", args);
             }
             else
             {
@@ -246,6 +247,20 @@ class TemplateCompiler
             {
                writer2.close();
             }
+
+            //
+            String className = templatePkgFQN;
+            if (className.length() == 0)
+            {
+               className = rawName + "_";
+            }
+            else
+            {
+               className += "." + rawName + "_";
+            }
+
+            //
+            application.templates.add(new TemplateMetaData(path, className));
 
             //
             cache.put(path, fqn);

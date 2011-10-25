@@ -17,23 +17,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.processing;
 
-import org.juzu.impl.processing.TemplateCompilationContext;
-import org.juzu.template.TagHandler;
+import javax.lang.model.element.TypeElement;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.IOException;
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ExtendedTagHandler extends TagHandler
+/**
+ * Controller meta data.
+ */
+class ControllerMetaData
 {
 
-   public void process(ASTNode.Tag tag)
+   /** . */
+   final ApplicationMetaData application;
+
+   /** . */
+   final TypeElement typeElt;
+
+   /** . */
+   final List<MethodMetaData> methods;
+
+   ControllerMetaData(TypeElement typeElt, ApplicationMetaData application)
    {
+      this.application = application;
+      this.typeElt = typeElt;
+      this.methods = new ArrayList<MethodMetaData>();
    }
 
-   public void compile(TemplateCompilationContext context, Map<String, String> args) throws IOException
+   public String getClassName()
    {
+      return typeElt.getQualifiedName().toString();
    }
 }

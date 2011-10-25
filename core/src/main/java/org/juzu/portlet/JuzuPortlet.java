@@ -19,13 +19,13 @@
 
 package org.juzu.portlet;
 
+import org.juzu.impl.processing.MainProcessor;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
 import org.juzu.impl.spi.request.portlet.PortletRenderBridge;
 import org.juzu.impl.spi.request.portlet.PortletResourceBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.application.Bootstrap;
-import org.juzu.impl.application.JuzuProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
@@ -53,7 +53,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -182,7 +181,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
                //
                Compiler<String, RAMPath> compiler = new Compiler<String, RAMPath>(classPath, fs, classes);
-               compiler.addAnnotationProcessor(new JuzuProcessor());
+               compiler.addAnnotationProcessor(new MainProcessor());
                List<CompilationError> res = compiler.compile();
                if (res.isEmpty())
                {

@@ -19,10 +19,10 @@
 
 package org.juzu.impl.tags;
 
+import org.juzu.impl.processing.TemplateCompilationContext;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.ExtendedTagHandler;
-import org.juzu.impl.template.TemplateCompilationContext;
 import org.juzu.template.Body;
 import org.juzu.template.TemplateRenderContext;
 

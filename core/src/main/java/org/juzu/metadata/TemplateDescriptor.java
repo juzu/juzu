@@ -17,33 +17,33 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.tags;
+package org.juzu.metadata;
 
-import org.juzu.impl.processing.TemplateCompilationContext;
-import org.juzu.impl.spi.template.TemplateStub;
-import org.juzu.impl.template.ExtendedTagHandler;
-import org.juzu.template.Body;
-import org.juzu.template.TemplateRenderContext;
-
-import java.io.IOException;
-import java.util.Map;
+import org.juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class IncludeTag extends ExtendedTagHandler
+public class TemplateDescriptor
 {
 
-   @Override
-   public void compile(TemplateCompilationContext context, Map<String, String> args) throws IOException
+   /** . */
+   private final String path;
+
+   /** . */
+   private final Class<? extends Template> template;
+
+   public TemplateDescriptor(String path, Class<? extends Template> template)
    {
-      String path = args.get("path");
-      context.resolveTemplate(path);
+      this.path = path;
+      this.template = template;
    }
 
-   @Override
-   public void render(TemplateRenderContext context, Body body, Map<String, String> args) throws IOException
+   public String getPath()
    {
-      String path = args.get("path");
-      TemplateStub template = context.resolveTemplate(path);
-      template.render(context);
+      return path;
+   }
+
+   public Class<? extends Template> getType()
+   {
+      return template;
    }
 }

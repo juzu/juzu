@@ -17,10 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.processing;
 
 import org.juzu.Path;
-import org.juzu.impl.application.ApplicationProcessor;
 import org.juzu.impl.compiler.ProcessorPlugin;
 import org.juzu.impl.spi.template.TemplateProvider;
 
@@ -81,7 +80,7 @@ public class TemplateProcessor extends ProcessorPlugin
    @Override
    public void process()
    {
-      Map<ApplicationProcessor.ApplicationMetaData, TemplateCompiler> compilerMap = new HashMap<ApplicationProcessor.ApplicationMetaData, TemplateCompiler>();
+      Map<ApplicationMetaData, TemplateCompiler> compilerMap = new HashMap<ApplicationMetaData, TemplateCompiler>();
 
       //
       for (final Element elt : getElementsAnnotatedWith(Path.class))
@@ -92,7 +91,7 @@ public class TemplateProcessor extends ProcessorPlugin
             Path ref = elt.getAnnotation(Path.class);
 
             //
-            ApplicationProcessor.ApplicationMetaData application = applicationPlugin.getApplication(packageElt);
+            ApplicationMetaData application = applicationPlugin.getApplication(packageElt);
             if (application == null)
             {
                throw new UnsupportedOperationException("handle me gracefully");

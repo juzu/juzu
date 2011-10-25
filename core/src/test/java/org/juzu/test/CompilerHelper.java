@@ -19,7 +19,7 @@
 
 package org.juzu.test;
 
-import org.juzu.impl.application.JuzuProcessor;
+import org.juzu.impl.processing.MainProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.fs.ReadFileSystem;
@@ -78,7 +78,7 @@ public class CompilerHelper<I, O>
       try
       {
          Compiler<I, O> compiler = new org.juzu.impl.compiler.Compiler<I, O>(input, output);
-         compiler.addAnnotationProcessor(new JuzuProcessor());
+         compiler.addAnnotationProcessor(new MainProcessor());
          List<CompilationError> errors = compiler.compile();
          AbstractTestCase.assertTrue("Was expecting compilation to fail", errors.size() > 0);
          return errors;
@@ -109,7 +109,7 @@ public class CompilerHelper<I, O>
       try
       {
          Compiler<I, O> compiler = new org.juzu.impl.compiler.Compiler<I, O>(input, output);
-         compiler.addAnnotationProcessor(new JuzuProcessor());
+         compiler.addAnnotationProcessor(new MainProcessor());
          AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
          cl = new URLClassLoader(new URL[]{output.getURL()}, Thread.currentThread().getContextClassLoader());
          return compiler;

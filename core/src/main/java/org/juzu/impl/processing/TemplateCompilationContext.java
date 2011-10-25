@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.processing;
 
 import org.juzu.impl.tags.TitleTag;
 import org.juzu.impl.utils.MethodInvocation;

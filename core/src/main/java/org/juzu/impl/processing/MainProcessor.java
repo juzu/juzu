@@ -17,18 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.application;
+package org.juzu.impl.processing;
 
 import org.juzu.impl.compiler.Processor;
-import org.juzu.impl.template.TemplateProcessor;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
 @javax.annotation.processing.SupportedAnnotationTypes({"*"})
-public class JuzuProcessor extends Processor
+public class MainProcessor extends Processor
 {
-   public JuzuProcessor()
+   public MainProcessor()
    {
-      super(new ApplicationProcessor(), new TemplateProcessor());
+      super(new ApplicationProcessor(), new TemplateProcessor(), new GenerateApplicationPhase());
    }
 }

@@ -42,18 +42,23 @@ public class ApplicationDescriptor
    /** . */
    private final String templatesPackageName;
 
+   /** . */
+   private final List<TemplateDescriptor> templates;
+
    public ApplicationDescriptor(
       String packageName,
       String name,
       Class<?> defaultController,
       String templatesPackageName,
-      List<ControllerMethod> controllerMethods)
+      List<ControllerMethod> controllerMethods,
+      List<TemplateDescriptor> templates)
    {
       this.defaultController = defaultController;
       this.packageName = packageName;
       this.name = name;
       this.templatesPackageName = templatesPackageName;
       this.controllerMethods = Collections.unmodifiableList(controllerMethods);
+      this.templates = Collections.unmodifiableList(templates);
    }
 
    public String getPackageName()
@@ -74,6 +79,11 @@ public class ApplicationDescriptor
    public List<ControllerMethod> getControllerMethods()
    {
       return controllerMethods;
+   }
+
+   public List<TemplateDescriptor> getTemplates()
+   {
+      return templates;
    }
 
    public ControllerMethod getControllerMethod(Class<?> type, String name, Class<?>... parameterTypes)

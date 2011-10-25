@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template;
 
+import org.juzu.impl.processing.TemplateCompilationContext;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.utils.Tools;

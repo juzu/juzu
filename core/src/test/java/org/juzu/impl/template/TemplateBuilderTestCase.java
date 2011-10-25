@@ -20,6 +20,7 @@
 package org.juzu.impl.template;
 
 import junit.framework.TestCase;
+import org.juzu.impl.processing.TemplateCompilationContext;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
 import org.juzu.template.TemplateRenderContext;
