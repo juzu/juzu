@@ -53,21 +53,6 @@ public class ApplicationProcessor extends ProcessorPlugin
 {
 
    /** . */
-   static final String CONTROLLER_METHOD = ControllerMethod.class.getSimpleName();
-
-   /** . */
-   static final String PHASE = Phase.class.getSimpleName();
-
-   /** . */
-   static final String CONTROLLER_PARAMETER = ControllerParameter.class.getSimpleName();
-
-   /** . */
-   static final String TOOLS = Tools.class.getSimpleName();
-
-   /** . */
-   static final String RESPONSE = Response.Render.class.getSimpleName();
-
-   /** . */
    final PackageMap<ApplicationMetaData> applications = new PackageMap<ApplicationMetaData>();
 
    /** The applications generated this round. */

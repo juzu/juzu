@@ -27,6 +27,7 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ProcessorPlugin;
 import org.juzu.impl.utils.Tools;
 import org.juzu.metadata.ApplicationDescriptor;
+import org.juzu.metadata.ControllerDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.metadata.TemplateDescriptor;
@@ -52,6 +53,24 @@ public class GenerateApplicationPhase extends ProcessorPlugin
 
    /** . */
    static final String TEMPLATE_DESCRIPTOR = TemplateDescriptor.class.getSimpleName();
+
+   /** . */
+   static final String CONTROLLER_DESCRIPTOR = ControllerDescriptor.class.getSimpleName();
+
+   /** . */
+   private static final String CONTROLLER_METHOD = ControllerMethod.class.getSimpleName();
+
+   /** . */
+   private static final String PHASE = Phase.class.getSimpleName();
+
+   /** . */
+   private static final String CONTROLLER_PARAMETER = ControllerParameter.class.getSimpleName();
+
+   /** . */
+   private static final String TOOLS = Tools.class.getSimpleName();
+
+   /** . */
+   private static final String RESPONSE = Response.Render.class.getSimpleName();
 
    /** . */
    private StringBuilder manifest = new StringBuilder();
@@ -93,15 +112,15 @@ public class GenerateApplicationPhase extends ProcessorPlugin
                writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
                writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
                writer.append("import ").append(Tools.getImport(TemplateDescriptor.class)).append(";\n");
+               writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
 
                // Open class declaration
                writer.append("public class ").append(foo.name).append(" {\n");
 
                //
+               int controllerIndex = 0;
                for (ControllerMetaData controller : foo.controllers)
                {
-
-                  //
                   PackageElement fooElt = this.getPackageOf(controller.typeElt);
                   JavaFileObject jfo2 = createSourceFile(controller.typeElt.getQualifiedName() + "_");
                   Writer writer2 = jfo2.openWriter();
@@ -129,23 +148,23 @@ public class GenerateApplicationPhase extends ProcessorPlugin
                         String controllerFQN = controller.typeElt.getQualifiedName().toString();
 
                         // Method
-                        writer.append("public static final ").append(ApplicationProcessor.CONTROLLER_METHOD).append(" ").append(method.id).append(" = ");
-                        writer.append("new ").append(ApplicationProcessor.CONTROLLER_METHOD).append("(");
+                        writer.append("public static final ").append(CONTROLLER_METHOD).append(" ").append(method.id).append(" = ");
+                        writer.append("new ").append(CONTROLLER_METHOD).append("(");
                         writer.append("\"").append(method.id).append("\",");
-                        writer.append(ApplicationProcessor.PHASE).append(".").append(method.phase.name()).append(",");
+                        writer.append(PHASE).append(".").append(method.phase.name()).append(",");
                         writer.append(controllerFQN).append(".class").append(",");
-                        writer.append(ApplicationProcessor.TOOLS).append(".safeGetMethod(").append(controllerFQN).append(".class,\"").append(method.getName()).append("\"");
+                        writer.append(TOOLS).append(".safeGetMethod(").append(controllerFQN).append(".class,\"").append(method.getName()).append("\"");
                         for (TypeMirror foobar : method.type.getParameterTypes())
                         {
                            TypeMirror erased = erasure(foobar);
                            writer.append(",").append(erased.toString()).append(".class");
                         }
                         writer.append(")");
-                        writer.append(", Arrays.<").append(ApplicationProcessor.CONTROLLER_PARAMETER).append(">asList(");
+                        writer.append(", Arrays.<").append(CONTROLLER_PARAMETER).append(">asList(");
                         for (Iterator<? extends VariableElement> j = method.element.getParameters().iterator(); j.hasNext(); )
                         {
                            VariableElement ve = j.next();
-                           writer.append("new ").append(ApplicationProcessor.CONTROLLER_PARAMETER).append("(\"").
+                           writer.append("new ").append(CONTROLLER_PARAMETER).append("(\"").
                               append(ve.getSimpleName()).append("\")");
                            if (j.hasNext())
                            {
@@ -162,7 +181,7 @@ public class GenerateApplicationPhase extends ProcessorPlugin
                         // Response literal
                         if (method.phase == Phase.RENDER)
                         {
-                           writer2.append("public static ").append(ApplicationProcessor.RESPONSE).append(" ").append(method.getName()).append("(");
+                           writer2.append("public static ").append(RESPONSE).append(" ").append(method.getName()).append("(");
                            for (int j = 0; j < argDecls.size(); j++)
                            {
                               if (j > 0)
@@ -242,6 +261,27 @@ public class GenerateApplicationPhase extends ProcessorPlugin
                   {
                      Tools.safeClose(writer2);
                   }
+
+                  //
+                  writer.append("public static final ").append(CONTROLLER_DESCRIPTOR).append(" controller").append(Integer.toString(controllerIndex));
+                  writer.append(" = new ").append(CONTROLLER_DESCRIPTOR).append("(");
+                  writer.append(controller.getClassName()).append(".class,");
+                  writer.append("Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
+                  int index = 0;
+                  for (MethodMetaData method : controller.methods)
+                  {
+                     if (index > 0)
+                     {
+                        writer.append(",");
+                     }
+                     writer.append(method.id);
+                     index++;
+                  }
+                  writer.append(")");
+                  writer.append(");\n");
+
+                  //
+                  controllerIndex++;
                }
 
                //
@@ -260,20 +300,17 @@ public class GenerateApplicationPhase extends ProcessorPlugin
                writer.append(foo.defaultController).append(".class,");
                writer.append("\"").append(templatesPackageName).append("\",");
 
-               //
-               writer.append("Arrays.<").append(ApplicationProcessor.CONTROLLER_METHOD).append(">asList(");
+               // Controllers
+               writer.append("Arrays.<").append(CONTROLLER_DESCRIPTOR).append(">asList(");
                int index = 0;
                for (ControllerMetaData bar : foo.controllers)
                {
-                  for (MethodMetaData method : bar.methods)
+                  if (index > 0)
                   {
-                     if (index > 0)
-                     {
-                        writer.append(",");
-                     }
-                     writer.append(method.id);
-                     index++;
+                     writer.append(",");
                   }
+                  writer.append("controller").append(Integer.toString(index));
+                  index++;
                }
                writer.append("),");
 

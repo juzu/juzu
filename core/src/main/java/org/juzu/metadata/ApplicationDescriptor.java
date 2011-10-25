@@ -20,6 +20,7 @@
 package org.juzu.metadata;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +38,9 @@ public class ApplicationDescriptor
    private Class<?> defaultController;
 
    /** . */
+   private final List<ControllerDescriptor> controllers;
+
+   /** . */
    private final List<ControllerMethod> controllerMethods;
 
    /** . */
@@ -50,14 +54,25 @@ public class ApplicationDescriptor
       String name,
       Class<?> defaultController,
       String templatesPackageName,
-      List<ControllerMethod> controllerMethods,
+      List<ControllerDescriptor> controllers,
       List<TemplateDescriptor> templates)
    {
+      List<ControllerMethod> foo = new ArrayList<ControllerMethod>();
+      for (ControllerDescriptor controller : controllers)
+      {
+         for (ControllerMethod method : controller.getMethods())
+         {
+            foo.add(method);
+         }
+      }
+
+      //
       this.defaultController = defaultController;
       this.packageName = packageName;
       this.name = name;
       this.templatesPackageName = templatesPackageName;
-      this.controllerMethods = Collections.unmodifiableList(controllerMethods);
+      this.controllers = Collections.unmodifiableList(controllers);
+      this.controllerMethods = Collections.unmodifiableList(foo);
       this.templates = Collections.unmodifiableList(templates);
    }
 
@@ -74,6 +89,11 @@ public class ApplicationDescriptor
    public Class<?> getDefaultController()
    {
       return defaultController;
+   }
+
+   public List<ControllerDescriptor> getControllers()
+   {
+      return controllers;
    }
 
    public List<ControllerMethod> getControllerMethods()
