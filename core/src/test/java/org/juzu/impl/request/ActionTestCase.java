@@ -19,7 +19,7 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.test.AbstractDITestCase;
+import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.request.MockActionBridge;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
@@ -28,12 +28,12 @@ import org.juzu.test.request.MockRenderBridge;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ActionTestCase extends AbstractDITestCase
+public class ActionTestCase extends AbstractInjectTestCase
 {
 
    public void testNoOp() throws Exception
    {
-      MockApplication<?> app = application("request", "action", "noop");
+      MockApplication<?> app = application("request", "action", "noop").init();
 
       //
       MockClient client = app.client();
@@ -44,7 +44,7 @@ public class ActionTestCase extends AbstractDITestCase
 
    public void testRedirect() throws Exception
    {
-      MockApplication<?> app = application("request", "action", "redirect");
+      MockApplication<?> app = application("request", "action", "redirect").init();
 
       //
       MockClient client = app.client();
@@ -55,7 +55,7 @@ public class ActionTestCase extends AbstractDITestCase
 
    public void testRender() throws Exception
    {
-      MockApplication<?> app = application("request", "action", "render");
+      MockApplication<?> app = application("request", "action", "render").init();
 
       //
       MockClient client = app.client();

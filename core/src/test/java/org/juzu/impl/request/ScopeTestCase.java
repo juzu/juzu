@@ -19,19 +19,21 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.test.AbstractDITestCase;
+import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.Registry;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopeTestCase extends AbstractDITestCase
+public class ScopeTestCase extends AbstractInjectTestCase
 {
 
    public void testRequestScope() throws Exception
    {
       MockApplication<?> app = application("request", "scope", "request");
+      app.declareBean(request.scope.request.Car.class, null);
+      app.init();
 
       //
       MockClient client = app.client();
@@ -53,6 +55,8 @@ public class ScopeTestCase extends AbstractDITestCase
    public void testFlashScope() throws Exception
    {
       MockApplication<?> app = application("request", "scope", "flash");
+      app.declareBean(request.scope.flash.Car.class, null);
+      app.init();
 
       //
       MockClient client = app.client();

@@ -17,25 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.named;
+package org.juzu.impl.spi.inject.qualifier;
 
 import org.juzu.impl.inject.Export;
 
-import javax.inject.Named;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class NamedBean
+public class Qualified
 {
 
    @Export
-   @Named("foo")
-   public static class Foo extends NamedBean
+   @Colorized(Color.RED)
+   public static class Red extends Qualified
    {
    }
 
    @Export
-   @Named("bar")
-   public static class Bar extends NamedBean
+   @Colorized(Color.GREEN)
+   public static class Green extends Qualified
    {
    }
 }

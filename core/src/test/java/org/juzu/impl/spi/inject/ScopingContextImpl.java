@@ -29,65 +29,33 @@ import java.util.Map;
 public class ScopingContextImpl implements ScopingContext
 {
 
-   private static class ScopedKey
-   {
-
-      /** . */
-      private final Scope scope;
-
-      /** . */
-      private final Object scoped;
-
-      private ScopedKey(Scope scope, Object scoped)
-      {
-         this.scope = scope;
-         this.scoped = scoped;
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         if (obj instanceof ScopedKey)
-         {
-            ScopedKey that = (ScopedKey)obj;
-            return scope == that.scope && scoped.equals(that.scoped);
-         }
-         return false;
-      }
-
-      @Override
-      public int hashCode()
-      {
-         return scope.hashCode() ^ scoped.hashCode();
-      }
-   }
-
    /** . */
-   private final Map<ScopedKey, Object> state = new HashMap<ScopedKey, Object>();
+   private final Map<ScopedKey, Object> entries = new HashMap<ScopedKey, Object>();
 
    public Object getContextualValue(Scope scope, Object key)
    {
-      return state.get(new ScopedKey(scope, key));
+      return entries.get(new ScopedKey(scope, key));
    }
 
    public void setContextualValue(Scope scope, Object key, Object value)
    {
       if (value != null)
       {
-         state.put(new ScopedKey(scope, key), value);
+         entries.put(new ScopedKey(scope, key), value);
       }
       else
       {
-         state.remove(new ScopedKey(scope, key));
+         entries.remove(new ScopedKey(scope, key));
       }
    }
 
    public boolean isActive(Scope scope)
    {
       return true;
+   }
+
+   public Map<ScopedKey, Object> getEntries()
+   {
+      return entries;
    }
 }

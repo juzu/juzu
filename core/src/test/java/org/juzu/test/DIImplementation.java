@@ -22,6 +22,7 @@ package org.juzu.test;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
 import org.juzu.impl.spi.inject.guice.GuiceBootstrap;
+import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum DIImplementation
@@ -42,6 +43,15 @@ public enum DIImplementation
       public InjectBootstrap bootstrap()
       {
          return new GuiceBootstrap();
+      }
+   },
+
+   INJECT_SPRING()
+   {
+      @Override
+      public InjectBootstrap bootstrap()
+      {
+         return new SpringBootstrap();
       }
    };
 

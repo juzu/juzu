@@ -19,18 +19,18 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.test.AbstractDITestCase;
+import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TagTestCase extends AbstractDITestCase
+public class TagTestCase extends AbstractInjectTestCase
 {
 
    public void _testSimple() throws Exception
    {
-      MockApplication<?> app = application("template", "tag", "simple");
+      MockApplication<?> app = application("template", "tag", "simple").init();
       app.init();
 
       //
@@ -42,7 +42,7 @@ public class TagTestCase extends AbstractDITestCase
 
    public void testDecorate() throws Exception
    {
-      MockApplication<?> app = application("template", "tag", "decorate");
+      MockApplication<?> app = application("template", "tag", "decorate").init();
 
       //
       MockClient client = app.client();
@@ -53,7 +53,7 @@ public class TagTestCase extends AbstractDITestCase
 
    public void testInclude() throws Exception
    {
-      MockApplication<?> app = application("template", "tag", "resolve");
+      MockApplication<?> app = application("template", "tag", "resolve").init();
 
       //
       MockClient client = app.client();
@@ -64,7 +64,7 @@ public class TagTestCase extends AbstractDITestCase
 
    public void testTitle() throws Exception
    {
-      MockApplication<?> app = application("template", "tag", "title");
+      MockApplication<?> app = application("template", "tag", "title").init();
 
       //
       MockClient client = app.client();

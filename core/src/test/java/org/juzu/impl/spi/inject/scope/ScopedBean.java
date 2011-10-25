@@ -27,4 +27,17 @@ import org.juzu.impl.inject.Export;
 @Export
 public class ScopedBean
 {
+
+   /** . */
+   private String value;
+
+   public ScopedBean()
+   {
+      this.value = "" + Math.random();
+   }
+
+   public String getValue()
+   {
+      return value;
+   }
 }

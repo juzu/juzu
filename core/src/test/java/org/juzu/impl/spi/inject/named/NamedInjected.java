@@ -19,7 +19,6 @@
 
 package org.juzu.impl.spi.inject.named;
 
-import org.juzu.SessionScoped;
 import org.juzu.impl.inject.Export;
 
 import javax.inject.Inject;
@@ -27,7 +26,6 @@ import javax.inject.Named;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-@SessionScoped
 public class NamedInjected
 {
 
@@ -35,8 +33,17 @@ public class NamedInjected
    @Named("foo")
    private NamedBean foo;
 
+   @Inject
+   @Named("bar")
+   private NamedBean bar;
+
    public NamedBean getFoo()
    {
       return foo;
+   }
+
+   public NamedBean getBar()
+   {
+      return bar;
    }
 }

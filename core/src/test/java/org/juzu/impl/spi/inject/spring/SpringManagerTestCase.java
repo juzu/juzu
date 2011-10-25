@@ -17,25 +17,33 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.named;
+package org.juzu.impl.spi.inject.spring;
 
-import org.juzu.impl.inject.Export;
-
-import javax.inject.Named;
+import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.InjectManagerTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class NamedBean
+public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Object>
 {
 
-   @Export
-   @Named("foo")
-   public static class Foo extends NamedBean
+   @Override
+   protected InjectBootstrap getManager() throws Exception
+   {
+      return new SpringBootstrap();
+   }
+
+   @Override
+   public void testRequestScopedProvider() throws Exception
    {
    }
 
-   @Export
-   @Named("bar")
-   public static class Bar extends NamedBean
+   @Override
+   public void testSiblingProducers() throws Exception
+   {
+   }
+
+   @Override
+   public void testProducer() throws Exception
    {
    }
 }

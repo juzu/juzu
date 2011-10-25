@@ -29,7 +29,7 @@ import org.juzu.test.request.MockApplication;
 import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractDITestCase extends AbstractTestCase
+public abstract class AbstractInjectTestCase extends AbstractTestCase
 {
 
    /** . */
@@ -80,5 +80,4 @@ public abstract class AbstractDITestCase extends AbstractTestCase
       InjectBootstrap bootstrap = di.bootstrap();
       return helper.application(bootstrap);
    }
-
 }

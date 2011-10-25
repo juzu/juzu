@@ -17,25 +17,54 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.named;
+package org.juzu.impl.spi.inject;
 
-import org.juzu.impl.inject.Export;
-
-import javax.inject.Named;
+import org.juzu.impl.request.Scope;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class NamedBean
+public class ScopedKey
 {
 
-   @Export
-   @Named("foo")
-   public static class Foo extends NamedBean
+   /** . */
+   private final Scope scope;
+
+   /** . */
+   private final Object scoped;
+
+   ScopedKey(Scope scope, Object scoped)
    {
+      this.scope = scope;
+      this.scoped = scoped;
    }
 
-   @Export
-   @Named("bar")
-   public static class Bar extends NamedBean
+   public Scope getScope()
    {
+      return scope;
+   }
+
+   public Object getScoped()
+   {
+      return scoped;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (obj == this)
+      {
+         return true;
+      }
+      if (obj instanceof ScopedKey)
+      {
+         ScopedKey that = (ScopedKey)obj;
+         return scope == that.scope && scoped.equals(that.scoped);
+      }
+      return false;
+   }
+
+   @Override
+   public int hashCode()
+   {
+      return scope.hashCode() ^ scoped.hashCode();
    }
 }

@@ -279,7 +279,7 @@ public class InternalApplicationContext extends ApplicationContext
             }
             id.append(name);
          }
-         ClassLoader cl = Thread.currentThread().getContextClassLoader();
+         ClassLoader cl = manager.getClassLoader();
          Class<?> stubClass = cl.loadClass(id.toString());
          return(TemplateStub)stubClass.newInstance();
       }

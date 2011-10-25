@@ -24,7 +24,7 @@ import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Content;
 import org.juzu.template.TemplateRenderContext;
-import org.juzu.test.AbstractDITestCase;
+import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.CompilerHelper;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
@@ -36,7 +36,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateTestCase extends AbstractDITestCase
+public class TemplateTestCase extends AbstractInjectTestCase
 {
 
    public void _testSimple() throws Exception
@@ -68,7 +68,7 @@ public class TemplateTestCase extends AbstractDITestCase
 
    public void testRelativePath() throws Exception
    {
-      MockApplication<?> app = application("template", "relativepath");
+      MockApplication<?> app = application("template", "relativepath").init();
       MockClient client = app.client();
       assertEquals("relative_path_template", client.render().getContent());
 

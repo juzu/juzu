@@ -60,7 +60,7 @@ public class MockApplication<P>
       this.bootstrap = bootstrap;
    }
 
-   public void init() throws Exception
+   public MockApplication<P> init() throws Exception
    {
       P f = classes.getFile(Arrays.asList("org", "juzu"), "config.properties");
       if (f == null)
@@ -102,6 +102,14 @@ public class MockApplication<P>
 
       //
       context = boot.getContext();
+
+      //
+      return this;
+   }
+
+   public <T> void declareBean(Class<T> type, Class<? extends T> implementationType)
+   {
+      bootstrap.declareBean(type, implementationType);
    }
 
    public ApplicationContext getContext()

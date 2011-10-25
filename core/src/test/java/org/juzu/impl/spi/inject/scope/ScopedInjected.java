@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.inject.scope;
 
+import org.juzu.RequestScoped;
 import org.juzu.impl.inject.Export;
 
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ public class ScopedInjected
 {
 
    @Inject
+   @RequestScoped
    public ScopedBean scoped;
 
 }

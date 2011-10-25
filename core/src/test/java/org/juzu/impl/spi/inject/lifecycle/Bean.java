@@ -22,16 +22,19 @@ package org.juzu.impl.spi.inject.lifecycle;
 import org.juzu.impl.inject.Export;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Named("computer")
 @Export
 public class Bean
 {
 
    @Inject
-   public Dependency dependency;
+   private Dependency dependency;
+
+   public Dependency getDependency()
+   {
+      return dependency;
+   }
 
    public void method()
    {

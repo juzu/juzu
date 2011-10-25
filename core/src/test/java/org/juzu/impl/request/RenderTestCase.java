@@ -19,18 +19,18 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.test.AbstractDITestCase;
+import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderTestCase extends AbstractDITestCase
+public class RenderTestCase extends AbstractInjectTestCase
 {
 
    public void testImplicitPrinter() throws Exception
    {
-      MockApplication<?> app = application("request", "render", "implicitprinter");
+      MockApplication<?> app = application("request", "render", "implicitprinter").init();
 
       //
       MockClient client = app.client();
@@ -40,7 +40,7 @@ public class RenderTestCase extends AbstractDITestCase
 
    public void testExplicitPrinter() throws Exception
    {
-      MockApplication<?> app = application("request", "render", "explicitprinter");
+      MockApplication<?> app = application("request", "render", "explicitprinter").init();
 
       //
       MockClient client = app.client();

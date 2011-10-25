@@ -17,25 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.named;
+package org.juzu.impl.spi.inject.defaultscope;
 
 import org.juzu.impl.inject.Export;
 
-import javax.inject.Named;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class NamedBean
+@Export
+public class UndeclaredScopeBean
 {
 
-   @Export
-   @Named("foo")
-   public static class Foo extends NamedBean
-   {
-   }
+   /** . */
+   private static int sequence = 0;
 
-   @Export
-   @Named("bar")
-   public static class Bar extends NamedBean
+   /** . */
+   public final int count;
+
+   public UndeclaredScopeBean()
    {
+      count = sequence++;
    }
 }

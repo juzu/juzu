@@ -100,9 +100,7 @@ public class CompilerHelper<I, O>
       try
       {
          ClassLoader classLoader = new URLClassLoader(new URL[]{getOutput().getURL()}, Thread.currentThread().getContextClassLoader());
-         MockApplication<O> app = new MockApplication<O>(getOutput(), classLoader, bootstrap);
-         app.init();
-         return app;
+         return new MockApplication<O>(getOutput(), classLoader, bootstrap);
       }
       catch (Exception e)
       {

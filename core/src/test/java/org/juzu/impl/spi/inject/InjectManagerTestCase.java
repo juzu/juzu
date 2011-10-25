@@ -23,6 +23,7 @@ import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.bindsingleton.Singleton;
 import org.juzu.impl.spi.inject.bindsingleton.SingletonInjected;
+import org.juzu.impl.spi.inject.defaultscope.UndeclaredScopeBean;
 import org.juzu.impl.spi.inject.implementationtype.Extended;
 import org.juzu.impl.spi.inject.implementationtype.Extension;
 import org.juzu.impl.spi.inject.lifecycle.Bean;
@@ -32,8 +33,11 @@ import org.juzu.impl.spi.inject.named.NamedBean;
 import org.juzu.impl.spi.inject.named.NamedInjected;
 import org.juzu.impl.spi.inject.producer.Producer;
 import org.juzu.impl.spi.inject.producer.Product;
+import org.juzu.impl.spi.inject.qualifier.Qualified;
+import org.juzu.impl.spi.inject.qualifier.QualifiedInjected;
 import org.juzu.impl.spi.inject.requestscopedprovider.RequestBean;
 import org.juzu.impl.spi.inject.requestscopedprovider.RequestBeanProvider;
+import org.juzu.impl.spi.inject.scope.ScopedBean;
 import org.juzu.impl.spi.inject.scope.ScopedInjected;
 import org.juzu.impl.spi.inject.siblingproducers.Ext1Producer;
 import org.juzu.impl.spi.inject.siblingproducers.Ext2Producer;
@@ -45,7 +49,16 @@ import org.juzu.test.AbstractTestCase;
 
 import java.io.File;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * <ul>
+ *    <li>http://www.earldouglas.com/jsr-330-compliance-with-spring/</li>
+ *    <li>http://matthiaswessendorf.wordpress.com/2010/05/06/using-cdi-scopes-with-spring-3/</li>
+ *    <li>http://matthiaswessendorf.wordpress.com/2010/04/20/spring-3-0-and-jsr-330-part-2/</li>
+ * </ul>
+ *
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
 {
 
@@ -101,7 +114,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    protected final Object getBean(String beanName) throws Exception
    {
       B bean = mgr.resolveBean(beanName);
-      assertNotNull(bean);
+      assertNotNull("Could not find bean " + beanName, bean);
       I beanInstance = mgr.create(bean);
       assertNotNull(beanInstance);
       return mgr.get(bean, beanInstance);
@@ -112,6 +125,8 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testLifeCycle() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "lifecycle");
+      bootstrap.declareBean(Bean.class, null);
+      bootstrap.declareBean(Dependency.class, null);
       boot();
 
       //
@@ -122,7 +137,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       Bean beanObject = getBean(Bean.class);
       assertNotNull(beanObject);
       beanObject.method();
-      Dependency dependency = beanObject.dependency;
+      Dependency dependency = beanObject.getDependency();
       assertNotNull(dependency);
       mgr.release(beanInstance);
    }
@@ -130,15 +145,25 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testScope() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "scope");
+      bootstrap.declareBean(ScopedInjected.class, null);
+      bootstrap.declareBean(ScopedBean.class, null);
       boot(Scope.REQUEST);
 
       //
-      ScopeController.begin(new ScopingContextImpl());
+      ScopingContextImpl context = new ScopingContextImpl();
+      ScopeController.begin(context);
       try
       {
+         assertEquals(0, context.getEntries().size());
          ScopedInjected injected = getBean(ScopedInjected.class);
          assertNotNull(injected);
          assertNotNull(injected.scoped);
+         String value = injected.scoped.getValue();
+         assertEquals(1, context.getEntries().size());
+         ScopedKey key = context.getEntries().keySet().iterator().next();
+         assertEquals(Scope.REQUEST, key.getScope());
+         ScopedBean scoped = (ScopedBean)context.getEntries().get(key);
+         assertEquals(scoped.getValue(), value);
       }
       finally
       {
@@ -149,25 +174,42 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testNamed() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "named");
-      bootstrap.declareBean(NamedBean.class, (Class<NamedBean>)null);
-      boot(Scope.SESSION);
+      bootstrap.declareBean(NamedInjected.class, (Class<NamedInjected>)null);
+      bootstrap.declareBean(NamedBean.class, NamedBean.Foo.class);
+      bootstrap.declareBean(NamedBean.class, NamedBean.Bar.class);
+      boot();
 
       //
-      ScopeController.begin(new ScopingContextImpl());
-      try
-      {
-         NamedInjected beanObject = getBean(NamedInjected.class);
-         assertNotNull(beanObject);
-         assertNotNull(beanObject.getFoo());
+      NamedInjected beanObject = getBean(NamedInjected.class);
+      assertNotNull(beanObject);
+      assertNotNull(beanObject.getFoo());
+      assertEquals(NamedBean.Foo.class, beanObject.getFoo().getClass());
+      assertNotNull(beanObject.getBar());
+      assertEquals(NamedBean.Bar.class, beanObject.getBar().getClass());
 
-         //
-         Object foo = getBean("foo");
-         assertNotNull(foo);
-      }
-      finally
-      {
-         ScopeController.end();
-      }
+      //
+      Object foo = getBean("foo");
+      assertNotNull(foo);
+
+      //
+      assertNull(mgr.resolveBean("juu"));
+   }
+
+   public void testQualifier() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "qualifier");
+      bootstrap.declareBean(QualifiedInjected.class, (Class<QualifiedInjected>)null);
+      bootstrap.declareBean(Qualified.class, Qualified.Red.class);
+      bootstrap.declareBean(Qualified.class, Qualified.Green.class);
+      boot();
+
+      //
+      QualifiedInjected beanObject = getBean(QualifiedInjected.class);
+      assertNotNull(beanObject);
+      assertNotNull(beanObject.getRed());
+      assertEquals(Qualified.Red.class, beanObject.getRed().getClass());
+      assertNotNull(beanObject.getGreen());
+      assertEquals(Qualified.Green.class, beanObject.getGreen().getClass());
    }
 
    public void testProducer() throws Exception
@@ -207,6 +249,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testInjectManager() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "managerinjection");
+      bootstrap.declareBean(ManagerInjected.class, null);
       boot();
 
       //
@@ -220,6 +263,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    {
       Singleton singleton = new Singleton();
       init("org", "juzu", "impl", "spi", "inject", "bindsingleton");
+      bootstrap.declareBean(SingletonInjected.class, null);
       bootstrap.bindSingleton(Singleton.class, singleton);
       boot();
 
@@ -259,5 +303,17 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       //
       Extended extended = getBean(Extended.class);
       assertEquals(Extension.class, extended.getClass());
+   }
+
+   public void testDefaultScope() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "defaultscope");
+      bootstrap.declareBean(UndeclaredScopeBean.class, null);
+      boot();
+
+      //
+      UndeclaredScopeBean bean1 = getBean(UndeclaredScopeBean.class);
+      UndeclaredScopeBean bean2 = getBean(UndeclaredScopeBean.class);
+      assertTrue(bean1.count != bean2.count);
    }
 }
