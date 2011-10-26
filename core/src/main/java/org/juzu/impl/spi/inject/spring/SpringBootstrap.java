@@ -28,14 +28,21 @@ import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefiniti
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.annotation.ScopeMetadata;
+import org.springframework.core.io.UrlResource;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -43,17 +50,22 @@ public class SpringBootstrap extends InjectBootstrap
 {
 
    /** . */
-   private DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
-
-   /** . */
    private ScopeMetadataResolverImpl resolver = new ScopeMetadataResolverImpl();
 
    /** . */
    private ClassLoader classLoader;
 
-   public SpringBootstrap()
-   {
-   }
+   /** . */
+   private Map<String, BeanDefinition> beans = new LinkedHashMap<String, BeanDefinition>();
+
+   /** . */
+   private Map<String, Object> singletons = new LinkedHashMap<String, Object>();
+
+   /** . */
+   private Set<Scope> scopes = new LinkedHashSet<Scope>();
+
+   /** . */
+   private URL configurationURL;
 
    @Override
    public <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType)
@@ -82,13 +94,26 @@ public class SpringBootstrap extends InjectBootstrap
             break;
          }
       }
-      factory.registerBeanDefinition(name, definition);
+
+      //
+      beans.put(name, definition);
       return this;
+   }
+
+   public URL getConfigurationURL()
+   {
+      return configurationURL;
+   }
+
+   public void setConfigurationURL(URL configurationURL)
+   {
+      this.configurationURL = configurationURL;
    }
 
    @Override
    public <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
    {
+      // todo
       return this;
    }
 
@@ -96,7 +121,7 @@ public class SpringBootstrap extends InjectBootstrap
    public <T> InjectBootstrap bindSingleton(Class<T> type, T instance)
    {
       String name = "" + Math.random();
-      factory.registerSingleton(name, instance);
+      singletons.put(name, instance);
       return this;
    }
 
@@ -109,6 +134,7 @@ public class SpringBootstrap extends InjectBootstrap
    @Override
    public InjectBootstrap addScope(Scope scope)
    {
+      scopes.add(scope);
       return this;
    }
 
@@ -122,10 +148,35 @@ public class SpringBootstrap extends InjectBootstrap
    @Override
    public <B, I> InjectManager<B, I> create() throws Exception
    {
+      DefaultListableBeanFactory factory;
+      if (configurationURL != null)
+      {
+         factory = new XmlBeanFactory(new UrlResource(configurationURL));
+      }
+      else
+      {
+         factory = new DefaultListableBeanFactory();
+      }
+
+      //
+      factory.setBeanClassLoader(classLoader);
+
       // Register scopes
-      for (Scope scope : Scope.values())
+      for (Scope scope : scopes)
       {
          factory.registerScope(scope.name().toLowerCase(), new SpringScope(scope, ScopeController.INSTANCE));
+      }
+
+      //
+      for (Map.Entry<String, Object> entry : singletons.entrySet())
+      {
+         factory.registerSingleton(entry.getKey(), entry.getValue());
+      }
+
+      //
+      for (Map.Entry<String, BeanDefinition> entry : beans.entrySet())
+      {
+         factory.registerBeanDefinition(entry.getKey(), entry.getValue());
       }
 
       //
@@ -142,9 +193,6 @@ public class SpringBootstrap extends InjectBootstrap
       QualifierAnnotationAutowireCandidateResolver customResolver = new QualifierAnnotationAutowireCandidateResolver();
       factory.setAutowireCandidateResolver(customResolver);
       configurer.postProcessBeanFactory(factory);
-
-      //
-
 
       //
       return (InjectManager<B, I>)new SpringManager(factory, classLoader);

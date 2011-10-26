@@ -5,18 +5,25 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
    http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
-      <portlet-name>BookingPortlet</portlet-name>
-      <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-      <init-param>
-         <name>juzu.run_mode</name>
-         <value>dev</value>
-      </init-param>
-      <supports>
-        <mime-type>text/html</mime-type>
-      </supports>
-      <portlet-info>
-          <title>Booking Application</title>
-      </portlet-info>
+     <portlet-name>BookingPortlet</portlet-name>
+     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+     <init-param>
+       <name>juzu.run_mode</name>
+       <value>dev</value>
+     </init-param>
+     <init-param>
+       <name>juzu.inject</name>
+       <value>weld</value>
+       <!--
+       <value>spring</value>
+       -->
+     </init-param>
+     <supports>
+       <mime-type>text/html</mime-type>
+     </supports>
+     <portlet-info>
+       <title>Booking Application</title>
+     </portlet-info>
    </portlet>
    <filter>
      <filter-name>HeaderFilter</filter-name>

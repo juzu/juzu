@@ -25,6 +25,7 @@ import org.juzu.impl.processing.MainProcessor;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
 import org.juzu.impl.spi.inject.guice.GuiceBootstrap;
+import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
 import org.juzu.impl.spi.request.portlet.PortletRenderBridge;
 import org.juzu.impl.spi.request.portlet.PortletResourceBridge;
@@ -266,11 +267,41 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       JarFileSystem libs = new JarFileSystem(new JarFile(new File(mainURL.toURI())));
 
       //
-      InjectBootstrap injectBootstrap = new CDIBootstrap();
-//      InjectBootstrap injectBootstrap = new GuiceBootstrap();
+      String inject = config.getInitParameter("juzu.inject");
+      InjectBootstrap injectBootstrap;
+      if (inject == null)
+      {
+         inject = "weld";
+      }
+      inject = inject.trim().toLowerCase();
+      if ("weld".equals(inject))
+      {
+      injectBootstrap = new CDIBootstrap();
+      }
+      else if ("spring".equals(inject))
+      {
+         injectBootstrap = new SpringBootstrap();
+      }
+      else
+      {
+         throw new PortletException("unrecognized inject vendor " + inject);
+      }
+      System.out.println("Using injection " + injectBootstrap.getClass().getName());
+
+      //
       injectBootstrap.addFileSystem(classes);
       injectBootstrap.addFileSystem(libs);
       injectBootstrap.setClassLoader(cl);
+
+      //
+      if (injectBootstrap instanceof SpringBootstrap)
+      {
+         URL configurationURL = config.getPortletContext().getResource("/WEB-INF/spring.xml");
+         if (configurationURL != null)
+         {
+            ((SpringBootstrap)injectBootstrap).setConfigurationURL(configurationURL);
+         }
+      }
 
       //
       ApplicationBootstrap bootstrap = new ApplicationBootstrap(

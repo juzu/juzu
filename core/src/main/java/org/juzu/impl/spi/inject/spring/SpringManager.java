@@ -22,6 +22,7 @@ package org.juzu.impl.spi.inject.spring;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /**

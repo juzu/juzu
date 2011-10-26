@@ -50,13 +50,6 @@ import org.juzu.test.AbstractTestCase;
 import java.io.File;
 
 /**
- * <ul>
- *    <li>http://www.earldouglas.com/jsr-330-compliance-with-spring/</li>
- *    <li>http://matthiaswessendorf.wordpress.com/2010/05/06/using-cdi-scopes-with-spring-3/</li>
- *    <li>http://matthiaswessendorf.wordpress.com/2010/04/20/spring-3-0-and-jsr-330-part-2/</li>
- * </ul>
- *
- *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase

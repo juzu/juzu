@@ -21,6 +21,14 @@ package org.juzu.impl.spi.inject.spring;
 
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.InjectManagerTestCase;
+import org.juzu.impl.spi.inject.configuration.Declared;
+import org.juzu.impl.spi.inject.configuration.DeclaredInjected;
+import org.juzu.impl.spi.inject.lifecycle.Bean;
+import org.juzu.impl.spi.inject.lifecycle.Dependency;
+import org.juzu.impl.utils.Tools;
+
+import java.io.InputStream;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Object>
@@ -45,5 +53,31 @@ public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Objec
    @Override
    public void testProducer() throws Exception
    {
+   }
+
+   public void testConfigurationURL() throws Exception
+   {
+      URL configurationURL = Declared.class.getResource("spring.xml");
+      assertNotNull(configurationURL);
+      InputStream in = configurationURL.openStream();
+      assertNotNull(in);
+      Tools.safeClose(in);
+
+      //
+      init("org", "juzu", "impl", "spi", "inject", "configuration");
+      bootstrap.declareBean(DeclaredInjected.class, null);
+      ((SpringBootstrap)bootstrap).setConfigurationURL(configurationURL);
+      boot();
+
+      //
+      DeclaredInjected injected = getBean(DeclaredInjected.class);
+      assertNotNull(injected);
+      assertNotNull(injected.getDeclared());
+
+      //
+      Declared declared = getBean(Declared.class);
+      assertNotNull(declared);
+      declared = (Declared)getBean("declared");
+      assertNotNull(declared);
    }
 }
