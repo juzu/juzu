@@ -19,7 +19,7 @@
 
 package template.tag.simple.tags;
 
-import org.juzu.template.Body;
+import org.juzu.template.Renderable;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.template.TagHandler;
 
@@ -31,7 +31,7 @@ public class FooTag extends TagHandler
 {
 
    @Override
-   public void render(TemplateRenderContext context, Body body, Map<String, String> args) throws IOException
+   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
    {
       context.getPrinter().write("<foo>");
       body.render(context);

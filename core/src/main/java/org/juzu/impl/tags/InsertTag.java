@@ -19,7 +19,7 @@
 
 package org.juzu.impl.tags;
 
-import org.juzu.template.Body;
+import org.juzu.template.Renderable;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.template.TagHandler;
 
@@ -31,9 +31,9 @@ public class InsertTag extends TagHandler
 {
 
    @Override
-   public void render(TemplateRenderContext context, Body body, Map<String, String> args) throws IOException
+   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
    {
-      Body body_ = DecorateTag.current.get();
+      Renderable body_ = DecorateTag.current.get();
       if (body_ != null)
       {
          body_.render(context);

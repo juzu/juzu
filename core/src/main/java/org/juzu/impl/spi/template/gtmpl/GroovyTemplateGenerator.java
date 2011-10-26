@@ -224,7 +224,7 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    @Override
    public void closeTag(String className, Map<String, String> args) throws IOException
    {
-      out.append("; } as org.juzu.template.Body;");
+      out.append("; } as org.juzu.template.Renderable;");
       out.append("; new ").append(className).append("().render(out.renderContext, closure,");
       if (args == null || args.isEmpty())
       {

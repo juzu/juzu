@@ -23,7 +23,7 @@ import org.juzu.impl.processing.TemplateCompilationContext;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.ExtendedTagHandler;
-import org.juzu.template.Body;
+import org.juzu.template.Renderable;
 import org.juzu.template.TemplateRenderContext;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class DecorateTag extends ExtendedTagHandler
 {
 
    /** . */
-   static final ThreadLocal<Body> current = new ThreadLocal<Body>();
+   static final ThreadLocal<Renderable> current = new ThreadLocal<Renderable>();
 
    @Override
    public void process(ASTNode.Tag tag)
@@ -78,7 +78,7 @@ public class DecorateTag extends ExtendedTagHandler
    }
 
    @Override
-   public void render(TemplateRenderContext context, Body body, Map<String, String> args) throws IOException
+   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
    {
       current.set(body);
       try

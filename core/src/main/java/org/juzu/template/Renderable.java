@@ -20,7 +20,7 @@
 package org.juzu.template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Body
+public interface Renderable
 {
 
    void render(TemplateRenderContext context);

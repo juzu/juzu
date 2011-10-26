@@ -19,7 +19,7 @@
 
 package org.juzu.impl.tags;
 
-import org.juzu.template.Body;
+import org.juzu.template.Renderable;
 import org.juzu.template.TagHandler;
 import org.juzu.template.TemplateRenderContext;
 
@@ -31,7 +31,7 @@ public class TitleTag extends TagHandler
 {
 
    @Override
-   public void render(TemplateRenderContext context, Body body, Map<String, String> args) throws IOException
+   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
    {
       String title = args.get("value");
 
