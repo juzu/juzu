@@ -133,6 +133,7 @@
   <modules>
     <module>core</module>
     <module>booking</module>
+    <module>doc</module>
   </modules>
 
 </project>
