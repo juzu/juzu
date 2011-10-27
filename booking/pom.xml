@@ -16,6 +16,9 @@
   <artifactId>juzu-booking</artifactId>
   <version>0.4-SNAPSHOT</version>
 
+  <name>Juzu Booking</name>
+  <description>The infamous booking application</description>
+
   <dependencies>
 
     <dependency>

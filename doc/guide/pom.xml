@@ -33,4 +33,7 @@
   <artifactId>juzu-doc-guide</artifactId>
   <version>0.4-SNAPSHOT</version>
 
+  <name>Juzu Guide</name>
+  <description>The documentation guide</description>
+
 </project>

@@ -9,6 +9,37 @@
   <version>0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <name>Juzu Web Framework</name>
+  <description>The Juzu Web Framework</description>
+
+  <organization>
+    <name>eXo Platform SAS</name>
+    <url>http://www.exoplatform.com</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>LGPL, version 2.1</name>
+      <url>http://www.opensource.org/licenses/lgpl-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>julien.viet</id>
+      <name>Julien Viet</name>
+      <email>julien.viet@exoplatform.com</email>
+      <roles>
+        <role>Owner</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/juzu/juzu.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/juzu/juzu.git</developerConnection>
+    <url>https://github.com/juzu/juzu</url>
+  </scm>
+
   <dependencyManagement>
     <dependencies>
       <dependency>

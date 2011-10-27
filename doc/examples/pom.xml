@@ -33,4 +33,7 @@
   <artifactId>juzu-doc-examples</artifactId>
   <version>0.4-SNAPSHOT</version>
 
+  <name>Juzu Examples</name>
+  <description>Various documentation examples</description>
+
 </project>
