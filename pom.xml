@@ -165,6 +165,7 @@
     <module>core</module>
     <module>booking</module>
     <module>doc</module>
+    <module>distrib</module>
   </modules>
 
 </project>
