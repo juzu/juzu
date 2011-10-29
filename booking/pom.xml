@@ -22,12 +22,6 @@
   <dependencies>
 
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
-      <version>1.0</version>
-    </dependency>
-
-    <dependency>
       <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
       <version>2.0</version>
@@ -37,6 +31,29 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.weld</groupId>
+      <artifactId>weld-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
     </dependency>
 
     <dependency>
@@ -66,6 +83,7 @@
         <executions>
           <execution>
             <configuration>
+              <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
               <webResources>
                 <resource>
                   <targetPath>WEB-INF/src</targetPath>
@@ -83,6 +101,31 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2</version>
+
+        <executions>
+          <execution>
+            <id>booking-gatein</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <attach>true</attach>
+              <descriptors>
+                <descriptor>src/main/assembly/gatein.xml</descriptor>
+                <descriptor>src/main/assembly/liferay.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+
+      </plugin>
+
     </plugins>
   </build>
 
