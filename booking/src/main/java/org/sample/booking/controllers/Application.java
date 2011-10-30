@@ -22,6 +22,7 @@ package org.sample.booking.controllers;
 import org.juzu.Action;
 import org.juzu.Path;
 import org.juzu.Render;
+import org.juzu.Response;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
@@ -92,7 +93,7 @@ public class Application
    }
 
    @Action
-   public void saveUser(String username, String name, String password, String verifyPassword)
+   public Response saveUser(String username, String name, String password, String verifyPassword)
    {
 /*
        validation.required(verifyPassword);
@@ -106,12 +107,12 @@ public class Application
       User.create(user);
       login.setUserName(user.username);
       flash.setSuccess("Welcome, " + user.name);
-      Application_.index();
+      return Application_.index();
    }
 
 
    @Action
-   public void login(String username, String password)
+   public Response login(String username, String password)
    {
       System.out.println("Want login " + username + " " + password);
       User user = User.find(username, password);
@@ -119,20 +120,21 @@ public class Application
       {
          login.setUserName(user.name);
          flash.setSuccess("Welcome, " + user.name);
-         Hotels_.index();
+         return Hotels_.index();
       }
       else
       {
-        // Oops
-        flash.setUsername(username);
-        flash.setError("Login failed");
+         // Oops
+         flash.setUsername(username);
+         flash.setError("Login failed");
+         return null;
       }
    }
 
    @Action
-   public void logout()
+   public Response logout()
    {
       login.setUserName(null);
-      Application_.index();
+      return Application_.index();
    }
 }

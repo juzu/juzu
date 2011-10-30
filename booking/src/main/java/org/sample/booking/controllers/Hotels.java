@@ -23,6 +23,7 @@ import org.juzu.Action;
 import org.juzu.Path;
 import org.juzu.Render;
 import org.juzu.Resource;
+import org.juzu.Response;
 import org.juzu.template.Template;
 import org.sample.booking.Flash;
 import org.sample.booking.models.Booking;
@@ -125,7 +126,7 @@ public class Hotels // extends Application
    }
 
    @Action
-   public void processConfirmBooking(
+   public Response processConfirmBooking(
       String confirm,
       String id,
       String checkinDate,
@@ -164,12 +165,12 @@ public class Hotels // extends Application
          booking.create();
          flash.setSuccess("Thank you, " + login.getUserName() + ", your confimation number for " + hotel.name
             + " is " + booking.id);
-         Hotels_.index();
+         return Hotels_.index();
       }
       else
       {
          // Display booking
-         Hotels_.confirmBooking(
+         return Hotels_.confirmBooking(
             id,
             checkinDate,
             checkoutDate,
@@ -214,12 +215,12 @@ public class Hotels // extends Application
    }
 
    @Action
-   public void cancelBooking(String id)
+   public Response cancelBooking(String id)
    {
       Booking booking = Booking.find(id);
       booking.delete();
       flash.setSuccess("Booking cancelled for confirmation number " + id);
-      Hotels_.index();
+      return Hotels_.index();
    }
 
    @Render
