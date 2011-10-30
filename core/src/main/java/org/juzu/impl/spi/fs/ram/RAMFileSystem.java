@@ -56,7 +56,7 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
    }
 
    @Override
-   public void setContent(RAMPath file, Content<?> content) throws IOException
+   public void setContent(RAMPath file, Content content) throws IOException
    {
       ((RAMFile)file).update(content);
    }
@@ -101,7 +101,7 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
       return path instanceof RAMFile;
    }
 
-   public Content<?> getContent(RAMPath file) throws IOException
+   public Content getContent(RAMPath file) throws IOException
    {
       return ((RAMFile)file).getContent();
    }

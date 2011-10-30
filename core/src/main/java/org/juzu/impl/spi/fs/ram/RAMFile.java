@@ -28,19 +28,19 @@ public class RAMFile extends RAMPath
 {
 
    /** . */
-   private Content<?> content;
+   private Content content;
 
    public RAMFile(RAMDir parent, String name)
    {
       super(parent, name);
 
       //
-      this.content = new Content.CharArray(System.currentTimeMillis(), "");
+      this.content = new Content(System.currentTimeMillis(), "");
    }
 
    public RAMFile update(String content)
    {
-      return update(new Content.CharArray(System.currentTimeMillis(), content));
+      return update(new Content(System.currentTimeMillis(), content));
    }
 
    @Override
@@ -55,7 +55,7 @@ public class RAMFile extends RAMPath
       content.touch();
    }
 
-   public RAMFile update(Content<?> content)
+   public RAMFile update(Content content)
    {
       if (content == null)
       {
@@ -69,7 +69,7 @@ public class RAMFile extends RAMPath
       return this;
    }
 
-   public Content<?> getContent() throws IOException
+   public Content getContent() throws IOException
    {
       return content;
    }

@@ -31,6 +31,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,6 +46,9 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
 
    /** . */
    private final FilenameFilter filter;
+
+   /** . */
+   private Charset encoding;
 
    public DiskFileSystem(File root)
    {
@@ -61,6 +65,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
    {
       this.root = root;
       this.filter = filter;
+      this.encoding = Charset.defaultCharset();
    }
 
    public DiskFileSystem(final File root, final String... path)
@@ -170,7 +175,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
          {
             content.write(buffer, 0, l);
          }
-         return new Content.ByteArray(file.lastModified(), content.toByteArray());
+         return new Content(file.lastModified(), content.toByteArray(), encoding);
       }
       finally
       {
@@ -211,7 +216,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
    }
 
    @Override
-   public void setContent(File file, Content<?> content) throws IOException
+   public void setContent(File file, Content content) throws IOException
    {
       InputStream in = content.getInputStream();
       FileOutputStream out = new FileOutputStream(file);

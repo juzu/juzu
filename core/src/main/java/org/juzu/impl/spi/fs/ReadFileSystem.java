@@ -24,6 +24,7 @@ import org.juzu.impl.utils.Content;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 
 /**
@@ -193,6 +194,20 @@ public abstract class ReadFileSystem<P>
       return getURL(root);
    }
 
+   /** . */
+   private final Charset encoding;
+
+   protected ReadFileSystem()
+   {
+      // For now it's hardcoded
+      this.encoding = Charset.defaultCharset();
+   }
+
+   public final Charset getEncoding()
+   {
+      return encoding;
+   }
+
    public abstract boolean equals(P left, P right);
 
    public abstract P getRoot() throws IOException;
@@ -209,7 +224,7 @@ public abstract class ReadFileSystem<P>
 
    public abstract boolean isFile(P path) throws IOException;
 
-   public abstract Content<?> getContent(P file) throws IOException;
+   public abstract Content getContent(P file) throws IOException;
 
    public abstract long getLastModified(P path) throws IOException;
 

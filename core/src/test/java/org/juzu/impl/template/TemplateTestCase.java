@@ -45,13 +45,13 @@ public class TemplateTestCase extends AbstractInjectTestCase
       Compiler<?, ?> compiler = helper.assertCompile();
 
       //
-      Content<?> content = compiler.getClassOutput(FileKey.newResourceName("template.simple.templates", "index.groovy"));
+      Content content = compiler.getClassOutput(FileKey.newResourceName("template.simple.templates", "index.groovy"));
       assertNotNull(content);
       assertTrue(compiler.getClassOutputKeys().size() > 0);
 
       //
       assertTrue(compiler.getSourceOutputKeys().size() > 1);
-      Content<?> content2 = compiler.getSourceOutput(FileKey.newJavaName("template.simple.templates.index", JavaFileObject.Kind.SOURCE));
+      Content content2 = compiler.getSourceOutput(FileKey.newJavaName("template.simple.templates.index", JavaFileObject.Kind.SOURCE));
       assertNotNull(content2);
 
       //

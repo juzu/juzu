@@ -31,9 +31,9 @@ class RAMURLConnection extends URLConnection
 {
 
    /** . */
-   private final Content<?> content;
+   private final Content content;
 
-   public RAMURLConnection(URL url, Content<?> content)
+   public RAMURLConnection(URL url, Content content)
    {
       super(url);
 

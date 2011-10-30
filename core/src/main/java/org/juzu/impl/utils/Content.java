@@ -21,20 +21,44 @@ package org.juzu.impl.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.Reader;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Content<V>
+public class Content
 {
 
    /** . */
    private long lastModified;
 
-   public Content(long lastModified)
+   /** . */
+   private byte[] data;
+
+   /** . */
+   private Charset encoding;
+
+   public Content(long lastModified, byte[] data, Charset encoding)
    {
+      if (data == null)
+      {
+         throw new NullPointerException("No null data accepted");
+      }
+
+      //
       this.lastModified = lastModified;
+      this.data = data;
+      this.encoding = encoding;
+   }
+
+   public Content(long lastModified, CharSequence s)
+   {
+      this(lastModified, s, Charset.defaultCharset());
+   }
+
+   public Content(long lastModified, CharSequence s, Charset encoding)
+   {
+      this.encoding = encoding;
+      this.lastModified = lastModified;
+      this.data = s.toString().getBytes(encoding);
    }
 
    public long getLastModified()
@@ -42,107 +66,28 @@ public abstract class Content<V>
       return lastModified;
    }
 
-   public abstract InputStream getInputStream();
-
-   public abstract CharSequence getCharSequence();
-
-   public abstract V getValue();
-
-   public abstract Content<V> touch();
-
-   public static class CharArray extends Content<CharSequence>
+   public Charset getEncoding()
    {
-
-      /** . */
-      private final CharSequence value;
-
-      /** . */
-      private final Charset charset;
-
-      public CharArray(long lastModified, CharSequence value)
-      {
-         this(lastModified, value, Charset.defaultCharset());
-      }
-
-      public CharArray(long lastModified, CharSequence value, Charset charset)
-      {
-         super(lastModified);
-
-         //
-         this.value = value;
-         this.charset = charset;
-      }
-
-      @Override
-      public InputStream getInputStream()
-      {
-         return new ByteArrayInputStream(charset.encode(CharBuffer.wrap(value)).array());
-      }
-
-      @Override
-      public CharSequence getCharSequence()
-      {
-         return value;
-      }
-
-      @Override
-      public CharSequence getValue()
-      {
-         return value;
-      }
-
-      @Override
-      public Content<CharSequence> touch()
-      {
-         return new CharArray(System.currentTimeMillis(), value);
-      }
+      return encoding;
    }
 
-   public static class ByteArray extends Content<byte[]>
+   public InputStream getInputStream()
    {
+      return new ByteArrayInputStream(data);
+   }
 
-      /** . */
-      private final byte[] bytes;
-
-      /** . */
-      private Charset charset;
-
-      public ByteArray(long lastModified, byte[] bytes, Charset charset)
+   public CharSequence getCharSequence()
+   {
+      if (encoding == null)
       {
-         super(lastModified);
-
-         //
-         this.bytes = bytes;
-         this.charset = charset;
+         throw new IllegalStateException("No encoding set");
       }
+      return new String(data, encoding);
+   }
 
-      public ByteArray(long lastModified, byte[] bytes)
-      {
-         this(lastModified, bytes, Charset.defaultCharset());
-      }
-
-      @Override
-      public InputStream getInputStream()
-      {
-         return new ByteArrayInputStream(bytes);
-      }
-
-      @Override
-      public CharSequence getCharSequence()
-      {
-         return new String(bytes, charset);
-      }
-
-      @Override
-      public byte[] getValue()
-      {
-         return bytes.clone();
-      }
-
-      @Override
-      public Content<byte[]> touch()
-      {
-         return new ByteArray(System.currentTimeMillis(), bytes);
-      }
+   public Content touch()
+   {
+      lastModified = System.currentTimeMillis();
+      return this;
    }
 }

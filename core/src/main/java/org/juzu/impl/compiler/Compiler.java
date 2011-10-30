@@ -88,7 +88,7 @@ public class Compiler<I, O>
       return fileManager.classOutput.keySet();
    }
 
-   public Content<?> getClassOutput(FileKey key)
+   public Content getClassOutput(FileKey key)
    {
       VirtualJavaFileObject.RandomAccess file = fileManager.classOutput.get(key);
       return file != null ? file.content : null;
@@ -99,7 +99,7 @@ public class Compiler<I, O>
       return fileManager.sourceOutput.keySet();
    }
 
-   public Content<?> getSourceOutput(FileKey key)
+   public Content getSourceOutput(FileKey key)
    {
       VirtualJavaFileObject.RandomAccess file = fileManager.sourceOutput.get(key);
       return file != null ? file.content : null;

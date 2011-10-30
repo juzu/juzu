@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -145,7 +146,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
    }
 
    @Override
-   public Content<?> getContent(String file) throws IOException
+   public Content getContent(String file) throws IOException
    {
       URL url = getResource(file);
       if (url != null)
@@ -161,7 +162,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
             {
                content.write(buffer, 0, l);
             }
-            return new Content.ByteArray(lastModified, content.toByteArray());
+            return new Content(lastModified, content.toByteArray(), Charset.defaultCharset());
          }
          finally
          {

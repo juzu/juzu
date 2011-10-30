@@ -46,7 +46,7 @@ class RAMURLStreamHandler extends URLStreamHandler
       RAMPath path = fs.getPath(names);
       if (path instanceof RAMFile)
       {
-         Content<?> content = ((RAMFile)path).getContent();
+         Content content = ((RAMFile)path).getContent();
          if (content != null)
          {
             return new RAMURLConnection(u, content);

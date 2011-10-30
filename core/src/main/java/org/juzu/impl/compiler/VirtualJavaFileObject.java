@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class VirtualJavaFileObject extends SimpleJavaFileObject
@@ -122,7 +123,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       protected final VirtualFileManager<?, P> manager;
 
       /** . */
-      protected Content<?> content;
+      protected Content content;
 
       RandomAccess(VirtualFileManager<?, P> manager, FileKey key)
       {
@@ -164,7 +165,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
                @Override
                public void close() throws IOException
                {
-                  content = new Content.ByteArray(System.currentTimeMillis(), toByteArray());
+                  content = new Content(System.currentTimeMillis(), toByteArray(), null);
                   P file = manager.output.makeFile(key.packageNames, key.name);
                   manager.output.setContent(file, content);
                   out = null;
@@ -212,7 +213,7 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
                @Override
                public void close() throws IOException
                {
-                  content = new Content.CharArray(System.currentTimeMillis(), writer.toString());
+                  content = new Content(System.currentTimeMillis(), writer.toString());
                   P file = manager.output.makeFile(key.packageNames, key.name);
                   manager.output.setContent(file, content);
                   writer = null;
