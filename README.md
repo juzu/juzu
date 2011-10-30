@@ -1,7 +1,9 @@
 # Juzu
 
-Juzu Web is a web framework matching portlet MVC. A 0.1 sample can be downloaded [available](https://github.com/downloads/juzu/juzu/juzu-booking.war) and
-deployed in a portal server (only tested with GateIn trunk / Tomcat at the moment).
+Juzu Web is a web framework matching portlet MVC. Version 0.3 is [available](https://github.com/downloads/juzu/juzu/juzu-0.3.zip) and
+at the moment contains the sample booking application that works on GateIn and Liferay. At the moment there is no formal
+documentation, yet the sample application is good enough to discover how to use Juzu and can be used as a bootstrap to
+create applications.
 
 # Status
 
