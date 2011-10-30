@@ -7,8 +7,35 @@ deployed in a portal server (only tested with GateIn trunk / Tomcat at the momen
 
 - 0.1 milestone reached : booking demo adapted from Play!
 - 0.2 milestone reached
-- 0.3 milestone reached : deploy on liferay 6.10 now
-- 0.4-SNAPSHOT in progress
+- 0.3 milestone reached
+    - Liferay support
+    - Weld and Spring integration
+    - basic packaging
+
+# Roadmap
+
+- 0.4
+    - initial documentation and sample
+    - maven archetype
+- 0.5
+    - bean mapping
+    - validation
+    - IDE screencast
+    - portlet eventing support
+- 0.6
+    - header taglib
+    - servlet support
+    - routing engine
+    - cross site scripting (xss) support
+
+Various things to do, not exhaustive that needs to go in the roadmap
+
+- UndeclaredIOException
+- parse error in template parser
+- stack trace sanitization
+- consider resolving a template via its variable name instead of @Path
+- honour life cycle of objects (specially flash scope)
+
 
 # Deploy on
 
@@ -16,31 +43,45 @@ deployed in a portal server (only tested with GateIn trunk / Tomcat at the momen
 - GateIn/JBoss5.1 requires to remove the seam and cdi deployer in AS5.1
 - Liferay/Tomcat tested on Liferay 6.10
 
-# Todo
+# Dependency Injection integration
 
-Various things to do, not exhaustive
+Juzu leverages the JSR-330 specification to perform dependency injection, this specification is supported by the most
+popular dependency injection frameworks such as Weld, Spring and Guice. At the moment the Weld and Spring frameworks are
+ supported by Juzu.
 
-- UndeclaredIOException
-- event for begin/end with CDI eventing
-- parse error in template parser
-- bean mapping on render parameter
-- stack trace sanitization
-- consider resolving a template via its variable name instead of @Path
-- honour life cycle of objects (specially flash scope)
+Configuration happens in the portlet.xml:
+
+    <init-param>
+      <name>juzu.inject</name>
+      <value>weld</value>
+      <!--
+      <value>spring</value>
+      -->
+    </init-param>
+
+## Weld integration
+
+Weld is the default dependency injection framework.
+
+# Spring integration
+
+Spring is used by setting the `spring` value for the `juzu.inject` portlet init parameter. Spring beans are declared in the
+`spring.xml` file.
 
 # Principles
 
 ## Controller
 
 Juzu programming model is inspired by the Play! Framework that provides a simple and efficient programming model for
-the web.
+the web. Portlet programming model is very close to Play! programmint model and thus it makes a lot of sense to deliver
+a powerful and simple programming model.
 
 ### Controller
 
-Controller are methods annotated with @Action or @Render
+Controller are methods annotated with `@Action` or `@Render`
 
     @Action
-    public void purchaseProduct(String productId) { ... }
+    public Response purchaseProduct(String productId) { ... }
 
     @Render
     public void showProduct(String productId) { ... }
@@ -69,20 +110,25 @@ A template declaration
 
 Takes the corresponding template file and generates the corresponding Groovy source code to be compiled.
 
-## Injection
-
-Juzu leverages the Context and Dependency Injection framework to bring type safe injection.
-
 ### Template injection
 
     @Inject
-    @Template("MyTemplate.gtmpl");
+    @Path("MyTemplate.gtmpl");
     private Template template;
 
-### Printer injection
+### Templates
 
-    @Inject
-    private Printer printer;
+Juzu templates engine is based on Groovy and provide a powerful set of instructions.
+
+### Scopes
+
+The @inject specification provides the notion of scope and Juzu leverages it to manage the life cycle of the various
+objects. Juzu provides a set of scope that can be used to control the scope of objects:
+
+- Application scope (@Singleton annotation provides by @inject specification)
+- Request scope
+- Session scope
+- Flash scope
 
 ## Compiler integration
 
@@ -115,19 +161,10 @@ Juzu features a dev mode in which the application is recompiled in real time.
 
 Juzu should report error precisely, specially in dev mode.
 
-## Extension
-
-Juzu relies on Context and Dependency Injection to integrate an application with extensions.
-
 # Technical notes
 
 The chapter is about stuff that are related to technical implementation of Juzu. It may be already done features or things
 to do at some point.
-
-## Todo
-
-- provide a relocatable template folder with a `templatePath` field in the annotation `@Application`
-- support portlet event phase
 
 ## Architecture
 
@@ -166,29 +203,3 @@ Template providers are located using the java service loader mechanism.
 ### Tag library
 
 To describe
-
-### Context and Dependency Injection
-
-#### Provider
-
-For now CDI support is provided by the Weld reference implementation which is abstracted in the SPI package.
-
-#### Integration
-
-##### Bean visibility
-
-
-By default CDI consider that any class can be a managed bean, we want to restrict that in Juzu and instead decide which beans
-can be seen or not. The `@Export` annotation is used to declare the classes seen by CDI. This apply to Juzu classes.
-
-Application classes are all exposed to CDI by default.
-
-##### Invocation scopes
-
-- @RequestScope: a request scope is available, subdivided into three finer scopes
-    - @ActionScoped : valid during process action phase
-    - @MimeScoped : valid during process render or resource phase
-    - @RenderScoped : valid during render phase
-    - @ResourceScoped : valid during resource phase
-- @FlashScoped : propagate an object from an action to a render phase.
-- @SessionScoped : bound to the portlet session life cycle
