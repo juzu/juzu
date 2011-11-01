@@ -1,0 +1,4 @@
+
+= Hello World =
+
+{{include document=basic/hello.wiki/}}
