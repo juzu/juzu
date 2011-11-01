@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package examples.basic.hello;
+package examples.tutorial.hello;
 
 import org.juzu.Path;
 import org.juzu.Render;

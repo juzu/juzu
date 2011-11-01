@@ -1,4 +1,4 @@
-The Hello World applications shows a basic Juzu application. Our application is declared in the ##examples.basic.hello##
+The Hello World applications shows a basic Juzu application. Our application is declared in the ##examples.tutorial.hello##
 package package annotated with the ##@Application## annotation This annotation declares a Juzu application and does
 not require any mandatory value. Like classes, methods or fields, Java packages can be annotated, such packages declaration
 are represented by a special file named ##package-info.java##.
@@ -8,7 +8,7 @@ annotated with the ##@Render## annotation, which turns the ##Hello## class into 
 ##index()## is the name of the default method that Juzu will call when no other method is explictly specified.
 
 {{java}}
-{@include examples.basic.hello.Hello#index()}
+{@include examples.tutorial.hello.Hello#index()}
 {{/java}}
 
 Methods annotated by ##@Render## have the unique purpose of providing markup, in this case, the method delegates the
@@ -16,10 +16,10 @@ rendering to the ##index.gtmpl## template. The template is injected in the contr
 qualified by the ##@Path("index.gtmpl")## annotation.
 
 {{java}}
-{@include examples.basic.hello.Hello#index}
+{@include examples.tutorial.hello.Hello#index}
 {{/java}}
 
 By default templates are located in the ##templates## package of the application, in our case the
-##examples.basic.hello.templates## package. The templates are located in the same source tree than the java classes because
+##examples.tutorial.hello.templates## package. The templates are located in the same source tree than the java classes because
 the files must be available for the Java compiler.
 

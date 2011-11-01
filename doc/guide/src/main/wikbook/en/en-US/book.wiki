@@ -1,4 +1,9 @@
 
-= Hello World =
+= Tutorial =
 
-{{include document=basic/hello.wiki/}}
+== Hello World ==
+
+{{include document=tutorial/hello.wiki/}}
+
+== Creating links ==
+

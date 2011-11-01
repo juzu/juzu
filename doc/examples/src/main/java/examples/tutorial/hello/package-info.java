@@ -18,6 +18,6 @@
  */
 
 @Application
-package examples.basic.hello;
+package examples.tutorial.hello;
 
 import org.juzu.Application;
