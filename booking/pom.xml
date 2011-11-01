@@ -24,45 +24,30 @@
     <dependency>
       <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
-      <version>2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-core</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.weld</groupId>
-      <artifactId>weld-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
+      <artifactId>juzu-overlay-gatein</artifactId>
+      <type>war</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-overlay-liferay</artifactId>
+      <type>war</type>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>
@@ -70,6 +55,7 @@
   <build>
     <finalName>juzu-booking</finalName>
     <plugins>
+
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -78,54 +64,53 @@
           </compilerArguments>
         </configuration>
       </plugin>
+
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webResources>
+            <resource>
+              <targetPath>WEB-INF/src</targetPath>
+              <directory>src/main/java</directory>
+              <excludes>
+                <exclude>org/sample/booking/portlet/HeaderFilter.java</exclude>
+              </excludes>
+            </resource>
+          </webResources>
+        </configuration>
         <executions>
           <execution>
+            <id>gatein</id>
             <configuration>
-              <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
-              <webResources>
-                <resource>
-                  <targetPath>WEB-INF/src</targetPath>
-                  <directory>src/main/java</directory>
-                  <excludes>
-                    <exclude>org/sample/booking/portlet/HeaderFilter.java</exclude>
-                  </excludes>
-                </resource>
-              </webResources>
+              <classifier>gatein</classifier>
+              <overlays>
+                <overlay>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-overlay-gatein</artifactId>
+                </overlay>
+              </overlays>
             </configuration>
             <goals>
               <goal>war</goal>
             </goals>
-            <phase>package</phase>
           </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2</version>
-
-        <executions>
           <execution>
-            <id>booking-gatein</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
+            <id>liferay</id>
             <configuration>
-              <attach>true</attach>
-              <descriptors>
-                <descriptor>src/main/assembly/gatein.xml</descriptor>
-                <descriptor>src/main/assembly/liferay.xml</descriptor>
-              </descriptors>
+              <classifier>liferay</classifier>
+              <overlays>
+                <overlay>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-overlay-liferay</artifactId>
+                </overlay>
+              </overlays>
             </configuration>
+            <goals>
+              <goal>war</goal>
+            </goals>
           </execution>
         </executions>
-
       </plugin>
-
     </plugins>
   </build>
 
