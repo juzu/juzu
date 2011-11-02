@@ -24,7 +24,6 @@ import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.metadata.ControllerMethod;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-//@RenderScoped
 public class RenderContext extends MimeContext
 {
 

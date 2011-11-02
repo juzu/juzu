@@ -21,7 +21,7 @@ package org.sample.booking.controllers;
 
 import org.juzu.Action;
 import org.juzu.Path;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.Response;
 import org.juzu.template.Template;
 
@@ -73,7 +73,7 @@ public class Application
    @Inject
    Flash flash;
 
-   @Render
+   @View
    public void index() throws IOException
    {
       if (login.isConnected())
@@ -86,7 +86,7 @@ public class Application
       }
    }
 
-   @Render
+   @View
    public void register() throws IOException
    {
       register.render();

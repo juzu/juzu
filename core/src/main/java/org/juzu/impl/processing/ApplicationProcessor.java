@@ -21,15 +21,12 @@ package org.juzu.impl.processing;
 
 import org.juzu.Action;
 import org.juzu.Application;
-import org.juzu.Response;
 import org.juzu.Phase;
 import org.juzu.Resource;
+import org.juzu.View;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.metadata.ControllerParameter;
 import org.juzu.impl.compiler.ProcessorPlugin;
 import org.juzu.impl.utils.PackageMap;
-import org.juzu.impl.utils.Tools;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -125,7 +122,7 @@ public class ApplicationProcessor extends ProcessorPlugin
       // Collect controller methods
       Map<String, ControllerMetaData> controllerMap = new HashMap<String, ControllerMetaData>();
       Set<? extends Element> actions = getElementsAnnotatedWith(Action.class);
-      Set<? extends Element> renders = getElementsAnnotatedWith(org.juzu.Render.class);
+      Set<? extends Element> renders = getElementsAnnotatedWith(View.class);
       Set<? extends Element> resources = getElementsAnnotatedWith(Resource.class);
 
       //

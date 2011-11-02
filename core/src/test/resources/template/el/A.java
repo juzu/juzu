@@ -20,7 +20,7 @@
 package template.el;
 
 import org.juzu.Path;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.RequestScoped;
 import org.juzu.template.Template;
 
@@ -45,7 +45,7 @@ public class A
       return value;
    }
 
-   @Render
+   @View
    public void index() throws IOException
    {
       value = "A";

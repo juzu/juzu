@@ -20,9 +20,8 @@
 package template.tag.resolve;
 
 import org.juzu.Path;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.template.Template;
-import org.juzu.text.Printer;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -39,7 +38,7 @@ public class A
    @Inject
    Template foo;
 
-   @Render
+   @View
    public void index() throws IOException
    {
       index.render();

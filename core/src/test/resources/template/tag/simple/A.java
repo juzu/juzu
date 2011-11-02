@@ -20,7 +20,7 @@
 package template.tag.simple;
 
 import org.juzu.Path;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
@@ -38,7 +38,7 @@ public class A
    @Inject
    Printer printer;
 
-   @Render
+   @View
    public void index() throws IOException
    {
       index.render(printer);

@@ -21,7 +21,7 @@ package request.action.noop;
 
 import org.juzu.Action;
 import org.juzu.Controller;
-import org.juzu.Render;
+import org.juzu.View;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ import java.io.IOException;
 public class A extends Controller
 {
 
-   @Render
+   @View
    public void index() throws IOException
    {
       renderContext.getPrinter().write(A_.actionURL().toString());

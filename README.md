@@ -80,12 +80,12 @@ a powerful and simple programming model.
 
 ### Controller
 
-Controller are methods annotated with `@Action` or `@Render`
+Controller are methods annotated with `@Action` or `@View`
 
     @Action
     public Response purchaseProduct(String productId) { ... }
 
-    @Render
+    @View
     public void showProduct(String productId) { ... }
 
 ## Compile time validation
@@ -141,7 +141,7 @@ URL literal emulates first call support for application URLs, it allows an appli
 A controller method such as
 
     public class Controller {
-      @Render
+      @View
       public void showProduct(String productId) { }
     }
 

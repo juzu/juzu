@@ -4,14 +4,14 @@ not require any mandatory value. Like classes, methods or fields, Java packages 
 are represented by a special file named ##package-info.java##.
 
 Usually an application contains controllers and templates, in this example, the ##Hello## Java class contains a method
-annotated with the ##@Render## annotation, which turns the ##Hello## class into a Juzu controller. The controller method
+annotated with the ##@View## annotation, which turns the ##Hello## class into a Juzu controller. The controller method
 ##index()## is the name of the default method that Juzu will call when no other method is explictly specified.
 
 {{java}}
 {@include examples.tutorial.hello.Hello#index()}
 {{/java}}
 
-Methods annotated by ##@Render## have the unique purpose of providing markup, in this case, the method delegates the
+Methods annotated by ##@View## have the unique purpose of providing markup, in this case, the method delegates the
 rendering to the ##index.gtmpl## template. The template is injected in the controller thanks to the ##@Inject## annotation
 qualified by the ##@Path("index.gtmpl")## annotation.
 

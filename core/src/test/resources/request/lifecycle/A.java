@@ -19,7 +19,7 @@
 
 package request.lifecycle;
 
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.test.Registry;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +30,7 @@ import java.io.IOException;
 public class A
 {
 
-   @Render
+   @View
    public void index() throws IOException
    {
       Registry.compareAndSet("count", 0, 1);

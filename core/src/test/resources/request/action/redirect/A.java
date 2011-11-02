@@ -21,19 +21,16 @@ package request.action.redirect;
 
 import org.juzu.Action;
 import org.juzu.Controller;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.Response;
-import org.juzu.request.ActionContext;
-import org.juzu.request.RenderContext;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller
 {
 
-   @Render
+   @View
    public void index() throws IOException
    {
       renderContext.getPrinter().write(A_.actionURL().toString());

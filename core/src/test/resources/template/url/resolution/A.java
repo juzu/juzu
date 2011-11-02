@@ -19,7 +19,7 @@
 
 package template.url.resolution;
 
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.Path;
 import org.juzu.template.Template;
 
@@ -30,10 +30,10 @@ public class A
    @Path("index.gtmpl")
    private Template index;
 
-   @Render
+   @View
    public void foo() { }
 
-   @Render
+   @View
    public void bar(String s) { }
 
 }

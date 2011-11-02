@@ -20,12 +20,10 @@
 package request.scope.flash;
 
 import org.juzu.Action;
-import org.juzu.FlashScoped;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.test.Registry;
 
 import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -48,7 +46,7 @@ public class A
    @Inject
    private Car car;
 
-   @Render
+   @View
    public void index()
    {
       Registry.set("car", car.getIdentityHashCode());

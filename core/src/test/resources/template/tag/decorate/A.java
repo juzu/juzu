@@ -20,7 +20,7 @@
 package template.tag.decorate;
 
 import org.juzu.Path;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ public class A
    @Inject
    Template index;
 
-   @Render
+   @View
    public void index() throws IOException
    {
       index.render();

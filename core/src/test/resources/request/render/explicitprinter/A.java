@@ -21,7 +21,7 @@ package request.render.explicitprinter;
 
 import org.juzu.Controller;
 import org.juzu.Path;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
@@ -35,7 +35,7 @@ public class A extends Controller
    @Path("index.gtmpl")
    Template index;
 
-   @Render
+   @View
    public void index() throws IOException
    {
       index.render(renderContext.getPrinter());

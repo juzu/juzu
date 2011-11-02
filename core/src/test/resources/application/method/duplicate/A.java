@@ -19,16 +19,16 @@
 
 package application.method.duplicate;
 
-import org.juzu.Render;
+import org.juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A
 {
-   @Render(id = "foo")
+   @View(id = "foo")
    public void a()
    {
    }
-   @Render(id = "foo")
+   @View(id = "foo")
    public void b()
    {
    }

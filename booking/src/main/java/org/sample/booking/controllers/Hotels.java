@@ -21,7 +21,7 @@ package org.sample.booking.controllers;
 
 import org.juzu.Action;
 import org.juzu.Path;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.template.Template;
@@ -61,7 +61,7 @@ public class Hotels // extends Application
    @Path("hotels/index.gtmpl")
    Template index;
 
-   @Render
+   @View
    public void index() throws IOException
    {
       String username = login.getUserName();
@@ -103,7 +103,7 @@ public class Hotels // extends Application
    @Path("hotels/show.gtmpl")
    Template show;
 
-   @Render
+   @View
    public void show(String id) throws IOException
    {
       Hotel hotel = Hotel.findById(id);
@@ -116,7 +116,7 @@ public class Hotels // extends Application
    @Path("hotels/book.gtmpl")
    Template book;
 
-   @Render
+   @View
    public void book(String id) throws IOException
    {
       Hotel hotel = Hotel.findById(id);
@@ -187,7 +187,7 @@ public class Hotels // extends Application
    @Path("hotels/confirmBooking.gtmpl")
    Template confirmBooking;
 
-   @Render
+   @View
    public void confirmBooking(
       String id,
       String checkinDate,
@@ -223,7 +223,7 @@ public class Hotels // extends Application
       return Hotels_.index();
    }
 
-   @Render
+   @View
    public void settings()
    {
       throw new UnsupportedOperationException("todo settings.gtmpl");

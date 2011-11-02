@@ -21,7 +21,7 @@ package request.action.render;
 
 import org.juzu.Action;
 import org.juzu.Controller;
-import org.juzu.Render;
+import org.juzu.View;
 import org.juzu.Response;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.io.IOException;
 public class A extends Controller
 {
 
-   @Render
+   @View
    public void index() throws IOException
    {
       renderContext.getPrinter().write(A_.actionURL().toString());
@@ -42,7 +42,7 @@ public class A extends Controller
       return A_.render("arg_value");
    }
 
-   @Render(id = "render")
+   @View(id = "render")
    public void render(String arg)
    {
    }
