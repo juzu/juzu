@@ -12,3 +12,16 @@
 == Views ==
 
 {{include document=tutorial/weather.wiki/}}
+
+== Actions ==
+
+todo
+
+== Dependency Injection ==
+
+todo
+
+== Taglib ==
+
+todo
+
