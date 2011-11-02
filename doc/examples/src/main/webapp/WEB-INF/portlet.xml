@@ -7,6 +7,38 @@
    <portlet>
      <portlet-name>HelloPortlet</portlet-name>
      <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+     <init-param>
+       <name>juzu.app_name</name>
+       <value>HelloApplication</value>
+     </init-param>
+     <supports>
+       <mime-type>text/html</mime-type>
+     </supports>
+     <portlet-info>
+       <title>Hello World Application</title>
+     </portlet-info>
+   </portlet>
+   <portlet>
+     <portlet-name>TimePortlet</portlet-name>
+     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+     <init-param>
+       <name>juzu.app_name</name>
+       <value>TimeApplication</value>
+     </init-param>
+     <supports>
+       <mime-type>text/html</mime-type>
+     </supports>
+     <portlet-info>
+       <title>Time Application</title>
+     </portlet-info>
+   </portlet>
+   <portlet>
+     <portlet-name>WeatherPortlet</portlet-name>
+     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+     <init-param>
+       <name>juzu.app_name</name>
+       <value>WeatherApplication</value>
+     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>

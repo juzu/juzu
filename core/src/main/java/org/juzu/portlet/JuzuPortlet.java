@@ -222,18 +222,29 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       Properties props = new Properties();
       props.load(in);
 
-      // Find the first valid application for now
+      // Get the application name
+      String appName = config.getInitParameter("juzu.app_name").trim();
       String fqn = null;
-      for (Map.Entry<Object, Object> entry : props.entrySet())
+      if (appName != null)
       {
-         String a = entry.getKey().toString();
-         String b = entry.getValue().toString();
-         if (a.length() > 0 && b.length() > 0)
+         fqn = props.getProperty(appName);
+      }
+      else
+      {
+         // Find the first valid application for now
+         for (Map.Entry<Object, Object> entry : props.entrySet())
          {
-            fqn = b;
-            break;
+            String a = entry.getKey().toString();
+            String b = entry.getValue().toString();
+            if (a.length() > 0 && b.length() > 0)
+            {
+               fqn = b;
+               break;
+            }
          }
       }
+
+      //
       if (fqn == null)
       {
          throw new Exception("Could not find an application to start " + props);

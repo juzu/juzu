@@ -8,3 +8,7 @@
 == Template overwiew ==
 
 {{include document=tutorial/time.wiki/}}
+
+== Views ==
+
+{{include document=tutorial/weather.wiki/}}
