@@ -11,9 +11,9 @@ annotated with the ##@View## annotation, which turns the ##Hello## class into a 
 {@include examples.tutorial.hello.Hello#index()}
 {{/java}}
 
-Methods annotated by ##@View## have the unique purpose of providing markup, in this case, the method delegates the
-rendering to the ##index.gtmpl## template. The template is injected in the controller thanks to the ##@Inject## annotation
-qualified by the ##@Path("index.gtmpl")## annotation.
+Methods annotated by ##@View## have the unique purpose of providing markup, they are called //View//. In our case,
+the method delegates the rendering to the ##index.gtmpl## template. The template is injected in the controller thanks
+to the ##@Inject## annotation qualified by the ##@Path("index.gtmpl")## annotation.
 
 {{java}}
 {@include examples.tutorial.hello.Hello#index}
