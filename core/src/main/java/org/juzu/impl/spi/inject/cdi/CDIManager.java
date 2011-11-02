@@ -44,9 +44,13 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
    /** . */
    final ClassLoader classLoader;
 
-   public CDIManager(Container container, Map<Class<?>, Object> singletons) throws Exception
+   /** . */
+   final Set<Class<?>> beans;
+
+   public CDIManager(Container container, Map<Class<?>, Object> singletons, Set<Class<?>> beans) throws Exception
    {
       this.singletons = singletons;
+      this.beans = beans;
 
       //
       boot.set(this);

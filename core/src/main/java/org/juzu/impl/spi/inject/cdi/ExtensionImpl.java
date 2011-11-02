@@ -63,13 +63,18 @@ public class ExtensionImpl implements Extension
    {
       AnnotatedType<T> annotatedType = pat.getAnnotatedType();
       Class<?> type = annotatedType.getJavaClass();
-      if (type.getName().startsWith("org.juzu."))
+      if (annotatedType.isAnnotationPresent(Export.class))
       {
-         boolean present = annotatedType.isAnnotationPresent(Export.class);
-         if (!present)
+         if (!manager.beans.contains(type))
          {
             pat.veto();
          }
+      }
+
+      //
+      if (manager.singletons.containsKey(type))
+      {
+         pat.veto();
       }
    }
 

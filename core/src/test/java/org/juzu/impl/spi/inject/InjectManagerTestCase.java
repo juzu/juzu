@@ -219,6 +219,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testSiblingProducers() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "siblingproducers");
+      bootstrap.declareBean(ProductInjected.class, null);
       bootstrap.declareProvider(ProductExt1.class, Ext1Producer.class);
       bootstrap.declareProvider(ProductExt2.class, Ext2Producer.class);
       bootstrap.addFileSystem(fs);

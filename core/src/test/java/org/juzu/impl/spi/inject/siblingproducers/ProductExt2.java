@@ -19,9 +19,11 @@
 
 package org.juzu.impl.spi.inject.siblingproducers;
 
+import org.juzu.impl.inject.Export;
 import org.juzu.impl.spi.inject.producer.Product;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@Export
 public class ProductExt2 extends Product
 {
    public ProductExt2()

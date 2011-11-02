@@ -22,6 +22,7 @@ package org.juzu.impl.processing;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.Path;
 import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.inject.Export;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.ParseException;
@@ -227,10 +228,12 @@ class TemplateCompiler
             {
                writer2.append("package ").append(templatePkgFQN).append(";\n");
                writer2.append("import ").append(Tools.getImport(Path.class)).append(";\n");
+               writer2.append("import ").append(Tools.getImport(Export.class)).append(";\n");
                writer2.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
                writer2.append("import ").append(Tools.getImport(Inject.class)).append(";\n");
                writer2.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
                writer2.append("@Generated({})\n");
+               writer2.append("@Export\n");
                writer2.append("@Path(\"").append(path).append("\")\n");
                writer2.append("public class ").append(rawName).append("_ extends ").append(Template.class.getName()).append("\n");
                writer2.append("{\n");

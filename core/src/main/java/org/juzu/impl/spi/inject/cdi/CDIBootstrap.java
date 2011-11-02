@@ -50,22 +50,28 @@ public class CDIBootstrap extends InjectBootstrap
    /** . */
    private Map<Class<?>, Object> singletons;
 
+   /** . */
+   private Set<Class<?>> beans;
+
    public CDIBootstrap()
    {
       this.scopes = new HashSet<Scope>();
       this.fileSystems = new ArrayList<ReadFileSystem<?>>();
       this.singletons = new HashMap<Class<?>, Object>();
+      this.beans = new HashSet<Class<?>>();
    }
 
    @Override
    public <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType)
    {
+      beans.add(implementationType != null ? implementationType : type);
       return this;
    }
 
    @Override
    public <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
    {
+      beans.add(provider);
       return this;
    }
 
@@ -105,6 +111,6 @@ public class CDIBootstrap extends InjectBootstrap
       {
          container.addFileSystem(fs);
       }
-      return new CDIManager(container, singletons);
+      return new CDIManager(container, singletons, beans);
    }
 }
