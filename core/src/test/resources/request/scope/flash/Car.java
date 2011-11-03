@@ -20,10 +20,11 @@
 package request.scope.flash;
 
 import org.juzu.FlashScoped;
+import org.juzu.test.Identifiable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @FlashScoped
-public class Car
+public class Car implements Identifiable
 {
 
    public long getIdentityHashCode()

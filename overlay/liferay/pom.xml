@@ -8,7 +8,7 @@
 
   <parent>
     <groupId>org.juzu</groupId>
-    <artifactId>juzu-war-parent</artifactId>
+    <artifactId>juzu-overlay-parent</artifactId>
     <version>0.4-SNAPSHOT</version>
   </parent>
 

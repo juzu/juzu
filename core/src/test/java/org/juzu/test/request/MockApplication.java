@@ -34,8 +34,10 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockApplication<P>
@@ -51,6 +53,9 @@ public class MockApplication<P>
    final ClassLoader classLoader;
 
    /** . */
+   private final Set<String> beans;
+
+   /** . */
    InternalApplicationContext context;
 
    public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectBootstrap bootstrap)
@@ -58,6 +63,7 @@ public class MockApplication<P>
       this.classes = classes;
       this.classLoader = classLoader;
       this.bootstrap = bootstrap;
+      this.beans = new HashSet<String>();
    }
 
    public MockApplication<P> init() throws Exception
@@ -97,6 +103,13 @@ public class MockApplication<P>
       bootstrap.setClassLoader(classLoader);
 
       //
+      for (String bean : beans)
+      {
+         Class<?> beanClazz = classLoader.loadClass(bean);
+         bootstrap.declareBean(beanClazz, null);
+      }
+
+      //
       ApplicationBootstrap boot = new ApplicationBootstrap(bootstrap, descriptor);
       boot.start();
 
@@ -107,9 +120,9 @@ public class MockApplication<P>
       return this;
    }
 
-   public <T> void declareBean(Class<T> type, Class<? extends T> implementationType)
+   public <T> void declareBean(String className)
    {
-      bootstrap.declareBean(type, implementationType);
+      beans.add(className);
    }
 
    public ApplicationContext getContext()

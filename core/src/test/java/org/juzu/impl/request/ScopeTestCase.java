@@ -20,6 +20,7 @@
 package org.juzu.impl.request;
 
 import org.juzu.test.AbstractInjectTestCase;
+import org.juzu.test.Identifiable;
 import org.juzu.test.Registry;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
@@ -32,7 +33,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
    public void testRequestScope() throws Exception
    {
       MockApplication<?> app = application("request", "scope", "request");
-      app.declareBean(request.scope.request.Car.class, null);
+      app.declareBean("request.scope.request.Car");
       app.init();
 
       //
@@ -40,7 +41,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       assertEquals(1, render.getAttributes().size());
       long identity = Registry.<Long>unset("car");
-      request.scope.request.Car car = (request.scope.request.Car)render.getAttributes().values().iterator().next();
+      Identifiable car = (Identifiable)render.getAttributes().values().iterator().next();
       assertEquals(car.getIdentityHashCode(), identity);
 
       //
@@ -55,7 +56,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
    public void testFlashScope() throws Exception
    {
       MockApplication<?> app = application("request", "scope", "flash");
-      app.declareBean(request.scope.flash.Car.class, null);
+      app.declareBean("request.scope.flash.Car");
       app.init();
 
       //
@@ -63,7 +64,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       long identity1 = Registry.<Long>unset("car");
       assertEquals(1, client.getFlash(1).size());
-      request.scope.flash.Car car1 = (request.scope.flash.Car)client.getFlash(1).values().iterator().next();
+      Identifiable car1 = (Identifiable)client.getFlash(1).values().iterator().next();
       assertEquals(car1.getIdentityHashCode(), identity1);
 
       //
@@ -71,7 +72,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       long identity2 = Registry.<Long>unset("car");
       assertNotSame(identity1, identity2);
       assertEquals(1, client.getFlash(0).size());
-      request.scope.flash.Car car2 = (request.scope.flash.Car)client.getFlash(0).values().iterator().next();
+      Identifiable car2 = (Identifiable)client.getFlash(0).values().iterator().next();
       assertNotSame(car1, car2);
 
       //
@@ -79,7 +80,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       long identity3 = Registry.<Long>unset("car");
       assertEquals(identity2, identity3);
       assertEquals(1, client.getFlash(1).size());
-      request.scope.flash.Car car3 = (request.scope.flash.Car)client.getFlash(1).values().iterator().next();
+      Identifiable car3 = (Identifiable)client.getFlash(1).values().iterator().next();
       assertSame(car2, car3);
    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 eXo Platform SAS.
+ * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -17,18 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package request.scope.request;
+package org.juzu.test;
 
-import org.juzu.RequestScoped;
-import org.juzu.test.Identifiable;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@RequestScoped
-public class Car implements Identifiable
+/**
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ * @version $Revision$
+ */
+public interface Identifiable
 {
-
-   public long getIdentityHashCode()
-   {
-      return System.identityHashCode(this);
-   }
+   long getIdentityHashCode();
 }
