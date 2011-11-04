@@ -17,36 +17,48 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processing;
+package org.juzu.impl.processor;
 
-import javax.lang.model.element.TypeElement;
-import java.util.ArrayList;
-import java.util.List;
+import org.juzu.impl.template.ASTNode;
+import org.juzu.impl.utils.FQN;
 
-/**
- * Controller meta data.
- */
-class ControllerMetaData
+import java.io.Serializable;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class TemplateModel implements Serializable
 {
 
    /** . */
-   final ApplicationMetaData application;
+   private final Foo foo;
 
    /** . */
-   final TypeElement typeElt;
+   private final ASTNode.Template ast;
 
    /** . */
-   final List<MethodMetaData> methods;
+   private final FQN stubFQN;
 
-   ControllerMetaData(TypeElement typeElt, ApplicationMetaData application)
+   public TemplateModel(
+      Foo foo,
+      ASTNode.Template ast,
+      FQN stubFQN)
    {
-      this.application = application;
-      this.typeElt = typeElt;
-      this.methods = new ArrayList<MethodMetaData>();
+      this.foo = foo;
+      this.ast = ast;
+      this.stubFQN = stubFQN;
    }
 
-   public String getClassName()
+   public Foo getFoo()
    {
-      return typeElt.getQualifiedName().toString();
+      return foo;
+   }
+
+   public ASTNode.Template getAST()
+   {
+      return ast;
+   }
+
+   public FQN getStubFQN()
+   {
+      return stubFQN;
    }
 }

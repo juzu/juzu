@@ -108,4 +108,9 @@ public class RAMDir extends RAMPath
    {
       return children.values();
    }
+
+   public void clear()
+   {
+      children.clear();
+   }
 }

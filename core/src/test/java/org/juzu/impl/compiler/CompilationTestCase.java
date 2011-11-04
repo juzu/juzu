@@ -36,6 +36,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
@@ -50,7 +51,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -60,7 +60,7 @@ public class CompilationTestCase extends AbstractTestCase
    public void testBar() throws Exception
    {
       Compiler<?, ?> compiler = compiler("compiler", "disk").assertCompile();
-      assertEquals(2, compiler.getClassOutput().size(ReadFileSystem.FILE));
+      assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
    }
 
    public void testGetResourceFromProcessor() throws Exception
@@ -198,7 +198,7 @@ public class CompilationTestCase extends AbstractTestCase
          }
 
          //
-         return true;
+         return false;
       }
    }
 
@@ -226,20 +226,23 @@ public class CompilationTestCase extends AbstractTestCase
 
       //
       Compiler<File, ?> compiler = new Compiler<File, RAMPath>(fs, new RAMFileSystem());
-      ProcessorPlugin plugin = new ProcessorPlugin()
+      @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
+      @javax.annotation.processing.SupportedAnnotationTypes({"*"})
+      class Processor1 extends AbstractProcessor
       {
          @Override
-         public void process() throws CompilationException
+         public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
          {
-            Set<? extends Element> elements = getElementsAnnotatedWith(Deprecated.class);
+            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Deprecated.class);
             if (elements.size() == 1)
             {
                Element elt = elements.iterator().next();
-               throw new CompilationException(elt, "the_message");
+               processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "the_message", elt);
             }
+            return false;
          }
-      };
-      compiler.addAnnotationProcessor(new Processor(plugin));
+      }
+      compiler.addAnnotationProcessor(new Processor1());
       List<CompilationError> errors = compiler.compile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
@@ -251,20 +254,24 @@ public class CompilationTestCase extends AbstractTestCase
 
       //
       compiler = new Compiler<File, RAMPath>(fs, new RAMFileSystem());
-      plugin = new ProcessorPlugin()
+      @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
+      @javax.annotation.processing.SupportedAnnotationTypes({"*"})
+      class Processor2 extends AbstractProcessor
       {
          boolean failed = false;
+
          @Override
-         public void process() throws CompilationException
+         public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
          {
             if (!failed)
             {
                failed = true;
-               throw new NoSuchElementException("the_message");
+               processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "the_message");
             }
+            return false;
          }
       };
-      compiler.addAnnotationProcessor(new Processor(plugin));
+      compiler.addAnnotationProcessor(new Processor2());
       errors = compiler.compile();
       assertEquals(1, errors.size());
       error = errors.get(0);

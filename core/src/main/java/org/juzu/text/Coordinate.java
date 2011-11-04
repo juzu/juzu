@@ -19,8 +19,10 @@
 
 package org.juzu.text;
 
+import java.io.Serializable;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Coordinate
+public class Coordinate implements Serializable
 {
 
    /** . */

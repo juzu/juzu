@@ -72,9 +72,12 @@ public class ExtensionImpl implements Extension
       }
 
       //
-      if (manager.singletons.containsKey(type))
+      for (Class<?> current = type;current != null;current = current.getSuperclass())
       {
-         pat.veto();
+         if (manager.singletons.containsKey(current))
+         {
+            pat.veto();
+         }
       }
    }
 

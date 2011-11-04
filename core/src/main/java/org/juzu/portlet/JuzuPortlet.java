@@ -19,12 +19,10 @@
 
 package org.juzu.portlet;
 
-import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.juzu.impl.application.ApplicationBootstrap;
-import org.juzu.impl.processing.MainProcessor;
+import org.juzu.impl.processor.MainProcessor;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
-import org.juzu.impl.spi.inject.guice.GuiceBootstrap;
 import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
 import org.juzu.impl.spi.request.portlet.PortletRenderBridge;

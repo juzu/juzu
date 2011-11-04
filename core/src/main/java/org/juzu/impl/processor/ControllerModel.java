@@ -17,30 +17,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.processor;
 
-import junit.framework.TestCase;
-import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
-import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
-import org.juzu.template.TemplateRenderContext;
-import org.juzu.text.WriterPrinter;
+import org.juzu.impl.utils.FQN;
 
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Random;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateBuilderTestCase extends TestCase
+public class ControllerModel implements Serializable
 {
 
-   public void testFoo() throws Exception
-   {
-      GroovyTemplateGenerator template = new GroovyTemplateGenerator();
-      ASTNode.Template.parse("a<%=foo%>c").generate(template, new TemplateCompilationContext());
-      GroovyTemplateStub s = template.build("template_" + Math.abs(new Random().nextLong()));
-      StringWriter out = new StringWriter();
-      s.render(new TemplateRenderContext(new WriterPrinter(out), Collections.singletonMap("foo", "b")));
-      assertEquals("abc", out.toString());
-   }
+   /** . */
+   final ElementHandle origin;
 
+   /** . */
+   final FQN fqn;
+
+   /** . */
+   final ArrayList<MethodModel> methods = new ArrayList<MethodModel>();
+
+   public ControllerModel(ElementHandle origin, FQN fqn)
+   {
+      this.origin = origin;
+      this.fqn = fqn;
+   }
 }

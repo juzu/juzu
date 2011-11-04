@@ -17,64 +17,70 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.text;
+package org.juzu.impl.utils;
 
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Location implements Serializable
+public class FQN implements Serializable
 {
 
    /** . */
-   private final int col;
+   private final String fullName;
 
    /** . */
-   private final int line;
+   private final String packageName;
 
-   public Location(int col, int line)
+   /** . */
+   private final String simpleName;
+
+   public FQN(String fullName)
    {
-      if (col < 0)
+      String packageName;
+      String simpleName;
+      int pos = fullName.lastIndexOf('.');
+      if (pos == - 1)
       {
-         throw new IllegalArgumentException();
+         packageName = "";
+         simpleName = fullName;
       }
-      if (line < 0)
+      else
       {
-         throw new IllegalArgumentException();
+         packageName = fullName.substring(0, pos);
+         simpleName = fullName.substring(pos + 1);
       }
 
       //
-      this.col = col;
-      this.line = line;
+      this.fullName = fullName;
+      this.packageName = packageName;
+      this.simpleName = simpleName;
    }
 
-   public int getCol()
+   public FQN(String packageName, String simpleName)
    {
-      return col;
+      this.packageName = packageName;
+      this.simpleName = simpleName;
+      this.fullName = packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
    }
 
-   public int getLine()
+   public String getFullName()
    {
-      return line;
+      return fullName;
    }
 
-   @Override
-   public boolean equals(Object obj)
+   public String getPackageName()
    {
-      if (obj == this)
-      {
-         return true;
-      }
-      if (obj instanceof Location)
-      {
-         Location that = (Location)obj;
-         return col == that.col && line == that.line;
-      }
-      return false;
+      return packageName;
+   }
+
+   public String getSimpleName()
+   {
+      return simpleName;
    }
 
    @Override
    public String toString()
    {
-      return "Location[col=" + col + ",line=" + line + "]";
+      return fullName;
    }
 }

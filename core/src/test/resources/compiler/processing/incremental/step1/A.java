@@ -17,21 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processing;
+package compiler.processing.incremental.step1;
+
+import org.juzu.test.Marker;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateMetaData
+@Marker
+public class A
 {
-
-   /** . */
-   final String path;
-
-   /** . */
-   final String className;
-
-   public TemplateMetaData(String path, String className)
-   {
-      this.path = path;
-      this.className = className;
-   }
 }

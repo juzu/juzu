@@ -17,33 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.tags;
-
-import org.juzu.impl.template.TemplateCompilationContext;
-import org.juzu.impl.spi.template.TemplateStub;
-import org.juzu.impl.template.ExtendedTagHandler;
-import org.juzu.template.Renderable;
-import org.juzu.template.TemplateRenderContext;
-
-import java.io.IOException;
-import java.util.Map;
+package compiler.processing.incremental.step3;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class IncludeTag extends ExtendedTagHandler
+
+public class C
 {
-
-   @Override
-   public void compile(TemplateCompilationContext context, Map<String, String> args) throws IOException
-   {
-      String path = args.get("path");
-      context.resolveTemplate(path);
-   }
-
-   @Override
-   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
-   {
-      String path = args.get("path");
-      TemplateStub template = context.resolveTemplate(path);
-      template.render(context);
-   }
 }

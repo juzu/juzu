@@ -59,7 +59,7 @@ public class MethodTestCase extends AbstractTestCase
    {
       CompilerHelper<?, ?> compiler = compiler("application", "method", "duplicate");
       List<CompilationError> errors = compiler.failCompile();
-      assertEquals(1, errors.size());
+      assertEquals("Was expecting a single error instead of " + errors, 1, errors.size());
       assertEquals("/application/method/duplicate/A.java", errors.get(0).getSource());
    }
 }

@@ -19,7 +19,6 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.processing.TemplateCompilationContext;
 import org.juzu.template.TagHandler;
 
 import java.io.IOException;

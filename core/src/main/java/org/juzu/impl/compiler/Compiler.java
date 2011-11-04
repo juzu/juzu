@@ -256,9 +256,17 @@ public class Compiler<I, O>
       // it is not, need to investigate this at some piont
       task.call();
 
-      //
+      // Clear caches
+      fileManager.sourceOutput.clearCache();
       fileManager.classOutput.clearCache();
       fileManager.sourceOutput.clearCache();
+      if (fileManager.classPath != null)
+      {
+         fileManager.classPath.clearCache();
+      }
+
+      // Clear processors as we should not reuse them
+      processors.clear();
 
       //
       return errors;

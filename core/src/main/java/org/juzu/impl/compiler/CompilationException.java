@@ -28,6 +28,30 @@ public class CompilationException extends RuntimeException
    /** . */
    private final Element element;
 
+   public CompilationException(String message)
+   {
+      super(message);
+
+      //
+      this.element = null;
+   }
+
+   public CompilationException(String message, Throwable cause)
+   {
+      super(message, cause);
+
+      //
+      this.element = null;
+   }
+
+   public CompilationException(Throwable cause)
+   {
+      super(cause);
+
+      //
+      this.element = null;
+   }
+
    public CompilationException(Element element, String message)
    {
       super(message);

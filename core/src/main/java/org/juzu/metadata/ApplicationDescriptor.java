@@ -19,10 +19,18 @@
 
 package org.juzu.metadata;
 
+import org.juzu.Path;
+import org.juzu.impl.utils.Tools;
+import org.juzu.template.Template;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationDescriptor
@@ -48,6 +56,68 @@ public class ApplicationDescriptor
 
    /** . */
    private final List<TemplateDescriptor> templates;
+
+   protected ApplicationDescriptor(Class<?> defaultController, String templatesPackageName)
+   {
+      Class<?> applicationClass = getClass();
+
+      // Load config
+      Properties props;
+      InputStream in = null;
+      try
+      {
+         in = applicationClass.getResourceAsStream("config.properties");
+         props = new Properties();
+         props.load(in);
+      }
+      catch (IOException e)
+      {
+         throw new AssertionError(e);
+      }
+      finally
+      {
+         Tools.safeClose(in);
+      }
+
+      //
+      List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();
+      List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
+      List<TemplateDescriptor> templates = new ArrayList<TemplateDescriptor>();
+      for (Object o : props.keySet())
+      {
+         String controllerFQN = o.toString();
+         String value = props.getProperty(controllerFQN);
+         try
+         {
+            Class<?> clazz = applicationClass.getClassLoader().loadClass(controllerFQN);
+            if ("controller".equals(value))
+            {
+               Field f = clazz.getField("INSTANCE");
+               ControllerDescriptor controller = (ControllerDescriptor)f.get(null);
+               controllers.add(controller);
+               controllerMethods.addAll(controller.getMethods());
+            }
+            else if ("template".equals(value))
+            {
+               Path path = clazz.getAnnotation(Path.class);
+               templates.add(new TemplateDescriptor(path.value(), (Class<Template>)clazz));
+            }
+         }
+         catch (Exception e)
+         {
+            throw new AssertionError(e);
+         }
+      }
+
+      //
+      this.name = applicationClass.getSimpleName();
+      this.packageName = applicationClass.getPackage().getName();
+      this.templatesPackageName = templatesPackageName;
+      this.defaultController = defaultController;
+      this.controllers = controllers;
+      this.controllerMethods = controllerMethods;
+      this.templates = templates;
+   }
 
    public ApplicationDescriptor(
       String packageName,

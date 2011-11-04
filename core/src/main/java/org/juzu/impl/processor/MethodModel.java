@@ -17,56 +17,42 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processing;
+package org.juzu.impl.processor;
 
 import org.juzu.Phase;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ExecutableType;
-import java.util.LinkedHashSet;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class MethodMetaData
+public class MethodModel implements Serializable
 {
+
+   /** . */
+   final ControllerModel controller;
 
    /** . */
    final String id;
 
    /** . */
-   final ControllerMetaData controller;
-
-   /** . */
    final Phase phase;
 
    /** . */
-   final ExecutableElement element;
+   final String name;
 
    /** . */
-   final ExecutableType type;
+   final ArrayList<String> parameterTypes;
 
    /** . */
-   final LinkedHashSet<String> parameterNames;
+   final ArrayList<String> parameterNames;
 
-   MethodMetaData(ControllerMetaData controller, String id, Phase phase, ExecutableElement element)
+   public MethodModel(ControllerModel controller, String id, Phase phase, String name, ArrayList<String> parameterTypes, ArrayList<String> parameterNames)
    {
-      LinkedHashSet<String> parameterNames = new LinkedHashSet<String>();
-      for (VariableElement variableElt : element.getParameters())
-      {
-         parameterNames.add(variableElt.getSimpleName().toString());
-      }
-
-      //
-      this.id = id;
       this.controller = controller;
+      this.id = id;
       this.phase = phase;
-      this.element = element;
-      this.type = (ExecutableType)element.asType();
+      this.name = name;
+      this.parameterTypes = parameterTypes;
       this.parameterNames = parameterNames;
-   }
-
-   public String getName()
-   {
-      return element.getSimpleName().toString();
    }
 }

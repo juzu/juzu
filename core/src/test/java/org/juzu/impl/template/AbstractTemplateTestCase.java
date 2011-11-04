@@ -19,7 +19,6 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.processing.TemplateCompilationContext;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;

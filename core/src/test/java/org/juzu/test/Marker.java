@@ -17,17 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processing;
+package org.juzu.test;
 
-import org.juzu.impl.compiler.Processor;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
-@javax.annotation.processing.SupportedAnnotationTypes({"*"})
-public class MainProcessor extends Processor
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Marker
 {
-   public MainProcessor()
-   {
-      super(new ApplicationProcessor(), new TemplateProcessor(), new GenerateApplicationPhase());
-   }
 }

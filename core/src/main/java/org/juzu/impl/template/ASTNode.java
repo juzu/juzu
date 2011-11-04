@@ -19,7 +19,6 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.processing.TemplateCompilationContext;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.utils.Tools;
@@ -28,6 +27,7 @@ import org.juzu.text.Coordinate;
 import org.juzu.text.Location;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ASTNode<N extends ASTNode<N>>
+public abstract class ASTNode<N extends ASTNode<N>> implements Serializable
 {
 
    /** . */
@@ -113,14 +113,23 @@ public abstract class ASTNode<N extends ASTNode<N>>
 
       public void generate(TemplateGenerator generator, TemplateCompilationContext tcc) throws IOException
       {
-         attribute(tcc);
          process(tcc);
-         emit(generator, tcc);
+         emit(tcc, generator);
       }
 
-      private void attribute(TemplateCompilationContext tcc)
+      public void process(TemplateCompilationContext tcc) throws IOException
       {
          attribute(tcc, this);
+         process(tcc, this);
+         resolve(tcc, this);
+         unattribute(tcc, this);
+      }
+
+      public void emit(TemplateCompilationContext tcc, TemplateGenerator generator) throws IOException
+      {
+         attribute(tcc, this);
+         emit(tcc, new GeneratorContext(generator), getChildren());
+         unattribute(tcc, this);
       }
 
       private void attribute(TemplateCompilationContext tcc, ASTNode<?> node)
@@ -156,11 +165,6 @@ public abstract class ASTNode<N extends ASTNode<N>>
          }
       }
 
-      private void process(TemplateCompilationContext tcc)
-      {
-         process(tcc, this);
-      }
-
       private void process(TemplateCompilationContext tcc, ASTNode<?> node)
       {
          if (node instanceof Template)
@@ -192,12 +196,66 @@ public abstract class ASTNode<N extends ASTNode<N>>
          }
       }
 
-      private void emit(TemplateGenerator generator, TemplateCompilationContext tcc) throws IOException
+      private void resolve(TemplateCompilationContext tcc, ASTNode<?> node) throws IOException
       {
-         emit(new GeneratorContext(generator), tcc, getChildren());
+         if (node instanceof Template)
+         {
+            for (ASTNode.Block child : node.getChildren())
+            {
+               resolve(tcc, child);
+            }
+         }
+         else if (node instanceof Section)
+         {
+            // Do nothing
+         }
+         else if (node instanceof URL)
+         {
+            // Do nothing
+         }
+         else if (node instanceof Tag)
+         {
+            Tag nodeTag = (Tag)node;
+            if (nodeTag.handler instanceof ExtendedTagHandler)
+            {
+               ((ExtendedTagHandler)nodeTag.handler).compile(tcc, nodeTag.args);
+            }
+            for (ASTNode.Block child : nodeTag.children)
+            {
+               resolve(tcc, child);
+            }
+         }
       }
 
-      private void emit(GeneratorContext ctx, TemplateCompilationContext tagGen, List<Block<?>> blocks) throws IOException
+      private void unattribute(TemplateCompilationContext tcc, ASTNode<?> node)
+      {
+         if (node instanceof Template)
+         {
+            for (ASTNode.Block child : node.getChildren())
+            {
+               unattribute(tcc, child);
+            }
+         }
+         else if (node instanceof Section)
+         {
+            // Do nothing
+         }
+         else if (node instanceof URL)
+         {
+            // Do nothing
+         }
+         else if (node instanceof Tag)
+         {
+            Tag nodeTag = (Tag)node;
+            nodeTag.handler = null;
+            for (ASTNode.Block<?> child : nodeTag.children)
+            {
+               attribute(tcc, child);
+            }
+         }
+      }
+
+      private void emit(TemplateCompilationContext tcc, GeneratorContext ctx, List<Block<?>> blocks) throws IOException
       {
          for (ASTNode.Block block : blocks)
          {
@@ -233,7 +291,7 @@ public abstract class ASTNode<N extends ASTNode<N>>
             else if (block instanceof URL)
             {
                URL url = (URL)block;
-               MethodInvocation mi = tagGen.resolveMethodInvocation(url.typeName, url.methodName, url.args);
+               MethodInvocation mi = tcc.resolveMethodInvocation(url.typeName, url.methodName, url.args);
                if (mi == null)
                {
                   throw new UnsupportedOperationException("handle me gracefully");
@@ -243,16 +301,11 @@ public abstract class ASTNode<N extends ASTNode<N>>
             else if (block instanceof Tag)
             {
                Tag tag = (Tag)block;
-               if (tag.handler instanceof ExtendedTagHandler)
-               {
-                  ExtendedTagHandler etag = (ExtendedTagHandler)tag.handler;
-                  etag.compile(tagGen, tag.args);
-               }
                String className = tag.handler.getClass().getName();
                if (tag.children != null)
                {
                   ctx.writer.openTag(className, tag.args);
-                  emit(ctx, tagGen, tag.children);
+                  emit(tcc, ctx, tag.children);
                   ctx.writer.closeTag(className, tag.args);
                }
                else
@@ -452,7 +505,7 @@ public abstract class ASTNode<N extends ASTNode<N>>
       private final Map<String, String> args;
 
       /** . */
-      private TagHandler handler;
+      private transient TagHandler handler;
 
       public Tag(String name)
       {
