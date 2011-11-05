@@ -20,6 +20,7 @@
 package org.juzu.impl.compiler;
 
 import junit.framework.AssertionFailedError;
+import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFile;
@@ -54,7 +55,7 @@ public class CompilationTestCase extends AbstractTestCase
    public void testBar() throws Exception
    {
       Compiler<?, ?> compiler = compiler("compiler", "disk").assertCompile();
-      assertEquals("Was expecting 2 entries instead of 2 : " + compiler.getClassOutputKeys(), 2, compiler.getClassOutputKeys().size());
+      assertEquals(2, compiler.getClassOutput().size(ReadFileSystem.FILE));
    }
 
    public void testGetResourceFromProcessor() throws Exception
@@ -95,7 +96,7 @@ public class CompilationTestCase extends AbstractTestCase
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-      assertEquals(1, compiler.getClassOutputKeys().size());
+      assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
       if (processor.result instanceof Exception)
       {
          AssertionFailedError afe = new AssertionFailedError();
@@ -123,10 +124,10 @@ public class CompilationTestCase extends AbstractTestCase
 
       Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-      assertEquals(2, compiler.getClassOutputKeys());
-      Content aClass = compiler.getClassOutput(FileKey.newJavaName("foo.A", JavaFileObject.Kind.CLASS));
+      assertEquals(2, compiler.getClassOutput().size(ReadFileSystem.FILE));
+      Content aClass = compiler.getClassOutput().getContent("foo", "A");
       assertNotNull(aClass);
-      Content bClass = compiler.getClassOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.CLASS));
+      Content bClass = compiler.getClassOutput().getContent("foo", "B");
       assertNotNull(bClass);
 
       //
@@ -145,8 +146,8 @@ public class CompilationTestCase extends AbstractTestCase
 
       //
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-      assertEquals("was not expecting to be " + compiler.getClassOutputKeys(), 1, compiler.getClassOutputKeys().size());
-      bClass = compiler.getClassOutput(FileKey.newJavaName("foo.B", JavaFileObject.Kind.CLASS));
+      assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
+      bClass = compiler.getClassOutput().getContent("foo", "B");
       assertNotNull(bClass);
    }
 
@@ -199,13 +200,13 @@ public class CompilationTestCase extends AbstractTestCase
    public void testProcessor() throws Exception
    {
       DiskFileSystem ramFS = diskFS("compiler", "processor");
-      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(ramFS, new RAMFileSystem());
+      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(ramFS, new RAMFileSystem(), new RAMFileSystem());
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-      assertEquals(2, compiler.getClassOutputKeys().size());
+      assertEquals(2, compiler.getClassOutput().size(ReadFileSystem.FILE));
       assertEquals(Arrays.asList("compiler.processor.A", "compiler.processor.B"), processor.names);
-      assertEquals(1, compiler.getSourceOutputKeys().size());
+      assertEquals(1, compiler.getSourceOutput().size(ReadFileSystem.FILE));
    }
 
    public void testCompilationFailure() throws Exception
@@ -266,5 +267,28 @@ public class CompilationTestCase extends AbstractTestCase
       assertTrue(error.getMessage().contains("the_message"));
       assertNull(error.getSourceFile());
       assertNull(error.getLocation());
+   }
+
+   public void testIncremental() throws IOException
+   {
+//      DiskFileSystem fs = diskFS("compiler", "incremental", "A.java");
+      RAMFileSystem fs = new RAMFileSystem();
+      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(fs, new RAMFileSystem());
+
+      //
+      RAMDir incremental = fs.addDir(fs.getRoot(), "compiler").addDir("incremental");
+      RAMFile a = incremental.addFile("A.java").update("package compiler.incremental; public class A {}");
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile("compiler/incremental/A.java"));
+      assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
+      a.remove();
+
+      //
+      RAMFile b = incremental.addFile("B.java").update("package compiler.incremental; public class B extends A {}");
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile("compiler/incremental/B.java"));
+
+
+
+
+
    }
 }

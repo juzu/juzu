@@ -25,7 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * File system provider interface.
@@ -61,12 +63,12 @@ public abstract class ReadFileSystem<P>
       });
    }
 
-   public final P getFile(Iterable<String> path, String name) throws IOException
+   public final P getFile(Iterable<String> dirNames, String fileName) throws IOException
    {
-      P dir = getDir(path);
+      P dir = getDir(dirNames);
       if (dir != null)
       {
-         P child = getChild(dir, name);
+         P child = getChild(dir, fileName);
          if (isFile(child))
          {
             return child;
@@ -75,10 +77,10 @@ public abstract class ReadFileSystem<P>
       return null;
    }
 
-   public final P getDir(Iterable<String> path) throws IOException
+   public final P getDir(Iterable<String> names) throws IOException
    {
       P current = getRoot();
-      for (String name : path)
+      for (String name : names)
       {
          P child = getChild(current, name);
          if (child != null && isDir(child))
@@ -137,10 +139,33 @@ public abstract class ReadFileSystem<P>
       }
    }
 
-   public final P getPath(Iterable<String> filePath) throws IOException
+   public final Content getContent(String... names) throws IOException
+   {
+      return getContent(Arrays.<String>asList(names));
+   }
+
+   public final Content getContent(Iterable<String> names) throws IOException
+   {
+      P path = getPath(names);
+      if (path != null && isFile(path))
+      {
+         return getContent(path);
+      }
+      else
+      {
+         return null;
+      }
+   }
+
+   public final P getPath(String... names) throws IOException
+   {
+      return getPath(Arrays.asList(names));
+   }
+
+   public final P getPath(Iterable<String> names) throws IOException
    {
       P current = getRoot();
-      for (String name : filePath)
+      for (String name : names)
       {
          if (isDir(current))
          {
@@ -160,6 +185,47 @@ public abstract class ReadFileSystem<P>
          }
       }
       return current;
+   }
+
+   public static final int DIR = 0;
+
+   public static final int FILE = 1;
+
+   public static final int PATH = 2;
+
+   public final int size(final int mode) throws IOException
+   {
+      switch (mode)
+      {
+         case DIR:
+         case PATH:
+         case FILE:
+            break;
+         default:
+            throw new IllegalArgumentException("Illegal mode " + mode);
+      }
+      final AtomicInteger size = new AtomicInteger();
+      traverse(new Visitor.Default<P>()
+      {
+         @Override
+         public boolean enterDir(P dir, String name) throws IOException
+         {
+            if (mode == PATH || mode == DIR)
+            {
+               size.incrementAndGet();
+            }
+            return true;
+         }
+         @Override
+         public void file(P file, String name) throws IOException
+         {
+            if (mode == PATH || mode == FILE)
+            {
+               size.incrementAndGet();
+            }
+         }
+      });
+      return size.get();
    }
 
    public final void traverse(P path, Visitor<P> visitor) throws IOException

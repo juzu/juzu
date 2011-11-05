@@ -21,7 +21,8 @@ package org.juzu.impl.compiler;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
-import org.juzu.impl.utils.Content;
+import org.juzu.impl.spi.fs.Visitor;
+import org.juzu.impl.utils.Spliterator;
 import org.juzu.text.Location;
 
 import javax.annotation.processing.Processor;
@@ -34,10 +35,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -67,10 +66,20 @@ public class Compiler<I, O>
 
    public Compiler(List<URL> classPath, ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
    {
+      this(classPath, input, output, output);
+   }
+
+   public Compiler(ReadFileSystem<I> input, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput)
+   {
+      this(Collections.<URL>emptyList(), input, sourceOutput, classOutput);
+   }
+
+   public Compiler(List<URL> classPath, ReadFileSystem<I> input, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput)
+   {
       this.classPath = classPath;
       this.input = input;
       this.compiler = ToolProvider.getSystemJavaCompiler();
-      this.fileManager = new VirtualFileManager<I, O>(input, compiler.getStandardFileManager(null, null, null), output);
+      this.fileManager = new VirtualFileManager<I, O>(input, compiler.getStandardFileManager(null, null, null), sourceOutput, classOutput);
       this.processors = new HashSet<Processor>();
    }
 
@@ -83,55 +92,65 @@ public class Compiler<I, O>
       processors.add(annotationProcessorType);
    }
 
-   public Set<FileKey> getClassOutputKeys()
+   public ReadWriteFileSystem<O> getSourceOutput()
    {
-      return fileManager.classOutput.keySet();
+      return fileManager.sourceOutput;
    }
 
-   public Content getClassOutput(FileKey key)
+   public ReadWriteFileSystem<O> getClassOutput()
    {
-      VirtualJavaFileObject.RandomAccess file = fileManager.classOutput.get(key);
-      return file != null ? file.content : null;
+      return fileManager.classOutput;
    }
 
-   public Set<FileKey> getSourceOutputKeys()
+   public List<CompilationError> compile(String... compilationUnits) throws IOException
    {
-      return fileManager.sourceOutput.keySet();
-   }
+      ArrayList<String> tmp = new ArrayList<String>();
+      final ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<I>>();
+      for (String compilationUnit : compilationUnits)
+      {
+         ArrayList<String> names = Spliterator.split(compilationUnit, '/', tmp);
+         String name = tmp.get(tmp.size() - 1);
+         if (!name.endsWith(".java"))
+         {
+            throw new IllegalArgumentException("Illegal compilation unit: " + compilationUnit);
+         }
+         I file = input.getPath(names);
+         if (file == null)
+         {
+            throw new IllegalArgumentException("Could not find compilation unit: " + compilationUnit);
+         }
+         StringBuilder sb = new StringBuilder();
+         input.packageOf(file, '.', sb);
+         FileKey key = FileKey.newJavaName(sb.toString(), name.substring(0, name.length()));
+         javaFiles.add(new VirtualJavaFileObject.FileSystem<I>(input, file, key));
+      }
 
-   public Content getSourceOutput(FileKey key)
-   {
-      VirtualJavaFileObject.RandomAccess file = fileManager.sourceOutput.get(key);
-      return file != null ? file.content : null;
+      return compile(javaFiles);
    }
 
    public List<CompilationError> compile() throws IOException
    {
-      Collection<VirtualJavaFileObject.FileSystem<I>> sources = fileManager.collectJavaFiles();
 
-      //
-      fileManager.classOutput.clear();
-      fileManager.sourceOutput.clear();
-
-      // Filter compiled files
-      for (Iterator<VirtualJavaFileObject.FileSystem<I>> i = sources.iterator();i.hasNext();)
+      final ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<I>>();
+      input.traverse(new Visitor.Default<I>()
       {
-         VirtualJavaFileObject.FileSystem<I> source = i.next();
-         FileKey key = source.key;
-         VirtualJavaFileObject.RandomAccess.Binary existing = (VirtualJavaFileObject.RandomAccess.Binary)fileManager.classOutput.get(key.as(JavaFileObject.Kind.CLASS));
-         // For now we don't support this feature
-/*
-         if (existing != null)
+         public void file(I file, String name) throws IOException
          {
-            ClassFile cf = existing.getFile();
-            if (cf != null && cf.getLastModified() >= source.getLastModified())
+            if (name.endsWith(".java"))
             {
-               i.remove();
+               StringBuilder sb = new StringBuilder();
+               input.packageOf(file, '.', sb);
+               FileKey key = FileKey.newJavaName(sb.toString(), name);
+               javaFiles.add(new VirtualJavaFileObject.FileSystem<I>(input, file, key));
             }
          }
-*/
-      }
+      });
 
+      return compile(javaFiles);
+   }
+
+   private List<CompilationError> compile(Iterable<VirtualJavaFileObject.FileSystem<I>> compilationUnits) throws IOException
+   {
       // Build classpath
       List<String> options = new ArrayList<String>();
       if (classPath.size() > 0)
@@ -187,12 +206,16 @@ public class Compiler<I, O>
       };
 
       //
-      JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, options, null, sources);
+      JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, options, null, compilationUnits);
       task.setProcessors(processors);
 
       // We don't use the return value because sometime it says it is failed although
       // it is not, need to investigate this at some piont
       task.call();
+
+      //
+      fileManager.openedClassOutput.clear();
+      fileManager.openedSourceOutput.clear();
 
       //
       return errors;

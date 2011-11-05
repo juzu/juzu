@@ -19,6 +19,7 @@
 
 package org.juzu.impl.utils;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +50,15 @@ public class Spliterator implements Iterator<String>
             return new Spliterator(s, separator);
          }
       };
+   }
+
+   public static <C extends Collection<String>> C split(final String s, final char separator, C to) throws NullPointerException
+   {
+      for (Spliterator i = new Spliterator(s, separator);i.hasNext();)
+      {
+         to.add(i.next());
+      }
+      return to;
    }
 
    /** . */

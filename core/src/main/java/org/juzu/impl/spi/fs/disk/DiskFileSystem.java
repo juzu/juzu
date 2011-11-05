@@ -45,7 +45,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
    private final File root;
 
    /** . */
-   private final FilenameFilter filter;
+   private FilenameFilter filter;
 
    /** . */
    private Charset encoding;
@@ -70,27 +70,12 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
 
    public DiskFileSystem(final File root, final String... path)
    {
-      this(root, new FilenameFilter()
-      {
+      this(root, new FilterImpl(root, path));
+   }
 
-         /** . */
-         final Map<File, String> valids = new HashMap<File, String>();
-
-         {
-            File current = root;
-            for (String name : path)
-            {
-               valids.put(current, name);
-               current = new File(current, name);
-            }
-         }
-
-         public boolean accept(File dir, String name)
-         {
-            String found = valids.get(dir);
-            return found == null || found.equals(name);
-         }
-      });
+   public void applyFilter(String... path)
+   {
+      filter = new FilterImpl(root, path);
    }
 
    @Override

@@ -20,6 +20,7 @@
 package org.juzu.impl.compiler;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Content;
 
 import javax.tools.SimpleJavaFileObject;
@@ -30,7 +31,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class VirtualJavaFileObject extends SimpleJavaFileObject
@@ -123,14 +123,18 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
       protected final VirtualFileManager<?, P> manager;
 
       /** . */
+      protected final ReadWriteFileSystem<P> output;
+
+      /** . */
       protected Content content;
 
-      RandomAccess(VirtualFileManager<?, P> manager, FileKey key)
+      RandomAccess(VirtualFileManager<?, P> manager, ReadWriteFileSystem<P> output, FileKey key)
       {
          super(key);
 
          //
          this.manager = manager;
+         this.output = output;
          this.content = null;
       }
 
@@ -149,9 +153,9 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
          /** . */
          private ByteArrayOutputStream out;
 
-         Binary(VirtualFileManager<?, P> manager, FileKey key) throws IOException
+         Binary(VirtualFileManager<?, P> manager, ReadWriteFileSystem<P> output, FileKey key) throws IOException
          {
-            super(manager, key);
+            super(manager, output, key);
 
             //
             this.out = null;
@@ -166,8 +170,8 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
                public void close() throws IOException
                {
                   content = new Content(System.currentTimeMillis(), toByteArray(), null);
-                  P file = manager.output.makeFile(key.packageNames, key.name);
-                  manager.output.setContent(file, content);
+                  P file = output.makeFile(key.packageNames, key.name);
+                  output.setContent(file, content);
                   out = null;
                }
             };
@@ -197,9 +201,9 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
          /** . */
          private StringWriter writer;
 
-         Text(VirtualFileManager<?, P> manager, FileKey key) throws IOException
+         Text(VirtualFileManager<?, P> manager, ReadWriteFileSystem<P> output, FileKey key) throws IOException
          {
-            super(manager, key);
+            super(manager, output, key);
 
             //
             this.writer = null;
@@ -214,8 +218,8 @@ class VirtualJavaFileObject extends SimpleJavaFileObject
                public void close() throws IOException
                {
                   content = new Content(System.currentTimeMillis(), writer.toString());
-                  P file = manager.output.makeFile(key.packageNames, key.name);
-                  manager.output.setContent(file, content);
+                  P file = output.makeFile(key.packageNames, key.name);
+                  output.setContent(file, content);
                   writer = null;
                }
             };
