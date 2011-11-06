@@ -19,6 +19,8 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.compiler.file.FileKey;
+import org.juzu.impl.compiler.file.JavaFileObjectImpl;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.Visitor;
@@ -48,9 +50,6 @@ public class Compiler<I, O>
    final List<URL> classPath;
 
    /** . */
-   final ReadFileSystem<I> input;
-
-   /** . */
    private JavaCompiler compiler;
 
    /** . */
@@ -77,7 +76,6 @@ public class Compiler<I, O>
    public Compiler(List<URL> classPath, ReadFileSystem<I> input, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput)
    {
       this.classPath = classPath;
-      this.input = input;
       this.compiler = ToolProvider.getSystemJavaCompiler();
       this.fileManager = new VirtualFileManager<I, O>(input, compiler.getStandardFileManager(null, null, null), sourceOutput, classOutput);
       this.processors = new HashSet<Processor>();
@@ -94,18 +92,18 @@ public class Compiler<I, O>
 
    public ReadWriteFileSystem<O> getSourceOutput()
    {
-      return fileManager.sourceOutput;
+      return (ReadWriteFileSystem<O>)fileManager.sourceOutput.getFileSystem();
    }
 
    public ReadWriteFileSystem<O> getClassOutput()
    {
-      return fileManager.classOutput;
+      return (ReadWriteFileSystem<O>)fileManager.classOutput.getFileSystem();
    }
 
    public List<CompilationError> compile(String... compilationUnits) throws IOException
    {
       ArrayList<String> tmp = new ArrayList<String>();
-      final ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<I>>();
+      final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
       for (String compilationUnit : compilationUnits)
       {
          ArrayList<String> names = Spliterator.split(compilationUnit, '/', tmp);
@@ -114,15 +112,15 @@ public class Compiler<I, O>
          {
             throw new IllegalArgumentException("Illegal compilation unit: " + compilationUnit);
          }
-         I file = input.getPath(names);
+         I file = fileManager.sourcePath.getFileSystem().getPath(names);
          if (file == null)
          {
             throw new IllegalArgumentException("Could not find compilation unit: " + compilationUnit);
          }
          StringBuilder sb = new StringBuilder();
-         input.packageOf(file, '.', sb);
+         fileManager.sourcePath.getFileSystem().packageOf(file, '.', sb);
          FileKey key = FileKey.newJavaName(sb.toString(), name.substring(0, name.length()));
-         javaFiles.add(new VirtualJavaFileObject.FileSystem<I>(input, file, key));
+         javaFiles.add(fileManager.sourcePath.getReadable(key));
       }
 
       return compile(javaFiles);
@@ -130,18 +128,17 @@ public class Compiler<I, O>
 
    public List<CompilationError> compile() throws IOException
    {
-
-      final ArrayList<VirtualJavaFileObject.FileSystem<I>> javaFiles = new ArrayList<VirtualJavaFileObject.FileSystem<I>>();
-      input.traverse(new Visitor.Default<I>()
+      final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
+      fileManager.sourcePath.getFileSystem().traverse(new Visitor.Default<I>()
       {
          public void file(I file, String name) throws IOException
          {
             if (name.endsWith(".java"))
             {
                StringBuilder sb = new StringBuilder();
-               input.packageOf(file, '.', sb);
+               fileManager.sourcePath.getFileSystem().packageOf(file, '.', sb);
                FileKey key = FileKey.newJavaName(sb.toString(), name);
-               javaFiles.add(new VirtualJavaFileObject.FileSystem<I>(input, file, key));
+               javaFiles.add(fileManager.sourcePath.getReadable(key));
             }
          }
       });
@@ -149,7 +146,7 @@ public class Compiler<I, O>
       return compile(javaFiles);
    }
 
-   private List<CompilationError> compile(Iterable<VirtualJavaFileObject.FileSystem<I>> compilationUnits) throws IOException
+   private List<CompilationError> compile(Iterable<JavaFileObject> compilationUnits) throws IOException
    {
       // Build classpath
       List<String> options = new ArrayList<String>();
@@ -185,9 +182,9 @@ public class Compiler<I, O>
                if (obj != null)
                {
                   source = obj.getName().toString();
-                  if (obj instanceof VirtualJavaFileObject.FileSystem)
+                  if (obj instanceof JavaFileObjectImpl)
                   {
-                     VirtualJavaFileObject.FileSystem foo = (VirtualJavaFileObject.FileSystem)obj;
+                     JavaFileObjectImpl foo = (JavaFileObjectImpl)obj;
                      try
                      {
                         resolvedFile = foo.getFile();
@@ -214,8 +211,8 @@ public class Compiler<I, O>
       task.call();
 
       //
-      fileManager.openedClassOutput.clear();
-      fileManager.openedSourceOutput.clear();
+      fileManager.classOutput.clearCache();
+      fileManager.sourceOutput.clearCache();
 
       //
       return errors;

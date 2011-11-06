@@ -19,21 +19,11 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.compiler.FileKey;
 import org.juzu.impl.compiler.Compiler;
-import org.juzu.impl.spi.template.TemplateStub;
-import org.juzu.impl.utils.Content;
-import org.juzu.template.TemplateRenderContext;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.CompilerHelper;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
-import org.juzu.text.WriterPrinter;
-
-import javax.tools.JavaFileObject;
-import java.io.StringWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateTestCase extends AbstractInjectTestCase

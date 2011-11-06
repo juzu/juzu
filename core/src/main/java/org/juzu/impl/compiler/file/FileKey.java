@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.compiler;
+package org.juzu.impl.compiler.file;
 
 import org.juzu.impl.utils.Spliterator;
 
@@ -25,8 +25,6 @@ import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FileKey
@@ -77,25 +75,25 @@ public class FileKey
    }
 
    /** . */
-   final Iterable<String> packageNames;
+   public final Iterable<String> packageNames;
 
    /** . */
-   final String packageFQN;
+   public final String packageFQN;
 
    /** . */
-   final String rawName;
+   public final String rawName;
 
    /** . */
-   final String fqn;
+   public final String fqn;
 
    /** . */
-   final String name;
+   public final String name;
 
    /** . */
-   final URI uri;
+   public final URI uri;
 
    /** . */
-   final JavaFileObject.Kind kind;
+   public final JavaFileObject.Kind kind;
 
    private FileKey(String packageFQN, String rawName, JavaFileObject.Kind kind) throws IOException
    {
