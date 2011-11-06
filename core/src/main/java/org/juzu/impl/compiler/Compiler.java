@@ -20,6 +20,7 @@
 package org.juzu.impl.compiler;
 
 import org.juzu.impl.compiler.file.FileKey;
+import org.juzu.impl.compiler.file.FileManager;
 import org.juzu.impl.compiler.file.JavaFileObjectImpl;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
@@ -53,7 +54,7 @@ public class Compiler<I, O>
    private JavaCompiler compiler;
 
    /** . */
-   private VirtualFileManager<I, O> fileManager;
+   private VirtualFileManager fileManager;
 
    /** . */
    private Set<Processor> processors;
@@ -77,7 +78,11 @@ public class Compiler<I, O>
    {
       this.classPath = classPath;
       this.compiler = ToolProvider.getSystemJavaCompiler();
-      this.fileManager = new VirtualFileManager<I, O>(input, compiler.getStandardFileManager(null, null, null), sourceOutput, classOutput);
+      this.fileManager = new VirtualFileManager(
+         input,
+         compiler.getStandardFileManager(null, null, null),
+         sourceOutput,
+         classOutput);
       this.processors = new HashSet<Processor>();
    }
 
@@ -102,6 +107,16 @@ public class Compiler<I, O>
 
    public List<CompilationError> compile(String... compilationUnits) throws IOException
    {
+      return compile(getFromSourcePath(fileManager.sourcePath, compilationUnits));
+   }
+
+   public List<CompilationError> compile() throws IOException
+   {
+      return compile(getFromSourcePath(fileManager.sourcePath));
+   }
+
+   private <P> Iterable<JavaFileObject> getFromSourcePath(FileManager<P> manager, String... compilationUnits) throws IOException
+   {
       ArrayList<String> tmp = new ArrayList<String>();
       final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
       for (String compilationUnit : compilationUnits)
@@ -112,38 +127,36 @@ public class Compiler<I, O>
          {
             throw new IllegalArgumentException("Illegal compilation unit: " + compilationUnit);
          }
-         I file = fileManager.sourcePath.getFileSystem().getPath(names);
+         P file = manager.getFileSystem().getPath(names);
          if (file == null)
          {
             throw new IllegalArgumentException("Could not find compilation unit: " + compilationUnit);
          }
          StringBuilder sb = new StringBuilder();
-         fileManager.sourcePath.getFileSystem().packageOf(file, '.', sb);
+         manager.getFileSystem().packageOf(file, '.', sb);
          FileKey key = FileKey.newJavaName(sb.toString(), name.substring(0, name.length()));
-         javaFiles.add(fileManager.sourcePath.getReadable(key));
+         javaFiles.add(manager.getReadable(key));
       }
-
-      return compile(javaFiles);
+      return javaFiles;
    }
 
-   public List<CompilationError> compile() throws IOException
+   private <P> Iterable<JavaFileObject> getFromSourcePath(final FileManager<P> fileManager) throws IOException
    {
       final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
-      fileManager.sourcePath.getFileSystem().traverse(new Visitor.Default<I>()
+      fileManager.getFileSystem().traverse(new Visitor.Default<P>()
       {
-         public void file(I file, String name) throws IOException
+         public void file(P file, String name) throws IOException
          {
             if (name.endsWith(".java"))
             {
                StringBuilder sb = new StringBuilder();
-               fileManager.sourcePath.getFileSystem().packageOf(file, '.', sb);
+               fileManager.getFileSystem().packageOf(file, '.', sb);
                FileKey key = FileKey.newJavaName(sb.toString(), name);
-               javaFiles.add(fileManager.sourcePath.getReadable(key));
+               javaFiles.add(fileManager.getReadable(key));
             }
          }
       });
-
-      return compile(javaFiles);
+      return javaFiles;
    }
 
    private List<CompilationError> compile(Iterable<JavaFileObject> compilationUnits) throws IOException

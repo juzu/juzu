@@ -37,30 +37,30 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class VirtualFileManager<I, O> extends ForwardingJavaFileManager<StandardJavaFileManager>
+class VirtualFileManager extends ForwardingJavaFileManager<StandardJavaFileManager>
 {
 
    /** . */
-   final FileManager<I> sourcePath;
+   final FileManager<?> sourcePath;
 
    /** . */
-   final FileManager<O> classOutput;
+   final FileManager<?> classOutput;
 
    /** . */
-   final FileManager<O> sourceOutput;
+   final FileManager<?> sourceOutput;
 
-   public VirtualFileManager(
-      ReadFileSystem<I> sourcePath,
+   public <SP, CO, SO> VirtualFileManager(
+      ReadFileSystem<SP> sourcePath,
       StandardJavaFileManager fileManager,
-      ReadWriteFileSystem<O> classOutput,
-      ReadWriteFileSystem<O> sourceOutput)
+      ReadWriteFileSystem<CO> classOutput,
+      ReadWriteFileSystem<SO> sourceOutput)
    {
       super(fileManager);
 
       //
-      this.sourcePath = new FileManager<I>(sourcePath);
-      this.classOutput = new FileManager<O>(classOutput);
-      this.sourceOutput = new FileManager<O>(sourceOutput);
+      this.sourcePath = new FileManager<SP>(sourcePath);
+      this.classOutput = new FileManager<CO>(classOutput);
+      this.sourceOutput = new FileManager<SO>(sourceOutput);
    }
 
    private FileManager<?> getFiles(Location location)
