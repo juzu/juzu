@@ -27,6 +27,7 @@ import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.utils.Content;
+import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
@@ -40,11 +41,16 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -286,5 +292,95 @@ public class CompilationTestCase extends AbstractTestCase
       RAMFile b = incremental.addFile("B.java").update("package compiler.incremental; public class B extends A {}");
       compiler = new Compiler<RAMPath, RAMPath>(sourcePath, output, output, output);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile("compiler/incremental/B.java"));
+   }
+
+   @javax.annotation.processing.SupportedAnnotationTypes({"*"})
+   @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
+   public static class ReadResource extends AbstractProcessor
+   {
+
+      @Override
+      public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
+      {
+         try
+         {
+            return _process(annotations, roundEnv);
+         }
+         catch (IOException e)
+         {
+            throw failure(e);
+         }
+      }
+
+      private boolean _process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) throws IOException
+      {
+         if (roundEnv.processingOver())
+         {
+            Filer filer = processingEnv.getFiler();
+
+            // Read an existing resource
+            FileObject foo = filer.getResource(StandardLocation.SOURCE_OUTPUT, "", "foo.txt");
+            assertNotNull(foo);
+            String s = Tools.read(foo.openInputStream());
+            assertEquals("foo_value", s);
+
+            // Now we overwrite the resource
+            foo = filer.createResource(StandardLocation.SOURCE_OUTPUT, "", "foo.txt");
+            OutputStream out = foo.openOutputStream();
+            out.write("new_foo_value".getBytes());
+            out.close();
+
+            // Read an non existing resource
+            // JDK 6 strange behavior / bug happens here, we should get bar=null but we don't
+            // JDK 7 should return null
+            FileObject bar = filer.getResource(StandardLocation.SOURCE_OUTPUT, "", "bar.txt");
+            assertNotNull(bar);
+            try
+            {
+               bar.openInputStream();
+            }
+            catch (IOException ignore)
+            {
+            }
+
+            // Now create new resource
+            foo = filer.createResource(StandardLocation.SOURCE_OUTPUT, "", "juu.txt");
+            out = foo.openOutputStream();
+            out.write("juu_value".getBytes());
+            out.close();
+         }
+         return true;
+      }
+   }
+
+   public void testResource() throws IOException
+   {
+      DiskFileSystem fs = diskFS("compiler", "missingresource");
+      RAMFileSystem sourceOutput = new RAMFileSystem();
+      sourceOutput.addFile(sourceOutput.getRoot(), "foo.txt").update("foo_value");
+      RAMFileSystem classOutput = new RAMFileSystem();
+
+      //
+      Compiler<File, RAMPath> compiler = new Compiler<File, RAMPath>(
+         fs,
+         sourceOutput,
+         classOutput);
+      compiler.addAnnotationProcessor(new ReadResource());
+
+      //
+      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
+
+      //
+      RAMDir root = sourceOutput.getRoot();
+      Map<String, RAMFile> children = new HashMap<String, RAMFile>();
+      for (RAMPath path : root.getChildren())
+      {
+         children.put(path.getName(), (RAMFile)path);
+      }
+      assertEquals(2, children.size());
+      RAMFile foo = children.get("foo.txt");
+      assertEquals("new_foo_value", foo.getContent().getCharSequence(Charset.defaultCharset()));
+      RAMFile juu = children.get("juu.txt");
+      assertEquals("juu_value", juu.getContent().getCharSequence(Charset.defaultCharset()).toString());
    }
 }

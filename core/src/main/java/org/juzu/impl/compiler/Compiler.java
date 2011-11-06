@@ -113,8 +113,8 @@ public class Compiler<I, O>
          compiler.getStandardFileManager(null, null, null),
          sourcePath,
          classPath,
-         classOutput,
-         sourceOutput
+         sourceOutput,
+         classOutput
       );
       this.processors = new HashSet<Processor>();
    }

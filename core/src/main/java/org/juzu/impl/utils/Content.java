@@ -76,6 +76,11 @@ public class Content
       return new ByteArrayInputStream(data);
    }
 
+   public CharSequence getCharSequence(Charset encoding)
+   {
+      return new String(data, encoding);
+   }
+
    public CharSequence getCharSequence()
    {
       if (encoding == null)

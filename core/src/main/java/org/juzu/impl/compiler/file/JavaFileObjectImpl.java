@@ -25,6 +25,7 @@ import org.juzu.impl.utils.Content;
 import javax.tools.SimpleJavaFileObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,8 +42,8 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject
    /** . */
    final FileManager<P> manager;
 
-   /** . */
-   final P file;
+   /** The file, might not exist when this object will create. */
+   private P file;
 
    /** . */
    Content content;
@@ -71,6 +72,10 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject
       if (writing)
       {
          throw new IllegalStateException("Opened for writing");
+      }
+      if (file == null)
+      {
+         throw new FileNotFoundException("File " + key + " cannot be found");
       }
       if (content == null)
       {
@@ -127,7 +132,8 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject
                content = new Content(System.currentTimeMillis(), toByteArray(), null);
                P file = fs.makeFile(key.packageNames, key.name);
                fs.setContent(file, content);
-               writing = false;
+               JavaFileObjectImpl.this.file = file;
+               JavaFileObjectImpl.this.writing = false;
             }
          };
       }
@@ -154,7 +160,8 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject
                content = new Content(System.currentTimeMillis(), getBuffer());
                P file = fs.makeFile(key.packageNames, key.name);
                fs.setContent(file, content);
-               writing = false;
+               JavaFileObjectImpl.this.file = file;
+               JavaFileObjectImpl.this.writing = false;
             }
          };
       }

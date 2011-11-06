@@ -69,7 +69,7 @@ public abstract class ReadFileSystem<P>
       if (dir != null)
       {
          P child = getChild(dir, fileName);
-         if (isFile(child))
+         if (child != null && isFile(child))
          {
             return child;
          }

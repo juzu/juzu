@@ -136,6 +136,21 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
    }
 
    @Override
+   public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException
+   {
+      FileKey key = FileKey.newResourceName(packageName, relativeName);
+      FileManager<?> files = getFiles(location);
+      if (files != null)
+      {
+         return files.getReadable(key);
+      }
+      else
+      {
+         throw new FileNotFoundException("Cannot write: " + location);
+      }
+   }
+
+   @Override
    public FileObject getFileForOutput(Location location, String packageName, String relativeName, FileObject sibling) throws IOException
    {
       FileKey key = FileKey.newResourceName(packageName, relativeName);

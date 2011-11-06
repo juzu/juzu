@@ -146,9 +146,16 @@ public class Tools
 
    public static String read(InputStream in, String charsetName) throws IOException
    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      copy(in, baos);
-      return baos.toString();
+      try
+      {
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         copy(in, baos);
+         return baos.toString();
+      }
+      finally
+      {
+         safeClose(in);
+      }
    }
 
    public static void copy(InputStream in, OutputStream out) throws IOException

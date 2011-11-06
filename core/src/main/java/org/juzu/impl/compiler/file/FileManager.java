@@ -83,7 +83,7 @@ public class FileManager<P>
          JavaFileObjectImpl<P> entry = entries.get(key);
          if (entry == null)
          {
-            P file = rwFS.makeFile(key.packageNames, key.name);
+            P file = rwFS.getFile(key.packageNames, key.name);
             entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
          }
          return entry;
