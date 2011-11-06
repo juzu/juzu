@@ -59,30 +59,63 @@ public class Compiler<I, O>
    /** . */
    private Set<Processor> processors;
 
-   public Compiler(ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
+   public Compiler(
+      ReadFileSystem<I> input,
+      ReadWriteFileSystem<O> output)
    {
       this(Collections.<URL>emptyList(), input, output);
    }
 
-   public Compiler(List<URL> classPath, ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
+   public Compiler(
+      List<URL> classPathURLs,
+      ReadFileSystem<I> sourcePath,
+      ReadWriteFileSystem<O> output)
    {
-      this(classPath, input, output, output);
+      this(classPathURLs, sourcePath, output, output);
    }
 
-   public Compiler(ReadFileSystem<I> input, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput)
+   public Compiler(
+      ReadFileSystem<I> sourcePath,
+      ReadWriteFileSystem<O> sourceOutput,
+      ReadWriteFileSystem<O> classOutput)
    {
-      this(Collections.<URL>emptyList(), input, sourceOutput, classOutput);
+      this(Collections.<URL>emptyList(), sourcePath, sourceOutput, classOutput);
    }
 
-   public Compiler(List<URL> classPath, ReadFileSystem<I> input, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput)
+   public Compiler(
+      List<URL> classPathURLs,
+      ReadFileSystem<I> sourcePath,
+      ReadWriteFileSystem<O> sourceOutput,
+      ReadWriteFileSystem<O> classOutput)
    {
-      this.classPath = classPath;
+      this(classPathURLs, sourcePath, null, sourceOutput, classOutput);
+   }
+
+   public Compiler(
+      ReadFileSystem<I> sourcePath,
+      ReadFileSystem<?> classPath,
+      ReadWriteFileSystem<O> sourceOutput,
+      ReadWriteFileSystem<O> classOutput)
+   {
+      this(Collections.<URL>emptyList(), sourcePath, classPath, sourceOutput, classOutput);
+   }
+
+   public Compiler(
+      List<URL> classPathURLs,
+      ReadFileSystem<I> sourcePath,
+      ReadFileSystem<?> classPath,
+      ReadWriteFileSystem<O> sourceOutput,
+      ReadWriteFileSystem<O> classOutput)
+   {
+      this.classPath = classPathURLs;
       this.compiler = ToolProvider.getSystemJavaCompiler();
       this.fileManager = new VirtualFileManager(
-         input,
          compiler.getStandardFileManager(null, null, null),
-         sourceOutput,
-         classOutput);
+         sourcePath,
+         classPath,
+         classOutput,
+         sourceOutput
+      );
       this.processors = new HashSet<Processor>();
    }
 

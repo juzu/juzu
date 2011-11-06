@@ -21,15 +21,15 @@ package org.juzu.impl.compiler.file;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
+import org.juzu.impl.utils.Spliterator;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FileManager<P>
@@ -100,23 +100,40 @@ public class FileManager<P>
       boolean recurse,
       Collection<JavaFileObject> to) throws IOException
    {
-      Pattern pattern = org.juzu.impl.utils.Tools.getPackageMatcher(packageName, recurse);
-      Matcher matcher = null;
-      for (JavaFileObjectImpl<P> file : entries.values())
+      Iterable<String> packageNames = Spliterator.split(packageName, '.');
+      P dir = fs.getDir(packageNames);
+      if (dir != null)
       {
-         if (kinds.contains(file.key.kind))
+         list(dir, kinds, recurse, to);
+      }
+   }
+
+   public void list(
+      P root,
+      Set<JavaFileObject.Kind> kinds,
+      boolean recurse,
+      Collection<JavaFileObject> to) throws IOException
+   {
+      StringBuilder sb = new StringBuilder();
+      fs.packageOf(root, '.', sb);
+      String packageName = sb.toString();
+      for (Iterator<P> i = fs.getChildren(root);i.hasNext();)
+      {
+         P child = i.next();
+         if (fs.isDir(child))
          {
-            if (matcher == null)
+            if (recurse)
             {
-               matcher = pattern.matcher(file.key.packageFQN);
+               list(child, kinds, true, to);
             }
-            else
+         }
+         else
+         {
+            String name = fs.getName(child);
+            FileKey key = FileKey.newName(packageName, name);
+            if (kinds.contains(key.kind))
             {
-               matcher.reset(file.key.packageFQN);
-            }
-            if (matcher.matches())
-            {
-               to.add(file);
+               to.add(getReadable(key));
             }
          }
       }

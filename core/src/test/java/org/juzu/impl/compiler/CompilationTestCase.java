@@ -271,12 +271,12 @@ public class CompilationTestCase extends AbstractTestCase
 
    public void testIncremental() throws IOException
    {
-//      DiskFileSystem fs = diskFS("compiler", "incremental", "A.java");
-      RAMFileSystem fs = new RAMFileSystem();
-      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(fs, new RAMFileSystem());
+      RAMFileSystem sourcePath = new RAMFileSystem();
+      RAMFileSystem output = new RAMFileSystem();
+      Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(sourcePath, output);
 
       //
-      RAMDir incremental = fs.addDir(fs.getRoot(), "compiler").addDir("incremental");
+      RAMDir incremental = sourcePath.addDir(sourcePath.getRoot(), "compiler").addDir("incremental");
       RAMFile a = incremental.addFile("A.java").update("package compiler.incremental; public class A {}");
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile("compiler/incremental/A.java"));
       assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
@@ -284,11 +284,7 @@ public class CompilationTestCase extends AbstractTestCase
 
       //
       RAMFile b = incremental.addFile("B.java").update("package compiler.incremental; public class B extends A {}");
+      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, output, output, output);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile("compiler/incremental/B.java"));
-
-
-
-
-
    }
 }

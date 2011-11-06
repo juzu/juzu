@@ -74,6 +74,25 @@ public class FileKey
       return new FileKey(packageName, rawName, kind);
    }
 
+   public static FileKey newName(String packageName, String name) throws IOException
+   {
+      JavaFileObject.Kind kind;
+      if (name.endsWith(".java"))
+      {
+         kind = JavaFileObject.Kind.SOURCE;
+      }
+      else if (name.endsWith(".class"))
+      {
+         kind = JavaFileObject.Kind.CLASS;
+      }
+      else
+      {
+         kind = JavaFileObject.Kind.OTHER;
+      }
+      String rawName = name.substring(0, name.length() - kind.extension.length());
+      return new FileKey(packageName, rawName, kind);
+   }
+
    /** . */
    public final Iterable<String> packageNames;
 

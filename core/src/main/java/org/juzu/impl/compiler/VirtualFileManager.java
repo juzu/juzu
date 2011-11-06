@@ -27,6 +27,7 @@ import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
@@ -37,7 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class VirtualFileManager extends ForwardingJavaFileManager<StandardJavaFileManager>
+class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
 {
 
    /** . */
@@ -47,20 +48,30 @@ class VirtualFileManager extends ForwardingJavaFileManager<StandardJavaFileManag
    final FileManager<?> classOutput;
 
    /** . */
+   final FileManager<?> classPath;
+
+   /** . */
    final FileManager<?> sourceOutput;
 
-   public <SP, CO, SO> VirtualFileManager(
-      ReadFileSystem<SP> sourcePath,
-      StandardJavaFileManager fileManager,
-      ReadWriteFileSystem<CO> classOutput,
-      ReadWriteFileSystem<SO> sourceOutput)
+   public VirtualFileManager(
+      JavaFileManager fileManager,
+      ReadFileSystem<?> sourcePath,
+      ReadFileSystem<?> classPath,
+      ReadWriteFileSystem<?> sourceOutput,
+      ReadWriteFileSystem<?> classOutput)
    {
       super(fileManager);
 
       //
-      this.sourcePath = new FileManager<SP>(sourcePath);
-      this.classOutput = new FileManager<CO>(classOutput);
-      this.sourceOutput = new FileManager<SO>(sourceOutput);
+      this.sourcePath = safeWrap(sourcePath);
+      this.classPath = safeWrap(classPath);
+      this.classOutput = safeWrap(classOutput);
+      this.sourceOutput = safeWrap(sourceOutput);
+   }
+
+   private <P> FileManager<P> safeWrap(ReadFileSystem<P> fs)
+   {
+      return fs != null ? new FileManager<P>(fs) : null;
    }
 
    private FileManager<?> getFiles(Location location)
@@ -75,6 +86,8 @@ class VirtualFileManager extends ForwardingJavaFileManager<StandardJavaFileManag
                return sourceOutput;
             case CLASS_OUTPUT:
                return classOutput;
+            case CLASS_PATH:
+               return classPath;
          }
       }
       return null;
