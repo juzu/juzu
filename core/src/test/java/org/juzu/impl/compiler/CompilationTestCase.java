@@ -46,7 +46,6 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -299,6 +298,14 @@ public class CompilationTestCase extends AbstractTestCase
    public static class ReadResource extends AbstractProcessor
    {
 
+      /** . */
+      private final StandardLocation location;
+
+      public ReadResource(StandardLocation location)
+      {
+         this.location = location;
+      }
+
       @Override
       public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
       {
@@ -319,13 +326,13 @@ public class CompilationTestCase extends AbstractTestCase
             Filer filer = processingEnv.getFiler();
 
             // Read an existing resource
-            FileObject foo = filer.getResource(StandardLocation.SOURCE_OUTPUT, "", "foo.txt");
+            FileObject foo = filer.getResource(location, "", "foo.txt");
             assertNotNull(foo);
             String s = Tools.read(foo.openInputStream());
             assertEquals("foo_value", s);
 
             // Now we overwrite the resource
-            foo = filer.createResource(StandardLocation.SOURCE_OUTPUT, "", "foo.txt");
+            foo = filer.createResource(location, "", "foo.txt");
             OutputStream out = foo.openOutputStream();
             out.write("new_foo_value".getBytes());
             out.close();
@@ -333,7 +340,7 @@ public class CompilationTestCase extends AbstractTestCase
             // Read an non existing resource
             // JDK 6 strange behavior / bug happens here, we should get bar=null but we don't
             // JDK 7 should return null
-            FileObject bar = filer.getResource(StandardLocation.SOURCE_OUTPUT, "", "bar.txt");
+            FileObject bar = filer.getResource(location, "", "bar.txt");
             assertNotNull(bar);
             try
             {
@@ -344,7 +351,7 @@ public class CompilationTestCase extends AbstractTestCase
             }
 
             // Now create new resource
-            foo = filer.createResource(StandardLocation.SOURCE_OUTPUT, "", "juu.txt");
+            foo = filer.createResource(location, "", "juu.txt");
             out = foo.openOutputStream();
             out.write("juu_value".getBytes());
             out.close();
@@ -353,29 +360,54 @@ public class CompilationTestCase extends AbstractTestCase
       }
    }
 
-   public void testResource() throws IOException
+   public void testSourceOutputResource() throws IOException
+   {
+      testResource(StandardLocation.SOURCE_OUTPUT);
+   }
+
+   public void testClassOutputResource() throws IOException
+   {
+      testResource(StandardLocation.CLASS_OUTPUT);
+   }
+
+   private void testResource(StandardLocation location) throws IOException
    {
       DiskFileSystem fs = diskFS("compiler", "missingresource");
       RAMFileSystem sourceOutput = new RAMFileSystem();
-      sourceOutput.addFile(sourceOutput.getRoot(), "foo.txt").update("foo_value");
       RAMFileSystem classOutput = new RAMFileSystem();
+      RAMFileSystem output;
+      switch (location)
+      {
+         case SOURCE_OUTPUT:
+            output = sourceOutput;
+            break;
+         case CLASS_OUTPUT:
+            output = classOutput;
+            break;
+         default:
+            throw failure("was not expecting " + location);
+      }
 
       //
+      output.addFile(output.getRoot(), "foo.txt").update("foo_value");
       Compiler<File, RAMPath> compiler = new Compiler<File, RAMPath>(
          fs,
          sourceOutput,
          classOutput);
-      compiler.addAnnotationProcessor(new ReadResource());
+      compiler.addAnnotationProcessor(new ReadResource(location));
 
       //
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
 
       //
-      RAMDir root = sourceOutput.getRoot();
+      RAMDir root = output.getRoot();
       Map<String, RAMFile> children = new HashMap<String, RAMFile>();
       for (RAMPath path : root.getChildren())
       {
-         children.put(path.getName(), (RAMFile)path);
+         if (path instanceof RAMFile)
+         {
+            children.put(path.getName(), (RAMFile)path);
+         }
       }
       assertEquals(2, children.size());
       RAMFile foo = children.get("foo.txt");
