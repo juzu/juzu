@@ -37,7 +37,6 @@ import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
-import org.juzu.metadata.TemplateDescriptor;
 import org.juzu.request.ActionContext;
 import org.juzu.request.ApplicationContext;
 import org.juzu.request.MimeContext;
@@ -48,7 +47,6 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -83,6 +81,7 @@ import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
+@javax.annotation.processing.SupportedOptions("foobar")
 @javax.annotation.processing.SupportedAnnotationTypes({
 
    "org.juzu.View","org.juzu.Action","org.juzu.Resource",
@@ -128,7 +127,7 @@ public class MainProcessor extends AbstractProcessor
    private Model model;
 
    /** . */
-   private Filer filer;
+   Filer filer;
 
    /** . */
    private Map<String, TemplateProvider> providers;
@@ -136,6 +135,14 @@ public class MainProcessor extends AbstractProcessor
    static Element get(ElementHandle handle)
    {
       return handle.get(env.get());
+   }
+
+   /** . */
+   private final static ThreadLocal<StringBuilder> log = new ThreadLocal<StringBuilder>();
+
+   protected static void log(String msg)
+   {
+      log.get().append(msg).append("\n");
    }
 
    @Override
@@ -161,8 +168,13 @@ public class MainProcessor extends AbstractProcessor
       }
 
       //
+      this.log.set(new StringBuilder());
       this.providers = providers;
       this.filer = processingEnv.getFiler();
+
+      //
+      String options = processingEnv.getOptions().toString();
+      log("using processing nev " + processingEnv.getClass().getName());
    }
 
    @Override
@@ -187,11 +199,57 @@ public class MainProcessor extends AbstractProcessor
             {
                msg = "Exception : " + e.getClass().getName();
             }
+            log(msg);
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
          }
       }
       finally
       {
+         if (roundEnv.processingOver())
+         {
+            String t = log.get().toString();
+            log.set(null);
+
+            //
+            if  (t.length() > 0)
+            {
+               String s = null;
+               InputStream in = null;
+               try
+               {
+                  FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "processor.log");
+                  in = file.openInputStream();
+                  s = Tools.read(in, "UTF-8");
+               }
+               catch (Exception ignore)
+               {
+               }
+               finally
+               {
+                  Tools.safeClose(in);
+               }
+               OutputStream out = null;
+               try
+               {
+                  FileObject file = filer.createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "processor.log");
+                  out = file.openOutputStream();
+                  if (s != null)
+                  {
+                     out.write(s.getBytes("UTF-8"));
+                  }
+                  out.write(t.getBytes("UTF-8"));
+               }
+               catch (Exception ignore)
+               {
+               }
+               finally
+               {
+                  Tools.safeClose(out);
+               }
+            }
+         }
+
+         //
          env.set(null);
       }
 
@@ -613,7 +671,7 @@ public class MainProcessor extends AbstractProcessor
                TemplateCompiler compiler;
                try
                {
-                  compiler = new TemplateCompiler(application, foo, processingEnv);
+                  compiler = new TemplateCompiler(application, foo, this);
 
                   //
                   compiler.resolveTemplate(path);
@@ -649,7 +707,7 @@ public class MainProcessor extends AbstractProcessor
                         classWriter.append("import ").append(Tools.getImport(Path.class)).append(";\n");
                         classWriter.append("import ").append(Tools.getImport(Export.class)).append(";\n");
                         classWriter.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-                        classWriter.append("import ").append(Tools.getImport(Inject.class)).append(";\n");
+                        classWriter.append("import javax.inject.Inject;\n");
                         classWriter.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
                         classWriter.append("@Generated({})\n");
                         classWriter.append("@Export\n");

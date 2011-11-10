@@ -27,7 +27,6 @@ import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.utils.Spliterator;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
@@ -45,16 +44,23 @@ public class TemplateCompiler extends TemplateCompilationContext
    private Foo foo;
 
    /** . */
-   private final ProcessingEnvironment env;
+   private final MainProcessor processor;
 
    /** . */
    private final ArrayList<TemplateModel> added;
 
-   public TemplateCompiler(ApplicationModel application, Foo foo, ProcessingEnvironment env)
+   /**
+    * We need two locations as the {@link StandardLocation#SOURCE_PATH} is not supported in eclipse ide
+    * (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=341298), however the {@link StandardLocation#CLASS_OUTPUT}
+    * seems to work fairly well.
+    */
+   private static final StandardLocation[] locations = { StandardLocation.SOURCE_PATH, StandardLocation.CLASS_OUTPUT};
+
+   public TemplateCompiler(ApplicationModel application, Foo foo, MainProcessor processor)
    {
       this.application = application;
       this.foo = foo;
-      this.env = env;
+      this.processor = processor;
       this.added = new ArrayList<TemplateModel>();
    }
 
@@ -94,15 +100,33 @@ public class TemplateCompiler extends TemplateCompilationContext
          FQN stubFQN = new FQN(fqn);
 
          // Get source
-         CharSequence content;
-         try
+         CharSequence content = null;
+         Exception exception = null;
+         for (StandardLocation location : locations)
          {
-            FileObject file = env.getFiler().getResource(StandardLocation.SOURCE_PATH, stubFQN.getPackageName(), stubFQN.getSimpleName() + "." + foo.getExtension());
-            content = file.getCharContent(false).toString();
+            try
+            {
+               String pkg = stubFQN.getPackageName();
+               String relativeName = stubFQN.getSimpleName() + "." + foo.getExtension();
+               MainProcessor.log("Attempt to obtain template " + pkg + " " + relativeName + " from " + location.getName());
+               FileObject resource = processor.filer.getResource(location, pkg, relativeName);
+               content = resource.getCharContent(true);
+               if (content != null)
+               {
+                  MainProcessor.log("Obtained template e " + resource.toUri() + " from " + location.getName());
+                  break;
+               }
+            }
+            catch (Exception e)
+            {
+               exception = e;
+            }
          }
-         catch (IOException e)
+
+         //
+         if (content == null)
          {
-            throw new CompilationException(foo.getOrigin().get(env), "Could not obtain template " + stubFQN, e);
+            throw new CompilationException(processor.get(foo.getOrigin()), "Could not obtain template " + stubFQN, exception);
          }
 
          // Parse to AST
@@ -113,7 +137,7 @@ public class TemplateCompiler extends TemplateCompilationContext
          }
          catch (ParseException e)
          {
-            throw new CompilationException(foo.getOrigin().get(env), "Could not parse template " + fqn);
+            throw new CompilationException(processor.get(foo.getOrigin()), "Could not parse template " + fqn);
          }
 
          // Add template to application
@@ -126,7 +150,7 @@ public class TemplateCompiler extends TemplateCompilationContext
          }
          catch (IOException e)
          {
-            throw new CompilationException(foo.getOrigin().get(env), "Could not process template " + fqn);
+            throw new CompilationException(processor.get(foo.getOrigin()), "Could not process template " + fqn);
          }
 
          //
