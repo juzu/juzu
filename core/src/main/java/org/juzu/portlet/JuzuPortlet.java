@@ -221,11 +221,11 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       props.load(in);
 
       // Get the application name
-      String appName = config.getInitParameter("juzu.app_name").trim();
+      String appName = config.getInitParameter("juzu.app_name");
       String fqn = null;
       if (appName != null)
       {
-         fqn = props.getProperty(appName);
+         fqn = props.getProperty(appName.trim());
       }
       else
       {
