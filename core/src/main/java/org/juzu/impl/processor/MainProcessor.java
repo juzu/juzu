@@ -515,7 +515,6 @@ public class MainProcessor extends AbstractProcessor
                   writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
                   writer.append("import ").append(Tools.getImport(Response.Render.class)).append(";\n");
                   writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
-                  writer.append("import ").append(application.fqn.getFullName()).append(";\n");
 
                   // Open class
                   writer.append("public class ").append(controller.fqn.getSimpleName()).append("_ extends ").append(CONTROLLER_DESCRIPTOR).append(" {\n");
@@ -539,7 +538,7 @@ public class MainProcessor extends AbstractProcessor
                   for (MethodModel method : controller.methods)
                   {
                      // Method constant
-                     writer.append("public static final ").append(CONTROLLER_METHOD).append(" ").append(method.id).append(" = ");
+                     writer.append("private static final ").append(CONTROLLER_METHOD).append(" ").append(method.id).append(" = ");
                      writer.append("new ").append(CONTROLLER_METHOD).append("(");
                      writer.append("\"").append(method.id).append("\",");
                      writer.append(PHASE).append(".").append(method.phase.name()).append(",");
@@ -856,16 +855,6 @@ public class MainProcessor extends AbstractProcessor
 
          // Imports
          writer.append("import ").append(Tools.getImport(ApplicationDescriptor.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(ControllerMethod.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(ControllerParameter.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(Tools.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(URLBuilder.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(TemplateDescriptor.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
 
          // Open class
          writer.append("public class ").append(application.fqn.getSimpleName()).append(" extends ").append(APPLICATION_DESCRIPTOR).append(" {\n");
