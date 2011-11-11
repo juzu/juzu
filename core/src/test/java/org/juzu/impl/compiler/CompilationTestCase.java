@@ -122,10 +122,10 @@ public class CompilationTestCase extends AbstractTestCase
    public void _testChange() throws Exception
    {
       RAMFileSystem ramFS = new RAMFileSystem();
-      RAMDir root = ramFS.getRoot();
-      RAMDir foo = root.addDir("foo");
-      RAMFile a = foo.addFile("A.java").update("package foo; public class A {}");
-      RAMFile b = foo.addFile("B.java").update("package foo; public class B {}");
+      RAMPath root = ramFS.getRoot();
+      RAMPath foo = root.addDir("foo");
+      RAMPath a = foo.addFile("A.java").update("package foo; public class A {}");
+      RAMPath b = foo.addFile("B.java").update("package foo; public class B {}");
 
       Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
@@ -292,7 +292,7 @@ public class CompilationTestCase extends AbstractTestCase
       RAMFile a = incremental.addFile("A.java").update("package compiler.incremental; public class A {}");
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile("compiler/incremental/A.java"));
       assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
-      a.remove();
+      a.del();
 
       //
       RAMFile b = incremental.addFile("B.java").update("package compiler.incremental; public class B extends A {}");
@@ -407,7 +407,7 @@ public class CompilationTestCase extends AbstractTestCase
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
 
       //
-      RAMDir root = output.getRoot();
+      RAMPath root = output.getRoot();
       Map<String, RAMFile> children = new HashMap<String, RAMFile>();
       for (RAMPath path : root.getChildren())
       {

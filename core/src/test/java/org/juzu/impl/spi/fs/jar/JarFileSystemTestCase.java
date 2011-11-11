@@ -20,7 +20,7 @@
 package org.juzu.impl.spi.fs.jar;
 
 import junit.framework.TestCase;
-import org.juzu.impl.spi.fs.Visitor;
+import org.juzu.impl.fs.Visitor;
 
 import java.io.File;
 import java.io.IOException;

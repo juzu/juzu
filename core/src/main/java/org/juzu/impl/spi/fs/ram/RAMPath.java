@@ -19,6 +19,8 @@
 
 package org.juzu.impl.spi.fs.ram;
 
+import org.juzu.impl.utils.Content;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class RAMPath
 {
@@ -29,17 +31,13 @@ public abstract class RAMPath
    /** . */
    private RAMDir parent;
 
-   /** . */
-   private long lastModified;
-
    public RAMPath()
    {
       this.name = "";
       this.parent = null;
-      this.lastModified = System.currentTimeMillis();
    }
 
-   public RAMPath(RAMDir parent, String name)
+   RAMPath(RAMDir parent, String name)
    {
       if (parent == null)
       {
@@ -57,24 +55,36 @@ public abstract class RAMPath
       //
       this.name = name;
       this.parent = parent;
-      this.lastModified = System.currentTimeMillis();
    }
 
-   public String getName()
+   public abstract RAMDir addDir(String name);
+
+   public abstract RAMFile addFile(String name);
+
+   public final RAMFile update(String content)
+   {
+      return update(new Content(System.currentTimeMillis(), content));
+   }
+
+   public abstract RAMFile update(Content content);
+
+   public abstract RAMPath getChild(String name);
+
+   public abstract Iterable<RAMPath> getChildren();
+
+   public abstract long getLastModified();
+
+   public final String getName()
    {
       return name;
    }
 
-   public RAMDir getParent()
+   public final RAMDir getParent()
    {
       return parent;
    }
 
-   public abstract long getLastModified();
-
-   public abstract void touch();
-
-   public void remove()
+   public final void del()
    {
       if (name.length() == 0)
       {

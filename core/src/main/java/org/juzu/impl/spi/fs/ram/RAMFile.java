@@ -38,21 +38,10 @@ public class RAMFile extends RAMPath
       this.content = new Content(System.currentTimeMillis(), "");
    }
 
-   public RAMFile update(String content)
-   {
-      return update(new Content(System.currentTimeMillis(), content));
-   }
-
    @Override
    public long getLastModified()
    {
       return content.getLastModified();
-   }
-
-   @Override
-   public void touch()
-   {
-      content.touch();
    }
 
    public RAMFile update(Content content)
@@ -67,6 +56,30 @@ public class RAMFile extends RAMPath
 
       //
       return this;
+   }
+
+   @Override
+   public RAMDir addDir(String name)
+   {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public RAMFile addFile(String name)
+   {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public RAMPath getChild(String name)
+   {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public Iterable<RAMPath> getChildren()
+   {
+      throw new UnsupportedOperationException();
    }
 
    public Content getContent() throws IOException

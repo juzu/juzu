@@ -20,7 +20,6 @@
 package org.juzu.impl.fs;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
-import org.juzu.impl.spi.fs.Visitor;
 
 import java.io.IOException;
 import java.util.HashMap;

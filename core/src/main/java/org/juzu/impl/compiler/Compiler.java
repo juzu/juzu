@@ -22,9 +22,9 @@ package org.juzu.impl.compiler;
 import org.juzu.impl.compiler.file.FileKey;
 import org.juzu.impl.compiler.file.FileManager;
 import org.juzu.impl.compiler.file.JavaFileObjectImpl;
+import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
-import org.juzu.impl.spi.fs.Visitor;
 import org.juzu.impl.utils.Spliterator;
 import org.juzu.text.Location;
 

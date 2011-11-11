@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.fs;
 
+import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.utils.Content;
 
 import java.io.File;
@@ -37,6 +38,78 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class ReadFileSystem<P>
 {
    
+   public static <S, D> void copy(ReadFileSystem<S> src, ReadWriteFileSystem<D> dst) throws IOException
+   {
+      ReadFileSystem.copy(src, src.getRoot(), dst, dst.getRoot());
+   }
+
+   private static <S, D> int kind(ReadFileSystem<S> src, S srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
+   {
+      return (src.isDir(srcPath) ? 1 : 0) + (dst.isDir(dstPath) ? 2 : 0);
+   }
+
+   public static <S, D> void copy(ReadFileSystem<S> src, S srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
+   {
+      int kind = kind(src, srcPath, dst, dstPath);
+
+      //
+      switch (kind)
+      {
+         case 0:
+         {
+            dst.setContent(dstPath, src.getContent(srcPath));
+            break;
+         }
+         case 3:
+         {
+            for (Iterator<D> i =  dst.getChildren(dstPath);i.hasNext();)
+            {
+               D next = i.next();
+               String name = dst.getName(next);
+               S a = src.getChild(srcPath, name);
+               if (a == null)
+               {
+                  i.remove();
+               }
+               else
+               {
+                  switch (kind(src, a, dst, next))
+                  {
+                     case 1:
+                     case 2:
+                        i.remove();
+                        break;
+                     default:
+                        copy(src, a, dst, next);
+                        break;
+                  }
+               }
+            }
+            for (Iterator<S> i = src.getChildren(srcPath);i.hasNext();)
+            {
+               S next = i.next();
+               String name = src.getName(next);
+               D a = dst.getChild(dstPath, name);
+               if (a == null)
+               {
+                  if (src.isDir(next))
+                  {
+                     a = dst.addDir(dstPath, name);
+                  }
+                  else
+                  {
+                     a = dst.addFile(dstPath, name);
+                  }
+               }
+               copy(src, next, dst, a);
+            }
+            break;
+         }
+         default:
+            throw new UnsupportedOperationException("Todo " + kind);
+      }
+   }
+
    public final void dump(Appendable appendable) throws IOException
    {
       dump(getRoot(), appendable);
@@ -276,11 +349,11 @@ public abstract class ReadFileSystem<P>
 
    public abstract boolean equals(P left, P right);
 
+   public abstract String getName(P path) throws IOException;
+
    public abstract P getRoot() throws IOException;
 
    public abstract P getParent(P path) throws IOException;
-
-   public abstract String getName(P path) throws IOException;
 
    public abstract Iterator<P> getChildren(P dir) throws IOException;
 
@@ -301,7 +374,7 @@ public abstract class ReadFileSystem<P>
     *
     * @param path the path
     * @return the file system object
-    * @throws IOException
+    * @throws IOException any IO exception
     */
    public abstract File getFile(P path) throws IOException;
 

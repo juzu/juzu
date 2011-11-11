@@ -27,7 +27,6 @@ import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.utils.Tools;
-import org.juzu.test.CompilerHelper;
 
 import java.util.Collections;
 import java.util.Properties;
@@ -65,10 +64,10 @@ public class MainProcessorTestCase extends TestCase
    public void testIncremental() throws Exception
    {
       RAMFileSystem sourcePath = new RAMFileSystem();
-      RAMDir incremental = sourcePath.getRoot().addDir("compilation").addDir("incremental");
-      RAMFile a = incremental.addFile("A.java");
+      RAMPath incremental = sourcePath.getRoot().addDir("compilation").addDir("incremental");
+      RAMPath a = incremental.addFile("A.java");
       a.update("package compilation.incremental; public class A { @javax.inject.Inject @org.juzu.Path(\"index.gtmpl\") org.juzu.template.Template template;\n @org.juzu.View public void index() { } }");
-      RAMFile index = incremental.addDir("templates").addFile("index.gtmpl");
+      RAMPath index = incremental.addDir("templates").addFile("index.gtmpl");
 
       //
       RAMFileSystem sourceOutput = new RAMFileSystem();
@@ -88,8 +87,8 @@ public class MainProcessorTestCase extends TestCase
 */
 
       // Update
-      a.remove();
-      RAMFile packageInfo = incremental.addFile("package-info.java");
+      a.del();
+      RAMPath packageInfo = incremental.addFile("package-info.java");
       packageInfo.update("@org.juzu.Application package compilation.incremental;");
 
       //
@@ -117,8 +116,8 @@ public class MainProcessorTestCase extends TestCase
    public void testIncremental2() throws Exception
    {
       RAMFileSystem sourcePath = new RAMFileSystem();
-      RAMDir incremental = sourcePath.getRoot().addDir("compilation").addDir("incremental");
-      RAMFile a = incremental.addFile("A.java");
+      RAMPath incremental = sourcePath.getRoot().addDir("compilation").addDir("incremental");
+      RAMPath a = incremental.addFile("A.java");
       a.update("package compilation.incremental; public class A { @javax.inject.Inject @org.juzu.Path(\"index.gtmpl\") org.juzu.template.Template template;\n @org.juzu.View public void index() { } }");
 
       //
@@ -139,8 +138,8 @@ public class MainProcessorTestCase extends TestCase
 */
 
       // Update
-      a.remove();
-      RAMFile packageInfo = incremental.addFile("package-info.java");
+      a.del();
+      RAMPath packageInfo = incremental.addFile("package-info.java");
       packageInfo.update("@org.juzu.Application package compilation.incremental;");
 
       //
@@ -157,7 +156,7 @@ public class MainProcessorTestCase extends TestCase
 */
 
       //
-      RAMFile index = incremental.addDir("templates").addFile("index.gtmpl");
+      RAMPath index = incremental.addDir("templates").addFile("index.gtmpl");
       compiler = new Compiler<RAMPath, RAMPath>(sourcePath, classOutput, sourceOutput,classOutput);
       compiler.addAnnotationProcessor(new MainProcessor());
       assertEquals(0, compiler.compile().size());

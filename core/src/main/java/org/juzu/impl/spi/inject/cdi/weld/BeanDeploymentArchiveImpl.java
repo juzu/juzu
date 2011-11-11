@@ -26,8 +26,8 @@ import org.jboss.weld.bootstrap.spi.BeansXml;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
 import org.jboss.weld.resources.ClassLoaderResourceLoader;
 import org.jboss.weld.resources.spi.ResourceLoader;
+import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
-import org.juzu.impl.spi.fs.Visitor;
 
 import java.io.IOException;
 import java.net.URL;

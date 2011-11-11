@@ -19,6 +19,8 @@
 
 package org.juzu.impl.spi.fs.ram;
 
+import org.juzu.impl.utils.Content;
+
 import java.util.LinkedHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -93,15 +95,15 @@ public class RAMDir extends RAMPath
       return lastModified;
    }
 
-   @Override
-   public void touch()
-   {
-      lastModified = System.currentTimeMillis();
-   }
-
    public RAMPath getChild(String name)
    {
       return children.get(name);
+   }
+
+   @Override
+   public RAMFile update(Content content)
+   {
+      throw new UnsupportedOperationException();
    }
 
    public Iterable<RAMPath> getChildren()

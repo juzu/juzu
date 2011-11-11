@@ -244,4 +244,14 @@ public class Tools
       Collections.addAll(set, elements);
       return set;
    }
+
+   public static <E> ArrayList<E> list(Iterable<E> elements)
+   {
+      ArrayList<E> list = new ArrayList<E>();
+      for (E elt : elements)
+      {
+         list.add(elt);
+      }
+      return list;
+   }
 }

@@ -19,7 +19,6 @@
 
 package org.juzu.impl.fs;
 
-import junit.framework.TestCase;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
@@ -57,7 +56,7 @@ public class ScannerTestCase extends AbstractTestCase
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
 
       //
-      bar.remove();
+      bar.del();
       waitForOneMillis();
       assertEquals(Collections.singletonMap("foo/bar.txt", Change.REMOVE), scanner.scan());
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());

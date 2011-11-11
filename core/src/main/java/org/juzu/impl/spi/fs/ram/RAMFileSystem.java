@@ -46,19 +46,19 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
    @Override
    public RAMDir addDir(RAMPath parent, String name) throws IOException
    {
-      return ((RAMDir)parent).addDir(name);
+      return parent.addDir(name);
    }
 
    @Override
    public RAMFile addFile(RAMPath parent, String name) throws IOException
    {
-      return ((RAMDir)parent).addFile(name);
+      return parent.addFile(name);
    }
 
    @Override
    public void setContent(RAMPath file, Content content) throws IOException
    {
-      ((RAMFile)file).update(content);
+      file.update(content);
    }
 
    public boolean equals(RAMPath left, RAMPath right)
@@ -83,7 +83,7 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
 
    public Iterator<RAMPath> getChildren(RAMPath dir) throws IOException
    {
-      return ((RAMDir)dir).children.values().iterator();
+      return dir.getChildren().iterator();
    }
 
    public RAMPath getChild(RAMPath dir, String name) throws IOException
