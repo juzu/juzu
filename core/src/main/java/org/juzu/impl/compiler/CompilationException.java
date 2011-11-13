@@ -26,50 +26,60 @@ public class CompilationException extends RuntimeException
 {
 
    /** . */
+   private final Enum<?> code;
+
+   /** . */
+   private Object[] arguments;
+
+   /** . */
    private final Element element;
 
-   public CompilationException(String message)
+   public CompilationException(Element element, Enum<?> code, Object... arguments)
    {
-      super(message);
+      this.code = code;
+      this.element = element;
+      this.arguments = arguments;
+   }
 
-      //
+   public CompilationException(Enum<?> code, Object... arguments)
+   {
+      this.code = code;
+      this.arguments = arguments;
       this.element = null;
    }
 
-   public CompilationException(String message, Throwable cause)
-   {
-      super(message, cause);
-
-      //
-      this.element = null;
-   }
-
-   public CompilationException(Throwable cause)
+   public CompilationException(Throwable cause, Enum<?> code, Object... arguments)
    {
       super(cause);
 
       //
+      this.code = code;
       this.element = null;
+      this.arguments = arguments;
    }
 
-   public CompilationException(Element element, String message)
+   public CompilationException(Throwable cause, Element element, Enum<?> code, Object... arguments)
    {
-      super(message);
+      super(cause);
 
       //
+      this.code = code;
       this.element = element;
-   }
-
-   public CompilationException(Element element, String message, Throwable cause)
-   {
-      super(message, cause);
-
-      //
-      this.element = element;
+      this.arguments = arguments;
    }
 
    public Element getElement()
    {
       return element;
+   }
+
+   public Enum<?> getCode()
+   {
+      return code;
+   }
+
+   public Object[] getArguments()
+   {
+      return arguments;
    }
 }

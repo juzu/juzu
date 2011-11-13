@@ -126,7 +126,7 @@ public class TemplateCompiler extends TemplateCompilationContext
          //
          if (content == null)
          {
-            throw new CompilationException(processor.get(foo.getOrigin()), "Could not obtain template " + stubFQN, exception);
+            throw new CompilationException(exception, processor.get(foo.getOrigin()), ErrorCode.TEMPLATE_NOT_FOUND, stubFQN);
          }
 
          // Parse to AST
@@ -137,21 +137,14 @@ public class TemplateCompiler extends TemplateCompilationContext
          }
          catch (ParseException e)
          {
-            throw new CompilationException(processor.get(foo.getOrigin()), "Could not parse template " + fqn);
+            throw new CompilationException(processor.get(foo.getOrigin()), ErrorCode.TEMPLATE_SYNTAX_ERROR, fqn);
          }
 
          // Add template to application
          application.templates.put(path, template = new TemplateModel(foo, templateAST, stubFQN));
 
          // Process template
-         try
-         {
-            process(templateAST);
-         }
-         catch (IOException e)
-         {
-            throw new CompilationException(processor.get(foo.getOrigin()), "Could not process template " + fqn);
-         }
+         process(templateAST);
 
          //
          added.add(template);

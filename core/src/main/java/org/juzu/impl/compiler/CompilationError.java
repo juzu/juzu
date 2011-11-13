@@ -22,10 +22,17 @@ package org.juzu.impl.compiler;
 import org.juzu.text.Location;
 
 import java.io.File;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class CompilationError
 {
+
+   /** . */
+   private final String code;
+
+   /** . */
+   private final List<String> arguments;
 
    /** . */
    private final String source;
@@ -39,12 +46,24 @@ public class CompilationError
    /** . */
    private final String message;
 
-   public CompilationError(String source, File sourceFile, Location location, String message)
+   public CompilationError(String code, List<String> arguments, String source, File sourceFile, Location location, String message)
    {
+      this.code = code;
+      this.arguments = arguments;
       this.source = source;
       this.sourceFile = sourceFile;
       this.location = location;
       this.message = message;
+   }
+
+   public String getCode()
+   {
+      return code;
+   }
+
+   public List<String> getArguments()
+   {
+      return arguments;
    }
 
    public String getSource()

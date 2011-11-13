@@ -24,6 +24,7 @@ import org.juzu.Phase;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.application.InternalApplicationContext;
+import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.template.TemplateCompilationContext;
@@ -43,7 +44,6 @@ import org.juzu.request.MimeContext;
 import org.juzu.template.Template;
 
 import javax.annotation.Generated;
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -56,7 +56,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
@@ -64,7 +63,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,7 +89,7 @@ import java.util.regex.Pattern;
    "org.juzu.Path"
 
 })
-public class MainProcessor extends AbstractProcessor
+public class MainProcessor extends BaseProcessor
 {
 
    /** . */
@@ -137,19 +135,9 @@ public class MainProcessor extends AbstractProcessor
       return handle.get(env.get());
    }
 
-   /** . */
-   private final static ThreadLocal<StringBuilder> log = new ThreadLocal<StringBuilder>();
-
-   protected static void log(String msg)
-   {
-      log.get().append(msg).append("\n");
-   }
-
    @Override
-   public void init(ProcessingEnvironment processingEnv)
+   protected void doInit(ProcessingEnvironment processingEnv)
    {
-      super.init(processingEnv);
-
       // Discover the template providers
       ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, TemplateProvider.class.getClassLoader());
       Map<String, TemplateProvider> providers = new HashMap<String, TemplateProvider>();
@@ -168,7 +156,6 @@ public class MainProcessor extends AbstractProcessor
       }
 
       //
-      this.log.set(new StringBuilder());
       this.providers = providers;
       this.filer = processingEnv.getFiler();
 
@@ -178,158 +165,82 @@ public class MainProcessor extends AbstractProcessor
    }
 
    @Override
-   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
+   protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
    {
-      env.set(processingEnv);
       try
       {
-         doProcess(annotations, roundEnv);
-      }
-      catch (Exception e)
-      {
-         if (e instanceof CompilationException)
-         {
-            CompilationException ce = (CompilationException)e;
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, ce.getMessage(), ce.getElement());
-         }
-         else
-         {
-            String msg = e.getMessage();
-            if (msg == null)
-            {
-               msg = "Exception : " + e.getClass().getName();
-            }
-            log(msg);
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg);
-         }
-      }
-      finally
-      {
-         if (roundEnv.processingOver())
-         {
-            String t = log.get().toString();
-            log.set(null);
+         env.set(processingEnv);
 
-            //
-            if  (t.length() > 0)
+         //
+         if (!roundEnv.errorRaised())
+         {
+            if (roundEnv.processingOver())
             {
-               String s = null;
-               InputStream in = null;
+               // Emit templates
+               emitTemplates();
+
+               // Emit config
+               emitConfig();
+
+               // Passivate model
+               ObjectOutputStream out = null;
                try
                {
-                  FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "processor.log");
-                  in = file.openInputStream();
-                  s = Tools.read(in, "UTF-8");
+                  FileObject file = filer.createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "model.ser");
+                  out = new ObjectOutputStream(file.openOutputStream());
+                  out.writeObject(model);
+                  model = null;
                }
-               catch (Exception ignore)
+               catch (IOException e)
                {
-               }
-               finally
-               {
-                  Tools.safeClose(in);
-               }
-               OutputStream out = null;
-               try
-               {
-                  FileObject file = filer.createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "processor.log");
-                  out = file.openOutputStream();
-                  if (s != null)
-                  {
-                     out.write(s.getBytes("UTF-8"));
-                  }
-                  out.write(t.getBytes("UTF-8"));
-               }
-               catch (Exception ignore)
-               {
+                  e.printStackTrace();
                }
                finally
                {
                   Tools.safeClose(out);
                }
             }
-         }
-
-         //
-         env.set(null);
-      }
-
-      //
-      return false;
-   }
-
-   private void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
-   {
-      if (!roundEnv.errorRaised())
-      {
-         if (roundEnv.processingOver())
-         {
-            // Emit templates
-            emitTemplates();
-
-            // Emit config
-            emitConfig();
-
-            // Passivate model
-            ObjectOutputStream out = null;
-            try
+            else
             {
-               FileObject file = filer.createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "model.ser");
-               out = new ObjectOutputStream(file.openOutputStream());
-               out.writeObject(model);
-               model = null;
-            }
-            catch (IOException e)
-            {
-               e.printStackTrace();
-            }
-            finally
-            {
-               Tools.safeClose(out);
-            }
-         }
-         else
-         {
-            if (model == null)
-            {
-               InputStream in = null;
-               try
+               if (model == null)
                {
-                  FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "model.ser");
-                  in = file.openInputStream();
-                  ObjectInputStream ois = new ObjectInputStream(in);
-                  model = (Model)ois.readObject();
-               }
-               catch (Exception e)
-               {
-                  model = new Model();
-               }
-               finally
-               {
-                  Tools.safeClose(in);
-               }
-            }
-
-            //
-            for (TypeElement annotationElt : annotations)
-            {
-               for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt))
-               {
-                  if (annotatedElt.getAnnotation(Generated.class) == null)
+                  InputStream in = null;
+                  try
                   {
-                     for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors())
+                     FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "model.ser");
+                     in = file.openInputStream();
+                     ObjectInputStream ois = new ObjectInputStream(in);
+                     model = (Model)ois.readObject();
+                  }
+                  catch (Exception e)
+                  {
+                     model = new Model();
+                  }
+                  finally
+                  {
+                     Tools.safeClose(in);
+                  }
+               }
+
+               //
+               for (TypeElement annotationElt : annotations)
+               {
+                  for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt))
+                  {
+                     if (annotatedElt.getAnnotation(Generated.class) == null)
                      {
-                        if (annotationMirror.getAnnotationType().asElement().equals(annotationElt))
+                        for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors())
                         {
-                           String annotationName = annotationElt.getSimpleName().toString();
-                           Map<String, Object> annotationValues = new HashMap<String, Object>();
-                           for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet())
+                           if (annotationMirror.getAnnotationType().asElement().equals(annotationElt))
                            {
-                              String m = entry.getKey().getSimpleName().toString();
-                              Object value = entry.getValue().getValue();
-                              annotationValues.put(m, value);
-                           }
-                           try
-                           {
+                              String annotationName = annotationElt.getSimpleName().toString();
+                              Map<String, Object> annotationValues = new HashMap<String, Object>();
+                              for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet())
+                              {
+                                 String m = entry.getKey().getSimpleName().toString();
+                                 Object value = entry.getValue().getValue();
+                                 annotationValues.put(m, value);
+                              }
                               String annotationFQN = annotationElt.getQualifiedName().toString();
                               if (annotationFQN.equals("org.juzu.View") || annotationFQN.equals("org.juzu.Action") || annotationFQN.equals("org.juzu.Resource"))
                               {
@@ -343,24 +254,24 @@ public class MainProcessor extends AbstractProcessor
                               {
                                  processApplication(annotationName, annotationValues, annotatedElt);
                               }
+                              break;
                            }
-                           catch (Exception e)
-                           {
-                              throw new CompilationException(annotatedElt, "Cannot process", e);
-                           }
-                           break;
                         }
                      }
                   }
                }
+
+               //
+               resolveControllers();
+
+               //
+               resolveTemplates();
             }
-
-            //
-            resolveControllers();
-
-            //
-            resolveTemplates();
          }
+      }
+      finally
+      {
+         env.set(null);
       }
    }
 
@@ -382,9 +293,9 @@ public class MainProcessor extends AbstractProcessor
          writer = fo.openWriter();
          config.store(writer, null);
       }
-      catch (Exception e)
+      catch (IOException e)
       {
-         throw new CompilationException(e);
+         throw new CompilationException(e, ErrorCode.CANNOT_WRITE_CONFIG);
       }
       finally
       {
@@ -412,9 +323,9 @@ public class MainProcessor extends AbstractProcessor
             writer = fo.openWriter();
             config.store(writer, null);
          }
-         catch (Exception e)
+         catch (IOException e)
          {
-            throw new CompilationException(application.origin.get(processingEnv), "Could not emit application config", e);
+            throw new CompilationException(e, application.origin.get(processingEnv), ErrorCode.CANNOT_WRITE_APPLICATION_CONFIG);
          }
          finally
          {
@@ -446,7 +357,7 @@ public class MainProcessor extends AbstractProcessor
                      //
                      if (method == null)
                      {
-                        throw new CompilationException(template.getFoo().getOrigin().get(processingEnv), "Could no resolve method " + methodName + " " + parameterMap);
+                        throw new CompilationException(template.getFoo().getOrigin().get(processingEnv), ErrorCode.CONTROLLER_METHOD_NOT_FOUND, methodName, parameterMap);
                      }
 
                      //
@@ -465,7 +376,7 @@ public class MainProcessor extends AbstractProcessor
             }
             catch (IOException e)
             {
-               throw new CompilationException(template.getFoo().getOrigin().get(processingEnv), "Could not generate template");
+               throw new CompilationException(template.getFoo().getOrigin().get(processingEnv), ErrorCode.CANNOT_WRITE_TEMPLATE);
             }
          }
       }
@@ -639,9 +550,9 @@ public class MainProcessor extends AbstractProcessor
                   // Close class
                   writer.append("}\n");
                }
-               catch (Exception e)
+               catch (IOException e)
                {
-                  throw new CompilationException(origin, "Could not generate controller literal", e);
+                  throw new CompilationException(e, origin, ErrorCode.CANNOT_WRITE_CONTROLLER_CLASS);
                }
                finally
                {
@@ -684,11 +595,11 @@ public class MainProcessor extends AbstractProcessor
                {
                   TemplateProvider provider = providers.get(template.getFoo().getExtension());
                   Writer stubWriter = null;
-                  Writer classWriter = null;
+                  FQN stubFQN;
                   try
                   {
                      // Template stub
-                     FQN stubFQN = template.getStubFQN();
+                     stubFQN = template.getStubFQN();
                      JavaFileObject stubFile = filer.createSourceFile(stubFQN.getFullName());
                      stubWriter = stubFile.openWriter();
                      stubWriter.append("package ").append(stubFQN.getPackageName()).append(";\n");
@@ -696,7 +607,18 @@ public class MainProcessor extends AbstractProcessor
                      stubWriter.append("@Generated({})\n");
                      stubWriter.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
                      stubWriter.append("}");
-
+                  }
+                  catch (IOException e)
+                  {
+                     throw new CompilationException(e, template.getFoo().getOrigin().get(processingEnv), ErrorCode.CANNOT_WRITE_TEMPLATE_STUB_CLASS, template.getFoo().getPath());
+                  }
+                  finally
+                  {
+                     Tools.safeClose(stubWriter);
+                  }
+                  Writer classWriter = null;
+                  try
+                  {
                      // Template qualified class
                      FileObject classFile = filer.createSourceFile(stubFQN.getFullName() + "_");
                      classWriter = classFile.openWriter();
@@ -729,11 +651,10 @@ public class MainProcessor extends AbstractProcessor
                   }
                   catch (IOException e)
                   {
-                     throw new CompilationException(template.getFoo().getOrigin().get(processingEnv), "handle me gracefully: could not create template stub " + template.getFoo().getPath(), e);
+                     throw new CompilationException(e, template.getFoo().getOrigin().get(processingEnv), ErrorCode.CANNOT_WRITE_QUALIFIED_TEMPLATE_CLASS, template.getFoo().getPath());
                   }
                   finally
                   {
-                     Tools.safeClose(stubWriter);
                      Tools.safeClose(classWriter);
                   }
                }
@@ -748,7 +669,7 @@ public class MainProcessor extends AbstractProcessor
    private void processController(
       String annotationName,
       Map<String, Object> annotationValues,
-      Element annotatedElt) throws Exception
+      Element annotatedElt) throws CompilationException
    {
       ExecutableElement methodElt = (ExecutableElement)annotatedElt;
       TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
@@ -786,7 +707,7 @@ public class MainProcessor extends AbstractProcessor
             {
                if (existing.id.equals(id))
                {
-                  throw new CompilationException(annotatedElt, "Duplicate controller id " + id);
+                  throw new CompilationException(annotatedElt, ErrorCode.DUPLICATE_CONTROLLER_ID, id);
                }
             }
 
@@ -807,7 +728,7 @@ public class MainProcessor extends AbstractProcessor
    private void processTemplate(
       String annotationName,
       Map<String, Object> annotationValues,
-      Element annotatedElt) throws Exception
+      Element annotatedElt) throws CompilationException
    {
       String path = (String)annotationValues.get("value");
       PackageElement packageElt = processingEnv.getElementUtils().getPackageOf(annotatedElt);
@@ -822,7 +743,7 @@ public class MainProcessor extends AbstractProcessor
    private void processApplication(
       String annotationName,
       Map<String, Object> annotationValues,
-      Element annotatedElt) throws Exception
+      Element annotatedElt) throws CompilationException
    {
       //
       PackageElement packageElt = (PackageElement)annotatedElt;
@@ -844,13 +765,13 @@ public class MainProcessor extends AbstractProcessor
          templatesFQN);
       model.applications.put(packageName, application);
 
-      // Generate literal
-      JavaFileObject applicationFile = filer.createSourceFile(application.fqn.getFullName(), annotatedElt);
-      Writer writer = applicationFile.openWriter();
-
       //
+      Writer writer = null;
       try
       {
+         JavaFileObject applicationFile = filer.createSourceFile(application.fqn.getFullName(), annotatedElt);
+         writer = applicationFile.openWriter();
+
          writer.append("package ").append(application.fqn.getPackageName()).append(";\n");
 
          // Imports
@@ -873,6 +794,10 @@ public class MainProcessor extends AbstractProcessor
 
          // Close class
          writer.append("}\n");
+      }
+      catch (IOException e)
+      {
+         throw new CompilationException(annotatedElt, ErrorCode.CANNOT_WRITE_APPLICATION_CLASS);
       }
       finally
       {

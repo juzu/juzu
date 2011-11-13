@@ -52,10 +52,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class CompilationTestCase extends AbstractTestCase
 {
+
+   public void testErrorCodePattern()
+   {
+      asserNotMatch("");
+      asserNotMatch("[]");
+      asserNotMatch("[a]");
+      asserNotMatch("[]()");
+      asserNotMatch("[](a)");
+      asserMatch("[a]()", "a", "");
+      asserMatch("[a](b)", "a", "b");
+      asserMatch("[ERROR_01](5,foobar)", "ERROR_01", "5,foobar");
+   }
+
+   private void asserNotMatch(String test)
+   {
+      Matcher matcher = Compiler.PATTERN.matcher(test);
+      assertFalse("Was not expecting " + Compiler.PATTERN + " to match " + test, matcher.matches());
+   }
+
+   private void asserMatch(String test, String expectedCode, String expectedArguments)
+   {
+      Matcher matcher = Compiler.PATTERN.matcher(test);
+      assertTrue("Was expecting " + Compiler.PATTERN + " to match " + test, matcher.matches());
+      assertEquals(expectedCode, matcher.group(1));
+      assertEquals(expectedArguments, matcher.group(2));
+   }
 
    public void testBar() throws Exception
    {
@@ -246,6 +273,8 @@ public class CompilationTestCase extends AbstractTestCase
       List<CompilationError> errors = compiler.compile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
+      assertEquals(null, error.getCode());
+      assertEquals(Collections.<String>emptyList(), error.getArguments());
       assertEquals("/compiler/annotationexception/A.java", error.getSource());
       assertTrue(error.getMessage().contains("the_message"));
       assertNotNull(error.getSourceFile());
@@ -270,15 +299,51 @@ public class CompilationTestCase extends AbstractTestCase
             }
             return false;
          }
-      };
+      }
       compiler.addAnnotationProcessor(new Processor2());
       errors = compiler.compile();
       assertEquals(1, errors.size());
       error = errors.get(0);
+      assertEquals(null, error.getCode());
+      assertEquals(Collections.<String>emptyList(), error.getArguments());
       assertEquals(null, error.getSource());
       assertTrue(error.getMessage().contains("the_message"));
       assertNull(error.getSourceFile());
       assertNull(error.getLocation());
+   }
+
+   enum Code
+   {
+      ERROR_01
+   }
+
+   public void testErrorCode() throws IOException
+   {
+      @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
+      @javax.annotation.processing.SupportedAnnotationTypes({"*"})
+      class P extends BaseProcessor
+      {
+         @Override
+         protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) throws CompilationException
+         {
+            if (roundEnv.processingOver())
+            {
+               throw new CompilationException(Code.ERROR_01, 5, "foobar");
+            }
+         }
+      }
+
+      DiskFileSystem fs = diskFS("compiler", "errorcode");
+      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(fs, new RAMFileSystem());
+      compiler.addAnnotationProcessor(new P());
+      List<CompilationError> errors = compiler.compile();
+      assertEquals(1, errors.size());
+      CompilationError error = errors.get(0);
+      assertEquals("ERROR_01", error.getCode());
+      assertEquals(Arrays.asList("5", "foobar"), error.getArguments());
+
+
+
    }
 
    public void testIncremental() throws IOException

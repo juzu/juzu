@@ -26,6 +26,7 @@ import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.utils.Spliterator;
+import org.juzu.impl.utils.Tools;
 import org.juzu.text.Location;
 
 import javax.annotation.processing.Processor;
@@ -42,10 +43,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Compiler<I, O>
 {
+
+   /** . */
+   static final Pattern PATTERN = Pattern.compile("\\[" + "([^\\]]+)" + "\\]\\(" + "([^\\)]*)" + "\\)");
 
    /** . */
    final List<URL> classPath;
@@ -219,7 +225,26 @@ public class Compiler<I, O>
                int columnNumber = (int)diagnostic.getColumnNumber();
                int lineNumber = (int)diagnostic.getLineNumber();
                Location location = (columnNumber > 0 && lineNumber > 0) ? new Location(columnNumber, lineNumber) : null;
+
+               //
                String message = diagnostic.getMessage(null);
+
+               //
+               String code = null;
+               List<String> arguments = Collections.emptyList();
+               Matcher matcher = PATTERN.matcher(message);
+               if (matcher.find())
+               {
+                  code = matcher.group(1);
+                  if (matcher.group(2).length() > 0)
+                  {
+                     arguments = new ArrayList<String>();
+                     for (String argument : Spliterator.split(matcher.group(2), ','))
+                     {
+                        arguments.add(argument.trim());
+                     }
+                  }
+               }
 
                //
                JavaFileObject obj = diagnostic.getSource();
@@ -243,7 +268,7 @@ public class Compiler<I, O>
                }
 
                //
-               errors.add(new CompilationError(source, resolvedFile, location, message));
+               errors.add(new CompilationError(code, arguments, source, resolvedFile, location, message));
             }
          }
       };

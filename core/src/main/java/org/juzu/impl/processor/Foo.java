@@ -66,7 +66,7 @@ public class Foo implements Serializable
       Matcher matcher = NAME_PATTERN.matcher(path);
       if (!matcher.matches())
       {
-         throw new CompilationException(MainProcessor.get(origin), "Invalid @Path value " + path);
+         throw new CompilationException(MainProcessor.get(origin), ErrorCode.ILLEGAL_PATH, path);
       }
 
       //
