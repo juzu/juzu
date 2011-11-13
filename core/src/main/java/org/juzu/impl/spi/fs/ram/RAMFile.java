@@ -44,6 +44,12 @@ public class RAMFile extends RAMPath
       return content.getLastModified();
    }
 
+   @Override
+   public void touch()
+   {
+      content = content.touch();
+   }
+
    public RAMFile update(Content content)
    {
       if (content == null)
@@ -82,7 +88,7 @@ public class RAMFile extends RAMPath
       throw new UnsupportedOperationException();
    }
 
-   public Content getContent() throws IOException
+   public Content getContent()
    {
       return content;
    }

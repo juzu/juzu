@@ -61,6 +61,8 @@ public abstract class RAMPath
 
    public abstract RAMFile addFile(String name);
 
+   public abstract Content getContent();
+
    public final RAMFile update(String content)
    {
       return update(new Content(System.currentTimeMillis(), content));
@@ -73,6 +75,8 @@ public abstract class RAMPath
    public abstract Iterable<RAMPath> getChildren();
 
    public abstract long getLastModified();
+
+   public abstract void touch();
 
    public final String getName()
    {

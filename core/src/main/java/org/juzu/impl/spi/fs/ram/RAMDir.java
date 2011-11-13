@@ -90,6 +90,12 @@ public class RAMDir extends RAMPath
    }
 
    @Override
+   public void touch()
+   {
+      this.lastModified = System.currentTimeMillis();
+   }
+
+   @Override
    public long getLastModified()
    {
       return lastModified;
@@ -104,6 +110,12 @@ public class RAMDir extends RAMPath
    public RAMFile update(Content content)
    {
       throw new UnsupportedOperationException();
+   }
+
+   @Override
+   public Content getContent()
+   {
+      return null;
    }
 
    public Iterable<RAMPath> getChildren()

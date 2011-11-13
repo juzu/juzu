@@ -95,4 +95,9 @@ public class Content
       lastModified = System.currentTimeMillis();
       return this;
    }
+
+   public int getSize()
+   {
+      return data.length;
+   }
 }

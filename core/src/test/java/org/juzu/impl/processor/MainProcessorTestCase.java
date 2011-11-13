@@ -19,21 +19,21 @@
 
 package org.juzu.impl.processor;
 
-import junit.framework.TestCase;
 import org.juzu.impl.compiler.*;
 import org.juzu.impl.compiler.Compiler;
-import org.juzu.impl.spi.fs.ram.RAMDir;
-import org.juzu.impl.spi.fs.ram.RAMFile;
+import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
-import org.juzu.impl.utils.Tools;
+import org.juzu.impl.utils.Content;
+import org.juzu.test.AbstractTestCase;
 
 import java.util.Collections;
-import java.util.Properties;
+import java.util.List;
 import java.util.regex.Matcher;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MainProcessorTestCase extends TestCase
+public class MainProcessorTestCase extends AbstractTestCase
 {
 
    public void testTemplatePathMatching()
@@ -61,13 +61,15 @@ public class MainProcessorTestCase extends TestCase
       assertFalse("Was not expecting " + test + " to match", matcher.matches());
    }
 
-   public void testIncremental() throws Exception
+   public void testSimpleIncremental() throws Exception
    {
+      DiskFileSystem fs = diskFS("processor", "simple");
+
+      //
       RAMFileSystem sourcePath = new RAMFileSystem();
-      RAMPath incremental = sourcePath.getRoot().addDir("compilation").addDir("incremental");
-      RAMPath a = incremental.addFile("A.java");
-      a.update("package compilation.incremental; public class A { @javax.inject.Inject @org.juzu.Path(\"index.gtmpl\") org.juzu.template.Template template;\n @org.juzu.View public void index() { } }");
-      RAMPath index = incremental.addDir("templates").addFile("index.gtmpl");
+      ReadFileSystem.copy(fs, sourcePath);
+      sourcePath.getPath("processor", "simple", "templates", "index.gtmpl").del();
+      sourcePath.getPath("processor", "simple", "package-info.java").del();
 
       //
       RAMFileSystem sourceOutput = new RAMFileSystem();
@@ -76,49 +78,54 @@ public class MainProcessorTestCase extends TestCase
       //
       Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
       compiler.addAnnotationProcessor(new MainProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
+      List<CompilationError> errors = compiler.compile();
+      assertEquals(Collections.<CompilationError>emptyList(), errors);
+      assertEquals(2, classOutput.size(ReadFileSystem.FILE));
+      assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
+      assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
 
       //
-/*
-      System.out.println("Source:");
-      sourceOutput.dump(System.out);
-      System.out.println("Class:");
-      classOutput.dump(System.out);
-*/
-
-      // Update
-      a.del();
-      RAMPath packageInfo = incremental.addFile("package-info.java");
-      packageInfo.update("@org.juzu.Application package compilation.incremental;");
-
-      //
-      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, classOutput, sourceOutput,classOutput);
+      ReadFileSystem.copy(fs, sourcePath);
+      sourcePath.getPath("processor", "simple", "A.java").del();
+      sourcePath.getPath("processor", "simple", "templates", "index.gtmpl").del();
+      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
       compiler.addAnnotationProcessor(new MainProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-/*
-      System.out.println("Source:");
-      sourceOutput.dump(System.out);
-      System.out.println("Class:");
-      classOutput.dump(System.out);
-*/
 
       //
-      RAMFile config = (RAMFile)((RAMDir)((RAMDir)classOutput.getRoot().getChild("compilation")).getChild("incremental")).getChild("config.properties");
-      Properties props = new Properties();
-      props.load(config.getContent().getInputStream());
-      assertEquals(2, props.size());
-      assertEquals(Tools.<Object>set("compilation.incremental.A_", "compilation.incremental.templates.index_"), props.keySet());
-      assertEquals("controller", props.get("compilation.incremental.A_"));
-      assertEquals("template", props.get("compilation.incremental.templates.index_"));
+      errors = compiler.compile();
+      assertEquals(1, errors.size());
+      CompilationError error = errors.get(0);
+      assertEquals(ErrorCode.TEMPLATE_NOT_FOUND.toString(), error.getCode());
+      assertEquals(2, classOutput.size(ReadFileSystem.FILE));
+      assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
+      assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
+
+      //
+      ReadFileSystem.copy(fs, sourcePath);
+      sourcePath.getPath("processor", "simple", "A.java").del();
+      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
+      compiler.addAnnotationProcessor(new MainProcessor());
+
+      //
+      errors = compiler.compile();
+      assertEquals(Collections.<CompilationError>emptyList(), errors);
+      assertEquals(9, classOutput.size(ReadFileSystem.FILE));
+      assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
+      assertNotNull(classOutput.getPath("processor", "simple", "templates", "index.groovy"));
+      assertNotNull(classOutput.getPath("processor", "simple", "config.properties"));
+      assertNotNull(classOutput.getPath("processor", "simple", "package-info.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "SimpleApplication.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "A_.class"));
    }
 
-   public void testIncremental2() throws Exception
+   public void testModifyTemplate() throws Exception
    {
+      DiskFileSystem fs = diskFS("processor", "simple");
+
+      //
       RAMFileSystem sourcePath = new RAMFileSystem();
-      RAMPath incremental = sourcePath.getRoot().addDir("compilation").addDir("incremental");
-      RAMPath a = incremental.addFile("A.java");
-      a.update("package compilation.incremental; public class A { @javax.inject.Inject @org.juzu.Path(\"index.gtmpl\") org.juzu.template.Template template;\n @org.juzu.View public void index() { } }");
+      ReadFileSystem.copy(fs, sourcePath);
 
       //
       RAMFileSystem sourceOutput = new RAMFileSystem();
@@ -127,47 +134,42 @@ public class MainProcessorTestCase extends TestCase
       //
       Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
       compiler.addAnnotationProcessor(new MainProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
 
       //
-/*
-      System.out.println("Source:");
-      sourceOutput.dump(System.out);
-      System.out.println("Class:");
-      classOutput.dump(System.out);
-*/
+      List<CompilationError> errors = compiler.compile();
+      assertEquals(Collections.<CompilationError>emptyList(), errors);
+      assertEquals(9, classOutput.size(ReadFileSystem.FILE));
+      assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
+      assertNotNull(classOutput.getPath("processor", "simple", "templates", "index.groovy"));
+      assertNotNull(classOutput.getPath("processor", "simple", "config.properties"));
+      assertNotNull(classOutput.getPath("processor", "simple", "package-info.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "SimpleApplication.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "A_.class"));
 
-      // Update
-      a.del();
-      RAMPath packageInfo = incremental.addFile("package-info.java");
-      packageInfo.update("@org.juzu.Application package compilation.incremental;");
+      // We force a regeneration of the template by removing the class A
+      Content c1 = classOutput.getPath("processor", "simple", "templates", "index.groovy").getContent();
+      sourcePath.getPath("processor", "simple", "templates", "index.gtmpl").update("foo");
+      classOutput.getPath("processor", "simple", "A.class").del();
+      classOutput.getPath("processor", "simple", "A_.class").del();
 
       //
-      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, classOutput, sourceOutput,classOutput);
+      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
       compiler.addAnnotationProcessor(new MainProcessor());
-      assertEquals(1, compiler.compile().size());
-
-      //
-/*
-      System.out.println("Source:");
-      sourceOutput.dump(System.out);
-      System.out.println("Class:");
+      errors = compiler.compile();
+      assertEquals(Collections.<CompilationError>emptyList(), errors);
       classOutput.dump(System.out);
-*/
+      assertEquals(9, classOutput.size(ReadFileSystem.FILE));
+      assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
+      assertNotNull(classOutput.getPath("processor", "simple", "templates", "index.groovy"));
+      assertNotNull(classOutput.getPath("processor", "simple", "config.properties"));
+      assertNotNull(classOutput.getPath("processor", "simple", "package-info.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "SimpleApplication.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
+      assertNotNull(classOutput.getPath("processor", "simple", "A_.class"));
 
       //
-      RAMPath index = incremental.addDir("templates").addFile("index.gtmpl");
-      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, classOutput, sourceOutput,classOutput);
-      compiler.addAnnotationProcessor(new MainProcessor());
-      assertEquals(0, compiler.compile().size());
-
-      //
-      RAMFile config = (RAMFile)((RAMDir)((RAMDir)classOutput.getRoot().getChild("compilation")).getChild("incremental")).getChild("config.properties");
-      Properties props = new Properties();
-      props.load(config.getContent().getInputStream());
-      assertEquals(2, props.size());
-      assertEquals(Tools.<Object>set("compilation.incremental.A_", "compilation.incremental.templates.index_"), props.keySet());
-      assertEquals("controller", props.get("compilation.incremental.A_"));
-      assertEquals("template", props.get("compilation.incremental.templates.index_"));
+      Content c2 = classOutput.getPath("processor", "simple", "templates", "index.groovy").getContent();
+      assertFalse("Was not expecting templates to be identical", c1.getCharSequence().toString().equals(c2.getCharSequence().toString()));
    }
 }
