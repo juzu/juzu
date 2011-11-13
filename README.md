@@ -17,11 +17,12 @@ create applications.
 # Roadmap
 
 - 0.4
+    - eclipse incremental compilation support
     - initial documentation and sample
     - maven archetype
 - 0.5
     - bean mapping
-    - validation
+    - bean validation
     - IDE screencast
     - portlet eventing support
 - 0.6
@@ -29,6 +30,10 @@ create applications.
     - servlet support
     - routing engine
     - cross site scripting (xss) support
+- 0.7
+    - request context stacking
+    - extensible taglib
+    - application import
 
 Various things to do, not exhaustive that needs to go in the roadmap
 
