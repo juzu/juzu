@@ -15,7 +15,7 @@
        <mime-type>text/html</mime-type>
      </supports>
      <portlet-info>
-       <title>Hello World Application</title>
+       <title>Hello World</title>
      </portlet-info>
    </portlet>
    <portlet>
@@ -29,7 +29,7 @@
        <mime-type>text/html</mime-type>
      </supports>
      <portlet-info>
-       <title>Time Application</title>
+       <title>Time</title>
      </portlet-info>
    </portlet>
    <portlet>
@@ -43,7 +43,21 @@
        <mime-type>text/html</mime-type>
      </supports>
      <portlet-info>
-       <title>Hello World Application</title>
+       <title>Weather</title>
      </portlet-info>
    </portlet>
+  <portlet>
+    <portlet-name>BookmarkPortlet</portlet-name>
+    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>BookmarkApplication</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>Bookmark</title>
+    </portlet-info>
+  </portlet>
 </portlet-app>

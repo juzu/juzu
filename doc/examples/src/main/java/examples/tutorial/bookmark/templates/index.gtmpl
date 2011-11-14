@@ -1,0 +1,9 @@
+<ul><% bookmarks.each() { bookmark -> %>
+<li><a href="${bookmark.value}">${bookmark.key}</a></li>
+<% } %>
+</ul>
+<form action="@{add()}" method="post">
+   <input type="text" name="name" value=""/>
+   <input type="text" name="url" value=""/>
+   <input type="submit"/>
+</form>
