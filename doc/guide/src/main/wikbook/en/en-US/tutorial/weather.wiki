@@ -1,3 +1,5 @@
+= The weather application =
+
 We have seen basic view controller, in this section we will study more in depth view controllers. A view controller is
 invoked when the application needs to be rendered. The //weather// application has two view controller methods.
 
@@ -25,3 +27,14 @@ value.
 {{java}}
 {@include examples.tutorial.weather.Weather#index()}
 {{/java}}
+
+We could't close this section without talking about **safe urls**. Juzu is deeply integrated at the heart of the
+Java compiler and performs many checks to detect applications bugs during the application compilation. Among those
+checks, templates are validated and the url syntax ##@{ }## is checked against the application controllers, in fact
+Juzu will resolve an url syntax until it finds one controller that resolves the specified name and parameters. If not
+Juzu will make the compilation fail and give detailled information about the error. This kind of feature makes Juzu really
+unique among all other web frameworks, we will see some other later.
+
+{{note}}Juzu leverages the [[Annotation Processing Tool>>http://download.oracle.com/javase/6/docs/technotes/guides/apt/index.html]]
+(APT) facility standardized since Java 6. APT works with any Java compiler and is not specific to a build system or IDE,
+it just works anywhere, we will see later that it even works with Eclipse incremental compiler.{{/note}}
