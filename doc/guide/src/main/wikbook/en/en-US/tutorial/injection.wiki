@@ -1,0 +1,44 @@
+Juzu uses dependency injection to interact with a service layer. The [[JSR-330>>http://jcp.org/en/jsr/detail?id=330]],
+ also knowns as ##@Inject##, defines an API for dependency injection. This API is implemented by the major dependency
+ injection containers and Juzu integrates with the major ones. At the moment the following containers are supported:
+
+* [[Spring Framework>>http://www.springsource.org/]]
+* [[JBoss Weld>>http://seamframework.org/Weld]]
+
+There is a preliminary support for [[Google Guice 3.0>>http://code.google.com/p/google-guice/wiki/Guice30]], but it is not
+yet available. In the future more container support could be achieved.
+
+The tutorial reuses the classic **MovieLister** example in the video library application example. Our application
+defines the ##MovieFinder## interface implemented by the the ##MovieFinderImpl## class, for the sake of simplicity
+it defines a single method ##List<Movie> findAll()## that returns all the known movie. The main service used by the
+application is the ##MovieLister## class. In the application, the dependency injection happens two times (actually
+three as the template is also injected but this will be covered later).
+
+The ##MovieFinder## interface is injected in the ##MovieLister## service.
+
+{{java}}
+{@include examples.tutorial.injection.MovieLister#movieFinder}
+{{/java}}
+
+The second time an injection happens in the ##VideoLibrary## controller that uses the ##MovieLister## class.
+
+{{java}}
+{@include examples.tutorial.injection.VideoLibrary#lister}
+{{/java}}
+
+Dependency injection is performed by the dependency injection container that Juzu integrates with. Dependency injection
+is configured in the deployment descriptor of the portlet. By default it uses Weld, if you want instead to use Spring
+the configuration is done with an portlet init param:
+
+{{xml indent=2}}
+<init-param>
+  <name>juzu.inject</name>
+  <value>spring</value>
+</init-param>
+{{/xml}}
+
+In the case of Spring, the file ##spring.xml## file is needed, it contains the service declarations for the Spring
+container.
+
+Juzu provides more advanced dependency injection, in particular it uses the ##Qualifier## and ##Scope## features defined
+  by the JSR-330 specification that will be studied later.

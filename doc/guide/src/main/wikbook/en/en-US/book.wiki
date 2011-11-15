@@ -19,7 +19,7 @@
 
 == Dependency Injection ==
 
-todo
+{{include document=tutorial/injection.wiki/}}
 
 == Taglib ==
 

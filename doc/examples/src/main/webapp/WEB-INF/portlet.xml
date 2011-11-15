@@ -60,4 +60,25 @@
       <title>Bookmark</title>
     </portlet-info>
   </portlet>
+  <portlet>
+    <portlet-name>InjectionPortlet</portlet-name>
+    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>InjectionApplication</value>
+    </init-param>
+    <init-param>
+      <name>juzu.inject</name>
+      <value>spring</value>
+      <!--
+      <value>weld</value>
+      -->
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>Dependency Injection</title>
+    </portlet-info>
+  </portlet>
 </portlet-app>

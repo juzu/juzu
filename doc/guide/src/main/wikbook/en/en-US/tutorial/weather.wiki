@@ -1,5 +1,3 @@
-= The weather application =
-
 We have seen basic view controller, in this section we will study more in depth view controllers. A view controller is
 invoked when the application needs to be rendered. The //weather// application has two view controller methods.
 
