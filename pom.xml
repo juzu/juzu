@@ -57,6 +57,12 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
+        <artifactId>juzu-archetype</artifactId>
+        <version>0.4-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
         <artifactId>juzu-overlay-gatein</artifactId>
         <type>war</type>
         <version>0.4-SNAPSHOT</version>
@@ -261,6 +267,7 @@
   
   <modules>
     <module>core</module>
+    <module>archetype</module>
     <module>overlay</module>
     <module>booking</module>
     <module>doc</module>

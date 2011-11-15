@@ -1,0 +1,18 @@
+<archetype-descriptor name=">juzu.archetype">
+
+  <fileSets>
+    <fileSet filtered="true">
+      <directory>src/main/java</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet filtered="false">
+      <directory>src/main/webapp</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
+</archetype-descriptor>
