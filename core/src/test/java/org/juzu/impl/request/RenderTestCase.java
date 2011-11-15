@@ -24,27 +24,66 @@ import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RenderTestCase extends AbstractInjectTestCase
 {
 
-   public void testImplicitPrinter() throws Exception
+   private static final Pattern P = Pattern.compile("([0-9]+)\\[(.*)\\]");
+
+   public void testIndex() throws Exception
    {
-      MockApplication<?> app = application("request", "render", "implicitprinter").init();
+      MockApplication<?> app = application("request", "render", "index").init();
 
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("done", render.getContent());
+      assertEquals("index", render.getContent());
    }
 
-   public void testExplicitPrinter() throws Exception
+   public void testParameterizedIndex() throws Exception
    {
-      MockApplication<?> app = application("request", "render", "explicitprinter").init();
+      MockApplication<?> app = application("request", "render", "parameterizedindex").init();
 
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("done", render.getContent());
+      Matcher m = P.matcher(render.getContent());
+      assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
+      assertEquals("0", m.group(1));
+      render = (MockRenderBridge)client.invoke(m.group(2));
+      m.reset(render.getContent());
+      assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
+      assertEquals("1", m.group(1));
+      render = (MockRenderBridge)client.invoke(m.group(2));
+      m.reset(render.getContent());
+      assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
+      assertEquals("0", m.group(1));
+   }
+
+   public void testOverridenIndex() throws Exception
+   {
+      MockApplication<?> app = application("request", "render", "overridenindex").init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      Matcher m = P.matcher(render.getContent());
+      assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
+      assertEquals("0", m.group(1));
+      render = (MockRenderBridge)client.invoke(m.group(2));
+      m.reset(render.getContent());
+      assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
+      assertEquals("1", m.group(1));
+      render = (MockRenderBridge)client.invoke(m.group(2));
+      m.reset(render.getContent());
+      assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
+      assertEquals("2", m.group(1));
+      render = (MockRenderBridge)client.invoke(m.group(2));
+      m.reset(render.getContent());
+      assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
+      assertEquals("0", m.group(1));
    }
 }

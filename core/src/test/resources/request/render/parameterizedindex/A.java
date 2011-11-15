@@ -17,6 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package request.render.explicitprinter;
-import org.juzu.Application;
+package request.render.parameterizedindex;
+
+import org.juzu.Controller;
+import org.juzu.View;
+
+import java.io.IOException;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A extends Controller
+{
+
+   @View
+   public void index(String param) throws IOException
+   {
+      if (param == null)
+      {
+         renderContext.getPrinter().write("0[" + A_.indexURL("foo").toString() + "]");
+      }
+      else
+      {
+         renderContext.getPrinter().write("1[" + A_.indexURL(null).toString() + "]");
+      }
+   }
+}

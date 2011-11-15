@@ -17,6 +17,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package request.render.implicitprinter;
-import org.juzu.Application;
+package request.render.index;
+
+import org.juzu.Controller;
+import org.juzu.View;
+
+import java.io.IOException;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A extends Controller
+{
+
+   @View
+   public void index() throws IOException
+   {
+      renderContext.getPrinter().write("index");
+   }
+}

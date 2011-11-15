@@ -24,6 +24,7 @@ import org.juzu.Phase;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,11 +53,24 @@ public class ControllerResolver
       this.methods = desc.getControllerMethods();
    }
 
+   private class Foo implements Comparable<Foo>
+   {
+      int score;
+      ControllerMethod m;
+      private Foo(ControllerMethod m)
+      {
+         this.score = m.getArgumentParameters().size() + (m.getType() == desc.getDefaultController() ? 0 : 1000);
+         this.m = m;
+      }
+      public int compareTo(Foo o)
+      {
+         return score - o.score;
+      }
+   }
+
    public ControllerMethod resolve(Phase phase, String methodId) throws AmbiguousResolutionException
    {
       ControllerMethod found = null;
-
-      //
 
       //
       if (methodId != null)
@@ -72,30 +86,80 @@ public class ControllerResolver
       }
       else if (phase == Phase.RENDER)
       {
+         List<Foo> matches = new ArrayList<Foo>();
+
+         // Collect all index matches
          for (ControllerMethod method : methods)
          {
-            if (
-               method.getPhase() == Phase.RENDER &&
-               method.getName().equals("index") &&
-               method.getArgumentParameters().isEmpty())
+            if (method.getPhase() == Phase.RENDER && method.getName().equals("index"))
             {
-               if (desc.getDefaultController() == method.getType())
+               matches.add(new Foo(method));
+            }
+         }
+
+         //
+         int size = matches.size();
+         if (size > 0)
+         {
+            if (size > 1)
+            {
+               Foo first = matches.get(0);
+               Foo second = matches.get(1);
+               if (first.score == second.score)
                {
-                  return method;
-               }
-               else if (found == null)
-               {
-                  found = method;
-               }
-               else
-               {
-                  throw new AmbiguousResolutionException();
+                  // WE SHOULD NOT HAVE METHOD THAT RESOLVES TO AN AMBIGUITY AND WE CAN ENFORCE
+                  // THAT AT COMPILE TIME.
+                  // FOR INSTANCE WE COULD USE THE METHOD_ID AS WAY TO FIND THE METHOD
+                  // AND ENSURE THAT THE INDEX IS UNIQUE FOR A SINGLER APPLICATION
+                  // HAVING THE METHOD NAME AS METHOD ID WOULD HELP HOWEVER WE COULD HAVE TWO
+                  // CONTROLLER HAVING SAME IDS
+                  throw new AmbiguousResolutionException("Two methods satisfies the index criteria: " +
+                     first.m + " and " + second.m);
                }
             }
+            found = matches.get(0).m;
          }
       }
 
       //
       return found;
    }
+
+   private int getScore(ControllerMethod m)
+   {
+      return m.getArgumentParameters().size() + (m.getType() == desc.getDefaultController() ? 0 : 1000);
+   }
+
+/*
+         if (m1.getType() != desc.getDefaultController())
+         {
+            if (m2.getType() == desc.getDefaultController())
+            {
+               return -1;
+            }
+         }
+         else
+         {
+            if (m2.getType() != desc.getDefaultController())
+            {
+               return 1;
+            }
+         }
+
+         //
+         int s1 = m1.getArgumentParameters().size();
+         int s2 = m1.getArgumentParameters().size();
+         if (s1 == s2)
+         {
+            return 0;
+         }
+         else if (s1 < s2)
+         {
+            return 1;
+         }
+         else
+         {
+            return s2;
+         }
+*/
 }

@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package request.render.explicitprinter;
+package template.printer;
 
 import org.juzu.Controller;
 import org.juzu.Path;
@@ -32,12 +32,22 @@ public class A extends Controller
 {
 
    @Inject
-   @Path("index.gtmpl")
-   Template index;
+   @Path("implicit.gtmpl")
+   Template implicit;
 
-   @View
-   public void index() throws IOException
+   @Inject
+   @Path("explicit.gtmpl")
+   Template explicit;
+
+   @View(id = "implicit")
+   public void implicit() throws IOException
    {
-      index.render(renderContext.getPrinter());
+      implicit.render();
+   }
+
+   @View(id = "explicit")
+   public void explicit() throws IOException
+   {
+      explicit.render(renderContext.getPrinter());
    }
 }

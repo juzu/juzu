@@ -110,6 +110,13 @@ public class MockClient
       this.flashHistory = new LinkedList<Map<Object, Object>>();
    }
 
+   public MockRenderBridge render(String methodId)
+   {
+      MockRenderBridge render = new MockRenderBridge(this, methodId);
+      invoke(render);
+      return render;
+   }
+
    public MockRenderBridge render()
    {
       MockRenderBridge render = new MockRenderBridge(this);
