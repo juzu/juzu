@@ -1,27 +1,25 @@
 
 = Tutorial =
 
-== Hello World ==
+This tutorial will make you familliar with Juzu, to reach our objective we will develop a weather application
+in several steps, each step introducing a new feature to gradually improve the application.
 
-{{include document=tutorial/hello.wiki/}}
+== Application Bootstrap ==
+
+{{include document=tutorial/weather1.wiki/}}
 
 == Template overwiew ==
 
-{{include document=tutorial/time.wiki/}}
-
-== Views ==
-
-{{include document=tutorial/weather.wiki/}}
-
-== Actions ==
-
-{{include document=tutorial/bookmark.wiki/}}
+{{include document=tutorial/weather2.wiki/}}
 
 == Dependency Injection ==
 
-{{include document=tutorial/injection.wiki/}}
+{{include document=tutorial/weather3.wiki/}}
 
-== Taglib ==
+== Views ==
 
-todo
+{{include document=tutorial/weather4.wiki/}}
 
+== Actions ==
+
+{{include document=tutorial/weather5.wiki/}}

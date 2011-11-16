@@ -1,0 +1,20 @@
+Now we will improve our application by exploring a bit the templating engine.  We will show a quick overview of Juzu
+templating system. Templates are essentially made of static part (usually markup) and dynamic parts. In this section
+we will focus on explaining the use of dynamic expression in a template.
+
+The application shows how a view can provide variable input for a dynamic template with parameters. Our application has
+ a view controller and a template, but now the template contains the ##${ }## expression that makes it dynamic.
+
+{{code href=examples/tutorial/weather2/templates/index.gtmpl/}}
+
+Like before the template is used in the view controller but now we use a ##Map## containing the ##location## and
+##temperature## parameters.
+
+{{java}}
+{@include examples.tutorial.weather2.Weather#index()}
+{{/java}}
+
+During the template rendering, the ##location## and ##temperature## expressions are resolved to the value
+provided by the view controller. When a template is rendered, an optional map can be provided, this map will be
+available during the rendering of the template for resolving expression.
+

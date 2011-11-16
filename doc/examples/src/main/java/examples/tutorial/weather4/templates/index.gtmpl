@@ -1,0 +1,3 @@
+The weather temperature in ${location} is ${temperature} degrees.
+<a href="@{index(location = 'marseille')}">Marseille</a>
+<a href="@{index(location = 'paris')}">Paris</a>

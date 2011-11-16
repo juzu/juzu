@@ -5,67 +5,39 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
    http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
-     <portlet-name>HelloPortlet</portlet-name>
+     <portlet-name>Weather1Portlet</portlet-name>
      <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
      <init-param>
        <name>juzu.app_name</name>
-       <value>HelloApplication</value>
+       <value>Weather1Application</value>
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
      <portlet-info>
-       <title>Hello World</title>
+       <title>Weather 1</title>
      </portlet-info>
    </portlet>
    <portlet>
-     <portlet-name>TimePortlet</portlet-name>
+     <portlet-name>Weather2Portlet</portlet-name>
      <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
      <init-param>
        <name>juzu.app_name</name>
-       <value>TimeApplication</value>
+       <value>Weather2Application</value>
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
      <portlet-info>
-       <title>Time</title>
-     </portlet-info>
-   </portlet>
-   <portlet>
-     <portlet-name>WeatherPortlet</portlet-name>
-     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-     <init-param>
-       <name>juzu.app_name</name>
-       <value>WeatherApplication</value>
-     </init-param>
-     <supports>
-       <mime-type>text/html</mime-type>
-     </supports>
-     <portlet-info>
-       <title>Weather</title>
+       <title>Weather 2</title>
      </portlet-info>
    </portlet>
   <portlet>
-    <portlet-name>BookmarkPortlet</portlet-name>
+    <portlet-name>Weather3Portlet</portlet-name>
     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
     <init-param>
       <name>juzu.app_name</name>
-      <value>BookmarkApplication</value>
-    </init-param>
-    <supports>
-      <mime-type>text/html</mime-type>
-    </supports>
-    <portlet-info>
-      <title>Bookmark</title>
-    </portlet-info>
-  </portlet>
-  <portlet>
-    <portlet-name>InjectionPortlet</portlet-name>
-    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-    <init-param>
-      <name>juzu.app_name</name>
-      <value>InjectionApplication</value>
+      <value>Weather3Application</value>
     </init-param>
     <init-param>
       <name>juzu.inject</name>
@@ -78,7 +50,35 @@
       <mime-type>text/html</mime-type>
     </supports>
     <portlet-info>
-      <title>Dependency Injection</title>
+      <title>Weather 3</title>
+    </portlet-info>
+  </portlet>
+  <portlet>
+     <portlet-name>Weather4Portlet</portlet-name>
+     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+     <init-param>
+       <name>juzu.app_name</name>
+       <value>Weather4Application</value>
+     </init-param>
+     <supports>
+       <mime-type>text/html</mime-type>
+     </supports>
+     <portlet-info>
+       <title>Weather 4</title>
+     </portlet-info>
+   </portlet>
+  <portlet>
+    <portlet-name>Weather5Portlet</portlet-name>
+    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>Weather5Application</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>Weather 5</title>
     </portlet-info>
   </portlet>
 </portlet-app>

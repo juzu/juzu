@@ -1,0 +1,25 @@
+The first version of the application shows the most basic Juzu application. Our application is declared in the
+##examples.tutorial.weather1## package package annotated with the ##@Application## annotation This annotation declares a
+Juzu application and does not require any mandatory value. Like classes, methods or fields, Java packages can be
+annotated, such packages declaration are represented by a special file named ##package-info.java##.
+
+Usually an application is made of controllers and templates, in this example, the ##Weather## Java class contains a method
+annotated with the ##@View## annotation, which turns the ##Weather## class into a Juzu controller. The controller method
+##index()## is the name of the default method that Juzu will call.
+
+{{java}}
+{@include examples.tutorial.weather1.Weather#index()}
+{{/java}}
+
+Methods annotated by ##@View## have the unique purpose of providing markup, they are called //view//. In our case,
+the method delegates the rendering to the ##index.gtmpl## template. The template is injected in the controller thanks
+to the ##@Inject## annotation and the ##@Path("index.gtmpl")## annotation.
+
+{{java}}
+{@include examples.tutorial.weather1.Weather#index}
+{{/java}}
+
+By default templates are located in the ##templates## package of the application, in our case the
+##examples.tutorial.weather1.templates## package. The ##@Path## annotation specifies the path of the template in this
+package. The templates are located in the same source tree than the java classes because the files must be available
+for the Java compiler.
