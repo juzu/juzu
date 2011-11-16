@@ -389,7 +389,7 @@ public class MainProcessor extends BaseProcessor
          Map.Entry<String, ControllerModel> controllerEntry = i.next();
          for (Map.Entry<String, ApplicationModel> applicationEntry : model.applications.entrySet())
          {
-            if (controllerEntry.getKey().startsWith(applicationEntry.getKey()))
+            if (controllerEntry.getKey().startsWith(applicationEntry.getKey() + "."))
             {
                i.remove();
                ApplicationModel application = applicationEntry.getValue();
@@ -571,7 +571,9 @@ public class MainProcessor extends BaseProcessor
          Foo foo = i.next();
          for (Map.Entry<String, ApplicationModel> applicationEntry : model.applications.entrySet())
          {
-            if (foo.getOriginPackageFQN().startsWith(applicationEntry.getKey()))
+            if (
+               foo.getOriginPackageFQN().equals(applicationEntry.getKey()) ||
+               foo.getOriginPackageFQN().startsWith(applicationEntry.getKey() + "."))
             {
                i.remove();
                ApplicationModel application = applicationEntry.getValue();

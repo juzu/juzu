@@ -17,25 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.application;
+package application.prefix.ab;
 
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerTestCase extends AbstractTestCase
+public class A
 {
 
-   public void testDefaultController() throws Exception
+   @View
+   public void index()
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "default_controller");
-      compiler.assertCompile();
-      Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
-      Class<?> aClass = compiler.assertClass("application.default_controller.A");
-
-      //
-      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      assertSame(aClass, desc.getDefaultController());
    }
 }

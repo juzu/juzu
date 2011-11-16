@@ -28,10 +28,22 @@ import org.juzu.test.CompilerHelper;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MethodTestCase extends AbstractTestCase
+public class ApplicationTestCase extends AbstractTestCase
 {
 
-   public void testId() throws Exception
+   public void testDefaultController() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("application", "default_controller");
+      compiler.assertCompile();
+      Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
+      Class<?> aClass = compiler.assertClass("application.default_controller.A");
+
+      //
+      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+      assertSame(aClass, desc.getDefaultController());
+   }
+
+   public void testMethodId() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "method", "id");
       compiler.assertCompile();
@@ -55,11 +67,17 @@ public class MethodTestCase extends AbstractTestCase
       assertSame(c, desc.getControllerMethodById("juu"));
    }
 
-   public void testDuplicate() throws Exception
+   public void testDuplicateMethod() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "method", "duplicate");
       List<CompilationError> errors = compiler.failCompile();
       assertEquals("Was expecting a single error instead of " + errors, 1, errors.size());
       assertEquals("/application/method/duplicate/A.java", errors.get(0).getSource());
+   }
+
+   public void testPrefix() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("application", "prefix");
+      compiler.assertCompile();
    }
 }
