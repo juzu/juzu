@@ -102,12 +102,12 @@
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-doc-examples</artifactId>
+        <artifactId>juzu-tutorial-examples</artifactId>
         <version>0.4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-doc-examples</artifactId>
+        <artifactId>juzu-tutorial-examples</artifactId>
         <version>0.4-SNAPSHOT</version>
         <classifier>sources</classifier>
       </dependency>
