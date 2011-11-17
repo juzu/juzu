@@ -118,7 +118,7 @@ public class Application
       User user = User.find(username, password);
       if (user != null)
       {
-         login.setUserName(user.name);
+         login.setUserName(user.username);
          flash.setSuccess("Welcome, " + user.name);
          return Hotels_.index();
       }
