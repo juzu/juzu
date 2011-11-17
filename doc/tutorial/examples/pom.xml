@@ -43,6 +43,7 @@
   </dependencies>
 
   <build>
+    <finalName>juzu-tutorial</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

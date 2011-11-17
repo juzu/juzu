@@ -1,25 +1,23 @@
 
-= Tutorial =
-
 This tutorial will make you familliar with Juzu, to reach our objective we will develop a weather application
 in several steps, each step introducing a new feature to gradually improve the application.
 
-== Application Bootstrap ==
+= Application Bootstrap =
 
 {{include document=tutorial/weather1.wiki/}}
 
-== Template overwiew ==
+= Template overwiew =
 
 {{include document=tutorial/weather2.wiki/}}
 
-== Dependency Injection ==
+= Dependency Injection =
 
 {{include document=tutorial/weather3.wiki/}}
 
-== Views ==
+= Views =
 
 {{include document=tutorial/weather4.wiki/}}
 
-== Actions ==
+= Actions =
 
 {{include document=tutorial/weather5.wiki/}}
