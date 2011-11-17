@@ -6,6 +6,7 @@
    http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
      <portlet-name>Weather1Portlet</portlet-name>
+     <display-name xml:lang="EN">Juzu Kickstart</display-name>
      <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
      <init-param>
        <name>juzu.app_name</name>
@@ -24,6 +25,7 @@
    </portlet>
    <portlet>
      <portlet-name>Weather2Portlet</portlet-name>
+     <display-name xml:lang="EN">Juzu Template Overview</display-name>
      <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
      <init-param>
        <name>juzu.app_name</name>
@@ -42,6 +44,7 @@
    </portlet>
   <portlet>
     <portlet-name>Weather3Portlet</portlet-name>
+    <display-name xml:lang="EN">Juzu Dependency Injection</display-name>
     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
     <init-param>
       <name>juzu.app_name</name>
@@ -67,6 +70,7 @@
   </portlet>
   <portlet>
     <portlet-name>Weather4Portlet</portlet-name>
+    <display-name xml:lang="EN">Juzu Views</display-name>
     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
     <init-param>
       <name>juzu.app_name</name>
@@ -85,6 +89,7 @@
   </portlet>
   <portlet>
     <portlet-name>Weather5Portlet</portlet-name>
+    <display-name xml:lang="EN">Juzu Actions</display-name>
     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
     <init-param>
       <name>juzu.app_name</name>
