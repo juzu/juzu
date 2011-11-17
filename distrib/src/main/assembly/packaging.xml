@@ -7,16 +7,55 @@
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
+
+    <!-- Booking -->
     <dependencySet>
       <includes>
-
-
         <include>org.juzu:juzu-booking:war:gatein</include>
         <include>org.juzu:juzu-booking:war:liferay</include>
-
       </includes>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>/booking/</outputDirectory>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
     </dependencySet>
+
+    <!-- Tutorial -->
+    <dependencySet>
+      <includes>
+        <include>org.juzu:juzu-tutorial-examples:war:gatein</include>
+        <include>org.juzu:juzu-tutorial-examples:war:liferay</include>
+      </includes>
+      <outputDirectory>/tutorial/</outputDirectory>
+      <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.juzu:juzu-tutorial-examples:jar:sources</include>
+      </includes>
+      <unpack>true</unpack>
+      <outputDirectory>/tutorial/src/</outputDirectory>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.juzu:juzu-tutorial-guide:zip:html</include>
+      </includes>
+      <unpack>true</unpack>
+      <outputDirectory>/tutorial/html/</outputDirectory>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.juzu:juzu-tutorial-guide:pdf</include>
+      </includes>
+      <outputDirectory>/tutorial/</outputDirectory>
+      <outputFileNameMapping>tutorial.pdf</outputFileNameMapping>
+    </dependencySet>
+
+    <dependencySet>
+      <includes>
+        <include>org.juzu:juzu-core:jar:javadoc</include>
+      </includes>
+      <unpack>true</unpack>
+      <outputDirectory>/api/</outputDirectory>
+    </dependencySet>
+
   </dependencySets>
 </assembly>

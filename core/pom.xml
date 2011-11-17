@@ -155,8 +155,17 @@
         <version>2.8</version>
         <configuration>
           <show>public</show>
+          <quiet>true</quiet>
           <excludePackageNames>org.juzu.impl</excludePackageNames>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>

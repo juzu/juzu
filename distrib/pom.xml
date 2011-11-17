@@ -18,6 +18,7 @@
   <description>Packaging and distribution</description>
 
   <dependencies>
+
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-booking</artifactId>
@@ -30,6 +31,45 @@
       <type>war</type>
       <classifier>liferay</classifier>
     </dependency>
+
+    <!-- Tutorial -->
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-tutorial-examples</artifactId>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-tutorial-examples</artifactId>
+      <type>war</type>
+      <classifier>liferay</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-tutorial-examples</artifactId>
+      <type>war</type>
+      <classifier>gatein</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-tutorial-guide</artifactId>
+      <classifier>html</classifier>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-tutorial-guide</artifactId>
+      <type>pdf</type>
+    </dependency>
+
+    <!-- Doc -->
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-core</artifactId>
+      <classifier>javadoc</classifier>
+    </dependency>
+
+
   </dependencies>
 
   <build>

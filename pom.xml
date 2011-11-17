@@ -54,6 +54,12 @@
         <classifier>source</classifier>
         <version>0.4-SNAPSHOT</version>
       </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-core</artifactId>
+        <classifier>javadoc</classifier>
+        <version>0.4-SNAPSHOT</version>
+      </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
@@ -85,7 +91,6 @@
         <classifier>source</classifier>
         <version>0.4-SNAPSHOT</version>
       </dependency>
-
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
@@ -100,6 +105,7 @@
         <classifier>liferay</classifier>
         <version>0.4-SNAPSHOT</version>
       </dependency>
+
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-tutorial-examples</artifactId>
@@ -110,6 +116,33 @@
         <artifactId>juzu-tutorial-examples</artifactId>
         <version>0.4-SNAPSHOT</version>
         <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-tutorial-examples</artifactId>
+        <classifier>gatein</classifier>
+        <type>war</type>
+        <version>0.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-tutorial-examples</artifactId>
+        <type>war</type>
+        <classifier>liferay</classifier>
+        <version>0.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-tutorial-guide</artifactId>
+        <classifier>html</classifier>
+        <type>zip</type>
+        <version>0.4-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-tutorial-guide</artifactId>
+        <type>pdf</type>
+        <version>0.4-SNAPSHOT</version>
       </dependency>
 
       <dependency>
