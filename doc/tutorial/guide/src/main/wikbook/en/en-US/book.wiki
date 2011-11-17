@@ -2,22 +2,27 @@
 This tutorial will make you familliar with Juzu, to reach our objective we will develop a weather application
 in several steps, each step introducing a new feature to gradually improve the application.
 
-= Application Bootstrap =
+= Quickstart {{anchor id=quickstart /}} =
 
 {{include document=tutorial/weather1.wiki/}}
 
-= Template overwiew =
+= Template overwiew {{anchor id=template_overview /}} =
 
 {{include document=tutorial/weather2.wiki/}}
 
-= Dependency Injection =
+= Dependency Injection {{anchor id=dependency_injection /}} =
 
 {{include document=tutorial/weather3.wiki/}}
 
-= Views =
+= Views {{anchor id=views /}} =
 
 {{include document=tutorial/weather4.wiki/}}
 
-= Actions =
+= Actions {{anchor id=actions /}} =
 
 {{include document=tutorial/weather5.wiki/}}
+
+= Wrap up =
+
+We reached the ends our walk through Juzu, now you can learn more and study the Booking application. This application
+can be found in the package you downloaded in the ##booking## directory.

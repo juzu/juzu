@@ -1,6 +1,53 @@
-The first version of the application shows the most basic Juzu application. Our application is declared in the
-##examples.tutorial.weather1## package package annotated with the ##@Application## annotation This annotation declares a
-Juzu application and does not require any mandatory value. Like classes, methods or fields, Java packages can be
+= Deploy the applications =
+
+Before diving in the technical part of this tutorial, we need to study how to deploy the examples and how to use them.
+In the package you downloaded you will find a war file adapted to your portal server in the ##/tutorial## directory:
+
+* ##juzu-tutorial-examples-gatein.war## for the GateIn portal server
+* ##juzu-tutorial-examples-liferay.war## for the Liferay portal server
+
+The main reason we have two servers is that the jars are not exactly the same, each is adapted to the portal
+server you will use. When you deploy the applications, the deployment process will print information in the
+console, like this one:
+
+{{screen}}
+INFO: Deploying web application archive juzu-tutorial-examples-gatein.war
+loading class descriptor examples.tutorial.weather3.Weather3Application
+Using injection org.juzu.impl.spi.inject.spring.SpringBootstrap
+Starting application [Weather3Application]
+loading class descriptor examples.tutorial.weather2.Weather2Application
+Using injection org.juzu.impl.spi.inject.cdi.CDIBootstrap
+Starting application [Weather2Application]
+loading class descriptor examples.tutorial.weather1.Weather1Application
+Using injection org.juzu.impl.spi.inject.cdi.CDIBootstrap
+Starting application [Weather1Application]
+loading class descriptor examples.tutorial.weather4.Weather4Application
+Using injection org.juzu.impl.spi.inject.cdi.CDIBootstrap
+Starting application [Weather4Application]
+loading class descriptor examples.tutorial.weather5.Weather5Application
+Using injection org.juzu.impl.spi.inject.cdi.CDIBootstrap
+Starting application [Weather5Application]
+{{/screen}}
+
+As we can notice, there are 5 applications deployed, one for each of the topic of this tutorial
+
+* Weather1Application: [[#quickstart]]
+* Weather2Application: [[#template_overview]]
+* Weather3Application: [[#dependency_injection]]
+* Weather3Application: [[#views]]
+* Weather3Application: [[#actions]]
+
+= Interacting with the application =
+
+In this tutorial, Juzu applications are deployed in the **//dev//** mode. This runtime mode allows you to modify the
+source code of the application, Juzu will pick up the modifications and update the running application almost
+instantanesouly.
+
+The source code for the five applications is in the ##/WEB-INF/src## directory of the war file, each application has
+its own package, for instance the quickstart application uses the package ##examples.tutorial.weather1##. The first
+version of the application shows the most basic Juzu application. Our application is declared in the
+##examples.tutorial.weather1## package package annotated with the ##@Application## annotation This annotation declares
+a Juzu application and does not require any mandatory value. Like classes, methods or fields, Java packages can be
 annotated, such packages declaration are represented by a special file named ##package-info.java##.
 
 Usually an application is made of controllers and templates, in this example, the ##Weather## Java class contains a method

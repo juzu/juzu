@@ -11,6 +11,10 @@
        <name>juzu.app_name</name>
        <value>Weather1Application</value>
      </init-param>
+     <init-param>
+       <name>juzu.run_mode</name>
+       <value>dev</value>
+     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
@@ -24,6 +28,10 @@
      <init-param>
        <name>juzu.app_name</name>
        <value>Weather2Application</value>
+     </init-param>
+     <init-param>
+       <name>juzu.run_mode</name>
+       <value>dev</value>
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
@@ -40,6 +48,10 @@
       <value>Weather3Application</value>
     </init-param>
     <init-param>
+      <name>juzu.run_mode</name>
+      <value>dev</value>
+    </init-param>
+    <init-param>
       <name>juzu.inject</name>
       <value>spring</value>
       <!--
@@ -54,25 +66,33 @@
     </portlet-info>
   </portlet>
   <portlet>
-     <portlet-name>Weather4Portlet</portlet-name>
-     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-     <init-param>
-       <name>juzu.app_name</name>
-       <value>Weather4Application</value>
-     </init-param>
-     <supports>
-       <mime-type>text/html</mime-type>
-     </supports>
-     <portlet-info>
-       <title>Weather 4</title>
-     </portlet-info>
-   </portlet>
+    <portlet-name>Weather4Portlet</portlet-name>
+    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>Weather4Application</value>
+    </init-param>
+    <init-param>
+      <name>juzu.run_mode</name>
+      <value>dev</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>Weather 4</title>
+    </portlet-info>
+  </portlet>
   <portlet>
     <portlet-name>Weather5Portlet</portlet-name>
     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
     <init-param>
       <name>juzu.app_name</name>
       <value>Weather5Application</value>
+    </init-param>
+    <init-param>
+      <name>juzu.run_mode</name>
+      <value>dev</value>
     </init-param>
     <supports>
       <mime-type>text/html</mime-type>
