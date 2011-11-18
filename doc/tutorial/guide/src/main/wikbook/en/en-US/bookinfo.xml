@@ -18,7 +18,7 @@
   -->
 
 <bookinfo>
-  <title>Juzu Web Framework</title>
+  <title>Juzu Web Framework <?eval ${project.version}?></title>
   <subtitle>Tutorial</subtitle>
   <edition>1.0</edition>
   <pubsnumber>1</pubsnumber>
