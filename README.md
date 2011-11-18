@@ -37,6 +37,7 @@ create applications.
 
 Various things to do, not exhaustive that needs to go in the roadmap
 
+- Provide a deployment mode that get source from the file system wherever they are (in order to use the real sources)
 - UndeclaredIOException
 - parse error in template parser
 - stack trace sanitization
