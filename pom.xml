@@ -40,6 +40,17 @@
     <url>https://github.com/juzu/juzu</url>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <id>repository.exoplatform.org</id>
+      <url>http://repository.exoplatform.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>repository.exoplatform.org</id>
+      <url>http://repository.exoplatform.org/content/repositories/juzu-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencyManagement>
     <dependencies>
 
