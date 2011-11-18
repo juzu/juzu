@@ -33,6 +33,13 @@
         <exclude>WEB-INF/lib/**</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources</directory>
+      <outputDirectory>/META-INF</outputDirectory>
+      <includes>
+        <include>context.xml</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>

@@ -101,6 +101,9 @@
                 <overlay>
                   <groupId>org.juzu</groupId>
                   <artifactId>juzu-overlay-liferay</artifactId>
+                  <excludes>
+                    <!-- Empty to have /META-INF/context.xml copied -->
+                  </excludes>
                 </overlay>
               </overlays>
             </configuration>
