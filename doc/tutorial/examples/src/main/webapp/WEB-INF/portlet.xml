@@ -21,6 +21,7 @@
      </supports>
      <portlet-info>
        <title>Weather 1</title>
+       <keywords>juzu,sample</keywords>
      </portlet-info>
    </portlet>
    <portlet>
@@ -40,6 +41,7 @@
      </supports>
      <portlet-info>
        <title>Weather 2</title>
+       <keywords>juzu,sample</keywords>
      </portlet-info>
    </portlet>
   <portlet>
@@ -66,6 +68,7 @@
     </supports>
     <portlet-info>
       <title>Weather 3</title>
+      <keywords>juzu,sample</keywords>
     </portlet-info>
   </portlet>
   <portlet>
@@ -85,6 +88,7 @@
     </supports>
     <portlet-info>
       <title>Weather 4</title>
+      <keywords>juzu,sample</keywords>
     </portlet-info>
   </portlet>
   <portlet>
@@ -104,6 +108,7 @@
     </supports>
     <portlet-info>
       <title>Weather 5</title>
+      <keywords>juzu,sample</keywords>
     </portlet-info>
   </portlet>
 </portlet-app>
