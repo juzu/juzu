@@ -88,9 +88,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
    /** The jars in WEB-INF/lib . */
    private List<URL> jarURLs;
 
-   /** . */
-   private String applicationName;
-
    public void init(PortletConfig config) throws PortletException
    {
       try
@@ -154,19 +151,19 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                Map<String, Change> changes =  devScanner.scan();
                if (changes.size() > 0)
                {
-                  System.out.println("Detected changes : " + changes);
+                  System.out.println("[" + config.getPortletName() + "] Detected changes : " + changes);
                   applicationContext = null;
                }
                else
                {
-                  System.out.println("No changes detected");
+                  System.out.println("[" + config.getPortletName() + "] No changes detected");
                }
             }
 
             //
             if (applicationContext == null)
             {
-               System.out.println("Building application");
+               System.out.println("[" + config.getPortletName() + "] Building application");
 
                // Build the classpath
                List<URL> classPath = new ArrayList<URL>();
@@ -198,7 +195,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                   boot(classes, cl2);
                   devScanner = new FileSystemScanner<String>(fs);
                   devScanner.scan();
-                  System.out.println("[" + applicationName + "] Dev mode scanner monitoring " + fs.getFile(fs.getRoot()));
+                  System.out.println("[" + config.getPortletName() + "] Dev mode scanner monitoring " + fs.getFile(fs.getRoot()));
                   return Collections.emptyList();
                }
                else
@@ -260,9 +257,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       Field field = clazz.getDeclaredField("DESCRIPTOR");
       ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 
-      // Set app name
-      this.applicationName = descriptor.getName();
-
       // Find the juzu jar
       URL mainURL = null;
       for (URL jarURL : jarURLs)
@@ -304,7 +298,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       {
          throw new PortletException("unrecognized inject vendor " + inject);
       }
-      System.out.println("[" + applicationName + "] Using injection " + injectBootstrap.getClass().getName());
+      System.out.println("[" + config.getPortletName() + "] Using injection " + injectBootstrap.getClass().getName());
 
       //
       injectBootstrap.addFileSystem(classes);
@@ -328,7 +322,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       );
 
       //
-      System.out.println("[" + applicationName + "] Starting");
+      System.out.println("[" + config.getPortletName() + "] Starting " + descriptor.getName());
       bootstrap.start();
       applicationContext = bootstrap.getContext();
    }
