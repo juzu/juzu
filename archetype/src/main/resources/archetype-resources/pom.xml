@@ -90,6 +90,7 @@
             <id>gatein</id>
             <configuration>
               <classifier>gatein</classifier>
+              <webappDirectory>${project.build.directory}/gatein</webappDirectory>
               <overlays>
                 <overlay>
                   <groupId>org.juzu</groupId>
@@ -105,6 +106,7 @@
             <id>liferay</id>
             <configuration>
               <classifier>liferay</classifier>
+              <webappDirectory>${project.build.directory}/liferay</webappDirectory>
               <overlays>
                 <overlay>
                   <groupId>org.juzu</groupId>

@@ -60,6 +60,10 @@
         <!-- -->
         <include>javax.inject:javax.inject</include>
 
+        <!-- Spring -->
+        <include>org.springframework:*</include>
+        <include>commons-logging:commons-logging:*</include>
+
         <!-- CDI -->
         <include>javax.enterprise:cdi-api</include>
         <include>org.jboss.spec.javax.interceptor:jboss-interceptors-api_1.1_spec</include>
