@@ -30,6 +30,9 @@
     <pushChanges>false</pushChanges>
     <autoVersionSubmodules>true</autoVersionSubmodules>
 
+    <!-- Encoding -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
   </properties>
 
   <developers>
