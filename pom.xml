@@ -23,6 +23,15 @@
     </license>
   </licenses>
 
+  <properties>
+
+    <!-- maven-release-plugin -->
+    <useReleaseProfile>false</useReleaseProfile>
+    <pushChanges>false</pushChanges>
+    <autoVersionSubmodules>true</autoVersionSubmodules>
+
+  </properties>
+
   <developers>
     <developer>
       <id>julien.viet</id>
@@ -363,6 +372,11 @@
               </property>
             </systemProperties>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
