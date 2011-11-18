@@ -45,6 +45,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -61,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -336,6 +338,20 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       applicationContext.invoke(new PortletActionBridge(request, response));
    }
 
+   /**
+    * Purge the session.
+    *
+    * @param req the request owning the session
+    */
+   private void purgeSession(PortletRequest req)
+   {
+      PortletSession session = req.getPortletSession();
+      for (String key : new HashSet<String>(session.getAttributeMap().keySet()))
+      {
+         session.removeAttribute(key);
+      }
+   }
+
    public void render(RenderRequest request, RenderResponse response) throws PortletException, IOException
    {
       Collection<CompilationError> errors = boot();
@@ -345,7 +361,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       {
          if (errors != null)
          {
-            request.getPortletSession().invalidate();
+            purgeSession(request);
          }
 
          //
@@ -393,7 +409,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       {
          if (errors != null)
          {
-            request.getPortletSession().invalidate();
+            purgeSession(request);
          }
 
          //
