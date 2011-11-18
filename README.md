@@ -1,9 +1,10 @@
 # Juzu
 
-Juzu Web is a web framework matching portlet MVC. Version 0.3 is [available](https://github.com/downloads/juzu/juzu/juzu-0.3.zip) and
-at the moment contains the sample booking application that works on GateIn and Liferay. At the moment there is no formal
-documentation, yet the sample application is good enough to discover how to use Juzu and can be used as a bootstrap to
-create applications.
+Juzu Web is a web framework matching portlet MVC. Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib-0.4.1.zip)
+it contains
+
+- a tutorial (example and doc)
+- the booking application example
 
 # Status
 
@@ -13,27 +14,32 @@ create applications.
     - Liferay support
     - Weld and Spring integration
     - basic packaging
+- 0.4.1
+    - eclipse incremental compilation support (experimental)
+    - tutorial: documentation and sample
+    - maven archetype
 
 # Roadmap
 
-- 0.4
-    - eclipse incremental compilation support
-    - initial documentation and sample
-    - maven archetype
 - 0.5
-    - bean mapping
-    - bean validation
+    - tutorial (cont)
+    - template parameters
     - IDE screencast
     - portlet eventing support
-- 0.6
     - header taglib
-    - servlet support
-    - routing engine
-    - cross site scripting (xss) support
+- 0.6
+    - bean mapping
+    - bean validation
 - 0.7
     - request context stacking
     - extensible taglib
     - application import
+- 0.8
+    - module system
+- 0.9
+    - cross site scripting (xss) support
+    - servlet support
+    - routing engine
 
 Various things to do, not exhaustive that needs to go in the roadmap
 
@@ -84,7 +90,7 @@ The command line to use for creating a simple Juzu application using the Maven a
     -DremoteRepositories=http://repository.exoplatform.org/public
     -DarchetypeGroupId=org.juzu \
     -DarchetypeArtifactId=juzu-archetype \
-    -DarchetypeVersion=0.4 \
+    -DarchetypeVersion=0.4.1 \
     -DgroupId=<my.groupid> \
     -DartifactId=<my-artifactId>
 
