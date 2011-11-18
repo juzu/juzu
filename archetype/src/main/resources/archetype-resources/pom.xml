@@ -16,6 +16,14 @@
     <maven.compiler.source>1.5</maven.compiler.source>
   </properties>
 
+  <!-- Used until Juzu is in Maven central -->
+  <repositories>
+    <repository>
+      <id>exo-central-server</id>
+      <url>http://repository.exoplatform.org/public</url>
+    </repository>
+  </repositories>
+
   <dependencies>
 
     <!-- Application dependencies-->

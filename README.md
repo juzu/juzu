@@ -76,6 +76,18 @@ Weld is the default dependency injection framework.
 Spring is used by setting the `spring` value for the `juzu.inject` portlet init parameter. Spring beans are declared in the
 `spring.xml` file.
 
+# Maven archetype
+
+The command line to use for creating a simple Juzu application using the Maven archetype
+
+    >mvn archetype:generate \
+    -DremoteRepositories=http://repository.exoplatform.org/public
+    -DarchetypeGroupId=org.juzu \
+    -DarchetypeArtifactId=juzu-archetype \
+    -DarchetypeVersion=0.4 \
+    -DgroupId=<my.groupid> \
+    -DartifactId=<my-artifactId>
+
 # Principles
 
 ## Controller
