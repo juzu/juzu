@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-parent</artifactId>
-  <version>0.4-SNAPSHOT</version>
+  <version>0.4</version>
   <packaging>pom</packaging>
 
   <name>Juzu Web Framework</name>
@@ -70,75 +68,75 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
         <classifier>source</classifier>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
         <classifier>javadoc</classifier>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-archetype</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-overlay-gatein</artifactId>
         <type>war</type>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-overlay-liferay</artifactId>
         <type>war</type>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <classifier>source</classifier>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <classifier>gatein</classifier>
         <type>war</type>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <type>war</type>
         <classifier>liferay</classifier>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-tutorial-examples</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-tutorial-examples</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
@@ -146,27 +144,27 @@
         <artifactId>juzu-tutorial-examples</artifactId>
         <classifier>gatein</classifier>
         <type>war</type>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-tutorial-examples</artifactId>
         <type>war</type>
         <classifier>liferay</classifier>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-tutorial-guide</artifactId>
         <classifier>html</classifier>
         <type>zip</type>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-tutorial-guide</artifactId>
         <type>pdf</type>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.4</version>
       </dependency>
 
       <dependency>
