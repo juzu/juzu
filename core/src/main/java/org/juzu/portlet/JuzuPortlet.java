@@ -83,11 +83,11 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
    /** . */
    private FileSystemScanner<String> devScanner;
 
-   /** . */
-   private ClassLoader classLoader;
-
    /** The jars in WEB-INF/lib . */
    private List<URL> jarURLs;
+
+   /** . */
+   private String applicationName;
 
    public void init(PortletConfig config) throws PortletException
    {
@@ -155,6 +155,10 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                   System.out.println("Detected changes : " + changes);
                   applicationContext = null;
                }
+               else
+               {
+                  System.out.println("No changes detected");
+               }
             }
 
             //
@@ -192,6 +196,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                   boot(classes, cl2);
                   devScanner = new FileSystemScanner<String>(fs);
                   devScanner.scan();
+                  System.out.println("[" + applicationName + "] Dev mode scanner monitoring " + fs.getFile(fs.getRoot()));
                   return Collections.emptyList();
                }
                else
@@ -249,10 +254,12 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       }
 
       //
-      System.out.println("loading class descriptor " + fqn);
       Class<?> clazz = cl.loadClass(fqn);
       Field field = clazz.getDeclaredField("DESCRIPTOR");
       ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
+
+      // Set app name
+      this.applicationName = descriptor.getName();
 
       // Find the juzu jar
       URL mainURL = null;
@@ -295,7 +302,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       {
          throw new PortletException("unrecognized inject vendor " + inject);
       }
-      System.out.println("Using injection " + injectBootstrap.getClass().getName());
+      System.out.println("[" + applicationName + "] Using injection " + injectBootstrap.getClass().getName());
 
       //
       injectBootstrap.addFileSystem(classes);
@@ -319,10 +326,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       );
 
       //
-      System.out.println("Starting application [" + descriptor.getName() + "]");
+      System.out.println("[" + applicationName + "] Starting");
       bootstrap.start();
       applicationContext = bootstrap.getContext();
-      classLoader = cl;
    }
 
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
