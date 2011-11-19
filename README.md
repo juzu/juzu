@@ -1,7 +1,10 @@
 # Juzu
 
-Juzu Web is a web framework matching portlet MVC. Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib-0.4.1.zip)
-it contains
+Juzu Web is a web framework matching portlet MVC.
+
+You can join the Juzu [mailing list](http://groups.google.com/group/juzu) to discuss or contribute.
+
+Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib-0.4.1.zip) it contains
 
 - a tutorial (example and doc)
 - the booking application example
@@ -21,9 +24,10 @@ it contains
 
 # Roadmap
 
+- 0.4.2
+    - template named parameters
 - 0.5
     - tutorial (cont)
-    - template parameters
     - IDE screencast
     - portlet eventing support
     - header taglib
