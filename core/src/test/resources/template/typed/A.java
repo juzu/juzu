@@ -17,59 +17,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package template.typed;
 
-import org.juzu.impl.template.ASTNode;
-import org.juzu.impl.utils.FQN;
+import org.juzu.Path;
+import org.juzu.View;
 
-import java.io.Serializable;
-import java.util.LinkedHashSet;
+import javax.inject.Inject;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateModel implements Serializable
+public class A
 {
 
-   /** . */
-   private final Foo foo;
+   @Inject
+   @Path("index.gtmpl")
+   template.typed.templates.index index;
 
-   /** . */
-   private final ASTNode.Template ast;
-
-   /** . */
-   private final FQN fqn;
-
-   /** . */
-   private final LinkedHashSet<String> parameters;
-
-   public TemplateModel(
-      Foo foo,
-      ASTNode.Template ast,
-      FQN fqn,
-      LinkedHashSet<String> parameters)
+   @View
+   public void index() throws IOException
    {
-      this.foo = foo;
-      this.ast = ast;
-      this.fqn = fqn;
-      this.parameters = parameters;
-   }
-
-   public Foo getFoo()
-   {
-      return foo;
-   }
-
-   public ASTNode.Template getAST()
-   {
-      return ast;
-   }
-
-   public FQN getFQN()
-   {
-      return fqn;
-   }
-
-   public LinkedHashSet<String> getParameters()
-   {
-      return parameters;
+      index.render();
    }
 }

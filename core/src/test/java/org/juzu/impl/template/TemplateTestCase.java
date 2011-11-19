@@ -22,11 +22,12 @@ package org.juzu.impl.template;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.CompilerHelper;
+import org.juzu.test.DIImplementation;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateTestCase extends AbstractInjectTestCase
+   public class TemplateTestCase extends AbstractInjectTestCase
 {
 
    public void _testSimple() throws Exception
@@ -63,6 +64,16 @@ public class TemplateTestCase extends AbstractInjectTestCase
       MockApplication<?> app = application("template", "relativepath").init();
       MockClient client = app.client();
       assertEquals("relative_path_template", client.render().getContent());
+   }
 
+   public void testTyped() throws Exception
+   {
+      // Does not work with Guice at the moment
+      if (getDI() != DIImplementation.INJECT_GUICE)
+      {
+         MockApplication<?> app = application("template", "typed").init();
+         MockClient client = app.client();
+         assertEquals("typed_template", client.render().getContent());
+      }
    }
 }

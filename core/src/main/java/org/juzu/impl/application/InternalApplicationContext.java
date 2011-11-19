@@ -279,6 +279,7 @@ public class InternalApplicationContext extends ApplicationContext
             }
             id.append(name);
          }
+         id.append("_");
          ClassLoader cl = manager.getClassLoader();
          Class<?> stubClass = cl.loadClass(id.toString());
          return(TemplateStub)stubClass.newInstance();

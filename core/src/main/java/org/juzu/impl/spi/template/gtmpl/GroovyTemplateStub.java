@@ -47,7 +47,8 @@ public abstract class GroovyTemplateStub extends TemplateStub
 
    protected GroovyTemplateStub()
    {
-      this.templateId = getClass().getName();
+      String name = getClass().getName();
+      this.templateId = name.substring(0, name.length() - 1); // Remove trailing _
    }
 
    public GroovyTemplateStub(String templateId)

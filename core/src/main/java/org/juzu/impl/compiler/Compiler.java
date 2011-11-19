@@ -213,7 +213,6 @@ public class Compiler<I, O>
          options.add(sb.toString());
       }
 
-
       //
       final List<CompilationError> errors = new ArrayList<CompilationError>();
       DiagnosticListener<JavaFileObject> listener = new DiagnosticListener<JavaFileObject>()
@@ -279,7 +278,7 @@ public class Compiler<I, O>
 
       // We don't use the return value because sometime it says it is failed although
       // it is not, need to investigate this at some piont
-      task.call();
+      boolean ok = task.call();
 
       // Clear caches
       fileManager.sourceOutput.clearCache();
@@ -294,6 +293,6 @@ public class Compiler<I, O>
       processors.clear();
 
       //
-      return errors;
+      return ok ? Collections.<CompilationError>emptyList() : errors;
    }
 }

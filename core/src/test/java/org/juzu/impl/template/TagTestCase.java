@@ -20,6 +20,7 @@
 package org.juzu.impl.template;
 
 import org.juzu.test.AbstractInjectTestCase;
+import org.juzu.test.DIImplementation;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
@@ -73,5 +74,19 @@ public class TagTestCase extends AbstractInjectTestCase
       assertEquals("the_title", render.getTitle());
       render = (MockRenderBridge)client.invoke(url);
       assertEquals("4", render.getTitle());
+   }
+
+   public void testParam() throws Exception
+   {
+      if (getDI() != DIImplementation.INJECT_GUICE)
+      {
+         MockApplication<?> app = application("template", "tag", "param").init();
+
+         //
+         MockClient client = app.client();
+         MockRenderBridge render = client.render();
+         String content = render.getContent();
+         assertEquals("foo_value", content);
+      }
    }
 }

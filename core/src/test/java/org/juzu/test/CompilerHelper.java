@@ -114,7 +114,6 @@ public class CompilerHelper<I, O>
       try
       {
          Compiler<I, O> compiler = new org.juzu.impl.compiler.Compiler<I, O>(input, output);
-//         compiler.addAnnotationProcessor(new MainProcessor());
          compiler.addAnnotationProcessor(new MainProcessor());
          AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
          classLoader = new URLClassLoader(new URL[]{output.getURL()}, Thread.currentThread().getContextClassLoader());

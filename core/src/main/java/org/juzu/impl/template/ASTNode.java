@@ -469,6 +469,16 @@ public abstract class ASTNode<N extends ASTNode<N>> implements Serializable
          sibling.parent = parent;
       }
 
+      public void remove() throws IllegalStateException
+      {
+         if (parent == null)
+         {
+            throw new IllegalStateException("No parent");
+         }
+         parent.children.remove(this);
+         parent = null;
+      }
+
       public Coordinate getBegin()
       {
          return begin;

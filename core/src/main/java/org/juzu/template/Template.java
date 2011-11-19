@@ -24,6 +24,7 @@ import org.juzu.text.Printer;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -58,14 +59,14 @@ public class Template
       render(Collections.<String, Object>emptyMap(), locale);
    }
 
-   public void render(Map<String, ?> context) throws TemplateExecutionException, IOException
+   public void render(Map<String, ?> parameters) throws TemplateExecutionException, IOException
    {
-      render(context, null);
+      render(parameters, null);
    }
 
-   public void render(Map<String, ?> context, Locale locale) throws TemplateExecutionException, IOException
+   public void render(Map<String, ?> parameters, Locale locale) throws TemplateExecutionException, IOException
    {
-      render(null, context, null);
+      render(null, parameters, null);
    }
 
    public void render(Printer printer) throws TemplateExecutionException, IOException
@@ -78,9 +79,9 @@ public class Template
       render(printer, Collections.<String, Object>emptyMap(), locale);
    }
 
-   public void render(Printer printer, Map<String, ?> context) throws TemplateExecutionException, IOException
+   public void render(Printer printer, Map<String, ?> parameters) throws TemplateExecutionException, IOException
    {
-      render(printer, context, null);
+      render(printer, parameters, null);
    }
 
    /**
@@ -104,5 +105,55 @@ public class Template
    public String toString()
    {
       return getClass().getSimpleName() + "[path=" + path + "]";
+   }
+
+   public abstract class Builder
+   {
+
+      /** The parameters. */
+      private Map<String, Object> parameters;
+
+      public final void render() throws IOException
+      {
+         if (parameters != null)
+         {
+            Template.this.render(parameters);
+         }
+         else
+         {
+            Template.this.render();
+         }
+      }
+
+      /**
+       * Update a parameter, if the value is not null the parameter with the specified name is set, otherwise
+       * the parameter is removed. If the parameter is set and a value was set previously, the old value is
+       * overwritten otherwise. If the parameter is removed and the value does not exist, nothing happens.
+       *
+       * @param name the parameter name
+       * @param value the parameter value
+       * @return this builder
+       * @throws NullPointerException if the name argument is null
+       */
+      public Builder set(String name, Object value) throws NullPointerException
+      {
+         if (name == null)
+         {
+            throw new NullPointerException("The parameter argument cannot be null");
+         }
+         if (value != null)
+         {
+            if (parameters == null)
+            {
+               parameters = new HashMap<String, Object>();
+            }
+            parameters.put(name, value);
+         }
+         else if (parameters != null)
+         {
+            parameters.remove(name);
+         }
+         return this;
+      }
    }
 }

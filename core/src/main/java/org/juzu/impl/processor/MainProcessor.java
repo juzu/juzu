@@ -313,7 +313,7 @@ public class MainProcessor extends BaseProcessor
          }
          for (TemplateModel template : application.templates.values())
          {
-            config.put(template.getStubFQN().getFullName() + "_", "template");
+            config.put(template.getFQN().getFullName(), "template");
          }
 
          //
@@ -373,10 +373,10 @@ public class MainProcessor extends BaseProcessor
                }, generator);
 
                //
-               Collection<FileObject> generated = generator.generate(filer, template.getStubFQN());
+               Collection<FileObject> generated = generator.generate(filer, template.getFQN());
                if (generated.size() > 0)
                {
-                  StringBuilder msg = new StringBuilder("Generated meta template ").append(template.getStubFQN().getFullName()).append(" as ");
+                  StringBuilder msg = new StringBuilder("Generated meta template ").append(template.getFQN().getFullName()).append(" as ");
                   int i = 0;
                   for (FileObject fo : generated)
                   {
@@ -387,7 +387,7 @@ public class MainProcessor extends BaseProcessor
                }
                else
                {
-                  log("Template " + template.getStubFQN().getFullName() + " generated no meta template");
+                  log("Template " + template.getFQN().getFullName() + " generated no meta template");
                }
             }
             catch (IOException e)
@@ -628,17 +628,16 @@ public class MainProcessor extends BaseProcessor
                {
                   TemplateProvider provider = providers.get(template.getFoo().getExtension());
                   Writer stubWriter = null;
-                  FQN stubFQN;
+                  FQN stubFQN = template.getFQN();
                   try
                   {
                      // Template stub
-                     stubFQN = template.getStubFQN();
-                     JavaFileObject stubFile = filer.createSourceFile(stubFQN.getFullName());
+                     JavaFileObject stubFile = filer.createSourceFile(stubFQN.getFullName() + "_");
                      stubWriter = stubFile.openWriter();
                      stubWriter.append("package ").append(stubFQN.getPackageName()).append(";\n");
                      stubWriter.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-                     stubWriter.append("@Generated({})\n");
-                     stubWriter.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
+                     stubWriter.append("@Generated({\"").append(stubFQN.getFullName()).append("\"})\n");
+                     stubWriter.append("public class ").append(stubFQN.getSimpleName()).append("_ extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
                      stubWriter.append("}");
 
                      //
@@ -656,7 +655,7 @@ public class MainProcessor extends BaseProcessor
                   try
                   {
                      // Template qualified class
-                     FileObject classFile = filer.createSourceFile(stubFQN.getFullName() + "_");
+                     FileObject classFile = filer.createSourceFile(stubFQN.getFullName());
                      classWriter = classFile.openWriter();
                      try
                      {
@@ -669,15 +668,43 @@ public class MainProcessor extends BaseProcessor
                         classWriter.append("@Generated({})\n");
                         classWriter.append("@Export\n");
                         classWriter.append("@Path(\"").append(template.getFoo().getPath()).append("\")\n");
-                        classWriter.append("public class ").append(stubFQN.getSimpleName()).append("_ extends ").append(Template.class.getName()).append("\n");
+                        classWriter.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(Template.class.getName()).append("\n");
                         classWriter.append("{\n");
                         classWriter.append("@Inject\n");
-                        classWriter.append("public ").append(stubFQN.getSimpleName()).append("_(").
+                        classWriter.append("public ").append(stubFQN.getSimpleName()).append("(").
                            append(ApplicationContext.class.getSimpleName()).append(" applicationContext").
                            append(")\n");
                         classWriter.append("{\n");
                         classWriter.append("super(applicationContext, \"").append(path).append("\");\n");
                         classWriter.append("}\n");
+
+                        //
+                        if (template.getParameters() != null)
+                        {
+                           // Setters on template
+                           for (String paramName : template.getParameters())
+                           {
+                              classWriter.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
+                              classWriter.append("Builder builder = new Builder();");
+                              classWriter.append("builder.set(\"").append(paramName).append("\",").append(paramName).append(");\n");
+                              classWriter.append("return builder;\n");
+                              classWriter.append(("}\n"));
+                           }
+
+                           // Setters on builders
+                           classWriter.append("public class Builder extends ").append(Tools.getImport(Template.Builder.class)).append("\n");
+                           classWriter.append("{\n");
+                           for (String paramName : template.getParameters())
+                           {
+                              classWriter.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
+                              classWriter.append("set(\"").append(paramName).append("\",").append(paramName).append(");\n");
+                              classWriter.append("return this;\n");
+                              classWriter.append(("}\n"));
+                           }
+                           classWriter.append("}\n");
+                        }
+
+                        // Close class
                         classWriter.append("}\n");
 
                         //

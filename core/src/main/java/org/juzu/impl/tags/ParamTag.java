@@ -17,59 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package org.juzu.impl.tags;
 
 import org.juzu.impl.template.ASTNode;
-import org.juzu.impl.utils.FQN;
-
-import java.io.Serializable;
-import java.util.LinkedHashSet;
+import org.juzu.impl.template.ExtendedTagHandler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateModel implements Serializable
+public class ParamTag extends ExtendedTagHandler
 {
 
-   /** . */
-   private final Foo foo;
-
-   /** . */
-   private final ASTNode.Template ast;
-
-   /** . */
-   private final FQN fqn;
-
-   /** . */
-   private final LinkedHashSet<String> parameters;
-
-   public TemplateModel(
-      Foo foo,
-      ASTNode.Template ast,
-      FQN fqn,
-      LinkedHashSet<String> parameters)
+   @Override
+   public void process(ASTNode.Tag tag)
    {
-      this.foo = foo;
-      this.ast = ast;
-      this.fqn = fqn;
-      this.parameters = parameters;
-   }
-
-   public Foo getFoo()
-   {
-      return foo;
-   }
-
-   public ASTNode.Template getAST()
-   {
-      return ast;
-   }
-
-   public FQN getFQN()
-   {
-      return fqn;
-   }
-
-   public LinkedHashSet<String> getParameters()
-   {
-      return parameters;
    }
 }

@@ -31,6 +31,8 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -62,11 +64,6 @@ public class TemplateCompiler extends TemplateCompilationContext
       this.foo = foo;
       this.processor = processor;
       this.added = new ArrayList<TemplateModel>();
-   }
-
-   private void process(ASTNode.Template template) throws IOException
-   {
-      template.process(this);
    }
 
    public Iterable<TemplateModel> getAdded()
@@ -140,14 +137,44 @@ public class TemplateCompiler extends TemplateCompilationContext
             throw new CompilationException(processor.get(foo.getOrigin()), ErrorCode.TEMPLATE_SYNTAX_ERROR, fqn);
          }
 
+         // Obtain template parameters
+         ArrayList<ASTNode.Tag> paramTags = new ArrayList<ASTNode.Tag>();
+         collectParams(templateAST, paramTags);
+         LinkedHashSet<String> parameters = null;
+         if (paramTags.size() > 0)
+         {
+            parameters = new LinkedHashSet<String>();
+            for (ASTNode.Tag paramTag : paramTags)
+            {
+               String paramName = paramTag.getArgs().get("name");
+               parameters.add(paramName);
+            }
+         }
+
          // Add template to application
-         application.templates.put(path, template = new TemplateModel(foo, templateAST, stubFQN));
+         application.templates.put(path, template = new TemplateModel(foo, templateAST, stubFQN, parameters));
 
          // Process template
-         process(templateAST);
+         templateAST.process(this);
 
          //
          added.add(template);
+      }
+   }
+
+   private void collectParams(ASTNode<?> node, List<ASTNode.Tag> tags)
+   {
+      for (ASTNode.Block child : node.getChildren())
+      {
+         collectParams(child, tags);
+      }
+      if (node instanceof ASTNode.Tag)
+      {
+         ASTNode.Tag tag = (ASTNode.Tag)node;
+         if (tag.getName().equals("param"))
+         {
+            tags.add(tag);
+         }
       }
    }
 
