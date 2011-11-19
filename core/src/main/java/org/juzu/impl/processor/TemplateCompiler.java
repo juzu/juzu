@@ -75,7 +75,7 @@ public class TemplateCompiler extends TemplateCompilationContext
    }
 
    @Override
-   public String resolveTemplate(String path) throws IOException
+   public void resolveTemplate(String path) throws IOException
    {
       TemplateModel template = application.templates.get(path);
 
@@ -149,9 +149,6 @@ public class TemplateCompiler extends TemplateCompilationContext
          //
          added.add(template);
       }
-
-      //
-      return template.getStubFQN().getFullName();
    }
 
    @Override

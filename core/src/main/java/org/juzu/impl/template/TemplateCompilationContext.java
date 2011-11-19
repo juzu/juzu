@@ -52,9 +52,8 @@ public class TemplateCompilationContext
       return tags.get(name);
    }
 
-   public String resolveTemplate(String path) throws IOException
+   public void resolveTemplate(String path) throws IOException
    {
-      return null;
    }
 
    public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
