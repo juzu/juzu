@@ -21,6 +21,7 @@ package org.juzu.impl.spi.template.gtmpl;
 
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.template.SectionType;
+import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
 import org.juzu.text.Location;
 
@@ -30,6 +31,8 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -253,16 +256,17 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       // throw new UnsupportedOperationException();
    }
 
-   public void generate(Filer filer, String pkgName, String rawName) throws IOException
+   public Collection<FileObject> generate(Filer filer, FQN name) throws IOException
    {
       String script = toString();
 
       // Create the groovy file
-      FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, pkgName, rawName + ".groovy");
+      FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, name.getPackageName(), name.getSimpleName() + ".groovy");
       Writer writer = fo.openWriter();
       try
       {
          writer.write(script);
+         return Collections.singletonList(fo);
       }
       finally
       {

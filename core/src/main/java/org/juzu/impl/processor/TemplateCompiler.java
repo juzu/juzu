@@ -113,7 +113,7 @@ public class TemplateCompiler extends TemplateCompilationContext
                content = resource.getCharContent(true);
                if (content != null)
                {
-                  MainProcessor.log("Obtained template e " + resource.toUri() + " from " + location.getName());
+                  MainProcessor.log("Obtained template " + resource.toUri() + " from " + location.getName());
                   break;
                }
             }

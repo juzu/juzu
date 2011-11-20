@@ -66,6 +66,7 @@ import java.io.ObjectOutputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -161,7 +162,7 @@ public class MainProcessor extends BaseProcessor
 
       //
       String options = processingEnv.getOptions().toString();
-      log("using processing nev " + processingEnv.getClass().getName());
+      log("Using processing nev " + processingEnv.getClass().getName());
    }
 
    @Override
@@ -372,7 +373,22 @@ public class MainProcessor extends BaseProcessor
                }, generator);
 
                //
-               generator.generate(filer, template.getStubFQN().getPackageName(), template.getStubFQN().getSimpleName());
+               Collection<FileObject> generated = generator.generate(filer, template.getStubFQN());
+               if (generated.size() > 0)
+               {
+                  StringBuilder msg = new StringBuilder("Generated meta template ").append(template.getStubFQN().getFullName()).append(" as ");
+                  int i = 0;
+                  for (FileObject fo : generated)
+                  {
+                     msg.append(i++ == 0 ? "{" : ",").append(fo.toUri());
+                  }
+                  msg.append("}");
+                  log(msg);
+               }
+               else
+               {
+                  log("Template " + template.getStubFQN().getFullName() + " generated no meta template");
+               }
             }
             catch (IOException e)
             {
@@ -384,6 +400,9 @@ public class MainProcessor extends BaseProcessor
 
    private void resolveControllers()
    {
+      log("Begin controller resolution");
+
+      //
       for (Iterator<Map.Entry<String, ControllerModel>> i = model.controllers.entrySet().iterator();i.hasNext();)
       {
          Map.Entry<String, ControllerModel> controllerEntry = i.next();
@@ -549,6 +568,9 @@ public class MainProcessor extends BaseProcessor
 
                   // Close class
                   writer.append("}\n");
+
+                  //
+                  log("Generated controller companion " + controller.fqn.getFullName() + "_" + " as " + applicationFile.toUri());
                }
                catch (IOException e)
                {
@@ -561,10 +583,16 @@ public class MainProcessor extends BaseProcessor
             }
          }
       }
+
+      //
+      log("End controller resolution");
    }
 
    private void resolveTemplates()
    {
+      log("Begin template resolution");
+
+      //
       next:
       for (Iterator<Foo> i = model.templates.iterator();i.hasNext();)
       {
@@ -575,9 +603,12 @@ public class MainProcessor extends BaseProcessor
                foo.getOriginPackageFQN().equals(applicationEntry.getKey()) ||
                foo.getOriginPackageFQN().startsWith(applicationEntry.getKey() + "."))
             {
-               i.remove();
                ApplicationModel application = applicationEntry.getValue();
                String path = foo.getPath();
+
+               //
+               i.remove();
+               log("Resolving template " + path + " to application " + application.fqn);
 
                // Process template
                TemplateCompiler compiler;
@@ -609,6 +640,9 @@ public class MainProcessor extends BaseProcessor
                      stubWriter.append("@Generated({})\n");
                      stubWriter.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
                      stubWriter.append("}");
+
+                     //
+                     log("Generated template stub " + stubFQN.getFullName() + "_" + " as " + stubFile.toUri());
                   }
                   catch (IOException e)
                   {
@@ -645,6 +679,9 @@ public class MainProcessor extends BaseProcessor
                         classWriter.append("super(applicationContext, \"").append(path).append("\");\n");
                         classWriter.append("}\n");
                         classWriter.append("}\n");
+
+                        //
+                        log("Generated template class " + stubFQN.getFullName() + " as " + classFile.toUri());
                      }
                      finally
                      {
@@ -666,6 +703,9 @@ public class MainProcessor extends BaseProcessor
             }
          }
       }
+
+      //
+      log("End template resolution");
    }
 
    private void processController(
@@ -740,6 +780,7 @@ public class MainProcessor extends BaseProcessor
          path
       );
       model.templates.add(foo);
+      log("Found template " + path);
    }
 
    private void processApplication(
@@ -766,6 +807,7 @@ public class MainProcessor extends BaseProcessor
          defaultController,
          templatesFQN);
       model.applications.put(packageName, application);
+      log("Found application" + name + " as " + fqn);
 
       //
       Writer writer = null;
@@ -796,6 +838,9 @@ public class MainProcessor extends BaseProcessor
 
          // Close class
          writer.append("}\n");
+
+         //
+         log("Generated application " + application.fqn.getFullName() + " as " + applicationFile.toUri());
       }
       catch (IOException e)
       {

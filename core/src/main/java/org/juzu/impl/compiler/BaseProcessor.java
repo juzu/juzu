@@ -33,6 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -40,11 +43,25 @@ public abstract class BaseProcessor extends AbstractProcessor
 {
 
    /** . */
+   private static final String lineSep = System.getProperty("line.separator");
+
+   /** . */
    private final static ThreadLocal<StringBuilder> log = new ThreadLocal<StringBuilder>();
+
+   /** . */
+   private static final ThreadLocal<DateFormat> format = new ThreadLocal<DateFormat>()
+   {
+      @Override
+      protected DateFormat initialValue()
+      {
+         return new SimpleDateFormat("h:mm:ss:SSS");
+      }
+   };
 
    public static void log(CharSequence msg)
    {
-      log.get().append(msg).append("\n");
+      String s = format.get().format(new Date());
+      log.get().append("[").append(s).append("] ").append(msg).append(lineSep);
    }
 
    @Override
