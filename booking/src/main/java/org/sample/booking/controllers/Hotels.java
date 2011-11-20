@@ -32,7 +32,6 @@ import org.sample.booking.models.User;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,24 +57,31 @@ public class Hotels // extends Application
    Login login;
 
    @Inject
+   Flash flash;
+
+   @Inject
    @Path("hotels/index.gtmpl")
-   Template index;
+   org.sample.booking.templates.hotels.index index;
+
+   @Inject
+   @Path("hotels/list.gtmpl")
+   org.sample.booking.templates.hotels.list list;
+
+   @Inject
+   @Path("hotels/book.gtmpl")
+   org.sample.booking.templates.hotels.book book;
+
+   @Inject
+   @Path("hotels/show.gtmpl")
+   org.sample.booking.templates.hotels.show show;
 
    @View
    public void index() throws IOException
    {
       String username = login.getUserName();
       List<Booking> bookings = Booking.findByUser(username);
-      Map<String, Object> context = Collections.<String, Object>singletonMap("bookings", bookings);
-      index.render(context);
+      index.bookings(bookings).render();
    }
-
-   @Inject
-   @Path("hotels/list.gtmpl")
-   Template list;
-
-   @Inject
-   Flash flash;
 
    @Resource
    public void list(String search, String size, String page) throws IOException
@@ -93,36 +99,21 @@ public class Hotels // extends Application
          pattern = Pattern.compile(".*");
       }
       hotels = Hotel.find(pattern, pattern, _size, _page);
-      Map<String, Object> context = new HashMap<String, Object>();
-      context.put("hotels", hotels);
-      context.put("page", _page);
-      list.render(context);
+      list.hotels(hotels).page(_page).render();
    }
-
-   @Inject
-   @Path("hotels/show.gtmpl")
-   Template show;
 
    @View
    public void show(String id) throws IOException
    {
       Hotel hotel = Hotel.findById(id);
-      Map<String, Object> context = new HashMap<String, Object>();
-      context.put("hotel", hotel);
-      show.render(context);
+      show.hotel(hotel).render();
    }
-
-   @Inject
-   @Path("hotels/book.gtmpl")
-   Template book;
 
    @View
    public void book(String id) throws IOException
    {
       Hotel hotel = Hotel.findById(id);
-      Map<String, Object> context = new HashMap<String, Object>();
-      context.put("hotel", hotel);
-      book.render(context);
+      book.hotel(hotel).render();
    }
 
    @Action
