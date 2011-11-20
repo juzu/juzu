@@ -103,7 +103,7 @@ public class TemplateCompiler extends TemplateCompilationContext
          {
             try
             {
-               String pkg = stubFQN.getPackageName();
+               String pkg = stubFQN.getPackageName().getValue();
                String relativeName = stubFQN.getSimpleName() + "." + foo.getExtension();
                MainProcessor.log("Attempt to obtain template " + pkg + " " + relativeName + " from " + location.getName());
                FileObject resource = processor.filer.getResource(location, pkg, relativeName);

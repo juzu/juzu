@@ -67,12 +67,13 @@ public class CompositeFileManager extends FileManager
    }
 
    @Override
-   public void list(String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse, Collection<JavaFileObject> to) throws IOException
+   public <C extends Collection<JavaFileObject>> C list(String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse, C to) throws IOException
    {
       for (FileManager component : components)
       {
          component.list(packageName, kinds, recurse, to);
       }
+      return to;
    }
 
    @Override

@@ -19,16 +19,20 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.Application;
 import org.juzu.impl.compiler.file.FileKey;
 import org.juzu.impl.compiler.file.SimpleFileManager;
 import org.juzu.impl.compiler.file.JavaFileObjectImpl;
 import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
+import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.impl.utils.Spliterator;
 import org.juzu.text.Location;
 
 import javax.annotation.processing.Processor;
+import javax.inject.Inject;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
@@ -36,12 +40,15 @@ import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,16 +60,16 @@ public class Compiler
    {
 
       /** . */
-      private final ReadFileSystem<?> sourcePath;
+      private ReadFileSystem<?> sourcePath;
 
       /** . */
-      private final ReadWriteFileSystem<?> classOutput;
+      private ReadWriteFileSystem<?> classOutput;
 
       /** . */
-      private final ReadWriteFileSystem<?> sourceOutput;
+      private ReadWriteFileSystem<?> sourceOutput;
 
       /** . */
-      private final List<ReadFileSystem<?>> classPaths;
+      private List<ReadFileSystem<?>> classPaths;
 
       private Builder(
          ReadFileSystem<?> sourcePath,
@@ -78,27 +85,49 @@ public class Compiler
 
       public Builder classOutput(ReadWriteFileSystem<?> classOutput)
       {
-         return new Builder(sourcePath, sourceOutput, classOutput, classPaths);
+         this.classOutput = classOutput;
+         return this;
       }
 
       public Builder output(ReadWriteFileSystem<?> output)
       {
-         return new Builder(sourcePath, output, output, classPaths);
+         this.classOutput = this.sourceOutput = output;
+         return this;
       }
 
       public Builder sourcePath(ReadFileSystem<?> sourcePath)
       {
-         return new Builder(sourcePath, sourceOutput, classOutput, classPaths);
+         this.sourcePath = sourcePath;
+         return this;
       }
 
       public Builder sourceOutput(ReadWriteFileSystem<?> sourceOutput)
       {
-         return new Builder(sourcePath, sourceOutput, classOutput, classPaths);
+         this.sourceOutput = sourceOutput;
+         return this;
       }
 
       public Builder addClassPath(ReadFileSystem<?> classPath)
       {
          classPaths.add(classPath);
+         return this;
+      }
+
+      public Builder addClassPath(Class<?> type) throws URISyntaxException, IOException
+      {
+         URL url = Application.class.getProtectionDomain().getCodeSource().getLocation();
+         if (url.getProtocol().equals("file"))
+         {
+            classPaths.add(new DiskFileSystem(new File(url.toURI())));
+         }
+         else if (url.getProtocol().equals("jar"))
+         {
+            classPaths.add(new JarFileSystem(new JarFile(new File(Inject.class.getProtectionDomain().getCodeSource().getLocation().toURI()))));
+         }
+         else
+         {
+            throw new UnsupportedOperationException("Cannot handle path url " + url);
+         }
          return this;
       }
 

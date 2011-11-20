@@ -17,26 +17,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.compiler.file;
+package metamodel.controller.simple;
 
-import javax.tools.JavaFileObject;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
+import org.juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class FileManager
+public class A
 {
-
-   public abstract JavaFileObject getReadable(FileKey key) throws IOException;
-
-   public abstract JavaFileObject getWritable(FileKey key) throws IOException;
-
-   public abstract <C extends Collection<JavaFileObject>> C list(
-      String packageName,
-      Set<JavaFileObject.Kind> kinds,
-      boolean recurse,
-      C to) throws IOException;
-
-   public abstract void clearCache();
+   @View
+   public void index()
+   {
+   }
 }

@@ -320,7 +320,7 @@ public class MainProcessor extends BaseProcessor
          writer = null;
          try
          {
-            FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, application.fqn.getPackageName(), "config.properties");
+            FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, application.fqn.getPackageName().getValue(), "config.properties");
             writer = fo.openWriter();
             config.store(writer, null);
          }
@@ -746,7 +746,7 @@ public class MainProcessor extends BaseProcessor
       ControllerModel controller = model.controllers.get(controllerFQN.getFullName());
       if (controller == null)
       {
-         ElementHandle origin = ElementHandle.create(controllerElt);
+         ElementHandle origin = ElementHandle.Class.create(controllerElt);
          model.controllers.put(controllerFQN.getFullName(), controller = new ControllerModel(origin, controllerFQN));
       }
       String id = (String)annotationValues.get("id");
@@ -829,7 +829,7 @@ public class MainProcessor extends BaseProcessor
       String templatesFQN = packageName.isEmpty() ? "templates" : (packageName + ".templates");
       FQN fqn = new FQN(packageName, name);
       ApplicationModel application = new ApplicationModel(
-         ElementHandle.create(packageElt),
+         ElementHandle.Package.create(packageElt),
          fqn,
          defaultController,
          templatesFQN);
@@ -871,7 +871,7 @@ public class MainProcessor extends BaseProcessor
       }
       catch (IOException e)
       {
-         throw new CompilationException(annotatedElt, ErrorCode.CANNOT_WRITE_APPLICATION_CLASS);
+         throw new CompilationException(e, annotatedElt, ErrorCode.CANNOT_WRITE_APPLICATION_CLASS);
       }
       finally
       {

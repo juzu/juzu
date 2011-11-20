@@ -29,24 +29,24 @@ public class FQN implements Serializable
    private final String fullName;
 
    /** . */
-   private final String packageName;
+   private final QN packageName;
 
    /** . */
    private final String simpleName;
 
    public FQN(String fullName)
    {
-      String packageName;
+      QN packageName;
       String simpleName;
       int pos = fullName.lastIndexOf('.');
       if (pos == - 1)
       {
-         packageName = "";
+         packageName = new QN("");
          simpleName = fullName;
       }
       else
       {
-         packageName = fullName.substring(0, pos);
+         packageName = new QN(fullName.substring(0, pos));
          simpleName = fullName.substring(pos + 1);
       }
 
@@ -56,7 +56,12 @@ public class FQN implements Serializable
       this.simpleName = simpleName;
    }
 
-   public FQN(String packageName, String simpleName)
+   public FQN(CharSequence packageName, String simpleName)
+   {
+      this(new QN(packageName), simpleName);
+   }
+
+   public FQN(QN packageName, String simpleName)
    {
       this.packageName = packageName;
       this.simpleName = simpleName;
@@ -68,7 +73,7 @@ public class FQN implements Serializable
       return fullName;
    }
 
-   public String getPackageName()
+   public QN getPackageName()
    {
       return packageName;
    }
@@ -76,6 +81,27 @@ public class FQN implements Serializable
    public String getSimpleName()
    {
       return simpleName;
+   }
+
+   @Override
+   public int hashCode()
+   {
+      return fullName.hashCode();
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (obj == this)
+      {
+         return true;
+      }
+      if (obj instanceof FQN)
+      {
+         FQN that = (FQN)obj;
+         return packageName.equals(that.packageName) && simpleName.equals(that.simpleName);
+      }
+      return false;
    }
 
    @Override

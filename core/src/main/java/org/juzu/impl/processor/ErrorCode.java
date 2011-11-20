@@ -45,6 +45,8 @@ public enum ErrorCode
 
    TEMPLATE_SYNTAX_ERROR,
 
-   ILLEGAL_PATH
+   ILLEGAL_PATH,
+
+   UNSUPPORTED
 
 }

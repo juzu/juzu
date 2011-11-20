@@ -32,6 +32,7 @@ import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.test.request.MockApplication;
 
+import javax.annotation.processing.Processor;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Inject;
 import java.io.File;
@@ -71,16 +72,33 @@ public class CompilerHelper<I, O>
    /** . */
    private ClassLoader classLoader;
 
-   public CompilerHelper(ReadFileSystem<I> input, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput)
+   /** . */
+   private Processor annotationProcessor;
+
+   public CompilerHelper(
+      ReadFileSystem<I> input,
+      ReadWriteFileSystem<O> sourceOutput,
+      ReadWriteFileSystem<O> classOutput)
    {
       this.input = input;
       this.sourceOutput = sourceOutput;
       this.classOutput = classOutput;
+      this.annotationProcessor = new MainProcessor();
    }
 
    public CompilerHelper(ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
    {
       this(input, output, output);
+   }
+
+   public Processor getAnnotationProcessor()
+   {
+      return annotationProcessor;
+   }
+
+   public void setAnnotationProcessor(Processor annotationProcessor)
+   {
+      this.annotationProcessor = annotationProcessor;
    }
 
    public ReadWriteFileSystem<O> getClassOutput()
@@ -113,8 +131,8 @@ public class CompilerHelper<I, O>
       classPath.add(new JarFileSystem(new JarFile(new File(Context.class.getProtectionDomain().getCodeSource().getLocation().toURI()))));
 
       //
-      Compiler compiler = new org.juzu.impl.compiler.Compiler(input, classPath, sourceOutput, classOutput);
-      compiler.addAnnotationProcessor(new MainProcessor());
+      Compiler compiler = new Compiler(input, classPath, sourceOutput, classOutput);
+      compiler.addAnnotationProcessor(annotationProcessor);
       return compiler;
    }
 
@@ -151,7 +169,8 @@ public class CompilerHelper<I, O>
       try
       {
          Compiler compiler = buildCompiler();
-         AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
+         List<CompilationError> errors = compiler.compile();
+         AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), errors);
          classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, Thread.currentThread().getContextClassLoader());
          return compiler;
       }

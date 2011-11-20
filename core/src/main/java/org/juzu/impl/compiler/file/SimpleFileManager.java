@@ -99,11 +99,12 @@ public class SimpleFileManager<P> extends FileManager
       }
    }
 
-   public void list(
+   @Override
+   public <C extends Collection<JavaFileObject>> C list(
       String packageName,
       Set<JavaFileObject.Kind> kinds,
       boolean recurse,
-      Collection<JavaFileObject> to) throws IOException
+      C to) throws IOException
    {
       Iterable<String> packageNames = Spliterator.split(packageName, '.');
       P dir = fs.getDir(packageNames);
@@ -111,6 +112,7 @@ public class SimpleFileManager<P> extends FileManager
       {
          list(dir, kinds, recurse, to);
       }
+      return to;
    }
 
    private void list(

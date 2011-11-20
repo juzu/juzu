@@ -107,24 +107,24 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
    @Override
    public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException
    {
+      Iterable<JavaFileObject> ret;
       if (location == StandardLocation.PLATFORM_CLASS_PATH)
       {
-         return super.list(location, packageName, kinds, recurse);
+         ret = super.list(location, packageName, kinds, recurse);
       }
       else
       {
          FileManager files = getFiles(location);
          if (files != null)
          {
-            ArrayList<JavaFileObject> ret = new ArrayList<JavaFileObject>();
-            files.list(packageName, kinds, recurse, ret);
-            return ret;
+            ret = files.list(packageName, kinds, recurse, new ArrayList<JavaFileObject>());
          }
          else
          {
-            return Collections.emptyList();
+            ret = Collections.emptyList();
          }
       }
+      return ret;
    }
 
    @Override

@@ -17,26 +17,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.compiler.file;
+package org.juzu.impl.metamodel;
 
-import javax.tools.JavaFileObject;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
+import java.io.Serializable;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class FileManager
+public abstract class MetaModelObject implements Serializable
 {
 
-   public abstract JavaFileObject getReadable(FileKey key) throws IOException;
+   public abstract Map<String, ?> toJSON();
 
-   public abstract JavaFileObject getWritable(FileKey key) throws IOException;
-
-   public abstract <C extends Collection<JavaFileObject>> C list(
-      String packageName,
-      Set<JavaFileObject.Kind> kinds,
-      boolean recurse,
-      C to) throws IOException;
-
-   public abstract void clearCache();
 }
