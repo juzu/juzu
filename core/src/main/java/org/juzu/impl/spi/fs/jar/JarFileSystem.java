@@ -121,7 +121,7 @@ public class JarFileSystem extends ReadFileSystem<JarPath>
    @Override
    public Content getContent(JarPath file) throws IOException
    {
-      throw new UnsupportedOperationException();
+      return file.getContent();
    }
 
    @Override

@@ -19,8 +19,10 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.compiler.file.CompositeFileManager;
 import org.juzu.impl.compiler.file.FileKey;
 import org.juzu.impl.compiler.file.FileManager;
+import org.juzu.impl.compiler.file.SimpleFileManager;
 import org.juzu.impl.compiler.file.JavaFileObjectImpl;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
@@ -29,11 +31,12 @@ import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -42,21 +45,21 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
 {
 
    /** . */
-   final FileManager<?> sourcePath;
+   final SimpleFileManager<?> sourcePath;
 
    /** . */
-   final FileManager<?> classOutput;
+   final SimpleFileManager<?> classOutput;
 
    /** . */
-   final FileManager<?> classPath;
+   final CompositeFileManager classPath;
 
    /** . */
-   final FileManager<?> sourceOutput;
+   final SimpleFileManager<?> sourceOutput;
 
    public VirtualFileManager(
       JavaFileManager fileManager,
       ReadFileSystem<?> sourcePath,
-      ReadFileSystem<?> classPath,
+      Collection<ReadFileSystem<?>> classPath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput)
    {
@@ -64,17 +67,17 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
 
       //
       this.sourcePath = safeWrap(sourcePath);
-      this.classPath = safeWrap(classPath);
+      this.classPath = new CompositeFileManager(classPath);
       this.classOutput = safeWrap(classOutput);
       this.sourceOutput = safeWrap(sourceOutput);
    }
 
-   private <P> FileManager<P> safeWrap(ReadFileSystem<P> fs)
+   private <P> SimpleFileManager<P> safeWrap(ReadFileSystem<P> fs)
    {
-      return fs != null ? new FileManager<P>(fs) : null;
+      return fs != null ? new SimpleFileManager<P>(fs) : null;
    }
 
-   private FileManager<?> getFiles(Location location)
+   private FileManager getFiles(Location location)
    {
       if (location instanceof StandardLocation)
       {
@@ -96,28 +99,31 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
    // **************
 
    @Override
+   public JavaFileObject getJavaFileForInput(Location location, String className, JavaFileObject.Kind kind) throws IOException
+   {
+      throw new UnsupportedOperationException("Does not seem used at the moment, for now we leave it as is");
+   }
+
+   @Override
    public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException
    {
-      Iterable<JavaFileObject> s = super.list(location, packageName, kinds, recurse);
-      List<JavaFileObject> ret = null;
-      FileManager<?> files = getFiles(location);
-      if (files != null)
+      if (location == StandardLocation.PLATFORM_CLASS_PATH)
       {
-         files.list(packageName, kinds, recurse, ret = new ArrayList<JavaFileObject>());
-      }
-
-      //
-      if (ret == null)
-      {
-         return s;
+         return super.list(location, packageName, kinds, recurse);
       }
       else
       {
-         for (JavaFileObject o : s)
+         FileManager files = getFiles(location);
+         if (files != null)
          {
-            ret.add(o);
+            ArrayList<JavaFileObject> ret = new ArrayList<JavaFileObject>();
+            files.list(packageName, kinds, recurse, ret);
+            return ret;
          }
-         return ret;
+         else
+         {
+            return Collections.emptyList();
+         }
       }
    }
 
@@ -139,7 +145,7 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
    public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException
    {
       FileKey key = FileKey.newResourceName(packageName, relativeName);
-      FileManager<?> files = getFiles(location);
+      FileManager files = getFiles(location);
       if (files != null)
       {
          return files.getReadable(key);
@@ -167,7 +173,7 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
       }
       else
       {
-         FileManager<?> files = getFiles(location);
+         FileManager files = getFiles(location);
          if (files != null)
          {
             return files.getWritable(key);
@@ -190,7 +196,7 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
    @Override
    public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException
    {
-      FileManager<?> files = getFiles(location);
+      FileManager files = getFiles(location);
       if (files != null)
       {
          FileKey key = FileKey.newJavaName(className, kind);

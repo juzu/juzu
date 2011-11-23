@@ -40,7 +40,7 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject
    final FileKey key;
 
    /** . */
-   final FileManager<P> manager;
+   final SimpleFileManager<P> manager;
 
    /** The file, might not exist when this object will create. */
    private P file;
@@ -51,7 +51,7 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject
    /** . */
    private boolean writing;
 
-   public JavaFileObjectImpl(FileKey key, FileManager<P> manager, P file)
+   public JavaFileObjectImpl(FileKey key, SimpleFileManager<P> manager, P file)
    {
       super(key.uri, key.kind);
 

@@ -43,7 +43,7 @@ public class ApplicationTestCase extends AbstractTestCase
       assertSame(aClass, desc.getDefaultController());
    }
 
-   public void testMethodId() throws Exception
+   public void _testMethodId() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "method", "id");
       compiler.assertCompile();
@@ -67,7 +67,7 @@ public class ApplicationTestCase extends AbstractTestCase
       assertSame(c, desc.getControllerMethodById("juu"));
    }
 
-   public void testDuplicateMethod() throws Exception
+   public void _testDuplicateMethod() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "method", "duplicate");
       List<CompilationError> errors = compiler.failCompile();
@@ -75,7 +75,7 @@ public class ApplicationTestCase extends AbstractTestCase
       assertEquals("/application/method/duplicate/A.java", errors.get(0).getSource());
    }
 
-   public void testPrefix() throws Exception
+   public void _testPrefix() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "prefix");
       compiler.assertCompile();

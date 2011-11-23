@@ -36,7 +36,6 @@ import org.juzu.impl.fs.FileSystemScanner;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.fs.war.WarFileSystem;
 import org.juzu.impl.utils.DevClassLoader;
 
@@ -166,7 +165,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                System.out.println("[" + config.getPortletName() + "] Building application");
 
                // Build the classpath
-               List<URL> classPath = new ArrayList<URL>();
+               Collection<ReadFileSystem<?>> classPath = new ArrayList<ReadFileSystem<?>>();
                for (URL jarURL : jarURLs)
                {
                   URL configURL = new URL("jar:" + jarURL.toString() + "!/org/juzu/config.properties");
@@ -176,7 +175,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                   }
                   catch (IOException e)
                   {
-                     classPath.add(jarURL);
+                     classPath.add(new JarFileSystem(new JarFile(new File(jarURL.toURI()))));
                   }
                }
 
@@ -185,7 +184,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                RAMFileSystem classes = new RAMFileSystem();
 
                //
-               Compiler<String, RAMPath> compiler = new Compiler<String, RAMPath>(classPath, fs, classes);
+               Compiler compiler = new Compiler(fs, classPath, classes, classes);
                compiler.addAnnotationProcessor(new MainProcessor());
                List<CompilationError> res = compiler.compile();
                if (res.isEmpty())

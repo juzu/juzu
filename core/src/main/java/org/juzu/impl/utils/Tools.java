@@ -140,6 +140,20 @@ public class Tools
       }
    }
 
+   public static byte[] bytes(InputStream in) throws IOException
+   {
+      try
+      {
+         ByteArrayOutputStream baos = new ByteArrayOutputStream(in.available());
+         copy(in, baos);
+         return baos.toByteArray();
+      }
+      finally
+      {
+         safeClose(in);
+      }
+   }
+
    public static String read(InputStream in) throws IOException
    {
       return read(in, "UTF-8");

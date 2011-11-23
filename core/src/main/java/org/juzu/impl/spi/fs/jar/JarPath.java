@@ -19,10 +19,14 @@
 
 package org.juzu.impl.spi.fs.jar;
 
+import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.Spliterator;
+import org.juzu.impl.utils.Tools;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -164,5 +168,12 @@ public class JarPath
             break;
          }
       }
+   }
+
+   Content getContent() throws IOException
+   {
+      InputStream in = owner.jar.getInputStream(entry);
+      byte[] bytes = Tools.bytes(in);
+      return new Content(entry.getTime(), bytes, Charset.defaultCharset());
    }
 }

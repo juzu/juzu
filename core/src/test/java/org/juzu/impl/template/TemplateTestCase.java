@@ -33,7 +33,7 @@ import org.juzu.test.request.MockClient;
    public void _testSimple() throws Exception
    {
       CompilerHelper<?, ?> helper = compiler("template", "simple");
-      Compiler<?, ?> compiler = helper.assertCompile();
+      Compiler compiler = helper.assertCompile();
 
       //
 /*

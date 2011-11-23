@@ -19,16 +19,15 @@
 
 package org.juzu.impl.processor;
 
-import org.juzu.impl.compiler.*;
-import org.juzu.impl.compiler.Compiler;
+import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.utils.Content;
 import org.juzu.test.AbstractTestCase;
+import org.juzu.test.CompilerHelper;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -76,10 +75,8 @@ public class MainProcessorTestCase extends AbstractTestCase
       RAMFileSystem classOutput = new RAMFileSystem();
 
       //
-      Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
-      compiler.addAnnotationProcessor(new MainProcessor());
-      List<CompilationError> errors = compiler.compile();
-      assertEquals(Collections.<CompilationError>emptyList(), errors);
+      CompilerHelper<RAMPath, RAMPath> helper = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
+      helper.assertCompile();
       assertEquals(2, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
       assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
@@ -88,11 +85,10 @@ public class MainProcessorTestCase extends AbstractTestCase
       ReadFileSystem.copy(fs, sourcePath);
       sourcePath.getPath("processor", "simple", "A.java").del();
       sourcePath.getPath("processor", "simple", "templates", "index.gtmpl").del();
-      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
-      compiler.addAnnotationProcessor(new MainProcessor());
+      helper = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
 
       //
-      errors = compiler.compile();
+      List<CompilationError> errors = helper.failCompile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
       assertEquals(ErrorCode.TEMPLATE_NOT_FOUND.toString(), error.getCode());
@@ -103,12 +99,10 @@ public class MainProcessorTestCase extends AbstractTestCase
       //
       ReadFileSystem.copy(fs, sourcePath);
       sourcePath.getPath("processor", "simple", "A.java").del();
-      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
-      compiler.addAnnotationProcessor(new MainProcessor());
+      helper = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
 
       //
-      errors = compiler.compile();
-      assertEquals(Collections.<CompilationError>emptyList(), errors);
+      helper.assertCompile();
       assertEquals(9, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
       assertNotNull(classOutput.getPath("processor", "simple", "templates", "index.groovy"));
@@ -132,12 +126,10 @@ public class MainProcessorTestCase extends AbstractTestCase
       RAMFileSystem classOutput = new RAMFileSystem();
 
       //
-      Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
-      compiler.addAnnotationProcessor(new MainProcessor());
+      CompilerHelper<RAMPath, RAMPath> compiler = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
 
       //
-      List<CompilationError> errors = compiler.compile();
-      assertEquals(Collections.<CompilationError>emptyList(), errors);
+      compiler.assertCompile();
       assertEquals(9, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
       assertNotNull(classOutput.getPath("processor", "simple", "templates", "index.groovy"));
@@ -154,10 +146,8 @@ public class MainProcessorTestCase extends AbstractTestCase
       classOutput.getPath("processor", "simple", "A_.class").del();
 
       //
-      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
-      compiler.addAnnotationProcessor(new MainProcessor());
-      errors = compiler.compile();
-      assertEquals(Collections.<CompilationError>emptyList(), errors);
+      compiler = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
+      compiler.assertCompile();
       classOutput.dump(System.out);
       assertEquals(9, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));

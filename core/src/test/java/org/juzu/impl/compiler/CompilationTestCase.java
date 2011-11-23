@@ -40,7 +40,6 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -86,7 +85,7 @@ public class CompilationTestCase extends AbstractTestCase
 
    public void testBar() throws Exception
    {
-      Compiler<?, ?> compiler = compiler("compiler", "disk").assertCompile();
+      Compiler compiler = compiler("compiler", "disk").assertCompile();
       assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
    }
 
@@ -124,7 +123,7 @@ public class CompilationTestCase extends AbstractTestCase
       }
 
       //
-      Compiler<File, RAMPath> compiler = new Compiler<File, RAMPath>(input, new RAMFileSystem());
+      Compiler compiler = new Compiler(input, new RAMFileSystem());
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
@@ -154,7 +153,7 @@ public class CompilationTestCase extends AbstractTestCase
       RAMPath a = foo.addFile("A.java").update("package foo; public class A {}");
       RAMPath b = foo.addFile("B.java").update("package foo; public class B {}");
 
-      Compiler<RAMPath, ?> compiler = new Compiler<RAMPath, RAMPath>(ramFS, new RAMFileSystem());
+      Compiler compiler = new Compiler(ramFS, new RAMFileSystem());
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
       assertEquals(2, compiler.getClassOutput().size(ReadFileSystem.FILE));
       Content aClass = compiler.getClassOutput().getContent("foo", "A");
@@ -232,7 +231,7 @@ public class CompilationTestCase extends AbstractTestCase
    public void testProcessor() throws Exception
    {
       DiskFileSystem ramFS = diskFS("compiler", "processor");
-      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(ramFS, new RAMFileSystem(), new RAMFileSystem());
+      Compiler compiler = new Compiler(ramFS, new RAMFileSystem(), new RAMFileSystem());
       ProcessorImpl processor = new ProcessorImpl();
       compiler.addAnnotationProcessor(processor);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
@@ -252,7 +251,7 @@ public class CompilationTestCase extends AbstractTestCase
       DiskFileSystem fs = diskFS("compiler", "annotationexception");
 
       //
-      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(fs, new RAMFileSystem());
+      Compiler compiler = new Compiler(fs, new RAMFileSystem());
       @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
       @javax.annotation.processing.SupportedAnnotationTypes({"*"})
       class Processor1 extends AbstractProcessor
@@ -282,7 +281,7 @@ public class CompilationTestCase extends AbstractTestCase
       assertNotNull(error.getLocation());
 
       //
-      compiler = new Compiler<File, RAMPath>(fs, new RAMFileSystem());
+      compiler = new Compiler(fs, new RAMFileSystem());
       @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
       @javax.annotation.processing.SupportedAnnotationTypes({"*"})
       class Processor2 extends AbstractProcessor
@@ -334,7 +333,7 @@ public class CompilationTestCase extends AbstractTestCase
       }
 
       DiskFileSystem fs = diskFS("compiler", "errorcode");
-      Compiler<File, ?> compiler = new Compiler<File, RAMPath>(fs, new RAMFileSystem());
+      Compiler compiler = new Compiler(fs, new RAMFileSystem());
       compiler.addAnnotationProcessor(new P());
       List<CompilationError> errors = compiler.compile();
       assertEquals(1, errors.size());
@@ -350,7 +349,7 @@ public class CompilationTestCase extends AbstractTestCase
    {
       RAMFileSystem sourcePath = new RAMFileSystem();
       RAMFileSystem output = new RAMFileSystem();
-      Compiler<RAMPath, RAMPath> compiler = new Compiler<RAMPath, RAMPath>(sourcePath, output);
+      Compiler compiler = new Compiler(sourcePath, output);
 
       //
       RAMDir incremental = sourcePath.addDir(sourcePath.getRoot(), "compiler").addDir("incremental");
@@ -361,7 +360,7 @@ public class CompilationTestCase extends AbstractTestCase
 
       //
       RAMFile b = incremental.addFile("B.java").update("package compiler.incremental; public class B extends A {}");
-      compiler = new Compiler<RAMPath, RAMPath>(sourcePath, output, output, output);
+      compiler = new Compiler(sourcePath, output, output, output);
       assertEquals(Collections.<CompilationError>emptyList(), compiler.compile("compiler/incremental/B.java"));
    }
 
@@ -462,7 +461,7 @@ public class CompilationTestCase extends AbstractTestCase
 
       //
       output.addFile(output.getRoot(), "foo.txt").update("foo_value");
-      Compiler<File, RAMPath> compiler = new Compiler<File, RAMPath>(
+      Compiler compiler = new Compiler(
          fs,
          sourceOutput,
          classOutput);
