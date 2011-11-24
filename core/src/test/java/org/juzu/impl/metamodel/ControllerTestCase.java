@@ -19,19 +19,12 @@
 
 package org.juzu.impl.metamodel;
 
-import org.juzu.Application;
 import org.juzu.Phase;
-import org.juzu.impl.compiler.*;
-import org.juzu.impl.compiler.Compiler;
-import org.juzu.impl.processor.ModelProcessor;
-import org.juzu.impl.spi.fs.ReadFileSystem;
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.impl.spi.fs.ram.RAMFile;
-import org.juzu.impl.spi.fs.ram.RAMFileSystem;
-import org.juzu.impl.utils.Content;
+import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
+import org.juzu.test.CompilerHelper;
 
-import java.io.ObjectInputStream;
+import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
@@ -41,106 +34,54 @@ public class ControllerTestCase extends AbstractTestCase
 
    public void testBuild() throws Exception
    {
-      DiskFileSystem fs = diskFS("metamodel", "controller", "simple");
+      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFileSystem sourceOutput = new RAMFileSystem();
-      RAMFileSystem classOutput = new RAMFileSystem();
-
-      //
-      Compiler.Builder builder = Compiler.Builder.create().sourcePath(sourcePath).sourceOutput(sourceOutput).classOutput(classOutput).addClassPath(Application.class);
-      Compiler compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      Content content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ObjectInputStream ois = new ObjectInputStream(content.getInputStream());
-      MetaModel mm = (MetaModel)ois.readObject();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel amm = expected.addApplication("metamodel.controller.simple", "SimpleApplication");
-      ControllerMetaModel c = expected.addController("metamodel.controller.simple.A");
-      c.addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
-      amm.addController(c);
+      ApplicationMetaModel application = expected.addApplication("metamodel.controller.simple", "SimpleApplication");
+      ControllerMetaModel controller = expected.addController("metamodel.controller.simple.A");
+      controller.addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
+      application.addController(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
    public void testRemoveApplication() throws Exception
    {
-      DiskFileSystem fs = diskFS("metamodel", "controller", "simple");
+      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFileSystem sourceOutput = new RAMFileSystem();
-      RAMFileSystem classOutput = new RAMFileSystem();
+      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "A.java"));
+      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "package-info.java"));
+      assertDelete(helper.getClassOutput().getPath("metamodel", "controller", "simple", "package-info.class"));
 
       //
-      Compiler.Builder builder = Compiler.Builder.create().sourcePath(sourcePath).sourceOutput(sourceOutput).classOutput(classOutput).addClassPath(Application.class);
-      Compiler compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      // We remove the application declaration
-      ReadFileSystem.copy(fs, sourcePath);
-      sourcePath.getPath("metamodel", "controller", "simple", "A.java").del();
-      sourcePath.getPath("metamodel", "controller", "simple", "package-info.java").del();
-      classOutput.getPath("metamodel", "controller", "simple", "package-info.class").del();
-
-      //
-      builder.addClassPath(classOutput);
-      compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      Content content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ObjectInputStream ois = new ObjectInputStream(content.getInputStream());
-      MetaModel mm = (MetaModel)ois.readObject();
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
       MetaModel expected = new MetaModel();
-      ControllerMetaModel c = expected.addController("metamodel.controller.simple.A");
-      c.addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
+      expected.addController("metamodel.controller.simple.A").addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
    public void testRemoveAnnotation() throws Exception
    {
-      DiskFileSystem fs = diskFS("metamodel", "controller", "simple");
+      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFileSystem sourceOutput = new RAMFileSystem();
-      RAMFileSystem classOutput = new RAMFileSystem();
+      File a = helper.getSourcePath().getPath("metamodel", "controller", "simple", "A.java");
+      Tools.write(Tools.read(a).replace("@View", ""), a);
+      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "package-info.java"));
 
       //
-      Compiler.Builder builder = Compiler.Builder.create().sourcePath(sourcePath).sourceOutput(sourceOutput).classOutput(classOutput).addClassPath(Application.class);
-      Compiler compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFile a = (RAMFile)sourcePath.getPath("metamodel", "controller", "simple", "A.java");
-      a.update(a.getContent().getCharSequence().toString().replace("@View", ""));
-      sourcePath.getPath("metamodel", "controller", "simple", "package-info.java").del();
-
-      //
-      builder.addClassPath(classOutput);
-      compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      Content content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ObjectInputStream ois = new ObjectInputStream(content.getInputStream());
-      MetaModel mm = (MetaModel)ois.readObject();
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
       MetaModel expected = new MetaModel();
@@ -150,36 +91,17 @@ public class ControllerTestCase extends AbstractTestCase
 
    public void testRemoveControllerMethod() throws Exception
    {
-      DiskFileSystem fs = diskFS("metamodel", "controller", "simple");
+      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFileSystem sourceOutput = new RAMFileSystem();
-      RAMFileSystem classOutput = new RAMFileSystem();
+      File a = helper.getSourcePath().getPath("metamodel", "controller", "simple", "A.java");
+      Tools.write(Tools.read(a).replace("@View\n   public void index()\n   {\n   }", ""), a);
+      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "package-info.java"));
 
       //
-      Compiler.Builder builder = Compiler.Builder.create().sourcePath(sourcePath).sourceOutput(sourceOutput).classOutput(classOutput).addClassPath(Application.class);
-      Compiler compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFile a = (RAMFile)sourcePath.getPath("metamodel", "controller", "simple", "A.java");
-      a.update(a.getContent().getCharSequence().toString().replace("@View\n   public void index()\n   {\n   }", ""));
-      sourcePath.getPath("metamodel", "controller", "simple", "package-info.java").del();
-
-      //
-      builder.addClassPath(classOutput);
-      compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      Content content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ObjectInputStream ois = new ObjectInputStream(content.getInputStream());
-      MetaModel mm = (MetaModel)ois.readObject();
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
       MetaModel expected = new MetaModel();
@@ -189,43 +111,29 @@ public class ControllerTestCase extends AbstractTestCase
 
    public void testChangeAnnotation() throws Exception
    {
-      DiskFileSystem fs = diskFS("metamodel", "controller", "simple");
+      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFileSystem sourceOutput = new RAMFileSystem();
-      RAMFileSystem classOutput = new RAMFileSystem();
+      File a = helper.getSourcePath().getPath("metamodel", "controller", "simple", "A.java");
+      Tools.write(Tools.read(a).replace("View", "Action"), a);
+      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "package-info.java"));
 
       //
-      Compiler.Builder builder = Compiler.Builder.create().sourcePath(sourcePath).sourceOutput(sourceOutput).classOutput(classOutput).addClassPath(Application.class);
-      Compiler compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFile a = (RAMFile)sourcePath.getPath("metamodel", "controller", "simple", "A.java");
-      a.update(a.getContent().getCharSequence().toString().replace("View", "Action"));
-      sourcePath.getPath("metamodel", "controller", "simple", "package-info.java").del();
-
-      //
-      builder.addClassPath(classOutput);
-      compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      Content content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ObjectInputStream ois = new ObjectInputStream(content.getInputStream());
-      MetaModel mm = (MetaModel)ois.readObject();
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel amm = expected.addApplication("metamodel.controller.simple", "SimpleApplication");
-      ControllerMetaModel c = expected.addController("metamodel.controller.simple.A");
-      c.addMethod(Phase.ACTION, "index", Collections.<Map.Entry<String, String>>emptyList());
-      amm.addController(c);
+      ApplicationMetaModel application = expected.addApplication("metamodel.controller.simple", "SimpleApplication");
+      ControllerMetaModel controller = expected.addController("metamodel.controller.simple.A");
+      controller.addMethod(Phase.ACTION, "index", Collections.<Map.Entry<String, String>>emptyList());
+      application.addController(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
+   }
+
+   public void testUpdateController() throws Exception
+   {
+      // todo
    }
 }

@@ -40,6 +40,7 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -85,7 +86,9 @@ public class CompilationTestCase extends AbstractTestCase
 
    public void testBar() throws Exception
    {
-      Compiler compiler = compiler("compiler", "disk").assertCompile();
+      CompilerHelper<File, File> helper = compiler("compiler", "disk");
+      helper.with(null);
+      Compiler compiler = helper.assertCompile();
       assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
    }
 
@@ -318,8 +321,6 @@ public class CompilationTestCase extends AbstractTestCase
 
    public void testErrorCode() throws IOException
    {
-      @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
-      @javax.annotation.processing.SupportedAnnotationTypes({"*"})
       class P extends BaseProcessor
       {
          @Override

@@ -24,6 +24,7 @@ import org.juzu.impl.utils.Tools;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
@@ -35,6 +36,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
@@ -76,6 +78,18 @@ public abstract class BaseProcessor extends AbstractProcessor
       doInit(processingEnv);
    }
 
+   @Override
+   public final Set<String> getSupportedAnnotationTypes()
+   {
+      return Collections.singleton("*");
+   }
+
+   @Override
+   public final SourceVersion getSupportedSourceVersion()
+   {
+      return javax.lang.model.SourceVersion.RELEASE_6;
+   }
+
    protected void doInit(ProcessingEnvironment processingEnv)
    {
 
@@ -90,6 +104,7 @@ public abstract class BaseProcessor extends AbstractProcessor
       }
       catch (Exception e)
       {
+         e.printStackTrace();
          StringBuilder msg;
          Element element;
          if (e instanceof CompilationException)

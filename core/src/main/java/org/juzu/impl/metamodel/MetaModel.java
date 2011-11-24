@@ -25,9 +25,11 @@ import org.juzu.Path;
 import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.processor.AnnotationHandler;
 import org.juzu.impl.processor.ElementHandle;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.QN;
+import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -36,7 +38,6 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -46,7 +47,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaModel implements Serializable
+public class MetaModel extends AnnotationHandler
 {
 
    /** . */
@@ -63,11 +64,6 @@ public class MetaModel implements Serializable
 
    /** . */
    final LinkedList<MetaModelEvent> queue = new LinkedList<MetaModelEvent>();
-
-   public void setEnv(ProcessingEnvironment env)
-   {
-      this.env = env;
-   }
 
    public Map<String, ?> toJSON()
    {
@@ -112,6 +108,11 @@ public class MetaModel implements Serializable
 
    //
 
+   public ApplicationMetaModel getApplication(ElementHandle.Package handle)
+   {
+      return applications.get(handle);
+   }
+
    public ApplicationMetaModel addApplication(ElementHandle.Package handle, String applicationName, String defaultController)
    {
       if (applications.containsKey(handle))
@@ -120,7 +121,7 @@ public class MetaModel implements Serializable
       }
       ApplicationMetaModel application = new ApplicationMetaModel(this, handle, applicationName, defaultController);
       applications.put(handle, application);
-      queue.add(new MetaModelEvent.AddObject(application));
+      application.model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, application));
       return application;
    }
 
@@ -132,7 +133,6 @@ public class MetaModel implements Serializable
       }
       TemplateRefMetaModel ref = new TemplateRefMetaModel(handle, path);
       templates.put(handle, ref);
-      queue.add(new MetaModelEvent.AddObject(ref));
       return ref;
    }
 
@@ -144,12 +144,18 @@ public class MetaModel implements Serializable
       }
       ControllerMetaModel controller = new ControllerMetaModel(this, handle);
       controllers.put(handle, controller);
-      queue.add(new MetaModelEvent.AddObject(controller));
       return controller;
    }
 
    //
 
+   @Override
+   public void postActivate(ProcessingEnvironment env)
+   {
+      this.env = env;
+   }
+
+   @Override
    public void processControllerMethod(
       ExecutableElement methodElt,
       String annotationName,
@@ -168,6 +174,7 @@ public class MetaModel implements Serializable
          annotationValues);
    }
 
+   @Override
    public void processDeclarationTemplate(
       VariableElement variableElt,
       String annotationName,
@@ -199,7 +206,7 @@ public class MetaModel implements Serializable
             ref.template = null;
 
             //
-            queue.add(new MetaModelEvent.RemoveObject(ref));
+//            queue.add(new MetaModelEvent.RemoveObject(ref));
          }
 
          // Update the ref
@@ -207,6 +214,7 @@ public class MetaModel implements Serializable
       }
    }
 
+   @Override
    public void processApplication(
       PackageElement packageElt,
       String annotationName,
@@ -228,7 +236,7 @@ public class MetaModel implements Serializable
       }
       else
       {
-         if (!application.defaultController.equals(defaultController))
+         if (!Tools.safeEquals(application.defaultController, defaultController))
          {
             throw new UnsupportedOperationException("todo");
          }
@@ -238,12 +246,34 @@ public class MetaModel implements Serializable
    /**
     * .
     */
+   @Override
    public void postProcess()
    {
       resolveTemplateRefs();
 
       //
       resolveControllers();
+   }
+
+   /**
+    * .
+    */
+   @Override
+   public void prePassivate()
+   {
+      gcApplications();
+
+      //
+      gcControllers();
+
+      //
+      gcTemplateRefs();
+
+      //
+      gcTemplates();
+
+      //
+      env = null;
    }
 
    private void resolveControllers()
@@ -259,7 +289,16 @@ public class MetaModel implements Serializable
                if (application.fqn.getPackageName().isPrefix(packageQN))
                {
                   application.addController(controller);
+                  controller.modified = false;
                }
+            }
+         }
+         else
+         {
+            if (controller.modified)
+            {
+               queue.add(new MetaModelEvent(MetaModelEvent.UPDATED, controller));
+               controller.modified = false;
             }
          }
       }
@@ -291,23 +330,6 @@ public class MetaModel implements Serializable
             }
          }
       }
-   }
-
-   /**
-    * .
-    */
-   public void prePassivate()
-   {
-      gcApplications();
-
-      //
-      gcControllers();
-
-      //
-      gcTemplateRefs();
-
-      //
-      gcTemplates();
    }
 
    private void gcApplications()
@@ -343,11 +365,11 @@ public class MetaModel implements Serializable
                   application.removeTemplate(template);
                }
 
+               //
+               application.model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, application));
+
                // Remove application itself
                i.remove();
-
-               //
-               queue.add(new MetaModelEvent.RemoveObject(application));
             }
          }
       }
@@ -382,7 +404,6 @@ public class MetaModel implements Serializable
 
             //
             i.remove();
-            queue.add(new MetaModelEvent.RemoveObject(controller));
          }
       }
    }
@@ -407,7 +428,6 @@ public class MetaModel implements Serializable
                   ref.template.removeRef(ref);
                }
                i.remove();
-               queue.add(new MetaModelEvent.RemoveObject(ref));
             }
          }
       }

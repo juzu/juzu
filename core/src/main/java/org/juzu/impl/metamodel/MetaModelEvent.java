@@ -22,118 +22,52 @@ package org.juzu.impl.metamodel;
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MetaModelEvent implements Serializable
+public class MetaModelEvent implements Serializable
 {
 
-   public static class AddObject extends MetaModelEvent
+   /** . */
+   public static final int AFTER_ADD = 0;
+
+   /** . */
+   public static final int BEFORE_REMOVE = 1;
+
+   /** . */
+   public static final int UPDATED = 2;
+
+   /** . */
+   private final int type;
+
+   /** . */
+   private final MetaModelObject object;
+
+   MetaModelEvent(int type, MetaModelObject object)
    {
-
-      /** . */
-      private final MetaModelObject object;
-
-      public AddObject(MetaModelObject object)
+      if (type < 0 || type > 3)
       {
-         this.object = object;
+         throw new IllegalArgumentException();
+      }
+      if (object == null)
+      {
+         throw new NullPointerException();
       }
 
-      public MetaModelObject getObject()
-      {
-         return object;
-      }
-
-      public String toString()
-      {
-         return getClass().getSimpleName() + "[" + object.getClass().getSimpleName() + "]";
-      }
+      //
+      this.type = type;
+      this.object = object;
    }
 
-   public static class RemoveObject extends MetaModelEvent
+   public int getType()
    {
-
-      /** . */
-      private final MetaModelObject object;
-
-      public RemoveObject(MetaModelObject object)
-      {
-         this.object = object;
-      }
-
-      public MetaModelObject getObject()
-      {
-         return object;
-      }
-
-      public String toString()
-      {
-         return getClass().getSimpleName() + "[" + object.getClass().getSimpleName() + "]";
-      }
+      return type;
    }
 
-   /**
-    * A directed relationship between two meta model objects.
-    */
-   public static class AddRelationship extends MetaModelEvent
+   public MetaModelObject getObject()
    {
-
-      /** . */
-      private final MetaModelObject source;
-
-      /** . */
-      private final MetaModelObject target;
-
-      public AddRelationship(MetaModelObject source, MetaModelObject target)
-      {
-         this.source = source;
-         this.target = target;
-      }
-
-      public MetaModelObject getSource()
-      {
-         return source;
-      }
-
-      public MetaModelObject getTarget()
-      {
-         return target;
-      }
-
-      public String toString()
-      {
-         return getClass().getSimpleName() + "[source=" + source.getClass().getSimpleName() + ",target=" + target.getClass().getSimpleName() + "]";
-      }
+      return object;
    }
 
-   /**
-    * A directed relationship between two meta model objects.
-    */
-   public static class RemoveRelationship extends MetaModelEvent
+   public String toString()
    {
-
-      /** . */
-      private final MetaModelObject source;
-
-      /** . */
-      private final MetaModelObject target;
-
-      public RemoveRelationship(MetaModelObject source, MetaModelObject target)
-      {
-         this.source = source;
-         this.target = target;
-      }
-
-      public MetaModelObject getSource()
-      {
-         return source;
-      }
-
-      public MetaModelObject getTarget()
-      {
-         return target;
-      }
-
-      public String toString()
-      {
-         return getClass().getSimpleName() + "[source=" + source.getClass().getSimpleName() + ",target=" + target.getClass().getSimpleName() + "]";
-      }
+      return getClass().getSimpleName() + "[type=" + type + ",object=" + object.getClass().getSimpleName() + "]";
    }
 }

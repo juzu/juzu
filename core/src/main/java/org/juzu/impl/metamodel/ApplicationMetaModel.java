@@ -19,16 +19,20 @@
 
 package org.juzu.impl.metamodel;
 
+import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.processor.ElementHandle;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.QN;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModelObject
@@ -68,6 +72,31 @@ public class ApplicationMetaModel extends MetaModelObject
       this.templatesQN = fqn.getPackageName().append("templates");
    }
 
+   public String getDefaultController()
+   {
+      return defaultController;
+   }
+
+   public QN getTemplatesQN()
+   {
+      return templatesQN;
+   }
+
+   public FQN getFQN()
+   {
+      return fqn;
+   }
+
+   public ElementHandle.Package getHandle()
+   {
+      return handle;
+   }
+
+   public TemplateMetaModel getTemplate(String path)
+   {
+      return templates.get(path);
+   }
+
    public Collection<TemplateMetaModel> getTemplates()
    {
       return new ArrayList<TemplateMetaModel>(templates.values());
@@ -86,6 +115,7 @@ public class ApplicationMetaModel extends MetaModelObject
       }
       TemplateMetaModel template = new TemplateMetaModel(this, path);
       templates.put(path, template);
+      model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, template));
       return template;
    }
 
@@ -103,9 +133,9 @@ public class ApplicationMetaModel extends MetaModelObject
       {
          template.removeRef(ref);
       }
+      model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, template));
       templates.remove(template.getPath());
       template.application = null;
-      model.queue.add(new MetaModelEvent.RemoveObject(template));
    }
 
    public void addController(ControllerMetaModel controller)
@@ -116,7 +146,7 @@ public class ApplicationMetaModel extends MetaModelObject
       }
       controllers.add(controller);
       controller.application = this;
-      model.queue.add(new MetaModelEvent.AddRelationship(this, controller));
+      model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, controller));
    }
 
    public void removeController(ControllerMetaModel controller)
@@ -125,10 +155,11 @@ public class ApplicationMetaModel extends MetaModelObject
       {
          throw new IllegalArgumentException();
       }
-      if (controllers.remove(controller))
+      if (controllers.contains(controller))
       {
+         model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, controller));
+         controllers.remove(controller);
          controller.application = null;
-         model.queue.add(new MetaModelEvent.RemoveRelationship(this, controller));
       }
       else
       {
@@ -155,5 +186,43 @@ public class ApplicationMetaModel extends MetaModelObject
       }
       json.put("controllers", juu);
       return json;
+   }
+
+   public MethodMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException
+   {
+      TreeSet<MethodMetaModel> set = new TreeSet<MethodMetaModel>(
+         new Comparator<MethodMetaModel>()
+         {
+            public int compare(MethodMetaModel o1, MethodMetaModel o2)
+            {
+               return ((Integer)o1.parameterNames.size()).compareTo(o2.parameterNames.size());
+            }
+         }
+      );
+      for (ControllerMetaModel controller : controllers)
+      {
+         for (MethodMetaModel method : controller.methods.values())
+         {
+            if (typeName == null || controller.getHandle().getFQN().getSimpleName().equals(typeName))
+            {
+               if (method.name.equals(methodName) && method.parameterNames.containsAll(parameterNames))
+               {
+                  set.add(method);
+               }
+            }
+         }
+      }
+      if (set.isEmpty())
+      {
+         return null;
+      }
+      else if (set.size() == 1)
+      {
+         return set.iterator().next();
+      }
+      else
+      {
+         return null;
+      }
    }
 }

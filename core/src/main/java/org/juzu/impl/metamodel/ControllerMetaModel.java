@@ -31,12 +31,16 @@ import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerMetaModel extends MetaModelObject
 {
+
+   /** Allow to handle modified event. */
+   boolean modified;
 
    /** . */
    final MetaModel context;
@@ -55,6 +59,7 @@ public class ControllerMetaModel extends MetaModelObject
       this.context = context;
       this.handle = handle;
       this.methods = new LinkedHashMap<ElementHandle.Method, MethodMetaModel>();
+      this.modified = false;
    }
 
    public Map<String, ?> toJSON()
@@ -69,6 +74,21 @@ public class ControllerMetaModel extends MetaModelObject
       json.put("methods", foo);
       json.put("application", application == null ? null : application.handle);
       return json;
+   }
+
+   public ApplicationMetaModel getApplication()
+   {
+      return application;
+   }
+
+   public ElementHandle.Class getHandle()
+   {
+      return handle;
+   }
+
+   public List<MethodMetaModel> getMethods()
+   {
+      return new ArrayList<MethodMetaModel>(methods.values());
    }
 
    public MethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters)
@@ -140,10 +160,7 @@ public class ControllerMetaModel extends MetaModelObject
             //
             ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
             MethodMetaModel method = methods.remove(origin);
-            if (method != null)
-            {
-               context.queue.remove(new MetaModelEvent.AddObject(method));
-            }
+            int eventType = method != null ? MetaModelEvent.UPDATED : MetaModelEvent.AFTER_ADD;
             method = new MethodMetaModel(
                origin,
                this,
@@ -153,7 +170,7 @@ public class ControllerMetaModel extends MetaModelObject
                parameterTypes,
                parameterNames);
             methods.put(origin, method);
-            context.queue.add(new MetaModelEvent.AddObject(method));
+            modified = true;
             break;
          }
       }

@@ -17,29 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package org.juzu.impl.metamodel;
 
-import org.juzu.impl.utils.FQN;
-
-import java.io.Serializable;
-import java.util.ArrayList;
+import org.juzu.impl.processor.AbstractModelProcessor;
+import org.juzu.impl.processor.AnnotationHandler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerModel implements Serializable
+public class MetaModelProcessor extends AbstractModelProcessor
 {
-
-   /** . */
-   final ElementHandle origin;
-
-   /** . */
-   final FQN fqn;
-
-   /** . */
-   final ArrayList<MethodModel> methods = new ArrayList<MethodModel>();
-
-   public ControllerModel(ElementHandle origin, FQN fqn)
+   @Override
+   protected AnnotationHandler createHandler()
    {
-      this.origin = origin;
-      this.fqn = fqn;
+      return new MetaModel();
    }
 }

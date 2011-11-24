@@ -26,6 +26,7 @@ import org.juzu.impl.utils.Tools;
 import org.juzu.text.Location;
 
 import javax.annotation.processing.Filer;
+import javax.lang.model.element.Element;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
@@ -256,12 +257,13 @@ public class GroovyTemplateGenerator extends TemplateGenerator
       // throw new UnsupportedOperationException();
    }
 
-   public Collection<FileObject> generate(Filer filer, FQN name) throws IOException
+   @Override
+   public Collection<FileObject> generate(Filer filer, FQN name, Element... elements) throws IOException
    {
       String script = toString();
 
       // Create the groovy file
-      FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, name.getPackageName(), name.getSimpleName() + ".groovy");
+      FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, name.getPackageName(), name.getSimpleName() + ".groovy", elements);
       Writer writer = fo.openWriter();
       try
       {

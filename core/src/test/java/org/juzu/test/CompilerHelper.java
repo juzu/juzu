@@ -20,48 +20,28 @@
 package org.juzu.test;
 
 import org.juzu.Application;
-import org.juzu.impl.processor.MainProcessor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.impl.spi.fs.jar.JarFileSystem;
+import org.juzu.impl.processor.ModelProcessor;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
-import org.juzu.impl.spi.fs.ram.RAMFileSystem;
-import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.test.request.MockApplication;
 
 import javax.annotation.processing.Processor;
 import javax.enterprise.context.spi.Context;
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class CompilerHelper<I, O>
 {
 
-   public static <I> CompilerHelper<I, RAMPath> create(ReadFileSystem<I> input)
-   {
-      try
-      {
-         return new CompilerHelper<I, RAMPath>(input, new RAMFileSystem());
-      }
-      catch (IOException e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
-   }
-
    /** . */
-   private ReadFileSystem<I> input;
+   private ReadFileSystem<I> sourcePath;
 
    /** . */
    private ReadWriteFileSystem<O> sourceOutput;
@@ -73,32 +53,60 @@ public class CompilerHelper<I, O>
    private ClassLoader classLoader;
 
    /** . */
-   private Processor annotationProcessor;
+   private Compiler.Builder builder;
 
    public CompilerHelper(
-      ReadFileSystem<I> input,
+      ReadFileSystem<I> sourcePath,
       ReadWriteFileSystem<O> sourceOutput,
       ReadWriteFileSystem<O> classOutput)
    {
-      this.input = input;
+      this.sourcePath = sourcePath;
       this.sourceOutput = sourceOutput;
       this.classOutput = classOutput;
-      this.annotationProcessor = new MainProcessor();
+
+      //
+      Compiler.Builder builder;
+      try
+      {
+         builder = Compiler.builder();
+         builder.addClassPath(Application.class);
+         builder.addClassPath(Inject.class);
+         builder.addClassPath(CompilerHelper.class);
+         builder.addClassPath(Context.class);
+         builder.sourcePath(sourcePath);
+         builder.sourceOutput(sourceOutput);
+         builder.classOutput(classOutput);
+         builder.processor(new ModelProcessor());
+      }
+      catch (Exception e)
+      {
+         throw AbstractTestCase.failure(e);
+      }
+
+      //
+      this.builder = builder;
    }
 
-   public CompilerHelper(ReadFileSystem<I> input, ReadWriteFileSystem<O> output)
+   public CompilerHelper(ReadFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
    {
-      this(input, output, output);
+      this(sourcePath, output, output);
    }
 
-   public Processor getAnnotationProcessor()
+   public CompilerHelper<I, O> with(Processor annotationProcessor)
    {
-      return annotationProcessor;
+      builder.processor(annotationProcessor);
+      return this;
    }
 
-   public void setAnnotationProcessor(Processor annotationProcessor)
+   public CompilerHelper<I, O> addClassPath(ReadFileSystem<?> classPath)
    {
-      this.annotationProcessor = annotationProcessor;
+      builder.addClassPath(classPath);
+      return this;
+   }
+
+   public ReadFileSystem<I> getSourcePath()
+   {
+      return sourcePath;
    }
 
    public ReadWriteFileSystem<O> getClassOutput()
@@ -116,31 +124,16 @@ public class CompilerHelper<I, O>
       return classLoader;
    }
 
-   private Compiler buildCompiler() throws Exception
+   public Compiler.Builder getBuilder()
    {
-      ArrayList<ReadFileSystem<?>> classPath = new ArrayList<ReadFileSystem<?>>();
-
-      //
-      URL url1 = Application.class.getProtectionDomain().getCodeSource().getLocation();
-      classPath.add(new DiskFileSystem(new File(url1.toURI())));
-      URL url2 = CompilerHelper.class.getProtectionDomain().getCodeSource().getLocation();
-      classPath.add(new DiskFileSystem(new File(url2.toURI())));
-
-      //
-      classPath.add(new JarFileSystem(new JarFile(new File(Inject.class.getProtectionDomain().getCodeSource().getLocation().toURI()))));
-      classPath.add(new JarFileSystem(new JarFile(new File(Context.class.getProtectionDomain().getCodeSource().getLocation().toURI()))));
-
-      //
-      Compiler compiler = new Compiler(input, classPath, sourceOutput, classOutput);
-      compiler.addAnnotationProcessor(annotationProcessor);
-      return compiler;
+      return builder;
    }
 
    public List<CompilationError> failCompile()
    {
       try
       {
-         Compiler compiler = buildCompiler();
+         Compiler compiler = builder.build();
          List<CompilationError> errors = compiler.compile();
          AbstractTestCase.assertTrue("Was expecting compilation to fail", errors.size() > 0);
          return errors;
@@ -168,7 +161,7 @@ public class CompilerHelper<I, O>
    {
       try
       {
-         Compiler compiler = buildCompiler();
+         Compiler compiler = builder.build();
          List<CompilationError> errors = compiler.compile();
          AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), errors);
          classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, Thread.currentThread().getContextClassLoader());

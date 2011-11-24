@@ -79,4 +79,39 @@ public class MethodMetaModel extends MetaModelObject
       json.put("parameterTypes", new ArrayList<String>(parameterTypes));
       return json;
    }
+
+   public ControllerMetaModel getController()
+   {
+      return controller;
+   }
+
+   public ElementHandle.Method getHandle()
+   {
+      return handle;
+   }
+
+   public String getId()
+   {
+      return id;
+   }
+
+   public Phase getPhase()
+   {
+      return phase;
+   }
+
+   public String getName()
+   {
+      return name;
+   }
+
+   public ArrayList<String> getParameterTypes()
+   {
+      return parameterTypes;
+   }
+
+   public ArrayList<String> getParameterNames()
+   {
+      return parameterNames;
+   }
 }

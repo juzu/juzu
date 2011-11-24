@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package org.juzu.impl.generator;
 
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.utils.FQN;
@@ -29,8 +29,8 @@ import java.util.LinkedHashSet;
 public class TemplateModel implements Serializable
 {
 
-   /** . */
-   private final Foo foo;
+   /** The origin path. */
+   private final String originPath;
 
    /** . */
    private final ASTNode.Template ast;
@@ -39,23 +39,48 @@ public class TemplateModel implements Serializable
    private final FQN fqn;
 
    /** . */
+   private final String extension;
+
+   /** . */
+   private final String path;
+
+   /** . */
    private final LinkedHashSet<String> parameters;
 
+   /** The last modified date. */
+   private long lastModified;
+
    public TemplateModel(
-      Foo foo,
+      String originPath,
       ASTNode.Template ast,
       FQN fqn,
-      LinkedHashSet<String> parameters)
+      String extension,
+      String path,
+      LinkedHashSet<String> parameters,
+      long lastModified)
    {
-      this.foo = foo;
+      this.originPath = originPath;
       this.ast = ast;
       this.fqn = fqn;
+      this.extension = extension;
+      this.path = path;
       this.parameters = parameters;
+      this.lastModified = lastModified;
    }
 
-   public Foo getFoo()
+   public String getOriginPath()
    {
-      return foo;
+      return originPath;
+   }
+
+   public String getPath()
+   {
+      return path;
+   }
+
+   public String getExtension()
+   {
+      return extension;
    }
 
    public ASTNode.Template getAST()
@@ -66,6 +91,11 @@ public class TemplateModel implements Serializable
    public FQN getFQN()
    {
       return fqn;
+   }
+
+   public long getLastModified()
+   {
+      return lastModified;
    }
 
    public LinkedHashSet<String> getParameters()

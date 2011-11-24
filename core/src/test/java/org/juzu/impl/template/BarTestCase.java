@@ -23,6 +23,8 @@ import org.juzu.impl.compiler.CompilationError;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
+import java.util.List;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BarTestCase extends AbstractTestCase
 {
@@ -36,14 +38,18 @@ public class BarTestCase extends AbstractTestCase
    public void testInvalidMethodName() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("template", "url", "invalid_method_name");
-      CompilationError error = compiler.failCompile().get(0);
+      List<CompilationError> errors = compiler.failCompile();
+      assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
+      CompilationError error = errors.get(0);
       assertEquals("/template/url/invalid_method_name/A.java", error.getSource());
    }
 
    public void testInvalidMethodArgs() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("template", "url", "invalid_method_args");
-      CompilationError error = compiler.failCompile().get(0);
+      List<CompilationError> errors = compiler.failCompile();
+      assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
+      CompilationError error = errors.get(0);
       assertEquals("/template/url/invalid_method_args/A.java", error.getSource());
    }
 }

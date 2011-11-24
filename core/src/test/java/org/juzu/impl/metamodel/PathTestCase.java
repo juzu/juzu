@@ -19,178 +19,92 @@
 
 package org.juzu.impl.metamodel;
 
-import org.juzu.Application;
-import org.juzu.impl.compiler.*;
-import org.juzu.impl.compiler.Compiler;
-import org.juzu.impl.processor.ModelProcessor;
-import org.juzu.impl.spi.fs.ReadFileSystem;
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.impl.spi.fs.ram.RAMFileSystem;
-import org.juzu.impl.spi.fs.ram.RAMPath;
-import org.juzu.impl.utils.Content;
+import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
+import org.juzu.test.CompilerHelper;
 
-import java.io.ObjectInputStream;
-import java.util.Collections;
+import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PathTestCase extends AbstractTestCase
 {
 
-   public void testPathChangeValue() throws Exception
+   public void testBuild() throws Exception
    {
-      DiskFileSystem fs = diskFS("metamodel", "template", "pathannotation");
+      CompilerHelper<File, File> helper = compiler("metamodel", "template", "pathannotation").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFileSystem sourceOutput = new RAMFileSystem();
-      RAMFileSystem classOutput = new RAMFileSystem();
-
-      //
-      Compiler.Builder builder = Compiler.Builder.create().sourcePath(sourcePath).sourceOutput(sourceOutput).classOutput(classOutput).addClassPath(Application.class);
-      Compiler compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      Content content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ObjectInputStream ois = new ObjectInputStream(content.getInputStream());
-      MetaModel mm = (MetaModel)ois.readObject();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel b = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
-      TemplateMetaModel c = b.addTemplate("foo.gtmpl");
-      c.addRef(expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl"));
-      assertEquals(expected.toJSON(), mm.toJSON());
-
-      //
-      ReadFileSystem.copy(fs, sourcePath);
-      sourcePath.getPath("metamodel", "template", "pathannotation", "package-info.java").del();
-      RAMPath a = sourcePath.getPath("metamodel", "template", "pathannotation", "A.java");
-      a.update(a.getContent().getCharSequence().toString().replace("foo.gtmpl", "bar.gtmpl"));
-      classOutput.getPath("metamodel", "template", "pathannotation", "A.class").del();
-
-      //
-      builder = builder.addClassPath(classOutput);
-      compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ois = new ObjectInputStream(content.getInputStream());
-      mm = (MetaModel)ois.readObject();
-
-      //
-      expected = new MetaModel();
-      b = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
-      c = b.addTemplate("bar.gtmpl");
-      c.addRef(expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "bar.gtmpl"));
+      ApplicationMetaModel application = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
+      TemplateMetaModel template = application.addTemplate("foo.gtmpl");
+      template.addRef(expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl"));
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
-   public void testPathRemoveAnnotation() throws Exception
+   public void testChangeValue() throws Exception
    {
-      DiskFileSystem fs = diskFS("metamodel", "template", "pathannotation");
+      CompilerHelper<File, File> helper = compiler("metamodel", "template", "pathannotation").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFileSystem sourceOutput = new RAMFileSystem();
-      RAMFileSystem classOutput = new RAMFileSystem();
+      File a = helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "A.java");
+      Tools.write(Tools.read(a).replace("foo.gtmpl", "bar.gtmpl"), a);
+      assertDelete(helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "package-info.java"));
+      assertDelete(helper.getClassOutput().getPath("metamodel", "template", "pathannotation", "A.class"));
 
       //
-      Compiler.Builder builder = Compiler.Builder.create().sourcePath(sourcePath).sourceOutput(sourceOutput).classOutput(classOutput).addClassPath(Application.class);
-      Compiler compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      Content content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ObjectInputStream ois = new ObjectInputStream(content.getInputStream());
-      MetaModel mm = (MetaModel)ois.readObject();
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel b = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
-      TemplateMetaModel c = b.addTemplate("foo.gtmpl");
-      c.addRef(expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl"));
+      ApplicationMetaModel application = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
+      TemplateMetaModel template = application.addTemplate("bar.gtmpl");
+      template.addRef(expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "bar.gtmpl"));
       assertEquals(expected.toJSON(), mm.toJSON());
+   }
+
+   public void testRemoveAnnotation() throws Exception
+   {
+      CompilerHelper<File, File> helper = compiler("metamodel", "template", "pathannotation").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      ReadFileSystem.copy(fs, sourcePath);
-      sourcePath.getPath("metamodel", "template", "pathannotation", "package-info.java").del();
-      RAMPath a = sourcePath.getPath("metamodel", "template", "pathannotation", "A.java");
-      a.update(a.getContent().getCharSequence().toString().replace("@Path(\"foo.gtmpl\")", ""));
-      classOutput.getPath("metamodel", "template", "pathannotation", "A.class").del();
+      File a = helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "A.java");
+      Tools.write(Tools.read(a).replace("@Path(\"foo.gtmpl\")", ""), a);
+      assertDelete(helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "package-info.java"));
+      assertDelete(helper.getClassOutput().getPath("metamodel", "template", "pathannotation", "A.class"));
 
       //
-      builder = builder.addClassPath(classOutput);
-      compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
-      content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ois = new ObjectInputStream(content.getInputStream());
-      mm = (MetaModel)ois.readObject();
-
-      //
-      expected = new MetaModel();
+      MetaModel expected = new MetaModel();
       expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
    public void testPathRemoveApplication() throws Exception
    {
-      DiskFileSystem fs = diskFS("metamodel", "template", "pathannotation");
+      CompilerHelper<File, File> helper = compiler("metamodel", "template", "pathannotation").with(new MetaModelProcessor());
+      helper.assertCompile();
 
       //
-      RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
-      RAMFileSystem sourceOutput = new RAMFileSystem();
-      RAMFileSystem classOutput = new RAMFileSystem();
+      assertDelete(helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "package-info.java"));
+      assertDelete(helper.getClassOutput().getPath("metamodel", "template", "pathannotation", "package-info.class"));
+      assertDelete(helper.getClassOutput().getPath("metamodel", "template", "pathannotation", "A.class"));
 
       //
-      Compiler.Builder builder = Compiler.Builder.create().sourcePath(sourcePath).sourceOutput(sourceOutput).classOutput(classOutput).addClassPath(Application.class);
-      Compiler compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      Content content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ObjectInputStream ois = new ObjectInputStream(content.getInputStream());
-      MetaModel mm = (MetaModel)ois.readObject();
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel b = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
-      TemplateMetaModel c = b.addTemplate("foo.gtmpl");
-      c.addRef(expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl"));
-      assertEquals(expected.toJSON(), mm.toJSON());
-
-      //
-      ReadFileSystem.copy(fs, sourcePath);
-      sourcePath.getPath("metamodel", "template", "pathannotation", "package-info.java").del();
-      sourcePath.getPath("metamodel", "template", "pathannotation", "A.java").del();
-      classOutput.getPath("metamodel", "template", "pathannotation", "package-info.class").del();
-      classOutput.getPath("metamodel", "template", "pathannotation", "B.class").del();
-
-      //
-      builder = builder.addClassPath(classOutput);
-      compiler = builder.build();
-      compiler.addAnnotationProcessor(new ModelProcessor());
-      assertEquals(Collections.<CompilationError>emptyList(), compiler.compile());
-
-      //
-      content = sourceOutput.getPath("org", "juzu", "model2.ser").getContent();
-      ois = new ObjectInputStream(content.getInputStream());
-      mm = (MetaModel)ois.readObject();
-
-      //
-      expected = new MetaModel();
       expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl");
       assertEquals(expected.toJSON(), mm.toJSON());
    }

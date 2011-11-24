@@ -20,6 +20,7 @@
 package org.juzu.impl.processor;
 
 import org.juzu.impl.compiler.CompilationError;
+import org.juzu.impl.generator.TemplateCompiler;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MainProcessorTestCase extends AbstractTestCase
+public class ProcessorTestCase extends AbstractTestCase
 {
 
    public void testTemplatePathMatching()
@@ -47,7 +48,7 @@ public class MainProcessorTestCase extends AbstractTestCase
 
    private void assertMatch(String test, String expectedFolder, String expectedRawName, String expectedExtension)
    {
-      Matcher matcher = Foo.NAME_PATTERN.matcher(test);
+      Matcher matcher = TemplateCompiler.NAME_PATTERN.matcher(test);
       assertTrue("Was expecting " + test + " to match", matcher.matches());
       assertEquals(expectedFolder, matcher.group(1));
       assertEquals(expectedRawName, matcher.group(2));
@@ -56,7 +57,7 @@ public class MainProcessorTestCase extends AbstractTestCase
 
    private void assertNotMatch(String test)
    {
-      Matcher matcher = Foo.NAME_PATTERN.matcher(test);
+      Matcher matcher = TemplateCompiler.NAME_PATTERN.matcher(test);
       assertFalse("Was not expecting " + test + " to match", matcher.matches());
    }
 
@@ -98,13 +99,9 @@ public class MainProcessorTestCase extends AbstractTestCase
       //
       ReadFileSystem.copy(fs, sourcePath);
       sourcePath.getPath("processor", "simple", "A.java").del();
-      sourceOutput.getPath("processor", "simple", "A_.java").del();
+//      sourceOutput.getPath("processor", "simple", "A_.java").del();
       classOutput.getPath("processor", "simple", "A.class").del();
       helper = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
-
-      sourcePath.dump(System.out);
-      classOutput.dump(System.out);
-      sourceOutput.dump(System.out);
 
       // This test cannot pass actually
 //      helper.assertCompile();

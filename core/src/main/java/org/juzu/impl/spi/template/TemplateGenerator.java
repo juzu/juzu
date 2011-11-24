@@ -24,6 +24,7 @@ import org.juzu.impl.utils.FQN;
 import org.juzu.text.Location;
 
 import javax.annotation.processing.Filer;
+import javax.lang.model.element.Element;
 import javax.tools.FileObject;
 import java.io.IOException;
 import java.util.Collection;
@@ -58,6 +59,6 @@ public abstract class TemplateGenerator
 
    public abstract void tag(String tagName, Map<String, String> args);
 
-   public abstract Collection<FileObject> generate(Filer filer, FQN name) throws IOException;
+   public abstract Collection<FileObject> generate(Filer filer, FQN name, Element... elements) throws IOException;
 
 }

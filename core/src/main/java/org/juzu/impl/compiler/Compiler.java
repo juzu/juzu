@@ -19,7 +19,6 @@
 
 package org.juzu.impl.compiler;
 
-import org.juzu.Application;
 import org.juzu.impl.compiler.file.FileKey;
 import org.juzu.impl.compiler.file.SimpleFileManager;
 import org.juzu.impl.compiler.file.JavaFileObjectImpl;
@@ -32,7 +31,6 @@ import org.juzu.impl.utils.Spliterator;
 import org.juzu.text.Location;
 
 import javax.annotation.processing.Processor;
-import javax.inject.Inject;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
@@ -56,6 +54,11 @@ import java.util.regex.Pattern;
 public class Compiler
 {
 
+   public static Builder builder()
+   {
+      return new Builder(null, null, null, new ArrayList<ReadFileSystem<?>>());
+   }
+
    public static class Builder
    {
 
@@ -71,6 +74,9 @@ public class Compiler
       /** . */
       private List<ReadFileSystem<?>> classPaths;
 
+      /** . */
+      private Processor processor;
+
       private Builder(
          ReadFileSystem<?> sourcePath,
          ReadWriteFileSystem<?> sourceOutput,
@@ -81,6 +87,7 @@ public class Compiler
          this.sourceOutput = sourceOutput;
          this.classOutput = classOutput;
          this.classPaths = classPaths;
+         this.processor = null;
       }
 
       public Builder classOutput(ReadWriteFileSystem<?> classOutput)
@@ -115,19 +122,33 @@ public class Compiler
 
       public Builder addClassPath(Class<?> type) throws URISyntaxException, IOException
       {
-         URL url = Application.class.getProtectionDomain().getCodeSource().getLocation();
+         URL url = type.getProtectionDomain().getCodeSource().getLocation();
          if (url.getProtocol().equals("file"))
          {
-            classPaths.add(new DiskFileSystem(new File(url.toURI())));
-         }
-         else if (url.getProtocol().equals("jar"))
-         {
-            classPaths.add(new JarFileSystem(new JarFile(new File(Inject.class.getProtectionDomain().getCodeSource().getLocation().toURI()))));
+            File f = new File(url.toURI());
+            if (f.isDirectory())
+            {
+               classPaths.add(new DiskFileSystem(f));
+            }
+            else if (f.isFile() && f.getName().endsWith(".jar"))
+            {
+               classPaths.add(new JarFileSystem(new JarFile(f)));
+            }
+            else
+            {
+               throw new UnsupportedOperationException("Cannot handle path url " + url);
+            }
          }
          else
          {
             throw new UnsupportedOperationException("Cannot handle path url " + url);
          }
+         return this;
+      }
+
+      public Builder processor(Processor processor)
+      {
+         this.processor = processor;
          return this;
       }
 
@@ -145,17 +166,17 @@ public class Compiler
          {
             throw new IllegalStateException("No null source output");
          }
-         return new Compiler(
+         Compiler compiler = new Compiler(
             sourcePath,
             classPaths,
             sourceOutput,
             classOutput
          );
-      }
-
-      public static Builder create()
-      {
-         return new Builder(null, null, null, new ArrayList<ReadFileSystem<?>>());
+         if (processor != null)
+         {
+            compiler.addAnnotationProcessor(processor);
+         }
+         return compiler;
       }
    }
 

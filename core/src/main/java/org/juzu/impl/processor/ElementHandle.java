@@ -354,11 +354,14 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       public VariableElement get(ProcessingEnvironment env)
       {
          TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getFullName());
-         for (VariableElement variableElt : ElementFilter.fieldsIn(typeElt.getEnclosedElements()))
+         if (typeElt != null)
          {
-            if (variableElt.getSimpleName().contentEquals(name))
+            for (VariableElement variableElt : ElementFilter.fieldsIn(typeElt.getEnclosedElements()))
             {
-               return variableElt;
+               if (variableElt.getSimpleName().contentEquals(name))
+               {
+                  return variableElt;
+               }
             }
          }
          return null;

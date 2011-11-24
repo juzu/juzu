@@ -20,7 +20,7 @@
 package org.juzu.portlet;
 
 import org.juzu.impl.application.ApplicationBootstrap;
-import org.juzu.impl.processor.MainProcessor;
+import org.juzu.impl.processor.ModelProcessor;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
 import org.juzu.impl.spi.inject.spring.SpringBootstrap;
@@ -185,7 +185,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
                //
                Compiler compiler = new Compiler(fs, classPath, classes, classes);
-               compiler.addAnnotationProcessor(new MainProcessor());
+               compiler.addAnnotationProcessor(new ModelProcessor());
                List<CompilationError> res = compiler.compile();
                if (res.isEmpty())
                {

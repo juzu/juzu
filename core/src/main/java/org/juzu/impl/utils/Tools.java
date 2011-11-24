@@ -19,10 +19,15 @@
 
 package org.juzu.impl.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -154,6 +159,24 @@ public class Tools
       }
    }
 
+   public static void write(String content, File f) throws IOException
+   {
+      FileOutputStream out = new FileOutputStream(f);
+      try
+      {
+         copy(new ByteArrayInputStream(content.getBytes()), out);
+      }
+      finally
+      {
+         safeClose(out);
+      }
+   }
+
+   public static String read(File f) throws IOException
+   {
+      return read(new FileInputStream(f));
+   }
+
    public static String read(InputStream in) throws IOException
    {
       return read(in, "UTF-8");
@@ -267,5 +290,24 @@ public class Tools
          list.add(elt);
       }
       return list;
+   }
+
+   public static <T> T unserialize(Class<T> expectedType, File f) throws IOException, ClassNotFoundException
+   {
+      return unserialize(expectedType, new FileInputStream(f));
+   }
+
+   public static <T> T unserialize(Class<T> expectedType, InputStream in) throws IOException, ClassNotFoundException
+   {
+      try
+      {
+         ObjectInputStream ois = new ObjectInputStream(in);
+         Object o = ois.readObject();
+         return expectedType.cast(o);
+      }
+      finally
+      {
+         safeClose(in);
+      }
    }
 }

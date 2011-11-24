@@ -50,6 +50,11 @@ public class TemplateRefMetaModel extends MetaModelObject
       this.path = path;
    }
 
+   public ElementHandle.Field getHandle()
+   {
+      return handle;
+   }
+
    public String getPath()
    {
       return path;

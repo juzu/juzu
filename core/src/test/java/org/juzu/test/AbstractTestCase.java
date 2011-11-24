@@ -21,10 +21,12 @@ package org.juzu.test;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
+import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.utils.Tools;
 
 import java.io.File;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractTestCase extends TestCase
@@ -79,13 +81,25 @@ public abstract class AbstractTestCase extends TestCase
       return new AssertionFailedError(msg);
    }
 
+   public static void assertDelete(File f)
+   {
+      if (!f.exists())
+      {
+         throw failure("Was expecting file " + f.getAbsolutePath() + " to exist");
+      }
+      if (!f.delete())
+      {
+         throw failure("Was expecting file " + f.getAbsolutePath() + " to be deleted");
+      }
+   }
+
    public static DiskFileSystem diskFS(String... packageName)
    {
       File root = new File(System.getProperty("test.resources"));
       return new DiskFileSystem(root, packageName);
    }
 
-   public static CompilerHelper<File, File> compiler(String... packageName)
+   public CompilerHelper<File, File> compiler(String... packageName)
    {
       DiskFileSystem input = diskFS(packageName);
 
@@ -113,9 +127,8 @@ public abstract class AbstractTestCase extends TestCase
       }
 
       // Find
-      File f2;
-      String pkg = Tools.join('_', packageName);
-      f2 = new File(a, pkg);
+      String pkg = Tools.join('.', packageName) + "#" + getName();
+      File f2 = new File(a, pkg);
       for (int count = 0;;count++)
       {
          if (!f2.exists())
@@ -135,9 +148,29 @@ public abstract class AbstractTestCase extends TestCase
       }
 
       //
-      DiskFileSystem output = new DiskFileSystem(f2);
+      File sourceOutputDir = new File(f2, "source-output");
+      assertTrue(sourceOutputDir.mkdir());
+      DiskFileSystem sourceOutput = new DiskFileSystem(sourceOutputDir);
 
       //
-      return new CompilerHelper<File, File>(input, output);
+      File classOutputDir = new File(f2, "class-output");
+      assertTrue(classOutputDir.mkdir());
+      DiskFileSystem classOutput = new DiskFileSystem(classOutputDir);
+
+      //
+      File sourcePathDir = new File(f2, "source-path");
+      assertTrue(sourcePathDir.mkdir());
+      DiskFileSystem sourcePath = new DiskFileSystem(sourcePathDir);
+      try
+      {
+         ReadFileSystem.copy(input, sourcePath);
+      }
+      catch (IOException e)
+      {
+         throw failure(e);
+      }
+
+      //
+      return new CompilerHelper<File, File>(sourcePath, sourceOutput, classOutput);
    }
 }

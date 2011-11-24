@@ -28,4 +28,9 @@ public abstract class MetaModelObject implements Serializable
 
    public abstract Map<String, ?> toJSON();
 
+   @Override
+   public String toString()
+   {
+      return getClass().getSimpleName() + "[" + toJSON() + "]";
+   }
 }

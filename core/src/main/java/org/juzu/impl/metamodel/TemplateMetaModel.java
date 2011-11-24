@@ -52,6 +52,11 @@ public class TemplateMetaModel extends MetaModelObject
       this.path = path;
    }
 
+   public ApplicationMetaModel getApplication()
+   {
+      return application;
+   }
+
    public String getPath()
    {
       return path;
@@ -87,7 +92,7 @@ public class TemplateMetaModel extends MetaModelObject
       }
       refs.put(ref.handle, ref);
       ref.template = this;
-      application.model.queue.add(new MetaModelEvent.AddRelationship(ref, this));
+      application.model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, ref));
       return this;
    }
 
@@ -97,10 +102,11 @@ public class TemplateMetaModel extends MetaModelObject
       {
          throw new IllegalArgumentException();
       }
-      if (refs.remove(ref.handle) != null)
+      if (refs.containsKey(ref.handle))
       {
+         application.model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, ref));
+         refs.remove(ref.handle);
          ref.template = null;
-         application.model.queue.add(new MetaModelEvent.RemoveRelationship(ref, this));
       }
       else
       {
