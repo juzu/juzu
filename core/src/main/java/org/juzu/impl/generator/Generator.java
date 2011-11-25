@@ -24,6 +24,7 @@ import org.juzu.Phase;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.application.InternalApplicationContext;
+import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.metamodel.ApplicationMetaModel;
@@ -295,7 +296,7 @@ public class Generator extends AnnotationHandler implements Serializable
                stubWriter.append("}");
 
                //
-               // log("Generated template stub " + stubFQN.getFullName() + "_" + " as " + stubFile.toUri());
+               BaseProcessor.log("Generated template stub " + stubFQN.getFullName() + "_" + " as " + stubFile.toUri());
             }
             catch (IOException e)
             {
@@ -364,7 +365,7 @@ public class Generator extends AnnotationHandler implements Serializable
                   classWriter.append("}\n");
 
                   //
-                  // log("Generated template class " + stubFQN.getFullName() + " as " + classFile.toUri());
+                  BaseProcessor.log("Generated template class " + stubFQN.getFullName() + " as " + classFile.toUri());
                }
                finally
                {
@@ -420,11 +421,11 @@ public class Generator extends AnnotationHandler implements Serializable
                      msg.append(i++ == 0 ? "{" : ",").append(fo.toUri());
                   }
                   msg.append("}");
-                  // log(msg);
+                  BaseProcessor.log(msg);
                }
                else
                {
-                  // log("Template " + template.getFQN().getFullName() + " generated no meta template");
+                  BaseProcessor.log("Template " + added.getFQN().getFullName() + " generated no meta template");
                }
             }
             catch (IOException e)
@@ -536,7 +537,7 @@ public class Generator extends AnnotationHandler implements Serializable
          writer.append("}\n");
 
          //
-//         log("Generated application " + fqn.getFullName() + " as " + applicationFile.toUri());
+         BaseProcessor.log("Generated application " + fqn.getFullName() + " as " + applicationFile.toUri());
       }
       catch (IOException e)
       {
@@ -704,7 +705,7 @@ public class Generator extends AnnotationHandler implements Serializable
          writer.append("}\n");
 
          //
-         // log("Generated controller companion " + fqn.getFullName() + "_" + " as " + applicationFile.toUri());
+         BaseProcessor.log("Generated controller companion " + fqn.getFullName() + "_" + " as " + applicationFile.toUri());
       }
       catch (IOException e)
       {

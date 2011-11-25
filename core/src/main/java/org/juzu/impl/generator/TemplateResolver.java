@@ -19,6 +19,7 @@
 
 package org.juzu.impl.generator;
 
+import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
@@ -51,18 +52,18 @@ class TemplateResolver
    {
       for (StandardLocation location : locations)
       {
+         String pkg = fqn.getPackageName().getValue();
+         String relativeName = fqn.getSimpleName() + "." + extension;
          try
          {
-            String pkg = fqn.getPackageName().getValue();
-            String relativeName = fqn.getSimpleName() + "." + extension;
-            // MainProcessor.log("Attempt to obtain template " + pkg + " " + relativeName + " from " + location.getName());
+            BaseProcessor.log("Attempt to obtain template " + pkg + " " + relativeName + " from " + location.getName());
             FileObject resource = filer.getResource(location, pkg, relativeName);
             byte[] bytes = Tools.bytes(resource.openInputStream());
             return new Content(resource.getLastModified(), bytes, Charset.defaultCharset());
          }
          catch (Exception e)
          {
-            // log me
+            BaseProcessor.log("Could not get template " + pkg + " " + relativeName + " from " + location.getName() + ":" + e.getMessage());
          }
       }
 
