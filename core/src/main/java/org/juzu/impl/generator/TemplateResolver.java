@@ -22,6 +22,7 @@ package org.juzu.impl.generator;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
+import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.Filer;
@@ -32,6 +33,9 @@ import java.nio.charset.Charset;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class TemplateResolver
 {
+
+   /** . */
+   private static final Logger log = BaseProcessor.getLogger(TemplateResolver.class);
 
    /**
     * We need two locations as the {@link javax.tools.StandardLocation#SOURCE_PATH} is not supported in eclipse ide
@@ -56,14 +60,14 @@ class TemplateResolver
          String relativeName = fqn.getSimpleName() + "." + extension;
          try
          {
-            BaseProcessor.log("Attempt to obtain template " + pkg + " " + relativeName + " from " + location.getName());
+            log.log("Attempt to obtain template " + pkg + " " + relativeName + " from " + location.getName());
             FileObject resource = filer.getResource(location, pkg, relativeName);
             byte[] bytes = Tools.bytes(resource.openInputStream());
             return new Content(resource.getLastModified(), bytes, Charset.defaultCharset());
          }
          catch (Exception e)
          {
-            BaseProcessor.log("Could not get template " + pkg + " " + relativeName + " from " + location.getName() + ":" + e.getMessage());
+            log.log("Could not get template " + pkg + " " + relativeName + " from " + location.getName() + ":" + e.getMessage());
          }
       }
 

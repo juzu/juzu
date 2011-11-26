@@ -74,7 +74,7 @@ public class TemplateCompiler
 
    }
 
-   List<TemplateModel> resolve() throws IOException
+   List<TemplateModel> resolve()
    {
       added = new ArrayList<TemplateModel>();
       context.resolveTemplate(templateMetaModel.getPath());
@@ -84,7 +84,7 @@ public class TemplateCompiler
    private final TemplateCompilationContext context = new TemplateCompilationContext()
    {
       @Override
-      public void resolveTemplate(String path) throws IOException
+      public void resolveTemplate(String path)
       {
          TemplateModel template = templates.get(path);
 

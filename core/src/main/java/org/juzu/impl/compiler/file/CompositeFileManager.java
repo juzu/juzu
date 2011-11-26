@@ -63,7 +63,15 @@ public class CompositeFileManager extends FileManager
    @Override
    public JavaFileObject getWritable(FileKey key) throws IOException
    {
-      throw new UnsupportedOperationException("not possible");
+      for (FileManager component : components)
+      {
+         JavaFileObject writable = component.getWritable(key);
+         if (writable != null)
+         {
+            return writable;
+         }
+      }
+      return null;
    }
 
    @Override

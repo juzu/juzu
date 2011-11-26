@@ -26,6 +26,7 @@ import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.Generated;
@@ -66,6 +67,12 @@ public abstract class AbstractModelProcessor extends BaseProcessor
    /** . */
    Filer filer;
 
+   /** . */
+   private int index;
+   
+   /** . */
+   private final Logger log = BaseProcessor.getLogger(getClass());
+
    @Override
    protected void doInit(ProcessingEnvironment processingEnv)
    {
@@ -80,9 +87,10 @@ public abstract class AbstractModelProcessor extends BaseProcessor
       //
       this.filer = processingEnv.getFiler();
       this.annotations = annotations;
+      this.index = 0;
 
       //
-      log("Using processing nev " + processingEnv.getClass().getName());
+      log.log("Using processing nev " + processingEnv.getClass().getName());
    }
 
    protected abstract AnnotationHandler createHandler();
@@ -94,6 +102,10 @@ public abstract class AbstractModelProcessor extends BaseProcessor
       {
          if (roundEnv.processingOver())
          {
+            log.log("APT processing over");
+
+            //
+            log.log("Passivating model");
             model.prePassivate();
 
             // Passivate model
@@ -107,7 +119,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
             }
             catch (IOException e)
             {
-               e.printStackTrace();
+               log.log("Could not passivate model ", e);
             }
             finally
             {
@@ -116,6 +128,9 @@ public abstract class AbstractModelProcessor extends BaseProcessor
          }
          else
          {
+            log.log("Starting APT round #" + index);
+
+            //
             if (model == null)
             {
                InputStream in = null;
@@ -125,9 +140,11 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                   in = file.openInputStream();
                   ObjectInputStream ois = new ObjectInputStream(in);
                   model = (AnnotationHandler)ois.readObject();
+                  log.log("Loaded model from " + file.toUri());
                }
                catch (Exception e)
                {
+                  log.log("Created new model");
                   model = createHandler();
                }
                finally
@@ -136,6 +153,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                }
 
                // Activate
+               log.log("Activating model");
                model.postActivate(processingEnv);
             }
 
@@ -161,6 +179,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                            String annotationFQN = annotationElt.getQualifiedName().toString();
                            if (annotationFQN.equals("org.juzu.View") || annotationFQN.equals("org.juzu.Action") || annotationFQN.equals("org.juzu.Resource"))
                            {
+                              log.log("Processing controller method " + annotatedElt + " annotated by " + annotationMirror);
                               model.processControllerMethod(
                                  (ExecutableElement)annotatedElt,
                                  annotationName,
@@ -170,6 +189,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                            {
                               if (annotatedElt instanceof VariableElement)
                               {
+                                 log.log("Processing template declaration " + annotatedElt + " annotated by " + annotationMirror);
                                  model.processDeclarationTemplate(
                                     (VariableElement)annotatedElt,
                                     annotationName,
@@ -186,6 +206,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                            }
                            else if (annotationFQN.equals("org.juzu.Application"))
                            {
+                              log.log("Processing application " + annotatedElt + " annotated by " + annotationMirror);
                               model.processApplication(
                                  (PackageElement)annotatedElt,
                                  annotationName,
@@ -199,7 +220,11 @@ public abstract class AbstractModelProcessor extends BaseProcessor
             }
 
             //
+            log.log("Post processing model");
             model.postProcess();
+
+            //
+            log.log("Ending APT round #" + index++);
          }
       }
    }

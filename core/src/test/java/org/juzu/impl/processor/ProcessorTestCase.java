@@ -21,6 +21,7 @@ package org.juzu.impl.processor;
 
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.generator.TemplateCompiler;
+import org.juzu.impl.metamodel.MetaModelProcessor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
@@ -29,6 +30,7 @@ import org.juzu.impl.utils.Content;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
+import java.io.File;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -61,7 +63,7 @@ public class ProcessorTestCase extends AbstractTestCase
       assertFalse("Was not expecting " + test + " to match", matcher.matches());
    }
 
-   public void testSimpleIncremental() throws Exception
+   public void _testSimpleIncremental() throws Exception
    {
       DiskFileSystem fs = diskFS("processor", "simple");
 
@@ -115,7 +117,7 @@ public class ProcessorTestCase extends AbstractTestCase
 //      assertNotNull(classOutput.getPath("processor", "simple", "A_.class"));
    }
 
-   public void testModifyTemplate() throws Exception
+   public void _testModifyTemplate() throws Exception
    {
       DiskFileSystem fs = diskFS("processor", "simple");
 
@@ -162,5 +164,18 @@ public class ProcessorTestCase extends AbstractTestCase
       //
       Content c2 = classOutput.getPath("processor", "simple", "templates", "index.groovy").getContent();
       assertFalse("Was not expecting templates to be identical", c1.getCharSequence().toString().equals(c2.getCharSequence().toString()));
+   }
+
+   public void testRemoveTemplate() throws Exception
+   {
+      CompilerHelper<File, File> helper = compiler("processor", "simple");
+      helper.assertCompile();
+
+      //
+      assertDelete(helper.getSourcePath().getPath("processor", "simple", "templates", "index.gtmpl"));
+      assertDelete(helper.getClassOutput().getPath("processor", "simple", "B.class"));
+
+      //
+      helper.with(new ModelProcessor()).addClassPath(helper.getClassOutput()).failCompile();
    }
 }

@@ -20,14 +20,9 @@
 package org.juzu.impl.spi.template;
 
 import org.juzu.impl.template.SectionType;
-import org.juzu.impl.utils.FQN;
 import org.juzu.text.Location;
 
-import javax.annotation.processing.Filer;
-import javax.lang.model.element.Element;
-import javax.tools.FileObject;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +53,5 @@ public abstract class TemplateGenerator
    public abstract void closeTag(String tagName, Map<String, String> args) throws IOException;
 
    public abstract void tag(String tagName, Map<String, String> args);
-
-   public abstract Collection<FileObject> generate(Filer filer, FQN name, Element... elements) throws IOException;
 
 }

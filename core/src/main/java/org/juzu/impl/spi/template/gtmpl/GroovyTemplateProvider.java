@@ -38,4 +38,10 @@ public class GroovyTemplateProvider extends TemplateProvider
    {
       return new GroovyTemplateGenerator();
    }
+
+   @Override
+   public String getTargetExtension()
+   {
+      return "groovy";
+   }
 }

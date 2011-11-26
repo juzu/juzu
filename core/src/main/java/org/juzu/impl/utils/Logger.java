@@ -17,21 +17,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.utils;
 
-import org.juzu.template.TagHandler;
-
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ExtendedTagHandler extends TagHandler
+/**
+ * A basic logger for now.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public interface Logger
 {
 
-   public void process(ASTNode.Tag tag)
-   {
-   }
+   /**
+    * Log a message.
+    *
+    * @param msg the message
+    */
+   void log(CharSequence msg);
 
-   public void compile(TemplateCompilationContext context, Map<String, String> args)
-   {
-   }
+   /**
+    * Log a message assocated with a throwable.
+    *
+    * @param msg the message
+    * @param t the throwable
+    */
+   void log(CharSequence msg, Throwable t);
+
 }

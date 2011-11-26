@@ -19,6 +19,7 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -38,6 +39,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -48,7 +51,7 @@ public abstract class BaseProcessor extends AbstractProcessor
    private static final String lineSep = System.getProperty("line.separator");
 
    /** . */
-   private final static ThreadLocal<StringBuilder> log = new ThreadLocal<StringBuilder>();
+   private final static ThreadLocal<StringBuilder> currentLog = new ThreadLocal<StringBuilder>();
 
    /** . */
    private static final ThreadLocal<DateFormat> format = new ThreadLocal<DateFormat>()
@@ -60,10 +63,47 @@ public abstract class BaseProcessor extends AbstractProcessor
       }
    };
 
-   public static void log(CharSequence msg)
+   /** . */
+   private static final Map<String, Logger> loggers = new HashMap<String, Logger>();
+
+   /** . */
+   private static final Logger logger = getLogger(BaseProcessor.class);
+
+   public static Logger getLogger(Class<?> type)
+   {
+      String key = type.getName();
+      final String name = type.getSimpleName();
+      Logger logger = loggers.get(key);
+      if (logger == null)
+      {
+         logger = new Logger()
+         {
+            public void log(CharSequence msg)
+            {
+               BaseProcessor.log(name, msg);
+            }
+            public void log(CharSequence msg, Throwable t)
+            {
+               BaseProcessor.log(name, msg, t);
+            }
+         };
+         loggers.put(key, logger);
+      }
+      return logger;
+   }
+
+   private static void log(String name, CharSequence msg)
    {
       String s = format.get().format(new Date());
-      log.get().append("[").append(s).append("] ").append(msg).append(lineSep);
+      currentLog.get().append(s).append(" ").append("[").append(name).append("] ").append(msg).append(lineSep);
+   }
+
+   private static void log(String name, CharSequence msg, Throwable t)
+   {
+      StringWriter buffer = new StringWriter();
+      t.printStackTrace(new PrintWriter(buffer));
+      log(name, msg);
+      currentLog.get().append(buffer);
    }
 
    @Override
@@ -72,7 +112,7 @@ public abstract class BaseProcessor extends AbstractProcessor
       super.init(processingEnv);
 
       //
-      this.log.set(new StringBuilder());
+      this.currentLog.set(new StringBuilder());
 
       //
       doInit(processingEnv);
@@ -104,7 +144,6 @@ public abstract class BaseProcessor extends AbstractProcessor
       }
       catch (Exception e)
       {
-         e.printStackTrace();
          StringBuilder msg;
          Element element;
          if (e instanceof CompilationException)
@@ -140,7 +179,7 @@ public abstract class BaseProcessor extends AbstractProcessor
          StringWriter writer = new StringWriter();
          writer.append(msg).append("\n");
          e.printStackTrace(new PrintWriter(writer));
-         log(writer.getBuffer());
+         logger.log(writer.getBuffer());
 
          // Report to javac
          processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, element);
@@ -149,8 +188,8 @@ public abstract class BaseProcessor extends AbstractProcessor
       {
          if (roundEnv.processingOver())
          {
-            String t = log.get().toString();
-            log.set(null);
+            String t = currentLog.get().toString();
+            currentLog.set(null);
 
             //
             if  (t.length() > 0)

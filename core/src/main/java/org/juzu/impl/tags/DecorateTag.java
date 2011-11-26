@@ -71,7 +71,7 @@ public class DecorateTag extends ExtendedTagHandler
    }
 
    @Override
-   public void compile(TemplateCompilationContext context, Map<String, String> args) throws IOException
+   public void compile(TemplateCompilationContext context, Map<String, String> args)
    {
       String path = args.get("path");
       context.resolveTemplate(path);

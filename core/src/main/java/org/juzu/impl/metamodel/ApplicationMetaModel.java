@@ -107,14 +107,14 @@ public class ApplicationMetaModel extends MetaModelObject
       return new ArrayList<ControllerMetaModel>(controllers);
    }
 
-   public TemplateMetaModel addTemplate(String path)
+   public TemplateMetaModel addTemplate(TemplateRefMetaModel ref)
    {
-      if (templates.containsKey(path))
+      if (templates.containsKey(ref.path))
       {
          throw new IllegalStateException("Template path already existing");
       }
-      TemplateMetaModel template = new TemplateMetaModel(this, path);
-      templates.put(path, template);
+      TemplateMetaModel template = new TemplateMetaModel(this, ref);
+      templates.put(template.path, template);
       model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, template));
       return template;
    }

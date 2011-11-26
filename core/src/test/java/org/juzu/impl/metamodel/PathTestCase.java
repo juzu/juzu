@@ -40,8 +40,9 @@ public class PathTestCase extends AbstractTestCase
       //
       MetaModel expected = new MetaModel();
       ApplicationMetaModel application = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
-      TemplateMetaModel template = application.addTemplate("foo.gtmpl");
-      template.addRef(expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl"));
+      TemplateRefMetaModel ref = expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl");
+      TemplateMetaModel template = application.addTemplate(ref);
+      template.addRef(ref);
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
@@ -63,8 +64,9 @@ public class PathTestCase extends AbstractTestCase
       //
       MetaModel expected = new MetaModel();
       ApplicationMetaModel application = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
-      TemplateMetaModel template = application.addTemplate("bar.gtmpl");
-      template.addRef(expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "bar.gtmpl"));
+      TemplateRefMetaModel ref = expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "bar.gtmpl");
+      TemplateMetaModel template = application.addTemplate(ref);
+      template.addRef(ref);
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 

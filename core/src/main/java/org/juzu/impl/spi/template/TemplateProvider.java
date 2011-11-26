@@ -31,4 +31,6 @@ public abstract class TemplateProvider
 
    public abstract TemplateGenerator newGenerator();
 
+   public abstract String getTargetExtension();
+
 }

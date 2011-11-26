@@ -39,6 +39,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -107,6 +108,11 @@ public class MetaModel extends AnnotationHandler
    }
 
    //
+
+   public Collection<ApplicationMetaModel> getApplications()
+   {
+      return new ArrayList<ApplicationMetaModel>(applications.values());
+   }
 
    public ApplicationMetaModel getApplication(ElementHandle.Package handle)
    {
@@ -323,7 +329,7 @@ public class MetaModel extends AnnotationHandler
                   TemplateMetaModel template = application.templates.get(ref.path);
                   if (template == null)
                   {
-                     template = application.addTemplate(ref.path);
+                     template = application.addTemplate(ref);
                   }
                   template.addRef(ref);
                }

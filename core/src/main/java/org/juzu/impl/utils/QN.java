@@ -127,7 +127,7 @@ public class QN implements CharSequence, Serializable
 
    public boolean isPrefix(QN qn)
    {
-      return qn.value.startsWith(value) && (qn.value.length() == value.length() || qn.value.charAt(qn.value.length()) == '.');
+      return value.length() == 0 || qn.value.startsWith(value) && (qn.value.length() == value.length() || qn.value.charAt(value.length()) == '.');
    }
 
    @Override

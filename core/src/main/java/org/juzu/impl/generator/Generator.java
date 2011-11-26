@@ -19,14 +19,12 @@
 
 package org.juzu.impl.generator;
 
-import org.juzu.Path;
 import org.juzu.Phase;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.inject.Export;
 import org.juzu.impl.metamodel.ApplicationMetaModel;
 import org.juzu.impl.metamodel.ControllerMetaModel;
 import org.juzu.impl.metamodel.MetaModel;
@@ -38,23 +36,17 @@ import org.juzu.impl.metamodel.TemplateRefMetaModel;
 import org.juzu.impl.processor.AnnotationHandler;
 import org.juzu.impl.processor.ElementHandle;
 import org.juzu.impl.processor.ErrorCode;
-import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.spi.template.TemplateProvider;
-import org.juzu.impl.template.ASTNode;
-import org.juzu.impl.template.TemplateCompilationContext;
 import org.juzu.impl.utils.FQN;
-import org.juzu.impl.utils.MethodInvocation;
+import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.request.ActionContext;
-import org.juzu.request.ApplicationContext;
 import org.juzu.request.MimeContext;
-import org.juzu.template.Template;
 
-import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -67,9 +59,7 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -82,6 +72,9 @@ import java.util.regex.Pattern;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Generator extends AnnotationHandler implements Serializable
 {
+
+   /** . */
+   private static final Logger log = BaseProcessor.getLogger(Generator.class);
 
    /** . */
    private static final Pattern PROVIDER_PKG_PATTERN = Pattern.compile(
@@ -110,16 +103,13 @@ public class Generator extends AnnotationHandler implements Serializable
    private static final String RESPONSE = Response.Render.class.getSimpleName();
 
    /** . */
-   private ProcessingEnvironment env;
+   ProcessingEnvironment env;
 
    /** . */
-   private Map<String, TemplateProvider> providers;
+   Map<String, TemplateProvider> providers;
 
    /** . */
    private Map<String, String> moduleConfig;
-
-   /** . */
-   private Map<ElementHandle.Package, Map<String, String>> applicationConfigs;
 
    /** . */
    private Map<ElementHandle.Package, TemplateRepository> templateRepositoryMap;
@@ -130,7 +120,6 @@ public class Generator extends AnnotationHandler implements Serializable
    public Generator()
    {
       this.moduleConfig = new HashMap<String, String>();
-      this.applicationConfigs = new HashMap<ElementHandle.Package, Map<String, String>>();
       this.metaModel = new MetaModel();
       this.templateRepositoryMap = new HashMap<ElementHandle.Package, TemplateRepository>();
    }
@@ -184,15 +173,18 @@ public class Generator extends AnnotationHandler implements Serializable
    @Override
    public void postProcess() throws CompilationException
    {
+      log.log("Meta model post processing");
       metaModel.postProcess();
 
       //
       for (MetaModelEvent event : metaModel.popEvents())
       {
+         log.log("Processing meta model event " + event);
          processEvent(event);
       }
 
       //
+      log.log("Processing templates");
       processTemplates();
    }
 
@@ -206,26 +198,17 @@ public class Generator extends AnnotationHandler implements Serializable
             {
                ApplicationMetaModel application = (ApplicationMetaModel)obj;
                moduleConfig.put(application.getFQN().getSimpleName(), application.getFQN().getFullName());
-               applicationConfigs.put(application.getHandle(), new HashMap<String, String>());
-               templateRepositoryMap.put(application.getHandle(), new TemplateRepository());
+               templateRepositoryMap.put(application.getHandle(), new TemplateRepository(application));
                emitApplication(application);
             }
             else if (obj instanceof ControllerMetaModel)
             {
                ControllerMetaModel controller = (ControllerMetaModel)obj;
-               Map<String, String> foo = applicationConfigs.get(controller.getApplication().getHandle());
-               foo.put(controller.getHandle().getFQN().getFullName() + "_", "controller");
                emitController(controller);
             }
             else if (obj instanceof TemplateMetaModel)
             {
-               TemplateMetaModel template = (TemplateMetaModel)obj;
-
-               //
-               TemplateRepository repository = templateRepositoryMap.get(template.getApplication().getHandle());
-
-               // Add the template to the repository
-               repository.addTemplate(template);
+               // What should we do for now ?
             }
             else if (obj instanceof TemplateRefMetaModel)
             {
@@ -257,192 +240,26 @@ public class Generator extends AnnotationHandler implements Serializable
       for (Map.Entry<ElementHandle.Package, TemplateRepository> entry : templateRepositoryMap.entrySet())
       {
          TemplateRepository repo = entry.getValue();
-
-         //
-         final ApplicationMetaModel application = metaModel.getApplication(entry.getKey());
-
-         //
-         List<TemplateModel> addeds = repo.resolve(env);
-
-         // Handle added templates
-         for (TemplateModel added : addeds)
-         {
-            applicationConfigs.get(application.getHandle()).put(added.getFQN().getFullName(), "template");
-
-            //
-            TemplateMetaModel templateMeta = application.getTemplate(added.getOriginPath());
-
-            //
-            final Element[] elements = new Element[templateMeta.getRefs().size()];
-            int index = 0;
-            for (TemplateRefMetaModel ref : templateMeta.getRefs())
-            {
-               elements[index++] = ref.getHandle().get(env);
-            }
-
-            //
-            TemplateProvider provider = providers.get(added.getExtension());
-            Writer stubWriter = null;
-            FQN stubFQN = added.getFQN();
-            try
-            {
-               // Template stub
-               JavaFileObject stubFile = env.getFiler().createSourceFile(stubFQN.getFullName() + "_", elements);
-               stubWriter = stubFile.openWriter();
-               stubWriter.append("package ").append(stubFQN.getPackageName()).append(";\n");
-               stubWriter.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-               stubWriter.append("@Generated({\"").append(stubFQN.getFullName()).append("\"})\n");
-               stubWriter.append("public class ").append(stubFQN.getSimpleName()).append("_ extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
-               stubWriter.append("}");
-
-               //
-               BaseProcessor.log("Generated template stub " + stubFQN.getFullName() + "_" + " as " + stubFile.toUri());
-            }
-            catch (IOException e)
-            {
-               throw new CompilationException(e, entry.getKey().get(env), ErrorCode.CANNOT_WRITE_TEMPLATE_STUB_CLASS, added.getPath());
-            }
-            finally
-            {
-               Tools.safeClose(stubWriter);
-            }
-
-            //
-            Writer classWriter = null;
-            try
-            {
-               // Template qualified class
-               FileObject classFile = env.getFiler().createSourceFile(stubFQN.getFullName(), elements);
-               classWriter = classFile.openWriter();
-               try
-               {
-                  classWriter.append("package ").append(stubFQN.getPackageName()).append(";\n");
-                  classWriter.append("import ").append(Tools.getImport(Path.class)).append(";\n");
-                  classWriter.append("import ").append(Tools.getImport(Export.class)).append(";\n");
-                  classWriter.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-                  classWriter.append("import javax.inject.Inject;\n");
-                  classWriter.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
-                  classWriter.append("@Generated({})\n");
-                  classWriter.append("@Export\n");
-                  classWriter.append("@Path(\"").append(added.getPath()).append("\")\n");
-                  classWriter.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(Template.class.getName()).append("\n");
-                  classWriter.append("{\n");
-                  classWriter.append("@Inject\n");
-                  classWriter.append("public ").append(stubFQN.getSimpleName()).append("(").
-                     append(ApplicationContext.class.getSimpleName()).append(" applicationContext").
-                     append(")\n");
-                  classWriter.append("{\n");
-                  classWriter.append("super(applicationContext, \"").append(added.getPath()).append("\");\n");
-                  classWriter.append("}\n");
-
-                  //
-                  if (added.getParameters() != null)
-                  {
-                     // Setters on template
-                     for (String paramName : added.getParameters())
-                     {
-                        classWriter.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
-                        classWriter.append("Builder builder = new Builder();");
-                        classWriter.append("builder.set(\"").append(paramName).append("\",").append(paramName).append(");\n");
-                        classWriter.append("return builder;\n");
-                        classWriter.append(("}\n"));
-                     }
-
-                     // Setters on builders
-                     classWriter.append("public class Builder extends ").append(Tools.getImport(Template.Builder.class)).append("\n");
-                     classWriter.append("{\n");
-                     for (String paramName : added.getParameters())
-                     {
-                        classWriter.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
-                        classWriter.append("set(\"").append(paramName).append("\",").append(paramName).append(");\n");
-                        classWriter.append("return this;\n");
-                        classWriter.append(("}\n"));
-                     }
-                     classWriter.append("}\n");
-                  }
-
-                  // Close class
-                  classWriter.append("}\n");
-
-                  //
-                  BaseProcessor.log("Generated template class " + stubFQN.getFullName() + " as " + classFile.toUri());
-               }
-               finally
-               {
-                  classWriter.close();
-               }
-            }
-            catch (IOException e)
-            {
-               throw new CompilationException(e, entry.getKey().get(env), ErrorCode.CANNOT_WRITE_QUALIFIED_TEMPLATE_CLASS, added.getPath());
-            }
-            finally
-            {
-               Tools.safeClose(classWriter);
-            }
-
-            // Emit template file
-            try
-            {
-               TemplateGenerator generator = provider.newGenerator();
-               ASTNode.Template ast = added.getAST();
-               ast.emit(new TemplateCompilationContext()
-               {
-                  @Override
-                  public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
-                  {
-                     MethodMetaModel method = application.resolve(typeName, methodName, parameterMap.keySet());
-
-                     //
-                     if (method == null)
-                     {
-                        throw new CompilationException(elements[0], ErrorCode.CONTROLLER_METHOD_NOT_FOUND, methodName, parameterMap);
-                     }
-
-                     //
-                     List<String> args = new ArrayList<String>();
-                     for (String parameterName : method.getParameterNames())
-                     {
-                        String value = parameterMap.get(parameterName);
-                        args.add(value);
-                     }
-                     return new MethodInvocation(method.getController().getHandle().getFQN().getFullName() + "_", method.getName() + "URL", args);
-                  }
-               }, generator);
-
-               //
-               Collection<FileObject> generated = generator.generate(env.getFiler(), added.getFQN(), elements);
-               if (generated.size() > 0)
-               {
-                  StringBuilder msg = new StringBuilder("Generated meta template ").append(added.getFQN().getFullName()).append(" as ");
-                  int i = 0;
-                  for (FileObject fo : generated)
-                  {
-                     msg.append(i++ == 0 ? "{" : ",").append(fo.toUri());
-                  }
-                  msg.append("}");
-                  BaseProcessor.log(msg);
-               }
-               else
-               {
-                  BaseProcessor.log("Template " + added.getFQN().getFullName() + " generated no meta template");
-               }
-            }
-            catch (IOException e)
-            {
-               throw new CompilationException(elements[0], ErrorCode.CANNOT_WRITE_TEMPLATE);
-            }
-         }
+         repo.process(this);
       }
    }
 
    @Override
    public void prePassivate() throws CompilationException
    {
+      log.log("Passivating meta model");
       metaModel.prePassivate();
 
       //
+      log.log("Emitting config");
       emitConfig();
+
+      //
+      log.log("Passivating templates");
+      for (TemplateRepository repo : templateRepositoryMap.values())
+      {
+         repo.prePassivate();
+      }
 
       //
       this.providers = null;
@@ -474,22 +291,33 @@ public class Generator extends AnnotationHandler implements Serializable
       }
 
       // Application configs
-      for (Map.Entry<ElementHandle.Package, Map<String, String>> entry : applicationConfigs.entrySet())
+      for (ApplicationMetaModel application : metaModel.getApplications())
       {
-         config = new Properties();
-         config.putAll(entry.getValue());
+         config.clear();
+         for (ControllerMetaModel controller : application.getControllers())
+         {
+            config.put(controller.getHandle().getFQN().getFullName() + "_", "controller");
+         }
+         TemplateRepository repo = templateRepositoryMap.get(application.getHandle());
+         if (repo != null)
+         {
+            for (TemplateModel template : repo.getTemplates())
+            {
+               config.put(template.getFQN().getFullName(), "template");
+            }
+         }
 
          //
          writer = null;
          try
          {
-            FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, entry.getKey().getQN(), "config.properties");
+            FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.properties");
             writer = fo.openWriter();
             config.store(writer, null);
          }
          catch (IOException e)
          {
-            throw new CompilationException(e, entry.getKey().get(env), ErrorCode.CANNOT_WRITE_APPLICATION_CONFIG);
+            throw new CompilationException(e, application.getHandle().get(env), ErrorCode.CANNOT_WRITE_APPLICATION_CONFIG);
          }
          finally
          {
@@ -537,7 +365,7 @@ public class Generator extends AnnotationHandler implements Serializable
          writer.append("}\n");
 
          //
-         BaseProcessor.log("Generated application " + fqn.getFullName() + " as " + applicationFile.toUri());
+         log.log("Generated application " + fqn.getFullName() + " as " + applicationFile.toUri());
       }
       catch (IOException e)
       {
@@ -705,7 +533,7 @@ public class Generator extends AnnotationHandler implements Serializable
          writer.append("}\n");
 
          //
-         BaseProcessor.log("Generated controller companion " + fqn.getFullName() + "_" + " as " + applicationFile.toUri());
+         log.log("Generated controller companion " + fqn.getFullName() + "_" + " as " + applicationFile.toUri());
       }
       catch (IOException e)
       {

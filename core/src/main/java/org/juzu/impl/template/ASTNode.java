@@ -117,7 +117,7 @@ public abstract class ASTNode<N extends ASTNode<N>> implements Serializable
          emit(tcc, generator);
       }
 
-      public void process(TemplateCompilationContext tcc) throws IOException
+      public void process(TemplateCompilationContext tcc)
       {
          attribute(tcc, this);
          process(tcc, this);
@@ -196,7 +196,7 @@ public abstract class ASTNode<N extends ASTNode<N>> implements Serializable
          }
       }
 
-      private void resolve(TemplateCompilationContext tcc, ASTNode<?> node) throws IOException
+      private void resolve(TemplateCompilationContext tcc, ASTNode<?> node)
       {
          if (node instanceof Template)
          {

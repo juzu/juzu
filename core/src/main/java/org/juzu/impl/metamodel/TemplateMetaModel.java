@@ -21,7 +21,6 @@ package org.juzu.impl.metamodel;
 
 import org.juzu.impl.processor.ElementHandle;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,7 +37,7 @@ public class TemplateMetaModel extends MetaModelObject
 {
 
    /** The references pointing to this template. */
-   final LinkedHashMap<ElementHandle.Field, TemplateRefMetaModel> refs = new LinkedHashMap<ElementHandle.Field, TemplateRefMetaModel>();
+   final LinkedHashMap<ElementHandle.Field, TemplateRefMetaModel> refs;
 
    /** The related application. */
    ApplicationMetaModel application;
@@ -46,10 +45,11 @@ public class TemplateMetaModel extends MetaModelObject
    /** . */
    final String path;
 
-   public TemplateMetaModel(ApplicationMetaModel application, String path)
+   public TemplateMetaModel(ApplicationMetaModel application, TemplateRefMetaModel ref)
    {
       this.application = application;
-      this.path = path;
+      this.path = ref.path;
+      this.refs = new LinkedHashMap<ElementHandle.Field, TemplateRefMetaModel>();
    }
 
    public ApplicationMetaModel getApplication()

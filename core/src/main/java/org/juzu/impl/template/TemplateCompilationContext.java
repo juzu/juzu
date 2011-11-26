@@ -27,7 +27,6 @@ import org.juzu.impl.tags.IncludeTag;
 import org.juzu.impl.tags.InsertTag;
 import org.juzu.template.TagHandler;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +53,7 @@ public class TemplateCompilationContext
       return tags.get(name);
    }
 
-   public void resolveTemplate(String path) throws IOException
+   public void resolveTemplate(String path)
    {
    }
 

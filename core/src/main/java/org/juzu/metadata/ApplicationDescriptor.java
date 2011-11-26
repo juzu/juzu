@@ -105,7 +105,9 @@ public class ApplicationDescriptor
          }
          catch (Exception e)
          {
-            throw new AssertionError(e);
+            AssertionError ae = new AssertionError("Cannot load " + value + " class " + controllerFQN);
+            ae.initCause(e);
+            throw ae;
          }
       }
 

@@ -95,4 +95,34 @@ public class QNTestCase extends TestCase
    {
       assertEquals(expected, new QN(qn).append(simpleName).getValue());
    }
+
+   public void testPrefix()
+   {
+      assertPrefix("", "");
+      assertPrefix("", "a");
+      assertPrefix("", "a.b");
+      assertPrefix("", "a.b.c");
+      assertNotPrefix("a", "");
+      assertPrefix("a", "a");
+      assertPrefix("a", "a.b");
+      assertPrefix("a", "a.b.c");
+      assertNotPrefix("a.b", "");
+      assertNotPrefix("a.b", "a");
+      assertPrefix("a.b", "a.b");
+      assertPrefix("a.b", "a.b.c");
+      assertNotPrefix("a.b.c", "");
+      assertNotPrefix("a.b.c", "a");
+      assertNotPrefix("a.b.c", "a.b");
+      assertPrefix("a.b.c", "a.b.c");
+   }
+
+   private void assertPrefix(String prefix, String s)
+   {
+      assertTrue(new QN(prefix).isPrefix(new QN(s)));
+   }
+
+   private void assertNotPrefix(String prefix, String s)
+   {
+      assertFalse(new QN(prefix).isPrefix(new QN(s)));
+   }
 }
