@@ -30,6 +30,7 @@ import org.juzu.impl.processor.ElementHandle;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.QN;
 import org.juzu.impl.utils.Tools;
+import org.juzu.text.Location;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -38,6 +39,9 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -104,7 +108,7 @@ public class MetaModel extends AnnotationHandler
 
    public ControllerMetaModel addController(String className)
    {
-      return addController(ElementHandle.Class.create(new FQN(className)));
+      return addController(ElementHandle.Class.create(new FQN(className)), 0);
    }
 
    //
@@ -142,13 +146,13 @@ public class MetaModel extends AnnotationHandler
       return ref;
    }
 
-   private ControllerMetaModel addController(ElementHandle.Class handle)
+   private ControllerMetaModel addController(ElementHandle.Class handle, long lastModified)
    {
       if (controllers.containsKey(handle))
       {
          throw new IllegalStateException();
       }
-      ControllerMetaModel controller = new ControllerMetaModel(this, handle);
+      ControllerMetaModel controller = new ControllerMetaModel(this, handle, lastModified);
       controllers.put(handle, controller);
       return controller;
    }
@@ -169,10 +173,32 @@ public class MetaModel extends AnnotationHandler
    {
       TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
       ElementHandle.Class handle = ElementHandle.Class.create(controllerElt);
+
+      // Attempt to get last modified value from the .java file
+      // note this file may not exist because there are no guarantees
+      // that a type corresponds to a compilation unit
+      long lastModified = 0;
+      try
+      {
+         FileObject o = env.getFiler().getResource(
+            StandardLocation.SOURCE_PATH,
+            handle.getFQN().getPackageName().getValue(),
+            handle.getFQN().getSimpleName() + ".java");
+         lastModified = o.getLastModified();
+      }
+      catch (IOException e)
+      {
+         e.printStackTrace();
+      }
+
       ControllerMetaModel controller = controllers.get(handle);
       if (controller == null)
       {
-         controller = addController(handle);
+         controller = addController(handle, lastModified);
+      }
+      else
+      {
+         controller.lastModified = lastModified;
       }
       controller.addMethod(
          methodElt,
