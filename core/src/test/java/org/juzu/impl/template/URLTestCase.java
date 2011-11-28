@@ -26,7 +26,7 @@ import org.juzu.test.CompilerHelper;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BarTestCase extends AbstractTestCase
+public class URLTestCase extends AbstractTestCase
 {
 
    public void testResolution() throws Exception
@@ -51,5 +51,11 @@ public class BarTestCase extends AbstractTestCase
       assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
       CompilationError error = errors.get(0);
       assertEquals("/template/url/invalid_method_args/A.java", error.getSource());
+   }
+
+   public void testOverload() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("template", "url", "overload");
+      compiler.assertCompile();
    }
 }

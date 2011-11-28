@@ -44,7 +44,7 @@ public class ApplicationMetaModel extends MetaModelObject
    private static final Logger log = BaseProcessor.getLogger(ApplicationMetaModel.class);
 
    /** The controllers. */
-   LinkedHashSet<ControllerMetaModel> controllers = new LinkedHashSet<ControllerMetaModel>();
+   LinkedHashMap<ElementHandle.Class, ControllerMetaModel> controllers = new LinkedHashMap<ElementHandle.Class, ControllerMetaModel>();
 
    /** The templates. */
    LinkedHashMap<String, TemplateMetaModel> templates = new LinkedHashMap<String, TemplateMetaModel>();
@@ -109,7 +109,7 @@ public class ApplicationMetaModel extends MetaModelObject
 
    public Collection<ControllerMetaModel> getControllers()
    {
-      return new ArrayList<ControllerMetaModel>(controllers);
+      return new ArrayList<ControllerMetaModel>(controllers.values());
    }
 
    public TemplateMetaModel addTemplate(TemplateRefMetaModel ref)
@@ -145,11 +145,11 @@ public class ApplicationMetaModel extends MetaModelObject
 
    public void addController(ControllerMetaModel controller)
    {
-      if (controllers.contains(controller))
+      if (controllers.containsKey(controller.handle))
       {
          throw new IllegalStateException();
       }
-      controllers.add(controller);
+      controllers.put(controller.handle, controller);
       controller.application = this;
       model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, controller));
    }
@@ -160,10 +160,10 @@ public class ApplicationMetaModel extends MetaModelObject
       {
          throw new IllegalArgumentException();
       }
-      if (controllers.contains(controller))
+      if (controllers.containsKey(controller.handle))
       {
          model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, controller));
-         controllers.remove(controller);
+         controllers.remove(controller.handle);
          controller.application = null;
       }
       else
@@ -185,7 +185,7 @@ public class ApplicationMetaModel extends MetaModelObject
       }
       json.put("templates", foo);
       ArrayList<ElementHandle.Class> juu = new ArrayList<ElementHandle.Class>();
-      for (ControllerMetaModel controller : controllers)
+      for (ControllerMetaModel controller : controllers.values())
       {
          juu.add(controller.handle);
       }
@@ -204,20 +204,27 @@ public class ApplicationMetaModel extends MetaModelObject
             }
          }
       );
-      for (ControllerMetaModel controller : controllers)
+      log.log("About to search method in controllers " + controllers.keySet());
+      for (ControllerMetaModel controller : controllers.values())
       {
          for (MethodMetaModel method : controller.methods.values())
          {
+            boolean add = false;
             if (typeName == null || controller.getHandle().getFQN().getSimpleName().equals(typeName))
             {
                if (method.name.equals(methodName) && method.parameterNames.containsAll(parameterNames))
                {
-                  set.add(method);
+                  add = true;
                }
+            }
+            log.log("Method " + method + ( add ? " added to" : " removed from" ) +  " search");
+            if (add)
+            {
+               set.add(method);
             }
          }
       }
-      if (set.size() == 1)
+      if (set.size() >= 1)
       {
          MethodMetaModel method = set.iterator().next();
          log.log("Resolved method " + method.getName() + " " + method.getParameterNames() + " for " + methodName + " "
