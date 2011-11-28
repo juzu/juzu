@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Retention(RetentionPolicy.CLASS)
-public @interface LastModified
+public @interface Hash
 {
    long value();
 }

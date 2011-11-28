@@ -40,7 +40,7 @@ import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
-import org.juzu.impl.utils.LastModified;
+import org.juzu.impl.utils.Hash;
 import org.juzu.impl.utils.Tools;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerDescriptor;
@@ -381,122 +381,84 @@ public class ModelResolver extends ModelHandler implements Serializable
    {
       FQN fqn = controller.getHandle().getFQN();
       Element origin = env.get(controller.getHandle());
-      long lastModified = env.getClassLastModified(fqn.getFullName() + "_");
-      if (lastModified == 0 && controller.getLastModified() > lastModified)
+      Writer writer = null;
+      try
       {
-         // Generate controller literal
-         Writer writer = null;
-         try
+         JavaFileObject file = env.createSourceFile(fqn.getFullName() + "_", origin);
+         writer = file.openWriter();
+
+         //
+         writer.append("package ").append(fqn.getPackageName()).append(";\n");
+
+         // Imports
+         writer.append("import ").append(Tools.getImport(ControllerMethod.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(ControllerParameter.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Tools.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(URLBuilder.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(InternalApplicationContext.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Response.Render.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Hash.class)).append(";\n");
+
+         // Open class
+         writer.append("@Hash(").append(Long.toString(controller.getHash())).append("L)\n");
+         writer.append("@Generated(value={})\n");
+         writer.append("public class ").append(fqn.getSimpleName()).append("_ extends ").append(CONTROLLER_DESCRIPTOR).append(" {\n");
+
+         //
+         writer.append("private ").append(fqn.getSimpleName()).append("_() {\n");
+         writer.append("super(").append(fqn.getSimpleName()).append(".class, Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
+         List<MethodMetaModel> methods = controller.getMethods();
+         for (int j = 0;j < methods.size();j++)
          {
-            JavaFileObject file = env.createSourceFile(fqn.getFullName() + "_", origin);
-            writer = file.openWriter();
-
-            //
-            writer.append("package ").append(fqn.getPackageName()).append(";\n");
-
-            // Imports
-            writer.append("import ").append(Tools.getImport(ControllerMethod.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(ControllerParameter.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(Tools.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(URLBuilder.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(InternalApplicationContext.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(Response.Render.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(LastModified.class)).append(";\n");
-
-            // Open class
-            writer.append("@LastModified(").append(Long.toString(controller.getLastModified())).append("L)\n");
-            writer.append("@Generated(value={},date=\"").append(Tools.formatISO8601(controller.getLastModified())).append("\")\n");
-            writer.append("public class ").append(fqn.getSimpleName()).append("_ extends ").append(CONTROLLER_DESCRIPTOR).append(" {\n");
-
-            //
-            writer.append("private ").append(fqn.getSimpleName()).append("_() {\n");
-            writer.append("super(").append(fqn.getSimpleName()).append(".class, Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
-            List<MethodMetaModel> methods = controller.getMethods();
-            for (int j = 0;j < methods.size();j++)
+            MethodMetaModel method = methods.get(j);
+            if (j > 0)
             {
-               MethodMetaModel method = methods.get(j);
-               if (j > 0)
-               {
-                  writer.append(',');
-               }
-               writer.append(method.getId());
+               writer.append(',');
             }
-            writer.append("));\n");
-            writer.append("}\n");
+            writer.append(method.getId());
+         }
+         writer.append("));\n");
+         writer.append("}\n");
 
-            //
-            for (MethodMetaModel method : methods)
+         //
+         for (MethodMetaModel method : methods)
+         {
+            // Method constant
+            writer.append("private static final ").append(CONTROLLER_METHOD).append(" ").append(method.getId()).append(" = ");
+            writer.append("new ").append(CONTROLLER_METHOD).append("(");
+            writer.append("\"").append(method.getId()).append("\",");
+            writer.append(PHASE).append(".").append(method.getPhase().name()).append(",");
+            writer.append(fqn.getFullName()).append(".class").append(",");
+            writer.append(TOOLS).append(".safeGetMethod(").append(fqn.getFullName()).append(".class,\"").append(method.getName()).append("\"");
+            for (String parameterType : method.getParameterTypes())
             {
-               // Method constant
-               writer.append("private static final ").append(CONTROLLER_METHOD).append(" ").append(method.getId()).append(" = ");
-               writer.append("new ").append(CONTROLLER_METHOD).append("(");
-               writer.append("\"").append(method.getId()).append("\",");
-               writer.append(PHASE).append(".").append(method.getPhase().name()).append(",");
-               writer.append(fqn.getFullName()).append(".class").append(",");
-               writer.append(TOOLS).append(".safeGetMethod(").append(fqn.getFullName()).append(".class,\"").append(method.getName()).append("\"");
-               for (String parameterType : method.getParameterTypes())
+               writer.append(",").append(parameterType).append(".class");
+            }
+            writer.append(")");
+            writer.append(", Arrays.<").append(CONTROLLER_PARAMETER).append(">asList(");
+            for (Iterator<String> j = method.getParameterNames().iterator();j.hasNext(); )
+            {
+               String parameterName = j.next();
+               writer.append("new ").append(CONTROLLER_PARAMETER).append("(\"").
+                  append(parameterName).append("\")");
+               if (j.hasNext())
                {
-                  writer.append(",").append(parameterType).append(".class");
+                  writer.append(",");
                }
-               writer.append(")");
-               writer.append(", Arrays.<").append(CONTROLLER_PARAMETER).append(">asList(");
-               for (Iterator<String> j = method.getParameterNames().iterator();j.hasNext(); )
-               {
-                  String parameterName = j.next();
-                  writer.append("new ").append(CONTROLLER_PARAMETER).append("(\"").
-                     append(parameterName).append("\")");
-                  if (j.hasNext())
-                  {
-                     writer.append(",");
-                  }
-               }
-               writer.append(")");
-               writer.append(");\n");
+            }
+            writer.append(")");
+            writer.append(");\n");
 
-               // Render builder literal
-               if (method.getPhase() == Phase.RENDER)
-               {
-                  writer.append("public static ").append(RESPONSE).append(" ").append(method.getName()).append("(");
-                  for (int j = 0; j < method.getParameterTypes().size(); j++)
-                  {
-                     if (j > 0)
-                     {
-                        writer.append(',');
-                     }
-                     writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
-                  }
-                  writer.append(") { return ((ActionContext)InternalApplicationContext.getCurrentRequest()).createResponse(").append(method.getId());
-                  switch (method.getParameterTypes().size())
-                  {
-                     case 0:
-                        break;
-                     case 1:
-                        writer.append(",(Object)").append(method.getParameterNames().get(0));
-                        break;
-                     default:
-                        writer.append(",new Object[]{");
-                        for (int j = 0; j < method.getParameterNames().size();j++)
-                        {
-                           if (j > 0)
-                           {
-                              writer.append(",");
-                           }
-                           writer.append(method.getParameterNames().get(j));
-                        }
-                        writer.append("}");
-                        break;
-                  }
-                  writer.append("); }\n");
-               }
-
-               // URL builder literal
-               writer.append("public static URLBuilder ").append(method.getName()).append("URL").append("(");
+            // Render builder literal
+            if (method.getPhase() == Phase.RENDER)
+            {
+               writer.append("public static ").append(RESPONSE).append(" ").append(method.getName()).append("(");
                for (int j = 0; j < method.getParameterTypes().size(); j++)
                {
                   if (j > 0)
@@ -505,8 +467,8 @@ public class ModelResolver extends ModelHandler implements Serializable
                   }
                   writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
                }
-               writer.append(") { return ((MimeContext)InternalApplicationContext.getCurrentRequest()).createURLBuilder(").append(method.getId());
-               switch (method.getParameterNames().size())
+               writer.append(") { return ((ActionContext)InternalApplicationContext.getCurrentRequest()).createResponse(").append(method.getId());
+               switch (method.getParameterTypes().size())
                {
                   case 0:
                      break;
@@ -515,7 +477,7 @@ public class ModelResolver extends ModelHandler implements Serializable
                      break;
                   default:
                      writer.append(",new Object[]{");
-                     for (int j = 0;j < method.getParameterNames().size();j++)
+                     for (int j = 0; j < method.getParameterNames().size();j++)
                      {
                         if (j > 0)
                         {
@@ -529,27 +491,56 @@ public class ModelResolver extends ModelHandler implements Serializable
                writer.append("); }\n");
             }
 
-            // Singleton instance (declared after the method constants)
-            writer.append("public static final ").append(fqn.getSimpleName()).append("_ INSTANCE = new ").append(fqn.getSimpleName()).append("_();\n");
+            // URL builder literal
+            writer.append("public static URLBuilder ").append(method.getName()).append("URL").append("(");
+            for (int j = 0; j < method.getParameterTypes().size(); j++)
+            {
+               if (j > 0)
+               {
+                  writer.append(',');
+               }
+               writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
+            }
+            writer.append(") { return ((MimeContext)InternalApplicationContext.getCurrentRequest()).createURLBuilder(").append(method.getId());
+            switch (method.getParameterNames().size())
+            {
+               case 0:
+                  break;
+               case 1:
+                  writer.append(",(Object)").append(method.getParameterNames().get(0));
+                  break;
+               default:
+                  writer.append(",new Object[]{");
+                  for (int j = 0;j < method.getParameterNames().size();j++)
+                  {
+                     if (j > 0)
+                     {
+                        writer.append(",");
+                     }
+                     writer.append(method.getParameterNames().get(j));
+                  }
+                  writer.append("}");
+                  break;
+            }
+            writer.append("); }\n");
+         }
 
-            // Close class
-            writer.append("}\n");
+         // Singleton instance (declared after the method constants)
+         writer.append("public static final ").append(fqn.getSimpleName()).append("_ INSTANCE = new ").append(fqn.getSimpleName()).append("_();\n");
 
-            //
-            log.log("Generated controller companion " + fqn.getFullName() + "_" + " as " + file.toUri());
-         }
-         catch (IOException e)
-         {
-            throw new CompilationException(e, origin, ErrorCode.CANNOT_WRITE_CONTROLLER_CLASS);
-         }
-         finally
-         {
-            Tools.safeClose(writer);
-         }
+         // Close class
+         writer.append("}\n");
+
+         //
+         log.log("Generated controller companion " + fqn.getFullName() + "_" + " as " + file.toUri());
       }
-      else
+      catch (IOException e)
       {
-         log.log("Found existing valid controller companion " + fqn.getFullName() + "_" + " as ");
+         throw new CompilationException(e, origin, ErrorCode.CANNOT_WRITE_CONTROLLER_CLASS);
+      }
+      finally
+      {
+         Tools.safeClose(writer);
       }
    }
 }

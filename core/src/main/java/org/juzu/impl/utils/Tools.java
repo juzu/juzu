@@ -19,6 +19,7 @@
 
 package org.juzu.impl.utils;
 
+import javax.lang.model.element.Element;
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -335,5 +336,16 @@ public class Tools
       Calendar c = Calendar.getInstance();
       c.setTimeInMillis(timeMillis);
       return DatatypeConverter.printDateTime(c);
+   }
+
+   public static long handle(Element te)
+   {
+      long hash = 0;
+      for (Element enclosed : te.getEnclosedElements())
+      {
+         hash = 31 * hash + handle(enclosed);
+      }
+      hash = 31 * hash + te.getSimpleName().toString().hashCode();
+      return hash;
    }
 }

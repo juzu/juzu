@@ -23,7 +23,7 @@ import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
-import org.juzu.impl.utils.LastModified;
+import org.juzu.impl.utils.Hash;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -87,24 +87,24 @@ public class ProcessingContext implements Filer, Elements
       return handle.get(env);
    }
 
-   public long getClassLastModified(FQN fqn)
+   public long getClassHash(FQN fqn)
    {
-      return getClassLastModified(fqn.getFullName());
+      return getClassHash(fqn.getFullName());
    }
 
-   public long getClassLastModified(String className)
+   public long getClassHash(String className)
    {
       TypeElement element = getTypeElement(className);
       if (element != null)
       {
-         return getClassLastModified(element);
+         return getClassHash(element);
       }
       return 0;
    }
 
-   public long getClassLastModified(TypeElement element)
+   public long getClassHash(TypeElement element)
    {
-      LastModified p = element.getAnnotation(LastModified.class);
+      Hash p = element.getAnnotation(Hash.class);
       if (p != null)
       {
          return p.value();
@@ -115,34 +115,27 @@ public class ProcessingContext implements Filer, Elements
    /**
     * @param handle the class handle
     * @return the last modified
-    * @see #getSourceLastModified(org.juzu.impl.utils.FQN)
+    * @see #getSourceHash(javax.lang.model.element.TypeElement)
     */
-   public long getSourceLastModified(ElementHandle.Class handle)
+   public long getSourceHash(ElementHandle.Class handle)
    {
-      return getSourceLastModified(handle.getFQN());
+      TypeElement element = handle.get(env);
+      if (element != null)
+      {
+         return getSourceHash(element);
+      }
+      return 0;
    }
 
    /**
-    * Attempt to get last modified value from a .java file, note this file may not exist because there are no guarantees
-    * that a type corresponds to a compilation unit. If the last modified cannot be determined, the value 0 is returned.
+    * Compute the hash of the specified type
     *
-    * @param fqn the type fqn
-    * @return the last modified
+    * @param handle the class handle
+    * @return the hash value
     */
-   public long getSourceLastModified(FQN fqn)
+   public long getSourceHash(TypeElement handle)
    {
-      try
-      {
-         FileObject o = getResource(
-            StandardLocation.SOURCE_PATH,
-            fqn.getPackageName().getValue(),
-            fqn.getSimpleName() + ".java");
-         return o.getLastModified();
-      }
-      catch (IOException e)
-      {
-         return 0;
-      }
+      return Tools.handle(handle);
    }
 
    public Content resolveResource(FQN fqn, String extension)
@@ -167,8 +160,7 @@ public class ProcessingContext implements Filer, Elements
       //
       return null;
    }
-   
-   
+
    // Types implementation *********************************************************************************************
 
    public Element asElement(TypeMirror t)

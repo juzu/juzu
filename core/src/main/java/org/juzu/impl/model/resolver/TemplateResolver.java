@@ -76,13 +76,21 @@ public class TemplateResolver implements Serializable
    private Map<String, Template> templates;
 
    /** . */
-   private Map<String, FileObject> resources;
+   private Map<String, FileObject> resourceCache;
    
+   /** . */
+   private Map<FQN, FileObject> stubCache;
+
+   /** . */
+   private Map<FQN, FileObject> classCache;
+
    public TemplateResolver(ApplicationMetaModel application)
    {
       this.application = application;
       this.templates = new HashMap<String, Template>();
-      this.resources = new HashMap<String, FileObject>();
+      this.resourceCache = new HashMap<String, FileObject>();
+      this.stubCache = new HashMap<FQN, FileObject>();
+      this.classCache = new HashMap<FQN, FileObject>();
    }
 
    public Collection<Template> getTemplates()
@@ -92,8 +100,10 @@ public class TemplateResolver implements Serializable
 
    void prePassivate()
    {
-      log.log("Evicting template cache " + resources.keySet());
-      resources.clear();
+      log.log("Evicting cache " + resourceCache.keySet());
+      resourceCache.clear();
+      stubCache.clear();
+      classCache.clear();
    }
 
    void process(ModelResolver context) throws CompilationException
@@ -179,24 +189,10 @@ public class TemplateResolver implements Serializable
 
       // If it's the cache we do nothing
       String key = template.getFQN().getFullName() + ".groovy";
-      if (resources.containsKey(key))
+      if (resourceCache.containsKey(key))
       {
          log.log("Template " + key + " was found in cache");
          return;
-      }
-
-      // Attempt to get the script to check it's generated
-      try
-      {
-         FileObject scriptFile = context.env.getResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension());
-         scriptFile.getCharContent(true);
-         log.log("Template " + key + " was found on disk cache");
-         resources.put(key, scriptFile);
-         return;
-      }
-      catch (IOException e)
-      {
-         log.log("Template " + key + " was not found on disk");
       }
 
       //
@@ -235,7 +231,7 @@ public class TemplateResolver implements Serializable
          writer.write(generator.toString());
 
          // Put it in cache
-         resources.put(key, scriptFile);
+         resourceCache.put(key, scriptFile);
 
          //
          log.log("Generated template script " + template.getFQN().getFullName() + " as " + scriptFile.toUri() +
@@ -253,117 +249,121 @@ public class TemplateResolver implements Serializable
 
    private void resolvedQualified(Template template, ModelResolver context, Element[] elements)
    {
-      if (context.env.getTypeElement(template.getFQN().getFullName()) == null)
+      if (classCache.containsKey(template.getFQN()))
       {
-         Writer writer = null;
-         try
+         log.log("Template class " + template.getFQN() + " was found in cache");
+         return;
+      }
+
+      //
+      Writer writer = null;
+      try
+      {
+         // Template qualified class
+         FileObject classFile = context.env.createSourceFile(template.getFQN().getFullName(), elements);
+         writer = classFile.openWriter();
+         writer.append("package ").append(template.getFQN().getPackageName()).append(";\n");
+         writer.append("import ").append(Tools.getImport(Path.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Export.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+         writer.append("import javax.inject.Inject;\n");
+         writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
+         writer.append("@Generated({})\n");
+         writer.append("@Export\n");
+         writer.append("@Path(\"").append(template.getPath()).append("\")\n");
+         writer.append("public class ").append(template.getFQN().getSimpleName()).append(" extends ").append(org.juzu.template.Template.class.getName()).append("\n");
+         writer.append("{\n");
+         writer.append("@Inject\n");
+         writer.append("public ").append(template.getFQN().getSimpleName()).append("(").
+            append(ApplicationContext.class.getSimpleName()).append(" applicationContext").
+            append(")\n");
+         writer.append("{\n");
+         writer.append("super(applicationContext, \"").append(template.getPath()).append("\");\n");
+         writer.append("}\n");
+
+         //
+         if (template.getParameters() != null)
          {
-            // Template qualified class
-            FileObject classFile = context.env.createSourceFile(template.getFQN().getFullName(), elements);
-            writer = classFile.openWriter();
-            writer.append("package ").append(template.getFQN().getPackageName()).append(";\n");
-            writer.append("import ").append(Tools.getImport(Path.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(Export.class)).append(";\n");
-            writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-            writer.append("import javax.inject.Inject;\n");
-            writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
-            writer.append("@Generated({})\n");
-            writer.append("@Export\n");
-            writer.append("@Path(\"").append(template.getPath()).append("\")\n");
-            writer.append("public class ").append(template.getFQN().getSimpleName()).append(" extends ").append(org.juzu.template.Template.class.getName()).append("\n");
-            writer.append("{\n");
-            writer.append("@Inject\n");
-            writer.append("public ").append(template.getFQN().getSimpleName()).append("(").
-               append(ApplicationContext.class.getSimpleName()).append(" applicationContext").
-               append(")\n");
-            writer.append("{\n");
-            writer.append("super(applicationContext, \"").append(template.getPath()).append("\");\n");
-            writer.append("}\n");
-
-            //
-            if (template.getParameters() != null)
+            // Setters on template
+            for (String paramName : template.getParameters())
             {
-               // Setters on template
-               for (String paramName : template.getParameters())
-               {
-                  writer.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
-                  writer.append("Builder builder = new Builder();");
-                  writer.append("builder.set(\"").append(paramName).append("\",").append(paramName).append(");\n");
-                  writer.append("return builder;\n");
-                  writer.append(("}\n"));
-               }
-
-               // Setters on builders
-               writer.append("public class Builder extends ").append(Tools.getImport(org.juzu.template.Template.Builder.class)).append("\n");
-               writer.append("{\n");
-               for (String paramName : template.getParameters())
-               {
-                  writer.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
-                  writer.append("set(\"").append(paramName).append("\",").append(paramName).append(");\n");
-                  writer.append("return this;\n");
-                  writer.append(("}\n"));
-               }
-               writer.append("}\n");
+               writer.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
+               writer.append("Builder builder = new Builder();");
+               writer.append("builder.set(\"").append(paramName).append("\",").append(paramName).append(");\n");
+               writer.append("return builder;\n");
+               writer.append(("}\n"));
             }
 
-            // Close class
+            // Setters on builders
+            writer.append("public class Builder extends ").append(Tools.getImport(org.juzu.template.Template.Builder.class)).append("\n");
+            writer.append("{\n");
+            for (String paramName : template.getParameters())
+            {
+               writer.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
+               writer.append("set(\"").append(paramName).append("\",").append(paramName).append(");\n");
+               writer.append("return this;\n");
+               writer.append(("}\n"));
+            }
             writer.append("}\n");
+         }
 
-            //
-            log.log("Generated template class " + template.getFQN().getFullName() + " as " + classFile.toUri() +
-               " with originating elements " + Arrays.asList(elements));
-         }
-         catch (IOException e)
-         {
-            throw new CompilationException(e, elements[0], ErrorCode.CANNOT_WRITE_TEMPLATE_QUALIFIED_CLASS, template.getPath());
-         }
-         finally
-         {
-            Tools.safeClose(writer);
-         }
+         // Close class
+         writer.append("}\n");
+
+         //
+         classCache.put(template.getFQN(), classFile);
+
+         //
+         log.log("Generated template class " + template.getFQN().getFullName() + " as " + classFile.toUri() +
+            " with originating elements " + Arrays.asList(elements));
       }
-      else
+      catch (IOException e)
       {
-         log.log("Found existing qualified template " + template.getFQN().getFullName());
+         throw new CompilationException(e, elements[0], ErrorCode.CANNOT_WRITE_TEMPLATE_QUALIFIED_CLASS, template.getPath());
+      }
+      finally
+      {
+         Tools.safeClose(writer);
       }
    }
 
    private void resolveStub(Template template, ModelResolver context, Element[] elements)
    {
-      FQN stubFQN = new FQN(template.getFQN().getFullName() + "_");
+      if (stubCache.containsKey(template.getFQN()))
+      {
+         log.log("Template strub " + template.getFQN() + " was found in cache");
+         return;
+      }
 
       //
-      if (context.env.getTypeElement(stubFQN.getFullName()) == null)
+      FQN stubFQN = new FQN(template.getFQN().getFullName() + "_");
+      TemplateProvider provider = context.providers.get(template.getExtension());
+      Writer writer = null;
+      try
       {
-         TemplateProvider provider = context.providers.get(template.getExtension());
-         Writer writer = null;
-         try
-         {
-            // Template stub
-            JavaFileObject stubFile = context.env.createSourceFile(stubFQN.getFullName(), elements);
-            writer = stubFile.openWriter();
-            writer.append("package ").append(stubFQN.getPackageName()).append(";\n");
-            writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-            writer.append("@Generated({\"").append(stubFQN.getFullName()).append("\"})\n");
-            writer.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
-            writer.append("}");
+         // Template stub
+         JavaFileObject stubFile = context.env.createSourceFile(stubFQN.getFullName(), elements);
+         writer = stubFile.openWriter();
+         writer.append("package ").append(stubFQN.getPackageName()).append(";\n");
+         writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+         writer.append("@Generated({\"").append(stubFQN.getFullName()).append("\"})\n");
+         writer.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
+         writer.append("}");
 
-            //
-            log.log("Generating template stub " + stubFQN.getFullName() + " as " + stubFile.toUri() +
-               " with originating elements " + Arrays.asList(elements));
-         }
-         catch (IOException e)
-         {
-            throw new CompilationException(e, elements[0], ErrorCode.CANNOT_WRITE_TEMPLATE_STUB_CLASS, template.getPath());
-         }
-         finally
-         {
-            Tools.safeClose(writer);
-         }
+         //
+         stubCache.put(template.getFQN(), stubFile);
+
+         //
+         log.log("Generating template stub " + stubFQN.getFullName() + " as " + stubFile.toUri() +
+            " with originating elements " + Arrays.asList(elements));
       }
-      else
+      catch (IOException e)
       {
-         log.log("Found existing template stub " + stubFQN.getFullName());
+         throw new CompilationException(e, elements[0], ErrorCode.CANNOT_WRITE_TEMPLATE_STUB_CLASS, template.getPath());
+      }
+      finally
+      {
+         Tools.safeClose(writer);
       }
    }
 }

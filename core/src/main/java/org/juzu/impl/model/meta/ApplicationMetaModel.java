@@ -20,8 +20,10 @@
 package org.juzu.impl.model.meta;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.FQN;
+import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.QN;
 
 import java.util.ArrayList;
@@ -37,6 +39,9 @@ import java.util.TreeSet;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModelObject
 {
+
+   /** . */
+   private static final Logger log = BaseProcessor.getLogger(ApplicationMetaModel.class);
 
    /** The controllers. */
    LinkedHashSet<ControllerMetaModel> controllers = new LinkedHashSet<ControllerMetaModel>();
@@ -212,16 +217,16 @@ public class ApplicationMetaModel extends MetaModelObject
             }
          }
       }
-      if (set.isEmpty())
+      if (set.size() == 1)
       {
-         return null;
-      }
-      else if (set.size() == 1)
-      {
-         return set.iterator().next();
+         MethodMetaModel method = set.iterator().next();
+         log.log("Resolved method " + method.getName() + " " + method.getParameterNames() + " for " + methodName + " "
+            + parameterNames + " among " + set);
+         return method;
       }
       else
       {
+         log.log("Could not resolve method " + methodName + " " + parameterNames + " among " + set);
          return null;
       }
    }

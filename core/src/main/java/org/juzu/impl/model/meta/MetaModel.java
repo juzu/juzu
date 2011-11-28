@@ -169,17 +169,17 @@ public class MetaModel extends ModelHandler
    {
       TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
       ElementHandle.Class handle = ElementHandle.Class.create(controllerElt);
-      long lastModified = env.getSourceLastModified(handle);
+      long hash = env.getSourceHash(handle);
       ControllerMetaModel controller = controllers.get(handle);
       if (controller == null)
       {
-         controller = addController(handle, lastModified);
+         controller = addController(handle, hash);
       }
       else
       {
          // I don't like this for now
          // but it's OK it make it work
-         controller.lastModified = lastModified;
+         controller.hash = hash;
       }
       controller.addMethod(
          methodElt,

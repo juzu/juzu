@@ -55,15 +55,15 @@ public class ControllerMetaModel extends MetaModelObject
    final LinkedHashMap<ElementHandle.Method, MethodMetaModel> methods;
 
    /** The last modified value, 0 means that the value could not be determined for some reason. */
-   long lastModified;
+   long hash;
 
-   public ControllerMetaModel(MetaModel context, ElementHandle.Class handle, long lastModified)
+   public ControllerMetaModel(MetaModel context, ElementHandle.Class handle, long hash)
    {
       this.context = context;
       this.handle = handle;
       this.methods = new LinkedHashMap<ElementHandle.Method, MethodMetaModel>();
       this.modified = false;
-      this.lastModified = lastModified;
+      this.hash = hash;
    }
 
    public Map<String, ?> toJSON()
@@ -80,9 +80,9 @@ public class ControllerMetaModel extends MetaModelObject
       return json;
    }
 
-   public long getLastModified()
+   public long getHash()
    {
-      return lastModified;
+      return hash;
    }
 
    public ApplicationMetaModel getApplication()
