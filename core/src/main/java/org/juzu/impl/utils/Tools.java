@@ -19,6 +19,7 @@
 
 package org.juzu.impl.utils;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -32,6 +33,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -309,5 +311,29 @@ public class Tools
       {
          safeClose(in);
       }
+   }
+
+   /**
+    * Parses a date formatted as ISO 8601.
+    *
+    * @param date the date
+    * @return the time in millis corresponding to the date
+    */
+   public static long parseISO8601(String date)
+   {
+      return DatatypeConverter.parseDateTime(date).getTimeInMillis();
+   }
+
+   /**
+    * Format the time millis as an ISO 8601 date.
+    *
+    * @param timeMillis the time to format
+    * @return the ISO 8601 corresponding dat
+    */
+   public static String formatISO8601(long timeMillis)
+   {
+      Calendar c = Calendar.getInstance();
+      c.setTimeInMillis(timeMillis);
+      return DatatypeConverter.printDateTime(c);
    }
 }
