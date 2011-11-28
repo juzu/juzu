@@ -17,10 +17,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package metamodel.template.pathannotation;
+package org.juzu.impl.model;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class B
+public enum ErrorCode
 {
-   // This class is only used to trigger recompilation when needed
+
+   CANNOT_WRITE_CONFIG,
+
+   CANNOT_WRITE_APPLICATION_CONFIG,
+
+   CONTROLLER_METHOD_NOT_FOUND,
+
+   CANNOT_WRITE_CONTROLLER_CLASS,
+
+   CANNOT_WRITE_TEMPLATE,
+
+   CANNOT_WRITE_TEMPLATE_STUB_CLASS,
+
+   CANNOT_WRITE_TEMPLATE_QUALIFIED_CLASS,
+
+   CANNOT_WRITE_APPLICATION_CLASS,
+
+   DUPLICATE_CONTROLLER_ID,
+
+   TEMPLATE_NOT_FOUND,
+
+   TEMPLATE_SYNTAX_ERROR,
+
+   ILLEGAL_PATH,
+
+   UNSUPPORTED
+
 }

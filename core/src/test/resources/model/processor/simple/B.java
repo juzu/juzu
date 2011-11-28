@@ -17,17 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
-
-import org.juzu.impl.model.resolver.ModelResolver;
+package model.processor.simple;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ModelProcessor extends AbstractModelProcessor
+public class B
 {
-
-   @Override
-   protected AnnotationHandler createHandler()
-   {
-      return new ModelResolver();
-   }
+   // This class is only used to trigger recompilation when needed
 }

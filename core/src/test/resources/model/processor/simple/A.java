@@ -17,36 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package model.processor.simple;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum ErrorCode
+public class A
 {
 
-   CANNOT_WRITE_CONFIG,
+   @javax.inject.Inject @org.juzu.Path("index.gtmpl") org.juzu.template.Template template;
 
-   CANNOT_WRITE_APPLICATION_CONFIG,
-
-   CONTROLLER_METHOD_NOT_FOUND,
-
-   CANNOT_WRITE_CONTROLLER_CLASS,
-
-   CANNOT_WRITE_TEMPLATE,
-
-   CANNOT_WRITE_TEMPLATE_STUB_CLASS,
-
-   CANNOT_WRITE_TEMPLATE_QUALIFIED_CLASS,
-
-   CANNOT_WRITE_APPLICATION_CLASS,
-
-   DUPLICATE_CONTROLLER_ID,
-
-   TEMPLATE_NOT_FOUND,
-
-   TEMPLATE_SYNTAX_ERROR,
-
-   ILLEGAL_PATH,
-
-   UNSUPPORTED
+   @org.juzu.View public void index() { }
 
 }

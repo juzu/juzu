@@ -22,7 +22,7 @@ package org.juzu.test;
 import org.juzu.Application;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
-import org.juzu.impl.processor.ModelProcessor;
+import org.juzu.impl.model.processor.MainProcessor;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
@@ -76,7 +76,7 @@ public class CompilerHelper<I, O>
          builder.sourcePath(sourcePath);
          builder.sourceOutput(sourceOutput);
          builder.classOutput(classOutput);
-         builder.processor(new ModelProcessor());
+         builder.processor(new MainProcessor());
       }
       catch (Exception e)
       {

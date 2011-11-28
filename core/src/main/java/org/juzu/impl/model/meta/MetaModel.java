@@ -25,23 +25,19 @@ import org.juzu.Path;
 import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.processor.AnnotationHandler;
-import org.juzu.impl.processor.ElementHandle;
+import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.processor.ModelHandler;
+import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.QN;
 import org.juzu.impl.utils.Tools;
-import org.juzu.text.Location;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -52,7 +48,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaModel extends AnnotationHandler
+public class MetaModel extends ModelHandler
 {
 
    /** . */
@@ -65,7 +61,7 @@ public class MetaModel extends AnnotationHandler
    LinkedHashMap<ElementHandle.Package, ApplicationMetaModel> applications = new LinkedHashMap<ElementHandle.Package, ApplicationMetaModel>();
 
    /** . */
-   ProcessingEnvironment env;
+   ProcessingContext env;
 
    /** . */
    final LinkedList<MetaModelEvent> queue = new LinkedList<MetaModelEvent>();
@@ -160,7 +156,7 @@ public class MetaModel extends AnnotationHandler
    //
 
    @Override
-   public void postActivate(ProcessingEnvironment env)
+   public void postActivate(ProcessingContext env)
    {
       this.env = env;
    }
@@ -173,24 +169,7 @@ public class MetaModel extends AnnotationHandler
    {
       TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
       ElementHandle.Class handle = ElementHandle.Class.create(controllerElt);
-
-      // Attempt to get last modified value from the .java file
-      // note this file may not exist because there are no guarantees
-      // that a type corresponds to a compilation unit
-      long lastModified = 0;
-      try
-      {
-         FileObject o = env.getFiler().getResource(
-            StandardLocation.SOURCE_PATH,
-            handle.getFQN().getPackageName().getValue(),
-            handle.getFQN().getSimpleName() + ".java");
-         lastModified = o.getLastModified();
-      }
-      catch (IOException e)
-      {
-         e.printStackTrace();
-      }
-
+      long lastModified = env.getSourceLastModified(handle);
       ControllerMetaModel controller = controllers.get(handle);
       if (controller == null)
       {
@@ -198,6 +177,8 @@ public class MetaModel extends AnnotationHandler
       }
       else
       {
+         // I don't like this for now
+         // but it's OK it make it work
          controller.lastModified = lastModified;
       }
       controller.addMethod(
@@ -314,7 +295,7 @@ public class MetaModel extends AnnotationHandler
       {
          if (controller.application == null)
          {
-            PackageElement packageElt = env.getElementUtils().getPackageOf(controller.handle.get(env));
+            PackageElement packageElt = env.getPackageOf(env.get(controller.handle));
             QN packageQN = new QN(packageElt.getQualifiedName());
             for (ApplicationMetaModel application : applications.values())
             {
@@ -345,8 +326,8 @@ public class MetaModel extends AnnotationHandler
       {
          if (ref.template == null)
          {
-            VariableElement variableElt = ref.handle.get(env);
-            PackageElement packageElt = env.getElementUtils().getPackageOf(variableElt);
+            VariableElement variableElt = env.get(ref.handle);
+            PackageElement packageElt = env.getPackageOf(variableElt);
             QN packageQN = new QN(packageElt.getQualifiedName());
             for (ApplicationMetaModel application : applications.values())
             {
@@ -369,7 +350,7 @@ public class MetaModel extends AnnotationHandler
       for (Iterator<ApplicationMetaModel> i = applications.values().iterator();i.hasNext();)
       {
          ApplicationMetaModel application = i.next();
-         PackageElement packageElt = application.handle.get(env);
+         PackageElement packageElt = env.get(application.handle);
          if (packageElt == null)
          {
             throw new UnsupportedOperationException();
@@ -415,7 +396,7 @@ public class MetaModel extends AnnotationHandler
          for (Iterator<MethodMetaModel> j = controller.methods.values().iterator();j.hasNext();)
          {
             MethodMetaModel method = j.next();
-            ExecutableElement methodElt = method.handle.get(env);
+            ExecutableElement methodElt = env.get(method.handle);
             boolean remove = methodElt == null || (
                methodElt.getAnnotation(View.class) == null &&
                methodElt.getAnnotation(Action.class) == null &&
@@ -445,7 +426,7 @@ public class MetaModel extends AnnotationHandler
       for (Iterator<TemplateRefMetaModel> i = templates.values().iterator();i.hasNext();)
       {
          TemplateRefMetaModel ref = i.next();
-         VariableElement fieldElt = ref.handle.get(env);
+         VariableElement fieldElt = env.get(ref.handle);
          if (fieldElt == null)
          {
             throw new UnsupportedOperationException("todo");

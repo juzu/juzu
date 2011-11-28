@@ -31,7 +31,7 @@ public class PathTestCase extends AbstractTestCase
 
    public void testBuild() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "template", "pathannotation").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
@@ -39,8 +39,8 @@ public class PathTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel application = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
-      TemplateRefMetaModel ref = expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl");
+      ApplicationMetaModel application = expected.addApplication("model.meta.path", "PathApplication");
+      TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
       TemplateMetaModel template = application.addTemplate(ref);
       template.addRef(ref);
       assertEquals(expected.toJSON(), mm.toJSON());
@@ -48,14 +48,14 @@ public class PathTestCase extends AbstractTestCase
 
    public void testChangeValue() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "template", "pathannotation").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
-      File a = helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "A.java");
+      File a = helper.getSourcePath().getPath("model", "meta", "path", "A.java");
       Tools.write(Tools.read(a).replace("foo.gtmpl", "bar.gtmpl"), a);
-      assertDelete(helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("metamodel", "template", "pathannotation", "A.class"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "path", "package-info.java"));
+      assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
       helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
@@ -63,8 +63,8 @@ public class PathTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel application = expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
-      TemplateRefMetaModel ref = expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "bar.gtmpl");
+      ApplicationMetaModel application = expected.addApplication("model.meta.path", "PathApplication");
+      TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "bar.gtmpl");
       TemplateMetaModel template = application.addTemplate(ref);
       template.addRef(ref);
       assertEquals(expected.toJSON(), mm.toJSON());
@@ -72,14 +72,14 @@ public class PathTestCase extends AbstractTestCase
 
    public void testRemoveAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "template", "pathannotation").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
-      File a = helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "A.java");
+      File a = helper.getSourcePath().getPath("model", "meta", "path", "A.java");
       Tools.write(Tools.read(a).replace("@Path(\"foo.gtmpl\")", ""), a);
-      assertDelete(helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("metamodel", "template", "pathannotation", "A.class"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "path", "package-info.java"));
+      assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
       helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
@@ -87,19 +87,19 @@ public class PathTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      expected.addApplication("metamodel.template.pathannotation", "PathannotationApplication");
+      expected.addApplication("model.meta.path", "PathApplication");
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
    public void testPathRemoveApplication() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "template", "pathannotation").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
-      assertDelete(helper.getSourcePath().getPath("metamodel", "template", "pathannotation", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("metamodel", "template", "pathannotation", "package-info.class"));
-      assertDelete(helper.getClassOutput().getPath("metamodel", "template", "pathannotation", "A.class"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "path", "package-info.java"));
+      assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "package-info.class"));
+      assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
       helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
@@ -107,7 +107,7 @@ public class PathTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      expected.addTemplateRef("metamodel.template.pathannotation.A", "index", "foo.gtmpl");
+      expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 }

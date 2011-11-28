@@ -17,11 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package org.juzu.impl.model.processor;
 
 import org.juzu.impl.compiler.CompilationException;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.VariableElement;
@@ -29,10 +28,10 @@ import java.io.Serializable;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AnnotationHandler implements Serializable
+public abstract class ModelHandler implements Serializable
 {
 
-   public abstract void postActivate(ProcessingEnvironment env);
+   public abstract void postActivate(ProcessingContext env);
 
    public abstract void processControllerMethod(ExecutableElement methodElt, String annotationName, Map<String, Object> annotationValues) throws CompilationException;
 

@@ -25,6 +25,8 @@ import org.juzu.URLBuilder;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.ErrorCode;
 import org.juzu.impl.model.meta.ApplicationMetaModel;
 import org.juzu.impl.model.meta.ControllerMetaModel;
 import org.juzu.impl.model.meta.MetaModel;
@@ -33,9 +35,8 @@ import org.juzu.impl.model.meta.MetaModelObject;
 import org.juzu.impl.model.meta.MethodMetaModel;
 import org.juzu.impl.model.meta.TemplateMetaModel;
 import org.juzu.impl.model.meta.TemplateRefMetaModel;
-import org.juzu.impl.processor.AnnotationHandler;
-import org.juzu.impl.processor.ElementHandle;
-import org.juzu.impl.processor.ErrorCode;
+import org.juzu.impl.model.processor.ModelHandler;
+import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
@@ -49,12 +50,9 @@ import org.juzu.request.ActionContext;
 import org.juzu.request.MimeContext;
 
 import javax.annotation.Generated;
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -73,7 +71,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ModelResolver extends AnnotationHandler implements Serializable
+public class ModelResolver extends ModelHandler implements Serializable
 {
 
    /** . */
@@ -109,7 +107,7 @@ public class ModelResolver extends AnnotationHandler implements Serializable
    private static final String RESPONSE = Response.Render.class.getSimpleName();
 
    /** . */
-   ProcessingEnvironment env;
+   ProcessingContext env;
 
    /** . */
    Map<String, TemplateProvider> providers;
@@ -131,7 +129,7 @@ public class ModelResolver extends AnnotationHandler implements Serializable
    }
 
    @Override
-   public void postActivate(ProcessingEnvironment env)
+   public void postActivate(ProcessingContext env)
    {
       // Discover the template providers
       ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, TemplateProvider.class.getClassLoader());
@@ -276,14 +274,13 @@ public class ModelResolver extends AnnotationHandler implements Serializable
    {
       Properties config = new Properties();
       config.putAll(moduleConfig);
-      Filer filer = env.getFiler();
 
       // Module config
       Writer writer = null;
       try
       {
          //
-         FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, "org.juzu", "config.properties");
+         FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, "org.juzu", "config.properties");
          writer = fo.openWriter();
          config.store(writer, null);
       }
@@ -317,13 +314,13 @@ public class ModelResolver extends AnnotationHandler implements Serializable
          writer = null;
          try
          {
-            FileObject fo = filer.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.properties");
+            FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.properties");
             writer = fo.openWriter();
             config.store(writer, null);
          }
          catch (IOException e)
          {
-            throw new CompilationException(e, application.getHandle().get(env), ErrorCode.CANNOT_WRITE_APPLICATION_CONFIG);
+            throw new CompilationException(e, env.get(application.getHandle()), ErrorCode.CANNOT_WRITE_APPLICATION_CONFIG);
          }
          finally
          {
@@ -334,17 +331,14 @@ public class ModelResolver extends AnnotationHandler implements Serializable
 
    private void emitApplication(ApplicationMetaModel application) throws CompilationException
    {
-      Filer filer = env.getFiler();
-
-      //
-      PackageElement elt = application.getHandle().get(env);
+      PackageElement elt = env.get(application.getHandle());
       FQN fqn = application.getFQN();
 
       //
       Writer writer = null;
       try
       {
-         JavaFileObject applicationFile = filer.createSourceFile(fqn.getFullName(), elt);
+         JavaFileObject applicationFile = env.createSourceFile(fqn.getFullName(), elt);
          writer = applicationFile.openWriter();
 
          writer.append("package ").append(fqn.getPackageName()).append(";\n");
@@ -385,32 +379,16 @@ public class ModelResolver extends AnnotationHandler implements Serializable
 
    private void emitController(ControllerMetaModel controller) throws CompilationException
    {
-      Filer filer = env.getFiler();
-
       FQN fqn = controller.getHandle().getFQN();
-
-      Element origin = controller.getHandle().get(env);
-
-      //
-      TypeElement te = env.getElementUtils().getTypeElement(fqn.getFullName() + "_");
-      long lastModified = 0;
-      if (te != null)
-      {
-         LastModified p = te.getAnnotation(LastModified.class);
-         if (p != null)
-         {
-            lastModified = p.value();
-         }
-      }
-
-      //
+      Element origin = env.get(controller.getHandle());
+      long lastModified = env.getClassLastModified(fqn.getFullName() + "_");
       if (lastModified == 0 && controller.getLastModified() > lastModified)
       {
          // Generate controller literal
          Writer writer = null;
          try
          {
-            JavaFileObject file = filer.createSourceFile(fqn.getFullName() + "_", origin);
+            JavaFileObject file = env.createSourceFile(fqn.getFullName() + "_", origin);
             writer = file.openWriter();
 
             //

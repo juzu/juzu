@@ -17,9 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package org.juzu.impl.model.processor;
 
 import org.juzu.impl.compiler.CompilationError;
+import org.juzu.impl.model.ErrorCode;
 import org.juzu.impl.model.resolver.ModelResolver;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
@@ -167,14 +168,14 @@ public class ProcessorTestCase extends AbstractTestCase
 
    public void testRemoveTemplate() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("processor", "simple");
+      CompilerHelper<File, File> helper = compiler("model", "processor", "simple");
       helper.assertCompile();
 
       //
-      assertDelete(helper.getSourcePath().getPath("processor", "simple", "templates", "index.gtmpl"));
-      assertDelete(helper.getClassOutput().getPath("processor", "simple", "B.class"));
+      assertDelete(helper.getSourcePath().getPath("model", "processor", "simple", "templates", "index.gtmpl"));
+      assertDelete(helper.getClassOutput().getPath("model", "processor", "simple", "B.class"));
 
       //
-      helper.with(new ModelProcessor()).addClassPath(helper.getClassOutput()).failCompile();
+      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).failCompile();
    }
 }

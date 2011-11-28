@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package org.juzu.impl.model.processor;
 
 import org.juzu.Action;
 import org.juzu.Application;
@@ -26,6 +26,7 @@ import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.model.ErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -59,7 +60,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
    private static final Class<?>[] annotationTypes = {View.class, Action.class, Resource.class, Application.class, Path.class};
 
    /** . */
-   private AnnotationHandler model;
+   private ModelHandler model;
 
    /** . */
    private Set<TypeElement> annotations;
@@ -72,6 +73,9 @@ public abstract class AbstractModelProcessor extends BaseProcessor
    
    /** . */
    private final Logger log = BaseProcessor.getLogger(getClass());
+
+   /** . */
+   private ProcessingContext context;
 
    @Override
    protected void doInit(ProcessingEnvironment processingEnv)
@@ -88,12 +92,13 @@ public abstract class AbstractModelProcessor extends BaseProcessor
       this.filer = processingEnv.getFiler();
       this.annotations = annotations;
       this.index = 0;
+      this.context = new ProcessingContext(processingEnv);
 
       //
       log.log("Using processing nev " + processingEnv.getClass().getName());
    }
 
-   protected abstract AnnotationHandler createHandler();
+   protected abstract ModelHandler createHandler();
 
    @Override
    protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
@@ -139,7 +144,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                   FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "model2.ser");
                   in = file.openInputStream();
                   ObjectInputStream ois = new ObjectInputStream(in);
-                  model = (AnnotationHandler)ois.readObject();
+                  model = (ModelHandler)ois.readObject();
                   log.log("Loaded model from " + file.toUri());
                }
                catch (Exception e)
@@ -154,7 +159,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
 
                // Activate
                log.log("Activating model");
-               model.postActivate(processingEnv);
+               model.postActivate(context);
             }
 
             //

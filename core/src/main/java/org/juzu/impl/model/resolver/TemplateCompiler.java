@@ -20,8 +20,9 @@
 package org.juzu.impl.model.resolver;
 
 import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.model.ErrorCode;
 import org.juzu.impl.model.meta.TemplateMetaModel;
-import org.juzu.impl.processor.ErrorCode;
+import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.ParseException;
 import org.juzu.impl.template.TemplateCompilationContext;
@@ -30,7 +31,6 @@ import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.utils.Spliterator;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -52,19 +52,15 @@ class TemplateCompiler
    private ArrayList<Template> added;
 
    /** . */
-   private final TemplateFiler resolver;
-
-   /** . */
-   private final ProcessingEnvironment env;
+   private final ProcessingContext env;
 
    TemplateCompiler(
       TemplateMetaModel templateMetaModel,
       Map<String, Template> templates,
-      ProcessingEnvironment env)
+      ProcessingContext env)
    {
       this.templateMetaModel = templateMetaModel;
       this.templates = templates;
-      this.resolver = new TemplateFiler(env.getFiler());
       this.env = env;
 
    }
@@ -90,7 +86,7 @@ class TemplateCompiler
             Matcher matcher = ModelResolver.TEMPLATE_PATH_PATTERN.matcher(path);
             if (!matcher.matches())
             {
-               Element elt = templateMetaModel.getRefs().iterator().next().getHandle().get(env);
+               Element elt = env.get(templateMetaModel.getRefs().iterator().next().getHandle());
                throw new CompilationException(elt, ErrorCode.ILLEGAL_PATH, path);
             }
             String folder = matcher.group(1);
@@ -113,10 +109,10 @@ class TemplateCompiler
             FQN stubFQN = new FQN(fqn);
 
             // Get source
-            Content content = resolver.resolve(stubFQN, extension);
+            Content content = env.resolveResource(stubFQN, extension);
             if (content == null)
             {
-               throw new CompilationException(templateMetaModel.getRefs().iterator().next().getHandle().get(env), ErrorCode.TEMPLATE_NOT_FOUND, fqn);
+               throw new CompilationException(env.get(templateMetaModel.getRefs().iterator().next().getHandle()), ErrorCode.TEMPLATE_NOT_FOUND, fqn);
             }
 
             // Parse to AST
@@ -127,7 +123,7 @@ class TemplateCompiler
             }
             catch (ParseException e)
             {
-               Element elt = templateMetaModel.getRefs().iterator().next().getHandle().get(env);
+               Element elt = env.get(templateMetaModel.getRefs().iterator().next().getHandle());
                throw new CompilationException(elt, ErrorCode.TEMPLATE_SYNTAX_ERROR, fqn);
             }
 

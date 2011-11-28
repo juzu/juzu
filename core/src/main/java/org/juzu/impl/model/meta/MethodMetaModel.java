@@ -20,7 +20,7 @@
 package org.juzu.impl.model.meta;
 
 import org.juzu.Phase;
-import org.juzu.impl.processor.ElementHandle;
+import org.juzu.impl.compiler.ElementHandle;
 
 import java.util.ArrayList;
 import java.util.HashMap;

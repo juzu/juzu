@@ -17,16 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package metamodel.template.pathannotation;
+@Application
+package model.meta.controller;
 
-import org.juzu.Path;
-import org.juzu.template.Template;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-
-   @Path("foo.gtmpl")
-   Template index;
-
-}
+import org.juzu.Application;

@@ -19,7 +19,7 @@
 
 package org.juzu.impl.model.resolver;
 
-import org.juzu.impl.processor.ModelProcessor;
+import org.juzu.impl.model.processor.MainProcessor;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
@@ -48,7 +48,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertTrue(helper.getClassOutput().getPath("model", "resolver", "controller", "A.class").delete());
 
       //
-      helper.with(new ModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
       assertEquals(a_Last, a_.lastModified());
    }
 
@@ -69,7 +69,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertTrue(helper.getClassOutput().getPath("model", "resolver", "controller", "A.class").delete());
 
       //
-      helper.with(new ModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
       assertEquals(a_Last, a_.lastModified());
    }
 }

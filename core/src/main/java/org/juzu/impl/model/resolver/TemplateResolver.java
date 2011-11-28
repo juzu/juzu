@@ -22,13 +22,13 @@ package org.juzu.impl.model.resolver;
 import org.juzu.Path;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.inject.Export;
+import org.juzu.impl.model.ErrorCode;
 import org.juzu.impl.model.meta.ApplicationMetaModel;
 import org.juzu.impl.model.meta.MethodMetaModel;
 import org.juzu.impl.model.meta.TemplateMetaModel;
 import org.juzu.impl.model.meta.TemplateRefMetaModel;
-import org.juzu.impl.processor.ElementHandle;
-import org.juzu.impl.processor.ErrorCode;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.ASTNode;
@@ -100,11 +100,10 @@ public class TemplateResolver implements Serializable
    {
       // Evict templates that are out of date
       log.log("Synchronizing existing templates " + templates.keySet());
-      TemplateFiler resolver = new TemplateFiler(context.env.getFiler());
       for (Iterator<Template> i = templates.values().iterator();i.hasNext();)
       {
          Template template = i.next();
-         Content content = resolver.resolve(template.getFQN(), template.getExtension());
+         Content content = context.env.resolveResource(template.getFQN(), template.getExtension());
          if (content == null)
          {
             // That will generate a template not found error
@@ -160,7 +159,7 @@ public class TemplateResolver implements Serializable
          int index = 0;
          for (FQN type : types)
          {
-            elements[index++] = context.env.getElementUtils().getTypeElement(type.getFullName());
+            elements[index++] = context.env.getTypeElement(type.getFullName());
          }
 
          // Resolve the stub
@@ -189,7 +188,7 @@ public class TemplateResolver implements Serializable
       // Attempt to get the script to check it's generated
       try
       {
-         FileObject scriptFile = context.env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension());
+         FileObject scriptFile = context.env.getResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension());
          scriptFile.getCharContent(true);
          log.log("Template " + key + " was found on disk cache");
          resources.put(key, scriptFile);
@@ -231,7 +230,7 @@ public class TemplateResolver implements Serializable
          }, generator);
 
          //
-         FileObject scriptFile = context.env.getFiler().createResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension(), elements);
+         FileObject scriptFile = context.env.createResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension(), elements);
          writer = scriptFile.openWriter();
          writer.write(generator.toString());
 
@@ -254,13 +253,13 @@ public class TemplateResolver implements Serializable
 
    private void resolvedQualified(Template template, ModelResolver context, Element[] elements)
    {
-      if (context.env.getElementUtils().getTypeElement(template.getFQN().getFullName()) == null)
+      if (context.env.getTypeElement(template.getFQN().getFullName()) == null)
       {
          Writer writer = null;
          try
          {
             // Template qualified class
-            FileObject classFile = context.env.getFiler().createSourceFile(template.getFQN().getFullName(), elements);
+            FileObject classFile = context.env.createSourceFile(template.getFQN().getFullName(), elements);
             writer = classFile.openWriter();
             writer.append("package ").append(template.getFQN().getPackageName()).append(";\n");
             writer.append("import ").append(Tools.getImport(Path.class)).append(";\n");
@@ -334,14 +333,14 @@ public class TemplateResolver implements Serializable
       FQN stubFQN = new FQN(template.getFQN().getFullName() + "_");
 
       //
-      if (context.env.getElementUtils().getTypeElement(stubFQN.getFullName()) == null)
+      if (context.env.getTypeElement(stubFQN.getFullName()) == null)
       {
          TemplateProvider provider = context.providers.get(template.getExtension());
          Writer writer = null;
          try
          {
             // Template stub
-            JavaFileObject stubFile = context.env.getFiler().createSourceFile(stubFQN.getFullName(), elements);
+            JavaFileObject stubFile = context.env.createSourceFile(stubFQN.getFullName(), elements);
             writer = stubFile.openWriter();
             writer.append("package ").append(stubFQN.getPackageName()).append(";\n");
             writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");

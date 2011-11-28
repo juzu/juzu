@@ -20,7 +20,7 @@
 package org.juzu.impl.model.meta;
 
 import org.juzu.AmbiguousResolutionException;
-import org.juzu.impl.processor.ElementHandle;
+import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.QN;
 

@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.processor;
+package org.juzu.impl.compiler;
 
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.QN;

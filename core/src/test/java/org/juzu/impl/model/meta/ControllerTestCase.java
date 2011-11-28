@@ -34,7 +34,7 @@ public class ControllerTestCase extends AbstractTestCase
 
    public void testBuild() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
@@ -42,8 +42,8 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel application = expected.addApplication("metamodel.controller.simple", "SimpleApplication");
-      ControllerMetaModel controller = expected.addController("metamodel.controller.simple.A");
+      ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
+      ControllerMetaModel controller = expected.addController("model.meta.controller.A");
       controller.addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
       application.addController(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
@@ -51,13 +51,13 @@ public class ControllerTestCase extends AbstractTestCase
 
    public void testRemoveApplication() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
-      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "A.java"));
-      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("metamodel", "controller", "simple", "package-info.class"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "A.java"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
+      assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "package-info.class"));
 
       //
       helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
@@ -65,19 +65,19 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      expected.addController("metamodel.controller.simple.A").addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
+      expected.addController("model.meta.controller.A").addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
    public void testRemoveAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
-      File a = helper.getSourcePath().getPath("metamodel", "controller", "simple", "A.java");
+      File a = helper.getSourcePath().getPath("model", "meta", "controller", "A.java");
       Tools.write(Tools.read(a).replace("@View", ""), a);
-      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "package-info.java"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
       helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
@@ -85,19 +85,19 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      expected.addApplication("metamodel.controller.simple", "SimpleApplication");
+      expected.addApplication("model.meta.controller", "ControllerApplication");
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
    public void testRemoveControllerMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
-      File a = helper.getSourcePath().getPath("metamodel", "controller", "simple", "A.java");
+      File a = helper.getSourcePath().getPath("model", "meta", "controller", "A.java");
       Tools.write(Tools.read(a).replace("@View\n   public void index()\n   {\n   }", ""), a);
-      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "package-info.java"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
       helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
@@ -105,19 +105,19 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      expected.addApplication("metamodel.controller.simple", "SimpleApplication");
+      expected.addApplication("model.meta.controller", "ControllerApplication");
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
    public void testChangeAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("metamodel", "controller", "simple").with(new MetaModelProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MetaModelProcessor());
       helper.assertCompile();
 
       //
-      File a = helper.getSourcePath().getPath("metamodel", "controller", "simple", "A.java");
+      File a = helper.getSourcePath().getPath("model", "meta", "controller", "A.java");
       Tools.write(Tools.read(a).replace("View", "Action"), a);
-      assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "simple", "package-info.java"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
       helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
@@ -125,8 +125,8 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      ApplicationMetaModel application = expected.addApplication("metamodel.controller.simple", "SimpleApplication");
-      ControllerMetaModel controller = expected.addController("metamodel.controller.simple.A");
+      ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
+      ControllerMetaModel controller = expected.addController("model.meta.controller.A");
       controller.addMethod(Phase.ACTION, "index", Collections.<Map.Entry<String, String>>emptyList());
       application.addController(controller);
       assertEquals(expected.toJSON(), mm.toJSON());

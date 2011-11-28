@@ -21,8 +21,8 @@ package org.juzu.impl.model.meta;
 
 import org.juzu.Phase;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.processor.ElementHandle;
-import org.juzu.impl.processor.ErrorCode;
+import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.ErrorCode;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -148,7 +148,7 @@ public class ControllerMetaModel extends MetaModelObject
             ArrayList<String> parameterTypes = new ArrayList<String>();
             for (TypeMirror parameterType : ((ExecutableType)methodElt.asType()).getParameterTypes())
             {
-               TypeMirror erasedParameterType = context.env.getTypeUtils().erasure(parameterType);
+               TypeMirror erasedParameterType = context.env.erasure(parameterType);
                parameterTypes.add(erasedParameterType.toString());
             }
             ArrayList<String> parameterNames = new ArrayList<String>();
