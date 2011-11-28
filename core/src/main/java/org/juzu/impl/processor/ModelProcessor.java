@@ -19,7 +19,7 @@
 
 package org.juzu.impl.processor;
 
-import org.juzu.impl.generator.Generator;
+import org.juzu.impl.model.resolver.ModelResolver;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ModelProcessor extends AbstractModelProcessor
@@ -28,6 +28,6 @@ public class ModelProcessor extends AbstractModelProcessor
    @Override
    protected AnnotationHandler createHandler()
    {
-      return new Generator();
+      return new ModelResolver();
    }
 }

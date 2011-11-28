@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.generator;
+package org.juzu.impl.model.resolver;
 
 import org.juzu.Phase;
 import org.juzu.Response;
@@ -25,14 +25,14 @@ import org.juzu.URLBuilder;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.metamodel.ApplicationMetaModel;
-import org.juzu.impl.metamodel.ControllerMetaModel;
-import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelEvent;
-import org.juzu.impl.metamodel.MetaModelObject;
-import org.juzu.impl.metamodel.MethodMetaModel;
-import org.juzu.impl.metamodel.TemplateMetaModel;
-import org.juzu.impl.metamodel.TemplateRefMetaModel;
+import org.juzu.impl.model.meta.ApplicationMetaModel;
+import org.juzu.impl.model.meta.ControllerMetaModel;
+import org.juzu.impl.model.meta.MetaModel;
+import org.juzu.impl.model.meta.MetaModelEvent;
+import org.juzu.impl.model.meta.MetaModelObject;
+import org.juzu.impl.model.meta.MethodMetaModel;
+import org.juzu.impl.model.meta.TemplateMetaModel;
+import org.juzu.impl.model.meta.TemplateRefMetaModel;
 import org.juzu.impl.processor.AnnotationHandler;
 import org.juzu.impl.processor.ElementHandle;
 import org.juzu.impl.processor.ErrorCode;
@@ -70,11 +70,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Generator extends AnnotationHandler implements Serializable
+public class ModelResolver extends AnnotationHandler implements Serializable
 {
 
    /** . */
-   private static final Logger log = BaseProcessor.getLogger(Generator.class);
+   private static final Logger log = BaseProcessor.getLogger(ModelResolver.class);
+
+   /** . */
+   public static final Pattern TEMPLATE_PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
 
    /** . */
    private static final Pattern PROVIDER_PKG_PATTERN = Pattern.compile(
@@ -112,16 +115,16 @@ public class Generator extends AnnotationHandler implements Serializable
    private Map<String, String> moduleConfig;
 
    /** . */
-   private Map<ElementHandle.Package, TemplateRepository> templateRepositoryMap;
+   private Map<ElementHandle.Package, TemplateResolver> templateRepositoryMap;
 
    /** . */
    private MetaModel metaModel;
 
-   public Generator()
+   public ModelResolver()
    {
       this.moduleConfig = new HashMap<String, String>();
       this.metaModel = new MetaModel();
-      this.templateRepositoryMap = new HashMap<ElementHandle.Package, TemplateRepository>();
+      this.templateRepositoryMap = new HashMap<ElementHandle.Package, TemplateResolver>();
    }
 
    @Override
@@ -198,7 +201,7 @@ public class Generator extends AnnotationHandler implements Serializable
             {
                ApplicationMetaModel application = (ApplicationMetaModel)obj;
                moduleConfig.put(application.getFQN().getSimpleName(), application.getFQN().getFullName());
-               templateRepositoryMap.put(application.getHandle(), new TemplateRepository(application));
+               templateRepositoryMap.put(application.getHandle(), new TemplateResolver(application));
                emitApplication(application);
             }
             else if (obj instanceof ControllerMetaModel)
@@ -237,9 +240,9 @@ public class Generator extends AnnotationHandler implements Serializable
 
    private void processTemplates()
    {
-      for (Map.Entry<ElementHandle.Package, TemplateRepository> entry : templateRepositoryMap.entrySet())
+      for (Map.Entry<ElementHandle.Package, TemplateResolver> entry : templateRepositoryMap.entrySet())
       {
-         TemplateRepository repo = entry.getValue();
+         TemplateResolver repo = entry.getValue();
          repo.process(this);
       }
    }
@@ -256,7 +259,7 @@ public class Generator extends AnnotationHandler implements Serializable
 
       //
       log.log("Passivating templates");
-      for (TemplateRepository repo : templateRepositoryMap.values())
+      for (TemplateResolver repo : templateRepositoryMap.values())
       {
          repo.prePassivate();
       }
@@ -298,10 +301,10 @@ public class Generator extends AnnotationHandler implements Serializable
          {
             config.put(controller.getHandle().getFQN().getFullName() + "_", "controller");
          }
-         TemplateRepository repo = templateRepositoryMap.get(application.getHandle());
+         TemplateResolver repo = templateRepositoryMap.get(application.getHandle());
          if (repo != null)
          {
-            for (TemplateModel template : repo.getTemplates())
+            for (Template template : repo.getTemplates())
             {
                config.put(template.getFQN().getFullName(), "template");
             }

@@ -17,10 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.generator;
+package org.juzu.impl.model.resolver;
 
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.metamodel.TemplateMetaModel;
+import org.juzu.impl.model.meta.TemplateMetaModel;
 import org.juzu.impl.processor.ErrorCode;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.ParseException;
@@ -32,51 +32,46 @@ import org.juzu.impl.utils.Spliterator;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateCompiler
+class TemplateCompiler
 {
-
-   /** . */
-   public static final Pattern NAME_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
 
    /** . */
    private TemplateMetaModel templateMetaModel;
 
    /** . */
-   private final Map<String, TemplateModel> templates;
+   private final Map<String, Template> templates;
 
    /** . */
-   private ArrayList<TemplateModel> added;
+   private ArrayList<Template> added;
 
    /** . */
-   private final TemplateResolver resolver;
+   private final TemplateFiler resolver;
 
    /** . */
    private final ProcessingEnvironment env;
 
    TemplateCompiler(
       TemplateMetaModel templateMetaModel,
-      Map<String, TemplateModel> templates,
+      Map<String, Template> templates,
       ProcessingEnvironment env)
    {
       this.templateMetaModel = templateMetaModel;
       this.templates = templates;
-      this.resolver = new TemplateResolver(env.getFiler());
+      this.resolver = new TemplateFiler(env.getFiler());
       this.env = env;
 
    }
 
-   List<TemplateModel> resolve()
+   List<Template> resolve()
    {
-      added = new ArrayList<TemplateModel>();
+      added = new ArrayList<Template>();
       context.resolveTemplate(templateMetaModel.getPath());
       return added;
    }
@@ -86,13 +81,13 @@ public class TemplateCompiler
       @Override
       public void resolveTemplate(String path)
       {
-         TemplateModel template = templates.get(path);
+         Template template = templates.get(path);
 
          //
          if (template == null)
          {
             // Validate and analyse the path
-            Matcher matcher = NAME_PATTERN.matcher(path);
+            Matcher matcher = ModelResolver.TEMPLATE_PATH_PATTERN.matcher(path);
             if (!matcher.matches())
             {
                Element elt = templateMetaModel.getRefs().iterator().next().getHandle().get(env);
@@ -151,7 +146,7 @@ public class TemplateCompiler
             }
 
             // Add template to application
-            templates.put(path, template = new TemplateModel(
+            templates.put(path, template = new Template(
                templateMetaModel.getPath(),
                templateAST,
                stubFQN,

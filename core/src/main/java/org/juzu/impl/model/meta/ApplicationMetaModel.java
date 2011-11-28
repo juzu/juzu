@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.metamodel;
+package org.juzu.impl.model.meta;
 
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.processor.ElementHandle;

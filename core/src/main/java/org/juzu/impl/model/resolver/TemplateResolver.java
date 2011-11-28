@@ -17,16 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.generator;
+package org.juzu.impl.model.resolver;
 
 import org.juzu.Path;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.inject.Export;
-import org.juzu.impl.metamodel.ApplicationMetaModel;
-import org.juzu.impl.metamodel.MethodMetaModel;
-import org.juzu.impl.metamodel.TemplateMetaModel;
-import org.juzu.impl.metamodel.TemplateRefMetaModel;
+import org.juzu.impl.model.meta.ApplicationMetaModel;
+import org.juzu.impl.model.meta.MethodMetaModel;
+import org.juzu.impl.model.meta.TemplateMetaModel;
+import org.juzu.impl.model.meta.TemplateRefMetaModel;
 import org.juzu.impl.processor.ElementHandle;
 import org.juzu.impl.processor.ErrorCode;
 import org.juzu.impl.spi.template.TemplateGenerator;
@@ -39,7 +39,6 @@ import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.utils.Tools;
 import org.juzu.request.ApplicationContext;
-import org.juzu.template.Template;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.Element;
@@ -64,29 +63,29 @@ import java.util.Set;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class TemplateRepository implements Serializable
+public class TemplateResolver implements Serializable
 {
 
    /** . */
-   private static final Logger log = BaseProcessor.getLogger(TemplateRepository.class);
+   private static final Logger log = BaseProcessor.getLogger(TemplateResolver.class);
 
    /** . */
    private final ApplicationMetaModel application;
 
    /** . */
-   private Map<String, TemplateModel> templates;
+   private Map<String, Template> templates;
 
    /** . */
    private Map<String, FileObject> resources;
    
-   public TemplateRepository(ApplicationMetaModel application)
+   public TemplateResolver(ApplicationMetaModel application)
    {
       this.application = application;
-      this.templates = new HashMap<String, TemplateModel>();
+      this.templates = new HashMap<String, Template>();
       this.resources = new HashMap<String, FileObject>();
    }
 
-   public Collection<TemplateModel> getTemplates()
+   public Collection<Template> getTemplates()
    {
       return templates.values();
    }
@@ -97,14 +96,14 @@ public class TemplateRepository implements Serializable
       resources.clear();
    }
 
-   void process(Generator context) throws CompilationException
+   void process(ModelResolver context) throws CompilationException
    {
       // Evict templates that are out of date
       log.log("Synchronizing existing templates " + templates.keySet());
-      TemplateResolver resolver = new TemplateResolver(context.env.getFiler());
-      for (Iterator<TemplateModel> i = templates.values().iterator();i.hasNext();)
+      TemplateFiler resolver = new TemplateFiler(context.env.getFiler());
+      for (Iterator<Template> i = templates.values().iterator();i.hasNext();)
       {
-         TemplateModel template = i.next();
+         Template template = i.next();
          Content content = resolver.resolve(template.getFQN(), template.getExtension());
          if (content == null)
          {
@@ -126,16 +125,16 @@ public class TemplateRepository implements Serializable
 
       // Build missing templates
       log.log("Building missing templates");
-      Map<String, TemplateModel> copy = new HashMap<String, TemplateModel>(templates);
+      Map<String, Template> copy = new HashMap<String, Template>(templates);
       for (TemplateMetaModel templateMeta : application.getTemplates())
       {
-         TemplateModel template = copy.get(templateMeta.getPath());
+         Template template = copy.get(templateMeta.getPath());
          if (template == null)
          {
             log.log("Compiling template " + templateMeta.getPath());
-            TemplateCompiler compiler = new TemplateCompiler(templateMeta, new HashMap<String, TemplateModel>(copy), context.env);
-            List<TemplateModel> resolved = compiler.resolve();
-            for (TemplateModel added : resolved)
+            TemplateCompiler compiler = new TemplateCompiler(templateMeta, new HashMap<String, Template>(copy), context.env);
+            List<Template> resolved = compiler.resolve();
+            for (Template added : resolved)
             {
                copy.put(added.getPath(), added);
             }
@@ -144,7 +143,7 @@ public class TemplateRepository implements Serializable
       templates = copy;
 
       // Generate missing files from template
-      for (TemplateModel template : templates.values())
+      for (Template template : templates.values())
       {
          //
          String originPath = template.getOriginPath();
@@ -175,7 +174,7 @@ public class TemplateRepository implements Serializable
       }
    }
 
-   private void resolveScript(TemplateModel template, Generator context, final Element[] elements)
+   private void resolveScript(Template template, ModelResolver context, final Element[] elements)
    {
       TemplateProvider provider = context.providers.get(template.getExtension());
 
@@ -253,7 +252,7 @@ public class TemplateRepository implements Serializable
       }
    }
 
-   private void resolvedQualified(TemplateModel template, Generator context, Element[] elements)
+   private void resolvedQualified(Template template, ModelResolver context, Element[] elements)
    {
       if (context.env.getElementUtils().getTypeElement(template.getFQN().getFullName()) == null)
       {
@@ -272,7 +271,7 @@ public class TemplateRepository implements Serializable
             writer.append("@Generated({})\n");
             writer.append("@Export\n");
             writer.append("@Path(\"").append(template.getPath()).append("\")\n");
-            writer.append("public class ").append(template.getFQN().getSimpleName()).append(" extends ").append(Template.class.getName()).append("\n");
+            writer.append("public class ").append(template.getFQN().getSimpleName()).append(" extends ").append(org.juzu.template.Template.class.getName()).append("\n");
             writer.append("{\n");
             writer.append("@Inject\n");
             writer.append("public ").append(template.getFQN().getSimpleName()).append("(").
@@ -296,7 +295,7 @@ public class TemplateRepository implements Serializable
                }
 
                // Setters on builders
-               writer.append("public class Builder extends ").append(Tools.getImport(Template.Builder.class)).append("\n");
+               writer.append("public class Builder extends ").append(Tools.getImport(org.juzu.template.Template.Builder.class)).append("\n");
                writer.append("{\n");
                for (String paramName : template.getParameters())
                {
@@ -330,7 +329,7 @@ public class TemplateRepository implements Serializable
       }
    }
 
-   private void resolveStub(TemplateModel template, Generator context, Element[] elements)
+   private void resolveStub(Template template, ModelResolver context, Element[] elements)
    {
       FQN stubFQN = new FQN(template.getFQN().getFullName() + "_");
 

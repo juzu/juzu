@@ -17,20 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.metamodel;
+package org.juzu.impl.model.meta;
 
-import java.io.Serializable;
-import java.util.Map;
+import org.juzu.impl.processor.AbstractModelProcessor;
+import org.juzu.impl.processor.AnnotationHandler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MetaModelObject implements Serializable
+public class MetaModelProcessor extends AbstractModelProcessor
 {
-
-   public abstract Map<String, ?> toJSON();
-
    @Override
-   public String toString()
+   protected AnnotationHandler createHandler()
    {
-      return getClass().getSimpleName() + "[" + toJSON() + "]";
+      return new MetaModel();
    }
 }

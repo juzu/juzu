@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.generator;
+package org.juzu.impl.model.resolver;
 
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.utils.Content;
@@ -31,11 +31,11 @@ import javax.tools.StandardLocation;
 import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class TemplateResolver
+class TemplateFiler
 {
 
    /** . */
-   private static final Logger log = BaseProcessor.getLogger(TemplateResolver.class);
+   private static final Logger log = BaseProcessor.getLogger(TemplateFiler.class);
 
    /**
     * We need two locations as the {@link javax.tools.StandardLocation#SOURCE_PATH} is not supported in eclipse ide
@@ -47,7 +47,7 @@ class TemplateResolver
    /** . */
    private final Filer filer;
 
-   TemplateResolver(Filer filer)
+   TemplateFiler(Filer filer)
    {
       this.filer = filer;
    }

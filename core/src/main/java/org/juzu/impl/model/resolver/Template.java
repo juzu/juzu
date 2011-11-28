@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.generator;
+package org.juzu.impl.model.resolver;
 
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.utils.FQN;
@@ -26,7 +26,7 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateModel implements Serializable
+public class Template implements Serializable
 {
 
    /** The origin path. */
@@ -50,7 +50,7 @@ public class TemplateModel implements Serializable
    /** The last modified date. */
    private long lastModified;
 
-   public TemplateModel(
+   public Template(
       String originPath,
       ASTNode.Template ast,
       FQN fqn,

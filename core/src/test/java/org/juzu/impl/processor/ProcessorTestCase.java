@@ -20,8 +20,7 @@
 package org.juzu.impl.processor;
 
 import org.juzu.impl.compiler.CompilationError;
-import org.juzu.impl.generator.TemplateCompiler;
-import org.juzu.impl.metamodel.MetaModelProcessor;
+import org.juzu.impl.model.resolver.ModelResolver;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
@@ -50,7 +49,7 @@ public class ProcessorTestCase extends AbstractTestCase
 
    private void assertMatch(String test, String expectedFolder, String expectedRawName, String expectedExtension)
    {
-      Matcher matcher = TemplateCompiler.NAME_PATTERN.matcher(test);
+      Matcher matcher = ModelResolver.TEMPLATE_PATH_PATTERN.matcher(test);
       assertTrue("Was expecting " + test + " to match", matcher.matches());
       assertEquals(expectedFolder, matcher.group(1));
       assertEquals(expectedRawName, matcher.group(2));
@@ -59,7 +58,7 @@ public class ProcessorTestCase extends AbstractTestCase
 
    private void assertNotMatch(String test)
    {
-      Matcher matcher = TemplateCompiler.NAME_PATTERN.matcher(test);
+      Matcher matcher = ModelResolver.TEMPLATE_PATH_PATTERN.matcher(test);
       assertFalse("Was not expecting " + test + " to match", matcher.matches());
    }
 

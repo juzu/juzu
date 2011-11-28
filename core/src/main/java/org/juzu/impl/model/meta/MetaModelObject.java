@@ -17,57 +17,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.metamodel;
+package org.juzu.impl.model.meta;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaModelEvent implements Serializable
+public abstract class MetaModelObject implements Serializable
 {
 
-   /** . */
-   public static final int AFTER_ADD = 0;
+   public abstract Map<String, ?> toJSON();
 
-   /** . */
-   public static final int BEFORE_REMOVE = 1;
-
-   /** . */
-   public static final int UPDATED = 2;
-
-   /** . */
-   private final int type;
-
-   /** . */
-   private final MetaModelObject object;
-
-   MetaModelEvent(int type, MetaModelObject object)
-   {
-      if (type < 0 || type > 3)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (object == null)
-      {
-         throw new NullPointerException();
-      }
-
-      //
-      this.type = type;
-      this.object = object;
-   }
-
-   public int getType()
-   {
-      return type;
-   }
-
-   public MetaModelObject getObject()
-   {
-      return object;
-   }
-
+   @Override
    public String toString()
    {
-      return getClass().getSimpleName() + "[type=" + type + ",object=" + object.getClass().getSimpleName() + "]";
+      return getClass().getSimpleName() + "[" + toJSON() + "]";
    }
 }
