@@ -40,7 +40,6 @@ import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
-import org.juzu.impl.utils.Hash;
 import org.juzu.impl.utils.Tools;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerDescriptor;
@@ -403,10 +402,8 @@ public class ModelResolver extends ModelHandler implements Serializable
          writer.append("import ").append(Tools.getImport(Response.Render.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(Hash.class)).append(";\n");
 
          // Open class
-         writer.append("@Hash(").append(Long.toString(controller.getHash())).append("L)\n");
          writer.append("@Generated(value={})\n");
          writer.append("public class ").append(fqn.getSimpleName()).append("_ extends ").append(CONTROLLER_DESCRIPTOR).append(" {\n");
 

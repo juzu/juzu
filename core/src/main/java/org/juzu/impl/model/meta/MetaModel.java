@@ -104,7 +104,7 @@ public class MetaModel extends ModelHandler
 
    public ControllerMetaModel addController(String className)
    {
-      return addController(ElementHandle.Class.create(new FQN(className)), 0);
+      return addController(ElementHandle.Class.create(new FQN(className)));
    }
 
    //
@@ -142,13 +142,13 @@ public class MetaModel extends ModelHandler
       return ref;
    }
 
-   private ControllerMetaModel addController(ElementHandle.Class handle, long lastModified)
+   private ControllerMetaModel addController(ElementHandle.Class handle)
    {
       if (controllers.containsKey(handle))
       {
          throw new IllegalStateException();
       }
-      ControllerMetaModel controller = new ControllerMetaModel(this, handle, lastModified);
+      ControllerMetaModel controller = new ControllerMetaModel(this, handle);
       controllers.put(handle, controller);
       return controller;
    }
@@ -169,17 +169,10 @@ public class MetaModel extends ModelHandler
    {
       TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
       ElementHandle.Class handle = ElementHandle.Class.create(controllerElt);
-      long hash = env.getSourceHash(handle);
       ControllerMetaModel controller = controllers.get(handle);
       if (controller == null)
       {
-         controller = addController(handle, hash);
-      }
-      else
-      {
-         // I don't like this for now
-         // but it's OK it make it work
-         controller.hash = hash;
+         controller = addController(handle);
       }
       controller.addMethod(
          methodElt,

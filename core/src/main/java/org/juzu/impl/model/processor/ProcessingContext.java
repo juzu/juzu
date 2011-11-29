@@ -23,7 +23,6 @@ import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
-import org.juzu.impl.utils.Hash;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -85,57 +84,6 @@ public class ProcessingContext implements Filer, Elements
    public <E extends Element> E get(ElementHandle<E> handle)
    {
       return handle.get(env);
-   }
-
-   public long getClassHash(FQN fqn)
-   {
-      return getClassHash(fqn.getFullName());
-   }
-
-   public long getClassHash(String className)
-   {
-      TypeElement element = getTypeElement(className);
-      if (element != null)
-      {
-         return getClassHash(element);
-      }
-      return 0;
-   }
-
-   public long getClassHash(TypeElement element)
-   {
-      Hash p = element.getAnnotation(Hash.class);
-      if (p != null)
-      {
-         return p.value();
-      }
-      return 0;
-   }
-
-   /**
-    * @param handle the class handle
-    * @return the last modified
-    * @see #getSourceHash(javax.lang.model.element.TypeElement)
-    */
-   public long getSourceHash(ElementHandle.Class handle)
-   {
-      TypeElement element = handle.get(env);
-      if (element != null)
-      {
-         return getSourceHash(element);
-      }
-      return 0;
-   }
-
-   /**
-    * Compute the hash of the specified type
-    *
-    * @param handle the class handle
-    * @return the hash value
-    */
-   public long getSourceHash(TypeElement handle)
-   {
-      return Tools.handle(handle);
    }
 
    public Content resolveResource(FQN fqn, String extension)
