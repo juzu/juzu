@@ -274,8 +274,8 @@ public abstract class ElementHandle<E extends Element> implements Serializable
                            continue next;
                         }
                      }
+                     return executableElement;
                   }
-                  return executableElement;
                }
             }
          }

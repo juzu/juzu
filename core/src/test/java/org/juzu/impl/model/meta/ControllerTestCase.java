@@ -220,6 +220,42 @@ public class ControllerTestCase extends AbstractTestCase
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
+   public void testRemoveOverloadedMethod() throws Exception
+   {
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MetaModelProcessor());
+      File a = helper.getSourcePath().getPath("model", "meta", "controller", "A.java");
+      String src = Tools.read(a);
+      Tools.write(src.replace("@View", "\n@View public void index(String s) { }\n@View"), a);
+      helper.assertCompile();
+
+      //
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+      mm.popEvents();
+      Tools.serialize(mm, ser);
+
+      //
+      Tools.write(src, a);
+      assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
+
+      //
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      mm = Tools.unserialize(MetaModel.class, ser);
+      List<MetaModelEvent> events = mm.popEvents();
+      assertEquals(1, events.size());
+      assertEquals(MetaModelEvent.UPDATED, events.get(0).getType());
+      assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
+
+      //
+      MetaModel expected = new MetaModel();
+      ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
+      ControllerMetaModel controller = expected.addController("model.meta.controller.A");
+      controller.addMethod(Phase.RENDER, "index", Collections.<String, String>emptyMap().entrySet());
+      application.addController(controller);
+      assertEquals(expected.toJSON(), mm.toJSON());
+   }
+
    public void testRemoveMethods() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MetaModelProcessor());
