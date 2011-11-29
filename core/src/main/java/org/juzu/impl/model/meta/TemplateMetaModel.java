@@ -92,7 +92,7 @@ public class TemplateMetaModel extends MetaModelObject
       }
       refs.put(ref.handle, ref);
       ref.template = this;
-      application.model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, ref));
+      application.model.queue(new MetaModelEvent(MetaModelEvent.AFTER_ADD, ref));
       return this;
    }
 
@@ -104,7 +104,7 @@ public class TemplateMetaModel extends MetaModelObject
       }
       if (refs.containsKey(ref.handle))
       {
-         application.model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, ref));
+         application.model.queue(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, ref));
          refs.remove(ref.handle);
          ref.template = null;
       }

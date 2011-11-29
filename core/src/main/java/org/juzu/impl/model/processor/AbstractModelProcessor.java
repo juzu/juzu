@@ -189,9 +189,10 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                            String annotationFQN = annotationElt.getQualifiedName().toString();
                            if (annotationFQN.equals("org.juzu.View") || annotationFQN.equals("org.juzu.Action") || annotationFQN.equals("org.juzu.Resource"))
                            {
-                              log.log("Processing controller method " + annotatedElt + " annotated by " + annotationMirror);
+                              ExecutableElement executableElt = (ExecutableElement)annotatedElt;
+                              log.log("Processing controller method " + executableElt + " found on type " +  executableElt.getEnclosingElement() + " annotated by " + annotationMirror);
                               model.processControllerMethod(
-                                 (ExecutableElement)annotatedElt,
+                                 executableElt,
                                  annotationName,
                                  annotationValues);
                            }
@@ -199,9 +200,10 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                            {
                               if (annotatedElt instanceof VariableElement)
                               {
-                                 log.log("Processing template declaration " + annotatedElt + " annotated by " + annotationMirror);
+                                 VariableElement variableElt = (VariableElement)annotatedElt;
+                                 log.log("Processing template declaration " + variableElt.getEnclosingElement() + "#"  + variableElt + " annotated by " + annotationMirror);
                                  model.processDeclarationTemplate(
-                                    (VariableElement)annotatedElt,
+                                    variableElt,
                                     annotationName,
                                     annotationValues);
                               }

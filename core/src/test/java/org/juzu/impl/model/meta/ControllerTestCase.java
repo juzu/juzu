@@ -20,6 +20,8 @@
 package org.juzu.impl.model.meta;
 
 import org.juzu.Phase;
+import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
@@ -249,5 +251,42 @@ public class ControllerTestCase extends AbstractTestCase
       MetaModel expected = new MetaModel();
       expected.addApplication("model.meta.controller", "ControllerApplication");
       assertEquals(expected.toJSON(), mm.toJSON());
+   }
+
+   public void testRefactorPackageName() throws Exception
+   {
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MetaModelProcessor());
+      helper.assertCompile();
+
+      //
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+      mm.popEvents();
+      Tools.serialize(mm, ser);
+
+      //
+      File a = helper.getSourcePath().getPath("model", "meta", "controller", "A.java");
+      File sub = new File(a.getParentFile(), "sub");
+      assertTrue(sub.mkdir());
+      File tmp = new File(sub, a.getName());
+      assertTrue(a.renameTo(tmp));
+      a = tmp;
+      Tools.write(Tools.read(a).replace("package model.meta.controller;", "package model.meta.controller.sub;"), a);
+
+      //
+      assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
+
+      //
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+
+      //
+      mm = Tools.unserialize(MetaModel.class, ser);
+      List<MetaModelEvent> events = mm.popEvents();
+      assertEquals(2, events.size());
+      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+      assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.A")), ((ControllerMetaModel)events.get(0).getObject()).getHandle());
+      assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
+      assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
    }
 }

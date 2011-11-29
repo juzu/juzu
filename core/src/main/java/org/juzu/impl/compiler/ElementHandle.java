@@ -256,24 +256,27 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       public ExecutableElement get(ProcessingEnvironment env)
       {
          TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getFullName());
-         next:
-         for (ExecutableElement executableElement : ElementFilter.methodsIn(typeElt.getEnclosedElements()))
+         if (typeElt != null)
          {
-            if (executableElement.getSimpleName().toString().equals(name))
+            next:
+            for (ExecutableElement executableElement : ElementFilter.methodsIn(typeElt.getEnclosedElements()))
             {
-               List<? extends TypeMirror> parameterTypes = ((ExecutableType)executableElement.asType()).getParameterTypes();
-               int len = parameterTypes.size();
-               if (len == this.parameterTypes.size())
+               if (executableElement.getSimpleName().toString().equals(name))
                {
-                  for (int i = 0;i < len;i++)
+                  List<? extends TypeMirror> parameterTypes = ((ExecutableType)executableElement.asType()).getParameterTypes();
+                  int len = parameterTypes.size();
+                  if (len == this.parameterTypes.size())
                   {
-                     if (!parameterTypes.get(i).toString().equals(this.parameterTypes.get(i)))
+                     for (int i = 0;i < len;i++)
                      {
-                        continue next;
+                        if (!parameterTypes.get(i).toString().equals(this.parameterTypes.get(i)))
+                        {
+                           continue next;
+                        }
                      }
                   }
+                  return executableElement;
                }
-               return executableElement;
             }
          }
          return null;

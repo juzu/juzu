@@ -52,6 +52,7 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +84,23 @@ public class ProcessingContext implements Filer, Elements
 
    public <E extends Element> E get(ElementHandle<E> handle)
    {
-      return handle.get(env);
+      try
+      {
+         return handle.get(env);
+      }
+      catch (RuntimeException e)
+      {
+         if (e.getClass().getName().equals("org.eclipse.jdt.internal.compiler.problem.AbortCompilation"))
+         {
+            // In case of eclipse we catch it and return null instead
+            return null;
+         }
+         else
+         {
+            // Rethrow
+            throw e;
+         }
+      }
    }
 
    public Content resolveResource(FQN fqn, String extension)
@@ -282,16 +299,19 @@ public class ProcessingContext implements Filer, Elements
 
    public JavaFileObject createSourceFile(CharSequence name, Element... originatingElements) throws IOException
    {
+      log.log("Creating source file for name=" + name + " elements=" + Arrays.asList(originatingElements));
       return env.getFiler().createSourceFile(name, originatingElements);
    }
 
    public JavaFileObject createClassFile(CharSequence name, Element... originatingElements) throws IOException
    {
+      log.log("Creating class file for name=" + name + " elements=" + Arrays.asList(originatingElements));
       return env.getFiler().createClassFile(name, originatingElements);
    }
 
    public FileObject createResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName, Element... originatingElements) throws IOException
    {
+      log.log("Creating resource file for location=" + location + " pkg=" + pkg + " relativeName=" + relativeName + " elements=" + Arrays.asList(originatingElements));
       return env.getFiler().createResource(location, pkg, relativeName, originatingElements);
    }
 

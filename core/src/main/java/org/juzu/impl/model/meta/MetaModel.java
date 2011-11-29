@@ -24,11 +24,13 @@ import org.juzu.Application;
 import org.juzu.Path;
 import org.juzu.Resource;
 import org.juzu.View;
+import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.model.processor.ModelHandler;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.utils.FQN;
+import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.QN;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -63,7 +65,10 @@ public class MetaModel extends ModelHandler
    ProcessingContext env;
 
    /** . */
-   final LinkedList<MetaModelEvent> queue = new LinkedList<MetaModelEvent>();
+   private final LinkedList<MetaModelEvent> queue = new LinkedList<MetaModelEvent>();
+
+   /** . */
+   private Logger log;
 
    public Map<String, ?> toJSON()
    {
@@ -126,7 +131,7 @@ public class MetaModel extends ModelHandler
       }
       ApplicationMetaModel application = new ApplicationMetaModel(this, handle, applicationName, defaultController);
       applications.put(handle, application);
-      application.model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, application));
+      queue(new MetaModelEvent(MetaModelEvent.AFTER_ADD, application));
       return application;
    }
 
@@ -158,6 +163,7 @@ public class MetaModel extends ModelHandler
    public void postActivate(ProcessingContext env)
    {
       this.env = env;
+      this.log = BaseProcessor.getLogger(MetaModel.class);
 
       //
       gcApplications();
@@ -276,6 +282,7 @@ public class MetaModel extends ModelHandler
 
       //
       env = null;
+      log = null;
    }
 
    private void resolveApplications()
@@ -284,7 +291,7 @@ public class MetaModel extends ModelHandler
       {
          if (application.modified)
          {
-            queue.add(new MetaModelEvent(MetaModelEvent.UPDATED, application));
+            queue(new MetaModelEvent(MetaModelEvent.UPDATED, application));
             application.modified = false;
          }
       }
@@ -311,7 +318,7 @@ public class MetaModel extends ModelHandler
          {
             if (controller.modified)
             {
-               queue.add(new MetaModelEvent(MetaModelEvent.UPDATED, controller));
+               queue(new MetaModelEvent(MetaModelEvent.UPDATED, controller));
                controller.modified = false;
             }
          }
@@ -369,7 +376,7 @@ public class MetaModel extends ModelHandler
             }
             if (!found)
             {
-               application.model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, application));
+               application.model.queue(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, application));
 
                //
                for (ControllerMetaModel controller : application.getControllers())
@@ -429,21 +436,26 @@ public class MetaModel extends ModelHandler
       {
          TemplateRefMetaModel ref = i.next();
          VariableElement fieldElt = env.get(ref.handle);
+         boolean remove = false;
          if (fieldElt == null)
          {
-            throw new UnsupportedOperationException("todo");
+            log.log("Removing handle " + ref.handle + " that does not exist anymore");
+            remove = true;
          }
-         else
+         else if (fieldElt.getAnnotation(Path.class) == null)
          {
-            // The annotation was removed
-            if (fieldElt.getAnnotation(Path.class) == null)
+            log.log("Removing handle " + ref.handle + " that is not annoated anymore");
+            remove = true;
+         }
+
+         //
+         if (remove)
+         {
+            if (ref.template != null)
             {
-               if (ref.template != null)
-               {
-                  ref.template.removeRef(ref);
-               }
-               i.remove();
+               ref.template.removeRef(ref);
             }
+            i.remove();
          }
       }
    }
@@ -463,6 +475,15 @@ public class MetaModel extends ModelHandler
             }
          }
       }
+   }
+
+   void queue(MetaModelEvent event)
+   {
+      if (log != null)
+      {
+         log.log("Queue event " + event.getType() + " " + event.getObject());
+      }
+      queue.add(event);
    }
 
    public List<MetaModelEvent> popEvents()

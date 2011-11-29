@@ -182,7 +182,7 @@ public class ModelResolver extends ModelHandler implements Serializable
       //
       for (MetaModelEvent event : metaModel.popEvents())
       {
-         log.log("Processing meta model event " + event);
+         log.log("Processing meta model event " + event.getType() + " " + event.getObject());
          processEvent(event);
       }
 
@@ -206,16 +206,15 @@ public class ModelResolver extends ModelHandler implements Serializable
             }
             else if (obj instanceof ControllerMetaModel)
             {
-               ControllerMetaModel controller = (ControllerMetaModel)obj;
-               emitController(controller);
+               emitController((ControllerMetaModel)obj);
             }
             else if (obj instanceof TemplateMetaModel)
             {
-               // What should we do for now ?
+               //
             }
             else if (obj instanceof TemplateRefMetaModel)
             {
-               // What should we do for now ?
+               //
             }
             else
             {
@@ -223,16 +222,43 @@ public class ModelResolver extends ModelHandler implements Serializable
             }
             break;
          case MetaModelEvent.BEFORE_REMOVE:
-            throw new UnsupportedOperationException("Not yet supported remove: " + obj);
+            if (obj instanceof ApplicationMetaModel)
+            {
+               throw new UnsupportedOperationException("Not yet supported remove: " + obj);
+            }
+            else if (obj instanceof ControllerMetaModel)
+            {
+               //
+            }
+            else if (obj instanceof TemplateMetaModel)
+            {
+               //
+            }
+            else if (obj instanceof TemplateRefMetaModel)
+            {
+               //
+            }
+            else
+            {
+               throw new UnsupportedOperationException("Not yet supported add: " + obj);
+            }
+            break;
          case MetaModelEvent.UPDATED:
+            if (obj instanceof ApplicationMetaModel)
+            {
+               //
+            }
             if (obj instanceof ControllerMetaModel)
             {
-               ControllerMetaModel controller = (ControllerMetaModel)obj;
-               emitController(controller);
+               emitController((ControllerMetaModel)obj);
             }
-            else if (obj instanceof ApplicationMetaModel)
+            else if (obj instanceof TemplateMetaModel)
             {
-               // todo ?
+               //
+            }
+            else if (obj instanceof TemplateRefMetaModel)
+            {
+               //
             }
             else
             {

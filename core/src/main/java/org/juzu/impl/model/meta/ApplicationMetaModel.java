@@ -124,7 +124,7 @@ public class ApplicationMetaModel extends MetaModelObject
       }
       TemplateMetaModel template = new TemplateMetaModel(this, ref);
       templates.put(template.path, template);
-      model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, template));
+      model.queue(new MetaModelEvent(MetaModelEvent.AFTER_ADD, template));
       return template;
    }
 
@@ -138,7 +138,7 @@ public class ApplicationMetaModel extends MetaModelObject
       {
          throw new IllegalStateException();
       }
-      model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, template));
+      model.queue(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, template));
       for (TemplateRefMetaModel ref : template.getRefs())
       {
          template.removeRef(ref);
@@ -155,7 +155,7 @@ public class ApplicationMetaModel extends MetaModelObject
       }
       controllers.put(controller.handle, controller);
       controller.application = this;
-      model.queue.add(new MetaModelEvent(MetaModelEvent.AFTER_ADD, controller));
+      model.queue(new MetaModelEvent(MetaModelEvent.AFTER_ADD, controller));
    }
 
    public void removeController(ControllerMetaModel controller)
@@ -166,7 +166,7 @@ public class ApplicationMetaModel extends MetaModelObject
       }
       if (controllers.containsKey(controller.handle))
       {
-         model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, controller));
+         model.queue(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, controller));
          controllers.remove(controller.handle);
          controller.application = null;
       }
