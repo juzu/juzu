@@ -21,9 +21,12 @@ package org.juzu.impl.model.processor;
 
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
+import org.juzu.impl.utils.Spliterator;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.Filer;
@@ -49,9 +52,13 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -74,10 +81,58 @@ public class ProcessingContext implements Filer, Elements
 
    /** . */
    private static final Logger log = BaseProcessor.getLogger(ProcessingContext.class);
+
+   /** Set for eclipse environment. */
+   private final ReadFileSystem<File> sourcePath;
    
    public ProcessingContext(ProcessingEnvironment env)
    {
+      ReadFileSystem<File> sourcePath = null;
+      try
+      {
+         // As first attempt we tried to use the classpath since eclipse would copy the template to this location
+         // but that could a chicken egg problem as a template is coped in the classpath only if the compilation
+         // is successfull and sometimes a controller references a template literal that is generated from the
+         // template source
+         ClassLoader cl = env.getClass().getClassLoader();
+         Class eclipseImplClass = cl.loadClass("org.eclipse.jdt.internal.apt.pluggable.core.dispatch.IdeProcessingEnvImpl");
+         if (eclipseImplClass.isInstance(env))
+         {
+            Method getJavaProject = eclipseImplClass.getMethod("getJavaProject");
+            Object javaProject = getJavaProject.invoke(env);
+            Class aptConfigClass = cl.loadClass("org.eclipse.jdt.apt.core.util.AptConfig");
+            Class javaProjectClass = cl.loadClass("org.eclipse.jdt.core.IJavaProject");
+            Method getProcessorOptionsMethod = aptConfigClass.getMethod("getProcessorOptions", javaProjectClass);
+            Map<String, String> options = (Map<String, String>)getProcessorOptionsMethod.invoke(null, javaProject);
+            log.log("Retrieved options " + options);
+            String sp = options.get("-sourcepath");
+            log.log("Found sourcepath " + sp);
+            if (sp != null)
+            {
+               // We take the first value
+               Spliterator split = new Spliterator(sp, ':');
+               if (split.hasNext())
+               {
+                  File root = new File(split.next());
+                  if (root.isDirectory())
+                  {
+                     sourcePath = new DiskFileSystem(root);
+                  }
+               }
+            }
+         }
+      }
+      catch (Exception ignore)
+      {
+      }
+
+      //
+      log.log("Using processing " + env);
+      log.log("Using source path " + sourcePath);
+
+      //
       this.env = env;
+      this.sourcePath = sourcePath;
    }
 
    // Various stuff ****************************************************************************************************
@@ -105,20 +160,42 @@ public class ProcessingContext implements Filer, Elements
 
    public Content resolveResource(FQN fqn, String extension)
    {
-      for (StandardLocation location : RESOURCE_LOCATIONS)
+      log.log("Attempt to resolve " + fqn + "." + extension);
+      if (sourcePath != null)
       {
-         String pkg = fqn.getPackageName().getValue();
-         String relativeName = fqn.getSimpleName() + "." + extension;
          try
          {
-            log.log("Attempt to obtain template " + pkg + " " + relativeName + " from " + location.getName());
-            FileObject resource = getResource(location, pkg, relativeName);
-            byte[] bytes = Tools.bytes(resource.openInputStream());
-            return new Content(resource.getLastModified(), bytes, Charset.defaultCharset());
+            List<String> list = new ArrayList<String>();
+            Spliterator.split(fqn.getPackageName().getValue(), '.', list);
+            list.add(fqn.getSimpleName() + "." + extension);
+            File f = sourcePath.getPath(list);
+            if (f != null)
+            {
+               log.log("Resolved " + fqn + "." + extension + " to " + f.getAbsolutePath());
+               return sourcePath.getContent(f);
+            }
          }
-         catch (Exception e)
+         catch (IOException e)
          {
-            log.log("Could not get template " + pkg + " " + relativeName + " from " + location.getName() + ":" + e.getMessage());
+         }
+      }
+      else
+      {
+         for (StandardLocation location : RESOURCE_LOCATIONS)
+         {
+            String pkg = fqn.getPackageName().getValue();
+            String relativeName = fqn.getSimpleName() + "." + extension;
+            try
+            {
+               log.log("Attempt to resolve " + fqn + "." + extension + " from " + location.getName());
+               FileObject resource = getResource(location, pkg, relativeName);
+               byte[] bytes = Tools.bytes(resource.openInputStream());
+               return new Content(resource.getLastModified(), bytes, Charset.defaultCharset());
+            }
+            catch (Exception e)
+            {
+               log.log("Could not resolve resource " + fqn + "." + extension + " from " + location.getName(), e);
+            }
          }
       }
 
