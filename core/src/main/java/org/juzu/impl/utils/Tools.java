@@ -30,7 +30,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -295,12 +297,12 @@ public class Tools
       return list;
    }
 
-   public static <T> T unserialize(Class<T> expectedType, File f) throws IOException, ClassNotFoundException
+   public static <S extends Serializable> S unserialize(Class<S> expectedType, File f) throws IOException, ClassNotFoundException
    {
       return unserialize(expectedType, new FileInputStream(f));
    }
 
-   public static <T> T unserialize(Class<T> expectedType, InputStream in) throws IOException, ClassNotFoundException
+   public static <S> S unserialize(Class<S> expectedType, InputStream in) throws IOException, ClassNotFoundException
    {
       try
       {
@@ -311,6 +313,25 @@ public class Tools
       finally
       {
          safeClose(in);
+      }
+   }
+
+   public static <S extends Serializable> void serialize(S value, File f) throws IOException
+   {
+      serialize(value, new FileOutputStream(f));
+   }
+
+
+   public static <T extends Serializable> void serialize(T value, OutputStream out) throws IOException
+   {
+      ObjectOutputStream ois = new ObjectOutputStream(out);
+      try
+      {
+         ois.writeObject(value);
+      }
+      finally
+      {
+         safeClose(out);
       }
    }
 

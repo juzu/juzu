@@ -230,6 +230,10 @@ public class ModelResolver extends ModelHandler implements Serializable
                ControllerMetaModel controller = (ControllerMetaModel)obj;
                emitController(controller);
             }
+            else if (obj instanceof ApplicationMetaModel)
+            {
+               // todo ?
+            }
             else
             {
                throw new UnsupportedOperationException("Not yet supported update: " + obj);

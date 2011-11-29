@@ -39,7 +39,7 @@ import java.util.Random;
 public class ControllerMetaModel extends MetaModelObject
 {
 
-   /** Allow to handle modified event. */
+   /** A flag for handling modified event. */
    boolean modified;
 
    /** . */
@@ -159,9 +159,7 @@ public class ControllerMetaModel extends MetaModelObject
 
             //
             ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
-            MethodMetaModel method = methods.remove(origin);
-            int eventType = method != null ? MetaModelEvent.UPDATED : MetaModelEvent.AFTER_ADD;
-            method = new MethodMetaModel(
+            MethodMetaModel method = new MethodMetaModel(
                origin,
                this,
                id,

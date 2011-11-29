@@ -242,10 +242,7 @@ public class MetaModel extends ModelHandler
       }
       else
       {
-         if (!Tools.safeEquals(application.defaultController, defaultController))
-         {
-            throw new UnsupportedOperationException("todo");
-         }
+         queue.add(new MetaModelEvent(MetaModelEvent.UPDATED, application));
       }
    }
 
