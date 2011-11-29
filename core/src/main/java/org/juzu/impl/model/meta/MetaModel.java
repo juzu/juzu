@@ -30,7 +30,6 @@ import org.juzu.impl.model.processor.ModelHandler;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.QN;
-import org.juzu.impl.utils.Tools;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
@@ -159,6 +158,15 @@ public class MetaModel extends ModelHandler
    public void postActivate(ProcessingContext env)
    {
       this.env = env;
+
+      //
+      gcApplications();
+
+      //
+      gcControllers();
+
+      //
+      gcTemplateRefs();
    }
 
    @Override
@@ -210,9 +218,6 @@ public class MetaModel extends ModelHandler
 
             // Assign null, if such template already exist it will be resolved in a later phase
             ref.template = null;
-
-            //
-//            queue.add(new MetaModelEvent.RemoveObject(ref));
          }
 
          // Update the ref
@@ -242,7 +247,7 @@ public class MetaModel extends ModelHandler
       }
       else
       {
-         queue.add(new MetaModelEvent(MetaModelEvent.UPDATED, application));
+         application.modified = true;
       }
    }
 
@@ -256,6 +261,9 @@ public class MetaModel extends ModelHandler
 
       //
       resolveControllers();
+
+      //
+      resolveApplications();
    }
 
    /**
@@ -264,19 +272,22 @@ public class MetaModel extends ModelHandler
    @Override
    public void prePassivate()
    {
-      gcApplications();
-
-      //
-      gcControllers();
-
-      //
-      gcTemplateRefs();
-
-      //
       gcTemplates();
 
       //
       env = null;
+   }
+
+   private void resolveApplications()
+   {
+      for (ApplicationMetaModel application : applications.values())
+      {
+         if (application.modified)
+         {
+            queue.add(new MetaModelEvent(MetaModelEvent.UPDATED, application));
+            application.modified = false;
+         }
+      }
    }
 
    private void resolveControllers()
@@ -358,18 +369,19 @@ public class MetaModel extends ModelHandler
             }
             if (!found)
             {
+               application.model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, application));
+
+               //
                for (ControllerMetaModel controller : application.getControllers())
                {
                   application.removeController(controller);
                }
 
+               //
                for (TemplateMetaModel template : application.getTemplates())
                {
                   application.removeTemplate(template);
                }
-
-               //
-               application.model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, application));
 
                // Remove application itself
                i.remove();

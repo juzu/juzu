@@ -57,7 +57,12 @@ public abstract class AbstractModelProcessor extends BaseProcessor
 {
 
    /** . */
-   private static final Class<?>[] annotationTypes = {View.class, Action.class, Resource.class, Application.class, Path.class};
+   private static final Class<?>[] annotationTypes = {
+      View.class,
+      Action.class,
+      Resource.class,
+      Path.class,
+      Application.class};
 
    /** . */
    private ModelHandler model;

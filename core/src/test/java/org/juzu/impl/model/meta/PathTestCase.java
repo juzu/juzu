@@ -24,6 +24,8 @@ import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PathTestCase extends AbstractTestCase
@@ -109,5 +111,50 @@ public class PathTestCase extends AbstractTestCase
       MetaModel expected = new MetaModel();
       expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
       assertEquals(expected.toJSON(), mm.toJSON());
+   }
+
+   public void testRefactorApplication() throws Exception
+   {
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MetaModelProcessor());
+      helper.assertCompile();
+
+      //
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+      mm.popEvents();
+      Tools.serialize(mm, ser);
+
+      //
+      File f = helper.getSourcePath().getPath("model", "meta", "path", "package-info.java");
+      File dst = new File(f.getParentFile().getParentFile(), f.getName());
+      assertTrue(f.renameTo(dst));
+      f = dst;
+      Tools.write(Tools.read(f).replace("package model.meta.path;", "package model.meta;"), f);
+
+      //
+      assertTrue(helper.getSourcePath().getPath("model", "meta", "path", "A.java").delete());
+      assertTrue(helper.getClassOutput().getPath("model", "meta", "path", "package-info.class").delete());
+
+      //
+      helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
+
+      //
+      MetaModel expected = new MetaModel();
+      ApplicationMetaModel application = expected.addApplication("model.meta", "MetaApplication");
+      TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
+      TemplateMetaModel template = application.addTemplate(ref);
+      template.addRef(ref);
+      assertEquals(expected.toJSON(), mm.toJSON());
+
+      // Should also test objects....
+      List<MetaModelEvent> events = mm.popEvents();
+      assertEquals(6, events.size());
+      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
+      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(2).getType());
+      assertEquals(MetaModelEvent.AFTER_ADD, events.get(3).getType());
+      assertEquals(MetaModelEvent.AFTER_ADD, events.get(4).getType());
+      assertEquals(MetaModelEvent.AFTER_ADD, events.get(5).getType());
    }
 }

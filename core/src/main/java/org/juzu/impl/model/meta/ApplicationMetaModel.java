@@ -64,6 +64,9 @@ public class ApplicationMetaModel extends MetaModelObject
    /** . */
    final MetaModel model;
 
+   /** . */
+   boolean modified;
+
    ApplicationMetaModel(
       MetaModel model,
       ElementHandle.Package handle,
@@ -75,6 +78,7 @@ public class ApplicationMetaModel extends MetaModelObject
       this.fqn = new FQN(handle.getQN(), applicationName);
       this.defaultController = defaultController;
       this.templatesQN = fqn.getPackageName().append("templates");
+      this.modified = false;
    }
 
    public String getDefaultController()
@@ -134,11 +138,11 @@ public class ApplicationMetaModel extends MetaModelObject
       {
          throw new IllegalStateException();
       }
+      model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, template));
       for (TemplateRefMetaModel ref : template.getRefs())
       {
          template.removeRef(ref);
       }
-      model.queue.add(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, template));
       templates.remove(template.getPath());
       template.application = null;
    }

@@ -25,6 +25,21 @@ import java.io.Serializable;
 public class MetaModelEvent implements Serializable
 {
 
+   public static MetaModelEvent createAdded(MetaModelObject object)
+   {
+      return new MetaModelEvent(AFTER_ADD, object);
+   }
+
+   public static MetaModelEvent createUpdated(MetaModelObject object)
+   {
+      return new MetaModelEvent(UPDATED, object);
+   }
+
+   public static MetaModelEvent createRemoved(MetaModelObject object)
+   {
+      return new MetaModelEvent(BEFORE_REMOVE, object);
+   }
+
    /** . */
    public static final int AFTER_ADD = 0;
 
@@ -64,6 +79,21 @@ public class MetaModelEvent implements Serializable
    public MetaModelObject getObject()
    {
       return object;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (obj == this)
+      {
+         return true;
+      }
+      if (obj instanceof MetaModelEvent)
+      {
+         MetaModelEvent that = (MetaModelEvent)obj;
+         return type == that.type && object.equals(that.object);
+      }
+      return false;
    }
 
    public String toString()
