@@ -31,6 +31,14 @@ import java.util.Set;
 public class ScopeMetadataResolverImpl extends AnnotationScopeMetadataResolver
 {
 
+   /** . */
+   private final Set<Scope> scopes;
+
+   public ScopeMetadataResolverImpl(Set<Scope> scopes)
+   {
+      this.scopes = scopes;
+   }
+
    @Override
    public ScopeMetadata resolveScopeMetadata(BeanDefinition definition)
    {
@@ -41,7 +49,7 @@ public class ScopeMetadataResolverImpl extends AnnotationScopeMetadataResolver
          Set<String> annotationTypes = annDef.getMetadata().getAnnotationTypes();
 
          String scopeName = "prototype";
-         for (Scope scope : Scope.values())
+         for (Scope scope : scopes)
          {
             if (annotationTypes.contains(scope.getAnnotationType().getName()))
             {

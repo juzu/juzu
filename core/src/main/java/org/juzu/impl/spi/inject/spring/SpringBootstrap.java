@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefiniti
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.annotation.ScopeMetadata;
@@ -50,13 +49,10 @@ public class SpringBootstrap extends InjectBootstrap
 {
 
    /** . */
-   private ScopeMetadataResolverImpl resolver = new ScopeMetadataResolverImpl();
-
-   /** . */
    private ClassLoader classLoader;
 
    /** . */
-   private Map<String, BeanDefinition> beans = new LinkedHashMap<String, BeanDefinition>();
+   private Map<String, Class<?>> beans = new LinkedHashMap<String, Class<?>>();
 
    /** . */
    private Map<String, Object> singletons = new LinkedHashMap<String, Object>();
@@ -76,14 +72,6 @@ public class SpringBootstrap extends InjectBootstrap
       }
 
       //
-      AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(implementationType);
-      ScopeMetadata scopeMD = resolver.resolveScopeMetadata(definition);
-      if (scopeMD != null)
-      {
-         definition.setScope(scopeMD.getScopeName());
-      }
-
-      //
       String name = "" + Math.random();
       for (Annotation annotation : implementationType.getDeclaredAnnotations())
       {
@@ -96,7 +84,7 @@ public class SpringBootstrap extends InjectBootstrap
       }
 
       //
-      beans.put(name, definition);
+      beans.put(name, implementationType);
       return this;
    }
 
@@ -180,9 +168,16 @@ public class SpringBootstrap extends InjectBootstrap
       }
 
       //
-      for (Map.Entry<String, BeanDefinition> entry : beans.entrySet())
+      ScopeMetadataResolverImpl resolver = new ScopeMetadataResolverImpl(scopes);
+      for (Map.Entry<String, Class<?>> entry : beans.entrySet())
       {
-         factory.registerBeanDefinition(entry.getKey(), entry.getValue());
+         AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(entry.getValue());
+         ScopeMetadata scopeMD = resolver.resolveScopeMetadata(definition);
+         if (scopeMD != null)
+         {
+            definition.setScope(scopeMD.getScopeName());
+         }
+         factory.registerBeanDefinition(entry.getKey(), definition);
       }
 
       //
