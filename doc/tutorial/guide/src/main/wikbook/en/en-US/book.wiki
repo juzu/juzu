@@ -26,6 +26,10 @@ in several steps, each step introducing a new feature to gradually improve the a
 
 {{include document=tutorial/weather5.wiki/}}
 
+= Type safe templating {{anchor id=type_safe_templating /}} =
+
+{{include document=tutorial/weather6.wiki/}}
+
 = Wrap up =
 
 We reached the ends our walk through Juzu, now you can learn more and study the Booking application. This application
