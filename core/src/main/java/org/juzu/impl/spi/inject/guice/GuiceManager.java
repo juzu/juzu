@@ -113,6 +113,21 @@ public class GuiceManager implements InjectManager<Provider, Object>
                }
             }
 
+            //
+            for (Map.Entry<Class<?>, Provider<?>> entry : bootstrap.providers.entrySet())
+            {
+               final Provider<?> provider = entry.getValue();
+               AnnotatedBindingBuilder<Object> bind = bind((Class<Object>)entry.getKey());
+               com.google.inject.Provider<Object> guiceProvider = new com.google.inject.Provider<Object>()
+               {
+                  public Object get()
+                  {
+                     return provider.get();
+                  }
+               };
+               bind.toProvider(guiceProvider);
+            }
+
             // Bind the manager itself
             bind(InjectManager.class).toInstance(GuiceManager.this);
 

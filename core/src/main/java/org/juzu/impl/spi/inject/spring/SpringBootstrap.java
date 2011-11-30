@@ -126,6 +126,12 @@ public class SpringBootstrap extends InjectBootstrap
    }
 
    @Override
+   public <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider)
+   {
+      return bindSingleton(ProviderBean.class, new ProviderBean<T>(type, provider));
+   }
+
+   @Override
    public <P> InjectBootstrap addFileSystem(ReadFileSystem<P> fs)
    {
       return this;

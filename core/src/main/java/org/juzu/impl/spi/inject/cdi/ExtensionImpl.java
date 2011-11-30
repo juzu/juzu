@@ -23,25 +23,12 @@ import org.juzu.impl.inject.Export;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectManager;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Singleton;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Juzu CDI extension.
@@ -65,7 +52,7 @@ public class ExtensionImpl implements Extension
       Class<?> type = annotatedType.getJavaClass();
       if (annotatedType.isAnnotationPresent(Export.class))
       {
-         if (!manager.beans.contains(type))
+         if (!manager.beanTypes.contains(type))
          {
             pat.veto();
          }
@@ -74,7 +61,7 @@ public class ExtensionImpl implements Extension
       //
       for (Class<?> current = type;current != null;current = current.getSuperclass())
       {
-         if (manager.singletons.containsKey(current))
+         if (manager.beans.containsKey(current))
          {
             pat.veto();
          }
@@ -92,79 +79,12 @@ public class ExtensionImpl implements Extension
       }
 
       // Add the manager
-      event.addBean(bean(InjectManager.class, manager));
+      event.addBean(new InstanceBean(InjectManager.class, manager));
 
       // Add singletons
-      for (Map.Entry<Class<?>, Object> entry : manager.singletons.entrySet())
+      for (AbstractBean bean : manager.beans.values())
       {
-         event.addBean(bean(entry.getKey(), entry.getValue()));
+         event.addBean(bean);
       }
-   }
-
-   private Bean bean(final Class type, final Object instance)
-   {
-      return new Bean()
-      {
-         public Set<Type> getTypes()
-         {
-            Set<Type> types = new HashSet<Type>();
-            types.add(type);
-            types.add(Object.class);
-            return types;
-         }
-
-         public Set<Annotation> getQualifiers()
-         {
-            Set<Annotation> qualifiers = new HashSet<Annotation>();
-            qualifiers.add( new AnnotationLiteral<Default>() {} );
-            qualifiers.add( new AnnotationLiteral<Any>() {} );
-            return qualifiers;
-         }
-
-         public Class<? extends Annotation> getScope()
-         {
-            return Singleton.class;
-         }
-
-         public String getName()
-         {
-            return null;
-         }
-
-         public Set<Class<? extends Annotation>> getStereotypes()
-         {
-            return Collections.emptySet();
-         }
-
-         public Class<?> getBeanClass()
-         {
-            return type;
-         }
-
-         public boolean isAlternative()
-         {
-            return false;
-         }
-
-         public boolean isNullable()
-         {
-            return false;
-         }
-
-         public Set<InjectionPoint> getInjectionPoints()
-         {
-            return Collections.emptySet();
-         }
-
-         public Object create(CreationalContext tCreationalContext)
-         {
-            return instance;
-         }
-
-         public void destroy(Object instance, CreationalContext ctx)
-         {
-            ctx.release();
-         }
-      };
    }
 }

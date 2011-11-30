@@ -48,6 +48,9 @@ public class GuiceBootstrap extends InjectBootstrap
    final Map<Class<?>, Object> singletons;
 
    /** . */
+   final Map<Class<?>, Provider<?>> providers;
+
+   /** . */
    ClassLoader classLoader;
 
    public GuiceBootstrap()
@@ -55,6 +58,7 @@ public class GuiceBootstrap extends InjectBootstrap
       this.bindings = new ArrayList<BeanBinding>();
       this.scopes = new HashSet<Scope>();
       this.singletons = new HashMap<Class<?>, Object>();
+      this.providers = new HashMap<Class<?>, Provider<?>>();
    }
 
    @Override
@@ -117,6 +121,13 @@ public class GuiceBootstrap extends InjectBootstrap
    public <T> InjectBootstrap bindSingleton(Class<T> type, T instance)
    {
       singletons.put(type, instance);
+      return this;
+   }
+
+   @Override
+   public <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider)
+   {
+      providers.put(type, provider);
       return this;
    }
 

@@ -17,31 +17,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject;
+package org.juzu.impl.spi.inject.spring;
 
-import org.juzu.impl.request.Scope;
-import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.springframework.beans.factory.FactoryBean;
 
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class InjectBootstrap
+public class ProviderBean<T> implements FactoryBean<T>
 {
 
-   public abstract <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType);
+   /** . */
+   private final Class<T> type;
 
-   public abstract <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider);
+   /** . */
+   private final Provider<T> provider;
 
-   public abstract <T> InjectBootstrap bindSingleton(Class<T> type, T instance);
+   public ProviderBean(Class<T> type, Provider<T> provider)
+   {
+      this.type = type;
+      this.provider = provider;
+   }
 
-   public abstract <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider);
+   public T getObject() throws Exception
+   {
+      return provider.get();
+   }
 
-   public abstract <P> InjectBootstrap addFileSystem(ReadFileSystem<P> fs);
+   public Class<?> getObjectType()
+   {
+      return type;
+   }
 
-   public abstract InjectBootstrap addScope(Scope scope);
-
-   public abstract InjectBootstrap setClassLoader(ClassLoader classLoader);
-
-   public abstract <B, I> InjectManager<B, I> create() throws Exception;
-
+   public boolean isSingleton()
+   {
+      return false;
+   }
 }

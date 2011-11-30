@@ -240,6 +240,17 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(productInjected.productExt2);
    }
 
+   public void testProvider() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "provider");
+      bootstrap.bindProvider(Product.class, new Producer());
+      boot();
+
+      //
+      Product product = getBean(Product.class);
+      assertNotNull(product);
+   }
+
    public void testInjectManager() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "managerinjection");
