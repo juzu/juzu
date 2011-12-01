@@ -26,6 +26,8 @@ Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib
 
 - 0.4.2
     - template named parameters
+    - Eclipse screencast
+    - use unchecked exception for wrapping IOException
 - 0.5
     - tutorial (cont)
     - IDE screencast
@@ -48,7 +50,6 @@ Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib
 Various things to do, not exhaustive that needs to go in the roadmap
 
 - Provide a deployment mode that get source from the file system wherever they are (in order to use the real sources)
-- UndeclaredIOException
 - parse error in template parser
 - stack trace sanitization
 - consider resolving a template via its variable name instead of @Path
