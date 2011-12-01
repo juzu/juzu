@@ -19,6 +19,7 @@
 
 package org.juzu.template;
 
+import org.juzu.UndeclaredIOException;
 import org.juzu.request.ApplicationContext;
 import org.juzu.text.Printer;
 
@@ -49,37 +50,37 @@ public class Template
       return path;
    }
 
-   public void render() throws TemplateExecutionException, IOException
+   public void render() throws TemplateExecutionException, UndeclaredIOException
    {
       render(Collections.<String, Object>emptyMap(), null);
    }
 
-   public void render(Locale locale) throws TemplateExecutionException, IOException
+   public void render(Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
       render(Collections.<String, Object>emptyMap(), locale);
    }
 
-   public void render(Map<String, ?> parameters) throws TemplateExecutionException, IOException
+   public void render(Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException
    {
       render(parameters, null);
    }
 
-   public void render(Map<String, ?> parameters, Locale locale) throws TemplateExecutionException, IOException
+   public void render(Map<String, ?> parameters, Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
       render(null, parameters, null);
    }
 
-   public void render(Printer printer) throws TemplateExecutionException, IOException
+   public void render(Printer printer) throws TemplateExecutionException, UndeclaredIOException
    {
       render(printer, Collections.<String, Object>emptyMap(), null);
    }
 
-   public void render(Printer printer, Locale locale) throws TemplateExecutionException, IOException
+   public void render(Printer printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
       render(printer, Collections.<String, Object>emptyMap(), locale);
    }
 
-   public void render(Printer printer, Map<String, ?> parameters) throws TemplateExecutionException, IOException
+   public void render(Printer printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException
    {
       render(printer, parameters, null);
    }
@@ -90,15 +91,22 @@ public class Template
     * @param printer the printer
     * @param attributes the attributes
     * @param locale the locale
-    * @throws org.juzu.template.TemplateExecutionException any execution exception
-    * @throws java.io.IOException any io exception
+    * @throws TemplateExecutionException any execution exception
+    * @throws UndeclaredIOException any io exception
     */
    public void render(
       Printer printer,
       Map<String, ?> attributes,
       Locale locale
-   ) throws TemplateExecutionException, IOException {
-      applicationContext.render(this, printer, attributes, locale);
+   ) throws TemplateExecutionException, UndeclaredIOException {
+      try
+      {
+         applicationContext.render(this, printer, attributes, locale);
+      }
+      catch (IOException e)
+      {
+         throw new UndeclaredIOException(e);
+      }
    }
 
    @Override
@@ -113,7 +121,7 @@ public class Template
       /** The parameters. */
       private Map<String, Object> parameters;
 
-      public final void render() throws IOException
+      public final void render()
       {
          if (parameters != null)
          {

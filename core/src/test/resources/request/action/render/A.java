@@ -37,7 +37,7 @@ public class A extends Controller
    }
 
    @Action
-   public Response.Render action() throws IOException
+   public Response.Render action()
    {
       return A_.render("arg_value");
    }

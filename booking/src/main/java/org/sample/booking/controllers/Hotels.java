@@ -31,7 +31,6 @@ import org.sample.booking.models.Hotel;
 import org.sample.booking.models.User;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +75,7 @@ public class Hotels // extends Application
    org.sample.booking.templates.hotels.show show;
 
    @View
-   public void index() throws IOException
+   public void index()
    {
       String username = login.getUserName();
       List<Booking> bookings = Booking.findByUser(username);
@@ -84,7 +83,7 @@ public class Hotels // extends Application
    }
 
    @Resource
-   public void list(String search, String size, String page) throws IOException
+   public void list(String search, String size, String page)
    {
       int _size = size != null ? Integer.parseInt(size) : 5;
       int _page = page != null ? Integer.parseInt(page) : 0;
@@ -103,14 +102,14 @@ public class Hotels // extends Application
    }
 
    @View
-   public void show(String id) throws IOException
+   public void show(String id)
    {
       Hotel hotel = Hotel.findById(id);
       show.hotel(hotel).render();
    }
 
    @View
-   public void book(String id) throws IOException
+   public void book(String id)
    {
       Hotel hotel = Hotel.findById(id);
       book.hotel(hotel).render();
@@ -188,7 +187,7 @@ public class Hotels // extends Application
       String creditCard,
       String creditCardName,
       String creditCardExpiryMonth,
-      String creditCardExpiryYear) throws IOException
+      String creditCardExpiryYear)
    {
       Map<String, Object> context = new HashMap<String, Object>();
       Hotel hotel = Hotel.findById(id);

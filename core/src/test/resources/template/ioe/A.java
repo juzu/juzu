@@ -17,18 +17,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package examples.tutorial.weather2;
+package template.ioe;
 
+import org.juzu.Controller;
 import org.juzu.Path;
+import org.juzu.UndeclaredIOException;
 import org.juzu.View;
 import org.juzu.template.Template;
+import org.juzu.text.WriterPrinter;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Weather
+public class A extends Controller
 {
 
    @Inject
@@ -38,9 +40,36 @@ public class Weather
    @View
    public void index()
    {
-      Map<String, Object> parameters = new HashMap<String, Object>();
-      parameters.put("location", "Marseille");
-      parameters.put("temperature", "20");
-      index.render(parameters);
+      WriterPrinter printer = new WriterPrinter(new Appendable()
+      {
+         public Appendable append(CharSequence csq) throws IOException
+         {
+            throw new IOException();
+         }
+
+         public Appendable append(CharSequence csq, int start, int end) throws IOException
+         {
+            throw new IOException();
+         }
+
+         public Appendable append(char c) throws IOException
+         {
+            throw new IOException();
+         }
+      });
+      try
+      {
+         index.render(printer);
+      }
+      catch (UndeclaredIOException expected)
+      {
+         try
+         {
+            renderContext.getPrinter().write("pass");
+         }
+         catch (IOException e)
+         {
+         }
+      }
    }
 }

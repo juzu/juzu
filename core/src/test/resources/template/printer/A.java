@@ -25,7 +25,6 @@ import org.juzu.View;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller
@@ -40,13 +39,13 @@ public class A extends Controller
    Template explicit;
 
    @View(id = "implicit")
-   public void implicit() throws IOException
+   public void implicit()
    {
       implicit.render();
    }
 
    @View(id = "explicit")
-   public void explicit() throws IOException
+   public void explicit()
    {
       explicit.render(renderContext.getPrinter());
    }

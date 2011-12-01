@@ -36,7 +36,7 @@ public class A extends Controller
    }
 
    @Action
-   public void action() throws IOException
+   public void action()
    {
    }
 }

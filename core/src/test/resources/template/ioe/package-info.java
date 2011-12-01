@@ -17,30 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package examples.tutorial.weather2;
-
-import org.juzu.Path;
-import org.juzu.View;
-import org.juzu.template.Template;
-
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Weather
-{
-
-   @Inject
-   @Path("index.gtmpl")
-   Template index;
-
-   @View
-   public void index()
-   {
-      Map<String, Object> parameters = new HashMap<String, Object>();
-      parameters.put("location", "Marseille");
-      parameters.put("temperature", "20");
-      index.render(parameters);
-   }
-}
+@Application
+package template.ioe;
+import org.juzu.Application;

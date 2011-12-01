@@ -22,6 +22,7 @@ package org.juzu.impl.spi.template.gtmpl;
 import groovy.lang.GString;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
+import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.text.CharArray;
 
@@ -64,15 +65,22 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
          Object[] array = (Object[])args;
          if (array.length == 1)
          {
-            if ("print".equals(name))
+            try
             {
-               print(array[0]);
-               return null;
+               if ("print".equals(name))
+               {
+                  print(array[0]);
+                  return null;
+               }
+               else if ("println".equals(name))
+               {
+                  println(array[0]);
+                  return null;
+               }
             }
-            else if ("println".equals(name))
+            catch (IOException e)
             {
-               println(array[0]);
-               return null;
+               throw new InvokerInvocationException(e);
             }
          }
       }
@@ -81,21 +89,15 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
       return super.invokeMethod(name, args);
    }
 
-   public final void println(Object o)
+   public final void println(Object o) throws IOException
    {
       print(o);
       println();
    }
 
-   public final void println()
+   public final void println() throws IOException
    {
-      try
-      {
-         renderContext.getPrinter().write('\n');
-      }
-      catch (IOException ignore)
-      {
-      }
+      renderContext.getPrinter().write('\n');
    }
 
    /**
@@ -137,31 +139,25 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
       }
    }
 
-   public final void print(Object o)
+   public final void print(Object o) throws IOException
    {
-      try
+      if (o instanceof CharArray)
       {
-         if (o instanceof CharArray)
-         {
-            renderContext.getPrinter().write((CharArray)o);
-         }
-         else if (o instanceof GString)
-         {
-            GString gs = (GString)o;
-            Object[] values = gs.getValues();
-            for (int i = 0;i < values.length;i++)
-            {
-               values[i] = format(values[i]);
-            }
-            renderContext.getPrinter().write(o.toString());
-         }
-         else
-         {
-            renderContext.getPrinter().write(toString(o));
-         }
+         renderContext.getPrinter().write((CharArray)o);
       }
-      catch (IOException ignore)
+      else if (o instanceof GString)
       {
+         GString gs = (GString)o;
+         Object[] values = gs.getValues();
+         for (int i = 0;i < values.length;i++)
+         {
+            values[i] = format(values[i]);
+         }
+         renderContext.getPrinter().write(o.toString());
+      }
+      else
+      {
+         renderContext.getPrinter().write(toString(o));
       }
    }
 }

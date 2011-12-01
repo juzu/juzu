@@ -63,7 +63,7 @@ public class ActionContext extends RequestContext
       return Phase.ACTION;
    }
 
-   public Response.Redirect redirect(String location) throws IOException
+   public Response.Redirect redirect(String location)
    {
       return bridge.redirect(location);
    }

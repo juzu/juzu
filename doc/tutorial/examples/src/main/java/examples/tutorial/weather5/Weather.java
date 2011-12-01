@@ -52,13 +52,13 @@ public class Weather
    Template index;
 
    @View
-   public void index() throws Exception
+   public void index()
    {
       index("marseille");
    }
 
    @View
-   public void index(String location) throws Exception
+   public void index(String location)
    {
       Map<String, Object> parameters = new HashMap<String, Object>();
       parameters.put("location", location);

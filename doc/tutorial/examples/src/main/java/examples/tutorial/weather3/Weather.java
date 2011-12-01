@@ -24,7 +24,6 @@ import org.juzu.View;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public class Weather
    Template index;
 
    @View
-   public void index() throws IOException
+   public void index()
    {
       Map<String, Object> parameters = new HashMap<String, Object>();
       parameters.put("location", "Marseille");

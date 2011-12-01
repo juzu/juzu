@@ -19,10 +19,12 @@
 
 package org.juzu.template;
 
+import org.juzu.UndeclaredIOException;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface Renderable
 {
 
-   void render(TemplateRenderContext context);
+   void render(TemplateRenderContext context) throws TemplateExecutionException, UndeclaredIOException;
 
 }

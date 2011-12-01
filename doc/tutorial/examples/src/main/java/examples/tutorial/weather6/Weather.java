@@ -49,13 +49,13 @@ public class Weather
    examples.tutorial.weather6.templates.index index;
 
    @View
-   public void index() throws Exception
+   public void index()
    {
       index("marseille");
    }
 
    @View
-   public void index(String location) throws Exception
+   public void index(String location)
    {
       index.location(location).
             temperature(weatherService.getTemperature(location)).

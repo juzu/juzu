@@ -76,4 +76,11 @@ import org.juzu.test.request.MockClient;
          assertEquals("typed_template", client.render().getContent());
       }
    }
+
+   public void testUndeclaredIOE() throws Exception
+   {
+      MockApplication<?> app = application("template", "ioe").init();
+      MockClient client = app.client();
+      assertEquals("pass", client.render().getContent());
+   }
 }

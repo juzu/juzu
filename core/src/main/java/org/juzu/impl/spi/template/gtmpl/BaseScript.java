@@ -21,7 +21,10 @@ package org.juzu.impl.spi.template.gtmpl;
 
 import groovy.lang.Binding;
 import groovy.lang.Script;
+import org.codehaus.groovy.runtime.InvokerInvocationException;
 import org.juzu.template.TemplateRenderContext;
+
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class BaseScript extends Script
@@ -74,18 +77,39 @@ public abstract class BaseScript extends Script
    @Override
    public void println(Object o)
    {
-      printer.println(o);
+      try
+      {
+         printer.println(o);
+      }
+      catch (IOException e)
+      {
+         throw new InvokerInvocationException(e);
+      }
    }
 
    @Override
    public void println()
    {
-      printer.println();
+      try
+      {
+         printer.println();
+      }
+      catch (IOException e)
+      {
+         throw new InvokerInvocationException(e);
+      }
    }
 
    @Override
    public void print(Object o)
    {
-      printer.print(o);
+      try
+      {
+         printer.print(o);
+      }
+      catch (IOException e)
+      {
+         throw new InvokerInvocationException(e);
+      }
    }
 }

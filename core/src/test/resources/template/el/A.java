@@ -26,7 +26,6 @@ import org.juzu.template.Template;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Named("a")
@@ -46,7 +45,7 @@ public class A
    }
 
    @View
-   public void index() throws IOException
+   public void index()
    {
       value = "A";
       index.render();

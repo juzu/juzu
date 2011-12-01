@@ -292,6 +292,30 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       catch (IOException e)
       {
       }
+
+      //
+      try
+      {
+         render("foobar", null, null, new Appendable()
+         {
+            public Appendable append(CharSequence csq) throws IOException
+            {
+               throw new IOException();
+            }
+            public Appendable append(CharSequence csq, int start, int end) throws IOException
+            {
+               throw new IOException();
+            }
+            public Appendable append(char c) throws IOException
+            {
+               throw new IOException();
+            }
+         });
+         fail();
+      }
+      catch (IOException e)
+      {
+      }
    }
 
    public void testError() throws Exception

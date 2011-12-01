@@ -24,14 +24,13 @@ import org.juzu.test.Registry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A
 {
 
    @View
-   public void index() throws IOException
+   public void index()
    {
       Registry.compareAndSet("count", 0, 1);
    }

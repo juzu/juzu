@@ -37,7 +37,7 @@ public class A extends Controller
    }
 
    @Action
-   public Response.Redirect action() throws IOException
+   public Response.Redirect action()
    {
       return actionContext.redirect("http://www.julienviet.com");
    }

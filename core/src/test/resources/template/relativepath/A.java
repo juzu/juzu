@@ -24,7 +24,6 @@ import org.juzu.View;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A
@@ -35,7 +34,7 @@ public class A
    Template index;
 
    @View
-   public void index() throws IOException
+   public void index()
    {
       index.render();
    }

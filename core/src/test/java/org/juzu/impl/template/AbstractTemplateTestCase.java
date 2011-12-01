@@ -83,17 +83,22 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
       return render(template, null, locale);
    }
 
-   public String render(String text, Map<String, ?> attributes, Locale locale) throws IOException, TemplateExecutionException
-   {
-      GroovyTemplateStub template = template(text);
-      StringWriter out = new StringWriter();
-      TemplateRenderContext renderContext = new TemplateRenderContext(new WriterPrinter(out), attributes, locale);
-      template.render(renderContext);
-      return out.toString();
-   }
-
    public String render(String template, Map<String, ?> attributes) throws IOException, TemplateExecutionException
    {
       return render(template, attributes, null);
+   }
+
+   public String render(String text, Map<String, ?> attributes, Locale locale) throws IOException, TemplateExecutionException
+   {
+      StringWriter out = new StringWriter();
+      render(text, attributes, locale, out);
+      return out.toString();
+   }
+
+   public void render(String text, Map<String, ?> attributes, Locale locale, Appendable appendable) throws IOException, TemplateExecutionException
+   {
+      GroovyTemplateStub template = template(text);
+      TemplateRenderContext renderContext = new TemplateRenderContext(new WriterPrinter(appendable), attributes, locale);
+      template.render(renderContext);
    }
 }

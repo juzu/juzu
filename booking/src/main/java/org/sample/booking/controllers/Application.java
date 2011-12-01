@@ -26,7 +26,6 @@ import org.juzu.Response;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 import org.sample.booking.*;
 import org.sample.booking.models.User;
@@ -74,7 +73,7 @@ public class Application
    Flash flash;
 
    @View
-   public void index() throws IOException
+   public void index()
    {
       if (login.isConnected())
       {
@@ -87,7 +86,7 @@ public class Application
    }
 
    @View
-   public void register() throws IOException
+   public void register()
    {
       register.render();
    }

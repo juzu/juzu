@@ -20,7 +20,7 @@
 package org.juzu.text;
 
 import java.io.IOException;
-import java.io.Writer;
+
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class WriterPrinter implements Printer
@@ -38,11 +38,6 @@ public class WriterPrinter implements Printer
 
       //
       this.writer = writer;
-   }
-
-   public Appendable getWriter()
-   {
-      return writer;
    }
 
    public void write(char c) throws IOException

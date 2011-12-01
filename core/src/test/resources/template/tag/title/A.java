@@ -24,7 +24,6 @@ import org.juzu.View;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -40,13 +39,13 @@ public class A
    Template dynamic;
 
    @View
-   public void index() throws IOException
+   public void index()
    {
       index.render();
    }
 
    @View
-   public void dynamic() throws IOException
+   public void dynamic()
    {
       dynamic.render(Collections.singletonMap("expression", "4"));
    }
