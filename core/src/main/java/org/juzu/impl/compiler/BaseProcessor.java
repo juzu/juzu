@@ -39,7 +39,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -106,6 +108,24 @@ public abstract class BaseProcessor extends AbstractProcessor
       currentLog.get().append(buffer);
    }
 
+   /** Controls how error are reported. */
+   private boolean formalErrorReporting;
+
+   protected BaseProcessor()
+   {
+      this.formalErrorReporting = false;
+   }
+
+   public boolean getFormalErrorReporting()
+   {
+      return formalErrorReporting;
+   }
+
+   public void setFormalErrorReporting(boolean formalErrorReporting)
+   {
+      this.formalErrorReporting = formalErrorReporting;
+   }
+
    @Override
    public final void init(ProcessingEnvironment processingEnv)
    {
@@ -149,17 +169,25 @@ public abstract class BaseProcessor extends AbstractProcessor
          if (e instanceof CompilationException)
          {
             CompilationException ce = (CompilationException)e;
-            msg = new StringBuilder("[").append(ce.getCode().name()).append("](");
-            Object[] args = ce.getArguments();
-            for (int i = 0;i < args.length;i++)
+            if (formalErrorReporting)
             {
-               if (i > 0)
+               msg = new StringBuilder("[").append(ce.getCode().getKey()).append("](");
+               Object[] args = ce.getArguments();
+               for (int i = 0;i < args.length;i++)
                {
-                  msg.append(',');
+                  if (i > 0)
+                  {
+                     msg.append(',');
+                  }
+                  msg.append(String.valueOf(args[i]));
                }
-               msg.append(String.valueOf(args[i]));
+               msg.append(")");
             }
-            msg.append(")");
+            else
+            {
+               msg = new StringBuilder();
+               new Formatter(msg).format(Locale.getDefault(), ce.getCode().getMessage(), ce.getArguments()).flush();
+            }
             element = ce.getElement();
          }
          else

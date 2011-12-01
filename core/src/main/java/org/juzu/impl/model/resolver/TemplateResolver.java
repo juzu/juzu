@@ -24,7 +24,7 @@ import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.inject.Export;
-import org.juzu.impl.model.ErrorCode;
+import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.model.meta.ApplicationMetaModel;
 import org.juzu.impl.model.meta.MethodMetaModel;
 import org.juzu.impl.model.meta.TemplateMetaModel;
@@ -211,7 +211,7 @@ public class TemplateResolver implements Serializable
                //
                if (method == null)
                {
-                  throw new CompilationException(elements[0], ErrorCode.CONTROLLER_METHOD_NOT_FOUND, methodName, parameterMap);
+                  throw new CompilationException(elements[0], CompilationErrorCode.CONTROLLER_METHOD_NOT_RESOLVED, methodName + "(" + parameterMap + ")");
                }
 
                //
@@ -239,7 +239,7 @@ public class TemplateResolver implements Serializable
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elements[0], ErrorCode.CANNOT_WRITE_TEMPLATE);
+         throw new CompilationException(e, elements[0], CompilationErrorCode.CANNOT_WRITE_TEMPLATE_SCRIPT, template.getPath());
       }
       finally
       {
@@ -319,7 +319,7 @@ public class TemplateResolver implements Serializable
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elements[0], ErrorCode.CANNOT_WRITE_TEMPLATE_QUALIFIED_CLASS, template.getPath());
+         throw new CompilationException(e, elements[0], CompilationErrorCode.CANNOT_WRITE_TEMPLATE_CLASS, template.getPath());
       }
       finally
       {
@@ -359,7 +359,7 @@ public class TemplateResolver implements Serializable
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elements[0], ErrorCode.CANNOT_WRITE_TEMPLATE_STUB_CLASS, template.getPath());
+         throw new CompilationException(e, elements[0], CompilationErrorCode.CANNOT_WRITE_TEMPLATE_STUB, template.getPath());
       }
       finally
       {

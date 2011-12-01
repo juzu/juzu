@@ -19,6 +19,8 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.utils.ErrorCode;
+
 import javax.lang.model.element.Element;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -26,7 +28,7 @@ public class CompilationException extends RuntimeException
 {
 
    /** . */
-   private final Enum<?> code;
+   private final ErrorCode code;
 
    /** . */
    private Object[] arguments;
@@ -34,21 +36,21 @@ public class CompilationException extends RuntimeException
    /** . */
    private final Element element;
 
-   public CompilationException(Element element, Enum<?> code, Object... arguments)
+   public CompilationException(Element element, ErrorCode code, Object... arguments)
    {
       this.code = code;
       this.element = element;
       this.arguments = arguments;
    }
 
-   public CompilationException(Enum<?> code, Object... arguments)
+   public CompilationException(ErrorCode code, Object... arguments)
    {
       this.code = code;
       this.arguments = arguments;
       this.element = null;
    }
 
-   public CompilationException(Throwable cause, Enum<?> code, Object... arguments)
+   public CompilationException(Throwable cause, ErrorCode code, Object... arguments)
    {
       super(cause);
 
@@ -58,7 +60,7 @@ public class CompilationException extends RuntimeException
       this.arguments = arguments;
    }
 
-   public CompilationException(Throwable cause, Element element, Enum<?> code, Object... arguments)
+   public CompilationException(Throwable cause, Element element, ErrorCode code, Object... arguments)
    {
       super(cause);
 
@@ -73,7 +75,7 @@ public class CompilationException extends RuntimeException
       return element;
    }
 
-   public Enum<?> getCode()
+   public ErrorCode getCode()
    {
       return code;
    }

@@ -27,6 +27,7 @@ import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.utils.Content;
+import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
@@ -314,11 +315,6 @@ public class CompilationTestCase extends AbstractTestCase
       assertNull(error.getLocation());
    }
 
-   enum Code
-   {
-      ERROR_01
-   }
-
    public void testErrorCode() throws IOException
    {
       class P extends BaseProcessor
@@ -328,22 +324,32 @@ public class CompilationTestCase extends AbstractTestCase
          {
             if (roundEnv.processingOver())
             {
-               throw new CompilationException(Code.ERROR_01, 5, "foobar");
+               throw new CompilationException(new ErrorCode()
+               {
+                  public String getKey()
+                  {
+                     return "ERROR_01";
+                  }
+
+                  public String getMessage()
+                  {
+                     return "The error";
+                  }
+               }, 5, "foobar");
             }
          }
       }
 
       DiskFileSystem fs = diskFS("compiler", "errorcode");
       Compiler compiler = new Compiler(fs, new RAMFileSystem());
-      compiler.addAnnotationProcessor(new P());
+      P processor = new P();
+      processor.setFormalErrorReporting(true);
+      compiler.addAnnotationProcessor(processor);
       List<CompilationError> errors = compiler.compile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
       assertEquals("ERROR_01", error.getCode());
       assertEquals(Arrays.asList("5", "foobar"), error.getArguments());
-
-
-
    }
 
    public void testIncremental() throws IOException

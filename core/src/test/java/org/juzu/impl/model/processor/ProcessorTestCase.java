@@ -20,7 +20,7 @@
 package org.juzu.impl.model.processor;
 
 import org.juzu.impl.compiler.CompilationError;
-import org.juzu.impl.model.ErrorCode;
+import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.model.resolver.ModelResolver;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
@@ -93,7 +93,7 @@ public class ProcessorTestCase extends AbstractTestCase
       List<CompilationError> errors = helper.failCompile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
-      assertEquals(ErrorCode.TEMPLATE_NOT_FOUND.toString(), error.getCode());
+      assertEquals(CompilationErrorCode.TEMPLATE_NOT_RESOLVED.toString(), error.getCode());
       assertEquals(2, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
       assertNotNull(classOutput.getPath("processor", "simple", "A.class"));

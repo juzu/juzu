@@ -26,7 +26,7 @@ import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.model.ErrorCode;
+import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -213,7 +213,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                               }
                               else
                               {
-                                 throw new CompilationException(annotatedElt, ErrorCode.UNSUPPORTED, "Annotation of this element is not yet supported");
+                                 throw new CompilationException(annotatedElt, CompilationErrorCode.ANNOTATION_UNSUPPORTED);
                               }
                            }
                            else if (annotationFQN.equals("org.juzu.Application"))

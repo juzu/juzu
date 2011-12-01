@@ -20,7 +20,7 @@
 package org.juzu.impl.model.resolver;
 
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.model.ErrorCode;
+import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.model.meta.TemplateMetaModel;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.template.ASTNode;
@@ -87,7 +87,7 @@ class TemplateCompiler
             if (!matcher.matches())
             {
                Element elt = env.get(templateMetaModel.getRefs().iterator().next().getHandle());
-               throw new CompilationException(elt, ErrorCode.ILLEGAL_PATH, path);
+               throw new CompilationException(elt, CompilationErrorCode.TEMPLATE_ILLEGAL_PATH, path);
             }
             String folder = matcher.group(1);
             String rawName = matcher.group(2);
@@ -112,7 +112,7 @@ class TemplateCompiler
             Content content = env.resolveResource(stubFQN, extension);
             if (content == null)
             {
-               throw new CompilationException(env.get(templateMetaModel.getRefs().iterator().next().getHandle()), ErrorCode.TEMPLATE_NOT_FOUND, fqn);
+               throw new CompilationException(env.get(templateMetaModel.getRefs().iterator().next().getHandle()), CompilationErrorCode.TEMPLATE_NOT_RESOLVED, fqn);
             }
 
             // Parse to AST
@@ -124,7 +124,7 @@ class TemplateCompiler
             catch (ParseException e)
             {
                Element elt = env.get(templateMetaModel.getRefs().iterator().next().getHandle());
-               throw new CompilationException(elt, ErrorCode.TEMPLATE_SYNTAX_ERROR, fqn);
+               throw new CompilationException(elt, CompilationErrorCode.TEMPLATE_SYNTAX_ERROR, template.getPath());
             }
 
             // Obtain template parameters

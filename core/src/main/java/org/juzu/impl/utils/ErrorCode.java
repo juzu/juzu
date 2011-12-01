@@ -17,36 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model;
+package org.juzu.impl.utils;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum ErrorCode
+public interface ErrorCode
 {
 
-   CANNOT_WRITE_CONFIG,
+   /**
+    * The error key.
+    *
+    * @return the error key
+    */
+   String getKey();
 
-   CANNOT_WRITE_APPLICATION_CONFIG,
-
-   CONTROLLER_METHOD_NOT_FOUND,
-
-   CANNOT_WRITE_CONTROLLER_CLASS,
-
-   CANNOT_WRITE_TEMPLATE,
-
-   CANNOT_WRITE_TEMPLATE_STUB_CLASS,
-
-   CANNOT_WRITE_TEMPLATE_QUALIFIED_CLASS,
-
-   CANNOT_WRITE_APPLICATION_CLASS,
-
-   DUPLICATE_CONTROLLER_ID,
-
-   TEMPLATE_NOT_FOUND,
-
-   TEMPLATE_SYNTAX_ERROR,
-
-   ILLEGAL_PATH,
-
-   UNSUPPORTED
+   /**
+    * The error message.
+    *
+    * @return the error message
+    */
+   String getMessage();
 
 }

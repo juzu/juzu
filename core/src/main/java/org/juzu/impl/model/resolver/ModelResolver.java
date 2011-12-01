@@ -26,7 +26,7 @@ import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.model.ErrorCode;
+import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.model.meta.ApplicationMetaModel;
 import org.juzu.impl.model.meta.ControllerMetaModel;
 import org.juzu.impl.model.meta.MetaModel;
@@ -315,7 +315,7 @@ public class ModelResolver extends ModelHandler implements Serializable
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, ErrorCode.CANNOT_WRITE_CONFIG);
+         throw new CompilationException(e, CompilationErrorCode.CANNOT_WRITE_CONFIG);
       }
       finally
       {
@@ -349,7 +349,7 @@ public class ModelResolver extends ModelHandler implements Serializable
          }
          catch (IOException e)
          {
-            throw new CompilationException(e, env.get(application.getHandle()), ErrorCode.CANNOT_WRITE_APPLICATION_CONFIG);
+            throw new CompilationException(e, env.get(application.getHandle()), CompilationErrorCode.CANNOT_WRITE_APPLICATION_CONFIG, application.getFQN());
          }
          finally
          {
@@ -398,7 +398,7 @@ public class ModelResolver extends ModelHandler implements Serializable
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elt, ErrorCode.CANNOT_WRITE_APPLICATION_CLASS);
+         throw new CompilationException(e, elt, CompilationErrorCode.CANNOT_WRITE_APPLICATION, application.getFQN());
       }
       finally
       {
@@ -563,7 +563,7 @@ public class ModelResolver extends ModelHandler implements Serializable
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, origin, ErrorCode.CANNOT_WRITE_CONTROLLER_CLASS);
+         throw new CompilationException(e, origin, CompilationErrorCode.CANNOT_WRITE_CONTROLLER_COMPANION, controller.getHandle().getFQN());
       }
       finally
       {

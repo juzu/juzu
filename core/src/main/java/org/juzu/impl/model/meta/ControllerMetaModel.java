@@ -22,7 +22,7 @@ package org.juzu.impl.model.meta;
 import org.juzu.Phase;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.model.ErrorCode;
+import org.juzu.impl.model.CompilationErrorCode;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -153,7 +153,7 @@ public class ControllerMetaModel extends MetaModelObject
             {
                if (existing.id.equals(id))
                {
-                  throw new CompilationException(methodElt, ErrorCode.DUPLICATE_CONTROLLER_ID, id);
+                  throw new CompilationException(methodElt, CompilationErrorCode.CONTROLLER_METHOD_DUPLICATE_ID, id);
                }
             }
 
