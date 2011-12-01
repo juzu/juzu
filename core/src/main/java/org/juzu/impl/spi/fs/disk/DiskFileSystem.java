@@ -214,4 +214,10 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
          Tools.safeClose(out);
       }
    }
+
+   @Override
+   public String toString()
+   {
+      return "DiskFileSystem[root=" + root.getAbsolutePath() + "]";
+   }
 }

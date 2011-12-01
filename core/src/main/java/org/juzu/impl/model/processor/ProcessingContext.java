@@ -160,9 +160,10 @@ public class ProcessingContext implements Filer, Elements
 
    public Content resolveResource(FQN fqn, String extension)
    {
-      log.log("Attempt to resolve " + fqn + "." + extension);
+      String path = "/" + fqn.getFullName().replace('.', '/') + "." + extension;
       if (sourcePath != null)
       {
+         log.log("Attempt to resolve " + path + " from source path");
          try
          {
             List<String> list = new ArrayList<String>();
@@ -174,9 +175,14 @@ public class ProcessingContext implements Filer, Elements
                log.log("Resolved " + fqn + "." + extension + " to " + f.getAbsolutePath());
                return sourcePath.getContent(f);
             }
+            else
+            {
+               log.log("Resolving " + path + " from source path gave no result");
+            }
          }
          catch (IOException e)
          {
+            log.log("Could not resolve " + path + " from source path", e);
          }
       }
       else
@@ -187,14 +193,14 @@ public class ProcessingContext implements Filer, Elements
             String relativeName = fqn.getSimpleName() + "." + extension;
             try
             {
-               log.log("Attempt to resolve " + fqn + "." + extension + " from " + location.getName());
+               log.log("Attempt to resolve " + path + " from " + location.getName());
                FileObject resource = getResource(location, pkg, relativeName);
                byte[] bytes = Tools.bytes(resource.openInputStream());
                return new Content(resource.getLastModified(), bytes, Charset.defaultCharset());
             }
             catch (Exception e)
             {
-               log.log("Could not resolve resource " + fqn + "." + extension + " from " + location.getName(), e);
+               log.log("Could not resolve resource " + path + " from " + location.getName(), e);
             }
          }
       }
