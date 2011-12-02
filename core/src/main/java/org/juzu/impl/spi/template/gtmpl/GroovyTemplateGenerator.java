@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,11 +52,19 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    private int lineNumber = 1;
 
    /** . */
-   private Location pos;
+   private Location pos = null;
+
+   /** . */
+   private int closureCount = 0;
+
+   /** . */
+   private int closureCountIndex = -1;
+
+   /** . */
+   private final int[] closureCountStack = new int[200];
 
    public GroovyTemplateGenerator()
    {
-      this.pos = null;
    }
 
    @Override
@@ -214,14 +223,16 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    @Override
    public void openTag(String className, Map<String, String> args) throws IOException
    {
-      out.append("; def closure = { ");
+      int count = closureCountStack[++closureCountIndex] = closureCount++;
+      out.append("; def closure").append(count).append(" = { ");
    }
 
    @Override
    public void closeTag(String className, Map<String, String> args) throws IOException
    {
+      int count = closureCountStack[closureCountIndex--];
       out.append("; } as org.juzu.template.Renderable;");
-      out.append("; new ").append(className).append("().render(out.renderContext, closure,");
+      out.append("; new ").append(className).append("().render(out.renderContext, closure").append(count).append(",");
       if (args == null || args.isEmpty())
       {
          out.append("null");

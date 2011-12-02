@@ -281,6 +281,13 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
          assertTrue(e.getCause() instanceof EmptyStackException);
       }
    }
+
+   public void testSiblingClosures() throws IOException
+   {
+      GroovyTemplateStub template = template("#{title value=a/}#{title value=b/}");
+      template.getClassName();
+   }
+
    public void testIOException() throws Exception
    {
       String template = "<% throw new java.io.IOException(); %>";
