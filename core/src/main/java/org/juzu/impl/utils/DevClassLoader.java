@@ -20,8 +20,9 @@
 package org.juzu.impl.utils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 /**
  * <p></p>The <code>DevClassLoader</code> blacklists any class from found in the <code>/WEB-INF/classes</code> folder and
@@ -71,8 +72,57 @@ public class DevClassLoader extends ClassLoader
       }
       else
       {
+         try
+         {
+            Enumeration<URL> e = getResources(name);
+            if (e.hasMoreElements())
+            {
+               return e.nextElement();
+            }
+         }
+         catch (IOException ignore)
+         {
+            //
+         }
          return null;
       }
+   }
+
+   @Override
+   public Enumeration<URL> getResources(final String name) throws IOException
+   {
+      final Enumeration<URL> a = super.getResources(name);
+      return new Enumeration<URL>()
+      {
+         URL next = null;
+         public boolean hasMoreElements()
+         {
+            while (next == null && a.hasMoreElements())
+            {
+               URL url = a.nextElement();
+               if (shouldLoad(url, name))
+               {
+                  next = url;
+               }
+            }
+            return next != null;
+         }
+         public URL nextElement()
+         {
+            if (!hasMoreElements())
+            {
+               throw new NoSuchElementException("No more elements");
+            }
+            try
+            {
+               return next;
+            }
+            finally
+            {
+               next = null;
+            }
+         }
+      };
    }
 
    private boolean shouldLoad(URL url, String name)
@@ -110,5 +160,4 @@ public class DevClassLoader extends ClassLoader
          throw new UnsupportedOperationException("handle me gracefully " + url);
       }
    }
-
 }

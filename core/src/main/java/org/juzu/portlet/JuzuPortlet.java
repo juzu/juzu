@@ -21,6 +21,7 @@ package org.juzu.portlet;
 
 import org.juzu.impl.application.ApplicationBootstrap;
 import org.juzu.impl.model.processor.MainProcessor;
+import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
 import org.juzu.impl.spi.inject.spring.SpringBootstrap;
@@ -86,6 +87,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    /** The jars in WEB-INF/lib . */
    private List<URL> jarURLs;
+
+   /** . */
+   private ClassLoaderFileSystem classLoaderFS;
 
    public void init(PortletConfig config) throws PortletException
    {
@@ -164,19 +168,11 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             {
                System.out.println("[" + config.getPortletName() + "] Building application");
 
-               // Build the classpath
-               Collection<ReadFileSystem<?>> classPath = new ArrayList<ReadFileSystem<?>>();
-               for (URL jarURL : jarURLs)
+               // We load it once as it is an expensive resource
+               if (classLoaderFS == null)
                {
-                  URL configURL = new URL("jar:" + jarURL.toString() + "!/org/juzu/config.properties");
-                  try
-                  {
-                     configURL.openStream();
-                  }
-                  catch (IOException e)
-                  {
-                     classPath.add(new JarFileSystem(new JarFile(new File(jarURL.toURI()))));
-                  }
+                  ClassLoader devCL = new DevClassLoader(Thread.currentThread().getContextClassLoader());
+                  classLoaderFS = new ClassLoaderFileSystem(devCL);
                }
 
                //
@@ -184,13 +180,12 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                RAMFileSystem classes = new RAMFileSystem();
 
                //
-               Compiler compiler = new Compiler(fs, classPath, classes, classes);
+               Compiler compiler = new Compiler(fs, classLoaderFS, classes, classes);
                compiler.addAnnotationProcessor(new MainProcessor());
                List<CompilationError> res = compiler.compile();
                if (res.isEmpty())
                {
-                  ClassLoader cl1 = new DevClassLoader(Thread.currentThread().getContextClassLoader());
-                  ClassLoader cl2 = new URLClassLoader(new URL[]{classes.getURL()}, cl1);
+                  ClassLoader cl2 = new URLClassLoader(new URL[]{classes.getURL()}, classLoaderFS.getClassLoader());
                   boot(classes, cl2);
                   devScanner = new FileSystemScanner<String>(fs);
                   devScanner.scan();
@@ -217,7 +212,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
    private <P, D> void boot(ReadFileSystem<P> classes, ClassLoader cl) throws Exception
    {
       // Find an application
-      P f = classes.getFile(Arrays.asList("org", "juzu"), "config.properties");
+      P f = classes.getPath(Arrays.asList("org", "juzu", "config.properties"));
       URL url = classes.getURL(f);
       InputStream in = url.openStream();
       Properties props = new Properties();

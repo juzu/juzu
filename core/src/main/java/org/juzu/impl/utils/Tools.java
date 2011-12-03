@@ -34,11 +34,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -177,6 +179,11 @@ public class Tools
       }
    }
 
+   public static String read(URL url) throws IOException
+   {
+      return read(url.openStream());
+   }
+
    public static String read(File f) throws IOException
    {
       return read(new FileInputStream(f));
@@ -289,10 +296,15 @@ public class Tools
 
    public static <E> ArrayList<E> list(Iterable<E> elements)
    {
+      return list(elements.iterator());
+   }
+
+   public static <E> ArrayList<E> list(Iterator<E> elements)
+   {
       ArrayList<E> list = new ArrayList<E>();
-      for (E elt : elements)
+      while (elements.hasNext())
       {
-         list.add(elt);
+         list.add(elements.next());
       }
       return list;
    }
@@ -368,5 +380,52 @@ public class Tools
       }
       hash = 31 * hash + te.getSimpleName().toString().hashCode();
       return hash;
+   }
+
+   public static String[] split(CharSequence s, char separator)
+   {
+      return foo(s, separator, 0, 0, 0);
+   }
+
+   public static String[] split(CharSequence s, char separator, int rightPadding)
+   {
+      if (rightPadding < 0)
+      {
+         throw new IllegalArgumentException("Right padding cannot be negative");
+      }
+      return foo(s, separator, 0, 0, rightPadding);
+   }
+
+   private static String[] foo(CharSequence s, char separator, int count, int from, int rightPadding)
+   {
+      int len = s.length();
+      if (from < len)
+      {
+         int to = from;
+         while (to < len && s.charAt(to) != separator)
+         {
+            to++;
+         }
+         String[] ret;
+         if (to == len - 1)
+         {
+            ret = new String[count + 2 + rightPadding];
+            ret[count + 1] = "";
+         }
+         else
+         {
+            ret = to == len ? new String[count + 1 + rightPadding] : foo(s, separator, count + 1, to + 1, rightPadding);
+         }
+         ret[count] = from == to ? "" : s.subSequence(from, to).toString();
+         return ret;
+      }
+      else if (from == len)
+      {
+         return new String[count + rightPadding];
+      }
+      else
+      {
+         throw new AssertionError();
+      }
    }
 }

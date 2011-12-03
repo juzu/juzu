@@ -68,7 +68,7 @@ public class MockApplication<P>
 
    public MockApplication<P> init() throws Exception
    {
-      P f = classes.getFile(Arrays.asList("org", "juzu"), "config.properties");
+      P f = classes.getPath(Arrays.asList("org", "juzu", "config.properties"));
       if (f == null)
       {
          throw new Exception("Cannot find config properties");

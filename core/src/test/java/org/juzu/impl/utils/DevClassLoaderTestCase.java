@@ -19,22 +19,23 @@
 
 package org.juzu.impl.utils;
 
-import junit.framework.TestCase;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ExplodedExporter;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.juzu.test.AbstractTestCase;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Enumeration;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DevClassLoaderTestCase extends TestCase
+public class DevClassLoaderTestCase extends AbstractTestCase
 {
 
    /** . */
@@ -75,19 +76,43 @@ public class DevClassLoaderTestCase extends TestCase
       return extCL;
    }
 
-   public void testExploded() throws Exception
+   private File explode(JavaArchive classes, JavaArchive lib)
    {
-      WebArchive archive = ShrinkWrap.create(WebArchive.class, "exploded.war").addClass(Dev.class).addAsDirectory("WEB-INF/lib");
+      WebArchive archive = ShrinkWrap.create(WebArchive.class);
+      archive.merge(classes, "WEB-INF/classes");
+      archive.addAsDirectory("WEB-INF/lib");
       File explodedDir = archive.as(ExplodedExporter.class).exportExploded(targetDir);
       File libJar = new File(explodedDir, "WEB-INF/lib/lib.jar");
-      ShrinkWrap.create(JavaArchive.class).addClass(Lib.class).addAsResource(new StringAsset("lib_resource_value"), "lib_resource").as(ZipExporter.class).exportTo(libJar);
+      lib.as(ZipExporter.class).exportTo(libJar);
+      return explodedDir;
+   }
+
+   private File archive(JavaArchive classes, JavaArchive lib)
+   {
+      try
+      {
+         WebArchive archive = ShrinkWrap.create(WebArchive.class);
+         archive.merge(classes, "WEB-INF/classes");
+         archive.addAsLibrary(lib);
+         File tmp = File.createTempFile("archive", ".war", targetDir);
+         archive.as(ZipExporter.class).exportTo(tmp, true);
+         return tmp;
+      }
+      catch (IOException e)
+      {
+         throw failure(e);
+      }
+   }
+
+   public void testLoad() throws Exception
+   {
+      JavaArchive classes = ShrinkWrap.create(JavaArchive.class).addClass(Dev.class).addAsResource(new StringAsset("classes_resource_value"), "classes_resource");
+      JavaArchive lib = ShrinkWrap.create(JavaArchive.class).addClass(Lib.class).addAsResource(new StringAsset("lib_resource_value"), "lib_resource");
+      File explodedDir = explode(classes, lib);
 
       //
+      File libJar = new File(explodedDir, "WEB-INF/lib/lib.jar");
       File classesDir = new File(explodedDir, "WEB-INF/classes");
-      assertTrue(classesDir.isDirectory());
-      FileWriter classesResourceWriter = new FileWriter(new File(classesDir, "classes_resource"));
-      classesResourceWriter.write("classes_resource_value");
-      classesResourceWriter.close();
 
       // Build a correct parent CL
       URLClassLoader cl = new URLClassLoader(new URL[]{classesDir.toURI().toURL(),libJar.toURI().toURL()}, getParentClassLoader());
@@ -118,5 +143,33 @@ public class DevClassLoaderTestCase extends TestCase
       libResource = devCL.getResourceAsStream("lib_resource");
       assertNotNull(libResource);
       assertEquals("lib_resource_value", Tools.read(libResource));
+   }
+
+   public void testShadowedResource() throws Exception
+   {
+      JavaArchive classes = ShrinkWrap.create(JavaArchive.class).addAsResource(new StringAsset("classes_resource_value"), "resource");
+      JavaArchive lib = ShrinkWrap.create(JavaArchive.class).addClass(Lib.class).addAsResource(new StringAsset("lib_resource_value"), "resource");
+      File explodedDir = explode(classes, lib);
+
+      //
+      File libJar = new File(explodedDir, "WEB-INF/lib/lib.jar");
+      File classesDir = new File(explodedDir, "WEB-INF/classes");
+
+      // Build correct parent CL
+      ClassLoader cl = new URLClassLoader(new URL[]{classesDir.toURI().toURL(),libJar.toURI().toURL()}, getParentClassLoader());
+
+      //
+      DevClassLoader devCL = new DevClassLoader(cl);
+      URL url = devCL.getResource("resource");
+      assertNotNull(url);
+      assertEquals("lib_resource_value", Tools.read(url));
+
+      //
+      Enumeration<URL> e = devCL.getResources("resource");
+      assertTrue(e.hasMoreElements());
+      url = e.nextElement();
+      assertNotNull(url);
+      assertEquals("lib_resource_value", Tools.read(url));
+      assertFalse(e.hasMoreElements());
    }
 }

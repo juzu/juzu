@@ -25,6 +25,7 @@ import org.juzu.impl.compiler.file.JavaFileObjectImpl;
 import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
+import org.juzu.impl.spi.fs.SimpleFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.impl.utils.Spliterator;
@@ -56,7 +57,7 @@ public class Compiler
 
    public static Builder builder()
    {
-      return new Builder(null, null, null, new ArrayList<ReadFileSystem<?>>());
+      return new Builder(null, null, null, new ArrayList<SimpleFileSystem<?>>());
    }
 
    public static class Builder
@@ -72,7 +73,7 @@ public class Compiler
       private ReadWriteFileSystem<?> sourceOutput;
 
       /** . */
-      private List<ReadFileSystem<?>> classPaths;
+      private List<SimpleFileSystem<?>> classPaths;
 
       /** . */
       private Processor processor;
@@ -81,7 +82,7 @@ public class Compiler
          ReadFileSystem<?> sourcePath,
          ReadWriteFileSystem<?> sourceOutput,
          ReadWriteFileSystem<?> classOutput,
-         List<ReadFileSystem<?>> classPaths)
+         List<SimpleFileSystem<?>> classPaths)
       {
          this.sourcePath = sourcePath;
          this.sourceOutput = sourceOutput;
@@ -204,21 +205,21 @@ public class Compiler
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput)
    {
-      this(sourcePath, Collections.<ReadFileSystem<?>>emptyList(), sourceOutput, classOutput);
+      this(sourcePath, Collections.<SimpleFileSystem<?>>emptyList(), sourceOutput, classOutput);
    }
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
-      ReadFileSystem<?> classPath,
+      SimpleFileSystem<?> classPath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput)
    {
-      this(sourcePath, Collections.<ReadFileSystem<?>>singletonList(classPath), sourceOutput, classOutput);
+      this(sourcePath, Collections.<SimpleFileSystem<?>>singletonList(classPath), sourceOutput, classOutput);
    }
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
-      Collection<ReadFileSystem<?>> classPath,
+      Collection<SimpleFileSystem<?>> classPath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput)
    {
@@ -290,7 +291,7 @@ public class Compiler
    private <P> Iterable<JavaFileObject> getFromSourcePath(final SimpleFileManager<P> fileManager) throws IOException
    {
       final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
-      fileManager.getFileSystem().traverse(new Visitor.Default<P>()
+      ((ReadFileSystem<P>)fileManager.getFileSystem()).traverse(new Visitor.Default<P>()
       {
          public void file(P file, String name) throws IOException
          {

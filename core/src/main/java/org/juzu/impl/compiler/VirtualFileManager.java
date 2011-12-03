@@ -26,6 +26,7 @@ import org.juzu.impl.compiler.file.SimpleFileManager;
 import org.juzu.impl.compiler.file.JavaFileObjectImpl;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
+import org.juzu.impl.spi.fs.SimpleFileSystem;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
@@ -37,7 +38,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -59,7 +59,7 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
    public VirtualFileManager(
       JavaFileManager fileManager,
       ReadFileSystem<?> sourcePath,
-      Collection<ReadFileSystem<?>> classPath,
+      Collection<SimpleFileSystem<?>> classPath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput)
    {

@@ -21,6 +21,8 @@ package org.juzu.impl.utils;
 
 import junit.framework.TestCase;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -77,5 +79,27 @@ public class ToolsTestCase extends TestCase
       assertEquals("a", Tools.unquote("\"a\""));
       assertEquals("'a\"", Tools.unquote("'a\""));
       assertEquals("\"a'", Tools.unquote("\"a'"));
+   }
+
+   public void testSplit()
+   {
+      assertEquals(Collections.<String>emptyList(), Arrays.asList(Tools.split("", '.')));
+      assertEquals(Arrays.asList("a"), Arrays.asList(Tools.split("a", '.')));
+      assertEquals(Arrays.asList("a", ""), Arrays.asList(Tools.split("a.", '.')));
+      assertEquals(Arrays.asList("", "a"), Arrays.asList(Tools.split(".a", '.')));
+      assertEquals(Arrays.asList("", ""), Arrays.asList(Tools.split(".", '.')));
+      assertEquals(Arrays.asList("a", "b"), Arrays.asList(Tools.split("a.b", '.')));
+
+      //
+      String[] ret = Tools.split("a.b", '.', 1);
+      assertEquals(3, ret.length);
+      assertEquals("a", ret[0]);
+      assertEquals("b", ret[1]);
+      assertEquals(null, ret[2]);
+
+      //
+      ret = Tools.split("", '.', 1);
+      assertEquals(1, ret.length);
+      assertEquals(null, ret[0]);
    }
 }

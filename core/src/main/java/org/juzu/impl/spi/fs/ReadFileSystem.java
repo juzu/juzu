@@ -22,11 +22,11 @@ package org.juzu.impl.spi.fs;
 import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.utils.Content;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ReadFileSystem<P>
+public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
 {
    
    public static <S, D> void copy(ReadFileSystem<S> src, ReadWriteFileSystem<D> dst) throws IOException
@@ -125,10 +125,12 @@ public abstract class ReadFileSystem<P>
             prefix.append(name).append('/');
             return true;
          }
+
          public void file(P file, String name) throws IOException
          {
             appendable.append(prefix).append(name).append("\n");
          }
+
          public void leaveDir(P dir, String name) throws IOException
          {
             prefix.setLength(prefix.length() - 1 - name.length());
@@ -136,79 +138,22 @@ public abstract class ReadFileSystem<P>
       });
    }
 
-   public final P getFile(Iterable<String> dirNames, String fileName) throws IOException
+   @Override
+   public void packageOf(P path, Collection<String> to) throws IOException
    {
-      P dir = getDir(dirNames);
-      if (dir != null)
+      if (equals(getRoot(), path))
       {
-         P child = getChild(dir, fileName);
-         if (child != null && isFile(child))
-         {
-            return child;
-         }
-      }
-      return null;
-   }
-
-   public final P getDir(Iterable<String> names) throws IOException
-   {
-      P current = getRoot();
-      for (String name : names)
-      {
-         P child = getChild(current, name);
-         if (child != null && isDir(child))
-         {
-            current = child;
-         }
-         else
-         {
-            return null;
-         }
-      }
-      return current;
-   }
-
-   public final void pathOf(P path, char separator, Appendable appendable) throws IOException
-   {
-      if (packageOf(path, separator, appendable))
-      {
-         appendable.append(separator);
-      }
-      String name = getName(path);
-      appendable.append(name);
-   }
-
-   public final boolean packageOf(P path, char separator, Appendable appendable) throws NullPointerException, IOException
-   {
-      if (path == null)
-      {
-         throw new NullPointerException("No null path accepted");
-      }
-      if (appendable == null)
-      {
-         throw new NullPointerException("No null appendable accepted");
-      }
-      if (isDir(path))
-      {
-         P parent = getParent(path);
-         if (parent == null)
-         {
-            return false;
-         }
-         else
-         {
-            String name = getName(path);
-            if (packageOf(parent, separator, appendable))
-            {
-               appendable.append(separator);
-            }
-            appendable.append(name);
-            return true;
-         }
+         // Do nothing
       }
       else
       {
-         return packageOf(getParent(path), separator, appendable);
+         P parent = getParent(path);
+         packageOf(parent, to);
+         if (isDir(path))
+         {
+            String name = getName(path);
+            to.add(name);
+         }
       }
    }
 
@@ -228,11 +173,6 @@ public abstract class ReadFileSystem<P>
       {
          return null;
       }
-   }
-
-   public final P getPath(String... names) throws IOException
-   {
-      return getPath(Arrays.asList(names));
    }
 
    public final P getPath(Iterable<String> names) throws IOException
@@ -363,19 +303,8 @@ public abstract class ReadFileSystem<P>
 
    public abstract boolean isFile(P path) throws IOException;
 
-   public abstract Content getContent(P file) throws IOException;
-
    public abstract long getLastModified(P path) throws IOException;
 
    public abstract URL getURL(P path) throws IOException;
-
-   /**
-    * Attempt to return a {@link java.io.File} associated with this file or null if no physical file exists.
-    *
-    * @param path the path
-    * @return the file system object
-    * @throws IOException any IO exception
-    */
-   public abstract File getFile(P path) throws IOException;
 
 }

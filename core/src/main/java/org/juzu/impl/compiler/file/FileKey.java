@@ -19,7 +19,8 @@
 
 package org.juzu.impl.compiler.file;
 
-import org.juzu.impl.utils.Spliterator;
+import org.juzu.impl.utils.IterableArray;
+import org.juzu.impl.utils.Tools;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;
@@ -97,6 +98,9 @@ public class FileKey
    public final Iterable<String> packageNames;
 
    /** . */
+   public final Iterable<String> names;
+
+   /** . */
    public final String packageFQN;
 
    /** . */
@@ -131,7 +135,12 @@ public class FileKey
       }
       try
       {
-         this.packageNames = Spliterator.split(packageFQN, '.')   ;
+         String[] abc = Tools.split(packageFQN, '.', 1);
+         abc[abc.length - 1] = name;
+
+         //
+         this.packageNames = new IterableArray<String>(abc, 0, abc.length - 1);
+         this.names = new IterableArray<String>(abc, 0, abc.length);
          this.packageFQN = packageFQN;
          this.rawName = rawName;
          this.uri = new URI(path);

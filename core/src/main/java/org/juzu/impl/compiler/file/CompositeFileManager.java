@@ -19,7 +19,7 @@
 
 package org.juzu.impl.compiler.file;
 
-import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.SimpleFileSystem;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;
@@ -33,11 +33,11 @@ public class CompositeFileManager extends FileManager
    /** . */
    private FileManager[] components;
 
-   public CompositeFileManager(Collection<ReadFileSystem<?>> fsList)
+   public CompositeFileManager(Collection<SimpleFileSystem<?>> fsList)
    {
       FileManager[] components = new FileManager[fsList.size()];
       int index = 0;
-      for (ReadFileSystem<?> fs : fsList)
+      for (SimpleFileSystem<?> fs : fsList)
       {
          components[index++] = SimpleFileManager.wrap(fs);
       }

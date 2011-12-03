@@ -21,6 +21,7 @@ package org.juzu.impl.compiler.file;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
+import org.juzu.impl.spi.fs.SimpleFileSystem;
 import org.juzu.impl.utils.Spliterator;
 
 import javax.tools.JavaFileObject;
@@ -35,24 +36,24 @@ import java.util.Set;
 public class SimpleFileManager<P> extends FileManager
 {
 
-   public static <P> SimpleFileManager<P> wrap(ReadFileSystem<P> fs)
+   public static <P> SimpleFileManager<P> wrap(SimpleFileSystem<P> fs)
    {
       return new SimpleFileManager<P>(fs);
    }
 
    /** . */
-   final ReadFileSystem<P> fs;
+   final SimpleFileSystem<P> fs;
 
    /** . */
    final Map<FileKey, JavaFileObjectImpl<P>> entries;
 
-   public SimpleFileManager(ReadFileSystem<P> fs)
+   public SimpleFileManager(SimpleFileSystem<P> fs)
    {
       this.fs = fs;
       this.entries = new HashMap<FileKey, JavaFileObjectImpl<P>>();
    }
 
-   public ReadFileSystem<P> getFileSystem()
+   public SimpleFileSystem<P> getFileSystem()
    {
       return fs;
    }
@@ -67,14 +68,10 @@ public class SimpleFileManager<P> extends FileManager
       JavaFileObjectImpl<P> entry = entries.get(key);
       if (entry == null)
       {
-         P dir = fs.getDir(key.packageNames);
-         if (dir != null)
+         P file = fs.getPath(key.names);
+         if (file != null && fs.isFile(file))
          {
-            P file = fs.getChild(dir, key.name);
-            if (file != null)
-            {
-               entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
-            }
+            entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
          }
       }
       return entry;
@@ -88,7 +85,7 @@ public class SimpleFileManager<P> extends FileManager
          JavaFileObjectImpl<P> entry = entries.get(key);
          if (entry == null)
          {
-            P file = rwFS.getFile(key.packageNames, key.name);
+            P file = rwFS.getPath(key.names);
             entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
          }
          return entry;
@@ -107,8 +104,8 @@ public class SimpleFileManager<P> extends FileManager
       C to) throws IOException
    {
       Iterable<String> packageNames = Spliterator.split(packageName, '.');
-      P dir = fs.getDir(packageNames);
-      if (dir != null)
+      P dir = fs.getPath(packageNames);
+      if (dir != null && fs.isDir(dir))
       {
          list(dir, kinds, recurse, to);
       }
