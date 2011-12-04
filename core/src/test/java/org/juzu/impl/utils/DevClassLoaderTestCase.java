@@ -77,10 +77,10 @@ public class DevClassLoaderTestCase extends TestCase
 
    public void testExploded() throws Exception
    {
-      WebArchive archive = ShrinkWrap.create(WebArchive.class, "exploded.war").addClass(Dev.class).addDirectory("WEB-INF/lib");
+      WebArchive archive = ShrinkWrap.create(WebArchive.class, "exploded.war").addClass(Dev.class).addAsDirectory("WEB-INF/lib");
       File explodedDir = archive.as(ExplodedExporter.class).exportExploded(targetDir);
       File libJar = new File(explodedDir, "WEB-INF/lib/lib.jar");
-      ShrinkWrap.create(JavaArchive.class).addClass(Lib.class).addResource(new StringAsset("lib_resource_value"), "lib_resource").as(ZipExporter.class).exportZip(libJar);
+      ShrinkWrap.create(JavaArchive.class).addClass(Lib.class).addAsResource(new StringAsset("lib_resource_value"), "lib_resource").as(ZipExporter.class).exportTo(libJar);
 
       //
       File classesDir = new File(explodedDir, "WEB-INF/classes");
