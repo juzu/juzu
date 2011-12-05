@@ -17,31 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject;
-
-import org.juzu.impl.request.Scope;
-import org.juzu.impl.spi.fs.ReadFileSystem;
+package inject.binding.provider;
 
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class InjectBootstrap
+public class ProviderImpl<T> implements Provider<T>
 {
 
-   public abstract <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType);
+   /** . */
+   private T instance;
 
-   public abstract <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider);
+   public ProviderImpl(T instance)
+   {
+      this.instance = instance;
+   }
 
-   public abstract <T> InjectBootstrap bindBean(Class<T> type, T instance);
-
-   public abstract <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider);
-
-   public abstract <P> InjectBootstrap addFileSystem(ReadFileSystem<P> fs);
-
-   public abstract InjectBootstrap addScope(Scope scope);
-
-   public abstract InjectBootstrap setClassLoader(ClassLoader classLoader);
-
-   public abstract <B, I> InjectManager<B, I> create() throws Exception;
-
+   public T get()
+   {
+      return instance;
+   }
 }

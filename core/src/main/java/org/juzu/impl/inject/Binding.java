@@ -17,31 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject;
+package org.juzu.impl.inject;
 
-import org.juzu.impl.request.Scope;
-import org.juzu.impl.spi.fs.ReadFileSystem;
-
-import javax.inject.Provider;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class InjectBootstrap
+@Retention(RetentionPolicy.RUNTIME)
+@Target({})
+public @interface Binding
 {
 
-   public abstract <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType);
 
-   public abstract <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider);
+   Class<?> value();
 
-   public abstract <T> InjectBootstrap bindBean(Class<T> type, T instance);
+   Class<?> implementation() default Object.class;
 
-   public abstract <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider);
-
-   public abstract <P> InjectBootstrap addFileSystem(ReadFileSystem<P> fs);
-
-   public abstract InjectBootstrap addScope(Scope scope);
-
-   public abstract InjectBootstrap setClassLoader(ClassLoader classLoader);
-
-   public abstract <B, I> InjectManager<B, I> create() throws Exception;
 
 }

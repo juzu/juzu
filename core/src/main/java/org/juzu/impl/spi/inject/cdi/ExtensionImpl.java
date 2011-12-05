@@ -52,16 +52,16 @@ public class ExtensionImpl implements Extension
       Class<?> type = annotatedType.getJavaClass();
       if (annotatedType.isAnnotationPresent(Export.class))
       {
-         if (!manager.beanTypes.contains(type))
+         if (!manager.declaredBeans.contains(type))
          {
             pat.veto();
          }
       }
 
       //
-      for (Class<?> current = type;current != null;current = current.getSuperclass())
+      for (Class<?> boundBeanType : manager.boundBeans.keySet())
       {
-         if (manager.beans.containsKey(current))
+         if (boundBeanType.isAssignableFrom(type))
          {
             pat.veto();
          }
@@ -82,7 +82,7 @@ public class ExtensionImpl implements Extension
       event.addBean(new InstanceBean(InjectManager.class, manager));
 
       // Add singletons
-      for (AbstractBean bean : manager.beans.values())
+      for (AbstractBean bean : manager.boundBeans.values())
       {
          event.addBean(bean);
       }

@@ -118,7 +118,7 @@ public class GuiceBootstrap extends InjectBootstrap
    }
 
    @Override
-   public <T> InjectBootstrap bindSingleton(Class<T> type, T instance)
+   public <T> InjectBootstrap bindBean(Class<T> type, T instance)
    {
       singletons.put(type, instance);
       return this;

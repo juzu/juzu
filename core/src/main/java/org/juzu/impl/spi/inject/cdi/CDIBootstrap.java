@@ -48,30 +48,30 @@ public class CDIBootstrap extends InjectBootstrap
    private List<ReadFileSystem<?>> fileSystems;
 
    /** . */
-   private Map<Class<?>, AbstractBean> beans;
+   private Map<Class<?>, AbstractBean> boundBeans;
 
    /** . */
-   private Set<Class<?>> beanTypes;
+   private Set<Class<?>> declaredBeans;
 
    public CDIBootstrap()
    {
       this.scopes = new HashSet<Scope>();
       this.fileSystems = new ArrayList<ReadFileSystem<?>>();
-      this.beans = new HashMap<Class<?>, AbstractBean>();
-      this.beanTypes = new HashSet<Class<?>>();
+      this.boundBeans = new HashMap<Class<?>, AbstractBean>();
+      this.declaredBeans = new HashSet<Class<?>>();
    }
 
    @Override
    public <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType)
    {
-      beanTypes.add(implementationType != null ? implementationType : type);
+      declaredBeans.add(implementationType != null ? implementationType : type);
       return this;
    }
 
    @Override
    public <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
    {
-      beanTypes.add(provider);
+      declaredBeans.add(provider);
       return this;
    }
 
@@ -97,16 +97,16 @@ public class CDIBootstrap extends InjectBootstrap
    }
 
    @Override
-   public <T> InjectBootstrap bindSingleton(Class<T> type, T instance)
+   public <T> InjectBootstrap bindBean(Class<T> type, T instance)
    {
-      beans.put(type, new InstanceBean(type, instance));
+      boundBeans.put(type, new InstanceBean(type, instance));
       return this;
    }
 
    @Override
    public <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider)
    {
-      beans.put(type, new ProviderBean(type, provider));
+      boundBeans.put(type, new ProviderBean(type, provider));
       return this;
    }
 
@@ -118,6 +118,6 @@ public class CDIBootstrap extends InjectBootstrap
       {
          container.addFileSystem(fs);
       }
-      return new CDIManager(container, beans, beanTypes);
+      return new CDIManager(container, boundBeans, declaredBeans);
    }
 }

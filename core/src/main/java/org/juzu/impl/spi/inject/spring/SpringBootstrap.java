@@ -106,7 +106,7 @@ public class SpringBootstrap extends InjectBootstrap
    }
 
    @Override
-   public <T> InjectBootstrap bindSingleton(Class<T> type, T instance)
+   public <T> InjectBootstrap bindBean(Class<T> type, T instance)
    {
       String name = "" + Math.random();
       singletons.put(name, instance);
@@ -116,7 +116,7 @@ public class SpringBootstrap extends InjectBootstrap
    @Override
    public <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider)
    {
-      return bindSingleton(ProviderBean.class, new ProviderBean<T>(type, provider));
+      return bindBean(ProviderBean.class, new ProviderBean<T>(type, provider));
    }
 
    @Override

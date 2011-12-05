@@ -39,21 +39,21 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
    private BeanManager manager;
 
    /** . */
-   final Map<Class<?>, AbstractBean> beans;
+   final Map<Class<?>, AbstractBean> boundBeans;
 
    /** . */
    final ClassLoader classLoader;
 
    /** . */
-   final Set<Class<?>> beanTypes;
+   final Set<Class<?>> declaredBeans;
 
    public CDIManager(
       Container container,
-      Map<Class<?>, AbstractBean> beans,
-      Set<Class<?>> beanTypes) throws Exception
+      Map<Class<?>, AbstractBean> boundBeans,
+      Set<Class<?>> declaredBeans) throws Exception
    {
-      this.beans = beans;
-      this.beanTypes = beanTypes;
+      this.boundBeans = boundBeans;
+      this.declaredBeans = declaredBeans;
 
       //
       boot.set(this);

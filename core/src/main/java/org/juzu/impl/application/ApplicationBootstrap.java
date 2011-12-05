@@ -19,6 +19,9 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.impl.inject.Binding;
+import org.juzu.impl.inject.Bindings;
+import org.juzu.impl.inject.MetaProvider;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.InjectManager;
@@ -27,6 +30,8 @@ import org.juzu.metadata.ControllerDescriptor;
 import org.juzu.metadata.TemplateDescriptor;
 import org.juzu.request.ApplicationContext;
 import org.juzu.template.Template;
+
+import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationBootstrap
@@ -55,7 +60,7 @@ public class ApplicationBootstrap
    private <B, I> void _start() throws Exception
    {
       // Bind the application descriptor
-      bootstrap.bindSingleton(ApplicationDescriptor.class, descriptor);
+      bootstrap.bindBean(ApplicationDescriptor.class, descriptor);
 
       // Bind the application context
       bootstrap.declareBean(ApplicationContext.class, InternalApplicationContext.class);
@@ -76,6 +81,36 @@ public class ApplicationBootstrap
       for (TemplateDescriptor template : descriptor.getTemplates())
       {
          bootstrap.declareBean(Template.class, template.getType());
+      }
+
+      // Use this instead of cached package
+      Class<?> s = descriptor.getClass().getClassLoader().loadClass(descriptor.getClass().getPackage().getName() + ".package-info");
+
+      // Bind the bean bindings
+      Bindings bindings = s.getAnnotation(Bindings.class);
+      if (bindings != null)
+      {
+         for (Binding binding : bindings.value())
+         {
+            Class<?> clazz = binding.value();
+            Class<?> implementation = binding.implementation();
+
+            //
+            if (MetaProvider.class.isAssignableFrom(implementation))
+            {
+               MetaProvider mp = (MetaProvider)implementation.newInstance();
+               Provider provider = mp.getProvider(clazz);
+               bootstrap.bindProvider(clazz, provider);
+            }
+            else
+            {
+               if (implementation == Object.class)
+               {
+                  implementation = null;
+               }
+               bootstrap.declareBean((Class)clazz, (Class)implementation);
+            }
+         }
       }
 
       //

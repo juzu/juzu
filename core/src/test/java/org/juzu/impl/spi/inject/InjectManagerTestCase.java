@@ -269,7 +269,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       Singleton singleton = new Singleton();
       init("org", "juzu", "impl", "spi", "inject", "bindsingleton");
       bootstrap.declareBean(SingletonInjected.class, null);
-      bootstrap.bindSingleton(Singleton.class, singleton);
+      bootstrap.bindBean(Singleton.class, singleton);
       boot();
 
       //
