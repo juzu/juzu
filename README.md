@@ -26,8 +26,12 @@ Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib
 
 - 0.4.2
     - template named parameters
-    - Eclipse screencast
+    - Eclipse Hello World screencast
     - use unchecked exception for wrapping IOException
+    - integration with web application classloading in dev mode
+    - introduce declarative injection binding to register injection provider
+    - update to Weld 1.1.4
+    - bug fixes
 - 0.5
     - tutorial (cont)
     - IDE screencast
@@ -60,7 +64,7 @@ Various things to do, not exhaustive that needs to go in the roadmap
 
 - GateIn/Tomcat
 - GateIn/JBoss5.1 requires to remove the seam and cdi deployer in AS5.1
-- Liferay/Tomcat tested on Liferay 6.10
+- Liferay/Tomcat tested on Liferay 6.10 and 5.x
 
 # Dependency Injection integration
 
@@ -123,11 +127,6 @@ Juzu integrates at the heart of the Java compiler thanks to Annotation Processin
 code generation in a fully portable manner, it just work with the Java compiler in a very transparent manner
 and thus is integrated with any build system or IDE that uses a Java 6 compiler.
 
-### Template URL resolution
-
-Juzu validates the application templates during the compilation phase and will attempt to resolve any link against
- a controller method: application links are validated at compilation time.
-
 ### Build time validation
 
 Validates various things during at build time.
@@ -150,6 +149,22 @@ Takes the corresponding template file and generates the corresponding Groovy sou
 ### Templates
 
 Juzu templates engine is based on Groovy and provide a powerful set of instructions.
+
+#### Template URL resolution
+
+Juzu validates the application templates during the compilation phase and will attempt to resolve any link against
+ a controller method: application links are validated at compilation time.
+
+#### Template parameters
+
+Template can have parameters
+
+    #{param name=temperature/}
+    The ${temperature}
+
+Such parameters that can be used in a type safe way in a controller that renders the template
+
+    template.temperature("30").render();
 
 ### Scopes
 
@@ -207,8 +222,9 @@ Juzu leverages the Java Compiler API provided since Java 6. The compiler is most
 
 The virtual file system  is mostly used by the compiler
 
-- `ReadFileSystem` provides a read view of a file system, The compiler uses it for reading sources.
-- `ReadWriteFileSystem` extends the  read view and provides write operations, the compiler uses it for writing the generated sources and classes
+- `SimpleFileSystem` provides a degenerated view of a file system, the compiler uses it for classpath integration
+- `ReadFileSystem` provides a read view of a file system, the compiler uses it for reading sources.
+- `ReadWriteFileSystem` extends the read view and provides write operations, the compiler uses it for writing the generated sources and classes
 
 There are several implementation of the file system:
 
@@ -216,6 +232,7 @@ There are several implementation of the file system:
 - Memory (RW) : used by the compiler to write the compilation output in dev mode
 - Jar (R) : used for the jar in the web application
 - War (R) : used to load the application classes from `/WEB-INF/classes` mainly
+- ClassLoader (S) : used to provide a classpath during compilation
 
 ### Template system
 
@@ -223,7 +240,7 @@ The template system is extensible and provides an initial support with the Groov
 
 #### Compiler integration
 
-The `TemplateProcessor` plugin is triggered by the `@Path` annotation, it will lookup a template provide based on the
+The `MainProcessor` plugin is triggered by the `@Path` annotation, it will lookup a template provide based on the
 template extension (for instance `gtmpl` -> `GroovyTemplateProvider`). Templates are located in the template folder
 of the application which is by default the `templates` child package of the application.
 
