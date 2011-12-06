@@ -317,6 +317,20 @@ public class CompilationTestCase extends AbstractTestCase
 
    public void testErrorCode() throws IOException
    {
+      final ErrorCode code = new ErrorCode()
+      {
+         public String getKey()
+         {
+            return "ERROR_01";
+         }
+
+         public String getMessage()
+         {
+            return "The error";
+         }
+      };
+
+      //
       class P extends BaseProcessor
       {
          @Override
@@ -324,19 +338,14 @@ public class CompilationTestCase extends AbstractTestCase
          {
             if (roundEnv.processingOver())
             {
-               throw new CompilationException(new ErrorCode()
-               {
-                  public String getKey()
-                  {
-                     return "ERROR_01";
-                  }
-
-                  public String getMessage()
-                  {
-                     return "The error";
-                  }
-               }, 5, "foobar");
+               throw new CompilationException(code, 5, "foobar");
             }
+         }
+
+         @Override
+         protected ErrorCode decode(String key)
+         {
+            return "ERROR_01".equals(key) ? code : null;
          }
       }
 
@@ -348,7 +357,7 @@ public class CompilationTestCase extends AbstractTestCase
       List<CompilationError> errors = compiler.compile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
-      assertEquals("ERROR_01", error.getCode());
+      assertEquals(code, error.getCode());
       assertEquals(Arrays.asList("5", "foobar"), error.getArguments());
    }
 

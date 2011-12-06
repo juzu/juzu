@@ -19,6 +19,7 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -150,9 +151,25 @@ public abstract class BaseProcessor extends AbstractProcessor
       return javax.lang.model.SourceVersion.RELEASE_6;
    }
 
+   /**
+    * Perform the processor initialization.
+    *
+    * @param processingEnv the processing environment
+    */
    protected void doInit(ProcessingEnvironment processingEnv)
    {
+   }
 
+   /**
+    * Decode the error key and return a corresponding error code object. If no error can be decoded
+    * for the specified key, null is returned.
+    *
+    * @param key the error key
+    * @return the corresponding error
+    */
+   protected ErrorCode decode(String key)
+   {
+      return null;
    }
 
    @Override

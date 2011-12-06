@@ -27,6 +27,7 @@ import org.juzu.View;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.model.CompilationErrorCode;
+import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -104,6 +105,19 @@ public abstract class AbstractModelProcessor extends BaseProcessor
    }
 
    protected abstract ModelHandler createHandler();
+
+   @Override
+   protected ErrorCode decode(String key)
+   {
+      for (CompilationErrorCode c : CompilationErrorCode.values())
+      {
+         if (c.getKey().equals(key))
+         {
+            return c;
+         }
+      }
+      return null;
+   }
 
    @Override
    protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)

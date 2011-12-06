@@ -22,6 +22,7 @@ package org.juzu.test.request;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.juzu.Phase;
+import org.juzu.impl.application.ApplicationException;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 
@@ -110,21 +111,21 @@ public class MockClient
       this.flashHistory = new LinkedList<Map<Object, Object>>();
    }
 
-   public MockRenderBridge render(String methodId)
+   public MockRenderBridge render(String methodId) throws ApplicationException
    {
       MockRenderBridge render = new MockRenderBridge(this, methodId);
       invoke(render);
       return render;
    }
 
-   public MockRenderBridge render()
+   public MockRenderBridge render() throws ApplicationException
    {
       MockRenderBridge render = new MockRenderBridge(this);
       invoke(render);
       return render;
    }
 
-   public MockRequestBridge invoke(String url)
+   public MockRequestBridge invoke(String url) throws ApplicationException
    {
       MockRequestBridge request = create(url);
       invoke(request);
@@ -145,7 +146,7 @@ public class MockClient
       flash.put(key, value);
    }
 
-   private void invoke(MockRequestBridge request)
+   private void invoke(MockRequestBridge request) throws ApplicationException
    {
       if (request instanceof MockActionBridge)
       {

@@ -20,6 +20,7 @@
 package org.juzu.portlet;
 
 import org.juzu.impl.application.ApplicationBootstrap;
+import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.model.processor.MainProcessor;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.spi.inject.InjectBootstrap;
@@ -28,6 +29,8 @@ import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
 import org.juzu.impl.spi.request.portlet.PortletRenderBridge;
 import org.juzu.impl.spi.request.portlet.PortletResourceBridge;
+import org.juzu.impl.utils.Tools;
+import org.juzu.impl.utils.TrimmingException;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.compiler.CompilationError;
@@ -39,9 +42,11 @@ import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.war.WarFileSystem;
 import org.juzu.impl.utils.DevClassLoader;
+import org.w3c.dom.Element;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.MimeResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -52,9 +57,13 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceServingPortlet;
+import javax.portlet.ResourceURL;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -67,6 +76,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -323,7 +333,15 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
    {
-      applicationContext.invoke(new PortletActionBridge(request, response));
+      try
+      {
+         applicationContext.invoke(new PortletActionBridge(request, response));
+      }
+      catch (ApplicationException e)
+      {
+         // For now we do that until we find something better specially for the dev mode
+         throw new PortletException(e.getCause());
+      }
    }
 
    /**
@@ -340,7 +358,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       }
    }
 
-   public void render(RenderRequest request, RenderResponse response) throws PortletException, IOException
+   public void render(final RenderRequest request, final RenderResponse response) throws PortletException, IOException
    {
       Collection<CompilationError> errors = boot();
 
@@ -353,84 +371,253 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          }
 
          //
-         applicationContext.invoke(new PortletRenderBridge(request, response));
-
-         // Clean up flash scope
-         PortletSession session = request.getPortletSession(false);
-         if (session != null)
+         try
          {
-            session.removeAttribute("org.juzu.flash_scope");
+            TrimmingException.invoke(new TrimmingException.Callback()
+            {
+               public void call() throws Throwable
+               {
+                  try
+                  {
+                     applicationContext.invoke(new PortletRenderBridge(request, response));
+                  }
+                  catch (ApplicationException e)
+                  {
+                     throw e.getCause();
+                  }
+               }
+            });
+         }
+         catch (TrimmingException e)
+         {
+            if (prod)
+            {
+               throw new PortletException(e.getSource());
+            }
+            else
+            {
+               renderException(request, response, e);
+            }
+         }
+         finally
+         {
+            // Clean up flash scope
+            PortletSession session = request.getPortletSession(false);
+            if (session != null)
+            {
+               session.removeAttribute("org.juzu.flash_scope");
+            }
          }
       }
       else
       {
-//         Element linkElt = response.createElement("link");
-//         linkElt.setAttribute("rel", "stylesheet");
-//         linkElt.setAttribute("href", "http://twitter.github.com/bootstrap/1.3.0/bootstrap.min.css");
-//         response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, linkElt);
+         renderErrors(request, response, errors);
+      }
+   }
+   
+   public void serveResource(final ResourceRequest request, final ResourceResponse response) throws PortletException, IOException
+   {
+      String resourceId = request.getResourceID();
+      if ("css".equals(resourceId))
+      {
+         InputStream in = JuzuPortlet.class.getResourceAsStream("juzu.css");
+         response.setContentType("text/css");
+         Tools.copy(in, response.getPortletOutputStream());
+      }
+      else
+      {
+         Collection<CompilationError> errors = boot();
 
-         // Basic error reporting for now
-         StringBuilder sb = new StringBuilder();
-         for (CompilationError error : errors)
+         //
+         if (errors == null || errors.isEmpty())
          {
-
-            String at = error.getSource();
+            if (errors != null)
+            {
+               purgeSession(request);
+            }
 
             //
-            sb.append("<p>");
-            sb.append("<div>Compilation error at ").append(at).append(" ").append(error.getLocation()).append("</div>");
-            sb.append("<div>");
-            sb.append(error.getMessage());
-            sb.append("</div>");
-            sb.append("</p>");
+            try
+            {
+               TrimmingException.invoke(new TrimmingException.Callback()
+               {
+                  public void call() throws Throwable
+                  {
+                     try
+                     {
+                        applicationContext.invoke(new PortletResourceBridge(request, response));
+                     }
+                     catch (ApplicationException e)
+                     {
+                        throw e.getCause();
+                     }
+                  }
+               });
+            }
+            catch (TrimmingException e)
+            {
+               if (prod)
+               {
+                  throw new PortletException(e.getSource());
+               }
+               else
+               {
+                  renderException(request, response, e);
+               }
+            }
          }
-         response.getWriter().print(sb);
+         else
+         {
+            renderErrors(request, response, errors);
+         }
       }
    }
 
-   public void serveResource(ResourceRequest request, ResourceResponse response) throws PortletException, IOException
+   private void sendJuzuCSS(MimeResponse resp)
    {
-      Collection<CompilationError> errors = boot();
+      ResourceURL url = resp.createResourceURL();
+      url.setResourceID("css");
+      Element linkElt = resp.createElement("link");
+      linkElt.setAttribute("rel", "stylesheet");
+      linkElt.setAttribute("type", "text/css");
+      linkElt.setAttribute("media", "screen");
+      linkElt.setAttribute("href", url.toString());
+      resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, linkElt);
+   }
+
+   private void renderException(PortletRequest req, MimeResponse resp, Throwable t) throws PortletException, IOException
+   {
+      if (!resp.isCommitted())
+      {
+         resp.reset();
+      }
+      
+      // Trim the stack trace to remove stuff we don't want to see
+      int size = 0;
+      StackTraceElement[] trace = t.getStackTrace();
+      for (StackTraceElement element : trace)
+      {
+         if (element.getClassName().equals(JuzuPortlet.class.getName()))
+         {
+            break;
+         }
+         else
+         {
+            size++;
+         }
+      }
+      StackTraceElement[] ourTrace = new StackTraceElement[size];
+      System.arraycopy(trace, 0, ourTrace, 0, ourTrace.length);
+      t.setStackTrace(ourTrace);
 
       //
-      if (errors == null || errors.isEmpty())
+      sendJuzuCSS(resp);
+
+      //
+      final PrintWriter writer = resp.getWriter();
+
+      // We hack a bit
+      final AtomicBoolean open = new AtomicBoolean(false);
+      PrintWriter formatter = new PrintWriter(writer)
       {
-         if (errors != null)
+         @Override
+         public void println(Object x)
          {
-            purgeSession(request);
+            if (open.get())
+            {
+               super.append("</ul></pre>");
+            }
+            super.append("<div class=\"juzu-message\">");
+            super.append(String.valueOf(x));
+            super.append("</div>");
+            open.set(false);
          }
 
-         //
-         applicationContext.invoke(new PortletResourceBridge(request, response));
-      }
-      else
-      {
-//         Element linkElt = response.createElement("link");
-//         linkElt.setAttribute("rel", "stylesheet");
-//         linkElt.setAttribute("href", "http://twitter.github.com/bootstrap/1.3.0/bootstrap.min.css");
-//         response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, linkElt);
-
-         // Basic error reporting for now
-         StringBuilder sb = new StringBuilder();
-         for (CompilationError error : errors)
+         @Override
+         public void println(String x)
          {
-
-            String at = error.getSource();
-
-            //
-            sb.append("<p>");
-            sb.append("<div>Compilation error at ").append(at).append(" ").append(error.getLocation()).append("</div>");
-            sb.append("<div>");
-            sb.append(error.getMessage());
-            sb.append("</div>");
-            sb.append("</p>");
+            if (!open.get())
+            {
+               super.append("<pre><ul>");
+               open.set(true);
+            }
+            super.append("<li><span>");
+            super.append(x);
+            super.append("</span></li>");
          }
-         response.getWriter().print(sb);
+
+         @Override
+         public void println()
+         {
+            // Do nothing
+         }
+      };
+
+      //
+      writer.append("<div class=\"juzu\">");
+      writer.append("<div class=\"juzu-box\">");
+
+      // We hack a bit with our formatter
+      t.printStackTrace(formatter);
+
+      //
+      if (open.get())
+      {
+         writer.append("</ul></pre>");
       }
+      
+      //
+      writer.append("</div>");
+      writer.append("</div>");
+   }
+
+   private void renderErrors(PortletRequest req, MimeResponse resp, Collection<CompilationError> errors) throws PortletException, IOException
+   {
+      sendJuzuCSS(resp);
+
+      //
+      PrintWriter writer = resp.getWriter();
+         
+      //
+      writer.append("<div class=\"juzu\">");
+      for (CompilationError error : errors)
+      {
+         writer.append("<div class=\"juzu-box\">");
+         writer.append("<div class=\"juzu-message\">").append(error.getMessage()).append("</div>");
+
+         // Display the source code
+         File source = error.getSourceFile();
+         if (source != null)
+         {
+            int line = error.getLocation().getLine();
+            int from = line - 2;
+            int to = line + 3;
+            BufferedReader reader = new BufferedReader(new FileReader(source));
+            int count = 1;
+            writer.append("<pre><ol start=\"").append(String.valueOf(from)).append("\">");
+            for (String s = reader.readLine();s != null;s = reader.readLine())
+            {
+               if (count >= from && count < to)
+               {
+                  if (count == line)
+                  {
+                     writer.append("<li><span class=\"error\">").append(s).append("</span></li>");
+                  }
+                  else
+                  {
+                     writer.append("<li><span>").append(s).append("</span></li>");
+                  }
+               }
+               count++;
+            }
+            writer.append("</ol></pre>");
+         }
+         writer.append("</div>");
+      }
+      writer.append("</div>");
    }
 
    public void destroy()
    {
-
    }
 }

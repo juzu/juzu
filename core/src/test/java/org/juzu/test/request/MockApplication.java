@@ -19,6 +19,7 @@
 
 package org.juzu.test.request;
 
+import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.metadata.ApplicationDescriptor;
@@ -130,7 +131,7 @@ public class MockApplication<P>
       return context;
    }
 
-   void invoke(RequestBridge bridge)
+   void invoke(RequestBridge bridge) throws ApplicationException
    {
       this.context.invoke(bridge);
    }

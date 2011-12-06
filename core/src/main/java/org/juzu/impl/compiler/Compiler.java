@@ -28,6 +28,7 @@ import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.SimpleFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
+import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Spliterator;
 import org.juzu.text.Location;
 
@@ -324,12 +325,26 @@ public class Compiler
                String message = diagnostic.getMessage(null);
 
                //
-               String code = null;
+               ErrorCode code = null;
                List<String> arguments = Collections.emptyList();
                Matcher matcher = PATTERN.matcher(message);
                if (matcher.find())
                {
-                  code = matcher.group(1);
+                  String codeKey = matcher.group(1);
+                  for (Processor processor : processors)
+                  {
+                     if (processor instanceof BaseProcessor)
+                     {
+                        BaseProcessor baseProcessor = (BaseProcessor)processor;
+                        code = baseProcessor.decode(codeKey);
+                        if (code != null)
+                        {
+                           break;
+                        }
+                     }
+                  }
+
+                  //
                   if (matcher.group(2).length() > 0)
                   {
                      arguments = new ArrayList<String>();
@@ -346,7 +361,7 @@ public class Compiler
                File resolvedFile = null;
                if (obj != null)
                {
-                  source = obj.getName().toString();
+                  source = obj.getName();
                   if (obj instanceof JavaFileObjectImpl)
                   {
                      JavaFileObjectImpl foo = (JavaFileObjectImpl)obj;
@@ -354,7 +369,7 @@ public class Compiler
                      {
                         resolvedFile = foo.getFile();
                      }
-                     catch (Exception e)
+                     catch (Exception ignore)
                      {
                      }
 

@@ -19,6 +19,7 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.utils.ErrorCode;
 import org.juzu.text.Location;
 
 import java.io.File;
@@ -29,7 +30,7 @@ public class CompilationError
 {
 
    /** . */
-   private final String code;
+   private final ErrorCode code;
 
    /** . */
    private final List<String> arguments;
@@ -46,7 +47,7 @@ public class CompilationError
    /** . */
    private final String message;
 
-   public CompilationError(String code, List<String> arguments, String source, File sourceFile, Location location, String message)
+   public CompilationError(ErrorCode code, List<String> arguments, String source, File sourceFile, Location location, String message)
    {
       this.code = code;
       this.arguments = arguments;
@@ -56,7 +57,7 @@ public class CompilationError
       this.message = message;
    }
 
-   public String getCode()
+   public ErrorCode getCode()
    {
       return code;
    }

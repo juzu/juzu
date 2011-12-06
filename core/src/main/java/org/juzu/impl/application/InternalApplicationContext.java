@@ -47,6 +47,7 @@ import org.juzu.text.Printer;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -88,7 +89,7 @@ public class InternalApplicationContext extends ApplicationContext
       return descriptor;
    }
 
-   public void invoke(RequestBridge bridge)
+   public void invoke(RequestBridge bridge) throws ApplicationException
    {
       ClassLoader classLoader = manager.getClassLoader();
 
@@ -162,7 +163,7 @@ public class InternalApplicationContext extends ApplicationContext
       }
    }
 
-   private <B, I> Object doInvoke(InjectManager<B, I> manager, Request request, ControllerMethod method)
+   private <B, I> Object doInvoke(InjectManager<B, I> manager, Request request, ControllerMethod method) throws ApplicationException
    {
       RequestContext context = request.getContext();
 
@@ -231,6 +232,10 @@ public class InternalApplicationContext extends ApplicationContext
                   //
                   return method.getMethod().invoke(o, args);
                }
+            }
+            catch (InvocationTargetException e)
+            {
+               throw new ApplicationException(e.getCause());
             }
             catch (Exception e)
             {

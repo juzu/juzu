@@ -90,6 +90,24 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject
    }
 
    @Override
+   public String getName()
+   {
+      return key.rawName;
+   }
+
+   /**
+    * We subclass this in order to have the correct name in the stack trace. This is not really documented
+    * anywhere.
+    *
+    * @return the file name
+    */
+   @Override
+   public String toString()
+   {
+      return key.rawName;
+   }
+
+   @Override
    public long getLastModified()
    {
       try
