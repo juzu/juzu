@@ -9,6 +9,10 @@ Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib
 - a tutorial (example and doc)
 - the booking application example
 
+Screencast
+
+- [Hello World developed with Eclipse](http://vimeo.com/33184509)
+
 # Status
 
 - 0.1 milestone reached : booking demo adapted from Play!
