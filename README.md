@@ -35,6 +35,7 @@ Screencast
     - integration with web application classloading in dev mode
     - introduce declarative injection binding to register injection provider
     - update to Weld 1.1.4
+    - friendly error display
     - bug fixes
 - 0.5
     - tutorial (cont)
