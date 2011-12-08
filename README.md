@@ -12,6 +12,7 @@ Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib
 Screencast
 
 - [Hello World developed with Eclipse](http://vimeo.com/33184509)
+- [Template type safe parameters in Eclipse](http://vimeo.com/33370178)
 
 # Status
 
@@ -29,8 +30,9 @@ Screencast
 # Roadmap
 
 - 0.4.2
-    - template named parameters
+    - template type safe parameters
     - Eclipse Hello World screencast
+    - Template type safe parameters screencast
     - use unchecked exception for wrapping IOException
     - integration with web application classloading in dev mode
     - introduce declarative injection binding to register injection provider
@@ -39,7 +41,6 @@ Screencast
     - bug fixes
 - 0.5
     - tutorial (cont)
-    - IDE screencast
     - portlet eventing support
     - header taglib
 - 0.6
