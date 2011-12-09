@@ -361,7 +361,7 @@ public class Compiler
                File resolvedFile = null;
                if (obj != null)
                {
-                  source = obj.getName();
+                  source = obj.toUri().getPath();
                   if (obj instanceof JavaFileObjectImpl)
                   {
                      JavaFileObjectImpl foo = (JavaFileObjectImpl)obj;
