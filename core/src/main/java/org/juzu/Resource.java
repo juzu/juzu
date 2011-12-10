@@ -25,7 +25,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a resource serving controller method.
+ * Annotate a method for declaring a resource serving controller method.
+ *
+ * <code><pre>
+ *    public void MyController {
+ *
+ *       &#064;Resource
+ *       public void myResource() {
+ *          ...
+ *       }
+ *    }
+ * </pre></code>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */

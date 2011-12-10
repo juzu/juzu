@@ -24,7 +24,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * Annotate a method for declaring a view controller method.
+ *
+ * <code><pre>
+ *    public void MyController {
+ *
+ *       &#064;Action
+ *       public void myAction() {
+ *          ...
+ *       }
+ *    }
+ * </pre></code>
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Action

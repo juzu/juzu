@@ -25,7 +25,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotate a view method.
+ * Annotate a method for declaring a view controller method.
+ *
+ * <code><pre>
+ *    public void MyController {
+ *
+ *       &#064;View
+ *       public void myView() {
+ *          ...
+ *       }
+ *    }
+ * </pre></code>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */

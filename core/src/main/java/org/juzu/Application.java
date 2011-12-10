@@ -25,7 +25,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Declares an application.
+ * <p>A package annotation for declaring an application.</p>
+ * 
+ * <p>By default the application name is the current package name whose first letter is capitalized and appended with
+ * the word <i>Applicaiton</i>. For instance when this annotation annotates the package <code>org.hello</code> the
+ * resulting application name will be <code>HelloApplication</code>. The application name can be overrided thanks to
+ * the {@link #name} annotation parameter.</p>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */

@@ -48,13 +48,16 @@ public class MockURLBuilder implements URLBuilder
    {
       if (name == null)
       {
-         throw new NullPointerException();
+         throw new NullPointerException("No null parameter accepted");
       }
       if (value == null)
       {
-         throw new NullPointerException();
+         parameters.remove(name);
       }
-      parameters.put(name, value);
+      else
+      {
+         parameters.put(name, value);
+      }
       return this;
    }
 
