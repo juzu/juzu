@@ -61,4 +61,28 @@ public class ScannerTestCase extends AbstractTestCase
       assertEquals(Collections.singletonMap("foo/bar.txt", Change.REMOVE), scanner.scan());
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
    }
+   
+   public void testIgnoreHiddenFile() throws IOException
+   {
+      RAMFileSystem fs = new RAMFileSystem();
+      FileSystemScanner<RAMPath> scanner = new FileSystemScanner<RAMPath>(fs);
+
+      //
+      assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+      fs.addFile(fs.getRoot(), ".foo");
+      waitForOneMillis();
+      assertEquals(Collections.emptyMap(), scanner.scan());
+   }
+
+   public void testIgnoreHiddenDir() throws IOException
+   {
+      RAMFileSystem fs = new RAMFileSystem();
+      FileSystemScanner<RAMPath> scanner = new FileSystemScanner<RAMPath>(fs);
+
+      //
+      assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+      fs.addFile(fs.addDir(fs.getRoot(), ".foo"), "bar.txt");
+      waitForOneMillis();
+      assertEquals(Collections.emptyMap(), scanner.scan());
+   }
 }

@@ -95,30 +95,33 @@ public class FileSystemScanner<P> implements Visitor<P>
 
    public boolean enterDir(P dir, String name) throws IOException
    {
-      return true;
+      return !name.startsWith(".");
    }
 
    public void file(P file, String name) throws IOException
    {
-      long lastModified = fs.getLastModified(file);
-      fs.pathOf(file, '/', sb);
-      String id = sb.toString();
-      sb.setLength(0);
-      Data data = snapshot.get(id);
-      if (data == null)
+      if (!name.startsWith("."))
       {
-         snapshot.put(id, new Data(lastModified));
-      }
-      else
-      {
-         if (data.lastModified < lastModified)
+         long lastModified = fs.getLastModified(file);
+         fs.pathOf(file, '/', sb);
+         String id = sb.toString();
+         sb.setLength(0);
+         Data data = snapshot.get(id);
+         if (data == null)
          {
-            data.lastModified = lastModified;
-            data.change = Change.UPDATE;
+            snapshot.put(id, new Data(lastModified));
          }
          else
          {
-            data.change = null;
+            if (data.lastModified < lastModified)
+            {
+               data.lastModified = lastModified;
+               data.change = Change.UPDATE;
+            }
+            else
+            {
+               data.change = null;
+            }
          }
       }
    }
