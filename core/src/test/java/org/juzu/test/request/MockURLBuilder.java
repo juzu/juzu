@@ -21,7 +21,6 @@ package org.juzu.test.request;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.juzu.Phase;
 import org.juzu.URLBuilder;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;

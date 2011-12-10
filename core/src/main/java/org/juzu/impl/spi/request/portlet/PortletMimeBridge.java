@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.request.portlet;
 
-import org.juzu.Phase;
+import org.juzu.request.Phase;
 import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.metadata.ControllerMethod;

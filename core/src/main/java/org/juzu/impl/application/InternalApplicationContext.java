@@ -20,7 +20,7 @@
 package org.juzu.impl.application;
 
 import org.juzu.Controller;
-import org.juzu.Phase;
+import org.juzu.request.Phase;
 import org.juzu.Response;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.ScopeController;

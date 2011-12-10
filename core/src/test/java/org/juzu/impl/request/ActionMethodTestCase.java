@@ -19,7 +19,7 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.Phase;
+import org.juzu.request.Phase;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;

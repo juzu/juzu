@@ -20,12 +20,10 @@
 package org.juzu.request;
 
 import org.juzu.Response;
-import org.juzu.Phase;
 import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 
-import java.io.IOException;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

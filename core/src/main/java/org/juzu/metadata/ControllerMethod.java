@@ -19,7 +19,7 @@
 
 package org.juzu.metadata;
 
-import org.juzu.Phase;
+import org.juzu.request.Phase;
 import org.juzu.impl.utils.Tools;
 
 import java.lang.reflect.Method;

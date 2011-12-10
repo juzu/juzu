@@ -19,7 +19,7 @@
 
 package org.juzu.impl.model.resolver;
 
-import org.juzu.Phase;
+import org.juzu.request.Phase;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.application.InternalApplicationContext;

@@ -19,7 +19,7 @@
 
 package org.juzu.impl.model.meta;
 
-import org.juzu.Phase;
+import org.juzu.request.Phase;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.model.CompilationErrorCode;

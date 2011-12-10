@@ -17,7 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu;
+package org.juzu.request;
+
+import org.juzu.Action;
+import org.juzu.Resource;
+import org.juzu.View;
 
 import java.lang.annotation.Annotation;
 

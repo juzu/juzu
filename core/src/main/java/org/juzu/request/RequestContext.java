@@ -19,7 +19,6 @@
 
 package org.juzu.request;
 
-import org.juzu.Phase;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.metadata.ControllerMethod;
 
