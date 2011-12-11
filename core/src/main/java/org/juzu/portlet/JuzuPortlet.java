@@ -379,7 +379,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                {
                   try
                   {
-                     applicationContext.invoke(new PortletRenderBridge(request, response));
+                     PortletRenderBridge bridge = new PortletRenderBridge(request, response, !prod);
+                     applicationContext.invoke(bridge);
+                     bridge.commit();
                   }
                   catch (ApplicationException e)
                   {
@@ -445,7 +447,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                   {
                      try
                      {
-                        applicationContext.invoke(new PortletResourceBridge(request, response));
+                        PortletResourceBridge bridge = new PortletResourceBridge(request, response, !prod);
+                        applicationContext.invoke(bridge);
+                        bridge.commit();
                      }
                      catch (ApplicationException e)
                      {
@@ -487,11 +491,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    private void renderException(PortletRequest req, MimeResponse resp, Throwable t) throws PortletException, IOException
    {
-      if (!resp.isCommitted())
-      {
-         resp.reset();
-      }
-      
       // Trim the stack trace to remove stuff we don't want to see
       int size = 0;
       StackTraceElement[] trace = t.getStackTrace();

@@ -30,6 +30,9 @@ import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge
@@ -38,12 +41,33 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
    /** . */
    private final Printer printer;
 
-   PortletMimeBridge(Rq request, Rs response) throws IOException
+   /** . */
+   private StringBuilder writer;
+
+   PortletMimeBridge(Rq request, Rs response, boolean buffer) throws IOException
    {
       super(request, response);
 
       //
-      this.printer = new WriterPrinter(response.getWriter());
+      if (buffer)
+      {
+         this.writer = new StringBuilder();
+         this.printer = new WriterPrinter(writer);
+      }
+      else
+      {
+         this.writer = null;
+         this.printer = new WriterPrinter(response.getWriter());
+      }
+   }
+   
+   public void commit() throws IOException
+   {
+      if (writer != null)
+      {
+         response.getWriter().write(writer.toString());
+         writer.setLength(0);
+      }
    }
 
    public Printer getPrinter()

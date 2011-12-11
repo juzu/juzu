@@ -29,9 +29,9 @@ import java.io.IOException;
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
 {
 
-   public PortletRenderBridge(RenderRequest request, RenderResponse response) throws IOException
+   public PortletRenderBridge(RenderRequest request, RenderResponse response, boolean buffer) throws IOException
    {
-      super(request, response);
+      super(request, response, buffer);
    }
 
    public void setTitle(String title)

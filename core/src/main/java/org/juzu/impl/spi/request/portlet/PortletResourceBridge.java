@@ -29,8 +29,8 @@ import java.io.IOException;
 public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge
 {
 
-   public PortletResourceBridge(ResourceRequest request, ResourceResponse response) throws IOException
+   public PortletResourceBridge(ResourceRequest request, ResourceResponse response, boolean buffer) throws IOException
    {
-      super(request, response);
+      super(request, response, buffer);
    }
 }
