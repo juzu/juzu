@@ -25,6 +25,7 @@ import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.model.CompilationErrorCode;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
@@ -124,11 +125,18 @@ public class ControllerMetaModel extends MetaModelObject
    {
       String id = (String)annotationValues.get("id");
 
-      //
+      // For now we compute an id based on a kind of signature
       if (id == null)
       {
-         // Temporary
-         id = "method_" + Math.abs(new Random().nextInt());
+         StringBuilder sb = new StringBuilder();
+         sb.append(methodElt.getEnclosingElement().getSimpleName());
+         sb.append("_");
+         sb.append(methodElt.getSimpleName());
+         for (VariableElement ve : methodElt.getParameters())
+         {
+            sb.append("_").append(ve.getSimpleName());
+         }
+         id = sb.toString();
       }
 
       //
@@ -148,6 +156,12 @@ public class ControllerMetaModel extends MetaModelObject
                parameterNames.add(variableElt.getSimpleName().toString());
             }
 
+            //
+            ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
+
+            // First remove the previous method
+            methods.remove(origin);
+
             // Validate duplicate id within the same controller
             for (MethodMetaModel existing : methods.values())
             {
@@ -158,7 +172,6 @@ public class ControllerMetaModel extends MetaModelObject
             }
 
             //
-            ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
             MethodMetaModel method = new MethodMetaModel(
                origin,
                this,

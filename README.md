@@ -59,11 +59,14 @@ Screencast
 
 Various things to do, not exhaustive that needs to go in the roadmap
 
-- Provide a deployment mode that get source from the file system wherever they are (in order to use the real sources)
+- clarify how invocation URL are constructed and dispatched to the target (id versus resolution)
+- provide a deployment mode that get source from the file system wherever they are (in order to use the real sources)
 - parse error in template parser
-- stack trace sanitization
+- more stack trace sanitization
 - consider resolving a template via its variable name instead of @Path
 - honour life cycle of objects (specially flash scope)
+- handle internal error correctly
+- think about doing a "debug" portlet that would cooperate with juzu portlets
 
 
 # Deploy on
