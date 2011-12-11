@@ -1,10 +1,8 @@
-html {
+div.booking {
     background: #e0e0e0;
 }
 
-body {
-    width: 690px;
-    margin: 20px auto;
+div.booking {
     font-family: Arial;
     font-size: 90%;
     color: rgb(54, 47, 45);
@@ -15,40 +13,40 @@ body {
     -moz-box-shadow: 0 0 10px rgba(0,0,0,.2);
 }
 
-a {
+.booking a {
     color: #666;
 }
 
 /** Main **/
 
-.fError, .fSuccess {
+.booking .fError, .booking .fSuccess {
     text-align: center;
     position: relative;
     top: -10px;
 }
 
-.fError {
+.booking .fError {
     color: #c00;
 }
 
-.fSuccess {
+.booking .fSuccess {
     color: #0c0;
 }
 
-#content {
+#booking-content {
     padding: 20px;
 }
 
 
 /** Header **/
 
-#header {
+#booking-header {
     height: 200px;
     position: relative;
     background: #fff url(../images/hotel.jpg) 0px -90px no-repeat;
 }
 
-#header h1 {
+#booking-header h1 {
     margin: 0;
     background: #333;
     color: #eee;
@@ -59,7 +57,7 @@ a {
     text-shadow: 0 0 5px rgba(255,255,255,.5);
 }
 
-#header #options {
+#booking-header #booking-options {
     position: absolute;
     right: 10px;
     top: 13px;
@@ -67,28 +65,28 @@ a {
     color: #eee;
 }
 
-#header #options a {
+#booking-header #booking-options a {
     color: #eee;
 }
 
 /** Login **/
 
-#login {
+#booking-login {
     text-align: center;
 }
 
-#formLogin {
+#booking-formLogin {
     border-bottom: 1px dashed #aaa;
     width: 300px;
     margin: 0 auto;
     padding: 20px;
 }
 
-#formLogin label {
+#booking-formLogin label {
     text-align: right;
 }
 
-#formLogin p.buttons {
+#booking-formLogin p.buttons {
     text-align: center;
     background: none;
     margin-top: 0;
@@ -96,17 +94,17 @@ a {
 
 /** Table **/
 
-table {
+.booking table {
     border-collapse: collapse;
     border: 1px solid #aaa;
     width: 100%;
 }
 
-th {
+.booking th {
     background: #eee !important;
 }
 
-td, th {
+.booking td, .booking th {
     padding: 5px;
     text-align: left;
     border-right: 1px solid #aaa;
@@ -115,7 +113,7 @@ td, th {
 
 /** Forms **/
 
-label {
+.booking label {
     display: block;
     float: left;
     width: 100px;
@@ -123,17 +121,17 @@ label {
     margin-right: 5px;
 }
 
-form p {
+.booking form p {
     text-align: center;
     height: 20px;
 }
 
-form p.field {
+.booking form p.field {
     text-align: left;
     margin: 0 0 5px 0;
 }
 
-form strong {
+.booking form strong {
     display: block;
     width: 150px;
     float: left;
@@ -143,22 +141,22 @@ form strong {
     padding: 2px;
 }
 
-form p {
+.booking form p {
     clear: both;
     text-align: left;
     margin: 7px 0;
     min-height: 15px;
 }
 
-form p.hasError {
+.booking form p.hasError {
     color: #c00;
 }
 
-form .hasError .error {
+.booking form .hasError .error {
     font-size: 80%;
 }
 
-form .buttons {
+.booking form .buttons {
     text-align: left;
     background: #dedede;
     padding: 10px;
@@ -167,7 +165,7 @@ form .buttons {
 
 /** Footer **/
 
-#footer {
+#booking-footer {
     padding: 10px;
     font-size: 70%;
     border-top: 1px dotted #ccc;

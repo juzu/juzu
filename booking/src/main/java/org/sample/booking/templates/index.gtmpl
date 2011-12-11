@@ -1,11 +1,11 @@
 #{decorate path=main.gtmpl/}
 #{title value=Home/}
 
-<div id="login">
+<div id="booking-login">
 
     (try with demo/demo)
 
-    <form action="@{Application.login()}" id="formLogin" method="post">
+    <form action="@{Application.login()}" id="booking-formLogin" method="post">
         <p class="field">
             <label>Login Name:</label>
             <input type="text" name="username" size="19" value="${flash.username}" />

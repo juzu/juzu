@@ -1,35 +1,37 @@
-<div id="header">
-    <h1>juzu booking demo (adapted from play framework)</h1>
-    <% if (login.connected) { %>
-        <div id="options">
-            Connected as ${login.userName}
-            |
-            <a href="@{Hotels.index()}">Search</a>
-            |
-            <a href="@{Hotels.settings()}">Settings</a>
-            |
-            <a href="@{Application.logout()}">Logout</a>
-        </div>
-    <% } %>
-</div>
+<div class="booking">
+    <div id="booking-header">
+        <h1>juzu booking demo (adapted from play framework)</h1>
+        <% if (login.connected) { %>
+            <div id="booking-options">
+                Connected as ${login.userName}
+                |
+                <a href="@{Hotels.index()}">Search</a>
+                |
+                <a href="@{Hotels.settings()}">Settings</a>
+                |
+                <a href="@{Application.logout()}">Logout</a>
+            </div>
+        <% } %>
+    </div>
 
-<div id="content">
+    <div id="booking-content">
 
-    <% if (flash.error != "") { %>
-        <p class="fError">
-            <strong>${flash.error}</strong>
-        </p>
-    <% } %>
-    <% if (flash.success != "") { %>
-        <p class="fSuccess">
-            <strong>${flash.success}</strong>
-        </p>
-    <% } %>
+        <% if (flash.error != "") { %>
+            <p class="fError">
+                <strong>${flash.error}</strong>
+            </p>
+        <% } %>
+        <% if (flash.success != "") { %>
+            <p class="fSuccess">
+                <strong>${flash.success}</strong>
+            </p>
+        <% } %>
 
-    #{insert/}
+        #{insert/}
 
-</div>
+    </div>
 
-<div id="footer">
-    Created with <a href="http://www.github.com/juzu">juzu</a> and really inspirated from the booking sample application provided by <a href="http://seamframework.org/">seam framework</a>
+    <div id="booking-footer">
+        Created with <a href="http://www.github.com/juzu">juzu</a> and really inspirated from the booking sample application provided by <a href="http://seamframework.org/">seam framework</a>
+    </div>
 </div>
