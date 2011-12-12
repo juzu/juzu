@@ -305,6 +305,14 @@ public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
 
    public abstract long getLastModified(P path) throws IOException;
 
-   public abstract URL getURL(P path) throws IOException;
+   /**
+    * Get an URL for the provided path or return null if no such URL can be found.
+    *
+    * @param path the path
+    * @return the URL for this path
+    * @throws NullPointerException if the path is null
+    * @throws IOException any io exception
+    */
+   public abstract URL getURL(P path) throws NullPointerException, IOException;
 
 }

@@ -68,7 +68,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -82,6 +81,9 @@ import java.util.jar.JarFile;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class JuzuPortlet implements Portlet, ResourceServingPortlet
 {
+
+   /** . */
+   private static final String[] CONFIG_PATH = {"org", "juzu", "config.properties"};
 
    /** . */
    private InternalApplicationContext applicationContext;
@@ -222,7 +224,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
    private <P, D> void boot(ReadFileSystem<P> classes, ClassLoader cl) throws Exception
    {
       // Find an application
-      P f = classes.getPath(Arrays.asList("org", "juzu", "config.properties"));
+      P f = classes.getPath(CONFIG_PATH);
       URL url = classes.getURL(f);
       InputStream in = url.openStream();
       Properties props = new Properties();

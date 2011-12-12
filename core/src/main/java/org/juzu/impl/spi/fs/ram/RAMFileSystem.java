@@ -114,6 +114,10 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
    @Override
    public URL getURL(RAMPath path) throws IOException
    {
+      if (path == null)
+      {
+         throw new NullPointerException("No null path accepted");
+      }
       StringBuilder sb = new StringBuilder();
       pathOf(path, '/', sb);
       String spec = sb.toString();
