@@ -63,7 +63,7 @@
   </dependencies>
 
   <build>
-    <finalName>juzu-booking</finalName>
+    <finalName>\${artifactId}</finalName>
     <plugins>
 
       <plugin>
