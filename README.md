@@ -27,9 +27,6 @@ Screencast
     - eclipse incremental compilation support (experimental)
     - tutorial: documentation and sample
     - maven archetype
-
-# Roadmap
-
 - 0.4.2
     - template type safe parameters
     - Eclipse Hello World screencast
@@ -40,6 +37,9 @@ Screencast
     - update to Weld 1.1.4
     - friendly error display
     - bug fixes
+
+# Roadmap
+
 - 0.5
     - tutorial (cont)
     - portlet eventing support
