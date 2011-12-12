@@ -10,7 +10,7 @@
      <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
-       <value>dev</value>
+       <value>prod</value>
      </init-param>
      <init-param>
        <name>juzu.inject</name>
