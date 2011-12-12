@@ -13,6 +13,7 @@ Screencast
 
 - [Hello World developed with Eclipse](http://vimeo.com/33184509)
 - [Template type safe parameters in Eclipse](http://vimeo.com/33370178)
+- [Juzu dev mode](http://vimeo.com/33519963)
 
 # Status
 
