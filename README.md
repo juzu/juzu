@@ -106,10 +106,9 @@ Spring is used by setting the `spring` value for the `juzu.inject` portlet init 
 The command line to use for creating a simple Juzu application using the Maven archetype
 
     >mvn archetype:generate \
-    -DremoteRepositories=http://repository.exoplatform.org/public
     -DarchetypeGroupId=org.juzu \
     -DarchetypeArtifactId=juzu-archetype \
-    -DarchetypeVersion=0.4.1 \
+    -DarchetypeVersion=0.4.2 \
     -DgroupId=<my.groupid> \
     -DartifactId=<my-artifactId>
 
