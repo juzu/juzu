@@ -22,6 +22,8 @@ package org.juzu.impl.spi.request.portlet;
 import org.juzu.URLBuilder;
 
 import javax.portlet.BaseURL;
+import java.io.IOException;
+import java.io.StringWriter;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class URLBuilderImpl implements URLBuilder
@@ -30,9 +32,13 @@ class URLBuilderImpl implements URLBuilder
    /** . */
    private final BaseURL url;
 
+   /** . */
+   private Boolean escapeXML;
+
    URLBuilderImpl(BaseURL url)
    {
       this.url = url;
+      this.escapeXML = null;
    }
 
    public URLBuilder setParameter(String name, String value)
@@ -41,9 +47,32 @@ class URLBuilderImpl implements URLBuilder
       return this;
    }
 
+   public URLBuilder escapeXML(Boolean escapeXML)
+   {
+      this.escapeXML = escapeXML;
+      return this;
+   }
+
    @Override
    public String toString()
    {
-      return url.toString();
+      if (escapeXML != null && escapeXML)
+      {
+         try
+         {
+            StringWriter writer = new StringWriter();
+            url.write(writer, true);
+            return writer.toString();
+         }
+         catch (IOException ignore)
+         {
+            // This should not happen
+            return "";
+         }
+      }
+      else
+      {
+         return url.toString();
+      }
    }
 }

@@ -53,4 +53,11 @@ public @interface Application
     */
    Class<?> defaultController() default Object.class;
 
+   /**
+    * Controls if the generated URL should be escaped to valid XML.
+    *
+    * @return the escape XML value
+    */
+   boolean escapeXML() default false;
+
 }

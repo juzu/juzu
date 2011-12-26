@@ -26,6 +26,7 @@ import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.spi.request.ResourceBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.request.ActionContext;
+import org.juzu.request.ApplicationContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.request.ResourceContext;
@@ -40,20 +41,20 @@ public class Request implements ScopingContext
    /** . */
    private final RequestContext context;
 
-   public Request(ControllerMethod method, ClassLoader classLoader, RequestBridge bridge)
+   public Request(ApplicationContext application, ControllerMethod method, ClassLoader classLoader, RequestBridge bridge)
    {
       RequestContext context;
       if (bridge instanceof RenderBridge)
       {
-         context = new RenderContext(method, classLoader, (RenderBridge)bridge);
+         context = new RenderContext(application, method, classLoader, (RenderBridge)bridge);
       }
       else if (bridge instanceof ActionBridge)
       {
-         context = new ActionContext(method, classLoader, (ActionBridge)bridge);
+         context = new ActionContext( method, classLoader, (ActionBridge)bridge);
       }
       else
       {
-         context = new ResourceContext(method, classLoader, (ResourceBridge)bridge);
+         context = new ResourceContext(application, method, classLoader, (ResourceBridge)bridge);
       }
 
       

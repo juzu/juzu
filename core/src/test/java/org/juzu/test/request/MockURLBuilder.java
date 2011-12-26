@@ -38,10 +38,14 @@ public class MockURLBuilder implements URLBuilder
    /** . */
    private final Map<String, String> parameters;
 
+   /** . */
+   private Boolean escapeXML;
+
    public MockURLBuilder(ControllerMethod method)
    {
       this.method = method;
       this.parameters = new HashMap<String, String>();
+      this.escapeXML = null;
    }
 
    public URLBuilder setParameter(String name, String value)
@@ -61,6 +65,12 @@ public class MockURLBuilder implements URLBuilder
       return this;
    }
 
+   public URLBuilder escapeXML(Boolean escapeXML)
+   {
+      this.escapeXML = escapeXML;
+      return this;
+   }
+
    @Override
    public String toString()
    {
@@ -69,6 +79,10 @@ public class MockURLBuilder implements URLBuilder
          JSONObject url = new JSONObject();
          url.put("op", method.getId());
          url.put("parameters", parameters);
+         if (escapeXML != null)
+         {
+            url.put("escapeXML", escapeXML);
+         }
          return url.toString();
       }
       catch (JSONException e)

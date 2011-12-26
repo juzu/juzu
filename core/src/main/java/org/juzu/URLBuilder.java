@@ -59,6 +59,8 @@ public interface URLBuilder
     * @throws NullPointerException if the name parameter is null
     */
    URLBuilder setParameter(String name, String value) throws NullPointerException;
+   
+   URLBuilder escapeXML(Boolean escapeXML);
 
    /**
     * Build the string value of this URL.

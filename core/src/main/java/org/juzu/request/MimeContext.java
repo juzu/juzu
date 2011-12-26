@@ -21,6 +21,7 @@ package org.juzu.request;
 
 import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
+import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.text.Printer;
@@ -29,14 +30,15 @@ import org.juzu.text.Printer;
 public abstract class MimeContext extends RequestContext
 {
 
-   protected MimeContext()
-   {
-      super();
-   }
-
-   protected MimeContext(ControllerMethod method, ClassLoader classLoader)
+   /** . */
+   private final ApplicationContext application; 
+   
+   protected MimeContext(ApplicationContext application, ControllerMethod method, ClassLoader classLoader)
    {
       super(method, classLoader);
+      
+      //
+      this.application = application;
    }
 
    @Override
@@ -44,7 +46,14 @@ public abstract class MimeContext extends RequestContext
 
    public URLBuilder createURLBuilder(ControllerMethod method)
    {
-      return getBridge().createURLBuilder(method);
+      URLBuilder builder = getBridge().createURLBuilder(method);
+
+      // Bridge escape XML value
+      ApplicationDescriptor desc = application.getDescriptor();
+      builder.escapeXML(desc.getEscapeXML());
+
+      //
+      return builder;
    }
 
    public URLBuilder createURLBuilder(ControllerMethod method, Object arg)

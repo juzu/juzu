@@ -29,14 +29,9 @@ public class RenderContext extends MimeContext
    /** . */
    private RenderBridge bridge;
 
-   protected RenderContext()
+   public RenderContext(ApplicationContext application, ControllerMethod method, ClassLoader classLoader, RenderBridge bridge)
    {
-      super();
-   }
-
-   public RenderContext(ControllerMethod method, ClassLoader classLoader, RenderBridge bridge)
-   {
-      super(method, classLoader);
+      super(application, method, classLoader);
 
       //
       this.bridge = bridge;

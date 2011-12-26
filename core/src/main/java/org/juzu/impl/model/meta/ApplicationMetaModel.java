@@ -59,6 +59,9 @@ public class ApplicationMetaModel extends MetaModelObject
    final String defaultController;
 
    /** . */
+   final Boolean escapeXML;
+
+   /** . */
    final QN templatesQN;
 
    /** . */
@@ -71,12 +74,14 @@ public class ApplicationMetaModel extends MetaModelObject
       MetaModel model,
       ElementHandle.Package handle,
       String applicationName,
-      String defaultController)
+      String defaultController,
+      Boolean escapeXML)
    {
       this.model = model;
       this.handle = handle;
       this.fqn = new FQN(handle.getQN(), applicationName);
       this.defaultController = defaultController;
+      this.escapeXML = escapeXML;
       this.templatesQN = fqn.getPackageName().append("templates");
       this.modified = false;
    }
@@ -84,6 +89,11 @@ public class ApplicationMetaModel extends MetaModelObject
    public String getDefaultController()
    {
       return defaultController;
+   }
+
+   public Boolean getEscapeXML()
+   {
+      return escapeXML;
    }
 
    public QN getTemplatesQN()

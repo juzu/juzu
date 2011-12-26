@@ -17,35 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
+@Application
+package request.url.simple;
 
-import org.juzu.impl.spi.request.ResourceBridge;
-import org.juzu.metadata.ControllerMethod;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResourceContext extends MimeContext
-{
-
-   /** . */
-   private ResourceBridge bridge;
-
-   public ResourceContext(ApplicationContext application, ControllerMethod method, ClassLoader classLoader, ResourceBridge bridge)
-   {
-      super(application, method, classLoader);
-
-      //
-      this.bridge = bridge;
-   }
-
-   @Override
-   protected ResourceBridge getBridge()
-   {
-      return bridge;
-   }
-
-   @Override
-   public Phase getPhase()
-   {
-      return Phase.RESOURCE;
-   }
-}
+import org.juzu.Application;

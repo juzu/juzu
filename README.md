@@ -37,6 +37,8 @@ Screencast
     - update to Weld 1.1.4
     - friendly error display
     - bug fixes
+- 0.4.2
+    - URL xml escaping
 
 # Roadmap
 

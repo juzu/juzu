@@ -98,7 +98,7 @@ public class MetaModel extends ModelHandler
 
    public ApplicationMetaModel addApplication(String packageName, String applicationName)
    {
-      return addApplication(ElementHandle.Package.create(new QN(packageName)), applicationName, null);
+      return addApplication(ElementHandle.Package.create(new QN(packageName)), applicationName, null, null);
    }
 
    public TemplateRefMetaModel addTemplateRef(String className, String fieldName, String path)
@@ -123,13 +123,13 @@ public class MetaModel extends ModelHandler
       return applications.get(handle);
    }
 
-   public ApplicationMetaModel addApplication(ElementHandle.Package handle, String applicationName, String defaultController)
+   public ApplicationMetaModel addApplication(ElementHandle.Package handle, String applicationName, String defaultController, Boolean escapeXML)
    {
       if (applications.containsKey(handle))
       {
          throw new IllegalStateException("Contains already application " + handle);
       }
-      ApplicationMetaModel application = new ApplicationMetaModel(this, handle, applicationName, defaultController);
+      ApplicationMetaModel application = new ApplicationMetaModel(this, handle, applicationName, defaultController, escapeXML);
       applications.put(handle, application);
       queue(new MetaModelEvent(MetaModelEvent.AFTER_ADD, application));
       return application;
@@ -239,6 +239,7 @@ public class MetaModel extends ModelHandler
    {
       TypeMirror defaultControllerElt = (TypeMirror)annotationValues.get("defaultController");
       String defaultController = defaultControllerElt != null ? defaultControllerElt.toString() : null;
+      Boolean escapeXML = (Boolean)annotationValues.get("escapeXML");
       String name = (String)annotationValues.get("name");
       if (name == null)
       {
@@ -249,7 +250,7 @@ public class MetaModel extends ModelHandler
       ApplicationMetaModel application = applications.get(handle);
       if (application == null)
       {
-         addApplication(handle, name, defaultController);
+         addApplication(handle, name, defaultController, escapeXML);
       }
       else
       {

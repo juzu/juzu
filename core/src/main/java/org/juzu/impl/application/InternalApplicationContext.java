@@ -114,7 +114,7 @@ public class InternalApplicationContext extends ApplicationContext
       ControllerMethod method = controllerResolver.resolve(phase, bridge.getMethodId());
 
       //
-      Request request = new Request(method, classLoader, bridge);
+      Request request = new Request(this, method, classLoader, bridge);
 
       //
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();

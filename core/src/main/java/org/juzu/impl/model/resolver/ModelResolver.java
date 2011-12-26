@@ -386,6 +386,8 @@ public class ModelResolver extends ModelHandler implements Serializable
          writer.append("super(");
          writer.append(application.getDefaultController() != null ? (application.getDefaultController() + ".class") : "null");
          writer.append(",");
+         writer.append(application.getEscapeXML() != null ? Boolean.toString(application.getEscapeXML()) : "null");
+         writer.append(",");
          writer.append("\"").append(application.getTemplatesQN()).append("\"");
          writer.append(");\n");
          writer.append("}\n");

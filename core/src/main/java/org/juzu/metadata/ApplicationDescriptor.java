@@ -46,6 +46,9 @@ public class ApplicationDescriptor
    private Class<?> defaultController;
 
    /** . */
+   private final Boolean escapeXML;
+
+   /** . */
    private final List<ControllerDescriptor> controllers;
 
    /** . */
@@ -57,7 +60,7 @@ public class ApplicationDescriptor
    /** . */
    private final List<TemplateDescriptor> templates;
 
-   protected ApplicationDescriptor(Class<?> defaultController, String templatesPackageName)
+   protected ApplicationDescriptor(Class<?> defaultController, Boolean escapeXML, String templatesPackageName)
    {
       Class<?> applicationClass = getClass();
 
@@ -116,41 +119,20 @@ public class ApplicationDescriptor
       this.packageName = applicationClass.getPackage().getName();
       this.templatesPackageName = templatesPackageName;
       this.defaultController = defaultController;
+      this.escapeXML = escapeXML;
       this.controllers = controllers;
       this.controllerMethods = controllerMethods;
       this.templates = templates;
    }
 
-   public ApplicationDescriptor(
-      String packageName,
-      String name,
-      Class<?> defaultController,
-      String templatesPackageName,
-      List<ControllerDescriptor> controllers,
-      List<TemplateDescriptor> templates)
-   {
-      List<ControllerMethod> foo = new ArrayList<ControllerMethod>();
-      for (ControllerDescriptor controller : controllers)
-      {
-         for (ControllerMethod method : controller.getMethods())
-         {
-            foo.add(method);
-         }
-      }
-
-      //
-      this.defaultController = defaultController;
-      this.packageName = packageName;
-      this.name = name;
-      this.templatesPackageName = templatesPackageName;
-      this.controllers = Collections.unmodifiableList(controllers);
-      this.controllerMethods = Collections.unmodifiableList(foo);
-      this.templates = Collections.unmodifiableList(templates);
-   }
-
    public String getPackageName()
    {
       return packageName;
+   }
+
+   public Boolean getEscapeXML()
+   {
+      return escapeXML;
    }
 
    public String getName()
