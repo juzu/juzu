@@ -23,6 +23,7 @@ import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.FQN;
+import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.QN;
 
@@ -30,10 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -186,24 +184,14 @@ public class ApplicationMetaModel extends MetaModelObject
       }
    }
 
-   public Map<String, ?> toJSON()
+   public JSON toJSON()
    {
-      TreeMap<String, Object> json = new TreeMap<String, Object>();
-      json.put("handle", handle);
-      json.put("fqn", fqn);
-      json.put("defaultController", defaultController);
-      ArrayList<Map<String, ?>> foo = new ArrayList<Map<String, ?>>();
-      for (TemplateMetaModel bar : templates.values())
-      {
-         foo.add(bar.toJSON());
-      }
-      json.put("templates", foo);
-      ArrayList<ElementHandle.Class> juu = new ArrayList<ElementHandle.Class>();
-      for (ControllerMetaModel controller : controllers.values())
-      {
-         juu.add(controller.handle);
-      }
-      json.put("controllers", juu);
+      JSON json = new JSON();
+      json.add("handle", handle);
+      json.add("fqn", fqn);
+      json.add("defaultController", defaultController);
+      json.add("templates", templates.values());
+      json.add("controllers", controllers.keySet());
       return json;
    }
 

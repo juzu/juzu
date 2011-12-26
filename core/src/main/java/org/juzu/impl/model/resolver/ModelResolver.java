@@ -19,6 +19,7 @@
 
 package org.juzu.impl.model.resolver;
 
+import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
@@ -59,12 +60,12 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -301,17 +302,17 @@ public class ModelResolver extends ModelHandler implements Serializable
 
    private void emitConfig()
    {
-      Properties config = new Properties();
-      config.putAll(moduleConfig);
+      JSON json = new JSON();
+      json.add(moduleConfig);
 
       // Module config
       Writer writer = null;
       try
       {
          //
-         FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, "org.juzu", "config.properties");
+         FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, "org.juzu", "config.json");
          writer = fo.openWriter();
-         config.store(writer, null);
+         json.toString(writer);
       }
       catch (IOException e)
       {
@@ -325,27 +326,31 @@ public class ModelResolver extends ModelHandler implements Serializable
       // Application configs
       for (ApplicationMetaModel application : metaModel.getApplications())
       {
-         config.clear();
+         json.clear();
+         ArrayList<String> controllers = new ArrayList<String>();
          for (ControllerMetaModel controller : application.getControllers())
          {
-            config.put(controller.getHandle().getFQN().getFullName() + "_", "controller");
+            controllers.add(controller.getHandle().getFQN().getFullName() + "_");
          }
+         json.add("controllers", controllers);
          TemplateResolver repo = templateRepositoryMap.get(application.getHandle());
          if (repo != null)
          {
+            ArrayList<String> templates = new ArrayList<String>();
             for (Template template : repo.getTemplates())
             {
-               config.put(template.getFQN().getFullName(), "template");
+               templates.add(template.getFQN().getFullName());
             }
+            json.add("templates", templates);
          }
 
          //
          writer = null;
          try
          {
-            FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.properties");
+            FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.json");
             writer = fo.openWriter();
-            config.store(writer, null);
+            json.toString(writer);
          }
          catch (IOException e)
          {
@@ -376,21 +381,17 @@ public class ModelResolver extends ModelHandler implements Serializable
          writer.append("import ").append(Tools.getImport(ApplicationDescriptor.class)).append(";\n");
 
          // Open class
-         writer.append("public class ").append(fqn.getSimpleName()).append(" extends ").append(APPLICATION_DESCRIPTOR).append(" {\n");
+         writer.append("public class ").append(fqn.getSimpleName()).append(" {\n");
 
          // Singleton
-         writer.append("public static final ").append(fqn.getSimpleName()).append(" DESCRIPTOR = new ").append(fqn.getSimpleName()).append("();\n");
-
-         // Constructor
-         writer.append("private ").append(fqn.getSimpleName()).append("() {\n");
-         writer.append("super(");
+         writer.append("public static final ").append(APPLICATION_DESCRIPTOR).append(" DESCRIPTOR = new ").append(APPLICATION_DESCRIPTOR).append("(");
+         writer.append(fqn.getSimpleName()).append(".class,");
          writer.append(application.getDefaultController() != null ? (application.getDefaultController() + ".class") : "null");
          writer.append(",");
          writer.append(application.getEscapeXML() != null ? Boolean.toString(application.getEscapeXML()) : "null");
          writer.append(",");
          writer.append("\"").append(application.getTemplatesQN()).append("\"");
          writer.append(");\n");
-         writer.append("}\n");
 
          // Close class
          writer.append("}\n");
@@ -412,6 +413,7 @@ public class ModelResolver extends ModelHandler implements Serializable
    {
       FQN fqn = controller.getHandle().getFQN();
       Element origin = env.get(controller.getHandle());
+      List<MethodMetaModel> methods = controller.getMethods();
       Writer writer = null;
       try
       {
@@ -437,23 +439,7 @@ public class ModelResolver extends ModelHandler implements Serializable
 
          // Open class
          writer.append("@Generated(value={})\n");
-         writer.append("public class ").append(fqn.getSimpleName()).append("_ extends ").append(CONTROLLER_DESCRIPTOR).append(" {\n");
-
-         //
-         writer.append("private ").append(fqn.getSimpleName()).append("_() {\n");
-         writer.append("super(").append(fqn.getSimpleName()).append(".class, Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
-         List<MethodMetaModel> methods = controller.getMethods();
-         for (int j = 0;j < methods.size();j++)
-         {
-            MethodMetaModel method = methods.get(j);
-            if (j > 0)
-            {
-               writer.append(',');
-            }
-            writer.append(method.getId());
-         }
-         writer.append("));\n");
-         writer.append("}\n");
+         writer.append("public class ").append(fqn.getSimpleName()).append("_ {\n");
 
          //
          for (MethodMetaModel method : methods)
@@ -554,8 +540,20 @@ public class ModelResolver extends ModelHandler implements Serializable
             writer.append("); }\n");
          }
 
-         // Singleton instance (declared after the method constants)
-         writer.append("public static final ").append(fqn.getSimpleName()).append("_ INSTANCE = new ").append(fqn.getSimpleName()).append("_();\n");
+         //
+         writer.append("public static final ").append(CONTROLLER_DESCRIPTOR).append(" DESCRIPTOR = new ").append(CONTROLLER_DESCRIPTOR).append("(");
+         writer.append(fqn.getSimpleName()).append(".class,Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
+         for (int j = 0;j < methods.size();j++)
+         {
+            MethodMetaModel method = methods.get(j);
+            if (j > 0)
+            {
+               writer.append(',');
+            }
+            writer.append(method.getId());
+         }
+         writer.append(")");
+         writer.append(");\n");
 
          // Close class
          writer.append("}\n");

@@ -19,22 +19,20 @@
 
 package org.juzu.impl.model.meta;
 
+import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.model.CompilationErrorCode;
 
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerMetaModel extends MetaModelObject
@@ -63,17 +61,12 @@ public class ControllerMetaModel extends MetaModelObject
       this.modified = false;
    }
 
-   public Map<String, ?> toJSON()
+   public JSON toJSON()
    {
-      HashMap<String, Object> json = new HashMap<String, Object>();
-      json.put("handle", handle);
-      ArrayList<Map<String, ?>> foo = new ArrayList<Map<String, ?>>();
-      for (MethodMetaModel method : methods.values())
-      {
-         foo.add(method.toJSON());
-      }
-      json.put("methods", foo);
-      json.put("application", application == null ? null : application.handle);
+      JSON json = new JSON();
+      json.add("handle", handle);
+      json.add("methods", methods.values());
+      json.add("application", application == null ? null : application.handle);
       return json;
    }
 

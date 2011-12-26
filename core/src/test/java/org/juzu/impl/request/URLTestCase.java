@@ -19,7 +19,7 @@
 
 package org.juzu.impl.request;
 
-import org.json.JSONObject;
+import org.juzu.impl.utils.JSON;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
@@ -37,8 +37,8 @@ public class URLTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      JSONObject url = new JSONObject(render.getContent());
-      assertFalse(url.has("escapeXML"));
+      JSON url = (JSON)JSON.parse(render.getContent());
+      assertFalse(url.contains("escapeXML"));
    }
 
    public void testEscapeXML() throws Exception
@@ -49,7 +49,7 @@ public class URLTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      JSONObject url = new JSONObject(render.getContent());
+      JSON url = (JSON)JSON.parse(render.getContent());
       assertEquals(Boolean.TRUE, url.get("escapeXML"));
    }
 }

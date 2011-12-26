@@ -29,6 +29,7 @@ import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
 import org.juzu.impl.spi.request.portlet.PortletRenderBridge;
 import org.juzu.impl.spi.request.portlet.PortletResourceBridge;
+import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
 import org.juzu.impl.utils.TrimmingException;
 import org.juzu.metadata.ApplicationDescriptor;
@@ -83,7 +84,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 {
 
    /** . */
-   private static final String[] CONFIG_PATH = {"org", "juzu", "config.properties"};
+   private static final String[] CONFIG_PATH = {"org", "juzu", "config.json"};
 
    /** . */
    private InternalApplicationContext applicationContext;
@@ -226,24 +227,22 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       // Find an application
       P f = classes.getPath(CONFIG_PATH);
       URL url = classes.getURL(f);
-      InputStream in = url.openStream();
-      Properties props = new Properties();
-      props.load(in);
+      String s = Tools.read(url);
+      JSON json = (JSON)JSON.parse(s);
 
       // Get the application name
       String appName = config.getInitParameter("juzu.app_name");
       String fqn = null;
       if (appName != null)
       {
-         fqn = props.getProperty(appName.trim());
+         fqn = (String)json.get(appName.trim());
       }
       else
       {
          // Find the first valid application for now
-         for (Map.Entry<Object, Object> entry : props.entrySet())
+         for (String a : json.names())
          {
-            String a = entry.getKey().toString();
-            String b = entry.getValue().toString();
+            String b = json.getString(a);
             if (a.length() > 0 && b.length() > 0)
             {
                fqn = b;
@@ -255,7 +254,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       //
       if (fqn == null)
       {
-         throw new Exception("Could not find an application to start " + props);
+         throw new Exception("Could not find an application to start " + json);
       }
 
       //

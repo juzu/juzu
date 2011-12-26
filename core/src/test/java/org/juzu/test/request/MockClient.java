@@ -19,8 +19,7 @@
 
 package org.juzu.test.request;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.metadata.ControllerMethod;
@@ -28,7 +27,6 @@ import org.juzu.test.AbstractTestCase;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -44,10 +42,10 @@ public class MockClient
    {
       MockRequestBridge request;
       ControllerMethod method;
-      JSONObject json;
+      JSON json;
       try
       {
-         json = new JSONObject(url);
+         json = (JSON)JSON.parse(url);
          method = application.getContext().getDescriptor().getControllerMethodById(json.getString("op"));
          Phase phase = method.getPhase();
          String methodId = method.getId();
@@ -66,7 +64,7 @@ public class MockClient
                throw AbstractTestCase.failure("Not yet supported " + phase);
          }
       }
-      catch (JSONException e)
+      catch (Exception e)
       {
          throw AbstractTestCase.failure(e);
       }
@@ -74,15 +72,14 @@ public class MockClient
       //
       try
       {
-         JSONObject jsonParams = json.getJSONObject("parameters");
-         for (Iterator i = jsonParams.keys();i.hasNext();)
+         JSON jsonParams = json.getJSON("parameters");
+         for (String name : jsonParams.names())
          {
-            String name = (String)i.next();
             String value = jsonParams.getString(name);
             request.getParameters().put(name, new String[]{value});
          }
       }
-      catch (JSONException e)
+      catch (Exception e)
       {
          throw AbstractTestCase.failure(e);
       }

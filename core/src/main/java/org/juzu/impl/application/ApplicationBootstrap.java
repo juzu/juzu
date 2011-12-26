@@ -84,7 +84,7 @@ public class ApplicationBootstrap
       }
 
       // Use this instead of cached package
-      Class<?> s = descriptor.getClass().getClassLoader().loadClass(descriptor.getClass().getPackage().getName() + ".package-info");
+      Class<?> s = descriptor.getApplicationLoader().loadClass(descriptor.getPackageName() + ".package-info");
 
       // Bind the bean bindings
       Bindings bindings = s.getAnnotation(Bindings.class);

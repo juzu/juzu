@@ -19,12 +19,11 @@
 
 package org.juzu.impl.model.meta;
 
+import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MethodMetaModel extends MetaModelObject
@@ -69,14 +68,14 @@ public class MethodMetaModel extends MetaModelObject
       this.parameterNames = parameterNames;
    }
 
-   public Map<String, ?> toJSON()
+   public JSON toJSON()
    {
-      HashMap<String, Object> json = new HashMap<String, Object>();
-      json.put("handle", handle);
-      json.put("phase", phase);
-      json.put("name", name);
-      json.put("parameterTypes", new ArrayList<String>(parameterTypes));
-      json.put("parameterNames", new ArrayList<String>(parameterNames));
+      JSON json = new JSON();
+      json.add("handle", handle);
+      json.add("phase", phase);
+      json.add("name", name);
+      json.add("parameterTypes", new ArrayList<String>(parameterTypes));
+      json.add("parameterNames", new ArrayList<String>(parameterNames));
       return json;
    }
 

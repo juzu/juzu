@@ -38,6 +38,7 @@ import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.utils.Tools;
+import org.juzu.metadata.TemplateDescriptor;
 import org.juzu.request.ApplicationContext;
 
 import javax.annotation.Generated;
@@ -266,6 +267,7 @@ public class TemplateResolver implements Serializable
          writer.append("import ").append(Tools.getImport(Path.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Export.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(TemplateDescriptor.class)).append(";\n");
          writer.append("import javax.inject.Inject;\n");
          writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
          writer.append("@Generated({})\n");
@@ -280,6 +282,9 @@ public class TemplateResolver implements Serializable
          writer.append("{\n");
          writer.append("super(applicationContext, \"").append(template.getPath()).append("\");\n");
          writer.append("}\n");
+
+         //
+         writer.append("public static final TemplateDescriptor DESCRIPTOR = new TemplateDescriptor(").append(template.getFQN().getFullName()).append(".class);\n");
 
          //
          if (template.getParameters() != null)

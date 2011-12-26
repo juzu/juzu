@@ -20,9 +20,7 @@
 package org.juzu.impl.model.meta;
 
 import org.juzu.impl.compiler.ElementHandle;
-
-import java.util.Map;
-import java.util.TreeMap;
+import org.juzu.impl.utils.JSON;
 
 /**
  * A reference to a template.
@@ -59,11 +57,11 @@ public class TemplateRefMetaModel extends MetaModelObject
       return path;
    }
 
-   public Map<String, ?> toJSON()
+   public JSON toJSON()
    {
-      TreeMap<String, Object> json = new TreeMap<String, Object>();
-      json.put("handle", handle);
-      json.put("template", template == null ? null : template.toJSON());
+      JSON json = new JSON();
+      json.add("handle", handle);
+      json.add("template", template == null ? null : template.toJSON());
       return json;
    }
 }

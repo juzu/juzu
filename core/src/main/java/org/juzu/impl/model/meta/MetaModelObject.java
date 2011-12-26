@@ -19,6 +19,8 @@
 
 package org.juzu.impl.model.meta;
 
+import org.juzu.impl.utils.JSON;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -26,7 +28,7 @@ import java.util.Map;
 public abstract class MetaModelObject implements Serializable
 {
 
-   public abstract Map<String, ?> toJSON();
+   public abstract JSON toJSON();
 
    @Override
    public String toString()

@@ -19,23 +19,23 @@
 
 package org.juzu.metadata;
 
-import org.juzu.Path;
+import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
-import org.juzu.template.Template;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationDescriptor
 {
 
+   /** . */
+   private final Class<?> applicationClass;
+   
    /** . */
    private final String packageName;
 
@@ -60,18 +60,16 @@ public class ApplicationDescriptor
    /** . */
    private final List<TemplateDescriptor> templates;
 
-   protected ApplicationDescriptor(Class<?> defaultController, Boolean escapeXML, String templatesPackageName)
+   public ApplicationDescriptor(Class<?> applicationClass, Class<?> defaultController, Boolean escapeXML, String templatesPackageName)
    {
-      Class<?> applicationClass = getClass();
-
       // Load config
-      Properties props;
+      JSON props;
       InputStream in = null;
       try
       {
-         in = applicationClass.getResourceAsStream("config.properties");
-         props = new Properties();
-         props.load(in);
+         in = applicationClass.getResourceAsStream("config.json");
+         String s = Tools.read(in);
+         props = (JSON)JSON.parse(s);
       }
       catch (IOException e)
       {
@@ -86,35 +84,37 @@ public class ApplicationDescriptor
       List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();
       List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
       List<TemplateDescriptor> templates = new ArrayList<TemplateDescriptor>();
-      for (Object o : props.keySet())
+
+      try
       {
-         String controllerFQN = o.toString();
-         String value = props.getProperty(controllerFQN);
-         try
+         // Load controllers
+         for (String fqn : props.getList("controllers", String.class))
          {
-            Class<?> clazz = applicationClass.getClassLoader().loadClass(controllerFQN);
-            if ("controller".equals(value))
-            {
-               Field f = clazz.getField("INSTANCE");
-               ControllerDescriptor controller = (ControllerDescriptor)f.get(null);
-               controllers.add(controller);
-               controllerMethods.addAll(controller.getMethods());
-            }
-            else if ("template".equals(value))
-            {
-               Path path = clazz.getAnnotation(Path.class);
-               templates.add(new TemplateDescriptor(path.value(), (Class<Template>)clazz));
-            }
+            Class<?> clazz = applicationClass.getClassLoader().loadClass(fqn);
+            Field f = clazz.getField("DESCRIPTOR");
+            ControllerDescriptor controller = (ControllerDescriptor)f.get(null);
+            controllers.add(controller);
+            controllerMethods.addAll(controller.getMethods());
          }
-         catch (Exception e)
+
+         // Load templates
+         for (String fqn : props.getList("templates", String.class))
          {
-            AssertionError ae = new AssertionError("Cannot load " + value + " class " + controllerFQN);
-            ae.initCause(e);
-            throw ae;
+            Class<?> clazz = applicationClass.getClassLoader().loadClass(fqn);
+            Field f = clazz.getField("DESCRIPTOR");
+            TemplateDescriptor descriptor = (TemplateDescriptor)f.get(null);
+            templates.add(descriptor);
          }
+      }
+      catch (Exception e)
+      {
+         AssertionError ae = new AssertionError("Cannot load config");
+         ae.initCause(e);
+         throw ae;
       }
 
       //
+      this.applicationClass = applicationClass;
       this.name = applicationClass.getSimpleName();
       this.packageName = applicationClass.getPackage().getName();
       this.templatesPackageName = templatesPackageName;
@@ -123,6 +123,16 @@ public class ApplicationDescriptor
       this.controllers = controllers;
       this.controllerMethods = controllerMethods;
       this.templates = templates;
+   }
+
+   public Class<?> getApplicationClass()
+   {
+      return applicationClass;
+   }
+   
+   public ClassLoader getApplicationLoader()
+   {
+      return applicationClass.getClassLoader();
    }
 
    public String getPackageName()

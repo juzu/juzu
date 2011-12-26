@@ -22,6 +22,8 @@ package org.juzu.test.request;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.impl.utils.JSON;
+import org.juzu.impl.utils.Tools;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.request.ApplicationContext;
@@ -69,7 +71,7 @@ public class MockApplication<P>
 
    public MockApplication<P> init() throws Exception
    {
-      P f = classes.getPath(Arrays.asList("org", "juzu", "config.properties"));
+      P f = classes.getPath(Arrays.asList("org", "juzu", "config.json"));
       if (f == null)
       {
          throw new Exception("Cannot find config properties");
@@ -77,19 +79,18 @@ public class MockApplication<P>
 
       //
       URL url = classes.getURL(f);
-      InputStream in = url.openStream();
-      Properties props = new Properties();
-      props.load(in);
+      String s = Tools.read(url);
+      JSON props = (JSON)JSON.parse(s);
 
       //
-      if (props.size() != 1)
+      if (props.names().size() != 1)
       {
          throw AbstractTestCase.failure("Could not find an application to start " + props);
       }
-      Map.Entry<Object, Object> entry = props.entrySet().iterator().next();
+      String name = props.names().iterator().next();
+      String fqn = props.getString(name);
 
       //
-      String fqn = entry.getValue().toString();
       System.out.println("loading class descriptor " + fqn);
       Class<?> clazz = classLoader.loadClass(fqn);
       Field field = clazz.getDeclaredField("DESCRIPTOR");

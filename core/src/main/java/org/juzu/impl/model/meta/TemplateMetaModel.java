@@ -20,13 +20,12 @@
 package org.juzu.impl.model.meta;
 
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.utils.JSON;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * A template.
@@ -62,12 +61,12 @@ public class TemplateMetaModel extends MetaModelObject
       return path;
    }
 
-   public Map<String, ?> toJSON()
+   public JSON toJSON()
    {
-      TreeMap<String, Object> json = new TreeMap<String, Object>();
-      json.put("path", path);
-      json.put("refs", new HashSet<ElementHandle.Field>(refs.keySet()));
-      json.put("application", application.fqn);
+      JSON json = new JSON();
+      json.add("path", path);
+      json.add("refs", new HashSet<ElementHandle.Field>(refs.keySet()));
+      json.add("application", application.fqn);
       return json;
    }
 

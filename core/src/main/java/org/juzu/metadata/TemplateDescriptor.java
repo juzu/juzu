@@ -19,6 +19,7 @@
 
 package org.juzu.metadata;
 
+import org.juzu.Path;
 import org.juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -31,9 +32,12 @@ public class TemplateDescriptor
    /** . */
    private final Class<? extends Template> template;
 
-   public TemplateDescriptor(String path, Class<? extends Template> template)
+   public TemplateDescriptor(Class<? extends Template> template)
    {
-      this.path = path;
+      Path path = template.getAnnotation(Path.class);
+
+      //
+      this.path = path.value();
       this.template = template;
    }
 

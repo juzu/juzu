@@ -19,11 +19,9 @@
 
 package org.juzu.test.request;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.juzu.URLBuilder;
+import org.juzu.impl.utils.JSON;
 import org.juzu.metadata.ControllerMethod;
-import org.juzu.test.AbstractTestCase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,20 +72,13 @@ public class MockURLBuilder implements URLBuilder
    @Override
    public String toString()
    {
-      try
+      JSON url = new JSON();
+      url.add("op", method.getId());
+      url.add("parameters", parameters);
+      if (escapeXML != null)
       {
-         JSONObject url = new JSONObject();
-         url.put("op", method.getId());
-         url.put("parameters", parameters);
-         if (escapeXML != null)
-         {
-            url.put("escapeXML", escapeXML);
-         }
-         return url.toString();
+         url.add("escapeXML", escapeXML);
       }
-      catch (JSONException e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
+      return url.toString();
    }
 }

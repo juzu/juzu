@@ -29,14 +29,14 @@ public class Builder
    {
       return new Map<K, V>().put(key, value);
    }
-
+   
    public static class Map<K, V>
    {
 
       /** . */
-      private java.util.Map<K, V> map;
+      private HashMap<K, V> map;
 
-      public Map()
+      private Map()
       {
          this.map = new HashMap<K, V>();
       }

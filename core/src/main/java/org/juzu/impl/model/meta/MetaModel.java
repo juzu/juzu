@@ -30,6 +30,7 @@ import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.model.processor.ModelHandler;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.utils.FQN;
+import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.QN;
 
@@ -46,7 +47,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MetaModel extends ModelHandler
@@ -70,27 +70,12 @@ public class MetaModel extends ModelHandler
    /** . */
    private Logger log;
 
-   public Map<String, ?> toJSON()
+   public JSON toJSON()
    {
-      TreeMap<String, Object> json = new TreeMap<String, Object>();
-      ArrayList<Map<String, ?>> foo = new ArrayList<Map<String, ?>>();
-      for (TemplateRefMetaModel bar : templates.values())
-      {
-         foo.add(bar.toJSON());
-      }
-      ArrayList<Map<String, ?>> juu = new ArrayList<Map<String, ?>>();
-      for (ApplicationMetaModel daa : applications.values())
-      {
-         juu.add(daa.toJSON());
-      }
-      ArrayList<Map<String, ?>> bilto = new ArrayList<Map<String, ?>>();
-      for (ControllerMetaModel daa : controllers.values())
-      {
-         bilto.add(daa.toJSON());
-      }
-      json.put("templates", foo);
-      json.put("applications", juu);
-      json.put("controllers", bilto);
+      JSON json = new JSON();
+      json.add("templates", templates.values());
+      json.add("applications", applications.values());
+      json.add("controllers", controllers.values());
       return json;
    }
 
