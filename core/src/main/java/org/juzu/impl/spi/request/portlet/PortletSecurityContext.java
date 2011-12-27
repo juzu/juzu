@@ -17,45 +17,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.request;
+package org.juzu.impl.spi.request.portlet;
 
-import org.juzu.request.HttpContext;
 import org.juzu.request.SecurityContext;
 
-import java.util.Map;
+import javax.portlet.PortletRequest;
+import java.security.Principal;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestBridge
+public class PortletSecurityContext implements SecurityContext
 {
 
-   
-   String getMethodId();
+   /** . */
+   private final PortletRequest request;
 
-   /**
-    * Returns the request parameters.
-    *
-    * @return the request parameters
-    */
-   Map<String, String[]> getParameters();
+   public PortletSecurityContext(PortletRequest request)
+   {
+      this.request = request;
+   }
 
-   Object getFlashValue(Object key);
+   public String getRemoteUser()
+   {
+      return request.getRemoteUser();
+   }
 
-   void setFlashValue(Object key, Object value);
+   public Principal getUserPrincipal()
+   {
+      return request.getUserPrincipal();
+   }
 
-   Object getRequestValue(Object key);
-
-   void setRequestValue(Object key, Object value);
-
-   Object getSessionValue(Object key);
-
-   void setSessionValue(Object key, Object value);
-
-   Object getIdentityValue(Object key);
-
-   void setIdentityValue(Object key, Object value);
-
-   HttpContext getHttpContext();
-
-   SecurityContext getSecurityContext();
-
+   public boolean isUserInRole(String role)
+   {
+      return request.isUserInRole(role);
+   }
 }

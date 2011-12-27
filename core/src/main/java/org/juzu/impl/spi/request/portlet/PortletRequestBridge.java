@@ -20,6 +20,8 @@
 package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.request.HttpContext;
+import org.juzu.request.SecurityContext;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -43,6 +45,12 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
    /** . */
    protected final Map<String, String[]> parameters;
 
+   /** . */
+   protected final PortletHttpContext httpContext;
+
+   /** . */
+   protected final PortletSecurityContext securityContext;
+
    PortletRequestBridge(Rq request, Rs response)
    {
       Map<String, String[]> parameters = request.getParameterMap();
@@ -59,6 +67,8 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       this.response = response;
       this.methodId = methodId;
       this.parameters = parameters;
+      this.httpContext = new PortletHttpContext(request);
+      this.securityContext = new PortletSecurityContext(request);
    }
 
    public String getMethodId()
@@ -162,5 +172,15 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
 
    public void setIdentityValue(Object key, Object value)
    {
+   }
+
+   public HttpContext getHttpContext()
+   {
+      return httpContext;
+   }
+
+   public SecurityContext getSecurityContext()
+   {
+      return securityContext;
    }
 }

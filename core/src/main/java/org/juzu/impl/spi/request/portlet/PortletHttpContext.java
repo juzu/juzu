@@ -17,61 +17,47 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
+package org.juzu.impl.spi.request.portlet;
 
-import org.juzu.impl.spi.request.RequestBridge;
-import org.juzu.metadata.ControllerMethod;
+import org.juzu.request.HttpContext;
 
-import java.util.Map;
+import javax.portlet.PortletRequest;
+import javax.servlet.http.Cookie;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestContext
+public class PortletHttpContext implements HttpContext
 {
 
-   /** The request classloader. */
-   protected ClassLoader classLoader;
-
    /** . */
-   protected ControllerMethod method;
+   private final PortletRequest request;
 
-   /** . */
-   protected RequestContext()
+   public PortletHttpContext(PortletRequest request)
    {
+      this.request = request;
    }
 
-   public RequestContext(ControllerMethod method, ClassLoader classLoader)
+   public Cookie[] getCookies()
    {
-      this.method = method;
-      this.classLoader = classLoader;
+      return request.getCookies();
    }
 
-   public ControllerMethod getMethod()
+   public String getScheme()
    {
-      return method;
+      return request.getScheme();
    }
 
-   public ClassLoader getClassLoader()
+   public int getServerPort()
    {
-      return classLoader;
+      return request.getServerPort();
    }
 
-   public Map<String, String[]> getParameters()
+   public String getServerName()
    {
-      return getBridge().getParameters();
-   }
-   
-   public HttpContext getHttpContext()
-   {
-      return getBridge().getHttpContext();
-   }
-   
-   public SecurityContext getSecurityContext()
-   {
-      return getBridge().getSecurityContext();
+      return request.getServerName();
    }
 
-   public abstract Phase getPhase();
-
-   protected abstract RequestBridge getBridge();
-
+   public String getContextPath()
+   {
+      return request.getContextPath();
+   }
 }

@@ -17,45 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.request;
+package org.juzu.request;
 
-import org.juzu.request.HttpContext;
-import org.juzu.request.SecurityContext;
-
-import java.util.Map;
+import java.security.Principal;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestBridge
+public interface SecurityContext
 {
 
-   
-   String getMethodId();
+   String getRemoteUser();
 
-   /**
-    * Returns the request parameters.
-    *
-    * @return the request parameters
-    */
-   Map<String, String[]> getParameters();
+   Principal getUserPrincipal();
 
-   Object getFlashValue(Object key);
-
-   void setFlashValue(Object key, Object value);
-
-   Object getRequestValue(Object key);
-
-   void setRequestValue(Object key, Object value);
-
-   Object getSessionValue(Object key);
-
-   void setSessionValue(Object key, Object value);
-
-   Object getIdentityValue(Object key);
-
-   void setIdentityValue(Object key, Object value);
-
-   HttpContext getHttpContext();
-
-   SecurityContext getSecurityContext();
+   boolean isUserInRole(String role);
 
 }

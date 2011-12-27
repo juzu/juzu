@@ -17,45 +17,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.request;
-
-import org.juzu.request.HttpContext;
-import org.juzu.request.SecurityContext;
-
-import java.util.Map;
+package org.juzu.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestBridge
+public interface HttpContext
 {
 
+   javax.servlet.http.Cookie[] getCookies();
+
+   String getScheme();
    
-   String getMethodId();
-
-   /**
-    * Returns the request parameters.
-    *
-    * @return the request parameters
-    */
-   Map<String, String[]> getParameters();
-
-   Object getFlashValue(Object key);
-
-   void setFlashValue(Object key, Object value);
-
-   Object getRequestValue(Object key);
-
-   void setRequestValue(Object key, Object value);
-
-   Object getSessionValue(Object key);
-
-   void setSessionValue(Object key, Object value);
-
-   Object getIdentityValue(Object key);
-
-   void setIdentityValue(Object key, Object value);
-
-   HttpContext getHttpContext();
-
-   SecurityContext getSecurityContext();
-
+   int getServerPort();
+   
+   String getServerName();
+   
+   String getContextPath();
+   
 }

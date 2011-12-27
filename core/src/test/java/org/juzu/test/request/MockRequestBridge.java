@@ -20,6 +20,7 @@
 package org.juzu.test.request;
 
 import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.impl.spi.request.portlet.MockSecurityContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,12 +41,20 @@ public abstract class MockRequestBridge implements RequestBridge
    /** . */
    private final Map<Object, Object> attributes;
 
+   /** . */
+   private final MockHttpContext httpContext;
+
+   /** . */
+   private final MockSecurityContext securityContext;
+
    public MockRequestBridge(MockClient client, String methodId)
    {
       this.client = client;
       this.parameters = new HashMap<String, String[]>();
       this.attributes = new HashMap<Object, Object>();
       this.methodId = methodId;
+      this.httpContext = new MockHttpContext();
+      this.securityContext = new MockSecurityContext();
    }
 
    public String getMethodId()
@@ -114,5 +123,15 @@ public abstract class MockRequestBridge implements RequestBridge
 
    public void setIdentityValue(Object key, Object value)
    {
+   }
+
+   public MockSecurityContext getSecurityContext()
+   {
+      return securityContext;
+   }
+
+   public MockHttpContext getHttpContext()
+   {
+      return httpContext;
    }
 }
