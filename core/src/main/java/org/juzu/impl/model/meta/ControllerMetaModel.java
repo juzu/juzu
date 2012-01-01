@@ -102,7 +102,7 @@ public class ControllerMetaModel extends MetaModelObject
       MethodMetaModel method = new MethodMetaModel(
          handle,
          this,
-         "" + Math.random(),
+         null,
          phase,
          name,
          parameterTypes,
@@ -117,20 +117,6 @@ public class ControllerMetaModel extends MetaModelObject
       Map<String, Object> annotationValues)
    {
       String id = (String)annotationValues.get("id");
-
-      // For now we compute an id based on a kind of signature
-      if (id == null)
-      {
-         StringBuilder sb = new StringBuilder();
-         sb.append(methodElt.getEnclosingElement().getSimpleName());
-         sb.append("_");
-         sb.append(methodElt.getSimpleName());
-         for (VariableElement ve : methodElt.getParameters())
-         {
-            sb.append("_").append(ve.getSimpleName());
-         }
-         id = sb.toString();
-      }
 
       //
       for (Phase phase : Phase.values())
@@ -158,7 +144,7 @@ public class ControllerMetaModel extends MetaModelObject
             // Validate duplicate id within the same controller
             for (MethodMetaModel existing : methods.values())
             {
-               if (existing.id.equals(id))
+               if (existing.id != null && existing.id.equals(id))
                {
                   throw new CompilationException(methodElt, CompilationErrorCode.CONTROLLER_METHOD_DUPLICATE_ID, id);
                }

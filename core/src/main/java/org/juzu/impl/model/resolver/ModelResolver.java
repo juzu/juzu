@@ -442,12 +442,22 @@ public class ModelResolver extends ModelHandler implements Serializable
          writer.append("public class ").append(fqn.getSimpleName()).append("_ {\n");
 
          //
+         int index = 0;
          for (MethodMetaModel method : methods)
          {
+            String methodRef = "method_" + index++;
+
             // Method constant
-            writer.append("private static final ").append(CONTROLLER_METHOD).append(" ").append(method.getId()).append(" = ");
+            writer.append("private static final ").append(CONTROLLER_METHOD).append(" ").append(methodRef).append(" = ");
             writer.append("new ").append(CONTROLLER_METHOD).append("(");
-            writer.append("\"").append(method.getId()).append("\",");
+            if (method.getId() != null)
+            {
+               writer.append("\"").append(method.getId()).append("\",");
+            }
+            else
+            {
+               writer.append("null,");
+            }
             writer.append(PHASE).append(".").append(method.getPhase().name()).append(",");
             writer.append(fqn.getFullName()).append(".class").append(",");
             writer.append(TOOLS).append(".safeGetMethod(").append(fqn.getFullName()).append(".class,\"").append(method.getName()).append("\"");
@@ -482,7 +492,7 @@ public class ModelResolver extends ModelHandler implements Serializable
                   }
                   writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
                }
-               writer.append(") { return ((ActionContext)InternalApplicationContext.getCurrentRequest()).createResponse(").append(method.getId());
+               writer.append(") { return ((ActionContext)InternalApplicationContext.getCurrentRequest()).createResponse(").append(methodRef);
                switch (method.getParameterTypes().size())
                {
                   case 0:
@@ -516,7 +526,7 @@ public class ModelResolver extends ModelHandler implements Serializable
                }
                writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
             }
-            writer.append(") { return ((MimeContext)InternalApplicationContext.getCurrentRequest()).createURLBuilder(").append(method.getId());
+            writer.append(") { return ((MimeContext)InternalApplicationContext.getCurrentRequest()).createURLBuilder(").append(methodRef);
             switch (method.getParameterNames().size())
             {
                case 0:
@@ -545,12 +555,11 @@ public class ModelResolver extends ModelHandler implements Serializable
          writer.append(fqn.getSimpleName()).append(".class,Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
          for (int j = 0;j < methods.size();j++)
          {
-            MethodMetaModel method = methods.get(j);
             if (j > 0)
             {
                writer.append(',');
             }
-            writer.append(method.getId());
+            writer.append("method_").append(Integer.toString(j));
          }
          writer.append(")");
          writer.append(");\n");

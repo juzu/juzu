@@ -22,6 +22,7 @@ package org.juzu.metadata;
 import org.juzu.request.Phase;
 import org.juzu.impl.utils.Tools;
 
+import javax.lang.model.element.VariableElement;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -55,6 +56,21 @@ public final class ControllerMethod
       Method method,
       List<ControllerParameter> argumentParameters)
    {
+      if (id == null)
+      {
+         // For now we compute an id based on a kind of signature
+         StringBuilder sb = new StringBuilder();
+         sb.append(method.getDeclaringClass().getSimpleName());
+         sb.append("_");
+         sb.append(method.getName());
+         for (ControllerParameter ve : argumentParameters)
+         {
+            sb.append("_").append(ve.getName());
+         }
+         id = sb.toString();
+      }
+      
+      //
       this.id = id;
       this.phase = phase;
       this.type = type;
