@@ -72,6 +72,7 @@ public class MethodMetaModel extends MetaModelObject
    {
       JSON json = new JSON();
       json.add("handle", handle);
+      json.add("id", id);
       json.add("phase", phase);
       json.add("name", name);
       json.add("parameterTypes", new ArrayList<String>(parameterTypes));
