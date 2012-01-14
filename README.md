@@ -4,7 +4,7 @@ Juzu Web is a web framework matching portlet MVC.
 
 You can join the Juzu [mailing list](http://groups.google.com/group/juzu) to discuss or contribute.
 
-Version 0.4.1 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib-0.4.1.zip) it contains
+Version 0.4.2 is [available](https://github.com/downloads/juzu/juzu/juzu-distrib-0.4.2.zip) it contains
 
 - a tutorial (example and doc)
 - the booking application example
@@ -37,11 +37,11 @@ Screencast
     - update to Weld 1.1.4
     - friendly error display
     - bug fixes
-- 0.4.2
-    - URL xml escaping
 
 # Roadmap
 
+- 0.4.3
+    - URL xml escaping
 - 0.5
     - tutorial (cont)
     - portlet eventing support
