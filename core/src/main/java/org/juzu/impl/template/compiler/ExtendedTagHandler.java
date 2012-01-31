@@ -17,49 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.template.compiler;
 
-import org.juzu.impl.tags.ParamTag;
-import org.juzu.impl.tags.TitleTag;
-import org.juzu.impl.utils.MethodInvocation;
-import org.juzu.impl.tags.DecorateTag;
-import org.juzu.impl.tags.IncludeTag;
-import org.juzu.impl.tags.InsertTag;
+import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.template.ASTNode;
 import org.juzu.template.TagHandler;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateCompilationContext
+public abstract class ExtendedTagHandler extends TagHandler
 {
 
-   /** . */
-   private final Map<String, TagHandler> tags = new HashMap<String, TagHandler>();
-
-   public TemplateCompilationContext()
-   {
-      // Built in tags
-
-      tags.put("include", new IncludeTag());
-      tags.put("insert", new InsertTag());
-      tags.put("decorate", new DecorateTag());
-      tags.put("title", new TitleTag());
-      tags.put("param", new ParamTag());
-   }
-
-   public TagHandler resolve(String name)
-   {
-      return tags.get(name);
-   }
-
-   public void resolveTemplate(String path)
+   public void process(ASTNode.Tag tag) throws CompilationException
    {
    }
 
-   public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
+   public void compile(ProcessPhase phase, Map<String, String> args) throws CompilationException
    {
-      return null;
    }
-
 }

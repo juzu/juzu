@@ -17,17 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.tags;
-
-import org.juzu.impl.template.compiler.ExtendedTagHandler;
-import org.juzu.impl.template.ASTNode;
+package org.juzu.impl.template.compiler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ParamTag extends ExtendedTagHandler
+public class ProcessContext
 {
 
-   @Override
-   public void process(ASTNode.Tag tag)
+   protected Template resolveTemplate(String originPath, String path)
    {
+      return null;
    }
 }

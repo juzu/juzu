@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.resolver;
+package org.juzu.impl.template.compiler;
 
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.utils.FQN;

@@ -32,7 +32,9 @@ import org.juzu.impl.model.meta.TemplateRefMetaModel;
 import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.ASTNode;
-import org.juzu.impl.template.TemplateCompilationContext;
+import org.juzu.impl.template.compiler.Template;
+import org.juzu.impl.template.compiler.EmitContext;
+import org.juzu.impl.template.compiler.EmitPhase;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
@@ -58,6 +60,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * The template repository.
@@ -142,8 +145,8 @@ public class TemplateResolver implements Serializable
          if (template == null)
          {
             log.log("Compiling template " + templateMeta.getPath());
-            TemplateCompiler compiler = new TemplateCompiler(templateMeta, new HashMap<String, Template>(copy), context.env);
-            List<Template> resolved = compiler.resolve();
+            ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<String, Template>(copy), context.env);
+            Collection<Template> resolved = compiler.resolve(templateMeta);
             for (Template added : resolved)
             {
                copy.put(added.getPath(), added);
@@ -184,68 +187,81 @@ public class TemplateResolver implements Serializable
       }
    }
 
-   private void resolveScript(Template template, ModelResolver context, final Element[] elements)
+   private void resolveScript(final Template template, final ModelResolver context, final Element[] elements)
    {
-      TemplateProvider provider = context.providers.get(template.getExtension());
-
-      // If it's the cache we do nothing
-      String key = template.getFQN().getFullName() + ".groovy";
-      if (resourceCache.containsKey(key))
+      context.env.executeWithin(elements[0], new Callable<Void>()
       {
-         log.log("Template " + key + " was found in cache");
-         return;
-      }
-
-      //
-      Writer writer = null;
-      try
-      {
-         TemplateGenerator generator = provider.newGenerator();
-         ASTNode.Template ast = template.getAST();
-         ast.emit(new TemplateCompilationContext()
+         public Void call() throws Exception
          {
-            @Override
-            public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
+            TemplateProvider provider = context.providers.get(template.getExtension());
+
+            // If it's the cache we do nothing
+            String key = template.getFQN().getFullName() + ".groovy";
+            if (!resourceCache.containsKey(key))
             {
-               MethodMetaModel method = application.resolve(typeName, methodName, parameterMap.keySet());
-
                //
-               if (method == null)
+               Writer writer = null;
+               try
                {
-                  throw new CompilationException(elements[0], CompilationErrorCode.CONTROLLER_METHOD_NOT_RESOLVED, methodName + "(" + parameterMap + ")");
-               }
+                  TemplateGenerator generator = provider.newGenerator();
+                  ASTNode.Template ast = template.getAST();
+                  EmitPhase tcc = new EmitPhase(new EmitContext()
+                  {
+                     @Override
+                     public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException
+                     {
+                        MethodMetaModel method = application.resolve(typeName, methodName, parameterMap.keySet());
 
-               //
-               List<String> args = new ArrayList<String>();
-               for (String parameterName : method.getParameterNames())
-               {
-                  String value = parameterMap.get(parameterName);
-                  args.add(value);
+                        //
+                        if (method == null)
+                        {
+                           throw new CompilationException(CompilationErrorCode.CONTROLLER_METHOD_NOT_RESOLVED, methodName + "(" + parameterMap + ")");
+                        }
+
+                        //
+                        List<String> args = new ArrayList<String>();
+                        for (String parameterName : method.getParameterNames())
+                        {
+                           String value = parameterMap.get(parameterName);
+                           args.add(value);
+                        }
+                        return new MethodInvocation(method.getController().getHandle().getFQN().getFullName() + "_", method.getName() + "URL", args);
+                     }
+                  });
+
+                  //
+                  tcc.emit(generator, ast);
+
+                  //
+                  FileObject scriptFile = context.env.createResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension(), elements);
+                  writer = scriptFile.openWriter();
+                  writer.write(generator.toString());
+
+                  // Put it in cache
+                  resourceCache.put(key, scriptFile);
+
+                  //
+                  log.log("Generated template script " + template.getFQN().getFullName() + " as " + scriptFile.toUri() +
+                     " with originating elements " + Arrays.asList(elements));
                }
-               return new MethodInvocation(method.getController().getHandle().getFQN().getFullName() + "_", method.getName() + "URL", args);
+               catch (IOException e)
+               {
+                  throw new CompilationException(e, CompilationErrorCode.CANNOT_WRITE_TEMPLATE_SCRIPT, template.getPath());
+               }
+               finally
+               {
+                  Tools.safeClose(writer);
+               }
             }
-         }, generator);
+            else
+            {
+               log.log("Template " + key + " was found in cache");
+            }
 
-         //
-         FileObject scriptFile = context.env.createResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension(), elements);
-         writer = scriptFile.openWriter();
-         writer.write(generator.toString());
-
-         // Put it in cache
-         resourceCache.put(key, scriptFile);
-
-         //
-         log.log("Generated template script " + template.getFQN().getFullName() + " as " + scriptFile.toUri() +
-            " with originating elements " + Arrays.asList(elements));
-      }
-      catch (IOException e)
-      {
-         throw new CompilationException(e, elements[0], CompilationErrorCode.CANNOT_WRITE_TEMPLATE_SCRIPT, template.getPath());
-      }
-      finally
-      {
-         Tools.safeClose(writer);
-      }
+            //
+            return null;
+         }
+      });
    }
 
    private void resolvedQualified(Template template, ModelResolver context, Element[] elements)

@@ -19,6 +19,7 @@
 
 package org.juzu.impl.model.resolver;
 
+import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.Response;

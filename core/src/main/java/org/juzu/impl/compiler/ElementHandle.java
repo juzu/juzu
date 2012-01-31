@@ -71,7 +71,28 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       }
    }
 
-   public abstract E get(ProcessingEnvironment env);
+   public final E get(ProcessingEnvironment env)
+   {
+      try
+      {
+         return doGet(env);
+      }
+      catch (RuntimeException e)
+      {
+         if (e.getClass().getName().equals("org.eclipse.jdt.internal.compiler.problem.AbortCompilation"))
+         {
+            // In case of eclipse we catch it and return null instead
+            return null;
+         }
+         else
+         {
+            // Rethrow
+            throw e;
+         }
+      }
+   }
+
+   protected abstract E doGet(ProcessingEnvironment env);
 
    public abstract boolean equals(Object obj);
 
@@ -106,7 +127,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       }
 
       @Override
-      public PackageElement get(ProcessingEnvironment env)
+      protected PackageElement doGet(ProcessingEnvironment env)
       {
          return env.getElementUtils().getPackageElement(qn);
       }
@@ -166,7 +187,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       }
 
       @Override
-      public TypeElement get(ProcessingEnvironment env)
+      protected TypeElement doGet(ProcessingEnvironment env)
       {
          return env.getElementUtils().getTypeElement(fqn.getFullName());
       }
@@ -253,7 +274,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       }
 
       @Override
-      public ExecutableElement get(ProcessingEnvironment env)
+      protected ExecutableElement doGet(ProcessingEnvironment env)
       {
          TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getFullName());
          if (typeElt != null)
@@ -354,7 +375,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       }
 
       @Override
-      public VariableElement get(ProcessingEnvironment env)
+      protected VariableElement doGet(ProcessingEnvironment env)
       {
          TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getFullName());
          if (typeElt != null)

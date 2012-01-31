@@ -20,7 +20,9 @@
 package org.juzu.impl.model.processor;
 
 import org.juzu.impl.compiler.BaseProcessor;
+import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.utils.Content;
@@ -62,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -139,22 +142,34 @@ public class ProcessingContext implements Filer, Elements
 
    public <E extends Element> E get(ElementHandle<E> handle)
    {
+      return handle.get(env);
+   }
+
+   public <T> T executeWithin(ElementHandle element, Callable<T> callable) throws CompilationException
+   {
+      return executeWithin(element.get(env), callable);
+   }
+
+   public <T> T executeWithin(Element element, Callable<T> callable) throws CompilationException
+   {
       try
       {
-         return handle.get(env);
+         return callable.call();
       }
-      catch (RuntimeException e)
+      catch (CompilationException e)
       {
-         if (e.getClass().getName().equals("org.eclipse.jdt.internal.compiler.problem.AbortCompilation"))
+         if (e.getElement() != null)
          {
-            // In case of eclipse we catch it and return null instead
-            return null;
+            throw e;
          }
          else
          {
-            // Rethrow
-            throw e;
+            throw new CompilationException(element, e.getCode(), (Object)e.getArguments());
          }
+      }
+      catch (Exception e)
+      {
+         throw new CompilationException(e, element, CompilationErrorCode.UNEXPECTED_ERROR, e.getMessage());
       }
    }
 

@@ -19,6 +19,8 @@
 
 package org.juzu.impl.template;
 
+import org.juzu.impl.template.compiler.EmitContext;
+import org.juzu.impl.template.compiler.EmitPhase;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
@@ -39,12 +41,12 @@ import java.util.Random;
 public abstract class AbstractTemplateTestCase extends AbstractTestCase
 {
 
-   public GroovyTemplateStub template(String text) throws IOException
+   public GroovyTemplateStub template(final String text) throws IOException
    {
-      GroovyTemplateGenerator templateWriter = new GroovyTemplateGenerator();
+      GroovyTemplateGenerator generator = new GroovyTemplateGenerator();
       try
       {
-         ASTNode.Template.parse(text).generate(templateWriter, new TemplateCompilationContext()
+         EmitPhase tcc = new EmitPhase(new EmitContext()
          {
             @Override
             public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
@@ -61,16 +63,18 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
                }
                catch (NoSuchMethodException e)
                {
+                  // Should we thrown a CompilationException instead ?
                   throw failure(e);
                }
             }
          });
+         tcc.emit(generator, ASTNode.Template.parse(text));
       }
       catch (ParseException e)
       {
          throw failure(e);
       }
-      return templateWriter.build("template_" + Math.abs(new Random().nextLong()));
+      return generator.build("template_" + Math.abs(new Random().nextLong()));
    }
 
    public String render(String template) throws IOException, TemplateExecutionException

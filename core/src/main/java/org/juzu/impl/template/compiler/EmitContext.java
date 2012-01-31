@@ -17,21 +17,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.template.compiler;
 
-import org.juzu.template.TagHandler;
+import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.utils.MethodInvocation;
 
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ExtendedTagHandler extends TagHandler
+public class EmitContext
 {
 
-   public void process(ASTNode.Tag tag)
+   public MethodInvocation resolveMethodInvocation(
+      String typeName,
+      String methodName,
+      Map<String, String> parameterMap) throws CompilationException
    {
-   }
-
-   public void compile(TemplateCompilationContext context, Map<String, String> args)
-   {
+      return null;
    }
 }
