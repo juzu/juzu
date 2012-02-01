@@ -23,17 +23,15 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.template.TagHandler;
 
-import java.util.Map;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class ExtendedTagHandler extends TagHandler
 {
 
-   public void process(ASTNode.Tag tag) throws CompilationException
+   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException
    {
    }
 
-   public void compile(ProcessPhase phase, Map<String, String> args) throws CompilationException
+   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException
    {
    }
 }

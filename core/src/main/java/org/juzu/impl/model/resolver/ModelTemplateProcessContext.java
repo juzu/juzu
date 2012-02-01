@@ -33,10 +33,7 @@ import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Spliterator;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
@@ -130,20 +127,6 @@ class ModelTemplateProcessContext extends ProcessContext
          throw new CompilationException(CompilationErrorCode.TEMPLATE_SYNTAX_ERROR, path);
       }
 
-      // Obtain template parameters
-      ArrayList<ASTNode.Tag> paramTags = new ArrayList<ASTNode.Tag>();
-      collectParams(templateAST, paramTags);
-      LinkedHashSet<String> parameters = null;
-      if (paramTags.size() > 0)
-      {
-         parameters = new LinkedHashSet<String>();
-         for (ASTNode.Tag paramTag : paramTags)
-         {
-            String paramName = paramTag.getArgs().get("name");
-            parameters.add(paramName);
-         }
-      }
-
       // Add template to application
       return new Template(
          originPath,
@@ -151,23 +134,6 @@ class ModelTemplateProcessContext extends ProcessContext
          stubFQN,
          extension,
          path,
-         parameters,
          content.getLastModified());
-   }
-
-   private void collectParams(ASTNode<?> node, List<ASTNode.Tag> tags)
-   {
-      for (ASTNode.Block child : node.getChildren())
-      {
-         collectParams(child, tags);
-      }
-      if (node instanceof ASTNode.Tag)
-      {
-         ASTNode.Tag tag = (ASTNode.Tag)node;
-         if (tag.getName().equals("param"))
-         {
-            tags.add(tag);
-         }
-      }
    }
 }

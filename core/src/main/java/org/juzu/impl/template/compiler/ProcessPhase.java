@@ -86,8 +86,8 @@ public class ProcessPhase extends CompilationPhase
 
          // Process template
          doAttribute(templateAST);
-         doProcess(templateAST);
-         doResolve(templateAST);
+         doProcess(template, templateAST);
+         doResolve(template, templateAST);
          doUnattribute(templateAST);
 
          //
@@ -95,13 +95,13 @@ public class ProcessPhase extends CompilationPhase
       }
    }
 
-   private void doProcess(ASTNode<?> node) throws CompilationException
+   private void doProcess(Template template, ASTNode<?> node) throws CompilationException
    {
       if (node instanceof ASTNode.Template)
       {
          for (ASTNode.Block child : node.getChildren())
          {
-            doProcess(child);
+            doProcess(template, child);
          }
       }
       else if (node instanceof ASTNode.Section)
@@ -118,22 +118,22 @@ public class ProcessPhase extends CompilationPhase
          TagHandler handler = get(nodeTag);
          if (handler instanceof ExtendedTagHandler)
          {
-            ((ExtendedTagHandler)handler).process(nodeTag);
+            ((ExtendedTagHandler)handler).process(this, nodeTag, template);
          }
          for (ASTNode.Block child : nodeTag.getChildren())
          {
-            doProcess(child);
+            doProcess(template, child);
          }
       }
    }
 
-   private void doResolve(ASTNode<?> node) throws CompilationException
+   private void doResolve(Template template, ASTNode<?> node) throws CompilationException
    {
       if (node instanceof ASTNode.Template)
       {
          for (ASTNode.Block child : node.getChildren())
          {
-            doResolve(child);
+            doResolve(template, child);
          }
       }
       else if (node instanceof ASTNode.Section)
@@ -150,11 +150,11 @@ public class ProcessPhase extends CompilationPhase
          TagHandler handler = get(nodeTag);
          if (handler instanceof ExtendedTagHandler)
          {
-            ((ExtendedTagHandler)handler).compile(this, nodeTag.getArgs());
+            ((ExtendedTagHandler)handler).compile(this, nodeTag, template);
          }
          for (ASTNode.Block child : nodeTag.getChildren())
          {
-            doResolve(child);
+            doResolve(template, child);
          }
       }
    }

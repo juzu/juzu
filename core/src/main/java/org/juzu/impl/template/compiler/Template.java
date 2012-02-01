@@ -56,7 +56,6 @@ public class Template implements Serializable
       FQN fqn,
       String extension,
       String path,
-      LinkedHashSet<String> parameters,
       long lastModified)
    {
       this.originPath = originPath;
@@ -64,7 +63,7 @@ public class Template implements Serializable
       this.fqn = fqn;
       this.extension = extension;
       this.path = path;
-      this.parameters = parameters;
+      this.parameters = new LinkedHashSet<String>();
       this.lastModified = lastModified;
    }
 
@@ -101,5 +100,10 @@ public class Template implements Serializable
    public LinkedHashSet<String> getParameters()
    {
       return parameters;
+   }
+   
+   public void addParameter(String parameterName)
+   {
+      parameters.add(parameterName);
    }
 }

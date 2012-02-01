@@ -23,6 +23,7 @@ import org.juzu.impl.template.compiler.ExtendedTagHandler;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.compiler.ProcessPhase;
+import org.juzu.impl.template.compiler.Template;
 import org.juzu.template.Renderable;
 import org.juzu.template.TemplateRenderContext;
 
@@ -38,7 +39,7 @@ public class DecorateTag extends ExtendedTagHandler
    static final ThreadLocal<Renderable> current = new ThreadLocal<Renderable>();
 
    @Override
-   public void process(ASTNode.Tag tag)
+   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t)
    {
       ASTNode current =  tag;
       while (true)
@@ -71,9 +72,9 @@ public class DecorateTag extends ExtendedTagHandler
    }
 
    @Override
-   public void compile(ProcessPhase phase, Map<String, String> args)
+   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t)
    {
-      String path = args.get("path");
+      String path = tag.getArgs().get("path");
       phase.resolveTemplate(path);
    }
 
