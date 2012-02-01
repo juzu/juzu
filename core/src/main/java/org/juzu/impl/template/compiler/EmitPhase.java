@@ -19,7 +19,7 @@
 
 package org.juzu.impl.template.compiler;
 
-import org.juzu.impl.spi.template.TemplateGenerator;
+import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.template.TagHandler;
@@ -40,7 +40,7 @@ public class EmitPhase extends CompilationPhase
       this.context = context;
    }
 
-   public void emit(TemplateGenerator generator, ASTNode<?> node) throws IOException
+   public void emit(TemplateEmitter generator, ASTNode<?> node) throws IOException
    {
       doAttribute(node);
       doEmit(new EmitterContext(generator), node.getChildren());

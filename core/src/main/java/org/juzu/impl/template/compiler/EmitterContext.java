@@ -19,7 +19,7 @@
 
 package org.juzu.impl.template.compiler;
 
-import org.juzu.impl.spi.template.TemplateGenerator;
+import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.template.SectionType;
 import org.juzu.text.Location;
 
@@ -34,9 +34,9 @@ class EmitterContext
    private StringBuilder accumulatedText = new StringBuilder();
 
    /** . */
-   final TemplateGenerator writer;
+   final TemplateEmitter writer;
 
-   EmitterContext(TemplateGenerator writer)
+   EmitterContext(TemplateEmitter writer)
    {
       this.writer = writer;
    }

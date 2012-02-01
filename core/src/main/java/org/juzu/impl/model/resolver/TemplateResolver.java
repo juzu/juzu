@@ -29,7 +29,7 @@ import org.juzu.impl.model.meta.ApplicationMetaModel;
 import org.juzu.impl.model.meta.MethodMetaModel;
 import org.juzu.impl.model.meta.TemplateMetaModel;
 import org.juzu.impl.model.meta.TemplateRefMetaModel;
-import org.juzu.impl.spi.template.TemplateGenerator;
+import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.compiler.Template;
@@ -203,7 +203,7 @@ public class TemplateResolver implements Serializable
                Writer writer = null;
                try
                {
-                  TemplateGenerator generator = provider.newGenerator();
+                  TemplateEmitter generator = provider.createEmitter();
                   ASTNode.Template ast = template.getAST();
                   EmitPhase tcc = new EmitPhase(new EmitContext()
                   {

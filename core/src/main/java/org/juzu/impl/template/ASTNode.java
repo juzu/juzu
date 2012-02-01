@@ -19,15 +19,11 @@
 
 package org.juzu.impl.template;
 
-import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.utils.MethodInvocation;
-import org.juzu.impl.spi.template.TemplateGenerator;
 import org.juzu.impl.utils.Tools;
 import org.juzu.template.TagHandler;
 import org.juzu.text.Coordinate;
 import org.juzu.text.Location;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;

@@ -29,7 +29,7 @@ public abstract class TemplateProvider
 
    public abstract Class<? extends TemplateStub> getTemplateStubType();
 
-   public abstract TemplateGenerator newGenerator();
+   public abstract TemplateEmitter createEmitter();
 
    public abstract String getTargetExtension();
 

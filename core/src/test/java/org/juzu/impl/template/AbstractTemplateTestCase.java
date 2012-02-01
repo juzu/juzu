@@ -23,7 +23,7 @@ import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
-import org.juzu.impl.spi.template.gtmpl.GroovyTemplateGenerator;
+import org.juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.test.AbstractTestCase;
@@ -43,7 +43,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
 
    public GroovyTemplateStub template(final String text) throws IOException
    {
-      GroovyTemplateGenerator generator = new GroovyTemplateGenerator();
+      GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
       try
       {
          EmitPhase tcc = new EmitPhase(new EmitContext()

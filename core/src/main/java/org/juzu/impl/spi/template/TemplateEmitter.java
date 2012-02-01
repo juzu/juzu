@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class TemplateGenerator
+public abstract class TemplateEmitter
 {
 
    public abstract void startScriptlet(Location beginPosition);

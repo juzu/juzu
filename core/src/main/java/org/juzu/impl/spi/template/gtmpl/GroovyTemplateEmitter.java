@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.template.gtmpl;
 
-import org.juzu.impl.spi.template.TemplateGenerator;
+import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.template.SectionType;
 import org.juzu.impl.utils.Tools;
 import org.juzu.text.Location;
@@ -28,12 +28,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GroovyTemplateGenerator extends TemplateGenerator
+public class GroovyTemplateEmitter extends TemplateEmitter
 {
 
    /** . */
@@ -63,7 +62,7 @@ public class GroovyTemplateGenerator extends TemplateGenerator
    /** . */
    private final int[] closureCountStack = new int[200];
 
-   public GroovyTemplateGenerator()
+   public GroovyTemplateEmitter()
    {
    }
 

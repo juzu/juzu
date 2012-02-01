@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.template.gtmpl;
 
-import org.juzu.impl.spi.template.TemplateGenerator;
+import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.spi.template.TemplateStub;
 
@@ -34,9 +34,9 @@ public class GroovyTemplateProvider extends TemplateProvider
    }
 
    @Override
-   public TemplateGenerator newGenerator()
+   public TemplateEmitter createEmitter()
    {
-      return new GroovyTemplateGenerator();
+      return new GroovyTemplateEmitter();
    }
 
    @Override
