@@ -34,7 +34,10 @@ import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Spliterator;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 
@@ -69,8 +72,12 @@ class ModelTemplateProcessContext extends ProcessContext
       {
          public Collection<Template> call() throws Exception
          {
+            Set<String> keys = new HashSet<String>(templates.keySet());
             ProcessPhase phase = new ProcessPhase(ModelTemplateProcessContext.this, templates);
-            return phase.resolveTemplates(metaModel.getPath());
+            phase.resolveTemplate(metaModel.getPath());
+            Map<String, Template> copy = new HashMap<String, Template>(templates);
+            copy.keySet().removeAll(keys);
+            return copy.values();
          }
       });
    }

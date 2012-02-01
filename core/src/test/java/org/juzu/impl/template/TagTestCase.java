@@ -19,11 +19,24 @@
 
 package org.juzu.impl.template;
 
+import org.juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
+import org.juzu.impl.template.compiler.EmitContext;
+import org.juzu.impl.template.compiler.EmitPhase;
+import org.juzu.impl.template.compiler.ProcessContext;
+import org.juzu.impl.template.compiler.ProcessPhase;
+import org.juzu.impl.template.compiler.Template;
+import org.juzu.impl.utils.FQN;
+import org.juzu.metadata.TemplateDescriptor;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.DIImplementation;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TagTestCase extends AbstractInjectTestCase
@@ -88,5 +101,56 @@ public class TagTestCase extends AbstractInjectTestCase
          String content = render.getContent();
          assertEquals("foo_value", content);
       }
+   }
+   
+   public void testRecompileTemplate() throws Exception
+   {
+      MockApplication<?> app = application("template", "tag", "decorate").init();
+      
+      // Manufacture a template
+      // to be removed later when we improve this
+      // but for now it will be enough
+      TemplateDescriptor desc = app.getContext().getDescriptor().getTemplate("foo.gtmpl");
+      assertNotNull(desc);
+      Template foo = new Template("index.gtmpl", new ASTNode.Template(), new FQN(desc.getType()), "groovy", "foo.gtmpl", System.currentTimeMillis());
+
+      //
+      HashMap<String, Template> templates = new HashMap<String, Template>();
+      templates.put("foo.gtmpl", foo);
+      ProcessPhase process = new ProcessPhase(new ProcessContext()
+      {
+         @Override
+         protected Template resolveTemplate(String originPath, String path)
+         {
+            if (path.equals("index.gtmpl"))
+            {
+               try
+               {
+                  return new Template(
+                     "index.gtmpl",
+                     ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
+                     new FQN("template.tag.decorate.templates.index"),
+                     "gtmpl",
+                     "index.gtmpl",
+                     System.currentTimeMillis()
+                  );
+               }
+               catch (ParseException e)
+               {
+                  throw failure(e);
+               }
+            }
+            else
+            {
+               return null;
+            }
+         }
+      }, templates);
+      Template template = process.resolveTemplate("index.gtmpl");
+      assertNotNull(template);
+      
+      // Now emit the template
+      EmitPhase emit = new EmitPhase(new EmitContext());
+      emit.emit(new GroovyTemplateEmitter(), template.getAST());
    }
 }

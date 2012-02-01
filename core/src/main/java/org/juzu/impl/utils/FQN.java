@@ -34,6 +34,11 @@ public class FQN implements Serializable
    /** . */
    private final String simpleName;
 
+   public FQN(Class<?> type)
+   {
+      this(type.getName());
+   }
+
    public FQN(String fullName)
    {
       QN packageName;

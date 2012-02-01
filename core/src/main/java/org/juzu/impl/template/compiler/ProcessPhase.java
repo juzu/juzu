@@ -23,9 +23,7 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.template.TagHandler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -52,46 +50,54 @@ public class ProcessPhase extends CompilationPhase
    /** . */
    private String originPath;
 
-   /** . */
-   private List<Template> added;
-
-   public Collection<Template> resolveTemplates(String originPath)
+   public Template resolveTemplate(String path) throws CompilationException
    {
-      this.added = new ArrayList<Template>();
-      this.originPath = originPath;
-      
-      //
-      resolveTemplate(originPath);
-      
-      //
-      return added;
-   }
-
-   public void resolveTemplate(String path) throws CompilationException
-   {
-      Template template = templates.get(path);
-
-      //
-      if (template == null)
+      boolean initial;
+      if (originPath == null)
       {
+         originPath = path;
+         initial = true;
+      }
+      else
+      {
+         initial = false;
+      }
+
+      //
+      try
+      {
+         Template template = templates.get(path);
 
          //
-         templates.put(path, template);
+         if (template == null)
+         {
+            template = context.resolveTemplate(originPath, path);
+   
+            //
+            if (template != null)
+            {
+               templates.put(path, template);
+   
+               //
+               ASTNode.Template templateAST = template.getAST();
+   
+               // Process template
+               doAttribute(templateAST);
+               doProcess(template, templateAST);
+               doResolve(template, templateAST);
+               doUnattribute(templateAST);
+            }
+         }
 
          //
-         template = context.resolveTemplate(originPath, path);
-
-         //
-         ASTNode.Template templateAST = template.getAST();
-
-         // Process template
-         doAttribute(templateAST);
-         doProcess(template, templateAST);
-         doResolve(template, templateAST);
-         doUnattribute(templateAST);
-
-         //
-         added.add(template);
+         return template;
+      }
+      finally
+      {
+         if (initial)
+         {
+            originPath = null;
+         }
       }
    }
 

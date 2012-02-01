@@ -169,6 +169,22 @@ public class ApplicationDescriptor
    {
       return templates;
    }
+   
+   public TemplateDescriptor getTemplate(String path) throws NullPointerException
+   {
+      if (path == null)
+      {
+         throw new NullPointerException("No null path accepted");
+      }
+      for (TemplateDescriptor template : templates)
+      {
+         if (template.getPath().equals(path))
+         {
+            return template;
+         }
+      }
+      return null;
+   }
 
    public ControllerMethod getControllerMethod(Class<?> type, String name, Class<?>... parameterTypes)
    {
