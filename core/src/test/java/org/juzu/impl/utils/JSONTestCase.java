@@ -119,6 +119,12 @@ public class JSONTestCase extends TestCase
       JSON json = new JSON().add("foo", new Foo("bar"));
       assertEquals(new JSON().add("value", "bar"), json.getJSON("foo"));
    }
+
+   public void testUnwrapArray() throws Exception
+   {
+      JSON json = new JSON().add("foo", (Object)new String[]{"bar_1","bar_2"});
+      assertEquals(Arrays.asList("bar_1", "bar_2"), json.getList("foo"));
+   }
    
    public void testCastToString() throws Exception
    {

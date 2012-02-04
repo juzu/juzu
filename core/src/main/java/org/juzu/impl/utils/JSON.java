@@ -25,6 +25,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -156,14 +157,9 @@ public final class JSON
       return this;
    }
 
-   public <E> JSON add(String name, E[] elements)
+   public <E> JSON add(String name, E... elements)
    {
-      ArrayList<Object> r = new ArrayList<Object>();
-      for (E element : elements)
-      {
-         r.add(unwrap(element));
-      }
-      entries.put(name, r);
+      add(name, (Object)elements);
       return this;
    }
 
@@ -216,50 +212,75 @@ public final class JSON
          }
          else
          {
-            Object json = null;
-            try
+            if (o instanceof Iterable<?>)
             {
-               Method toJSON = type.getMethod("toJSON");
-               if (toJSON.getReturnType() != Void.TYPE)
+               ArrayList<Object> r = new ArrayList<Object>();
+               for (Object element : (Iterable<?>)o)
                {
-                  try
-                  {
-                     json = toJSON.invoke(o);
-                  }
-                  catch (IllegalAccessException e)
-                  {
-                     throw new AssertionError(e);
-                  }
-                  catch (InvocationTargetException e)
-                  {
-                     Throwable t = e.getCause();
-                     if (t instanceof RuntimeException)
-                     {
-                        throw (RuntimeException)t;
-                     }
-                     else if (t instanceof Error)
-                     {
-                        throw (Error)t;
-                     }
-                     else
-                     {
-                        throw new UndeclaredThrowableException(t);
-                     }
-                  }
+                  Object unwrapped = unwrap(element);
+                  r.add(unwrapped);
                }
+               o = r;
             }
-            catch (NoSuchMethodException ignore)
+            else if (o.getClass().isArray())
             {
-            }
-
-            //
-            if (json != null)
-            {
-               o = unwrap(json);
+               int length = Array.getLength(o);
+               ArrayList<Object> r = new ArrayList<Object>(length);
+               for (int i = 0;i < length;i++)
+               {
+                  Object component = Array.get(o, i);
+                  Object unwrapped = unwrap(component);
+                  r.add(unwrapped);
+               }
+               o = r;
             }
             else
             {
-               o = o.toString();
+               Object json = null;
+               try
+               {
+                  Method toJSON = type.getMethod("toJSON");
+                  if (toJSON.getReturnType() != Void.TYPE)
+                  {
+                     try
+                     {
+                        json = toJSON.invoke(o);
+                     }
+                     catch (IllegalAccessException e)
+                     {
+                        throw new AssertionError(e);
+                     }
+                     catch (InvocationTargetException e)
+                     {
+                        Throwable t = e.getCause();
+                        if (t instanceof RuntimeException)
+                        {
+                           throw (RuntimeException)t;
+                        }
+                        else if (t instanceof Error)
+                        {
+                           throw (Error)t;
+                        }
+                        else
+                        {
+                           throw new UndeclaredThrowableException(t);
+                        }
+                     }
+                  }
+               }
+               catch (NoSuchMethodException ignore)
+               {
+               }
+
+               //
+               if (json != null)
+               {
+                  o = unwrap(json);
+               }
+               else
+               {
+                  o = o.toString();
+               }
             }
          }
       }
