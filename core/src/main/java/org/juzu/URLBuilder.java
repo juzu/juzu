@@ -59,7 +59,18 @@ public interface URLBuilder
     * @throws NullPointerException if the name parameter is null
     */
    URLBuilder setParameter(String name, String value) throws NullPointerException;
-   
+
+   /**
+    * <p>Set a parameter on the URL that will be built by this builder. This method replaces the parameter with the given
+    * name . A parameter value of <code>null</code> indicates that this parameter should be removed.</p>
+    *
+    * @param name the parameter name
+    * @param value the parameter value
+    * @return this builder
+    * @throws NullPointerException if the name parameter is null
+    */
+   URLBuilder setParameter(String name, String[] value) throws NullPointerException;
+
    URLBuilder escapeXML(Boolean escapeXML);
 
    /**

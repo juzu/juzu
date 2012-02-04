@@ -33,22 +33,35 @@ public class ControllerParameter
    private final String name;
 
    /** . */
+   private final Cardinality cardinality;
+
+   /** . */
    private final String value;
 
-   public ControllerParameter(String name) throws NullPointerException
+//   public ControllerParameter(String name) throws NullPointerException
+//   {
+//      this(name, Cardinality.SINGLE, null);
+//   }
+
+   public ControllerParameter(String name, Cardinality cardinality) throws NullPointerException
    {
-      this(name, null);
+      this(name, cardinality, null);
    }
 
-   public ControllerParameter(String name, String value) throws NullPointerException
+   public ControllerParameter(String name, Cardinality cardinality, String value) throws NullPointerException
    {
       if (name == null)
       {
          throw new NullPointerException("No null parameter name accepted");
       }
+      if (cardinality == null)
+      {
+         throw new NullPointerException("No null parameter cardinality accepted");
+      }
 
       //
       this.name = name;
+      this.cardinality = cardinality;
       this.value = value;
    }
 
@@ -60,6 +73,16 @@ public class ControllerParameter
    public String getName()
    {
       return name;
+   }
+
+   /**
+    * Returns the parameter cardinality.
+    *
+    * @return the parameter cardinality
+    */
+   public Cardinality getCardinality()
+   {
+      return cardinality;
    }
 
    /**

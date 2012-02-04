@@ -26,6 +26,10 @@ import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.text.Printer;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Iterator;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MimeContext extends RequestContext
 {
@@ -56,6 +60,46 @@ public abstract class MimeContext extends RequestContext
       return builder;
    }
 
+   private void setValue(URLBuilder builder, ControllerParameter param, Object value)
+   {
+      switch (param.getCardinality())
+      {
+         case SINGLE:
+         {
+            builder.setParameter(param.getName(), String.valueOf(value));
+            break;
+         }
+         case ARRAY:
+         {
+            int length = Array.getLength(value);
+            String[] array = new String[length];
+            for (int i = 0;i < length;i++)
+            {
+               Object component = Array.get(value, i);
+               array[i] = String.valueOf(component);
+            }
+            builder.setParameter(param.getName(), array);
+            break;
+         }
+         case LIST:
+         {
+            Collection<?> c = (Collection<?>)value;
+            int length = c.size();
+            String[] array = new String[length];
+            Iterator<?> iterator = c.iterator();
+            for (int i = 0;i < length;i++)
+            {
+               Object element = iterator.next();
+               array[i] = String.valueOf(element);
+            }
+            builder.setParameter(param.getName(), array);
+            break;
+         }
+         default:
+            throw new UnsupportedOperationException("Not yet implemented");
+      }
+   }
+   
    public URLBuilder createURLBuilder(ControllerMethod method, Object arg)
    {
       URLBuilder builder = createURLBuilder(method);
@@ -64,7 +108,7 @@ public abstract class MimeContext extends RequestContext
       ControllerParameter param = method.getArgumentParameters().get(0);
       if (arg != null)
       {
-         builder.setParameter(param.getName(), String.valueOf(arg));
+         setValue(builder, param, arg);
       }
 
       //
@@ -81,7 +125,7 @@ public abstract class MimeContext extends RequestContext
          Object value = args[i];
          if (value != null)
          {
-            builder.setParameter(method.getArgumentParameters().get(i).getName(), String.valueOf(value));
+            setValue(builder, method.getArgumentParameters().get(i), value);
          }
       }
       return builder;

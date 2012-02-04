@@ -43,6 +43,20 @@ class URLBuilderImpl implements URLBuilder
 
    public URLBuilder setParameter(String name, String value)
    {
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
+      url.setParameter(name, value);
+      return this;
+   }
+
+   public URLBuilder setParameter(String name, String[] value) throws NullPointerException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null name accepted");
+      }
       url.setParameter(name, value);
       return this;
    }

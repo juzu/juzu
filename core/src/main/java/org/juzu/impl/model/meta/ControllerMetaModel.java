@@ -20,14 +20,19 @@
 package org.juzu.impl.model.meta;
 
 import org.juzu.impl.utils.JSON;
+import org.juzu.metadata.Cardinality;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.model.CompilationErrorCode;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -88,10 +93,12 @@ public class ControllerMetaModel extends MetaModelObject
    public MethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters)
    {
       ArrayList<String> parameterTypes = new ArrayList<String>();
+      ArrayList<Cardinality> parameterCardinalities = new ArrayList<Cardinality>();
       ArrayList<String> parameterNames = new ArrayList<String>();
       for (Map.Entry<String, String> entry : parameters)
       {
          parameterTypes.add(entry.getValue());
+         parameterCardinalities.add(Cardinality.SINGLE);
          parameterNames.add(entry.getKey());
       }
       ElementHandle.Method handle = ElementHandle.Method.create(this.handle.getFQN(), name, parameterTypes);
@@ -106,6 +113,7 @@ public class ControllerMetaModel extends MetaModelObject
          phase,
          name,
          parameterTypes,
+         parameterCardinalities,
          parameterNames);
       methods.put(handle, method);
       return method;
@@ -123,16 +131,67 @@ public class ControllerMetaModel extends MetaModelObject
       {
          if (phase.annotation.getSimpleName().equals(annotationName))
          {
+            List<? extends TypeMirror> parameterTypeMirrors = ((ExecutableType)methodElt.asType()).getParameterTypes();
+            List<? extends VariableElement> parameterVariableElements = methodElt.getParameters();
+
+            //
             ArrayList<String> parameterTypes = new ArrayList<String>();
-            for (TypeMirror parameterType : ((ExecutableType)methodElt.asType()).getParameterTypes())
-            {
-               TypeMirror erasedParameterType = context.env.erasure(parameterType);
-               parameterTypes.add(erasedParameterType.toString());
-            }
             ArrayList<String> parameterNames = new ArrayList<String>();
-            for (VariableElement variableElt : methodElt.getParameters())
+            ArrayList<Cardinality> parameterCardinalities = new ArrayList<Cardinality>();
+            for (int i = 0;i < parameterTypeMirrors.size();i++)
             {
-               parameterNames.add(variableElt.getSimpleName().toString());
+               VariableElement parameterVariableElement = parameterVariableElements.get(i);
+               TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i); 
+               TypeMirror erasedParameterTypeMirror = context.env.erasure(parameterTypeMirror);
+               parameterTypes.add(erasedParameterTypeMirror.toString());
+               TypeMirror parameterSimpleTypeMirror;
+               Cardinality cardinality;
+               switch (parameterTypeMirror.getKind())
+               {
+                  case DECLARED:
+                     DeclaredType dt = (DeclaredType)parameterTypeMirror;
+                     TypeElement col = context.env.getTypeElement("java.util.List");
+                     TypeMirror tm = context.env.erasure(col.asType());
+                     TypeMirror err = context.env.erasure(dt);
+                     // context.env.isSubtype(err, tm)
+                     if (err.equals(tm))
+                     {
+                        if (dt.getTypeArguments().size() != 1)
+                        {
+                           throw new CompilationException(parameterVariableElement, CompilationErrorCode.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                        }
+                        else
+                        {
+                           cardinality = Cardinality.LIST;
+                           parameterSimpleTypeMirror = dt.getTypeArguments().get(0);
+                        }
+                     }
+                     else
+                     {
+                        cardinality = Cardinality.SINGLE;
+                        parameterSimpleTypeMirror = parameterTypeMirror;
+                     }
+                     break;
+                  case ARRAY:
+                     // Unwrap array
+                     ArrayType arrayType = (ArrayType)parameterTypeMirror;
+                     cardinality = Cardinality.ARRAY;
+                     parameterSimpleTypeMirror = arrayType.getComponentType();
+                     break;
+                  default:
+                     throw new CompilationException(parameterVariableElement, CompilationErrorCode.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+               }
+               if (parameterSimpleTypeMirror.getKind() != TypeKind.DECLARED)
+               {
+                  throw new CompilationException(parameterVariableElement, CompilationErrorCode.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+               }
+               DeclaredType parameterSimpleType = (DeclaredType)parameterSimpleTypeMirror;
+               if (!parameterSimpleType.asElement().toString().equals("java.lang.String"))
+               {
+                  throw new CompilationException(parameterVariableElement, CompilationErrorCode.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+               }
+               parameterCardinalities.add(cardinality);
+               parameterNames.add(parameterVariableElement.getSimpleName().toString());
             }
 
             //
@@ -158,6 +217,7 @@ public class ControllerMetaModel extends MetaModelObject
                phase,
                methodElt.getSimpleName().toString(),
                parameterTypes,
+               parameterCardinalities,
                parameterNames);
             methods.put(origin, method);
             modified = true;

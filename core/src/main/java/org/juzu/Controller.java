@@ -26,7 +26,7 @@ import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.request.ResourceContext;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -42,77 +42,26 @@ public abstract class Controller
    /** . */
    protected ResourceContext resourceContext;
 
-   private Object[] getArgs(RequestContext context)
+   public void beginRequest(RequestContext context)
    {
-      ControllerMethod method = context.getMethod();
-
-      // Prepare method parameters
-      List<ControllerParameter> params = method.getArgumentParameters();
-      Object[] args = new Object[params.size()];
-      for (int i = 0;i < args.length;i++)
+      if (context instanceof ActionContext)
       {
-         String[] values = context.getParameters().get(params.get(i).getName());
-         args[i] = (values != null && values.length > 0) ? values[0] : null;
+         actionContext = (ActionContext)context;
       }
-
-      //
-      return args;
-   }
-
-   public Response processAction(ActionContext context)
-   {
-      try
+      else if (context instanceof RenderContext)
       {
-         ControllerMethod method = context.getMethod();
-         Object[] args = getArgs(context);
-         actionContext = context;
-         return (Response)method.getMethod().invoke(this, args);
+         renderContext = (RenderContext)context;
       }
-      catch (Exception e)
+      else if (context instanceof ResourceContext)
       {
-         throw new UnsupportedOperationException("handle me gracefully", e);
-      }
-      finally
-      {
-         actionContext = null;
+         resourceContext = (ResourceContext)context;
       }
    }
-
-   public void render(RenderContext context)
+   
+   public void endRequest()
    {
-      try
-      {
-         ControllerMethod method = context.getMethod();
-         Object[] args = getArgs(context);
-         renderContext = context;
-         method.getMethod().invoke(this, args);
-      }
-      catch (Exception e)
-      {
-         throw new UnsupportedOperationException("handle me gracefully", e);
-      }
-      finally
-      {
-         renderContext = null;
-      }
-   }
-
-   public void serveResource(ResourceContext context)
-   {
-      try
-      {
-         ControllerMethod method = context.getMethod();
-         Object[] args = getArgs(context);
-         resourceContext = context;
-         method.getMethod().invoke(this, args);
-      }
-      catch (Exception e)
-      {
-         throw new UnsupportedOperationException("handle me gracefully", e);
-      }
-      finally
-      {
-         resourceContext = null;
-      }
+      this.actionContext = null;
+      this.renderContext = null;
+      this.resourceContext = null;
    }
 }

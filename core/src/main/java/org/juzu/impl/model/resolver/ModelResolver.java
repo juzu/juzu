@@ -21,6 +21,7 @@ package org.juzu.impl.model.resolver;
 
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.utils.JSON;
+import org.juzu.metadata.Cardinality;
 import org.juzu.request.Phase;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
@@ -106,6 +107,9 @@ public class ModelResolver extends ModelHandler implements Serializable
 
    /** . */
    private static final String RESPONSE = Response.Render.class.getSimpleName();
+
+   /** . */
+   public static final String CARDINALITY = Cardinality.class.getSimpleName();
 
    /** . */
    ProcessingContext env;
@@ -437,6 +441,7 @@ public class ModelResolver extends ModelHandler implements Serializable
          writer.append("import ").append(Tools.getImport(Response.Render.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Cardinality.class)).append(";\n");
 
          // Open class
          writer.append("@Generated(value={})\n");
@@ -468,15 +473,19 @@ public class ModelResolver extends ModelHandler implements Serializable
             }
             writer.append(")");
             writer.append(", Arrays.<").append(CONTROLLER_PARAMETER).append(">asList(");
-            for (Iterator<String> j = method.getParameterNames().iterator();j.hasNext(); )
+            for (int i = 0;i < method.getParameterNames().size();i++)
             {
-               String parameterName = j.next();
-               writer.append("new ").append(CONTROLLER_PARAMETER).append("(\"").
-                  append(parameterName).append("\")");
-               if (j.hasNext())
+               if (i > 0)
                {
                   writer.append(",");
                }
+               String parameterName = method.getParameterNames().get(i);
+               Cardinality parameterCardinality = method.getParameterCardinalities().get(i);
+               writer.append("new ").
+                  append(CONTROLLER_PARAMETER).append('(').
+                  append('"').append(parameterName).append('"').append(',').
+                  append(CARDINALITY).append('.').append(parameterCardinality.name()).
+                  append(')');
             }
             writer.append(")");
             writer.append(");\n");

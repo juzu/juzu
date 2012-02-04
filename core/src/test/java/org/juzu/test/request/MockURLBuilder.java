@@ -23,6 +23,7 @@ import org.juzu.URLBuilder;
 import org.juzu.impl.utils.JSON;
 import org.juzu.metadata.ControllerMethod;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class MockURLBuilder implements URLBuilder
    private final ControllerMethod method;
 
    /** . */
-   private final Map<String, String> parameters;
+   private final Map<String, String[]> parameters;
 
    /** . */
    private Boolean escapeXML;
@@ -42,7 +43,7 @@ public class MockURLBuilder implements URLBuilder
    public MockURLBuilder(ControllerMethod method)
    {
       this.method = method;
-      this.parameters = new HashMap<String, String>();
+      this.parameters = new HashMap<String, String[]>();
       this.escapeXML = null;
    }
 
@@ -58,7 +59,32 @@ public class MockURLBuilder implements URLBuilder
       }
       else
       {
-         parameters.put(name, value);
+         parameters.put(name, new String[]{value});
+      }
+      return this;
+   }
+
+   public URLBuilder setParameter(String name, String[] value) throws NullPointerException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException("No null parameter accepted");
+      }
+      if (value == null)
+      {
+         parameters.remove(name);
+      }
+      else
+      {
+         String[] clone = new String[value.length];
+         for (int i = 0;i < value.length;i++)
+         {
+            if ((clone[i] = value[i]) == null)
+            {
+               throw new IllegalArgumentException("The value array " + Arrays.asList(value) + " should not contain a null value for the parameter " + name + " at position " + i);
+            }
+         }
+         parameters.put(name, clone);
       }
       return this;
    }

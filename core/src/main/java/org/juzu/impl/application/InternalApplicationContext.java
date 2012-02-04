@@ -48,6 +48,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -200,42 +201,38 @@ public class InternalApplicationContext extends ApplicationContext
                // Get a reference
                Object o = manager.get(bean, instance);
 
-               //
+               // Begin request callback
                if (o instanceof Controller)
                {
                   Controller controller = (Controller)o;
-                  switch (request.getContext().getPhase())
-                  {
-                     case ACTION:
-                        return controller.processAction((ActionContext)context);
-                     case RENDER:
-                        controller.render((RenderContext)context);
-                        return null;
-                     case RESOURCE:
-                        controller.serveResource((ResourceContext)context);
-                        return null;
-                     default:
-                        throw new AssertionError();
-                  }
+                  controller.beginRequest(context);
                }
-               else
+               
+               // Invoke method on controller
+               Object[] args = getArgs(context);
+               try
                {
-                  // Prepare method parameters
-                  List<ControllerParameter> params = method.getArgumentParameters();
-                  Object[] args = new Object[params.size()];
-                  for (int i = 0;i < args.length;i++)
-                  {
-                     String[] values = context.getParameters().get(params.get(i).getName());
-                     args[i] = (values != null && values.length > 0) ? values[0] : null;
-                  }
-
-                  //
                   return method.getMethod().invoke(o, args);
                }
-            }
-            catch (InvocationTargetException e)
-            {
-               throw new ApplicationException(e.getCause());
+               catch (InvocationTargetException e)
+               {
+                  throw new ApplicationException(e.getCause());
+               }
+               finally
+               {
+                  if (o instanceof Controller)
+                  {
+                     Controller controller = (Controller)o;
+                     try
+                     {
+                        controller.endRequest();
+                     }
+                     catch (Exception e)
+                     {
+                        // Log me
+                     }
+                  }
+               }
             }
             catch (Exception e)
             {
@@ -254,6 +251,45 @@ public class InternalApplicationContext extends ApplicationContext
             return null;
          }
       }
+   }
+
+   private Object[] getArgs(RequestContext context)
+   {
+      ControllerMethod method = context.getMethod();
+
+      // Prepare method parameters
+      List<ControllerParameter> params = method.getArgumentParameters();
+      Object[] args = new Object[params.size()];
+      for (int i = 0;i < args.length;i++)
+      {
+         ControllerParameter param = params.get(i);
+         String[] values = context.getParameters().get(param.getName());
+         if (values != null)
+         {
+            switch (param.getCardinality())
+            {
+               case SINGLE:
+                  args[i] = (values.length > 0) ? values[0] : null;
+                  break;
+               case ARRAY:
+                  args[i] = values.clone();
+                  break;
+               case LIST:
+                  ArrayList<String> list = new ArrayList<String>(values.length);
+                  for (String value : values)
+                  {
+                     list.add(value);
+                  }
+                  args[i] = list;
+                  break;
+               default:
+                  throw new UnsupportedOperationException("Handle me gracefully");
+            }
+         }
+      }
+
+      //
+      return args;
    }
 
    public Printer getPrinter()

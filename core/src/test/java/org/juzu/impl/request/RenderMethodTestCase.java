@@ -19,6 +19,7 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.metadata.Cardinality;
 import org.juzu.request.Phase;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
@@ -65,6 +66,6 @@ public class RenderMethodTestCase extends AbstractTestCase
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "oneArg", String.class);
       assertEquals("oneArg", cm.getName());
       assertEquals(Phase.RENDER, cm.getPhase());
-      assertEquals(Arrays.asList(new ControllerParameter("foo")), cm.getArgumentParameters());
+      assertEquals(Arrays.asList(new ControllerParameter("foo", Cardinality.SINGLE)), cm.getArgumentParameters());
    }
 }

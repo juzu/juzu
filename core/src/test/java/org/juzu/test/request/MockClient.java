@@ -25,9 +25,11 @@ import org.juzu.impl.application.ApplicationException;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,8 +77,8 @@ public class MockClient
          JSON jsonParams = json.getJSON("parameters");
          for (String name : jsonParams.names())
          {
-            String value = jsonParams.getString(name);
-            request.getParameters().put(name, new String[]{value});
+            List<? extends String> value = jsonParams.getList(name, String.class);
+            request.getParameters().put(name, value.toArray(new String[value.size()]));
          }
       }
       catch (Exception e)

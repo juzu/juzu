@@ -47,6 +47,8 @@ public enum CompilationErrorCode implements ErrorCode
 
    CONTROLLER_METHOD_DUPLICATE_ID("Duplicate method controller id %1$s"),
 
+   CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED("The method parameter type cannot be resolved"),
+
    TEMPLATE_NOT_RESOLVED("The template %1$s cannot be resolved"),
 
    TEMPLATE_SYNTAX_ERROR("Template syntax error"),

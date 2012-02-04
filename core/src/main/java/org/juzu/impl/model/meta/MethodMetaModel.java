@@ -20,6 +20,7 @@
 package org.juzu.impl.model.meta;
 
 import org.juzu.impl.utils.JSON;
+import org.juzu.metadata.Cardinality;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
 
@@ -48,6 +49,9 @@ public class MethodMetaModel extends MetaModelObject
    final ArrayList<String> parameterTypes;
 
    /** . */
+   final ArrayList<Cardinality> parameterCardinalities;
+
+   /** . */
    final ArrayList<String> parameterNames;
 
    MethodMetaModel(
@@ -57,6 +61,7 @@ public class MethodMetaModel extends MetaModelObject
       Phase phase,
       String name,
       ArrayList<String> parameterTypes,
+      ArrayList<Cardinality> parameterCardinalities,
       ArrayList<String> parameterNames)
    {
       this.handle = handle;
@@ -65,6 +70,7 @@ public class MethodMetaModel extends MetaModelObject
       this.phase = phase;
       this.name = name;
       this.parameterTypes = parameterTypes;
+      this.parameterCardinalities = parameterCardinalities;
       this.parameterNames = parameterNames;
    }
 
@@ -108,6 +114,11 @@ public class MethodMetaModel extends MetaModelObject
    public ArrayList<String> getParameterTypes()
    {
       return parameterTypes;
+   }
+
+   public ArrayList<Cardinality> getParameterCardinalities()
+   {
+      return parameterCardinalities;
    }
 
    public ArrayList<String> getParameterNames()
