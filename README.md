@@ -37,11 +37,14 @@ Screencast
     - update to Weld 1.1.4
     - friendly error display
     - bug fixes
+- 0.4.3
+    - Added SecurityContext and HttpContext API
+    - URL xml escaping
+    - multivaluated controller method arguments
+    - fix maven archetype webAppDirectory value
 
 # Roadmap
 
-- 0.4.3
-    - URL xml escaping
 - 0.5
     - tutorial (cont)
     - portlet eventing support
