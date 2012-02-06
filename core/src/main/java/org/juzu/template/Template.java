@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Template
+public abstract class Template
 {
 
    /** . */
@@ -84,6 +84,8 @@ public class Template
    {
       render(printer, parameters, null);
    }
+   
+   public abstract Builder with();
 
    /**
     * Renders the template.
@@ -115,7 +117,7 @@ public class Template
       return getClass().getSimpleName() + "[path=" + path + "]";
    }
 
-   public abstract class Builder
+   public class Builder
    {
 
       /** The parameters. */

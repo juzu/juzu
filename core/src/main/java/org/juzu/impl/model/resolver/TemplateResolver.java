@@ -303,8 +303,14 @@ public class TemplateResolver implements Serializable
          writer.append("public static final TemplateDescriptor DESCRIPTOR = new TemplateDescriptor(").append(template.getFQN().getFullName()).append(".class);\n");
 
          //
+         String baseBuilderName = Tools.getImport(org.juzu.template.Template.Builder.class);
          if (template.getParameters() != null)
          {
+            // Implement abstract method with this class Builder covariant return type
+            writer.append("public Builder with() {\n");
+            writer.append("return new Builder();\n");
+            writer.append("}\n");
+
             // Setters on template
             for (String paramName : template.getParameters())
             {
@@ -316,7 +322,7 @@ public class TemplateResolver implements Serializable
             }
 
             // Setters on builders
-            writer.append("public class Builder extends ").append(Tools.getImport(org.juzu.template.Template.Builder.class)).append("\n");
+            writer.append("public class Builder extends ").append(baseBuilderName).append("\n");
             writer.append("{\n");
             for (String paramName : template.getParameters())
             {
@@ -325,6 +331,13 @@ public class TemplateResolver implements Serializable
                writer.append("return this;\n");
                writer.append(("}\n"));
             }
+            writer.append("}\n");
+         }
+         else
+         {
+            // Implement abstract method
+            writer.append("public ").append(baseBuilderName).append(" with() {\n");
+            writer.append("return new ").append(baseBuilderName).append("();\n");
             writer.append("}\n");
          }
 
