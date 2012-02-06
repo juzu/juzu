@@ -311,16 +311,6 @@ public class TemplateResolver implements Serializable
             writer.append("return new Builder();\n");
             writer.append("}\n");
 
-            // Setters on template
-            for (String paramName : template.getParameters())
-            {
-               writer.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
-               writer.append("Builder builder = new Builder();");
-               writer.append("builder.set(\"").append(paramName).append("\",").append(paramName).append(");\n");
-               writer.append("return builder;\n");
-               writer.append(("}\n"));
-            }
-
             // Setters on builders
             writer.append("public class Builder extends ").append(baseBuilderName).append("\n");
             writer.append("{\n");

@@ -45,6 +45,8 @@ Screencast
 
 # Roadmap
 
+- 0.4.4
+    - change how a builder is obtained from a template using the word "with()"
 - 0.5
     - tutorial (cont)
     - portlet eventing support
@@ -193,7 +195,7 @@ Template can have parameters
 
 Such parameters that can be used in a type safe way in a controller that renders the template
 
-    template.temperature("30").render();
+    template.with().temperature("30").render();
 
 ### Scopes
 

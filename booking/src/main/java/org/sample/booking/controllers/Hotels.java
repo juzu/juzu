@@ -79,7 +79,7 @@ public class Hotels // extends Application
    {
       String username = login.getUserName();
       List<Booking> bookings = Booking.findByUser(username);
-      index.bookings(bookings).render();
+      index.with().bookings(bookings).render();
    }
 
    @Resource
@@ -98,21 +98,21 @@ public class Hotels // extends Application
          pattern = Pattern.compile(".*");
       }
       hotels = Hotel.find(pattern, pattern, _size, _page);
-      list.hotels(hotels).page(_page).render();
+      list.with().hotels(hotels).page(_page).render();
    }
 
    @View
    public void show(String id)
    {
       Hotel hotel = Hotel.findById(id);
-      show.hotel(hotel).render();
+      show.with().hotel(hotel).render();
    }
 
    @View
    public void book(String id)
    {
       Hotel hotel = Hotel.findById(id);
-      book.hotel(hotel).render();
+      book.with().hotel(hotel).render();
    }
 
    @Action

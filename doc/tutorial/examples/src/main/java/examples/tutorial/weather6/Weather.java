@@ -57,10 +57,12 @@ public class Weather
    @View
    public void index(String location)
    {
-      index.location(location).
-            temperature(weatherService.getTemperature(location)).
-            locations(locations).
-            render();
+      index.
+         with().
+         location(location).
+         temperature(weatherService.getTemperature(location)).
+         locations(locations).
+         render();
    }
 
    @Action

@@ -35,6 +35,6 @@ public class A
    @View
    public void index()
    {
-      index.foo("foo_value").render();
+      index.with().foo("foo_value").render();
    }
 }
