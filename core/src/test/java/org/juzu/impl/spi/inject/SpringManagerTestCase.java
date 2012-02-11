@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.spring;
+package org.juzu.impl.spi.inject;
 
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.InjectManagerTestCase;
@@ -25,6 +25,7 @@ import org.juzu.impl.spi.inject.configuration.Declared;
 import org.juzu.impl.spi.inject.configuration.DeclaredInjected;
 import org.juzu.impl.spi.inject.lifecycle.Bean;
 import org.juzu.impl.spi.inject.lifecycle.Dependency;
+import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 import org.juzu.impl.utils.Tools;
 
 import java.io.InputStream;
