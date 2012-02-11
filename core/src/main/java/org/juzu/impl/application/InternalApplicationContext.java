@@ -202,16 +202,25 @@ public class InternalApplicationContext extends ApplicationContext
             I instance = null;
             try
             {
-               // Get the bean
-               instance = manager.create(bean);
+               Object o =  null;
+               try
+               {
+                  // Get the bean
+                  instance = manager.create(bean);
 
-               // Get a reference
-               Object o = manager.get(bean, instance);
+                  // Get a reference
+                  o = manager.get(bean, instance);
+               }
+               catch (InvocationTargetException e)
+               {
+                  throw new ApplicationException(e.getCause());
+               }
 
                // Begin request callback
                if (o instanceof Controller)
                {
                   Controller controller = (Controller)o;
+                  // Handle erorr here
                   controller.beginRequest(context);
                }
                
@@ -224,6 +233,10 @@ public class InternalApplicationContext extends ApplicationContext
                catch (InvocationTargetException e)
                {
                   throw new ApplicationException(e.getCause());
+               }
+               catch (IllegalAccessException e)
+               {
+                  throw new UnsupportedOperationException("hanle me gracefully", e);
                }
                finally
                {
@@ -240,10 +253,6 @@ public class InternalApplicationContext extends ApplicationContext
                      }
                   }
                }
-            }
-            catch (Exception e)
-            {
-               throw new UnsupportedOperationException("handle me gracefully", e);
             }
             finally
             {
