@@ -17,23 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.application;
+@Application
+package template.throwable.checked;
 
-/**
- * A business exception.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public class ApplicationException extends RuntimeException
-{
-
-   public ApplicationException(String message, Throwable cause)
-   {
-      super(message, cause);
-   }
-
-   public ApplicationException(Throwable cause)
-   {
-      super(cause);
-   }
-}
+import org.juzu.Application;

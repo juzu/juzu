@@ -19,6 +19,7 @@
 
 package org.juzu.template;
 
+import org.juzu.impl.application.ApplicationException;
 import org.juzu.text.Location;
 
 /**
@@ -27,7 +28,7 @@ import org.juzu.text.Location;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class TemplateExecutionException extends RuntimeException
+public class TemplateExecutionException extends ApplicationException
 {
 
    /** . */

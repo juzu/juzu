@@ -17,23 +17,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.application;
+package template.throwable.runtime;
 
-/**
- * A business exception.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public class ApplicationException extends RuntimeException
+import org.juzu.Path;
+import org.juzu.View;
+import org.juzu.template.Template;
+
+import javax.inject.Inject;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A
 {
 
-   public ApplicationException(String message, Throwable cause)
-   {
-      super(message, cause);
-   }
+   @Path("index.gtmpl")
+   @Inject
+   Template index;
 
-   public ApplicationException(Throwable cause)
+   @View
+   public void index()
    {
-      super(cause);
+      index.render();
    }
 }
