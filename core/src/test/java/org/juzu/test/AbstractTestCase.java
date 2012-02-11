@@ -80,6 +80,18 @@ public abstract class AbstractTestCase extends TestCase
    {
       return new AssertionFailedError(msg);
    }
+   
+   public static <T> T assertInstanceOf(Class<T> expectedInstance, Object o)
+   {
+      if (expectedInstance.isInstance(o))
+      {
+         return expectedInstance.cast(o);
+      }
+      else
+      {
+         throw failure("Was expecting " + o + " to be an instance of " + expectedInstance.getName());
+      }
+   }
 
    public static void assertDelete(File f)
    {
