@@ -75,7 +75,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.JarFile;
 
@@ -103,7 +102,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    /** . */
    private ClassLoaderFileSystem classLoaderFS;
-
+   
    public void init(PortletConfig config) throws PortletException
    {
       try
@@ -399,7 +398,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             }
             else
             {
-               renderException(request, response, e);
+               renderThrowable(request, response, e);
             }
          }
          finally
@@ -461,19 +460,32 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             }
             catch (TrimmingException e)
             {
-               if (prod)
+               // Internal server error
+               response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
+
+               //
+               logThrowable(e);
+
+               //
+               if (!prod)
                {
-                  throw new PortletException(e.getSource());
-               }
-               else
-               {
-                  renderException(request, response, e);
+                  renderThrowable(request, response, e);
                }
             }
          }
          else
          {
-            renderErrors(request, response, errors);
+            // Internal Server Error
+            response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
+
+            // Log errors
+            logErrors(errors);
+
+            //
+            if (!prod)
+            {
+               renderErrors(request, response, errors);
+            }
          }
       }
    }
@@ -489,8 +501,32 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       linkElt.setAttribute("href", url.toString());
       resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, linkElt);
    }
+   
+   private void logThrowable(Throwable t)
+   {
+      config.getPortletContext().log(t.getMessage(), t);
+   }
 
-   private void renderException(PortletRequest req, MimeResponse resp, Throwable t) throws PortletException, IOException
+   private void logErrors(Collection<CompilationError> errors)
+   {
+      // Todo format that better like it is in renderErrors
+      StringBuilder sb = new StringBuilder("Compilation errors:\n");
+      for (CompilationError error : errors)
+      {
+         if (error.getSourceFile() != null)
+         {
+            sb.append(error.getSourceFile().getAbsolutePath());
+         }
+         else
+         {
+            sb.append(error.getSource());
+         }
+         sb.append(':').append(error.getLocation().getLine()).append(':').append(error.getMessage()).append('\n');
+      }
+      config.getPortletContext().log(sb.toString());
+   }
+
+   private void renderThrowable(PortletRequest req, MimeResponse resp, Throwable t) throws PortletException, IOException
    {
       // Trim the stack trace to remove stuff we don't want to see
       int size = 0;
