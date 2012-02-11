@@ -19,6 +19,8 @@
 
 package org.juzu.impl.spi.inject;
 
+import java.lang.reflect.InvocationTargetException;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface InjectManager<B, I>
 {
@@ -31,10 +33,25 @@ public interface InjectManager<B, I>
 
    B resolveBean(String name);
 
-   I create(B bean);
-
    void release(I instance);
 
-   Object get(B bean, I instance);
+   /**
+    * Create a bean instance for the specified bean.
+    *
+    * @param bean the bean
+    * @return the bean instance
+    * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
+    */
+   I create(B bean) throws InvocationTargetException;
+
+   /**
+    * Get the bean object associated the bean instance.
+    *
+    * @param bean the bean
+    * @param instance the bean instance
+    * @return the bean instance
+    * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
+    */
+   Object get(B bean, I instance) throws InvocationTargetException;
 
 }

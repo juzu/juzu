@@ -22,9 +22,11 @@ package org.juzu.impl.spi.template.gtmpl;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
+import org.juzu.impl.application.ApplicationException;
 import org.juzu.template.TemplateRenderContext;
 
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class BaseScript extends Script
@@ -65,7 +67,26 @@ public abstract class BaseScript extends Script
       }
       else
       {
-         value = renderContext.resolveBean(property);
+         try
+         {
+            value = renderContext.resolveBean(property);
+         }
+         catch (ApplicationException e)
+         {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException)
+            {
+               throw (RuntimeException)cause;
+            }
+            else if (cause instanceof Error)
+            {
+               throw (Error)cause;
+            }
+            else
+            {
+               throw new UndeclaredThrowableException(cause);
+            }
+         }
          if (value == null)
          {
             value = super.getProperty(property);

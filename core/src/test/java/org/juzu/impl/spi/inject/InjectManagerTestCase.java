@@ -23,6 +23,9 @@ import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.bindsingleton.Singleton;
 import org.juzu.impl.spi.inject.bindsingleton.SingletonInjected;
+import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
+import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
+import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
 import org.juzu.impl.spi.inject.defaultscope.UndeclaredScopeBean;
 import org.juzu.impl.spi.inject.implementationtype.Extended;
 import org.juzu.impl.spi.inject.implementationtype.Extension;
@@ -47,7 +50,10 @@ import org.juzu.impl.spi.inject.siblingproducers.ProductInjected;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.AbstractTestCase;
 
+import javax.naming.AuthenticationException;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ConcurrentModificationException;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -320,5 +326,59 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       UndeclaredScopeBean bean1 = getBean(UndeclaredScopeBean.class);
       UndeclaredScopeBean bean2 = getBean(UndeclaredScopeBean.class);
       assertTrue(bean1.count != bean2.count);
+   }
+
+   public void testConstructorThrowsChecked() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "constructorthrowschecked");
+      bootstrap.declareBean(ConstructorThrowsCheckedBean.class, null);
+      boot();
+
+      //
+      try
+      {
+         getBean(ConstructorThrowsCheckedBean.class);
+         throw failure("Was expecting exception");
+      }
+      catch (InvocationTargetException e)
+      {
+         assertInstanceOf(AuthenticationException.class, e.getCause());
+      }
+   }
+
+   public void testConstructorThrowsRuntime() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "constructorthrowsruntime");
+      bootstrap.declareBean(ConstructorThrowsRuntimeBean.class, null);
+      boot();
+
+      //
+      try
+      {
+         getBean(ConstructorThrowsRuntimeBean.class);
+         throw failure("Was expecting exception");
+      }
+      catch (InvocationTargetException e)
+      {
+         assertInstanceOf(ConcurrentModificationException.class, e.getCause());
+      }
+   }
+
+   public void testConstructorThrowsError() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "constructorthrowserror");
+      bootstrap.declareBean(ConstructorThrowsErrorBean.class, null);
+      boot();
+
+      //
+      try
+      {
+         getBean(ConstructorThrowsErrorBean.class);
+         throw failure("Was expecting exception");
+      }
+      catch (InvocationTargetException e)
+      {
+         assertInstanceOf(UnknownError.class, e.getCause());
+      }
    }
 }

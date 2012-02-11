@@ -23,8 +23,10 @@ import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.spi.inject.InjectManager;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 
@@ -119,8 +121,19 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
       instance.release();
    }
 
-   public Object get(Bean<?> bean, CreationalContext<?> instance)
+   public Object get(Bean<?> bean, CreationalContext<?> instance) throws InvocationTargetException
    {
-      return manager.getReference(bean, bean.getBeanClass(), instance);
+      try
+      {
+         return manager.getReference(bean, bean.getBeanClass(), instance);
+      }
+      catch (CreationException e)
+      {
+         throw new InvocationTargetException(e.getCause());
+      }
+      catch (RuntimeException e)
+      {
+         throw new InvocationTargetException(e);
+      }
    }
 }

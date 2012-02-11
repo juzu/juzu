@@ -26,6 +26,7 @@ import com.google.inject.Key;
 import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.binder.LinkedBindingBuilder;
 import com.google.inject.binder.ScopedBindingBuilder;
+import com.google.inject.ProvisionException;
 import com.google.inject.name.Named;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
@@ -33,6 +34,7 @@ import org.juzu.impl.spi.inject.InjectManager;
 
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -184,9 +186,16 @@ public class GuiceManager implements InjectManager<Provider, Object>
       return key != null ? injector.getProvider(key) : null;
    }
 
-   public Object create(Provider bean)
+   public Object create(Provider bean) throws InvocationTargetException
    {
-      return bean.get();
+      try
+      {
+         return bean.get();
+      }
+      catch (ProvisionException e)
+      {
+         throw new InvocationTargetException(e.getCause());
+      }
    }
 
    public void release(Object instance)

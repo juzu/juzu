@@ -17,31 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
-
-import org.juzu.impl.application.ApplicationException;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.template.Template;
-import org.juzu.text.Printer;
-
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
+package org.juzu.impl.spi.inject.spring;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ApplicationContext
+public class SpringBean
 {
-
-   public ApplicationContext()
-   {
-   }
-
-   public abstract ApplicationDescriptor getDescriptor();
-
-   public abstract Object resolveBean(String name) throws ApplicationException;
-
-   public abstract Printer getPrinter();
-
-   public abstract void render(Template template, Printer printer, Map<String, ?> attributes, Locale locale) throws IOException;
-
 }

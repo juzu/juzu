@@ -145,18 +145,25 @@ public class InternalApplicationContext extends ApplicationContext
       }
    }
 
-   public Object resolveBean(String name)
+   public Object resolveBean(String name) throws ApplicationException
    {
       return resolveBean(manager, name);
    }
 
-   private <B, I> Object resolveBean(InjectManager<B, I> manager, String name)
+   private <B, I> Object resolveBean(InjectManager<B, I> manager, String name) throws ApplicationException
    {
       B bean = manager.resolveBean(name);
       if (bean != null)
       {
-         I cc = manager.create(bean);
-         return manager.get(bean, cc);
+         try
+         {
+            I cc = manager.create(bean);
+            return manager.get(bean, cc);
+         }
+         catch (InvocationTargetException e)
+         {
+            throw new ApplicationException(e.getCause());
+         }
       }
       else
       {

@@ -48,7 +48,7 @@ public class ApplicationTemplateRenderContext extends TemplateRenderContext
    }
 
    @Override
-   public Object resolveBean(String name)
+   public Object resolveBean(String name) throws ApplicationException
    {
       return applicationContext.resolveBean(name);
    }

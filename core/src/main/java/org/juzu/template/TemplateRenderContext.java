@@ -19,6 +19,7 @@
 
 package org.juzu.template;
 
+import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.text.Printer;
 
@@ -94,7 +95,7 @@ public class TemplateRenderContext
       return null;
    }
 
-   public Object resolveBean(String expression)
+   public Object resolveBean(String expression) throws ApplicationException
    {
       return null;
    }
