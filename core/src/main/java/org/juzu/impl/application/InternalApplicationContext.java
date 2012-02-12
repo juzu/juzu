@@ -19,7 +19,7 @@
 
 package org.juzu.impl.application;
 
-import org.juzu.Controller;
+import org.juzu.RequestLifeCycle;
 import org.juzu.request.Phase;
 import org.juzu.Response;
 import org.juzu.impl.inject.Export;
@@ -33,14 +33,12 @@ import org.juzu.impl.spi.request.ResourceBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
-import org.juzu.request.ActionContext;
 import org.juzu.request.ApplicationContext;
 import org.juzu.request.MimeContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Spliterator;
-import org.juzu.request.ResourceContext;
 import org.juzu.template.Template;
 import org.juzu.text.Printer;
 
@@ -202,7 +200,7 @@ public class InternalApplicationContext extends ApplicationContext
             I instance = null;
             try
             {
-               Object o =  null;
+               Object o;
                try
                {
                   // Get the bean
@@ -217,11 +215,9 @@ public class InternalApplicationContext extends ApplicationContext
                }
 
                // Begin request callback
-               if (o instanceof Controller)
+               if (o instanceof RequestLifeCycle)
                {
-                  Controller controller = (Controller)o;
-                  // Handle erorr here
-                  controller.beginRequest(context);
+                  ((RequestLifeCycle)o).beginRequest(context);
                }
                
                // Invoke method on controller
@@ -240,12 +236,11 @@ public class InternalApplicationContext extends ApplicationContext
                }
                finally
                {
-                  if (o instanceof Controller)
+                  if (o instanceof RequestLifeCycle)
                   {
-                     Controller controller = (Controller)o;
                      try
                      {
-                        controller.endRequest();
+                        ((RequestLifeCycle)o).endRequest(context);
                      }
                      catch (Exception e)
                      {

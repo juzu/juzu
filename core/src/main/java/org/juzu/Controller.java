@@ -19,18 +19,15 @@
 
 package org.juzu;
 
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.metadata.ControllerParameter;
 import org.juzu.request.ActionContext;
+import org.juzu.request.HttpContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.request.ResourceContext;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.juzu.request.SecurityContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Controller
+public abstract class Controller implements RequestLifeCycle
 {
 
    /** . */
@@ -41,6 +38,12 @@ public abstract class Controller
 
    /** . */
    protected ResourceContext resourceContext;
+
+   /** . */
+   protected HttpContext httpContext;
+
+   /** . */
+   protected SecurityContext securityContext;
 
    public void beginRequest(RequestContext context)
    {
@@ -56,12 +59,16 @@ public abstract class Controller
       {
          resourceContext = (ResourceContext)context;
       }
+      httpContext = context.getHttpContext();
+      securityContext = context.getSecurityContext();
    }
    
-   public void endRequest()
+   public void endRequest(RequestContext context)
    {
       this.actionContext = null;
       this.renderContext = null;
       this.resourceContext = null;
+      this.httpContext = null;
+      this.securityContext = null;
    }
 }
