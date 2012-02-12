@@ -75,6 +75,7 @@ Various things to do, not exhaustive that needs to go in the roadmap
 - honour life cycle of objects (specially flash scope)
 - handle internal error correctly
 - think about doing a "debug" portlet that would cooperate with juzu portlets
+- weld declared beans and instance always have the Singleton scope and ignore the class setting
 
 
 # Deploy on
