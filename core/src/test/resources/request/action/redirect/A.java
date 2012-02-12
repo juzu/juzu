@@ -20,25 +20,24 @@
 package request.action.redirect;
 
 import org.juzu.Action;
-import org.juzu.Controller;
 import org.juzu.View;
 import org.juzu.Response;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
+public class A
 {
 
    @View
-   public void index() throws IOException
+   public Response.Mime index() throws IOException
    {
-      renderContext.getPrinter().write(A_.actionURL().toString());
+      return Response.ok(A_.actionURL().toString());
    }
 
    @Action
-   public Response.Redirect action()
+   public Response.Action.Redirect action()
    {
-      return actionContext.redirect("http://www.julienviet.com");
+      return Response.redirect("http://www.julienviet.com");
    }
 }

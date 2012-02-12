@@ -19,12 +19,11 @@
 
 package org.juzu.request;
 
+import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.template.Template;
-import org.juzu.text.Printer;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -40,8 +39,6 @@ public abstract class ApplicationContext
 
    public abstract Object resolveBean(String name) throws ApplicationException;
 
-   public abstract Printer getPrinter();
-
-   public abstract void render(Template template, Printer printer, Map<String, ?> attributes, Locale locale) throws IOException;
+   public abstract Response.Mime render(Template template, Map<String, ?> parameters, Locale locale);
 
 }

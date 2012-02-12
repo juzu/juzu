@@ -22,16 +22,8 @@ package org.juzu.impl.spi.request;
 import org.juzu.Response;
 import org.juzu.metadata.ControllerMethod;
 
-import java.io.IOException;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ActionBridge extends RequestBridge
+public interface ActionBridge extends RequestBridge<Response.Action>
 {
-
-   Response.Render createResponse(ControllerMethod method);
-
-   Response.Redirect redirect(String location);
-
-   void setResponse(Response response) throws IllegalStateException, IOException;
 
 }

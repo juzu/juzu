@@ -19,6 +19,7 @@
 
 package org.juzu.request;
 
+import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.metadata.ApplicationDescriptor;
@@ -26,6 +27,7 @@ import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.text.Printer;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
@@ -139,5 +141,10 @@ public abstract class MimeContext extends RequestContext
    public Printer getPrinter()
    {
       return getBridge().getPrinter();
+   }
+   
+   public void setResponse(Response.Mime response) throws IOException, IllegalStateException
+   {
+      getBridge().setResponse(response);
    }
 }

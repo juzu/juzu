@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.Response;
 import org.juzu.impl.spi.request.ResourceBridge;
 
 import javax.portlet.ResourceRequest;
@@ -26,7 +27,7 @@ import javax.portlet.ResourceResponse;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge
+public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse, Response.Mime.Resource> implements ResourceBridge
 {
 
    public PortletResourceBridge(ResourceRequest request, ResourceResponse response, boolean buffer) throws IOException

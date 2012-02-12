@@ -21,7 +21,6 @@ package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
-import org.juzu.metadata.ControllerMethod;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -29,7 +28,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge
+public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse, Response.Action> implements ActionBridge
 {
 
    /** . */
@@ -43,28 +42,18 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       this.done = false;
    }
 
-   public Response.Render createResponse(ControllerMethod method)
-   {
-      return  new RenderImpl(method.getId());
-   }
-
-   public Response.Redirect redirect(String location)
-   {
-      return new RedirectImpl(location);
-   }
-
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void setResponse(Response.Action response) throws IllegalStateException, IOException
    {
       if (done)
       {
          throw new IllegalStateException();
       }
-      if (response instanceof RenderImpl)
+      if (response instanceof Response.Action.Render)
       {
          done = true;
-         RenderImpl render = (RenderImpl)response;
-         super.response.setRenderParameter("op", render.methodId);
-         for (Map.Entry<String, String> entry : render.parameters.entrySet())
+         Response.Action.Render render = (Response.Action.Render)response;
+         super.response.setRenderParameter("op", render.getMethodId());
+         for (Map.Entry<String, String> entry : render.getParameters().entrySet())
          {
             super.response.setRenderParameter(entry.getKey(), entry.getValue());
          }
@@ -72,8 +61,8 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       else
       {
          done = true;
-         RedirectImpl redirect = (RedirectImpl)response;
-         super.response.sendRedirect(redirect.location);
+         Response.Action.Redirect redirect = (Response.Action.Redirect)response;
+         super.response.sendRedirect(redirect.getLocation());
       }
    }
 }

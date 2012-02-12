@@ -19,13 +19,16 @@
 
 package org.juzu.test.request;
 
+import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.text.Printer;
 
+import java.io.IOException;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge
+public abstract class MockMimeBridge<R extends Response.Mime> extends MockRequestBridge<R> implements MimeBridge<R>
 {
 
    /** . */
@@ -52,5 +55,18 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
    public Printer getPrinter()
    {
       return printer;
+   }
+
+   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   {
+      if (response instanceof Response.Mime.Stream)
+      {
+         Response.Mime.Stream stream = (Response.Mime.Stream)response;
+         stream.send(printer);
+      }
+      else
+      {
+         throw new UnsupportedOperationException();
+      }
    }
 }

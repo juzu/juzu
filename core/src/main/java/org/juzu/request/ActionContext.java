@@ -24,6 +24,7 @@ import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 
+import java.io.IOException;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -32,9 +33,6 @@ public class ActionContext extends RequestContext
 
    /** . */
    private ActionBridge bridge;
-
-   /** . */
-   private boolean sent;
 
    protected ActionContext()
    {
@@ -46,7 +44,6 @@ public class ActionContext extends RequestContext
 
       //
       this.bridge = bridge;
-      this.sent = false;
    }
 
    @Override
@@ -61,30 +58,14 @@ public class ActionContext extends RequestContext
       return Phase.ACTION;
    }
 
-   public Response.Redirect redirect(String location)
+   public Response.Action.Render createResponse(ControllerMethod method) throws IllegalStateException
    {
-      return bridge.redirect(location);
+      return new Response.Action.Render(method.getId());
    }
 
-   public boolean isSent()
+   public Response.Action.Render createResponse(ControllerMethod method, Object arg) throws IllegalStateException
    {
-      return sent;
-   }
-
-   public Response.Render createResponse(ControllerMethod method) throws IllegalStateException
-   {
-      if (sent)
-      {
-         throw new IllegalStateException("Response already created");
-      }
-      Response.Render response = bridge.createResponse(method);
-      sent = true;
-      return response;
-   }
-
-   public Response.Render createResponse(ControllerMethod method, Object arg) throws IllegalStateException
-   {
-      Response.Render response = createResponse(method);
+      Response.Action.Render response = createResponse(method);
       List<ControllerParameter> argumentParameters = method.getArgumentParameters();
       if (arg != null)
       {
@@ -93,9 +74,9 @@ public class ActionContext extends RequestContext
       return response;
    }
 
-   public Response.Render createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
+   public Response.Action.Render createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
    {
-      Response.Render response = createResponse(method);
+      Response.Action.Render response = createResponse(method);
       List<ControllerParameter> argumentParameters = method.getArgumentParameters();
       for (int i = 0;i < argumentParameters.size();i++)
       {
@@ -107,5 +88,10 @@ public class ActionContext extends RequestContext
          }
       }
       return response;
+   }
+
+   public void setResponse(Response.Action response) throws IOException, IllegalStateException
+   {
+      getBridge().setResponse(response);
    }
 }

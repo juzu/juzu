@@ -20,6 +20,7 @@
 package inject.binding.declaration;
 
 import org.juzu.Controller;
+import org.juzu.Response;
 import org.juzu.View;
 
 import javax.inject.Inject;
@@ -33,11 +34,8 @@ public class A extends Controller
    Service service;
 
    @View
-   public void index() throws IOException
+   public Response.Mime index() throws IOException
    {
-      if (service != null)
-      {
-         renderContext.getPrinter().write("pass");
-      }
+      return Response.ok(service != null ? "pass" : "");
    }
 }

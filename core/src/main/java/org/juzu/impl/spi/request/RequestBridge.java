@@ -19,13 +19,15 @@
 
 package org.juzu.impl.spi.request;
 
+import org.juzu.Response;
 import org.juzu.request.HttpContext;
 import org.juzu.request.SecurityContext;
 
+import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestBridge
+public interface RequestBridge<R extends Response>
 {
 
    
@@ -58,4 +60,5 @@ public interface RequestBridge
 
    SecurityContext getSecurityContext();
 
+   void setResponse(R response) throws IllegalStateException, IOException;
 }

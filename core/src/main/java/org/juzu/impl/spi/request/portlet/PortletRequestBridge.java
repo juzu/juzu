@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.Response;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.request.HttpContext;
 import org.juzu.request.SecurityContext;
@@ -30,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge
+abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse, R extends Response> implements RequestBridge<R>
 {
 
    /** . */

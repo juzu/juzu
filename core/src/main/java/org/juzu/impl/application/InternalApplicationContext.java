@@ -34,8 +34,6 @@ import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.request.ApplicationContext;
-import org.juzu.request.MimeContext;
-import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Spliterator;
@@ -123,11 +121,16 @@ public class InternalApplicationContext extends ApplicationContext
          current.set(request);
          ScopeController.begin(request);
          Object ret = doInvoke(manager, request, method);
-         if (phase == Phase.ACTION && ret != null && ret instanceof Response)
+         if (ret instanceof Response)
          {
+            // We should check that it matches....
+            // btw we should try to enforce matching during compilation phase
+            // @Action -> Response.Action
+            // @View -> Response.Mime
+            // as we can do it
             try
             {
-               ((ActionBridge)bridge).setResponse((Response)ret);
+               bridge.setResponse((Response)ret);
             }
             catch (IOException e)
             {
@@ -303,20 +306,6 @@ public class InternalApplicationContext extends ApplicationContext
       return args;
    }
 
-   public Printer getPrinter()
-   {
-      Request req = current.get();
-      RequestContext context = req.getContext();
-      if (context instanceof MimeContext)
-      {
-         return ((MimeContext)context).getPrinter();
-      }
-      else
-      {
-         throw new AssertionError("does not make sense");
-      }
-   }
-
    public TemplateStub resolveTemplateStub(String path)
    {
       try
@@ -343,28 +332,38 @@ public class InternalApplicationContext extends ApplicationContext
    }
 
    @Override
-   public void render(Template template, Printer printer, Map<String, ?> attributes, Locale locale) throws IOException
+   public Response.Mime render(final Template template, final Map<String, ?> parameters, final Locale locale)
    {
-      Printer toUse = printer != null ? printer : getPrinter();
-
-      //
-      TemplateStub stub = resolveTemplateStub(template.getPath());
-
-      //
-      ApplicationTemplateRenderContext context = new ApplicationTemplateRenderContext(this, toUse, attributes, locale);
-
-      //
-      stub.render(context);
-
-      //
-      String title = context.getTitle();
-      if (printer == null && title != null)
+      return new Response.Mime.Render()
       {
-         RequestContext ctx = current.get().getContext();
-         if (ctx instanceof RenderContext)
+
+         /** . */
+         private String title;
+         
+         @Override
+         public String getTitle()
          {
-            ((RenderContext)ctx).setTitle(title);
+            return title;
          }
-      }
+
+         public void send(Printer printer) throws IOException
+         {
+            //
+            TemplateStub stub = resolveTemplateStub(template.getPath());
+
+            //
+            ApplicationTemplateRenderContext context = new ApplicationTemplateRenderContext(
+               InternalApplicationContext.this,
+               printer,
+               parameters,
+               locale);
+
+            //
+            stub.render(context);
+
+            //
+            this.title = context.getTitle();
+         }
+      };
    }
 }

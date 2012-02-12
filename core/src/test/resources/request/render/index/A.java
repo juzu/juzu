@@ -20,6 +20,7 @@
 package request.render.index;
 
 import org.juzu.Controller;
+import org.juzu.Response;
 import org.juzu.View;
 
 import java.io.IOException;
@@ -29,8 +30,8 @@ public class A extends Controller
 {
 
    @View
-   public void index() throws IOException
+   public Response.Mime index() throws IOException
    {
-      renderContext.getPrinter().write("index");
+      return Response.ok("index");
    }
 }

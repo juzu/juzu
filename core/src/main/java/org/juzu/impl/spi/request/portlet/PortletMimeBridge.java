@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.Response;
 import org.juzu.request.Phase;
 import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
@@ -30,12 +31,9 @@ import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge
+abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse, R extends Response.Mime> extends PortletRequestBridge<Rq, Rs, R> implements MimeBridge<R>
 {
 
    /** . */
@@ -97,4 +95,8 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       return new URLBuilderImpl(url);
    }
 
+   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   {
+      response.send(printer);
+   }
 }

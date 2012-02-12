@@ -21,6 +21,7 @@ package request.action.throwable.runtime;
 
 import org.juzu.Action;
 import org.juzu.Controller;
+import org.juzu.Response;
 import org.juzu.View;
 
 import java.io.IOException;
@@ -41,8 +42,8 @@ public class A extends Controller
    }
 
    @View
-   public void index() throws IOException
+   public Response.Mime index() throws IOException
    {
-      renderContext.getPrinter().write(A_.actionURL().toString());
+      return Response.ok(A_.actionURL().toString());
    }
 }

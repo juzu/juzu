@@ -65,7 +65,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -106,7 +105,7 @@ public class ModelResolver extends ModelHandler implements Serializable
    private static final String TOOLS = Tools.class.getSimpleName();
 
    /** . */
-   private static final String RESPONSE = Response.Render.class.getSimpleName();
+   private static final String RESPONSE = Response.Action.Render.class.getSimpleName();
 
    /** . */
    public static final String CARDINALITY = Cardinality.class.getSimpleName();
@@ -438,7 +437,7 @@ public class ModelResolver extends ModelHandler implements Serializable
          writer.append("import ").append(Tools.getImport(InternalApplicationContext.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(Response.Render.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Response.Action.Render.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Cardinality.class)).append(";\n");

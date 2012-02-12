@@ -20,6 +20,7 @@
 package request.render.parameterizedindex;
 
 import org.juzu.Controller;
+import org.juzu.Response;
 import org.juzu.View;
 
 import java.io.IOException;
@@ -29,15 +30,15 @@ public class A extends Controller
 {
 
    @View
-   public void index(String param) throws IOException
+   public Response.Mime index(String param) throws IOException
    {
       if (param == null)
       {
-         renderContext.getPrinter().write("0[" + A_.indexURL("foo").toString() + "]");
+         return Response.ok("0[" + A_.indexURL("foo").toString() + "]");
       }
       else
       {
-         renderContext.getPrinter().write("1[" + A_.indexURL(null).toString() + "]");
+         return Response.ok("1[" + A_.indexURL(null).toString() + "]");
       }
    }
 }

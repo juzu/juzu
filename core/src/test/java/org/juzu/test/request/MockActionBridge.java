@@ -21,14 +21,13 @@ package org.juzu.test.request;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
-import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockActionBridge extends MockRequestBridge implements ActionBridge
+public class MockActionBridge extends MockRequestBridge<Response.Action> implements ActionBridge
 {
 
    /** . */
@@ -39,16 +38,6 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
       super(client, methodId);
    }
 
-   public Response.Render createResponse(ControllerMethod method)
-   {
-      return new MockResponse(method.getId());
-   }
-
-   public Response.Redirect redirect(String location)
-   {
-      return new MockRedirect(location);
-   }
-
    public void assertNoResponse()
    {
       assertResponse(null);
@@ -56,12 +45,13 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
 
    public void assertRedirect(String location)
    {
-      assertResponse(new MockRedirect(location));
+      assertResponse(new Response.Action.Redirect(location));
    }
 
    public void assertRender(String expectedMethodId, Map<String, String> expectedArguments)
    {
-      MockResponse resp = new MockResponse(expectedMethodId, expectedArguments);
+      Response.Action.Render resp = new Response.Action.Render(expectedMethodId);
+      resp.getParameters().putAll(expectedArguments);
       assertResponse(resp);
    }
 
@@ -72,7 +62,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
          response);
    }
 
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void setResponse(Response.Action response) throws IllegalStateException, IOException
    {
       if (this.response != null)
       {

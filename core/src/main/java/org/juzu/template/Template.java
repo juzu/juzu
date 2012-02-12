@@ -19,8 +19,12 @@
 
 package org.juzu.template;
 
+import org.juzu.Response;
 import org.juzu.UndeclaredIOException;
+import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.request.ApplicationContext;
+import org.juzu.request.MimeContext;
+import org.juzu.request.RequestContext;
 import org.juzu.text.Printer;
 
 import java.io.IOException;
@@ -67,7 +71,25 @@ public abstract class Template
 
    public void render(Map<String, ?> parameters, Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
-      render(null, parameters, null);
+      try
+      {
+         RequestContext context = InternalApplicationContext.getCurrentRequest();
+         if (context instanceof MimeContext)
+         {
+            Response.Mime stream = applicationContext.render(this, parameters, locale);
+            MimeContext mime = (MimeContext)context;
+            mime.setResponse(stream);
+         }
+         else
+         {
+            throw new AssertionError("does not make sense");
+         }
+      }
+      catch (IOException e)
+      {
+         throw new UndeclaredIOException(e);
+      }
+
    }
 
    public void render(Printer printer) throws TemplateExecutionException, UndeclaredIOException
@@ -84,7 +106,27 @@ public abstract class Template
    {
       render(printer, parameters, null);
    }
-   
+
+   public final Response.Mime ok()
+   {
+      return applicationContext.render(this, null, null);
+   }
+
+   public final Response.Mime ok(Locale locale)
+   {
+      return applicationContext.render(this, null, locale);
+   }
+
+   public final Response.Mime ok(Map<String, ?> parameters)
+   {
+      return applicationContext.render(this, parameters, null);
+   }
+
+   public final Response.Mime ok(Map<String, ?> parameters, Locale locale)
+   {
+      return applicationContext.render(this, parameters, locale);
+   }
+
    public abstract Builder with();
 
    /**
@@ -99,18 +141,23 @@ public abstract class Template
    public void render(
       Printer printer,
       Map<String, ?> attributes,
-      Locale locale
-   ) throws TemplateExecutionException, UndeclaredIOException {
+      Locale locale) throws TemplateExecutionException, UndeclaredIOException
+   {
+      if (printer == null)
+      {
+         throw new NullPointerException("No null printe provided");
+      }
       try
       {
-         applicationContext.render(this, printer, attributes, locale);
+         Response.Mime stream = applicationContext.render(this, attributes, locale);
+         stream.send(printer);
       }
       catch (IOException e)
       {
          throw new UndeclaredIOException(e);
       }
    }
-
+   
    @Override
    public String toString()
    {
@@ -125,14 +172,12 @@ public abstract class Template
 
       public final void render()
       {
-         if (parameters != null)
-         {
-            Template.this.render(parameters);
-         }
-         else
-         {
-            Template.this.render();
-         }
+         Template.this.render(parameters);
+      }
+
+      public final Response.Mime.Stream ok()
+      {
+         return Template.this.ok(parameters);
       }
 
       /**

@@ -86,4 +86,13 @@ public class RenderTestCase extends AbstractInjectTestCase
       assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
       assertEquals("0", m.group(1));
    }
+
+   public void testResponse() throws Exception
+   {
+      MockApplication<?> app = application("request", "render", "response").init();
+
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      assertEquals("foo", render.getContent());
+   }
 }

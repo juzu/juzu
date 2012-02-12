@@ -20,6 +20,7 @@
 package request.method.parameters.string.array;
 
 import org.juzu.Controller;
+import org.juzu.Response;
 import org.juzu.View;
 
 import java.io.IOException;
@@ -30,33 +31,33 @@ public class A extends Controller
 {
 
    @View(id = "none")
-   public void none() throws IOException
+   public Response.Mime none() throws IOException
    {
-      renderContext.getPrinter().write(A_.mvURL(null).toString());
+      return Response.ok(A_.mvURL(null).toString());
    }
 
    @View(id = "0")
-   public void zero() throws IOException
+   public Response.Mime zero() throws IOException
    {
-      renderContext.getPrinter().write(A_.mvURL(new String[]{}).toString());
+      return Response.ok(A_.mvURL(new String[]{}).toString());
    }
 
    @View(id = "1")
-   public void one() throws IOException
+   public Response.Mime one() throws IOException
    {
-      renderContext.getPrinter().write(A_.mvURL(new String[]{"bar"}).toString());
+      return Response.ok(A_.mvURL(new String[]{"bar"}).toString());
    }
 
    @View(id = "2")
-   public void two() throws IOException
+   public Response.Mime two() throws IOException
    {
-      renderContext.getPrinter().write(A_.mvURL(new String[]{"bar_1", "bar_2"}).toString());
+      return Response.ok(A_.mvURL(new String[]{"bar_1", "bar_2"}).toString());
    }
 
    @View
-   public void mv(String[] foo) throws IOException
+   public Response.Mime mv(String[] foo) throws IOException
    {
       String s = foo != null ? Arrays.<String>asList((String[])foo).toString() : "";
-      renderContext.getPrinter().write(s);
+      return Response.ok(s);
    }
 }

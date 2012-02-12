@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.Response;
 import org.juzu.impl.spi.request.RenderBridge;
 
 import javax.portlet.RenderRequest;
@@ -26,7 +27,7 @@ import javax.portlet.RenderResponse;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
+public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse, Response.Mime.Render> implements RenderBridge
 {
 
    public PortletRenderBridge(RenderRequest request, RenderResponse response, boolean buffer) throws IOException
@@ -37,5 +38,23 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
    public void setTitle(String title)
    {
       response.setTitle(title);
+   }
+
+   @Override
+   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   {
+      super.setResponse(response);
+
+      // Improve that because it will not work on streaming portals...
+      // for now it's OK
+      if (response instanceof Response.Mime.Render)
+      {
+         Response.Mime.Render render = (Response.Mime.Render)response;
+         String title = render.getTitle();
+         if (title != null)
+         {
+            setTitle(title);
+         }
+      }
    }
 }

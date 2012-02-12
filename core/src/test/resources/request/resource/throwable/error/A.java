@@ -21,6 +21,7 @@ package request.resource.throwable.error;
 
 import org.juzu.Controller;
 import org.juzu.Resource;
+import org.juzu.Response;
 import org.juzu.View;
 
 import javax.naming.AuthenticationException;
@@ -41,8 +42,8 @@ public class A extends Controller
    }
 
    @View
-   public void index() throws IOException
+   public Response.Mime index() throws IOException
    {
-      renderContext.getPrinter().write(A_.resourceURL().toString());
+      return Response.ok(A_.resourceURL().toString());
    }
 }

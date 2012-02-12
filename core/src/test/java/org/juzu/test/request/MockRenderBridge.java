@@ -19,10 +19,13 @@
 
 package org.juzu.test.request;
 
+import org.juzu.Response;
 import org.juzu.impl.spi.request.RenderBridge;
 
+import java.io.IOException;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockRenderBridge extends MockMimeBridge implements RenderBridge
+public class MockRenderBridge extends MockMimeBridge<Response.Mime.Render> implements RenderBridge
 {
 
    /** . */
@@ -46,5 +49,18 @@ public class MockRenderBridge extends MockMimeBridge implements RenderBridge
    public void setTitle(String title)
    {
       this.title = title;
+   }
+
+   @Override
+   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   {
+      super.setResponse(response);
+      
+      //
+      if (response instanceof Response.Mime.Render)
+      {
+         Response.Mime.Render stream = (Response.Mime.Render)response;
+         title = stream.getTitle();
+      }
    }
 }

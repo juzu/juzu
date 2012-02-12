@@ -21,6 +21,7 @@ package template.ioe;
 
 import org.juzu.Controller;
 import org.juzu.Path;
+import org.juzu.Response;
 import org.juzu.UndeclaredIOException;
 import org.juzu.View;
 import org.juzu.template.Template;
@@ -38,8 +39,9 @@ public class A extends Controller
    Template index;
 
    @View
-   public void index()
+   public Response.Mime index()
    {
+      String ret = "";
       WriterPrinter printer = new WriterPrinter(new Appendable()
       {
          public Appendable append(CharSequence csq) throws IOException
@@ -63,13 +65,8 @@ public class A extends Controller
       }
       catch (UndeclaredIOException expected)
       {
-         try
-         {
-            renderContext.getPrinter().write("pass");
-         }
-         catch (IOException e)
-         {
-         }
+         ret = "pass";
       }
+      return Response.ok(ret);
    }
 }

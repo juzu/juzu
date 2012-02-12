@@ -19,6 +19,7 @@
 
 package org.juzu.test.request;
 
+import org.juzu.Response;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.spi.request.portlet.MockSecurityContext;
 
@@ -26,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockRequestBridge implements RequestBridge
+public abstract class MockRequestBridge<R extends Response> implements RequestBridge<R>
 {
 
    /** . */

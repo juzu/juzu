@@ -21,6 +21,7 @@ package request.context;
 
 import org.juzu.Action;
 import org.juzu.Controller;
+import org.juzu.Response;
 import org.juzu.View;
 
 import java.io.IOException;
@@ -30,10 +31,9 @@ public class A extends Controller
 {
 
    @View
-   public void index() throws IOException
+   public Response.Mime.Render index() throws IOException
    {
-      renderContext.getPrinter().write("render_phase");
-      renderContext.setTitle(A_.actionURL().toString());
+      return Response.ok(A_.actionURL().toString(), "render_phase");
    }
 
    @Action
