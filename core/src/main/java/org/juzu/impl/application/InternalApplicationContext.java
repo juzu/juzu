@@ -38,7 +38,7 @@ import org.juzu.request.RequestContext;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Spliterator;
 import org.juzu.template.Template;
-import org.juzu.text.Printer;
+import org.juzu.template.TemplateRenderContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -332,38 +332,19 @@ public class InternalApplicationContext extends ApplicationContext
    }
 
    @Override
-   public Response.Mime render(final Template template, final Map<String, ?> parameters, final Locale locale)
+   public TemplateRenderContext render(final Template template, final Map<String, ?> parameters, final Locale locale)
    {
-      return new Response.Mime.Render()
-      {
+      //
+      TemplateStub stub = resolveTemplateStub(template.getPath());
 
-         /** . */
-         private String title;
-         
-         @Override
-         public String getTitle()
-         {
-            return title;
-         }
-
-         public void send(Printer printer) throws IOException
-         {
-            //
-            TemplateStub stub = resolveTemplateStub(template.getPath());
-
-            //
-            ApplicationTemplateRenderContext context = new ApplicationTemplateRenderContext(
-               InternalApplicationContext.this,
-               printer,
-               parameters,
-               locale);
-
-            //
-            stub.render(context);
-
-            //
-            this.title = context.getTitle();
-         }
-      };
+      //
+      ApplicationTemplateRenderContext context = new ApplicationTemplateRenderContext(
+         InternalApplicationContext.this,
+         stub,
+         parameters,
+         locale);
+      
+      //
+      return context;
    }
 }

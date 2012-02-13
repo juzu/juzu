@@ -77,6 +77,7 @@ import java.util.Map;
  * 
  * <ul>
  *    <li>{@link Response#ok} creates an ok response</li>
+ *    <li>{@link Response#notFound} creates a not found response</li>
  * </ul>
  *
  * <p>Response can also created from {@link org.juzu.template.Template} directly:</p>
@@ -283,6 +284,40 @@ public class Response
          public void send(Printer printer) throws IOException
          {
             printer.write(content);
+         }
+      };
+   }
+
+   public static Mime.Resource notFound()
+   {
+      return notFound(null);
+   }
+
+   public static Mime.Resource notFound(final String content)
+   {
+      return status(404, content);
+   }
+
+   public static Mime.Resource status(final int code)
+   {
+      return status(code, null);
+   }
+
+   public static Mime.Resource status(final int code, final String content)
+   {
+      return new Mime.Resource()
+      {
+         @Override
+         public int getStatus()
+         {
+            return code;
+         }
+         public void send(Printer printer) throws IOException
+         {
+            if (content != null)
+            {
+               printer.write(content);
+            }
          }
       };
    }

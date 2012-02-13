@@ -17,28 +17,33 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
+package request.resource.notfound;
 
-import org.juzu.impl.application.ApplicationException;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.template.Template;
-import org.juzu.template.TemplateRenderContext;
+import org.juzu.Controller;
+import org.juzu.Resource;
+import org.juzu.Response;
+import org.juzu.View;
 
-import java.util.Locale;
-import java.util.Map;
+import javax.naming.AuthenticationException;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ApplicationContext
+public class A extends Controller
 {
 
-   public ApplicationContext()
+   public A()
    {
    }
 
-   public abstract ApplicationDescriptor getDescriptor();
+   @Resource
+   public Response.Mime.Resource resource() throws AuthenticationException
+   {
+      return Response.notFound("not_found");
+   }
 
-   public abstract Object resolveBean(String name) throws ApplicationException;
-
-   public abstract TemplateRenderContext render(Template template, Map<String, ?> parameters, Locale locale);
-
+   @View
+   public Response.Mime index() throws IOException
+   {
+      return Response.ok(A_.resourceURL().toString());
+   }
 }

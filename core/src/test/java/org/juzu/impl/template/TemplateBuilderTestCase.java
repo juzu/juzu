@@ -41,7 +41,7 @@ public class TemplateBuilderTestCase extends TestCase
       new EmitPhase(new EmitContext()).emit(generator, ASTNode.Template.parse("a<%=foo%>c"));
       GroovyTemplateStub s = generator.build("template_" + Math.abs(new Random().nextLong()));
       StringWriter out = new StringWriter();
-      s.render(new TemplateRenderContext(new WriterPrinter(out), Collections.singletonMap("foo", "b")));
+      new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(new WriterPrinter(out));
       assertEquals("abc", out.toString());
    }
 

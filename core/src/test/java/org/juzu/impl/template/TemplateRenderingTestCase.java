@@ -376,7 +376,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       out = null;
       Writer writer = new StringWriter();
       GroovyTemplateStub template = template("<% " + TemplateRenderingTestCase.class.getName() + ".out = out; %>");
-      template.render(new TemplateRenderContext(new WriterPrinter(writer)));
+      new TemplateRenderContext(template).render(new WriterPrinter(writer));
       assertNotNull(out);
    }
 
@@ -385,7 +385,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       GroovyTemplateStub template = template(script);
       try
       {
-         template.render(new TemplateRenderContext(new MockPrinter()));
+         new TemplateRenderContext(template).render(new MockPrinter());
          fail();
       }
       catch (TemplateExecutionException t)

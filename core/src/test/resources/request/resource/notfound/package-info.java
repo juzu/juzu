@@ -17,28 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
+@Application
+package request.resource.notfound;
 
-import org.juzu.impl.application.ApplicationException;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.template.Template;
-import org.juzu.template.TemplateRenderContext;
-
-import java.util.Locale;
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ApplicationContext
-{
-
-   public ApplicationContext()
-   {
-   }
-
-   public abstract ApplicationDescriptor getDescriptor();
-
-   public abstract Object resolveBean(String name) throws ApplicationException;
-
-   public abstract TemplateRenderContext render(Template template, Map<String, ?> parameters, Locale locale);
-
-}
+import org.juzu.Application;

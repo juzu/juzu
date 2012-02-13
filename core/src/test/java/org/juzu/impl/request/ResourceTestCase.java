@@ -17,28 +17,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
+package org.juzu.impl.request;
 
-import org.juzu.impl.application.ApplicationException;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.template.Template;
-import org.juzu.template.TemplateRenderContext;
+import org.juzu.test.AbstractInjectTestCase;
+import org.juzu.test.request.MockActionBridge;
+import org.juzu.test.request.MockApplication;
+import org.juzu.test.request.MockClient;
+import org.juzu.test.request.MockRenderBridge;
+import org.juzu.test.request.MockResourceBridge;
 
-import java.util.Locale;
-import java.util.Map;
+import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ApplicationContext
+public class ResourceTestCase extends AbstractInjectTestCase
 {
 
-   public ApplicationContext()
+   public void testNotFound() throws Exception
    {
+      MockApplication<?> app = application("request", "resource", "notfound").init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      MockResourceBridge resource = (MockResourceBridge)client.invoke(render.getContent());
+      resource.assertNotFound();
    }
-
-   public abstract ApplicationDescriptor getDescriptor();
-
-   public abstract Object resolveBean(String name) throws ApplicationException;
-
-   public abstract TemplateRenderContext render(Template template, Map<String, ?> parameters, Locale locale);
-
 }

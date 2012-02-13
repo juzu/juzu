@@ -23,6 +23,7 @@ import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.text.Printer;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -30,9 +31,6 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateRenderContext
 {
-
-   /** . */
-   private final Printer printer;
 
    /** . */
    private final Map<String, ?> attributes;
@@ -43,26 +41,32 @@ public class TemplateRenderContext
    /** . */
    private String title;
 
-   public TemplateRenderContext(Printer printer)
+   /** . */
+   protected Printer printer;
+
+   /** . */
+   private final TemplateStub stub;
+
+   public TemplateRenderContext(TemplateStub stub)
    {
-      this(printer, Collections.<String, Object>emptyMap());
+      this(stub, Collections.<String, Object>emptyMap());
    }
 
-   public TemplateRenderContext(Printer printer, Map<String, ?> attributes)
+   public TemplateRenderContext(TemplateStub stub, Map<String, ?> attributes)
    {
-      this(printer, attributes, null);
+      this(stub, attributes, null);
    }
 
-   public TemplateRenderContext(Printer printer, Locale locale)
+   public TemplateRenderContext(TemplateStub stub, Locale locale)
    {
-      this(printer, Collections.<String, Object>emptyMap(), locale);
+      this(stub, Collections.<String, Object>emptyMap(), locale);
    }
 
-   public TemplateRenderContext(Printer printer, Map<String, ?> attributes, Locale locale)
+   public TemplateRenderContext(TemplateStub stub, Map<String, ?> attributes, Locale locale)
    {
-      this.printer = printer;
       this.locale = locale;
       this.attributes = attributes;
+      this.stub = stub;
    }
 
    public Map<String, ?> getAttributes()
@@ -98,5 +102,26 @@ public class TemplateRenderContext
    public Object resolveBean(String expression) throws ApplicationException
    {
       return null;
+   }
+
+   public void render(Printer printer) throws IOException
+   {
+      if (this.printer != null)
+      {
+         throw new IllegalStateException("Already rendering");
+      }
+
+      //
+      this.printer = printer;
+
+      //
+      try
+      {
+         stub.render(this);
+      }
+      finally
+      {
+         this.printer = null;
+      }
    }
 }

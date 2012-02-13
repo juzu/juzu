@@ -19,14 +19,53 @@
 
 package org.juzu.test.request;
 
+import org.junit.Assert;
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ResourceBridge;
+
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockResourceBridge extends MockMimeBridge<Response.Mime.Resource> implements ResourceBridge
 {
+
+   /** . */
+   private int status;
+   
    public MockResourceBridge(MockClient client, String methodId)
    {
       super(client, methodId);
+   }
+
+   public void assertOk()
+   {
+      assertStatus(200);
+   }
+
+   public void assertNotFound()
+   {
+      assertStatus(404);
+   }
+
+   public void assertStatus(int status)
+   {
+      Assert.assertEquals(status, this.status);
+   }
+
+   @Override
+   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   {
+      super.setResponse(response);
+      
+      //
+      if (response instanceof Response.Mime.Resource)
+      {
+         Response.Mime.Resource resource = (Response.Mime.Resource)response;
+         status = resource.getStatus();
+      }
+      else
+      {
+         status = 200;
+      }
    }
 }

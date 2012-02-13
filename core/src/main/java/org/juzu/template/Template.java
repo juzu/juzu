@@ -76,8 +76,8 @@ public abstract class Template
          RequestContext context = InternalApplicationContext.getCurrentRequest();
          if (context instanceof MimeContext)
          {
-            Response.Mime stream = applicationContext.render(this, parameters, locale);
             MimeContext mime = (MimeContext)context;
+            Response.Mime stream = ok(parameters, locale);
             mime.setResponse(stream);
          }
          else
@@ -109,25 +109,78 @@ public abstract class Template
 
    public final Response.Mime ok()
    {
-      return applicationContext.render(this, null, null);
+      return ok(null, null);
    }
 
    public final Response.Mime ok(Locale locale)
    {
-      return applicationContext.render(this, null, locale);
+      return ok(null, locale);
    }
 
    public final Response.Mime ok(Map<String, ?> parameters)
    {
-      return applicationContext.render(this, parameters, null);
+      return ok(parameters, null);
    }
 
    public final Response.Mime ok(Map<String, ?> parameters, Locale locale)
    {
-      return applicationContext.render(this, parameters, locale);
+      final TemplateRenderContext trc = applicationContext.render(this, parameters, locale);
+      return new Response.Mime.Render()
+      {
+         
+         @Override
+         public String getTitle()
+         {
+            return trc.getTitle();
+         }
+
+         public void send(Printer printer) throws IOException
+         {
+            trc.render(printer);
+         }
+      };
+   }
+
+   public final Response.Mime.Resource notFound()
+   {
+      return notFound(null, null);
+   }
+
+   public final Response.Mime.Resource notFound(Locale locale)
+   {
+      return notFound(null, locale);
+   }
+
+   public final Response.Mime.Resource notFound(Map<String, ?> parameters)
+   {
+      return notFound(parameters, null);
+   }
+
+   public final Response.Mime.Resource notFound(Map<String, ?> parameters, Locale locale)
+   {
+      final TemplateRenderContext trc = applicationContext.render(this, parameters, locale);
+      return new Response.Mime.Resource()
+      {
+         @Override
+         public int getStatus()
+         {
+            return 404;
+         }
+         public void send(Printer printer) throws IOException
+         {
+            trc.render(printer);
+         }
+      };
    }
 
    public abstract Builder with();
+
+   public Builder with(Locale locale)
+   {
+      Builder builder = with();
+      builder.locale = locale;
+      return builder;
+   }
 
    /**
     * Renders the template.
@@ -149,8 +202,8 @@ public abstract class Template
       }
       try
       {
-         Response.Mime stream = applicationContext.render(this, attributes, locale);
-         stream.send(printer);
+         TemplateRenderContext trc = applicationContext.render(this, attributes, locale);
+         trc.render(printer);
       }
       catch (IOException e)
       {
@@ -170,14 +223,22 @@ public abstract class Template
       /** The parameters. */
       private Map<String, Object> parameters;
 
+      /** The locale. */
+      private Locale locale;
+
       public final void render()
       {
-         Template.this.render(parameters);
+         Template.this.render(parameters, locale);
       }
 
       public final Response.Mime.Stream ok()
       {
-         return Template.this.ok(parameters);
+         return Template.this.ok(parameters, locale);
+      }
+
+      public final Response.Mime.Stream notFound()
+      {
+         return Template.this.notFound(parameters, locale);
       }
 
       /**

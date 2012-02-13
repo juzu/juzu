@@ -21,7 +21,6 @@ package org.juzu.impl.application;
 
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.template.TemplateRenderContext;
-import org.juzu.text.Printer;
 
 import java.util.Locale;
 import java.util.Map;
@@ -33,9 +32,9 @@ public class ApplicationTemplateRenderContext extends TemplateRenderContext
    /** . */
    private final InternalApplicationContext applicationContext;
 
-   public ApplicationTemplateRenderContext(InternalApplicationContext applicationContext, Printer printer, Map<String, ?> attributes, Locale locale)
+   public ApplicationTemplateRenderContext(InternalApplicationContext applicationContext, TemplateStub stub, Map<String, ?> attributes, Locale locale)
    {
-      super(printer, attributes, locale);
+      super(stub, attributes, locale);
 
       //
       this.applicationContext = applicationContext;
