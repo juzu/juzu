@@ -398,7 +398,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             }
             else
             {
-               renderThrowable(request, response, e);
+               renderThrowable(response.getWriter(), e);
             }
          }
          finally
@@ -413,95 +413,110 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       }
       else
       {
-         renderErrors(request, response, errors);
+         renderErrors(response.getWriter(), errors);
       }
    }
    
    public void serveResource(final ResourceRequest request, final ResourceResponse response) throws PortletException, IOException
    {
-      String resourceId = request.getResourceID();
-      if ("css".equals(resourceId))
+      Collection<CompilationError> errors = boot();
+
+      //
+      if (errors == null || errors.isEmpty())
       {
-         InputStream in = JuzuPortlet.class.getResourceAsStream("juzu.css");
-         response.setContentType("text/css");
-         Tools.copy(in, response.getPortletOutputStream());
-      }
-      else
-      {
-         Collection<CompilationError> errors = boot();
+         if (errors != null)
+         {
+            purgeSession(request);
+         }
 
          //
-         if (errors == null || errors.isEmpty())
+         try
          {
-            if (errors != null)
+            TrimmingException.invoke(new TrimmingException.Callback()
             {
-               purgeSession(request);
-            }
-
-            //
-            try
-            {
-               TrimmingException.invoke(new TrimmingException.Callback()
+               public void call() throws Throwable
                {
-                  public void call() throws Throwable
+                  try
                   {
-                     try
-                     {
-                        PortletResourceBridge bridge = new PortletResourceBridge(request, response, !prod);
-                        applicationContext.invoke(bridge);
-                        bridge.commit();
-                     }
-                     catch (ApplicationException e)
-                     {
-                        throw e.getCause();
-                     }
+                     PortletResourceBridge bridge = new PortletResourceBridge(request, response, !prod);
+                     applicationContext.invoke(bridge);
+                     bridge.commit();
                   }
-               });
-            }
-            catch (TrimmingException e)
-            {
-               // Internal server error
-               response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
-
-               //
-               logThrowable(e);
-
-               //
-               if (!prod)
-               {
-                  renderThrowable(request, response, e);
+                  catch (ApplicationException e)
+                  {
+                     throw e.getCause();
+                  }
                }
-            }
+            });
          }
-         else
+         catch (TrimmingException e)
          {
-            // Internal Server Error
+            // Internal server error
             response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
 
-            // Log errors
-            logErrors(errors);
+            //
+            logThrowable(e);
 
             //
             if (!prod)
             {
-               renderErrors(request, response, errors);
+               PrintWriter writer = response.getWriter();
+               writer.print("<html>\n");
+               writer.print("<head>\n");
+               writer.print("</head>\n");
+               writer.print("<body>\n");
+               renderThrowable(writer, e);
+               writer.print("</body>\n");
             }
+         }
+      }
+      else
+      {
+         // Internal Server Error
+         response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
+
+         // Log errors
+         logErrors(errors);
+
+         //
+         if (!prod)
+         {
+            PrintWriter writer = response.getWriter();
+            writer.print("<html>\n");
+            writer.print("<head>\n");
+            writer.print("</head>\n");
+            writer.print("<body>\n");
+            renderErrors(writer, errors);
+            writer.print("</body>\n");
          }
       }
    }
 
-   private void sendJuzuCSS(MimeResponse resp)
+   private void sendJuzuCSS(PrintWriter writer) throws IOException
    {
-      ResourceURL url = resp.createResourceURL();
-      url.setResourceID("css");
-      Element linkElt = resp.createElement("link");
-      linkElt.setAttribute("rel", "stylesheet");
-      linkElt.setAttribute("type", "text/css");
-      linkElt.setAttribute("media", "screen");
-      linkElt.setAttribute("href", url.toString());
-      resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, linkElt);
+      // Get CSS
+      URL cssURL = JuzuPortlet.class.getResource("juzu.css");
+      String css = Tools.read(cssURL);
+      css = css.replace("\"", "\\\"");
+      css = css.replace("'", "\\'");
+      css = css.replace("\n", "\\n");
+
+      //
+      writer.append("<script type='text/javascript'>\n");
+      writer.append("var styleElement = document.createElement('style');\n");
+      writer.append("var css = '");
+      writer.append(css);
+      writer.append("';\n");
+      writer.append("styleElement.type = 'text/css';\n");
+      writer.append("if (styleElement.styleSheet) {;\n");
+      writer.append("styleElement.styleSheet.cssText = css;\n");
+      writer.append("} else {\n");
+      writer.append("styleElement.appendChild(document.createTextNode(css));\n");
+      writer.append("}\n");
+      writer.append("document.getElementsByTagName(\"head\")[0].appendChild(styleElement);\n");
+      writer.append("</script>\n");
    }
-   
+
    private void logThrowable(Throwable t)
    {
       config.getPortletContext().log(t.getMessage(), t);
@@ -526,7 +541,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       config.getPortletContext().log(sb.toString());
    }
 
-   private void renderThrowable(PortletRequest req, MimeResponse resp, Throwable t) throws PortletException, IOException
+   private void renderThrowable(PrintWriter writer, Throwable t) throws PortletException, IOException
    {
       // Trim the stack trace to remove stuff we don't want to see
       int size = 0;
@@ -547,10 +562,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       t.setStackTrace(ourTrace);
 
       //
-      sendJuzuCSS(resp);
-
-      //
-      final PrintWriter writer = resp.getWriter();
+      sendJuzuCSS(writer);
 
       // We hack a bit
       final AtomicBoolean open = new AtomicBoolean(false);
@@ -607,13 +619,10 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       writer.append("</div>");
    }
 
-   private void renderErrors(PortletRequest req, MimeResponse resp, Collection<CompilationError> errors) throws PortletException, IOException
+   private void renderErrors(PrintWriter writer, Collection<CompilationError> errors) throws PortletException, IOException
    {
-      sendJuzuCSS(resp);
+      sendJuzuCSS(writer);
 
-      //
-      PrintWriter writer = resp.getWriter();
-         
       //
       writer.append("<div class=\"juzu\">");
       for (CompilationError error : errors)
