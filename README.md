@@ -47,6 +47,7 @@ Screencast
 
 - 0.4.4
     - change how a builder is obtained from a template using the word "with()"
+    - improve controller response creation allowing better control for ajax serving and control flow
 - 0.5
     - tutorial (cont)
     - portlet eventing support
@@ -76,7 +77,8 @@ Various things to do, not exhaustive that needs to go in the roadmap
 - handle internal error correctly
 - think about doing a "debug" portlet that would cooperate with juzu portlets
 - weld declared beans and instance always have the Singleton scope and ignore the class setting
-
+- response : handle mime type
+- no files to compile -> javac message : see why
 
 # Deploy on
 
