@@ -17,6 +17,9 @@ Screencast
 
 # Status
 
+- 0.4.4
+    - change how a builder is obtained from a template using the word "with()"
+    - improve controller response creation allowing better control for ajax serving and control flow
 - 0.4.3
     - Added SecurityContext and HttpContext API
     - URL xml escaping
@@ -45,9 +48,6 @@ Screencast
 
 # Roadmap
 
-- 0.4.4
-    - change how a builder is obtained from a template using the word "with()"
-    - improve controller response creation allowing better control for ajax serving and control flow
 - 0.5
     - tutorial (cont)
     - portlet eventing support
@@ -118,7 +118,7 @@ The command line to use for creating a simple Juzu application using the Maven a
     >mvn archetype:generate \
     -DarchetypeGroupId=org.juzu \
     -DarchetypeArtifactId=juzu-archetype \
-    -DarchetypeVersion=0.4.3 \
+    -DarchetypeVersion=0.4.4 \
     -DgroupId=<my.groupid> \
     -DartifactId=<my-artifactId>
 
