@@ -19,6 +19,7 @@
 
 package org.juzu.request;
 
+import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.ResourceBridge;
 import org.juzu.metadata.ControllerMethod;
 
@@ -29,9 +30,9 @@ public class ResourceContext extends MimeContext
    /** . */
    private ResourceBridge bridge;
 
-   public ResourceContext(ApplicationContext application, ControllerMethod method, ResourceBridge bridge)
+   public ResourceContext(Request request, ApplicationContext application, ControllerMethod method, ResourceBridge bridge)
    {
-      super(application, method);
+      super(request, application, method);
 
       //
       this.bridge = bridge;

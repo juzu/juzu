@@ -19,6 +19,7 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.Response;
 import org.juzu.impl.inject.ScopingContext;
 import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.impl.spi.request.RenderBridge;
@@ -44,26 +45,39 @@ public class Request implements ScopingContext
    /** . */
    private final Object[] args;
 
+   /** The response. */
+   private Response response;
+
    public Request(ApplicationContext application, ControllerMethod method, Object[] args, RequestBridge bridge)
    {
       RequestContext context;
       if (bridge instanceof RenderBridge)
       {
-         context = new RenderContext(application, method, (RenderBridge)bridge);
+         context = new RenderContext(this, application, method, (RenderBridge)bridge);
       }
       else if (bridge instanceof ActionBridge)
       {
-         context = new ActionContext(application, method, (ActionBridge)bridge);
+         context = new ActionContext(this, application, method, (ActionBridge)bridge);
       }
       else
       {
-         context = new ResourceContext(application, method, (ResourceBridge)bridge);
+         context = new ResourceContext(this, application, method, (ResourceBridge)bridge);
       }
 
       
       this.context = context;
       this.bridge = bridge;
       this.args = args;
+   }
+
+   public Response getResponse()
+   {
+      return response;
+   }
+
+   public void setResponse(Response response)
+   {
+      this.response = response;
    }
 
    public Object[] getArgs()

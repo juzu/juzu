@@ -21,6 +21,7 @@ package org.juzu.request;
 
 import org.juzu.Response;
 import org.juzu.URLBuilder;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
@@ -40,12 +41,9 @@ public abstract class MimeContext extends RequestContext
    /** . */
    private final ApplicationContext application;
 
-   /** The response. */
-   private Response.Mime response;
-   
-   protected MimeContext(ApplicationContext application, ControllerMethod method)
+   protected MimeContext(Request request,ApplicationContext application, ControllerMethod method)
    {
-      super(application, method);
+      super(request, application, method);
       
       //
       this.application = application;
@@ -147,12 +145,6 @@ public abstract class MimeContext extends RequestContext
       return getBridge().getPrinter();
    }
 
-   @Override
-   public Response.Mime getResponse()
-   {
-      return response;
-   }
-
    public void setResponse(Response.Mime response) throws IOException, IllegalStateException
    {
       // Consume response here
@@ -169,6 +161,6 @@ public abstract class MimeContext extends RequestContext
       }
       
       //
-      this.response = response;
+      request.setResponse(response);
    }
 }

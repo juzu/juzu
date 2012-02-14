@@ -20,6 +20,7 @@
 package org.juzu.request;
 
 import org.juzu.Response;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.metadata.ControllerMethod;
 
@@ -35,8 +36,12 @@ public abstract class RequestContext
    /** . */
    protected final ControllerMethod method;
 
-   public RequestContext(ApplicationContext application, ControllerMethod method)
+   /** . */
+   protected final Request request;
+
+   public RequestContext(Request request, ApplicationContext application, ControllerMethod method)
    {
+      this.request = request;
       this.application = application;
       this.method = method;
    }
@@ -70,5 +75,4 @@ public abstract class RequestContext
 
    protected abstract RequestBridge getBridge();
 
-   public abstract Response getResponse();
 }

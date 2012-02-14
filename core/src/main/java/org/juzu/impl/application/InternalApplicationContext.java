@@ -137,7 +137,7 @@ public class InternalApplicationContext extends ApplicationContext
          }
          else
          {
-            resp = request.getContext().getResponse();
+            resp = request.getResponse();
          }
 
          //

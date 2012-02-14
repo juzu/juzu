@@ -20,6 +20,7 @@
 package org.juzu.request;
 
 import org.juzu.Response;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
@@ -37,9 +38,9 @@ public class ActionContext extends RequestContext
    /** . */
    private Response.Action response;
 
-   public ActionContext(ApplicationContext application, ControllerMethod method, ActionBridge bridge)
+   public ActionContext(Request request, ApplicationContext application, ControllerMethod method, ActionBridge bridge)
    {
-      super(application, method);
+      super(request, application, method);
 
       //
       this.bridge = bridge;
@@ -86,12 +87,6 @@ public class ActionContext extends RequestContext
             response.setParameter(argParameter.getName(), value.toString());
          }
       }
-      return response;
-   }
-
-   @Override
-   public Response.Action getResponse()
-   {
       return response;
    }
 
