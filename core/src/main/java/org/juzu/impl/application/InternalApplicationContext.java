@@ -108,7 +108,8 @@ public class InternalApplicationContext extends ApplicationContext
       ControllerMethod method = controllerResolver.resolve(phase, bridge.getMethodId());
 
       //
-      Request request = new Request(this, method, bridge);
+      Object[] args = getArgs(method, bridge.getParameters());
+      Request request = new Request(this, method, args, bridge);
 
       //
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
@@ -119,8 +120,8 @@ public class InternalApplicationContext extends ApplicationContext
          current.set(request);
          ScopeController.begin(request);
          
-         //
 
+         //
          Object ret = doInvoke(manager, request, method);
          
          //
@@ -238,10 +239,9 @@ public class InternalApplicationContext extends ApplicationContext
                }
                
                // Invoke method on controller
-               Object[] args = getArgs(context);
                try
                {
-                  return method.getMethod().invoke(o, args);
+                  return method.getMethod().invoke(o, request.getArgs());
                }
                catch (InvocationTargetException e)
                {
@@ -281,17 +281,15 @@ public class InternalApplicationContext extends ApplicationContext
       }
    }
 
-   private Object[] getArgs(RequestContext context)
+   private Object[] getArgs(ControllerMethod method, Map<String, String[]> parameterMap)
    {
-      ControllerMethod method = context.getMethod();
-
       // Prepare method parameters
       List<ControllerParameter> params = method.getArgumentParameters();
       Object[] args = new Object[params.size()];
       for (int i = 0;i < args.length;i++)
       {
          ControllerParameter param = params.get(i);
-         String[] values = context.getParameters().get(param.getName());
+         String[] values = parameterMap.get(param.getName());
          if (values != null)
          {
             switch (param.getCardinality())

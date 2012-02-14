@@ -41,7 +41,10 @@ public class Request implements ScopingContext
    /** . */
    private final RequestContext context;
 
-   public Request(ApplicationContext application, ControllerMethod method, RequestBridge bridge)
+   /** . */
+   private final Object[] args;
+
+   public Request(ApplicationContext application, ControllerMethod method, Object[] args, RequestBridge bridge)
    {
       RequestContext context;
       if (bridge instanceof RenderBridge)
@@ -60,6 +63,12 @@ public class Request implements ScopingContext
       
       this.context = context;
       this.bridge = bridge;
+      this.args = args;
+   }
+
+   public Object[] getArgs()
+   {
+      return args;
    }
 
    public RequestContext getContext()
