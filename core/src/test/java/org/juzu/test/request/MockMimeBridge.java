@@ -66,7 +66,7 @@ public abstract class MockMimeBridge<R extends Response.Mime> extends MockReques
       }
       else
       {
-         throw new UnsupportedOperationException();
+         throw new UnsupportedOperationException("Cannot handle response " + response);
       }
    }
 }

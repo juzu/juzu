@@ -34,6 +34,9 @@ public class ActionContext extends RequestContext
    /** . */
    private ActionBridge bridge;
 
+   /** . */
+   private Response.Action response;
+
    protected ActionContext()
    {
    }
@@ -90,8 +93,14 @@ public class ActionContext extends RequestContext
       return response;
    }
 
+   @Override
+   public Response.Action getResponse()
+   {
+      return response;
+   }
+
    public void setResponse(Response.Action response) throws IOException, IllegalStateException
    {
-      getBridge().setResponse(response);
+      this.response = response;
    }
 }

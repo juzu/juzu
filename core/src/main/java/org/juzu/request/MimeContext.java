@@ -26,6 +26,7 @@ import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 import org.juzu.text.Printer;
+import org.juzu.text.WriterPrinter;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -37,7 +38,10 @@ public abstract class MimeContext extends RequestContext
 {
 
    /** . */
-   private final ApplicationContext application; 
+   private final ApplicationContext application;
+
+   /** The response. */
+   private Response.Mime response;
    
    protected MimeContext(ApplicationContext application, ControllerMethod method, ClassLoader classLoader)
    {
@@ -142,9 +146,29 @@ public abstract class MimeContext extends RequestContext
    {
       return getBridge().getPrinter();
    }
-   
+
+   @Override
+   public Response.Mime getResponse()
+   {
+      return response;
+   }
+
    public void setResponse(Response.Mime response) throws IOException, IllegalStateException
    {
-      getBridge().setResponse(response);
+      // Consume response here
+      StringBuilder buffer = new StringBuilder();
+      WriterPrinter printer = new WriterPrinter(buffer);
+      response.send(printer);
+      if (response instanceof Response.Mime.Render)
+      {
+         response = Response.ok(((Response.Mime.Render)response).getTitle(), buffer.toString());
+      }
+      else
+      {
+         response = Response.status(((Response.Mime.Resource)response).getStatus(), buffer.toString());
+      }
+      
+      //
+      this.response = response;
    }
 }

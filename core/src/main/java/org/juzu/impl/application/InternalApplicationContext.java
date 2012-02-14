@@ -120,7 +120,13 @@ public class InternalApplicationContext extends ApplicationContext
          Thread.currentThread().setContextClassLoader(classLoader);
          current.set(request);
          ScopeController.begin(request);
+         
+         //
+
          Object ret = doInvoke(manager, request, method);
+         
+         //
+         Response resp;
          if (ret instanceof Response)
          {
             // We should check that it matches....
@@ -128,9 +134,19 @@ public class InternalApplicationContext extends ApplicationContext
             // @Action -> Response.Action
             // @View -> Response.Mime
             // as we can do it
+            resp = (Response)ret;
+         }
+         else
+         {
+            resp = request.getContext().getResponse();
+         }
+
+         //
+         if (resp != null)
+         {
             try
             {
-               bridge.setResponse((Response)ret);
+               bridge.setResponse(resp);
             }
             catch (IOException e)
             {

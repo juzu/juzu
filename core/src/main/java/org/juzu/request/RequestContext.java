@@ -19,6 +19,7 @@
 
 package org.juzu.request;
 
+import org.juzu.Response;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.metadata.ControllerMethod;
 
@@ -74,4 +75,5 @@ public abstract class RequestContext
 
    protected abstract RequestBridge getBridge();
 
+   public abstract Response getResponse();
 }
