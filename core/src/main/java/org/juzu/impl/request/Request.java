@@ -41,20 +41,20 @@ public class Request implements ScopingContext
    /** . */
    private final RequestContext context;
 
-   public Request(ApplicationContext application, ControllerMethod method, ClassLoader classLoader, RequestBridge bridge)
+   public Request(ApplicationContext application, ControllerMethod method, RequestBridge bridge)
    {
       RequestContext context;
       if (bridge instanceof RenderBridge)
       {
-         context = new RenderContext(application, method, classLoader, (RenderBridge)bridge);
+         context = new RenderContext(application, method, (RenderBridge)bridge);
       }
       else if (bridge instanceof ActionBridge)
       {
-         context = new ActionContext( method, classLoader, (ActionBridge)bridge);
+         context = new ActionContext(application, method, (ActionBridge)bridge);
       }
       else
       {
-         context = new ResourceContext(application, method, classLoader, (ResourceBridge)bridge);
+         context = new ResourceContext(application, method, (ResourceBridge)bridge);
       }
 
       

@@ -88,9 +88,6 @@ public class InternalApplicationContext extends ApplicationContext
 
    public void invoke(RequestBridge bridge) throws ApplicationException
    {
-      ClassLoader classLoader = manager.getClassLoader();
-
-      //
       Phase phase;
       if (bridge instanceof RenderBridge)
       {
@@ -111,12 +108,13 @@ public class InternalApplicationContext extends ApplicationContext
       ControllerMethod method = controllerResolver.resolve(phase, bridge.getMethodId());
 
       //
-      Request request = new Request(this, method, classLoader, bridge);
+      Request request = new Request(this, method, bridge);
 
       //
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
       try
       {
+         ClassLoader classLoader = manager.getClassLoader();
          Thread.currentThread().setContextClassLoader(classLoader);
          current.set(request);
          ScopeController.begin(request);

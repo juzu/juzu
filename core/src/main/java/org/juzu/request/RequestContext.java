@@ -29,31 +29,26 @@ import java.util.Map;
 public abstract class RequestContext
 {
 
-   /** The request classloader. */
-   protected ClassLoader classLoader;
+   /** . */
+   protected final ApplicationContext application;
 
    /** . */
-   protected ControllerMethod method;
+   protected final ControllerMethod method;
 
-   /** . */
-   protected RequestContext()
+   public RequestContext(ApplicationContext application, ControllerMethod method)
    {
+      this.application = application;
+      this.method = method;
    }
 
-   public RequestContext(ControllerMethod method, ClassLoader classLoader)
+   public ApplicationContext getApplication()
    {
-      this.method = method;
-      this.classLoader = classLoader;
+      return application;
    }
 
    public ControllerMethod getMethod()
    {
       return method;
-   }
-
-   public ClassLoader getClassLoader()
-   {
-      return classLoader;
    }
 
    public Map<String, String[]> getParameters()

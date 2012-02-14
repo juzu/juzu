@@ -43,9 +43,9 @@ public abstract class MimeContext extends RequestContext
    /** The response. */
    private Response.Mime response;
    
-   protected MimeContext(ApplicationContext application, ControllerMethod method, ClassLoader classLoader)
+   protected MimeContext(ApplicationContext application, ControllerMethod method)
    {
-      super(method, classLoader);
+      super(application, method);
       
       //
       this.application = application;

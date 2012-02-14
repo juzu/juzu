@@ -37,13 +37,9 @@ public class ActionContext extends RequestContext
    /** . */
    private Response.Action response;
 
-   protected ActionContext()
+   public ActionContext(ApplicationContext application, ControllerMethod method, ActionBridge bridge)
    {
-   }
-
-   public ActionContext(ControllerMethod method, ClassLoader classLoader, ActionBridge bridge)
-   {
-      super(method, classLoader);
+      super(application, method);
 
       //
       this.bridge = bridge;

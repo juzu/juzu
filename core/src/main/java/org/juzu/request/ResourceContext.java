@@ -29,9 +29,9 @@ public class ResourceContext extends MimeContext
    /** . */
    private ResourceBridge bridge;
 
-   public ResourceContext(ApplicationContext application, ControllerMethod method, ClassLoader classLoader, ResourceBridge bridge)
+   public ResourceContext(ApplicationContext application, ControllerMethod method, ResourceBridge bridge)
    {
-      super(application, method, classLoader);
+      super(application, method);
 
       //
       this.bridge = bridge;
