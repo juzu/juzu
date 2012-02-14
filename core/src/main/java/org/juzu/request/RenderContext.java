@@ -37,11 +37,6 @@ public class RenderContext extends MimeContext
       this.bridge = bridge;
    }
 
-   public void setTitle(String title)
-   {
-      bridge.setTitle(title);
-   }
-
    @Override
    protected RenderBridge getBridge()
    {
