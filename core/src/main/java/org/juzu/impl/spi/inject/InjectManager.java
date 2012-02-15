@@ -33,6 +33,8 @@ public interface InjectManager<B, I>
 
    B resolveBean(String name);
 
+   Iterable<B> resolveBeans(Class<?> type);
+
    void release(I instance);
 
    /**

@@ -40,6 +40,9 @@ import org.juzu.impl.spi.inject.qualifier.Qualified;
 import org.juzu.impl.spi.inject.qualifier.QualifiedInjected;
 import org.juzu.impl.spi.inject.requestscopedprovider.RequestBean;
 import org.juzu.impl.spi.inject.requestscopedprovider.RequestBeanProvider;
+import org.juzu.impl.spi.inject.resolvebeans.ResolvableBean;
+import org.juzu.impl.spi.inject.resolvebeans.ResolveBeanSubclass1;
+import org.juzu.impl.spi.inject.resolvebeans.ResolveBeanSubclass2;
 import org.juzu.impl.spi.inject.scope.ScopedBean;
 import org.juzu.impl.spi.inject.scope.ScopedInjected;
 import org.juzu.impl.spi.inject.siblingproducers.Ext1Producer;
@@ -48,12 +51,15 @@ import org.juzu.impl.spi.inject.siblingproducers.ProductExt1;
 import org.juzu.impl.spi.inject.siblingproducers.ProductExt2;
 import org.juzu.impl.spi.inject.siblingproducers.ProductInjected;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 
 import javax.naming.AuthenticationException;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.HashSet;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -380,5 +386,25 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       {
          assertInstanceOf(UnknownError.class, e.getCause());
       }
+   }
+   
+   public void testResolvableBeans() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "resolvebeans");
+      bootstrap.declareBean(ResolveBeanSubclass1.class, null);
+      bootstrap.declareBean(ResolveBeanSubclass2.class, null);
+      boot();
+      
+      //
+      ArrayList<B> beans = Tools.list(mgr.resolveBeans(ResolvableBean.class));
+      assertEquals(2, beans.size());
+      HashSet<Class<?>> classes = new HashSet<Class<?>>(); 
+      for (B bean : beans)
+      {
+         I instance = mgr.create(bean);
+         Object o = mgr.get(bean, instance);
+         classes.add(o.getClass());
+      }
+      assertEquals(Tools.<Class<?>>set(ResolveBeanSubclass1.class, ResolveBeanSubclass2.class), classes);
    }
 }

@@ -97,6 +97,11 @@ public class SpringManager implements InjectManager<String, Object>
       }
    }
 
+   public Iterable<String> resolveBeans(Class<?> type)
+   {
+      return factory.getBeansOfType(type).keySet();
+   }
+
    public Object create(String bean) throws InvocationTargetException
    {
       try

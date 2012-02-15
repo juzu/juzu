@@ -26,9 +26,11 @@ import org.juzu.impl.spi.inject.InjectManager;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.ProcessBean;
 
 /**
  * Juzu CDI extension.
@@ -86,5 +88,11 @@ public class ExtensionImpl implements Extension
       {
          event.addBean(bean);
       }
+   }
+
+   void processBean(@Observes ProcessBean event, BeanManager beanManager)
+   {
+      Bean bean = event.getBean();
+      manager.beans.add(bean);
    }
 }

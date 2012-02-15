@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.inject.guice;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -35,11 +36,13 @@ import org.juzu.impl.spi.inject.InjectManager;
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceManager implements InjectManager<Provider, Object>
+public class GuiceManager implements InjectManager<Provider<?>, Object>
 {
 
    /** . */
@@ -175,9 +178,23 @@ public class GuiceManager implements InjectManager<Provider, Object>
       return classLoader;
    }
 
-   public Provider resolveBean(Class<?> type)
+   public Provider<?> resolveBean(Class<?> type)
    {
       return injector.getProvider(type);
+   }
+
+   public Iterable<Provider<?>> resolveBeans(Class<?> type)
+   {
+      List<Provider<?>> beans = new ArrayList<Provider<?>>();
+      for (Binding<?> binding : injector.getBindings().values())
+      {
+         Class bindingType = binding.getKey().getTypeLiteral().getRawType();
+         if (type.isAssignableFrom(bindingType))
+         {
+            beans.add(binding.getProvider());
+         }
+      }
+      return beans;
    }
 
    public Provider resolveBean(String name)

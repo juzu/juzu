@@ -27,6 +27,10 @@ import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,6 +53,9 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
    /** . */
    final Set<Class<?>> declaredBeans;
 
+   /** . */
+   final ArrayList<Bean> beans;
+
    public CDIManager(
       Container container,
       Map<Class<?>, AbstractBean> boundBeans,
@@ -56,6 +63,7 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
    {
       this.boundBeans = boundBeans;
       this.declaredBeans = declaredBeans;
+      this.beans = new ArrayList<Bean>();
 
       //
       boot.set(this);
@@ -95,6 +103,24 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
          default:
             throw new AmbiguousResolutionException("Could not resolve bean of type " + type + ": " + beans);
       }
+   }
+
+   public Iterable<Bean<?>> resolveBeans(Class<?> type)
+   {
+      List<Bean<?>> resolved = Collections.emptyList();
+      for (int i = 0;i < beans.size();i++)
+      {
+         Bean bean = beans.get(i);
+         if (type.isAssignableFrom(bean.getBeanClass()))
+         {
+            if (resolved.isEmpty())
+            {
+               resolved = new ArrayList<Bean<?>>();
+            }
+            resolved.add(bean);
+         }
+      }
+      return manager.getBeans(type);
    }
 
    public Bean<?> resolveBean(String name)
