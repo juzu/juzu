@@ -21,10 +21,13 @@ package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.RenderBridge;
+import org.w3c.dom.Element;
 
+import javax.portlet.MimeResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
@@ -50,6 +53,21 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       if (response instanceof Response.Content.Render)
       {
          Response.Content.Render render = (Response.Content.Render)response;
+
+         //
+         Collection<String> scripts = render.getScripts();
+         if (scripts.size() > 0)
+         {
+            for (String script : scripts)
+            {
+               Element elt = this.response.createElement("script");
+               elt.setAttribute("type", "text/javascript");
+               elt.setAttribute("src", script);
+               this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+            }
+         }
+         
+         //
          String title = render.getTitle();
          if (title != null)
          {

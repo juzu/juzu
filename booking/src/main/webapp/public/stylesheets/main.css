@@ -33,20 +33,20 @@ div.booking {
     color: #0c0;
 }
 
-#booking-content {
+.booking .content {
     padding: 20px;
 }
 
 
 /** Header **/
 
-#booking-header {
+.booking .header {
     height: 200px;
     position: relative;
     background: #fff url(../images/hotel.jpg) 0px -90px no-repeat;
 }
 
-#booking-header h1 {
+.booking .header h1 {
     margin: 0;
     background: #333;
     color: #eee;
@@ -57,7 +57,7 @@ div.booking {
     text-shadow: 0 0 5px rgba(255,255,255,.5);
 }
 
-#booking-header #booking-options {
+.booking .header .options {
     position: absolute;
     right: 10px;
     top: 13px;
@@ -65,28 +65,28 @@ div.booking {
     color: #eee;
 }
 
-#booking-header #booking-options a {
+.booking .header .options a {
     color: #eee;
 }
 
 /** Login **/
 
-#booking-login {
+.booking .login {
     text-align: center;
 }
 
-#booking-formLogin {
+.booking .formLogin {
     border-bottom: 1px dashed #aaa;
     width: 300px;
     margin: 0 auto;
     padding: 20px;
 }
 
-#booking-formLogin label {
+.booking .formLogin label {
     text-align: right;
 }
 
-#booking-formLogin p.buttons {
+.booking .formLogin p.buttons {
     text-align: center;
     background: none;
     margin-top: 0;
@@ -165,7 +165,7 @@ div.booking {
 
 /** Footer **/
 
-#booking-footer {
+.booking .footer {
     padding: 10px;
     font-size: 70%;
     border-top: 1px dotted #ccc;

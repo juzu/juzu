@@ -33,13 +33,10 @@ import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockApplication<P>
@@ -53,12 +50,6 @@ public class MockApplication<P>
 
    /** . */
    final ClassLoader classLoader;
-
-   /** . */
-   private final Set<String> declarations;
-
-   /** . */
-   private final Map<Class<?>, Object> bindings;
 
    /** . */
    InternalApplicationContext context;
@@ -95,16 +86,6 @@ public class MockApplication<P>
       ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 
       //
-      this.classes = classes;
-      this.classLoader = classLoader;
-      this.bootstrap = bootstrap;
-      this.declarations = new HashSet<String>();
-      this.bindings = new HashMap<Class<?>, Object>();
-      this.descriptor = descriptor;
-   }
-
-   public MockApplication<P> init() throws Exception
-   {
       DiskFileSystem libs = new DiskFileSystem(new File(ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
 
       //
@@ -113,21 +94,14 @@ public class MockApplication<P>
       bootstrap.setClassLoader(classLoader);
 
       //
-      for (String declaration : declarations)
-      {
-         Class<?> beanClazz = classLoader.loadClass(declaration);
-         bootstrap.declareBean(beanClazz, null);
-      }
+      this.classes = classes;
+      this.classLoader = classLoader;
+      this.bootstrap = bootstrap;
+      this.descriptor = descriptor;
+   }
 
-      //
-      for (Map.Entry<Class<?>, Object> binding : bindings.entrySet())
-      {
-         Class type = binding.getKey();
-         Object bean = binding.getValue();
-         bootstrap.bindBean(type, null, bean);
-      }
-
-      //
+   public MockApplication<P> init() throws Exception
+   {
       ApplicationBootstrap boot = new ApplicationBootstrap(bootstrap, descriptor);
 
       //
@@ -146,14 +120,15 @@ public class MockApplication<P>
       return descriptor;
    }
 
-   public void declareBean(String className)
+   public void declareBean(String className) throws ClassNotFoundException
    {
-      declarations.add(className);
+      Class<?> beanClazz = classLoader.loadClass(className);
+      bootstrap.declareBean(beanClazz, null);
    }
    
-   public <T> void bindBean(Class<T> type, T bean)
+   public <T> void bindBean(Class<T> type, Iterable<Annotation> qualifiers, T bean)
    {
-      bindings.put(type, bean);
+      bootstrap.bindBean(type, qualifiers, bean);
    }
 
    public ApplicationContext getContext()

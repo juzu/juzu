@@ -27,7 +27,7 @@
         </tbody>
     </table>
     <p>
-        <a id="nextPage" href="${page+1}">More results</a>
+        <a class="nextPage" href="${page+1}">More results</a>
     </p>
 <% } else { %>
     <p>

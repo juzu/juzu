@@ -44,7 +44,7 @@ public class HeaderFilter implements RenderFilter
       {
          Element jQuery1 = response.createElement("script");
          jQuery1.setAttribute("type", "text/javascript");
-         jQuery1.setAttribute("src", request.getContextPath() + "/public/javascripts/jquery-1.3.2.min.js");
+         jQuery1.setAttribute("src", request.getContextPath() + "/public/javascripts/jquery-1.7.1.min.js");
          response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, jQuery1);
 
          //
@@ -52,6 +52,12 @@ public class HeaderFilter implements RenderFilter
          jQuery2.setAttribute("type", "text/javascript");
          jQuery2.setAttribute("src", request.getContextPath() + "/public/javascripts/jquery-ui-1.7.2.custom.min.js");
          response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, jQuery2);
+
+         //
+         Element jQuery3 = response.createElement("script");
+         jQuery3.setAttribute("type", "text/javascript");
+         jQuery3.setAttribute("src", request.getContextPath() + "/public/javascripts/booking.js");
+         response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, jQuery3);
 
          //
          Element css1 = response.createElement("link");

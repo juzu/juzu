@@ -19,9 +19,8 @@
 
 package org.juzu.test.protocol.http;
 
-import org.juzu.impl.asset.ApplicationRouter;
-import org.juzu.impl.asset.PluginRouter;
 import org.juzu.impl.asset.Registration;
+import org.juzu.impl.asset.Router;
 import org.juzu.impl.asset.Server;
 import org.juzu.impl.spi.request.servlet.ServletRequestBridge;
 import org.juzu.impl.utils.Logger;
@@ -38,6 +37,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -90,11 +91,11 @@ public class InvocationServlet extends HttpServlet
 
          //
          Server server = (Server)getServletContext().getAttribute("asset.server");
-         Registration<ApplicationRouter> app = server.getApplicationRouter().register(application.getDescriptor().getName(), ApplicationRouter.class);
-         application.bindBean(ApplicationRouter.class, app.getRoute());
+         Registration<Router> app = server.getApplicationRouter().register(application.getDescriptor().getName(), Router.class);
 
-         // Configure the router as application beans
-         application.bindBean(PluginRouter.class, server.getPluginRouter());
+         //
+         application.bindBean(Router.class, Collections.<Annotation>singleton(Server.APPLICATION), app.getRoute());
+         application.bindBean(Router.class, Collections.<Annotation>singleton(Server.PLUGIN), server.getPluginRouter());
 
          //
          application.init();

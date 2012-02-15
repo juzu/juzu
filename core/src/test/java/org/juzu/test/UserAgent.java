@@ -20,6 +20,7 @@
 package org.juzu.test;
 
 import com.gargoylesoftware.htmlunit.AlertHandler;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -51,7 +52,7 @@ public class UserAgent
 
    public UserAgent(URL homeURL)
    {
-      WebClient client = new WebClient();
+      WebClient client = new WebClient(BrowserVersion.FIREFOX_3_6);
       client.setAlertHandler(new AlertHandler()
       {
          public void handleAlert(Page page, String message)

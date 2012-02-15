@@ -1,8 +1,8 @@
 <div class="booking">
-    <div id="booking-header">
+    <div class="header">
         <h1>juzu booking demo (adapted from play framework)</h1>
         <% if (login.connected) { %>
-            <div id="booking-options">
+            <div class="options">
                 Connected as ${login.userName}
                 |
                 <a href="@{Hotels.index()}">Search</a>
@@ -14,7 +14,7 @@
         <% } %>
     </div>
 
-    <div id="booking-content">
+    <div class="content">
 
         <% if (flash.error != "") { %>
             <p class="fError">
@@ -31,7 +31,7 @@
 
     </div>
 
-    <div id="booking-footer">
+    <div class="footer">
         Created with <a href="http://www.github.com/juzu">juzu</a> and really inspirated from the booking sample application provided by <a href="http://seamframework.org/">seam framework</a>
     </div>
 </div>

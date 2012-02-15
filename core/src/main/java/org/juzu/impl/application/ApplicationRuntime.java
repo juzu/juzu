@@ -19,6 +19,9 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.impl.asset.Registration;
+import org.juzu.impl.asset.Router;
+import org.juzu.impl.asset.Server;
 import org.juzu.impl.compiler.*;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
@@ -42,6 +45,7 @@ import org.juzu.request.ApplicationContext;
 import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -81,6 +85,12 @@ public abstract class ApplicationRuntime<P, R, L>
 
    /** . */
    protected ApplicationContext context;
+
+   /** . */
+   protected Server assetServer;
+
+   /** . */
+   protected Registration<Router> applicationAssets;
 
    ApplicationRuntime(Logger logger)
    {
@@ -130,6 +140,16 @@ public abstract class ApplicationRuntime<P, R, L>
    public ApplicationContext getContext()
    {
       return context;
+   }
+
+   public Server getAssetServer()
+   {
+      return assetServer;
+   }
+
+   public void setAssetServer(Server assetServer)
+   {
+      this.assetServer = assetServer;
    }
 
    protected abstract ClassLoader getClassLoader();
@@ -368,8 +388,28 @@ public abstract class ApplicationRuntime<P, R, L>
       );
 
       //
+      Registration<Router> applicationAssets =null;
+      if (assetServer != null)
+      {
+         applicationAssets = assetServer.getApplicationRouter().register(descriptor.getName(), Router.class);
+         injectBootstrap.bindBean(Router.class, Collections.<Annotation>singleton(Server.APPLICATION), applicationAssets.getRoute());
+         injectBootstrap.bindBean(Router.class, Collections.<Annotation>singleton(Server.PLUGIN), assetServer.getPluginRouter());
+      }
+
+      //
       logger.log("Starting " + descriptor.getName());
       bootstrap.start();
-      context = bootstrap.getContext();
+
+      //
+      this.context = bootstrap.getContext();
+      this.applicationAssets = applicationAssets;
+   }
+
+   public void shutdown()
+   {
+      if (applicationAssets != null)
+      {
+         applicationAssets.cancel();
+      }
    }
 }

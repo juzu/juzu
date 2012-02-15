@@ -24,6 +24,7 @@ import org.juzu.Path;
 import org.juzu.View;
 import org.juzu.Resource;
 import org.juzu.Response;
+import org.juzu.plugin.ajax.Ajax;
 import org.juzu.template.Template;
 import org.sample.booking.Flash;
 import org.sample.booking.models.Booking;
@@ -82,6 +83,7 @@ public class Hotels // extends Application
       index.with().bookings(bookings).render();
    }
 
+   @Ajax
    @Resource
    public void list(String search, String size, String page)
    {

@@ -17,8 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application(defaultController = org.sample.booking.controllers.Application.class, plugins = AjaxPlugin.class)
-package org.sample.booking;
+package org.juzu.plugin.ajax;
 
-import org.juzu.Application;
-import org.juzu.plugin.ajax.AjaxPlugin;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Ajax
+{
+}

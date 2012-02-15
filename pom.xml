@@ -286,6 +286,22 @@
       <version>2.9</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.jboss.arquillian.container</groupId>
+      <artifactId>arquillian-jetty-embedded-7</artifactId>
+      <version>1.0.0.CR1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-webapp</artifactId>
+      <version>7.0.0.v20091005</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <version>7.0.0.v20091005</version>
+    </dependency>
+
     </dependencies>
   </dependencyManagement>
 

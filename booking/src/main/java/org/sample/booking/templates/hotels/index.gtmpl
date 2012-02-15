@@ -5,49 +5,21 @@
 <h1>Search Hotels</h1>
 
 <p>
-    <input type="text" id="search" size="30">
-    <input type="submit" id="submit" value="Find Hotels">
-    <input type="hidden" id="page" value="0">
+    <input type="text" class="search" size="30">
+    <input type="submit" class="submit" value="Find Hotels">
+    <input type="hidden" class="page" value="0">
     <br>
 
     Maximum results: 
-    <select id="size">
+    <select class="size">
         <option value="5">5</option>
         <option value="10">10</option>
         <option value="20">20</option>
     </select>
 </p>
 
-<div id="result">
+<div class="result">
 </div>
-
-<script type="text/javascript" charset="utf-8">
-
-    // Search function
-    var search = function() {
-        var listAction = "@{list()}"
-        $('#result').load(listAction, {search : $('#search').val(), size : $('#size').val(), page : $('#page').val()}, function() {
-           $('#content').css('visibility', 'visible')
-        })
-    }
-    
-    // Events handler
-    $('#submit').click(function() {
-        $('#page').val(0)
-        search()
-    })
-    $('#search').keyup(function() {
-        $('#page').val(0)
-        search()
-    })
-    $('#nextPage').live('click', function(e) {
-        var p = $(this).attr('href')
-        $('#page').val(p)
-        e.preventDefault()
-        search()        
-    })
-    
-</script>
 
 <h1>Current Hotel Bookings</h1>
 

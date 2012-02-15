@@ -2,6 +2,7 @@ package org.juzu.impl.asset;
 
 import org.juzu.impl.utils.Path;
 
+import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,6 +28,11 @@ public class Router extends Route
          };
       }
    };
+
+   public <R extends Route> Registration<R> register(String name, Provider<R> routeProvider)
+   {
+      return mux.register(name, routeProvider);
+   }
 
    public <R extends Route> Registration<R> register(String name, Class<R> routeType)
    {

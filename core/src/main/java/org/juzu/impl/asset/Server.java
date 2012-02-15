@@ -1,10 +1,12 @@
 package org.juzu.impl.asset;
 
 import org.juzu.impl.application.InternalApplicationContext;
+import org.juzu.impl.utils.NameLiteral;
 import org.juzu.impl.utils.Path;
 import org.juzu.request.HttpContext;
 import org.juzu.request.RequestContext;
 
+import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +15,12 @@ import java.io.IOException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Server
 {
+
+   /** . */
+   public static final Named PLUGIN = new NameLiteral("plugin");
+
+   /** . */
+   public static final Named APPLICATION = new NameLiteral("application");
 
    /** . */
    final Multiplexer<String> mux = new Multiplexer<String>()
@@ -46,12 +54,12 @@ public class Server
    private final Router applicationRouter;
 
    /** . */
-   private final PluginRouter pluginRouter;
+   private final Router pluginRouter;
 
    public Server()
    {
-      this.applicationRouter = mux.register("application", Router.class).getRoute();
-      this.pluginRouter = mux.register("plugin", PluginRouter.class).getRoute();
+      this.applicationRouter = mux.register(APPLICATION.value(), Router.class).getRoute();
+      this.pluginRouter = mux.register(PLUGIN.value(), Router.class).getRoute();
    }
 
    public <R extends Route> Registration<R> register(final Scope scope, final String name, Class<R> routeType)
@@ -72,7 +80,7 @@ public class Server
       return applicationRouter;
    }
 
-   public PluginRouter getPluginRouter()
+   public Router getPluginRouter()
    {
       return pluginRouter;
    }
