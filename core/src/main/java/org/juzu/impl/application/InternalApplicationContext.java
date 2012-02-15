@@ -19,9 +19,8 @@
 
 package org.juzu.impl.application;
 
-import org.juzu.RequestLifeCycle;
+import org.juzu.plugin.Plugin;
 import org.juzu.request.Phase;
-import org.juzu.Response;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.spi.inject.InjectManager;
@@ -42,7 +41,6 @@ import org.juzu.template.TemplateRenderContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +63,7 @@ public class InternalApplicationContext extends ApplicationContext
    private final ApplicationDescriptor descriptor;
 
    /** . */
-   final InjectManager manager;
+   final InjectManager injectManager;
 
    /** . */
    private final ControllerResolver controllerResolver;
@@ -73,20 +71,53 @@ public class InternalApplicationContext extends ApplicationContext
    /** . */
    static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
+   /** . */
+   public ArrayList<Plugin> plugins;
+
    @Inject
-   public InternalApplicationContext(InjectManager manager, ApplicationDescriptor descriptor)
+   public InternalApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor) throws Exception
    {
       this.descriptor = descriptor;
-      this.manager = manager;
+      this.injectManager = injectManager;
       this.controllerResolver = new ControllerResolver(descriptor);
+      this.plugins = getPlugins(injectManager);
+   }
+   
+   private <B, I> ArrayList<Plugin> getPlugins(InjectManager<B, I> manager) throws Exception
+   {
+      ArrayList<Plugin> plugins = new ArrayList<Plugin>();
+      for (B pluginBean : manager.resolveBeans(Plugin.class))
+      {
+         I pluginInstance = manager.create(pluginBean);
+         Plugin plugin = (Plugin)manager.get(pluginBean, pluginInstance);
+         plugins.add(plugin);
+      }
+      return plugins;
+   }
+   
+   public List<Plugin> getPlugins()
+   {
+      return plugins;
    }
 
+   @Override
+   public ClassLoader getClassLoader()
+   {
+      return injectManager.getClassLoader();
+   }
+
+   @Override
    public ApplicationDescriptor getDescriptor()
    {
       return descriptor;
    }
 
-   public void invoke(RequestBridge bridge) throws ApplicationException
+   public InjectManager getInjectManager()
+   {
+      return injectManager;
+   }
+
+   public void invoke(RequestBridge<?> bridge) throws ApplicationException
    {
       Phase phase;
       if (bridge instanceof RenderBridge)
@@ -107,6 +138,23 @@ public class InternalApplicationContext extends ApplicationContext
       }
       ControllerMethod method = controllerResolver.resolve(phase, bridge.getMethodId());
 
+      if (method == null)
+      {
+         StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
+            "phase=" + phase + " and parameters={");
+         int index = 0;
+         for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet())
+         {
+            if (index++ > 0)
+            {
+               sb.append(',');
+            }
+            sb.append(entry.getKey()).append('=').append(Arrays.asList(entry.getValue()));
+         }
+         sb.append("}");
+         throw new UnsupportedOperationException(sb.toString());
+      }
+
       //
       Object[] args = getArgs(method, bridge.getParameters());
       Request request = new Request(this, method, args, bridge);
@@ -115,43 +163,13 @@ public class InternalApplicationContext extends ApplicationContext
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
       try
       {
-         ClassLoader classLoader = manager.getClassLoader();
+         ClassLoader classLoader = injectManager.getClassLoader();
          Thread.currentThread().setContextClassLoader(classLoader);
          current.set(request);
          ScopeController.begin(request);
          
-
          //
-         Object ret = doInvoke(manager, request, method);
-         
-         //
-         Response resp;
-         if (ret instanceof Response)
-         {
-            // We should check that it matches....
-            // btw we should try to enforce matching during compilation phase
-            // @Action -> Response.Action
-            // @View -> Response.Mime
-            // as we can do it
-            resp = (Response)ret;
-         }
-         else
-         {
-            resp = request.getResponse();
-         }
-
-         //
-         if (resp != null)
-         {
-            try
-            {
-               bridge.setResponse(resp);
-            }
-            catch (IOException e)
-            {
-               throw new UnsupportedOperationException("handle me gracefully");
-            }
-         }
+         request.invoke();
       }
       finally
       {
@@ -163,122 +181,7 @@ public class InternalApplicationContext extends ApplicationContext
 
    public Object resolveBean(String name) throws ApplicationException
    {
-      return resolveBean(manager, name);
-   }
-
-   private <B, I> Object resolveBean(InjectManager<B, I> manager, String name) throws ApplicationException
-   {
-      B bean = manager.resolveBean(name);
-      if (bean != null)
-      {
-         try
-         {
-            I cc = manager.create(bean);
-            return manager.get(bean, cc);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new ApplicationException(e.getCause());
-         }
-      }
-      else
-      {
-         return null;
-      }
-   }
-
-   private <B, I> Object doInvoke(InjectManager<B, I> manager, Request request, ControllerMethod method) throws ApplicationException
-   {
-      RequestContext context = request.getContext();
-
-      //
-      if (method == null)
-      {
-         StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
-            "phase=" + context.getPhase() + " and parameters={");
-         int index = 0;
-         for (Map.Entry<String, String[]> entry : context.getParameters().entrySet())
-         {
-            if (index++ > 0)
-            {
-               sb.append(',');
-            }
-            sb.append(entry.getKey()).append('=').append(Arrays.asList(entry.getValue()));
-         }
-         sb.append("}");
-         throw new UnsupportedOperationException(sb.toString());
-      }
-      else
-      {
-         Class<?> type = method.getType();
-         B bean = manager.resolveBean(type);
-
-         if (bean != null)
-         {
-            I instance = null;
-            try
-            {
-               Object o;
-               try
-               {
-                  // Get the bean
-                  instance = manager.create(bean);
-
-                  // Get a reference
-                  o = manager.get(bean, instance);
-               }
-               catch (InvocationTargetException e)
-               {
-                  throw new ApplicationException(e.getCause());
-               }
-
-               // Begin request callback
-               if (o instanceof RequestLifeCycle)
-               {
-                  ((RequestLifeCycle)o).beginRequest(context);
-               }
-               
-               // Invoke method on controller
-               try
-               {
-                  return method.getMethod().invoke(o, request.getArgs());
-               }
-               catch (InvocationTargetException e)
-               {
-                  throw new ApplicationException(e.getCause());
-               }
-               catch (IllegalAccessException e)
-               {
-                  throw new UnsupportedOperationException("hanle me gracefully", e);
-               }
-               finally
-               {
-                  if (o instanceof RequestLifeCycle)
-                  {
-                     try
-                     {
-                        ((RequestLifeCycle)o).endRequest(context);
-                     }
-                     catch (Exception e)
-                     {
-                        // Log me
-                     }
-                  }
-               }
-            }
-            finally
-            {
-               if (instance != null)
-               {
-                  manager.release(instance);
-               }
-            }
-         }
-         else
-         {
-            return null;
-         }
-      }
+      return resolveBean(injectManager, name);
    }
 
    private Object[] getArgs(ControllerMethod method, Map<String, String[]> parameterMap)
@@ -318,6 +221,27 @@ public class InternalApplicationContext extends ApplicationContext
       return args;
    }
 
+   private <B, I> Object resolveBean(InjectManager<B, I> manager, String name) throws ApplicationException
+   {
+      B bean = manager.resolveBean(name);
+      if (bean != null)
+      {
+         try
+         {
+            I cc = manager.create(bean);
+            return manager.get(bean, cc);
+         }
+         catch (InvocationTargetException e)
+         {
+            throw new ApplicationException(e.getCause());
+         }
+      }
+      else
+      {
+         return null;
+      }
+   }
+
    public TemplateStub resolveTemplateStub(String path)
    {
       try
@@ -333,7 +257,7 @@ public class InternalApplicationContext extends ApplicationContext
             id.append(name);
          }
          id.append("_");
-         ClassLoader cl = manager.getClassLoader();
+         ClassLoader cl = injectManager.getClassLoader();
          Class<?> stubClass = cl.loadClass(id.toString());
          return(TemplateStub)stubClass.newInstance();
       }

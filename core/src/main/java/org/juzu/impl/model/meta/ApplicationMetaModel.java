@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -66,6 +67,9 @@ public class ApplicationMetaModel extends MetaModelObject
    final MetaModel model;
 
    /** . */
+   final List<FQN> plugins;
+
+   /** . */
    boolean modified;
 
    ApplicationMetaModel(
@@ -73,7 +77,8 @@ public class ApplicationMetaModel extends MetaModelObject
       ElementHandle.Package handle,
       String applicationName,
       String defaultController,
-      Boolean escapeXML)
+      Boolean escapeXML,
+      List<FQN> plugins)
    {
       this.model = model;
       this.handle = handle;
@@ -82,6 +87,7 @@ public class ApplicationMetaModel extends MetaModelObject
       this.escapeXML = escapeXML;
       this.templatesQN = fqn.getPackageName().append("templates");
       this.modified = false;
+      this.plugins = plugins;
    }
 
    public String getDefaultController()
@@ -184,6 +190,11 @@ public class ApplicationMetaModel extends MetaModelObject
       }
    }
 
+   public List<FQN> getPlugins()
+   {
+      return plugins;
+   }
+
    public JSON toJSON()
    {
       JSON json = new JSON();
@@ -192,6 +203,7 @@ public class ApplicationMetaModel extends MetaModelObject
       json.add("defaultController", defaultController);
       json.add("templates", templates.values());
       json.add("controllers", controllers.keySet());
+      json.add("plugins", plugins);
       return json;
    }
 

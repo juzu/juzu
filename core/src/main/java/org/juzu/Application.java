@@ -19,6 +19,8 @@
 
 package org.juzu;
 
+import org.juzu.plugin.Plugin;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -59,5 +61,12 @@ public @interface Application
     * @return the escape XML value
     */
    boolean escapeXML() default false;
+
+   /**
+    * Returns the list of application plugins.
+    *
+    * @return the plugins
+    */
+   Class<? extends Plugin>[] plugins() default {};
 
 }

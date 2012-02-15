@@ -19,23 +19,33 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.RequestLifeCycle;
 import org.juzu.Response;
+import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.inject.ScopingContext;
+import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.spi.request.ResourceBridge;
 import org.juzu.metadata.ControllerMethod;
+import org.juzu.plugin.Plugin;
 import org.juzu.request.ActionContext;
 import org.juzu.request.ApplicationContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.request.ResourceContext;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Request implements ScopingContext
 {
 
+   /** . */
+   private final ApplicationContext application;
+   
    /** . */
    private final RequestBridge bridge;
 
@@ -48,7 +58,11 @@ public class Request implements ScopingContext
    /** The response. */
    private Response response;
 
-   public Request(ApplicationContext application, ControllerMethod method, Object[] args, RequestBridge bridge)
+   public Request(
+      ApplicationContext application, 
+      ControllerMethod method, 
+      Object[] args, 
+      RequestBridge bridge)
    {
       RequestContext context;
       if (bridge instanceof RenderBridge)
@@ -64,11 +78,13 @@ public class Request implements ScopingContext
          context = new ResourceContext(this, application, method, (ResourceBridge)bridge);
       }
 
-      
+      //
       this.context = context;
       this.bridge = bridge;
       this.args = args;
+      this.application = application;
    }
+   
 
    public Response getResponse()
    {
@@ -131,5 +147,131 @@ public class Request implements ScopingContext
    public boolean isActive(Scope scope)
    {
       return scope.isActive(this);
+   }
+
+   /** . */
+   private int index = 0;
+
+   public void invoke() throws ApplicationException
+   {
+      if (index >= 0 && index < application.getPlugins().size())
+      {
+         Plugin plugin = application.getPlugins().get(index);
+         try
+         {
+            index++;
+            plugin.invoke(this);
+         }
+         finally
+         {
+            index--;
+         }
+      }
+      else if (index == application.getPlugins().size())
+      {
+         //
+         Object ret = doInvoke(this, args, application.getInjectManager());
+
+         //
+         if (ret instanceof Response)
+         {
+            // We should check that it matches....
+            // btw we should try to enforce matching during compilation phase
+            // @Action -> Response.Action
+            // @View -> Response.Mime
+            // as we can do it
+            response = (Response)ret;
+         }
+      }
+      else
+      {
+         throw new AssertionError();
+      }
+
+      //
+      if (index == 0 && response != null)
+      {
+         try
+         {
+            bridge.setResponse(response);
+         }
+         catch (IOException e)
+         {
+            throw new UnsupportedOperationException("handle me gracefully");
+         }
+      }
+   }
+
+   private static <B, I> Object doInvoke(Request request, Object[] args, InjectManager<B, I> manager) throws ApplicationException
+   {
+      RequestContext context = request.getContext();
+      Class<?> type = context.getMethod().getType();
+      B bean = manager.resolveBean(type);
+
+      if (bean != null)
+      {
+         I instance = null;
+         try
+         {
+            Object o;
+            try
+            {
+               // Get the bean
+               instance = manager.create(bean);
+
+               // Get a reference
+               o = manager.get(bean, instance);
+            }
+            catch (InvocationTargetException e)
+            {
+               throw new ApplicationException(e.getCause());
+            }
+
+            // Begin request callback
+            if (o instanceof RequestLifeCycle)
+            {
+               ((RequestLifeCycle)o).beginRequest(context);
+            }
+
+            // Invoke method on controller
+            try
+            {
+               return context.getMethod().getMethod().invoke(o, args);
+            }
+            catch (InvocationTargetException e)
+            {
+               throw new ApplicationException(e.getCause());
+            }
+            catch (IllegalAccessException e)
+            {
+               throw new UnsupportedOperationException("hanle me gracefully", e);
+            }
+            finally
+            {
+               if (o instanceof RequestLifeCycle)
+               {
+                  try
+                  {
+                     ((RequestLifeCycle)o).endRequest(context);
+                  }
+                  catch (Exception e)
+                  {
+                     // Log me
+                  }
+               }
+            }
+         }
+         finally
+         {
+            if (instance != null)
+            {
+               manager.release(instance);
+            }
+         }
+      }
+      else
+      {
+         return null;
+      }
    }
 }

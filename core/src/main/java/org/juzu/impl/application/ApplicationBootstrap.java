@@ -28,10 +28,13 @@ import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerDescriptor;
 import org.juzu.metadata.TemplateDescriptor;
+import org.juzu.plugin.Plugin;
 import org.juzu.request.ApplicationContext;
 import org.juzu.template.Template;
 
 import javax.inject.Provider;
+import java.util.ArrayList;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationBootstrap
@@ -56,7 +59,7 @@ public class ApplicationBootstrap
    {
       _start();
    }
-
+   
    private <B, I> void _start() throws Exception
    {
       // Bind the application descriptor
@@ -114,16 +117,35 @@ public class ApplicationBootstrap
       }
 
       //
+      List<Class<? extends Plugin>> plugins = descriptor.getPlugins();
+
+      // Declare the plugins
+      for (Class<? extends Plugin> pluginType : plugins)
+      {
+         bootstrap.declareBean(pluginType, null);
+      }
+
+      //
       InjectManager<B, I> manager = bootstrap.create();
 
       //
       B contextBean = manager.resolveBean(ApplicationContext.class);
       I contextInstance = manager.create(contextBean);
+      
+      // Get plugins
+      ArrayList<Plugin> p = new ArrayList<Plugin>();
+      for (Class<? extends Plugin> pluginType : plugins)
+      {
+         B pluginBean = manager.resolveBean(pluginType);
+         I pluginInstance = manager.create(pluginBean);
+         Object o = manager.get(pluginBean, pluginInstance);
+         p.add((Plugin)o);
+      }
 
       //
       this.context = (InternalApplicationContext)manager.get(contextBean, contextInstance);
    }
-
+   
    public InternalApplicationContext getContext()
    {
       return context;

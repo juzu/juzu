@@ -21,6 +21,7 @@ package org.juzu.metadata;
 
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
+import org.juzu.plugin.Plugin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +61,15 @@ public class ApplicationDescriptor
    /** . */
    private final List<TemplateDescriptor> templates;
 
-   public ApplicationDescriptor(Class<?> applicationClass, Class<?> defaultController, Boolean escapeXML, String templatesPackageName)
+   /** . */
+   private final List<Class<? extends Plugin>> plugins;
+
+   public ApplicationDescriptor(
+      Class<?> applicationClass,
+      Class<?> defaultController,
+      Boolean escapeXML,
+      String templatesPackageName,
+      List<Class<? extends Plugin>> plugins)
    {
       // Load config
       JSON props;
@@ -123,6 +132,7 @@ public class ApplicationDescriptor
       this.controllers = controllers;
       this.controllerMethods = controllerMethods;
       this.templates = templates;
+      this.plugins = plugins;
    }
 
    public Class<?> getApplicationClass()
@@ -227,5 +237,10 @@ public class ApplicationDescriptor
    public String getTemplatesPackageName()
    {
       return templatesPackageName;
+   }
+
+   public List<Class<? extends Plugin>> getPlugins()
+   {
+      return plugins;
    }
 }

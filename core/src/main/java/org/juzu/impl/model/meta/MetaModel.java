@@ -35,6 +35,7 @@ import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.QN;
 
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -42,6 +43,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -83,7 +85,7 @@ public class MetaModel extends ModelHandler
 
    public ApplicationMetaModel addApplication(String packageName, String applicationName)
    {
-      return addApplication(ElementHandle.Package.create(new QN(packageName)), applicationName, null, null);
+      return addApplication(ElementHandle.Package.create(new QN(packageName)), applicationName, null, null, Collections.<FQN>emptyList());
    }
 
    public TemplateRefMetaModel addTemplateRef(String className, String fieldName, String path)
@@ -108,13 +110,24 @@ public class MetaModel extends ModelHandler
       return applications.get(handle);
    }
 
-   public ApplicationMetaModel addApplication(ElementHandle.Package handle, String applicationName, String defaultController, Boolean escapeXML)
+   public ApplicationMetaModel addApplication(
+      ElementHandle.Package handle, 
+      String applicationName, 
+      String defaultController, 
+      Boolean escapeXML,
+      List<FQN> plugins)
    {
       if (applications.containsKey(handle))
       {
          throw new IllegalStateException("Contains already application " + handle);
       }
-      ApplicationMetaModel application = new ApplicationMetaModel(this, handle, applicationName, defaultController, escapeXML);
+      ApplicationMetaModel application = new ApplicationMetaModel(
+         this, 
+         handle, 
+         applicationName, 
+         defaultController, 
+         escapeXML,
+         plugins);
       applications.put(handle, application);
       queue(new MetaModelEvent(MetaModelEvent.AFTER_ADD, application));
       return application;
@@ -231,11 +244,26 @@ public class MetaModel extends ModelHandler
          String s = packageElt.getSimpleName().toString();
          name = Character.toUpperCase(s.charAt(0)) + s.substring(1) + "Application";
       }
+      List<AnnotationValue> pluginsAnnotation = (List<AnnotationValue>)annotationValues.get("plugins");
+      List<FQN> plugins;
+      if (pluginsAnnotation != null)
+      {
+         plugins = new ArrayList<FQN>(pluginsAnnotation.size());
+         for (AnnotationValue pluginAnnotation : pluginsAnnotation)
+         {
+            TypeMirror plugin = (TypeMirror)pluginAnnotation.getValue();
+            plugins.add(new FQN(plugin.toString()));
+         }
+      }
+      else
+      {
+         plugins = Collections.<FQN>emptyList();
+      }
       ElementHandle.Package handle = ElementHandle.Package.create(packageElt);
       ApplicationMetaModel application = applications.get(handle);
       if (application == null)
       {
-         addApplication(handle, name, defaultController, escapeXML);
+         addApplication(handle, name, defaultController, escapeXML, plugins);
       }
       else
       {

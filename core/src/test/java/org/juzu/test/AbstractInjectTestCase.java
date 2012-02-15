@@ -60,6 +60,10 @@ public abstract class AbstractInjectTestCase extends AbstractTestCase
       //
       for (DIImplementation impl : DIImplementation.values())
       {
+         // Clear registry before test
+         Registry.clear();
+
+         //
          di = impl;
          super.run(result);
       }

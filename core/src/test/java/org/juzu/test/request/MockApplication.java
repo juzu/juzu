@@ -33,13 +33,10 @@ import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.File;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -113,6 +110,8 @@ public class MockApplication<P>
 
       //
       ApplicationBootstrap boot = new ApplicationBootstrap(bootstrap, descriptor);
+
+      //
       boot.start();
 
       //
@@ -121,7 +120,7 @@ public class MockApplication<P>
       //
       return this;
    }
-
+   
    public <T> void declareBean(String className)
    {
       beans.add(className);

@@ -389,12 +389,26 @@ public class ModelResolver extends ModelHandler implements Serializable
 
          // Singleton
          writer.append("public static final ").append(APPLICATION_DESCRIPTOR).append(" DESCRIPTOR = new ").append(APPLICATION_DESCRIPTOR).append("(");
-         writer.append(fqn.getSimpleName()).append(".class,");
+         writer.append(fqn.getSimpleName()).append(".class");
+         writer.append(",\n");
          writer.append(application.getDefaultController() != null ? (application.getDefaultController() + ".class") : "null");
-         writer.append(",");
+         writer.append(",\n");
          writer.append(application.getEscapeXML() != null ? Boolean.toString(application.getEscapeXML()) : "null");
-         writer.append(",");
+         writer.append(",\n");
          writer.append("\"").append(application.getTemplatesQN()).append("\"");
+         writer.append(",\n");
+         writer.append("java.util.Arrays.<Class<? extends org.juzu.plugin.Plugin>>asList(");
+         List<FQN> plugins = application.getPlugins();
+         for (int i = 0;i < plugins.size();i++)
+         {
+            if (i > 0)
+            {
+               writer.append(',');
+            }
+            FQN plugin = plugins.get(i);
+            writer.append(plugin.getFullName()).append(".class");
+         }
+         writer.append(")");
          writer.append(");\n");
 
          // Close class

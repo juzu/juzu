@@ -17,36 +17,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
+package plugin.lifecycle;
 
-import org.juzu.impl.application.ApplicationException;
-import org.juzu.impl.spi.inject.InjectManager;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.plugin.Plugin;
-import org.juzu.template.Template;
-import org.juzu.template.TemplateRenderContext;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import org.juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ApplicationContext
+public class A
 {
-
-   public ApplicationContext()
+   @View
+   public void index()
    {
    }
-   
-   public abstract ClassLoader getClassLoader();
-
-   public abstract List<Plugin> getPlugins();
-
-   public abstract ApplicationDescriptor getDescriptor();
-
-   public abstract Object resolveBean(String name) throws ApplicationException;
-
-   public abstract TemplateRenderContext render(Template template, Map<String, ?> parameters, Locale locale);
-
-   public abstract InjectManager getInjectManager();
 }
