@@ -27,6 +27,8 @@ import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsChecke
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
 import org.juzu.impl.spi.inject.defaultscope.UndeclaredScopeBean;
+import org.juzu.impl.spi.inject.export.ExportedBean;
+import org.juzu.impl.spi.inject.export.NonExportedBean;
 import org.juzu.impl.spi.inject.implementationtype.Extended;
 import org.juzu.impl.spi.inject.implementationtype.Extension;
 import org.juzu.impl.spi.inject.lifecycle.Bean;
@@ -126,6 +128,19 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    }
 
    protected abstract InjectBootstrap getManager() throws Exception;
+
+   public void testExport() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "export");
+      bootstrap.declareBean(ExportedBean.class, null);
+      boot();
+
+      //
+      B bean = mgr.resolveBean(NonExportedBean.class);
+      assertNull(bean);
+      bean = mgr.resolveBean(ExportedBean.class);
+      assertNotNull(bean);
+   }
 
    public void testLifeCycle() throws Exception
    {

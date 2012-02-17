@@ -50,23 +50,35 @@ public class ExtensionImpl implements Extension
 
    <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat)
    {
+
       AnnotatedType<T> annotatedType = pat.getAnnotatedType();
-      Class<?> type = annotatedType.getJavaClass();
-      if (annotatedType.isAnnotationPresent(Export.class))
+      Class<T> type = annotatedType.getJavaClass();
+      boolean veto; 
+      if (type.getName().startsWith("org.juzu."))
       {
-         if (!manager.declaredBeans.contains(type))
+         veto = !manager.declaredBeans.contains(type);
+      }
+      else
+      {
+         veto = false;
+      }
+      
+      //
+      if (!veto)
+      {
+         for (Class<?> boundBeanType : manager.boundBeans.keySet())
          {
-            pat.veto();
+            if (boundBeanType.isAssignableFrom(type))
+            {
+               veto = true;
+            }
          }
       }
-
+      
       //
-      for (Class<?> boundBeanType : manager.boundBeans.keySet())
+      if (veto)
       {
-         if (boundBeanType.isAssignableFrom(type))
-         {
-            pat.veto();
-         }
+         pat.veto();
       }
    }
 

@@ -17,20 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject;
+package org.juzu.impl.spi.inject.export;
 
-import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
+import org.juzu.impl.inject.Export;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIManagerTestCase extends InjectManagerTestCase<Bean<?>, CreationalContext<?>>
+@Export
+public class ExportedBean
 {
-
-   @Override
-   protected InjectBootstrap getManager() throws Exception
-   {
-      return new CDIBootstrap();
-   }
 }
