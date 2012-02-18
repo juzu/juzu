@@ -46,7 +46,7 @@ public class MethodParametersTestCase extends AbstractInjectTestCase
       //
       render = client.render("0");
       mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals(Collections.<String>emptyList().toString(), mv.getContent());
+      assertEquals("", mv.getContent());
 
       //
       render = client.render("1");
@@ -74,7 +74,7 @@ public class MethodParametersTestCase extends AbstractInjectTestCase
       //
       render = client.render("0");
       mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals(Collections.<String>emptyList().toString(), mv.getContent());
+      assertEquals("", mv.getContent());
 
       //
       render = client.render("1");

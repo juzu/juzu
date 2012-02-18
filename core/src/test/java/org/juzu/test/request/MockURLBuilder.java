@@ -70,7 +70,7 @@ public class MockURLBuilder implements URLBuilder
       {
          throw new NullPointerException("No null parameter accepted");
       }
-      if (value == null)
+      if (value == null || value.length == 0)
       {
          parameters.remove(name);
       }
