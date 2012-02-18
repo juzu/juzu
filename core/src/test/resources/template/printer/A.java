@@ -43,10 +43,4 @@ public class A extends Controller
    {
       implicit.render();
    }
-
-   @View(id = "explicit")
-   public void explicit()
-   {
-      explicit.render(renderContext.getPrinter());
-   }
 }

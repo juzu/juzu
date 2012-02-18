@@ -30,6 +30,4 @@ public interface MimeBridge<R extends Response.Mime> extends RequestBridge<R>
 
    URLBuilder createURLBuilder(ControllerMethod method);
 
-   Printer getPrinter();
-
 }

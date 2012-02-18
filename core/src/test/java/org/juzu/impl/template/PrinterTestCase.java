@@ -37,14 +37,4 @@ public class PrinterTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render("implicit");
       assertEquals("implicit_render", render.getContent());
    }
-
-   public void testExplicit() throws Exception
-   {
-      MockApplication<?> app = application("template", "printer").init();
-
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render("explicit");
-      assertEquals("explicit_render", render.getContent());
-   }
 }
