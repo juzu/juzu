@@ -92,7 +92,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
             throw new AssertionError("Unexpected phase " + phase);
       }
       url.setParameter("op", method.getId());
-      return new URLBuilderImpl(url);
+      return new PortletURLBuilder(url);
    }
 
    public void setResponse(Response.Mime response) throws IllegalStateException, IOException

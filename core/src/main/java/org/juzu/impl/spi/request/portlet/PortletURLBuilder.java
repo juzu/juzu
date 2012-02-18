@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class URLBuilderImpl implements URLBuilder
+class PortletURLBuilder implements URLBuilder
 {
 
    /** . */
@@ -35,7 +35,7 @@ class URLBuilderImpl implements URLBuilder
    /** . */
    private Boolean escapeXML;
 
-   URLBuilderImpl(BaseURL url)
+   PortletURLBuilder(BaseURL url)
    {
       this.url = url;
       this.escapeXML = null;
