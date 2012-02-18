@@ -22,7 +22,11 @@ package org.juzu;
 import org.juzu.text.Printer;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -248,7 +252,31 @@ public class Response
 
    public static abstract class Render extends Mime
    {
+
+      /** . */
+      private Collection<String> scripts = Collections.emptyList();
+      
+      public Render addScript(String script) throws NullPointerException
+      {
+         if (script == null)
+         {
+            throw new NullPointerException("No null script accepted");
+         }
+         if (scripts.isEmpty())
+         {
+            scripts = new LinkedHashSet<String>();
+         }
+         scripts.add(script);
+         return this;
+      }
+
+      public Collection<String> getScripts()
+      {
+         return scripts;
+      }
+
       public abstract String getTitle();
+
    }
 
    public static abstract class Resource extends Mime
@@ -261,7 +289,7 @@ public class Response
       return new Response.Action.Redirect(location);
    }
 
-   public static Mime ok(final String content)
+   public static Response.Mime ok(final String content)
    {
       return new Mime()
       {

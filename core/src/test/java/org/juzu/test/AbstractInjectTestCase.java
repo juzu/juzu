@@ -23,7 +23,6 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestListener;
 import junit.framework.TestResult;
-import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.protocol.mock.MockApplication;
 
@@ -80,9 +79,6 @@ public abstract class AbstractInjectTestCase extends AbstractTestCase
 
    public MockApplication<?> application(String... packageName)
    {
-      CompilerHelper<File, File> helper = compiler(packageName);
-      helper.assertCompile();
-      InjectBootstrap bootstrap = di.bootstrap();
-      return helper.application(bootstrap);
+      return application(di, packageName);
    }
 }
