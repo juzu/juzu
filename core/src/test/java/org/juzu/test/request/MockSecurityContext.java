@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.request.portlet;
+package org.juzu.test.request;
 
 import org.juzu.request.SecurityContext;
 

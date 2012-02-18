@@ -21,7 +21,6 @@ package org.juzu.test.request;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.RequestBridge;
-import org.juzu.impl.spi.request.portlet.MockSecurityContext;
 
 import java.util.HashMap;
 import java.util.Map;
