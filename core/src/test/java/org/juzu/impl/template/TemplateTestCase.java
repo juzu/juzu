@@ -20,9 +20,9 @@
 package org.juzu.impl.template;
 
 import org.juzu.impl.compiler.Compiler;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.CompilerHelper;
-import org.juzu.test.DIImplementation;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 
@@ -69,7 +69,7 @@ import org.juzu.test.request.MockClient;
    public void testTyped() throws Exception
    {
       // Does not work with Guice at the moment
-      if (getDI() != DIImplementation.INJECT_GUICE)
+      if (getDI() != InjectImplementation.INJECT_GUICE)
       {
          MockApplication<?> app = application("template", "typed").init();
          MockClient client = app.client();

@@ -17,15 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.test;
+package org.juzu.impl.spi.inject;
 
-import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
 import org.juzu.impl.spi.inject.guice.GuiceBootstrap;
 import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum DIImplementation
+public enum InjectImplementation
 {
 
    CDI_WELD()

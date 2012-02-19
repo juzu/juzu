@@ -19,8 +19,8 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
-import org.juzu.test.DIImplementation;
 import org.juzu.test.Registry;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
@@ -31,7 +31,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase
 
    public void testRenderPhase() throws Exception
    {
-      if (getDI() == DIImplementation.CDI_WELD)
+      if (getDI() == InjectImplementation.CDI_WELD)
       {
          MockApplication<?> app = application("request", "lifecycle").init();
 

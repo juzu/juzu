@@ -24,6 +24,7 @@ import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.model.processor.MainProcessor;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
 import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
@@ -284,27 +285,31 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
       //
       String inject = config.getInitParameter("juzu.inject");
-      InjectBootstrap injectBootstrap;
+      InjectImplementation injectImpl;
       if (inject == null)
       {
-         inject = "weld";
-      }
-      inject = inject.trim().toLowerCase();
-      if ("weld".equals(inject))
-      {
-      injectBootstrap = new CDIBootstrap();
-      }
-      else if ("spring".equals(inject))
-      {
-         injectBootstrap = new SpringBootstrap();
+         injectImpl = InjectImplementation.CDI_WELD;
       }
       else
       {
-         throw new PortletException("unrecognized inject vendor " + inject);
+         inject = inject.trim().toLowerCase();
+         if ("weld".equals(inject))
+         {
+            injectImpl = InjectImplementation.CDI_WELD;
+         }
+         else if ("spring".equals(inject))
+         {
+            injectImpl = InjectImplementation.INJECT_SPRING;
+         }
+         else
+         {
+            throw new PortletException("unrecognized inject vendor " + inject);
+         }
       }
-      System.out.println("[" + config.getPortletName() + "] Using injection " + injectBootstrap.getClass().getName());
+      System.out.println("[" + config.getPortletName() + "] Using injection " + injectImpl.name());
 
       //
+      InjectBootstrap injectBootstrap = injectImpl.bootstrap();
       injectBootstrap.addFileSystem(classes);
       injectBootstrap.addFileSystem(libs);
       injectBootstrap.setClassLoader(cl);

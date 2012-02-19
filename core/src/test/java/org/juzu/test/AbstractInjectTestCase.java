@@ -24,6 +24,7 @@ import junit.framework.Test;
 import junit.framework.TestListener;
 import junit.framework.TestResult;
 import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.request.MockApplication;
 
 import java.io.File;
@@ -33,7 +34,7 @@ public abstract class AbstractInjectTestCase extends AbstractTestCase
 {
 
    /** . */
-   private DIImplementation di;
+   private InjectImplementation di;
 
    /** . */
    private String testName;
@@ -58,7 +59,7 @@ public abstract class AbstractInjectTestCase extends AbstractTestCase
       result.addListener(listener);
 
       //
-      for (DIImplementation impl : DIImplementation.values())
+      for (InjectImplementation impl : InjectImplementation.values())
       {
          // Clear registry before test
          Registry.clear();
@@ -72,7 +73,7 @@ public abstract class AbstractInjectTestCase extends AbstractTestCase
       result.removeListener(listener);
    }
 
-   public DIImplementation getDI()
+   public InjectImplementation getDI()
    {
       return di;
    }

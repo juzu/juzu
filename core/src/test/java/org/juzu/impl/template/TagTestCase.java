@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template;
 
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
 import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
@@ -28,15 +29,11 @@ import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.utils.FQN;
 import org.juzu.metadata.TemplateDescriptor;
 import org.juzu.test.AbstractInjectTestCase;
-import org.juzu.test.DIImplementation;
 import org.juzu.test.request.MockApplication;
 import org.juzu.test.request.MockClient;
 import org.juzu.test.request.MockRenderBridge;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TagTestCase extends AbstractInjectTestCase
@@ -91,7 +88,7 @@ public class TagTestCase extends AbstractInjectTestCase
 
    public void testParam() throws Exception
    {
-      if (getDI() != DIImplementation.INJECT_GUICE)
+      if (getDI() != InjectImplementation.INJECT_GUICE)
       {
          MockApplication<?> app = application("template", "tag", "param").init();
 
