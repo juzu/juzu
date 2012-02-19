@@ -56,6 +56,11 @@ public class FileSystemScanner<P> implements Visitor<P>
       }
    }
 
+   public ReadFileSystem<P> getFileSystem()
+   {
+      return fs;
+   }
+
    public FileSystemScanner(ReadFileSystem<P> fs)
    {
       this.snapshot = new HashMap<String, Data>();

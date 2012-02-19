@@ -21,6 +21,7 @@ package org.juzu.request;
 
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.spi.inject.InjectManager;
+import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.plugin.Plugin;
 import org.juzu.template.Template;
@@ -49,4 +50,6 @@ public abstract class ApplicationContext
    public abstract TemplateRenderContext render(Template template, Map<String, ?> parameters, Locale locale);
 
    public abstract InjectManager getInjectManager();
+
+   public abstract void invoke(RequestBridge<?> bridge) throws ApplicationException;
 }
