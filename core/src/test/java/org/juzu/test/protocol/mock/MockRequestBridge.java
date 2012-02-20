@@ -21,7 +21,9 @@ package org.juzu.test.protocol.mock;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.request.WindowContext;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +49,9 @@ public abstract class MockRequestBridge<R extends Response> implements RequestBr
    /** . */
    private final MockSecurityContext securityContext;
 
+   /** . */
+   private final MockWindowContext windowContext;
+
    public MockRequestBridge(MockClient client, String methodId)
    {
       this.client = client;
@@ -55,6 +60,7 @@ public abstract class MockRequestBridge<R extends Response> implements RequestBr
       this.methodId = methodId;
       this.httpContext = new MockHttpContext();
       this.securityContext = new MockSecurityContext();
+      this.windowContext = new MockWindowContext();
    }
 
    public String getMethodId()
@@ -133,5 +139,10 @@ public abstract class MockRequestBridge<R extends Response> implements RequestBr
    public MockHttpContext getHttpContext()
    {
       return httpContext;
+   }
+
+   public MockWindowContext getWindowContext()
+   {
+      return windowContext;
    }
 }

@@ -24,6 +24,7 @@ import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.request.HttpContext;
 import org.juzu.request.Phase;
 import org.juzu.request.SecurityContext;
+import org.juzu.request.WindowContext;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletRequestBridge<R extends Response> implements RequestBridge<R>, HttpContext
+public abstract class ServletRequestBridge<R extends Response> implements RequestBridge<R>, HttpContext, WindowContext
 {
    
    public static ServletRequestBridge<?> create(HttpServletRequest req, HttpServletResponse resp)
@@ -128,6 +129,17 @@ public abstract class ServletRequestBridge<R extends Response> implements Reques
 
    //
 
+   public String getNamespace()
+   {
+      return "window_ns";
+   }
+
+   public String getId()
+   {
+      return "window_id";
+   }
+   //
+
    public String getMethodId()
    {
       return methodId;
@@ -183,6 +195,11 @@ public abstract class ServletRequestBridge<R extends Response> implements Reques
    }
 
    public HttpContext getHttpContext()
+   {
+      return this;
+   }
+
+   public WindowContext getWindowContext()
    {
       return this;
    }
