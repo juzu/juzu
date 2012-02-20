@@ -25,7 +25,7 @@ import junit.framework.TestListener;
 import junit.framework.TestResult;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.InjectImplementation;
-import org.juzu.test.request.MockApplication;
+import org.juzu.test.protocol.mock.MockApplication;
 
 import java.io.File;
 

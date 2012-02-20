@@ -17,30 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
+package org.juzu.test.protocol.mock;
 
-import org.juzu.impl.spi.inject.InjectImplementation;
-import org.juzu.test.AbstractInjectTestCase;
-import org.juzu.test.Registry;
-import org.juzu.test.protocol.mock.MockApplication;
-import org.juzu.test.protocol.mock.MockClient;
+import org.juzu.text.WriterPrinter;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LifeCycleTestCase extends AbstractInjectTestCase
+public class MockPrinter extends WriterPrinter
 {
 
-   public void testRenderPhase() throws Exception
+   public MockPrinter()
    {
-      if (getDI() == InjectImplementation.CDI_WELD)
-      {
-         MockApplication<?> app = application("request", "lifecycle").init();
+      super(new StringBuilder());
+   }
 
-         //
-         MockClient client = app.client();
-         Registry.clear();
-         client.render();
-         Integer count = Registry.get("count");
-         assertEquals((Integer)2, count);
-      }
+   public StringBuilder getContent()
+   {
+      return (StringBuilder)writer;
    }
 }

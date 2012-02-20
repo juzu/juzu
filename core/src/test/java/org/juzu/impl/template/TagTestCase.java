@@ -29,9 +29,9 @@ import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.utils.FQN;
 import org.juzu.metadata.TemplateDescriptor;
 import org.juzu.test.AbstractInjectTestCase;
-import org.juzu.test.request.MockApplication;
-import org.juzu.test.request.MockClient;
-import org.juzu.test.request.MockRenderBridge;
+import org.juzu.test.protocol.mock.MockApplication;
+import org.juzu.test.protocol.mock.MockClient;
+import org.juzu.test.protocol.mock.MockRenderBridge;
 
 import java.util.HashMap;
 

@@ -20,9 +20,9 @@
 package org.juzu.impl.request;
 
 import org.juzu.test.AbstractInjectTestCase;
-import org.juzu.test.request.MockApplication;
-import org.juzu.test.request.MockClient;
-import org.juzu.test.request.MockRenderBridge;
+import org.juzu.test.protocol.mock.MockApplication;
+import org.juzu.test.protocol.mock.MockClient;
+import org.juzu.test.protocol.mock.MockRenderBridge;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

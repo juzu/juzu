@@ -17,38 +17,39 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.test.request;
+package org.juzu.test.protocol.mock;
 
+import org.junit.Assert;
 import org.juzu.Response;
-import org.juzu.impl.spi.request.RenderBridge;
+import org.juzu.impl.spi.request.ResourceBridge;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockRenderBridge extends MockMimeBridge<Response.Mime.Render> implements RenderBridge
+public class MockResourceBridge extends MockMimeBridge<Response.Mime.Resource> implements ResourceBridge
 {
 
    /** . */
-   private String title;
-
-   public MockRenderBridge(MockClient client, String methodId)
+   private int status;
+   
+   public MockResourceBridge(MockClient client, String methodId)
    {
       super(client, methodId);
    }
 
-   public MockRenderBridge(MockClient client)
+   public void assertOk()
    {
-      this(client, null);
+      assertStatus(200);
    }
 
-   public String getTitle()
+   public void assertNotFound()
    {
-      return title;
+      assertStatus(404);
    }
 
-   public void setTitle(String title)
+   public void assertStatus(int status)
    {
-      this.title = title;
+      Assert.assertEquals(status, this.status);
    }
 
    @Override
@@ -57,10 +58,14 @@ public class MockRenderBridge extends MockMimeBridge<Response.Mime.Render> imple
       super.setResponse(response);
       
       //
-      if (response instanceof Response.Mime.Render)
+      if (response instanceof Response.Mime.Resource)
       {
-         Response.Mime.Render stream = (Response.Mime.Render)response;
-         title = stream.getTitle();
+         Response.Mime.Resource resource = (Response.Mime.Resource)response;
+         status = resource.getStatus();
+      }
+      else
+      {
+         status = 200;
       }
    }
 }

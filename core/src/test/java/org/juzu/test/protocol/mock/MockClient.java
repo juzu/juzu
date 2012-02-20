@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.test.request;
+package org.juzu.test.protocol.mock;
 
 import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
@@ -25,7 +25,6 @@ import org.juzu.impl.application.ApplicationException;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;

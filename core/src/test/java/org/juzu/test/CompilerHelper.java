@@ -26,7 +26,7 @@ import org.juzu.impl.model.processor.MainProcessor;
 import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
-import org.juzu.test.request.MockApplication;
+import org.juzu.test.protocol.mock.MockApplication;
 
 import javax.annotation.processing.Processor;
 import javax.enterprise.context.spi.Context;

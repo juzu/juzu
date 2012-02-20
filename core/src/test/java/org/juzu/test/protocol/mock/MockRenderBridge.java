@@ -17,21 +17,50 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.test.request;
+package org.juzu.test.protocol.mock;
 
-import org.juzu.text.WriterPrinter;
+import org.juzu.Response;
+import org.juzu.impl.spi.request.RenderBridge;
+
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockPrinter extends WriterPrinter
+public class MockRenderBridge extends MockMimeBridge<Response.Mime.Render> implements RenderBridge
 {
 
-   public MockPrinter()
+   /** . */
+   private String title;
+
+   public MockRenderBridge(MockClient client, String methodId)
    {
-      super(new StringBuilder());
+      super(client, methodId);
    }
 
-   public StringBuilder getContent()
+   public MockRenderBridge(MockClient client)
    {
-      return (StringBuilder)writer;
+      this(client, null);
+   }
+
+   public String getTitle()
+   {
+      return title;
+   }
+
+   public void setTitle(String title)
+   {
+      this.title = title;
+   }
+
+   @Override
+   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   {
+      super.setResponse(response);
+      
+      //
+      if (response instanceof Response.Mime.Render)
+      {
+         Response.Mime.Render stream = (Response.Mime.Render)response;
+         title = stream.getTitle();
+      }
    }
 }

@@ -22,7 +22,7 @@ package org.juzu.impl.template;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.template.TemplateRenderContext;
-import org.juzu.test.request.MockPrinter;
+import org.juzu.test.protocol.mock.MockPrinter;
 import org.juzu.text.WriterPrinter;
 
 import java.awt.*;

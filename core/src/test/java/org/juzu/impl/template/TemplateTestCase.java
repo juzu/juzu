@@ -23,8 +23,8 @@ import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.CompilerHelper;
-import org.juzu.test.request.MockApplication;
-import org.juzu.test.request.MockClient;
+import org.juzu.test.protocol.mock.MockApplication;
+import org.juzu.test.protocol.mock.MockClient;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
    public class TemplateTestCase extends AbstractInjectTestCase

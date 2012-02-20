@@ -20,9 +20,9 @@
 package org.juzu.impl.template;
 
 import org.juzu.test.AbstractInjectTestCase;
-import org.juzu.test.request.MockApplication;
-import org.juzu.test.request.MockClient;
-import org.juzu.test.request.MockRenderBridge;
+import org.juzu.test.protocol.mock.MockApplication;
+import org.juzu.test.protocol.mock.MockClient;
+import org.juzu.test.protocol.mock.MockRenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ELTestCase extends AbstractInjectTestCase

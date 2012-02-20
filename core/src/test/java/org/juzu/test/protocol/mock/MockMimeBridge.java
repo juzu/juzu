@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.test.request;
+package org.juzu.test.protocol.mock;
 
 import org.juzu.Response;
 import org.juzu.URLBuilder;
