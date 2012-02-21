@@ -12,7 +12,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>InvocationServlet</servlet-name>
-    <url-pattern>/juzu</url-pattern>
+    <url-pattern>/</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ResourceServlet</servlet-name>
