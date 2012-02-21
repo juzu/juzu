@@ -21,18 +21,13 @@ package org.juzu.test.protocol.mock;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.RequestBridge;
-import org.juzu.request.WindowContext;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MockRequestBridge<R extends Response> implements RequestBridge<R>
 {
-
-   /** . */
-   private final String methodId;
 
    /** . */
    protected final MockClient client;
@@ -52,20 +47,14 @@ public abstract class MockRequestBridge<R extends Response> implements RequestBr
    /** . */
    private final MockWindowContext windowContext;
 
-   public MockRequestBridge(MockClient client, String methodId)
+   public MockRequestBridge(MockClient client)
    {
       this.client = client;
       this.parameters = new HashMap<String, String[]>();
       this.attributes = new HashMap<Object, Object>();
-      this.methodId = methodId;
       this.httpContext = new MockHttpContext();
       this.securityContext = new MockSecurityContext();
       this.windowContext = new MockWindowContext();
-   }
-
-   public String getMethodId()
-   {
-      return methodId;
    }
 
    public Map<Object, Object> getAttributes()

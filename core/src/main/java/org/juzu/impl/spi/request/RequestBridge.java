@@ -31,9 +31,6 @@ import java.util.Map;
 public interface RequestBridge<R extends Response>
 {
 
-   
-   String getMethodId();
-
    /**
     * Returns the request parameters.
     *

@@ -38,6 +38,7 @@ import org.juzu.request.ResourceContext;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Request implements ScopingContext
@@ -53,6 +54,9 @@ public class Request implements ScopingContext
    private final RequestContext context;
 
    /** . */
+   private final Map<String, String[]> parameters;
+
+   /** . */
    private final Object[] args;
 
    /** The response. */
@@ -60,7 +64,8 @@ public class Request implements ScopingContext
 
    public Request(
       ApplicationContext application, 
-      ControllerMethod method, 
+      ControllerMethod method,
+      Map<String, String[]> parameters,
       Object[] args, 
       RequestBridge bridge)
    {
@@ -82,6 +87,7 @@ public class Request implements ScopingContext
       this.context = context;
       this.bridge = bridge;
       this.args = args;
+      this.parameters = parameters;
       this.application = application;
    }
    
@@ -99,6 +105,11 @@ public class Request implements ScopingContext
    public Object[] getArgs()
    {
       return args;
+   }
+
+   public Map<String, String[]> getParameters()
+   {
+      return parameters;
    }
 
    public RequestContext getContext()

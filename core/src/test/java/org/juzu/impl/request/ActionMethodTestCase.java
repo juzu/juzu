@@ -58,7 +58,7 @@ public class ActionMethodTestCase extends AbstractTestCase
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "noArg");
       assertEquals("noArg", cm.getName());
       assertEquals(Phase.ACTION, cm.getPhase());
-      assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArgumentParameters());
+      assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArguments());
    }
 
    public void testStringArg() throws Exception
@@ -66,6 +66,6 @@ public class ActionMethodTestCase extends AbstractTestCase
       ControllerMethod cm = descriptor.getControllerMethod(aClass, "oneArg", String.class);
       assertEquals("oneArg", cm.getName());
       assertEquals(Phase.ACTION, cm.getPhase());
-      assertEquals(Arrays.asList(new ControllerParameter("foo", Cardinality.SINGLE)), cm.getArgumentParameters());
+      assertEquals(Arrays.asList(new ControllerParameter("foo", Cardinality.SINGLE)), cm.getArguments());
    }
 }

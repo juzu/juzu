@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,25 +42,19 @@ public abstract class ServletRequestBridge<R extends Response> implements Reques
    
    public static ServletRequestBridge<?> create(HttpServletRequest req, HttpServletResponse resp)
    {
-      String methodId = null;
       Phase phase = Phase.RENDER;
       Map<String, String[]> parameters = new HashMap<String, String[]>();
       for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet())
       {
          String name = entry.getKey();
          String[] value = entry.getValue();
-         if (name.startsWith("p."))
-         {
-            parameters.put(name.substring(2), value);
-         }
-         else if ("phase".equals(name))
+         if (name.equals("juzu.phase"))
          {
             phase = Phase.valueOf(value[0]);
          }
-         else if ("op".equals(name))
+         else
          {
-            // For now like that
-            methodId = value[0];
+            parameters.put(name, value);
          }
       }
       
@@ -66,18 +62,15 @@ public abstract class ServletRequestBridge<R extends Response> implements Reques
       switch (phase)
       {
          case RENDER:
-            return new ServletRenderBridge(req, resp, methodId, parameters);
+            return new ServletRenderBridge(req, resp, parameters);
          case ACTION:
-            return new ServletActionBridge(req, resp, methodId, parameters);
+            return new ServletActionBridge(req, resp, parameters);
          case RESOURCE:
-            return new ServletResourceBridge(req, resp, methodId, parameters);
+            return new ServletResourceBridge(req, resp, parameters);
          default:
             throw new UnsupportedOperationException("todo");
       }
    }
-
-   /** . */
-   final String methodId;
 
    /** . */
    final HttpServletRequest req;
@@ -91,10 +84,8 @@ public abstract class ServletRequestBridge<R extends Response> implements Reques
    ServletRequestBridge(
       HttpServletRequest req, 
       HttpServletResponse resp, 
-      String methodId, 
       Map<String, String[]> parameters)
    {
-      this.methodId = methodId;
       this.req = req;
       this.resp = resp;
       this.parameters = parameters;
@@ -139,11 +130,6 @@ public abstract class ServletRequestBridge<R extends Response> implements Reques
       return "window_id";
    }
    //
-
-   public String getMethodId()
-   {
-      return methodId;
-   }
 
    public Map<String, String[]> getParameters()
    {
@@ -261,5 +247,40 @@ public abstract class ServletRequestBridge<R extends Response> implements Reques
          session.setAttribute("org.juzu.flash_scope", store = new HashMap<Object, Object>());
       }
       return store;
+   }
+
+   public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
+   {
+      StringBuilder buffer = new StringBuilder();
+      buffer.append(req.getScheme());
+      buffer.append("://");
+      buffer.append(req.getServerName());
+      int port = req.getServerPort();
+      if (port != 80)
+      {
+         buffer.append(':').append(port);
+      }
+      buffer.append(req.getContextPath());
+      buffer.append(req.getServletPath());
+      buffer.append("?juzu.phase=").append(phase);
+      for (Map.Entry<String, String[]> parameter : parameters.entrySet())
+      {
+         String name = parameter.getKey();
+         try
+         {
+            String encName = URLEncoder.encode(name, "UTF-8");
+            for (String value : parameter.getValue())
+            {
+               String encValue = URLEncoder.encode(value, "UTF-8");
+               buffer.append("&").append(encName).append('=').append(encValue);
+            }
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            // Should not happen
+            throw new AssertionError(e);
+         }
+      }
+      return buffer.toString();
    }
 }

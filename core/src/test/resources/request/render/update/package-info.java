@@ -17,26 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.request.servlet;
+@Application
+package request.render.update;
 
-import org.juzu.Response;
-import org.juzu.URLBuilder;
-import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.request.Phase;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge<R extends Response.Mime> extends ServletRequestBridge<R> implements MimeBridge<R>
-{
-
-   ServletMimeBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
-   {
-      super(req, resp, parameters);
-   }
-}
+import org.juzu.Application;

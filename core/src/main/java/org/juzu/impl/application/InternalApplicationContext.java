@@ -44,6 +44,7 @@ import javax.inject.Singleton;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -136,7 +137,29 @@ public class InternalApplicationContext extends ApplicationContext
       {
          throw new AssertionError();
       }
-      ControllerMethod method = controllerResolver.resolve(phase, bridge.getMethodId());
+      
+      //
+      Map<String, String[]> parameters = new HashMap<String, String[]>();
+      String methodId = null;
+      for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet())
+      {
+         String name = entry.getKey();
+         String[] value = entry.getValue();
+         if (name.startsWith("juzu."))
+         {
+            if (name.equals("juzu.op"))
+            {
+               methodId = value[0];
+            }
+         }
+         else
+         {
+            parameters.put(name, value);
+         }
+      }
+      
+      //
+      ControllerMethod method = controllerResolver.resolve(phase, methodId, parameters.keySet());
 
       if (method == null)
       {
@@ -156,8 +179,8 @@ public class InternalApplicationContext extends ApplicationContext
       }
 
       //
-      Object[] args = getArgs(method, bridge.getParameters());
-      Request request = new Request(this, method, args, bridge);
+      Object[] args = getArgs(method, parameters);
+      Request request = new Request(this, method, parameters, args, bridge);
 
       //
       ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
@@ -187,7 +210,7 @@ public class InternalApplicationContext extends ApplicationContext
    private Object[] getArgs(ControllerMethod method, Map<String, String[]> parameterMap)
    {
       // Prepare method parameters
-      List<ControllerParameter> params = method.getArgumentParameters();
+      List<ControllerParameter> params = method.getArguments();
       Object[] args = new Object[params.size()];
       for (int i = 0;i < args.length;i++)
       {

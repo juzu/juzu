@@ -58,7 +58,7 @@ public abstract class RequestContext
 
    public Map<String, String[]> getParameters()
    {
-      return getBridge().getParameters();
+      return request.getParameters();
    }
    
    public HttpContext getHttpContext()

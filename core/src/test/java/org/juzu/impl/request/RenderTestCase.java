@@ -20,10 +20,12 @@
 package org.juzu.impl.request;
 
 import org.juzu.test.AbstractInjectTestCase;
+import org.juzu.test.protocol.mock.MockActionBridge;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
 import org.juzu.test.protocol.mock.MockRenderBridge;
 
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,10 +82,6 @@ public class RenderTestCase extends AbstractInjectTestCase
       render = (MockRenderBridge)client.invoke(m.group(2));
       m.reset(render.getContent());
       assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
-      assertEquals("2", m.group(1));
-      render = (MockRenderBridge)client.invoke(m.group(2));
-      m.reset(render.getContent());
-      assertTrue("Was expecting " + render.getContent() + " to match", m.matches());
       assertEquals("0", m.group(1));
    }
 
@@ -94,5 +92,18 @@ public class RenderTestCase extends AbstractInjectTestCase
       MockClient client = app.client();
       MockRenderBridge render = client.render();
       assertEquals("foo", render.getContent());
+   }
+
+   public void testUpdate() throws Exception
+   {
+      MockApplication<?> app = application("request", "render", "update").init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      String url = render.getContent();
+      MockActionBridge action = (MockActionBridge)client.invoke(url);
+      action.assertRender("A.done", Collections.<String, String>emptyMap());
+
    }
 }

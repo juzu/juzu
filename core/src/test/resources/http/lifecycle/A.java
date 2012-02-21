@@ -31,19 +31,25 @@ public class A
    @Action
    public Response.Update action()
    {
-      return A_.index("d");
+      return A_.done("d");
    }
    
    @View
-   public Response.Render.Mime index(String p)
+   public Response.Render.Mime index()
    {
-      if (p == null)
+      return Response.ok("Title", A_.actionURL().toString());
+   }
+
+   @View
+   public Response.Render.Mime done(String p)
+   {
+      if ("d".equals(p))
       {
-         return Response.ok("Title", A_.actionURL().toString());
+         return Response.ok("Title", A_.resourceURL().toString());
       }
       else
       {
-         return Response.ok("Title", A_.resourceURL().toString());
+         return Response.ok("Title", "<html><body>fail</body></html>");
       }
    }
 

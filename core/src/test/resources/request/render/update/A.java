@@ -17,26 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.request.servlet;
+package request.render.update;
 
+import org.juzu.Action;
+import org.juzu.Controller;
 import org.juzu.Response;
-import org.juzu.URLBuilder;
-import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.request.Phase;
+import org.juzu.View;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge<R extends Response.Mime> extends ServletRequestBridge<R> implements MimeBridge<R>
+public class A extends Controller
 {
 
-   ServletMimeBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
+   @Action 
+   public Response.Update process()
    {
-      super(req, resp, parameters);
+      return A_.done();
+   }
+   
+   @View
+   public Response.Mime index() throws IOException
+   {
+      return Response.ok(A_.processURL().toString());
+   }
+
+   @View
+   public Response.Mime done() throws IOException
+   {
+      return Response.ok("done");
    }
 }

@@ -53,7 +53,7 @@ public abstract class MimeContext extends RequestContext
 
    public URLBuilder createURLBuilder(ControllerMethod method)
    {
-      URLBuilder builder = getBridge().createURLBuilder(method);
+      URLBuilder builder = new URLBuilder(getBridge(), method);
 
       // Bridge escape XML value
       ApplicationDescriptor desc = application.getDescriptor();
@@ -108,7 +108,7 @@ public abstract class MimeContext extends RequestContext
       URLBuilder builder = createURLBuilder(method);
 
       //
-      ControllerParameter param = method.getArgumentParameters().get(0);
+      ControllerParameter param = method.getArguments().get(0);
       if (arg != null)
       {
          setValue(builder, param, arg);
@@ -128,7 +128,7 @@ public abstract class MimeContext extends RequestContext
          Object value = args[i];
          if (value != null)
          {
-            setValue(builder, method.getArgumentParameters().get(i), value);
+            setValue(builder, method.getArguments().get(i), value);
          }
       }
       return builder;

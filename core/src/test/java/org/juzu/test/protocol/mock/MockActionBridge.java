@@ -24,6 +24,7 @@ import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -33,9 +34,9 @@ public class MockActionBridge extends MockRequestBridge<Response.Action> impleme
    /** . */
    private Response response;
 
-   public MockActionBridge(MockClient client, String methodId)
+   public MockActionBridge(MockClient client)
    {
-      super(client, methodId);
+      super(client);
    }
 
    public void assertNoResponse()
@@ -50,7 +51,9 @@ public class MockActionBridge extends MockRequestBridge<Response.Action> impleme
 
    public void assertRender(String expectedMethodId, Map<String, String> expectedArguments)
    {
-      Response.Action.Render resp = new Response.Action.Render(expectedMethodId);
+      HashMap<String, String> parameters = new HashMap<String, String>();
+      parameters.put("juzu.op", expectedMethodId);
+      Response.Action.Render resp = new Response.Action.Render(parameters);
       resp.getParameters().putAll(expectedArguments);
       assertResponse(resp);
    }

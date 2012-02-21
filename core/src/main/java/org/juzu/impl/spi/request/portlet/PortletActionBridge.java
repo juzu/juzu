@@ -52,7 +52,6 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       {
          done = true;
          Response.Action.Render render = (Response.Action.Render)response;
-         super.response.setRenderParameter("op", render.getMethodId());
          for (Map.Entry<String, String> entry : render.getParameters().entrySet())
          {
             super.response.setRenderParameter(entry.getKey(), entry.getValue());

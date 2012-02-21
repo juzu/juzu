@@ -20,14 +20,14 @@
 package org.juzu.impl.spi.request;
 
 import org.juzu.Response;
-import org.juzu.URLBuilder;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.text.Printer;
+import org.juzu.request.Phase;
+
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface MimeBridge<R extends Response.Mime> extends RequestBridge<R>
 {
 
-   URLBuilder createURLBuilder(ControllerMethod method);
+   String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters);
 
 }

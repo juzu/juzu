@@ -21,9 +21,7 @@ package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
 import org.juzu.request.Phase;
-import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.metadata.ControllerMethod;
 import org.juzu.text.Printer;
 import org.juzu.text.WriterPrinter;
 
@@ -31,6 +29,8 @@ import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse, R extends Response.Mime> extends PortletRequestBridge<Rq, Rs, R> implements MimeBridge<R>
@@ -73,9 +73,8 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       return printer;
    }
 
-   public URLBuilder createURLBuilder(ControllerMethod method)
+   public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
    {
-      Phase phase = method.getPhase();
       BaseURL url;
       switch (phase)
       {
@@ -91,8 +90,29 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
          default:
             throw new AssertionError("Unexpected phase " + phase);
       }
-      url.setParameter("op", method.getId());
-      return new PortletURLBuilder(url);
+
+      //
+      url.setParameters(parameters);
+
+      //
+      if (escapeXML != null && escapeXML)
+      {
+         try
+         {
+            StringWriter writer = new StringWriter();
+            url.write(writer, true);
+            return writer.toString();
+         }
+         catch (IOException ignore)
+         {
+            // This should not happen
+            return "";
+         }
+      }
+      else
+      {
+         return url.toString();
+      }
    }
 
    public void setResponse(Response.Mime response) throws IllegalStateException, IOException

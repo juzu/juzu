@@ -21,28 +21,34 @@ package org.juzu.impl.spi.request.servlet;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
+import org.juzu.request.Phase;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletActionBridge extends ServletRequestBridge<Response.Action> implements ActionBridge
 {
-   ServletActionBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
+   ServletActionBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
    {
-      super(req, resp, methodId, parameters);
+      super(req, resp, parameters);
    }
 
    @Override
    public void setResponse(Response.Action response) throws IllegalStateException, IOException
    {
-      if (response instanceof Response.Action.Update)
+      if (response instanceof Response.Action.Render)
       {
-         Response.Action.Update update = (Response.Update)response;
-         ServletURLBuilder builder = new ServletURLBuilder(this, update);
-         String url = resp.encodeURL(builder.toString());
+         Response.Action.Render update = (Response.Action.Render)response;
+         Map<String, String[]> parameters = new HashMap<String, String[]>();
+         for (Map.Entry<String, String> entry : update.getParameters().entrySet())
+         {
+            parameters.put(entry.getKey(), new String[]{entry.getValue()});
+         }
+         String url = renderURL(Phase.RENDER, null, parameters);
          resp.sendRedirect(url);
       }
       else if (response instanceof Response.Action.Redirect)

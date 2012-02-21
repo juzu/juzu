@@ -26,6 +26,8 @@ import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
+import java.util.Collections;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerResolverTestCase extends AbstractTestCase
 {
@@ -44,12 +46,12 @@ public class ControllerResolverTestCase extends AbstractTestCase
       ControllerMethod cm2_ = desc.getControllerMethod(aClass, "fooArg", String.class);
 
       //
-      ControllerMethod cm1 = resolver.resolve(Phase.RENDER, cm1_.getId());
+      ControllerMethod cm1 = resolver.resolve(Phase.RENDER, cm1_.getId(), cm1_.getArgumentNames());
       assertNotNull(cm1);
       assertEquals("noArg", cm1.getName());
 
       //
-      ControllerMethod cm2 = resolver.resolve(Phase.RENDER, cm2_.getId());
+      ControllerMethod cm2 = resolver.resolve(Phase.RENDER, cm2_.getId(), cm2_.getArgumentNames());
       assertNotNull(cm2);
       assertEquals("fooArg", cm2.getName());
 
@@ -73,7 +75,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
       ControllerResolver resolver = new ControllerResolver(desc);
-      ControllerMethod method = resolver.resolve(Phase.RENDER, null);
+      ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
       assertEquals("index", method.getName());
    }
 
@@ -88,7 +90,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       ControllerResolver resolver = new ControllerResolver(desc);
       try
       {
-         resolver.resolve(Phase.RENDER, null);
+         resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
          fail();
       }
       catch (AmbiguousResolutionException e)
@@ -106,7 +108,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
       ControllerResolver resolver = new ControllerResolver(desc);
-      ControllerMethod method = resolver.resolve(Phase.RENDER, null);
+      ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
       assertEquals("index", method.getName());
       assertSame(aClass, method.getMethod().getDeclaringClass());
    }

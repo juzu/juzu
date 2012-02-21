@@ -42,24 +42,21 @@ public class MockClient
    private MockRequestBridge create(String url)
    {
       MockRequestBridge request;
-      ControllerMethod method;
       JSON json;
       try
       {
          json = (JSON)JSON.parse(url);
-         method = application.getContext().getDescriptor().getControllerMethodById(json.getString("op"));
-         Phase phase = method.getPhase();
-         String methodId = method.getId();
+         Phase phase = Phase.valueOf(json.getString("phase"));
          switch (phase)
          {
             case ACTION:
-               request = new MockActionBridge(this, methodId);
+               request = new MockActionBridge(this);
                break;
             case RENDER:
-               request =  new MockRenderBridge(this, methodId);
+               request =  new MockRenderBridge(this);
                break;
             case RESOURCE:
-               request =  new MockResourceBridge(this, methodId);
+               request =  new MockResourceBridge(this);
                break;
             default:
                throw AbstractTestCase.failure("Not yet supported " + phase);
@@ -111,7 +108,12 @@ public class MockClient
 
    public MockRenderBridge render(String methodId) throws ApplicationException
    {
-      MockRenderBridge render = new MockRenderBridge(this, methodId);
+      MockRenderBridge render = new MockRenderBridge(this);
+
+      // This is an hack for unit testing purpose
+      render.getParameters().put("juzu.op", new String[]{methodId});
+
+      //
       invoke(render);
       return render;
    }

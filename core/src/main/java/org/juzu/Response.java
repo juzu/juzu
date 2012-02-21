@@ -24,9 +24,7 @@ import org.juzu.text.Printer;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -126,9 +124,7 @@ public class Response
 
    public interface Update
    {
-      String getMethodId();
       Update setParameter(String parameterName, String parameterValue);
-      Map<String, String> getParameters();
    }
 
    public interface Stream
@@ -146,15 +142,11 @@ public class Response
       {
 
          /** . */
-         final String methodId;
-
-         /** . */
          final Map<String, String> parameters;
 
-         public Render(String methodId)
+         public Render(Map<String, String> parameters)
          {
-            this.methodId = methodId;
-            this.parameters = new HashMap<String, String>();
+            this.parameters = parameters;
          }
 
          /**
@@ -174,6 +166,10 @@ public class Response
             {
                throw new NullPointerException();
             }
+            if (parameterName.startsWith("juzu."))
+            {
+               throw new IllegalArgumentException("Parameter name cannot start with <juzu.> prefix");
+            }
             this.parameters.put(parameterName, parameterValue);
             return this;
          }
@@ -181,11 +177,6 @@ public class Response
          public Map<String, String> getParameters()
          {
             return parameters;
-         }
-
-         public String getMethodId()
-         {
-            return methodId;
          }
 
          @Override
@@ -198,7 +189,7 @@ public class Response
             if (obj instanceof Render)
             {
                Render that = (Render)obj;
-               return methodId.equals(that.methodId) && parameters.equals(that.parameters);
+               return parameters.equals(that.parameters);
             }
             return false;
          }
@@ -206,7 +197,7 @@ public class Response
          @Override
          public String toString()
          {
-            return "Response.Action.Render[methodId=" + methodId + ",parameters" + parameters + "]";
+            return "Response.Action.Render[parameters" + parameters + "]";
          }
       }
 

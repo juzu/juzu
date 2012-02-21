@@ -19,6 +19,12 @@
 
 package org.juzu;
 
+import org.juzu.impl.spi.request.MimeBridge;
+import org.juzu.metadata.ControllerMethod;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>The <code>URLBuilder</code> produces URL for a Juzu application.
  *
@@ -46,8 +52,35 @@ package org.juzu;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface URLBuilder
+public class URLBuilder
 {
+
+   /** . */
+   private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+   /** . */
+   private final MimeBridge<?> bridge;
+
+   /** . */
+   private final ControllerMethod method;
+
+   /** . */
+   private Map<String, String[]> parameters;
+
+   /** . */
+   private Boolean escapeXML;
+
+   public URLBuilder(MimeBridge<?> bridge, ControllerMethod method)
+   {
+      HashMap<String, String[]> parameters = new HashMap<String, String[]>();
+      parameters.put("juzu.op", new String[]{method.getId()});
+      
+      //
+      this.bridge = bridge;
+      this.method = method;
+      this.escapeXML = null;
+      this.parameters = parameters;
+   }
 
    /**
     * <p>Set a parameter on the URL that will be built by this builder. This method replaces the parameter with the given
@@ -58,7 +91,10 @@ public interface URLBuilder
     * @return this builder
     * @throws NullPointerException if the name parameter is null
     */
-   URLBuilder setParameter(String name, String value) throws NullPointerException;
+   public URLBuilder setParameter(String name, String value) throws NullPointerException
+   {
+      return setParameter(name, value == null ? EMPTY_STRING_ARRAY : new String[]{value});
+   }
 
    /**
     * <p>Set a parameter on the URL that will be built by this builder. This method replaces the parameter with the given
@@ -70,15 +106,51 @@ public interface URLBuilder
     * @throws NullPointerException if the name parameter is null
     * @throws IllegalArgumentException if any component of the value is null
     */
-   URLBuilder setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException;
+   public URLBuilder setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException
+   {
+      if (name == null)
+      {
+         throw new NullPointerException();
+      }
+      if (value == null)
+      {
+         throw new NullPointerException();
+      }
+      if (name.startsWith("juzu."))
+      {
+         throw new IllegalArgumentException("Parameter name cannot be prefixed with juzu.");
+      }
+      if (value.length == 0)
+      {
+         parameters.remove(name);
+      }
+      else
+      {
+         for (String component : value)
+         {
+            if (component == null)
+            {
+               throw new IllegalArgumentException("Argument array cannot contain null value");
+            }
+         }
+         parameters.put(name, value.clone());
+      }
+      return this;
+   }
 
-   URLBuilder escapeXML(Boolean escapeXML);
+   public URLBuilder escapeXML(Boolean escapeXML)
+   {
+      this.escapeXML = escapeXML;
+      return this;
+   }
 
    /**
     * Build the string value of this URL.
     *
     * @return the string url
     */
-   String toString();
-
+   public String toString()
+   {
+      return bridge.renderURL(method.getPhase(), escapeXML, parameters);
+   }
 }

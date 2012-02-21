@@ -34,9 +34,9 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletResourceBridge extends ServletMimeBridge<Response.Mime.Resource> implements ResourceBridge
 {
-   ServletResourceBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
+   ServletResourceBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
    {
-      super(req, resp, methodId, parameters);
+      super(req, resp, parameters);
    }
 
    public void setResponse(Response.Resource response) throws IllegalStateException, IOException

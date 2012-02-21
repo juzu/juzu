@@ -32,9 +32,9 @@ public class MockResourceBridge extends MockMimeBridge<Response.Mime.Resource> i
    /** . */
    private int status;
    
-   public MockResourceBridge(MockClient client, String methodId)
+   public MockResourceBridge(MockClient client)
    {
-      super(client, methodId);
+      super(client);
    }
 
    public void assertOk()

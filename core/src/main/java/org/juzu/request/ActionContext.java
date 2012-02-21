@@ -26,6 +26,7 @@ import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -60,13 +61,15 @@ public class ActionContext extends RequestContext
 
    public Response.Action.Render createResponse(ControllerMethod method) throws IllegalStateException
    {
-      return new Response.Action.Render(method.getId());
+      HashMap<String, String> parameters = new HashMap<String, String>();
+      parameters.put("juzu.op", method.getId());
+      return new Response.Action.Render(parameters);
    }
 
    public Response.Action.Render createResponse(ControllerMethod method, Object arg) throws IllegalStateException
    {
       Response.Action.Render response = createResponse(method);
-      List<ControllerParameter> argumentParameters = method.getArgumentParameters();
+      List<ControllerParameter> argumentParameters = method.getArguments();
       if (arg != null)
       {
          response.setParameter(argumentParameters.get(0).getName(), arg.toString());
@@ -77,7 +80,7 @@ public class ActionContext extends RequestContext
    public Response.Action.Render createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
    {
       Response.Action.Render response = createResponse(method);
-      List<ControllerParameter> argumentParameters = method.getArgumentParameters();
+      List<ControllerParameter> argumentParameters = method.getArguments();
       for (int i = 0;i < argumentParameters.size();i++)
       {
          Object value = args[i];

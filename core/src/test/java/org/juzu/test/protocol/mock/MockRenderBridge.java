@@ -31,14 +31,9 @@ public class MockRenderBridge extends MockMimeBridge<Response.Mime.Render> imple
    /** . */
    private String title;
 
-   public MockRenderBridge(MockClient client, String methodId)
-   {
-      super(client, methodId);
-   }
-
    public MockRenderBridge(MockClient client)
    {
-      this(client, null);
+      super(client);
    }
 
    public String getTitle()

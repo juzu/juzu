@@ -25,7 +25,9 @@ import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Resolves a controller for a given input.
@@ -59,7 +61,7 @@ public class ControllerResolver
       ControllerMethod m;
       private Foo(ControllerMethod m)
       {
-         this.score = m.getArgumentParameters().size() + (m.getType() == desc.getDefaultController() ? 0 : 1000);
+         this.score = m.getArguments().size() + (m.getType() == desc.getDefaultController() ? 0 : 1000);
          this.m = m;
       }
       public int compareTo(Foo o)
@@ -68,19 +70,65 @@ public class ControllerResolver
       }
    }
 
-   public ControllerMethod resolve(Phase phase, String methodId) throws AmbiguousResolutionException
+   public ControllerMethod resolve(Phase phase, String methodId, final Set<String> parameterNames) throws AmbiguousResolutionException
    {
       ControllerMethod found = null;
 
       //
       if (methodId != null)
       {
+
+         class Match implements Comparable<Match>
+         {
+            final ControllerMethod method;
+            final int score1;
+            final int score2;
+            Match(ControllerMethod method)
+            {
+               this.method = method;
+               this.score1 = method.getArgumentNames().size() - parameterNames.size();
+               this.score2 = method.getArgumentNames().size();
+            }
+            public int compareTo(Match o)
+            {
+               int delta = score1 - o.score1;
+               if (delta == 0)
+               {
+                  delta = score2 - o.score2;
+               }
+               return delta;
+            }
+         }
+
+         //
+         List<Match> matches = new ArrayList<Match>();
          for (ControllerMethod method : methods)
          {
-            if (method.getId().equals(methodId))
+            if (method.getId().equals(methodId) && method.getArgumentNames().containsAll(parameterNames))
             {
-               found = method;
+               //
+               matches.add(new Match(method));
                break;
+            }
+         }
+         
+         //
+         if (matches.size() > 0)
+         {
+            Collections.sort(matches);
+            Match first = matches.get(0);
+            if (matches.size() > 1)
+            {
+               Match second = matches.get(1);
+               if (first.compareTo(second) == 0)
+               {
+                  throw new AmbiguousResolutionException("Two methods satisfies the index criteria: " +
+                     first.method + " and " + second.method);
+               }
+            }
+            else
+            {
+               found = first.method;
             }
          }
       }
@@ -127,7 +175,7 @@ public class ControllerResolver
 
    private int getScore(ControllerMethod m)
    {
-      return m.getArgumentParameters().size() + (m.getType() == desc.getDefaultController() ? 0 : 1000);
+      return m.getArguments().size() + (m.getType() == desc.getDefaultController() ? 0 : 1000);
    }
 
 /*

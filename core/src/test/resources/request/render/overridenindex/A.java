@@ -44,7 +44,7 @@ public class A extends Controller
       }
       else
       {
-         return Response.ok("2[" + A_.indexURL().toString() + "]");
+         return Response.ok("fail]");
       }
    }
 }

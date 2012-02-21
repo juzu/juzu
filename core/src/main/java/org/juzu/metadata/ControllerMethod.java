@@ -22,9 +22,12 @@ package org.juzu.metadata;
 import org.juzu.request.Phase;
 import org.juzu.impl.utils.Tools;
 
-import javax.lang.model.element.VariableElement;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A controller method.
@@ -47,27 +50,32 @@ public final class ControllerMethod
    private final Method method;
 
    /** . */
-   private final List<ControllerParameter> argumentParameters;
+   private final List<ControllerParameter> argumentList;
+
+   /** . */
+   private final Map<String, ControllerParameter> argumentMap;
 
    public ControllerMethod(
       String id,
       Phase phase,
       Class<?> type,
       Method method,
-      List<ControllerParameter> argumentParameters)
+      List<ControllerParameter> argumentList)
    {
       if (id == null)
       {
-         // For now we compute an id based on a kind of signature
          StringBuilder sb = new StringBuilder();
          sb.append(method.getDeclaringClass().getSimpleName());
-         sb.append("_");
+         sb.append(".");
          sb.append(method.getName());
-         for (ControllerParameter ve : argumentParameters)
-         {
-            sb.append("_").append(ve.getName());
-         }
          id = sb.toString();
+      }
+      
+      //
+      LinkedHashMap<String, ControllerParameter> argumentMap = new LinkedHashMap<String, ControllerParameter>();
+      for (ControllerParameter argument : argumentList)
+      {
+         argumentMap.put(argument.getName(), argument);
       }
       
       //
@@ -75,7 +83,8 @@ public final class ControllerMethod
       this.phase = phase;
       this.type = type;
       this.method = method;
-      this.argumentParameters = Tools.safeUnmodifiableList(argumentParameters);
+      this.argumentList = Tools.safeUnmodifiableList(argumentList);
+      this.argumentMap = Collections.unmodifiableMap(argumentMap);
    }
 
    public String getId()
@@ -103,9 +112,19 @@ public final class ControllerMethod
       return method.getName();
    }
 
-   public List<ControllerParameter> getArgumentParameters()
+   public ControllerParameter getArgument(String name)
    {
-      return argumentParameters;
+      return argumentMap.get(name);
+   }
+
+   public List<ControllerParameter> getArguments()
+   {
+      return argumentList;
+   }
+
+   public Set<String> getArgumentNames()
+   {
+      return argumentMap.keySet();
    }
 
    @Override

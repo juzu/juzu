@@ -20,12 +20,13 @@
 package org.juzu.test.protocol.mock;
 
 import org.juzu.Response;
-import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.metadata.ControllerMethod;
+import org.juzu.impl.utils.JSON;
+import org.juzu.request.Phase;
 import org.juzu.text.Printer;
 
 import java.io.IOException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MockMimeBridge<R extends Response.Mime> extends MockRequestBridge<R> implements MimeBridge<R>
@@ -34,9 +35,9 @@ public abstract class MockMimeBridge<R extends Response.Mime> extends MockReques
    /** . */
    private final MockPrinter printer;
 
-   public MockMimeBridge(MockClient client, String methodId)
+   public MockMimeBridge(MockClient client)
    {
-      super(client, methodId);
+      super(client);
 
       //
       printer = new MockPrinter();
@@ -47,9 +48,16 @@ public abstract class MockMimeBridge<R extends Response.Mime> extends MockReques
       return printer.getContent().toString();
    }
 
-   public URLBuilder createURLBuilder(ControllerMethod method)
+   public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
    {
-      return new MockURLBuilder(method);
+      JSON url = new JSON();
+      url.add("phase", phase.name());
+      url.add("parameters", parameters);
+      if (escapeXML != null)
+      {
+         url.add("escapeXML", escapeXML);
+      }
+      return url.toString();
    }
 
    public Printer getPrinter()
