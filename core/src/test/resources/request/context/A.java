@@ -31,9 +31,9 @@ public class A extends Controller
 {
 
    @View
-   public Response.Mime.Render index() throws IOException
+   public Response.Content.Render index() throws IOException
    {
-      return Response.ok(A_.actionURL().toString(), "render_phase");
+      return Response.render(A_.actionURL().toString(), "render_phase");
    }
 
    @Action

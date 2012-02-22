@@ -59,7 +59,7 @@ public class URLBuilder
    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
    /** . */
-   private final MimeBridge<?> bridge;
+   private final MimeBridge bridge;
 
    /** . */
    private final ControllerMethod method;
@@ -70,7 +70,7 @@ public class URLBuilder
    /** . */
    private Boolean escapeXML;
 
-   public URLBuilder(MimeBridge<?> bridge, ControllerMethod method)
+   public URLBuilder(MimeBridge bridge, ControllerMethod method)
    {
       HashMap<String, String[]> parameters = new HashMap<String, String[]>();
       parameters.put("juzu.op", new String[]{method.getId()});

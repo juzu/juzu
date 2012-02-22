@@ -40,7 +40,7 @@ public class PluginImpl extends Plugin
       }
       catch (ApplicationException e)
       {
-         request.setResponse(Response.ok("pass"));
+         request.setResponse(Response.content("pass"));
       }
    }
 }

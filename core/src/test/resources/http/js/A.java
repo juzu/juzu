@@ -27,9 +27,9 @@ public class A
 {
    
    @View
-   public Response.Render.Mime index(String p)
+   public Response.Content index(String p)
    {
       String content = "<script>alert('foo');</script>";
-      return Response.ok("Title", content);
+      return Response.render(content);
    }
 }

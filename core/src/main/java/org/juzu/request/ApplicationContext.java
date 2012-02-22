@@ -51,5 +51,5 @@ public abstract class ApplicationContext
 
    public abstract InjectManager getInjectManager();
 
-   public abstract void invoke(RequestBridge<?> bridge) throws ApplicationException;
+   public abstract void invoke(RequestBridge bridge) throws ApplicationException;
 }

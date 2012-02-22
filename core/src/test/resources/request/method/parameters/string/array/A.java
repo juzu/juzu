@@ -31,33 +31,33 @@ public class A extends Controller
 {
 
    @View(id = "none")
-   public Response.Mime none() throws IOException
+   public Response.Content none() throws IOException
    {
-      return Response.ok(A_.mvURL(null).toString());
+      return Response.content(A_.mvURL(null).toString());
    }
 
    @View(id = "0")
-   public Response.Mime zero() throws IOException
+   public Response.Content zero() throws IOException
    {
-      return Response.ok(A_.mvURL(new String[]{}).toString());
+      return Response.content(A_.mvURL(new String[]{}).toString());
    }
 
    @View(id = "1")
-   public Response.Mime one() throws IOException
+   public Response.Content one() throws IOException
    {
-      return Response.ok(A_.mvURL(new String[]{"bar"}).toString());
+      return Response.content(A_.mvURL(new String[]{"bar"}).toString());
    }
 
    @View(id = "2")
-   public Response.Mime two() throws IOException
+   public Response.Content two() throws IOException
    {
-      return Response.ok(A_.mvURL(new String[]{"bar_1", "bar_2"}).toString());
+      return Response.content(A_.mvURL(new String[]{"bar_1", "bar_2"}).toString());
    }
 
    @View
-   public Response.Mime mv(String[] foo) throws IOException
+   public Response.Content mv(String[] foo) throws IOException
    {
       String s = foo != null ? Arrays.<String>asList((String[])foo).toString() : "";
-      return Response.ok(s);
+      return Response.content(s);
    }
 }

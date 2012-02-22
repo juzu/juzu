@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletRenderBridge extends ServletMimeBridge<Response.Mime.Render> implements RenderBridge
+public class ServletRenderBridge extends ServletMimeBridge implements RenderBridge
 {
    ServletRenderBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
    {
@@ -43,8 +43,9 @@ public class ServletRenderBridge extends ServletMimeBridge<Response.Mime.Render>
    }
 
    @Override
-   public void setResponse(Response.Mime.Render response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
+      Response.Content.Render render = (Response.Render)response;
       resp.setContentType("text/html");
 
       //
@@ -55,7 +56,7 @@ public class ServletRenderBridge extends ServletMimeBridge<Response.Mime.Render>
       writer.println("<html>");
       
       writer.println("<head>");
-      Collection<String> scripts = response.getScripts();
+      Collection<String> scripts = render.getScripts();
       if (scripts.size() > 0)
       {
          for (String script : scripts)
@@ -71,7 +72,7 @@ public class ServletRenderBridge extends ServletMimeBridge<Response.Mime.Render>
       writer.println("<body>");
 
       // Send response
-      response.send(new WriterPrinter(writer));
+      render.send(new WriterPrinter(writer));
 
       //
       writer.println("</body>");

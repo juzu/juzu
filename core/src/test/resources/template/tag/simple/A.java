@@ -40,6 +40,6 @@ public class A
    @View
    public void index()
    {
-      index.render(printer);
+      index.renderTo(printer);
    }
 }

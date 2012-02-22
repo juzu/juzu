@@ -30,13 +30,13 @@ public class A
 {
 
    @View
-   public Response.Mime index() throws IOException
+   public Response.Content index() throws IOException
    {
-      return Response.ok(A_.actionURL().toString());
+      return Response.content(A_.actionURL().toString());
    }
 
    @Action
-   public Response.Action.Redirect action()
+   public Response.Redirect action()
    {
       return Response.redirect("http://www.julienviet.com");
    }

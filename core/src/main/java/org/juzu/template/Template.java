@@ -54,22 +54,22 @@ public abstract class Template
       return path;
    }
 
-   public void render() throws TemplateExecutionException, UndeclaredIOException
+   public Response.Render render() throws TemplateExecutionException, UndeclaredIOException
    {
-      render(Collections.<String, Object>emptyMap(), null);
+      return render(Collections.<String, Object>emptyMap(), null);
    }
 
-   public void render(Locale locale) throws TemplateExecutionException, UndeclaredIOException
+   public Response.Render render(Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
-      render(Collections.<String, Object>emptyMap(), locale);
+      return render(Collections.<String, Object>emptyMap(), locale);
    }
 
-   public void render(Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException
+   public Response.Render render(Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException
    {
-      render(parameters, null);
+      return render(parameters, null);
    }
 
-   public void render(Map<String, ?> parameters, Locale locale) throws TemplateExecutionException, UndeclaredIOException
+   public Response.Render render(Map<String, ?> parameters, Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
       try
       {
@@ -77,8 +77,23 @@ public abstract class Template
          if (context instanceof MimeContext)
          {
             MimeContext mime = (MimeContext)context;
-            Response.Mime stream = ok(parameters, locale);
-            mime.setResponse(stream);
+            final TemplateRenderContext renderContext = applicationContext.render(this, parameters, locale);
+            Response.Render render = new Response.Content.Render()
+            {
+
+               @Override
+               public String getTitle()
+               {
+                  return renderContext.getTitle();
+               }
+
+               public void send(Printer printer) throws IOException
+               {
+                  renderContext.render(printer);
+               }
+            };
+            mime.setResponse(render);
+            return render;
          }
          else
          {
@@ -89,77 +104,27 @@ public abstract class Template
       {
          throw new UndeclaredIOException(e);
       }
-
    }
 
-   public void render(Printer printer) throws TemplateExecutionException, UndeclaredIOException
-   {
-      render(printer, Collections.<String, Object>emptyMap(), null);
-   }
-
-   public void render(Printer printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException
-   {
-      render(printer, Collections.<String, Object>emptyMap(), locale);
-   }
-
-   public void render(Printer printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException
-   {
-      render(printer, parameters, null);
-   }
-
-   public final Response.Mime ok()
-   {
-      return ok(null, null);
-   }
-
-   public final Response.Mime ok(Locale locale)
-   {
-      return ok(null, locale);
-   }
-
-   public final Response.Mime ok(Map<String, ?> parameters)
-   {
-      return ok(parameters, null);
-   }
-
-   public final Response.Mime ok(Map<String, ?> parameters, Locale locale)
-   {
-      final TemplateRenderContext trc = applicationContext.render(this, parameters, locale);
-      return new Response.Mime.Render()
-      {
-         
-         @Override
-         public String getTitle()
-         {
-            return trc.getTitle();
-         }
-
-         public void send(Printer printer) throws IOException
-         {
-            trc.render(printer);
-         }
-      };
-   }
-
-   public final Response.Mime.Resource notFound()
+   public final Response.Content.Resource notFound()
    {
       return notFound(null, null);
    }
 
-   public final Response.Mime.Resource notFound(Locale locale)
+   public final Response.Content.Resource notFound(Locale locale)
    {
       return notFound(null, locale);
    }
 
-   public final Response.Mime.Resource notFound(Map<String, ?> parameters)
+   public final Response.Content.Resource notFound(Map<String, ?> parameters)
    {
       return notFound(parameters, null);
    }
 
-   public final Response.Mime.Resource notFound(Map<String, ?> parameters, Locale locale)
+   public final Response.Content.Resource notFound(Map<String, ?> parameters, Locale locale)
    {
       final TemplateRenderContext trc = applicationContext.render(this, parameters, locale);
-      return new Response.Mime.Resource()
+      return new Response.Content.Resource()
       {
          @Override
          public int getStatus()
@@ -182,6 +147,21 @@ public abstract class Template
       return builder;
    }
 
+   public void renderTo(Printer printer) throws TemplateExecutionException, UndeclaredIOException
+   {
+      renderTo(printer, Collections.<String, Object>emptyMap(), null);
+   }
+
+   public void renderTo(Printer printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException
+   {
+      renderTo(printer, Collections.<String, Object>emptyMap(), locale);
+   }
+
+   public void renderTo(Printer printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException
+   {
+      renderTo(printer, parameters, null);
+   }
+
    /**
     * Renders the template.
     *
@@ -191,7 +171,7 @@ public abstract class Template
     * @throws TemplateExecutionException any execution exception
     * @throws UndeclaredIOException any io exception
     */
-   public void render(
+   public void renderTo(
       Printer printer,
       Map<String, ?> attributes,
       Locale locale) throws TemplateExecutionException, UndeclaredIOException
@@ -226,17 +206,12 @@ public abstract class Template
       /** The locale. */
       private Locale locale;
 
-      public final void render()
+      public final Response.Render render()
       {
-         Template.this.render(parameters, locale);
+         return Template.this.render(parameters, locale);
       }
 
-      public final Response.Mime.Stream ok()
-      {
-         return Template.this.ok(parameters, locale);
-      }
-
-      public final Response.Mime.Stream notFound()
+      public final Response.Content notFound()
       {
          return Template.this.notFound(parameters, locale);
       }

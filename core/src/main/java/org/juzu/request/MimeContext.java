@@ -134,19 +134,19 @@ public abstract class MimeContext extends RequestContext
       return builder;
    }
 
-   public void setResponse(Response.Mime response) throws IOException, IllegalStateException
+   public void setResponse(Response.Content response) throws IOException, IllegalStateException
    {
       // Consume response here
       StringBuilder buffer = new StringBuilder();
       WriterPrinter printer = new WriterPrinter(buffer);
       response.send(printer);
-      if (response instanceof Response.Mime.Render)
+      if (response instanceof Response.Content.Render)
       {
-         response = Response.ok(((Response.Mime.Render)response).getTitle(), buffer.toString());
+         response = Response.render(((Response.Content.Render)response).getTitle(), buffer.toString());
       }
       else
       {
-         response = Response.status(((Response.Mime.Resource)response).getStatus(), buffer.toString());
+         response = Response.status(((Response.Content.Resource)response).getStatus(), buffer.toString());
       }
       
       //

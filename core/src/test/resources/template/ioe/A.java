@@ -39,7 +39,7 @@ public class A extends Controller
    Template index;
 
    @View
-   public Response.Mime index()
+   public Response.Content index()
    {
       String ret = "";
       WriterPrinter printer = new WriterPrinter(new Appendable()
@@ -61,12 +61,12 @@ public class A extends Controller
       });
       try
       {
-         index.render(printer);
+         index.renderTo(printer);
       }
       catch (UndeclaredIOException expected)
       {
          ret = "pass";
       }
-      return Response.ok(ret);
+      return Response.content(ret);
    }
 }

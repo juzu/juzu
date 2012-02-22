@@ -118,7 +118,7 @@ public class InternalApplicationContext extends ApplicationContext
       return injectManager;
    }
 
-   public void invoke(RequestBridge<?> bridge) throws ApplicationException
+   public void invoke(RequestBridge bridge) throws ApplicationException
    {
       Phase phase;
       if (bridge instanceof RenderBridge)

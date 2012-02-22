@@ -27,7 +27,7 @@ import javax.portlet.RenderResponse;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse, Response.Mime.Render> implements RenderBridge
+public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
 {
 
    public PortletRenderBridge(RenderRequest request, RenderResponse response, boolean buffer) throws IOException
@@ -41,15 +41,15 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
    }
 
    @Override
-   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
       super.setResponse(response);
 
       // Improve that because it will not work on streaming portals...
       // for now it's OK
-      if (response instanceof Response.Mime.Render)
+      if (response instanceof Response.Content.Render)
       {
-         Response.Mime.Render render = (Response.Mime.Render)response;
+         Response.Content.Render render = (Response.Content.Render)response;
          String title = render.getTitle();
          if (title != null)
          {

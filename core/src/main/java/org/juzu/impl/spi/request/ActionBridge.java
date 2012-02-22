@@ -19,11 +19,8 @@
 
 package org.juzu.impl.spi.request;
 
-import org.juzu.Response;
-import org.juzu.metadata.ControllerMethod;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ActionBridge extends RequestBridge<Response.Action>
+public interface ActionBridge extends RequestBridge
 {
 
 }

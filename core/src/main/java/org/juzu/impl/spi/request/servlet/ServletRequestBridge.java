@@ -37,10 +37,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletRequestBridge<R extends Response> implements RequestBridge<R>, HttpContext, WindowContext
+public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext
 {
    
-   public static ServletRequestBridge<?> create(HttpServletRequest req, HttpServletResponse resp)
+   public static ServletRequestBridge create(HttpServletRequest req, HttpServletResponse resp)
    {
       Phase phase = Phase.RENDER;
       Map<String, String[]> parameters = new HashMap<String, String[]>();
@@ -222,7 +222,7 @@ public abstract class ServletRequestBridge<R extends Response> implements Reques
    {
    }
 
-   public void setResponse(R response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
       throw new UnsupportedOperationException("todo");
    }

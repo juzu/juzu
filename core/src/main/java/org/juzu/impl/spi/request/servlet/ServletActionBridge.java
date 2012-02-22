@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletActionBridge extends ServletRequestBridge<Response.Action> implements ActionBridge
+public class ServletActionBridge extends ServletRequestBridge implements ActionBridge
 {
    ServletActionBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
    {
@@ -38,11 +38,11 @@ public class ServletActionBridge extends ServletRequestBridge<Response.Action> i
    }
 
    @Override
-   public void setResponse(Response.Action response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
-      if (response instanceof Response.Action.Render)
+      if (response instanceof Response.Update)
       {
-         Response.Action.Render update = (Response.Action.Render)response;
+         Response.Update update = (Response.Update)response;
          Map<String, String[]> parameters = new HashMap<String, String[]>();
          for (Map.Entry<String, String> entry : update.getParameters().entrySet())
          {
@@ -51,9 +51,9 @@ public class ServletActionBridge extends ServletRequestBridge<Response.Action> i
          String url = renderURL(Phase.RENDER, null, parameters);
          resp.sendRedirect(url);
       }
-      else if (response instanceof Response.Action.Redirect)
+      else if (response instanceof Response.Redirect)
       {
-         Response.Action.Redirect redirect = (Response.Action.Redirect)response;
+         Response.Redirect redirect = (Response.Redirect)response;
          String url = redirect.getLocation();
          resp.sendRedirect(url);
       }

@@ -36,14 +36,14 @@ public class A extends Controller
    }
 
    @Resource
-   public Response.Mime.Resource resource() throws AuthenticationException
+   public Response.Content.Resource resource() throws AuthenticationException
    {
       return Response.notFound("not_found");
    }
 
    @View
-   public Response.Mime index() throws IOException
+   public Response.Content index() throws IOException
    {
-      return Response.ok(A_.resourceURL().toString());
+      return Response.content(A_.resourceURL().toString());
    }
 }

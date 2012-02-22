@@ -29,7 +29,7 @@ public class A extends Controller
 {
    
    @View
-   public Response.Render.Mime index(String p)
+   public Response.Content index(String p)
    {
       String content =
          "<script>\n" +
@@ -47,12 +47,12 @@ public class A extends Controller
          "</script>\n" +
          "<a id='trigger' href='#'>click</a>\n" +
          "<div id='foo'>foo</div>";
-      return Response.ok("Title", content).addScript(renderContext.getHttpContext().getContextPath() + "/jquery.js");
+      return Response.render(content).addScript(renderContext.getHttpContext().getContextPath() + "/jquery.js");
    }
    
    @Resource 
-   public Response.Mime.Resource resource()
+   public Response.Content.Resource resource()
    {
-      return Response.status(200, "bar");
+      return Response.ok("bar");
    }
 }

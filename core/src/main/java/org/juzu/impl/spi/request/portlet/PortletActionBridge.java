@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse, Response.Action> implements ActionBridge
+public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge
 {
 
    /** . */
@@ -42,16 +42,16 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       this.done = false;
    }
 
-   public void setResponse(Response.Action response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
       if (done)
       {
          throw new IllegalStateException();
       }
-      if (response instanceof Response.Action.Render)
+      if (response instanceof Response.Update)
       {
          done = true;
-         Response.Action.Render render = (Response.Action.Render)response;
+         Response.Update render = (Response.Update)response;
          for (Map.Entry<String, String> entry : render.getParameters().entrySet())
          {
             super.response.setRenderParameter(entry.getKey(), entry.getValue());
@@ -60,7 +60,7 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       else
       {
          done = true;
-         Response.Action.Redirect redirect = (Response.Action.Redirect)response;
+         Response.Redirect redirect = (Response.Redirect)response;
          super.response.sendRedirect(redirect.getLocation());
       }
    }

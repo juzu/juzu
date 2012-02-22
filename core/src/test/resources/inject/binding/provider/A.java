@@ -34,8 +34,8 @@ public class A extends Controller
    Service service;
 
    @View
-   public Response.Mime index() throws IOException
+   public Response.Content index() throws IOException
    {
-      return Response.ok(service != null ? "pass" : "");
+      return Response.content(service != null ? "pass" : "");
    }
 }

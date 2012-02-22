@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockRequestBridge<R extends Response> implements RequestBridge<R>
+public abstract class MockRequestBridge implements RequestBridge
 {
 
    /** . */

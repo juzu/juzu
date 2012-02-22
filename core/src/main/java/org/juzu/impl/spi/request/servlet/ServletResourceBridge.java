@@ -20,11 +20,9 @@
 package org.juzu.impl.spi.request.servlet;
 
 import org.juzu.Response;
-import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.impl.spi.request.ResourceBridge;
 import org.juzu.text.WriterPrinter;
 
-import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,18 +30,18 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletResourceBridge extends ServletMimeBridge<Response.Mime.Resource> implements ResourceBridge
+public class ServletResourceBridge extends ServletMimeBridge implements ResourceBridge
 {
    ServletResourceBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
    {
       super(req, resp, parameters);
    }
 
-   public void setResponse(Response.Resource response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
-      if (response instanceof Response.Mime.Resource)
+      if (response instanceof Response.Content.Resource)
       {
-         Response.Mime.Resource resource = (Response.Mime.Resource)response;
+         Response.Content.Resource resource = (Response.Content.Resource)response;
          int status = resource.getStatus();
          if (status != 200)
          {
@@ -58,6 +56,6 @@ public class ServletResourceBridge extends ServletMimeBridge<Response.Mime.Resou
       PrintWriter writer = resp.getWriter();
 
       // Send response
-      response.send(new WriterPrinter(writer));
+      ((Response.Resource)response).send(new WriterPrinter(writer));
    }
 }

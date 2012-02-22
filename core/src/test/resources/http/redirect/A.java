@@ -28,14 +28,14 @@ public class A
 {
    
    @Action
-   public Response.Action.Redirect action()
+   public Response.Redirect action()
    {
       return Response.redirect("http://www.foo.org");
    }
    
    @View
-   public Response.Render.Mime index(String p)
+   public Response.Content index(String p)
    {
-      return Response.ok("Title", A_.actionURL().toString());
+      return Response.render(A_.actionURL().toString());
    }
 }

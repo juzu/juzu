@@ -26,9 +26,9 @@ class PortletWindowContext implements WindowContext
 {
 
    /** . */
-   private final PortletRequestBridge<?, ?, ?> request;
+   private final PortletRequestBridge<?, ?> request;
 
-   PortletWindowContext(PortletRequestBridge<?, ?, ?> request)
+   PortletWindowContext(PortletRequestBridge<?, ?> request)
    {
       this.request = request;
    }

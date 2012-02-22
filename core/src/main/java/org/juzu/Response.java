@@ -44,19 +44,19 @@ import java.util.Map;
  *
  * <h3>Proceed to render phase</h3>
  *
- * <p>A <code>Response.Process.Action.Render</code> response instructs the aggreator to proceed to the render phase of a valid
+ * <p>A <code>Response.Update</code> response instructs the aggreator to proceed to the render phase of a valid
  * view controller, this kind of response can be created using an {@link org.juzu.request.ActionContext}, however
  * the the preferred way is to use a controller companion class that carries method factories for creating render
  * responses.</p>
  *
- * <p>Type safe {@link Response.Action.Render} factory method are generated for each view or resource controller methods.
+ * <p>Type safe {@link org.juzu.Response.Update} factory method are generated for each view or resource controller methods.
  * The signature of an render factory is obtained by using the same signature of the controller method.</p>
  *
  * <code><pre>
  *    public class MyController {
  *
  *       &#064;Action
- *       public {@link Response.Action.Render} myAction() {
+ *       public {@link org.juzu.Response.Update} myAction() {
  *          return MyController_.myRender("hello");
  *       }
  *
@@ -71,14 +71,14 @@ import java.util.Map;
  * <p>Mime response are used by the {@link org.juzu.request.Phase#RENDER} and the {@link org.juzu.request.Phase#RESOURCE} phases.
  * Both contains a content to be streamed to the client but still they have some noticeable differences.</p>
  * 
- * <p>The {@link Mime} class is the base response class which will work well for the two phases. However the 
+ * <p>The {@link org.juzu.Response.Content} class is the base response class which will work well for the two phases. However the
  * {@link org.juzu.request.Phase#RENDER} can specify an optional title and the {@link org.juzu.request.Phase#RESOURCE} can
  * specify an optional status code for the user agent response.</p>
  * 
  * <p>Responses are created using the {@link Response} factory methods such as</p>
  * 
  * <ul>
- *    <li>{@link Response#ok} creates an ok response</li>
+ *    <li>{@link Response#content} creates an ok response</li>
  *    <li>{@link Response#notFound} creates a not found response</li>
  * </ul>
  *
@@ -90,14 +90,14 @@ import java.util.Map;
  *       &#064;Inject &#064;Path("index.gtmpl") {@link org.juzu.template.Template} index;
  *
  *       &#064;View
- *       public {@link Response.Mime} myView() {
- *          return index.ok();
+ *       public {@link org.juzu.Response.Render} myView() {
+ *          return index.render();
  *       }
  *
  *       &#064;Inject &#064;Path("error.gtmpl")  {@link org.juzu.template.Template} error;
  *
  *       &#064;Resource
- *       public {@link Response.Mime} myView() {
+ *       public {@link org.juzu.Response.Resource} myView() {
  *          return error.notFound();
  *       }
  *    }
@@ -111,142 +111,137 @@ import java.util.Map;
  *       &#064;Inject &#064;Path("index.gtmpl") index index;
  *
  *       &#064;View
- *       public {@link Response.Mime} myView() {
- *          return index.with().label("hello").ok();
+ *       public {@link org.juzu.Response.Content} myView() {
+ *          return index.with().label("hello").render();
  *       }
  *    }
  * </pre></code>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class Response
+public abstract class Response
 {
 
-   public interface Update
-   {
-      Update setParameter(String parameterName, String parameterValue);
-   }
-
-   public interface Stream
-   {
-      void send(Printer printer) throws IOException;
-   }
-
-   public static class Action extends Response
+   /**
+    * A response instructing to execute a render phase of a controller method after the current interaction.
+    */
+   public static class Update extends Response
    {
 
-      /**
-       * A response instructing to execute a render phase of a controller method after the current interaction.
-       */
-      public static class Render extends Action implements Update
+      /** . */
+      final Map<String, String> parameters;
+
+      public Update(Map<String, String> parameters)
       {
-
-         /** . */
-         final Map<String, String> parameters;
-
-         public Render(Map<String, String> parameters)
-         {
-            this.parameters = parameters;
-         }
-
-         /**
-          * Set a parameter for the controller method.
-          *
-          * @param parameterName the parameter name
-          * @param parameterValue the parameter value
-          * @return this object
-          */
-         public Render setParameter(String parameterName, String parameterValue)
-         {
-            if (parameterName == null)
-            {
-               throw new NullPointerException();
-            }
-            if (parameterValue == null)
-            {
-               throw new NullPointerException();
-            }
-            if (parameterName.startsWith("juzu."))
-            {
-               throw new IllegalArgumentException("Parameter name cannot start with <juzu.> prefix");
-            }
-            this.parameters.put(parameterName, parameterValue);
-            return this;
-         }
-
-         public Map<String, String> getParameters()
-         {
-            return parameters;
-         }
-
-         @Override
-         public boolean equals(Object obj)
-         {
-            if (obj == this)
-            {
-               return true;
-            }
-            if (obj instanceof Render)
-            {
-               Render that = (Render)obj;
-               return parameters.equals(that.parameters);
-            }
-            return false;
-         }
-
-         @Override
-         public String toString()
-         {
-            return "Response.Action.Render[parameters" + parameters + "]";
-         }
+         this.parameters = parameters;
       }
 
       /**
-       * A response instructing to execute an HTTP redirection after the current interaction.
+       * Set a parameter for the controller method.
+       *
+       * @param parameterName the parameter name
+       * @param parameterValue the parameter value
+       * @return this object
        */
-      public static class Redirect extends Action
+      public Update setParameter(String parameterName, String parameterValue)
       {
-
-         /** . */
-         private final String location;
-
-         public Redirect(String location)
+         if (parameterName == null)
          {
-            this.location = location;
+            throw new NullPointerException();
          }
-
-         public String getLocation()
+         if (parameterValue == null)
          {
-            return location;
+            throw new NullPointerException();
          }
-
-         @Override
-         public boolean equals(Object obj)
+         if (parameterName.startsWith("juzu."))
          {
-            if (obj == this)
-            {
-               return true;
-            }
-            if (obj instanceof Redirect)
-            {
-               Redirect that = (Redirect)obj;
-               return location.equals(that.location);
-            }
-            return false;
+            throw new IllegalArgumentException("Parameter name cannot start with <juzu.> prefix");
          }
+         this.parameters.put(parameterName, parameterValue);
+         return this;
+      }
+
+      public Map<String, String> getParameters()
+      {
+         return parameters;
+      }
+
+      @Override
+      public boolean equals(Object obj)
+      {
+         if (obj == this)
+         {
+            return true;
+         }
+         if (obj instanceof Update)
+         {
+            Update that = (Update)obj;
+            return parameters.equals(that.parameters);
+         }
+         return false;
+      }
+
+      @Override
+      public String toString()
+      {
+         return "Response.Update[parameters" + parameters + "]";
       }
    }
-   
-   public static abstract class Mime extends Response implements Stream
+
+   /**
+    * A response instructing to execute an HTTP redirection after the current interaction.
+    */
+   public static class Redirect extends Response
    {
+
+      /** . */
+      private final String location;
+
+      public Redirect(String location)
+      {
+         this.location = location;
+      }
+
+      public String getLocation()
+      {
+         return location;
+      }
+
+      @Override
+      public boolean equals(Object obj)
+      {
+         if (obj == this)
+         {
+            return true;
+         }
+         if (obj instanceof Redirect)
+         {
+            Redirect that = (Redirect)obj;
+            return location.equals(that.location);
+         }
+         return false;
+      }
+
+      @Override
+      public String toString()
+      {
+         return "Response.Redirect[location" + location + "]";
+      }
    }
 
-   public static abstract class Render extends Mime
+   public static abstract class Content extends Response
+   {
+
+      public abstract void send(Printer printer) throws IOException;
+
+   }
+
+   public static abstract class Render extends Content
    {
 
       /** . */
       private Collection<String> scripts = Collections.emptyList();
-      
+
       public Render addScript(String script) throws NullPointerException
       {
          if (script == null)
@@ -268,21 +263,33 @@ public class Response
 
       public abstract String getTitle();
 
+      @Override
+      public String toString()
+      {
+         return "Response.Render[]";
+      }
    }
 
-   public static abstract class Resource extends Mime
+   public static abstract class Resource extends Content
    {
+
       public abstract int getStatus();
+
+      @Override
+      public String toString()
+      {
+         return "Response.Resource[]";
+      }
    }
 
-   public static Response.Action.Redirect redirect(String location)
+   public static Response.Redirect redirect(String location)
    {
-      return new Response.Action.Redirect(location);
+      return new Response.Redirect(location);
    }
 
-   public static Response.Mime ok(final String content)
+   public static Content content(final String content)
    {
-      return new Mime()
+      return new Content()
       {
          public void send(Printer printer) throws IOException
          {
@@ -291,46 +298,70 @@ public class Response
       };
    }
 
-   public static Mime.Render ok(final String title, final String content)
+   public static Render render(String content)
    {
-      return new Mime.Render()
+      return render(null, content);
+   }
+
+   public static Render render(final String title, final String content)
+   {
+      return new Render()
       {
+
+         /** . */
+         private String _title = title;
+
          @Override
          public String getTitle()
          {
-            return title;
+            return _title;
          }
+
          public void send(Printer printer) throws IOException
          {
-            printer.write(content);
+            if (content != null)
+            {
+               printer.write(content);
+            }
          }
       };
    }
 
-   public static Mime.Resource notFound()
+   public static Resource ok()
+   {
+      return ok(null);
+   }
+
+   public static Resource ok(String content)
+   {
+      return status(200, content);
+   }
+
+   public static Resource notFound()
    {
       return notFound(null);
    }
 
-   public static Mime.Resource notFound(final String content)
+   public static Resource notFound(String content)
    {
       return status(404, content);
    }
 
-   public static Mime.Resource status(final int code)
+   public static Resource status(int code)
    {
       return status(code, null);
    }
 
-   public static Mime.Resource status(final int code, final String content)
+   public static Resource status(final int code, final String content)
    {
-      return new Mime.Resource()
+      return new Resource()
       {
          @Override
          public int getStatus()
          {
             return code;
          }
+
          public void send(Printer printer) throws IOException
          {
             if (content != null)

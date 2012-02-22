@@ -24,7 +24,6 @@ import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.View;
 
-import javax.naming.AuthenticationException;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -42,8 +41,8 @@ public class A extends Controller
    }
 
    @View
-   public Response.Mime index() throws IOException
+   public Response.Content index() throws IOException
    {
-      return Response.ok(A_.resourceURL().toString());
+      return Response.content(A_.resourceURL().toString());
    }
 }

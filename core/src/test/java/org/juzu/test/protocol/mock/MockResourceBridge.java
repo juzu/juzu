@@ -26,7 +26,7 @@ import org.juzu.impl.spi.request.ResourceBridge;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockResourceBridge extends MockMimeBridge<Response.Mime.Resource> implements ResourceBridge
+public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
 {
 
    /** . */
@@ -53,14 +53,14 @@ public class MockResourceBridge extends MockMimeBridge<Response.Mime.Resource> i
    }
 
    @Override
-   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
       super.setResponse(response);
       
       //
-      if (response instanceof Response.Mime.Resource)
+      if (response instanceof Response.Content.Resource)
       {
-         Response.Mime.Resource resource = (Response.Mime.Resource)response;
+         Response.Content.Resource resource = (Response.Content.Resource)response;
          status = resource.getStatus();
       }
       else

@@ -25,7 +25,7 @@ import org.juzu.impl.spi.request.RenderBridge;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockRenderBridge extends MockMimeBridge<Response.Mime.Render> implements RenderBridge
+public class MockRenderBridge extends MockMimeBridge implements RenderBridge
 {
 
    /** . */
@@ -47,14 +47,14 @@ public class MockRenderBridge extends MockMimeBridge<Response.Mime.Render> imple
    }
 
    @Override
-   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
       super.setResponse(response);
       
       //
-      if (response instanceof Response.Mime.Render)
+      if (response instanceof Response.Content.Render)
       {
-         Response.Mime.Render stream = (Response.Mime.Render)response;
+         Response.Content.Render stream = (Response.Content.Render)response;
          title = stream.getTitle();
       }
    }

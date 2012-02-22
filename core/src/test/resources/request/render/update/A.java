@@ -37,14 +37,14 @@ public class A extends Controller
    }
    
    @View
-   public Response.Mime index() throws IOException
+   public Response.Content index() throws IOException
    {
-      return Response.ok(A_.processURL().toString());
+      return Response.content(A_.processURL().toString());
    }
 
    @View
-   public Response.Mime done() throws IOException
+   public Response.Content done() throws IOException
    {
-      return Response.ok("done");
+      return Response.content("done");
    }
 }

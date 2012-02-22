@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockMimeBridge<R extends Response.Mime> extends MockRequestBridge<R> implements MimeBridge<R>
+public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge
 {
 
    /** . */
@@ -65,11 +65,11 @@ public abstract class MockMimeBridge<R extends Response.Mime> extends MockReques
       return printer;
    }
 
-   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
-      if (response instanceof Response.Mime.Stream)
+      if (response instanceof Response.Content)
       {
-         Response.Mime.Stream stream = (Response.Mime.Stream)response;
+         Response.Content stream = (Response.Content)response;
          stream.send(printer);
       }
       else

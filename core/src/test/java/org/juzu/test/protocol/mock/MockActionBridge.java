@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockActionBridge extends MockRequestBridge<Response.Action> implements ActionBridge
+public class MockActionBridge extends MockRequestBridge implements ActionBridge
 {
 
    /** . */
@@ -46,14 +46,14 @@ public class MockActionBridge extends MockRequestBridge<Response.Action> impleme
 
    public void assertRedirect(String location)
    {
-      assertResponse(new Response.Action.Redirect(location));
+      assertResponse(new Response.Redirect(location));
    }
 
    public void assertRender(String expectedMethodId, Map<String, String> expectedArguments)
    {
       HashMap<String, String> parameters = new HashMap<String, String>();
       parameters.put("juzu.op", expectedMethodId);
-      Response.Action.Render resp = new Response.Action.Render(parameters);
+      Response.Update resp = new Response.Update(parameters);
       resp.getParameters().putAll(expectedArguments);
       assertResponse(resp);
    }
@@ -65,7 +65,7 @@ public class MockActionBridge extends MockRequestBridge<Response.Action> impleme
          response);
    }
 
-   public void setResponse(Response.Action response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
       if (this.response != null)
       {

@@ -30,8 +30,8 @@ public class A extends Controller
 {
 
    @View
-   public Response.Mime index() throws IOException
+   public Response.Content index() throws IOException
    {
-      return Response.ok("index");
+      return Response.content("index");
    }
 }

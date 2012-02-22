@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestBridge<R extends Response>
+public interface RequestBridge
 {
 
    /**
@@ -60,5 +60,5 @@ public interface RequestBridge<R extends Response>
    
    WindowContext getWindowContext();
 
-   void setResponse(R response) throws IllegalStateException, IOException;
+   void setResponse(Response response) throws IllegalStateException, IOException;
 }

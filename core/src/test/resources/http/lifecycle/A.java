@@ -35,26 +35,26 @@ public class A
    }
    
    @View
-   public Response.Render.Mime index()
+   public Response.Content index()
    {
-      return Response.ok("Title", A_.actionURL().toString());
+      return Response.render(A_.actionURL().toString());
    }
 
    @View
-   public Response.Render.Mime done(String p)
+   public Response.Content done(String p)
    {
       if ("d".equals(p))
       {
-         return Response.ok("Title", A_.resourceURL().toString());
+         return Response.render(A_.resourceURL().toString());
       }
       else
       {
-         return Response.ok("Title", "<html><body>fail</body></html>");
+         return Response.render("<html><body>fail</body></html>");
       }
    }
 
    @Resource
-   public Response.Mime.Resource resource()
+   public Response.Content.Resource resource()
    {
       return Response.status(200, "<html><body>done</body></html>");
    }

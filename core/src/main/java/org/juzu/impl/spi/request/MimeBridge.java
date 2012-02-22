@@ -25,7 +25,7 @@ import org.juzu.request.Phase;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface MimeBridge<R extends Response.Mime> extends RequestBridge<R>
+public interface MimeBridge extends RequestBridge
 {
 
    String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters);

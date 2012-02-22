@@ -25,7 +25,6 @@ import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.metadata.ControllerMethod;
 import org.juzu.metadata.ControllerParameter;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,9 +34,6 @@ public class ActionContext extends RequestContext
 
    /** . */
    private ActionBridge bridge;
-
-   /** . */
-   private Response.Action response;
 
    public ActionContext(Request request, ApplicationContext application, ControllerMethod method, ActionBridge bridge)
    {
@@ -59,16 +55,16 @@ public class ActionContext extends RequestContext
       return Phase.ACTION;
    }
 
-   public Response.Action.Render createResponse(ControllerMethod method) throws IllegalStateException
+   public Response.Update createResponse(ControllerMethod method) throws IllegalStateException
    {
       HashMap<String, String> parameters = new HashMap<String, String>();
       parameters.put("juzu.op", method.getId());
-      return new Response.Action.Render(parameters);
+      return new Response.Update(parameters);
    }
 
-   public Response.Action.Render createResponse(ControllerMethod method, Object arg) throws IllegalStateException
+   public Response.Update createResponse(ControllerMethod method, Object arg) throws IllegalStateException
    {
-      Response.Action.Render response = createResponse(method);
+      Response.Update response = createResponse(method);
       List<ControllerParameter> argumentParameters = method.getArguments();
       if (arg != null)
       {
@@ -77,9 +73,9 @@ public class ActionContext extends RequestContext
       return response;
    }
 
-   public Response.Action.Render createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
+   public Response.Update createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
    {
-      Response.Action.Render response = createResponse(method);
+      Response.Update response = createResponse(method);
       List<ControllerParameter> argumentParameters = method.getArguments();
       for (int i = 0;i < argumentParameters.size();i++)
       {
@@ -91,10 +87,5 @@ public class ActionContext extends RequestContext
          }
       }
       return response;
-   }
-
-   public void setResponse(Response.Action response) throws IOException, IllegalStateException
-   {
-      this.response = response;
    }
 }

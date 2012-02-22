@@ -31,13 +31,13 @@ public class A extends Controller
 {
 
    @View
-   public Response.Mime index() throws IOException
+   public Response.Content index() throws IOException
    {
-      return Response.ok(A_.actionURL().toString());
+      return Response.content(A_.actionURL().toString());
    }
 
    @Action
-   public Response.Action.Render action()
+   public Response.Update action()
    {
       return A_.render("arg_value");
    }

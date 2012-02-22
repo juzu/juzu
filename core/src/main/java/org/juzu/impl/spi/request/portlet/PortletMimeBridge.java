@@ -33,7 +33,7 @@ import java.io.StringWriter;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse, R extends Response.Mime> extends PortletRequestBridge<Rq, Rs, R> implements MimeBridge<R>
+abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge
 {
 
    /** . */
@@ -115,8 +115,8 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       }
    }
 
-   public void setResponse(Response.Mime response) throws IllegalStateException, IOException
+   public void setResponse(Response response) throws IllegalStateException, IOException
    {
-      response.send(printer);
+      ((Response.Content)response).send(printer);
    }
 }
