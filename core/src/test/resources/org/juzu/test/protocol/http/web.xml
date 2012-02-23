@@ -3,19 +3,20 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
   <servlet>
-    <servlet-name>ResourceServlet</servlet-name>
-    <servlet-class>org.juzu.test.protocol.http.ResourceServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>InvocationServlet</servlet-name>
     <servlet-class>org.juzu.test.protocol.http.InvocationServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>AssetServlet</servlet-name>
+    <servlet-class>org.juzu.impl.asset.AssetServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>InvocationServlet</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>ResourceServlet</servlet-name>
-    <url-pattern>*.js</url-pattern>
+    <servlet-name>AssetServlet</servlet-name>
+    <url-pattern>/assets/*</url-pattern>
   </servlet-mapping>
 </web-app>

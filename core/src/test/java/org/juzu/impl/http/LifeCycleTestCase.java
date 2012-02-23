@@ -19,24 +19,14 @@
 
 package org.juzu.impl.http;
 
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Test;
 import org.juzu.test.AbstractHttpTestCase;
 import org.juzu.test.UserAgent;
 
-import java.util.Arrays;
-import java.util.List;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class HttpTestCase extends AbstractHttpTestCase
+public class LifeCycleTestCase extends AbstractHttpTestCase
 {
-
-   @Test
-   public void testNoApplication()
-   {
-      assertInternalError();
-   }
 
    @Test
    public void testLifeCycle() throws Exception
@@ -50,37 +40,5 @@ public class HttpTestCase extends AbstractHttpTestCase
       assertTrue(resourceURL.length() > 0);
       String done = ((HtmlPage)page.getWebClient().getPage(resourceURL)).asText();
       assertEquals("done", done);
-   }
-
-   @Test
-   public void testRedirect() throws Exception
-   {
-      assertDeploy("http", "redirect");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      String actionURL = page.asText();
-      assertTrue(actionURL.length() > 0);
-      ua.assertRedirect("http://www.foo.org", actionURL);
-   }
-
-   @Test
-   public void testJS() throws Exception
-   {
-      assertDeploy("http", "js");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      List<String> alerts = ua.getAlerts(page);
-      assertEquals(Arrays.asList("foo"), alerts);
-   }
-
-   @Test
-   public void testAjax() throws Exception
-   {
-      assertDeploy("http", "ajax");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
-      trigger.click();
-      assertEquals("bar", page.getElementById("foo").asText());
    }
 }

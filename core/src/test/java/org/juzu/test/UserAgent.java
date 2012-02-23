@@ -41,7 +41,7 @@ public class UserAgent
    private WebClient client;
 
    /** . */
-   private final String homeURL;
+   private final URL homeURL;
 
    /** . */
    private Page currentPage;
@@ -49,7 +49,7 @@ public class UserAgent
    /** . */
    private IdentityHashMap<Page, List<String>> alerts;
 
-   public UserAgent(String homeURL)
+   public UserAgent(URL homeURL)
    {
       WebClient client = new WebClient();
       client.setAlertHandler(new AlertHandler()
@@ -70,13 +70,23 @@ public class UserAgent
       this.client = client;
       this.homeURL = homeURL;
    }
-   
-   public HtmlPage getHomePage()
+
+   public HtmlPage getPage(URL url)
+   {
+      return getPage(HtmlPage.class, url);
+   }
+
+   public HtmlPage getPage(String path)
+   {
+      return getPage(HtmlPage.class, path);
+   }
+
+   public <P extends Page> P getPage(Class<P> pageType, URL url)
    {
       Page page;
       try
       {
-         page = client.getPage(homeURL);
+         page = client.getPage(url);
       }
       catch (FailingHttpStatusCodeException e)
       {
@@ -86,15 +96,34 @@ public class UserAgent
       {
          throw AbstractTestCase.failure("Cannot get initial page", e);
       }
-      if (page instanceof HtmlPage)
+      if (pageType.isInstance(page))
       {
          currentPage = page;
-         return (HtmlPage)page;
+         return pageType.cast(page);
       }
       else
       {
-         throw AbstractTestCase.failure("Was expecting an HTML page instead of " + page);
+         throw AbstractTestCase.failure("Was expecting an HTML page instead of " + page + " for URL " + page.getUrl());
       }
+   }
+
+   public <P extends Page> P getPage(Class<P> pageType, String path)
+   {
+      URL url;
+      try
+      {
+         url = homeURL.toURI().resolve(path).toURL();
+      }
+      catch (Exception e)
+      {
+         throw AbstractTestCase.failure("Cannot build page URL " + path);
+      }
+      return getPage(pageType, url);
+   }
+   
+   public HtmlPage getHomePage()
+   {
+      return getPage(homeURL);
    }
    
    public void assertRedirect(String expectedLocation, String url)

@@ -32,7 +32,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.protocol.http.InvocationServlet;
-import org.juzu.test.protocol.http.ResourceServlet;
 import org.juzu.test.protocol.mock.MockApplication;
 
 import java.io.IOException;
@@ -80,8 +79,6 @@ public abstract class AbstractHttpTestCase extends AbstractTestCase
       URL descriptor = InvocationServlet.class.getResource("web.xml");
       URL jquery = InvocationServlet.class.getResource("jquery-1.7.1.js");
       return ShrinkWrap.create(WebArchive.class, "juzu.war").
-         addClasses(InvocationServlet.class).
-         addClasses(ResourceServlet.class).
          addAsWebResource(jquery, "jquery.js").
          setWebXML(descriptor);
    }
@@ -93,7 +90,7 @@ public abstract class AbstractHttpTestCase extends AbstractTestCase
    {
       try
       {
-         return application = application(InjectImplementation.CDI_WELD, packageName).init();
+         return application = application(InjectImplementation.CDI_WELD, packageName);
       }
       catch (Exception e)
       {
@@ -121,6 +118,6 @@ public abstract class AbstractHttpTestCase extends AbstractTestCase
    
    public UserAgent assertInitialPage()
    {
-      return new UserAgent(deploymentURL + "/juzu");
+      return new UserAgent(deploymentURL);
    }
 }

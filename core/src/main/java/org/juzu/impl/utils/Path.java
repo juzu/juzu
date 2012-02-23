@@ -20,7 +20,6 @@
 package org.juzu.impl.utils;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Path implements Iterable<String>
@@ -98,7 +97,7 @@ public class Path implements Iterable<String>
       this.next = null;
    }
    
-   public Path next() throws IllegalStateException
+   public Path next()
    {
       if (from < names.length)
       {

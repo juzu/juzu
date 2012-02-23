@@ -19,21 +19,49 @@
 
 package org.juzu.test.protocol.http;
 
+import org.juzu.impl.asset.ApplicationRouter;
+import org.juzu.impl.asset.PluginRouter;
+import org.juzu.impl.asset.Registration;
+import org.juzu.impl.asset.Server;
 import org.juzu.impl.spi.request.servlet.ServletRequestBridge;
 import org.juzu.impl.utils.Logger;
+import org.juzu.impl.utils.Tools;
 import org.juzu.request.ApplicationContext;
 import org.juzu.test.AbstractHttpTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class InvocationServlet extends HttpServlet
 {
+
+   /**
+    * Returns an asset server associated with the specified context or null if it does not exist.
+    *
+    * @param context the related context
+    * @return the related server
+    * @throws NullPointerException if the context argument is null
+    */
+   public static Server getServer(ServletContext context) throws NullPointerException
+   {
+      if (context == null)
+      {
+         throw new NullPointerException("No null context accepted");
+      }
+      return registry.get(context.getContextPath());
+   }
+
+   /** . */
+   private static final ConcurrentHashMap<String, Server> registry = new ConcurrentHashMap<String, Server>();
 
    /** . */
    private final Logger log = new Logger()
@@ -50,13 +78,52 @@ public class InvocationServlet extends HttpServlet
       }
    };
 
+   /** . */
+   private MockApplication<?> application;
+
+   @Override
+   public void init() throws ServletException
+   {
+      try
+      {
+         MockApplication<?> application = AbstractHttpTestCase.getApplication();
+
+         //
+         Server server = (Server)getServletContext().getAttribute("asset.server");
+         Registration<ApplicationRouter> app = server.getApplicationRouter().register(application.getDescriptor().getName(), ApplicationRouter.class);
+         application.bindBean(ApplicationRouter.class, app.getRoute());
+
+         // Configure the router as application beans
+         application.bindBean(PluginRouter.class, server.getPluginRouter());
+
+         //
+         application.init();
+
+         //
+         this.application = application;
+      }
+      catch (Exception e)
+      {
+         throw new ServletException(e);
+      }
+   }
+
+   @Override
+   public void destroy()
+   {
+      getServletContext().removeAttribute("asset.server");
+   }
+
    @Override
    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
-      MockApplication<?> application = AbstractHttpTestCase.getApplication();
-      if (application == null)
+      String s = req.getRequestURI().substring(req.getContextPath().length());
+      if ("/jquery.js".equals(s))
       {
-         resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No application");
+         resp.setContentType("text/javascript");
+         OutputStream out = resp.getOutputStream();
+         InputStream in = getServletContext().getResourceAsStream("/jquery.js");
+         Tools.copy(in, out);
       }
       else
       {

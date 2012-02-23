@@ -36,7 +36,9 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -53,20 +55,22 @@ public class MockApplication<P>
    final ClassLoader classLoader;
 
    /** . */
-   private final Set<String> beans;
+   private final Set<String> declarations;
+
+   /** . */
+   private final Map<Class<?>, Object> bindings;
 
    /** . */
    InternalApplicationContext context;
 
-   public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectBuilder bootstrap)
-   {
-      this.classes = classes;
-      this.classLoader = classLoader;
-      this.bootstrap = bootstrap;
-      this.beans = new HashSet<String>();
-   }
+   /** . */
+   private ApplicationBootstrap boot;
 
-   public MockApplication<P> init() throws Exception
+   /** . */
+   private final ApplicationDescriptor descriptor;
+
+
+   public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectBuilder bootstrap) throws Exception
    {
       P f = classes.getPath(Arrays.asList("org", "juzu", "config.json"));
       if (f == null)
@@ -86,14 +90,21 @@ public class MockApplication<P>
       }
       String name = props.names().iterator().next();
       String fqn = props.getString(name);
-
-      //
-      System.out.println("loading class descriptor " + fqn);
       Class<?> clazz = classLoader.loadClass(fqn);
       Field field = clazz.getDeclaredField("DESCRIPTOR");
       ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 
       //
+      this.classes = classes;
+      this.classLoader = classLoader;
+      this.bootstrap = bootstrap;
+      this.declarations = new HashSet<String>();
+      this.bindings = new HashMap<Class<?>, Object>();
+      this.descriptor = descriptor;
+   }
+
+   public MockApplication<P> init() throws Exception
+   {
       DiskFileSystem libs = new DiskFileSystem(new File(ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
 
       //
@@ -102,10 +113,18 @@ public class MockApplication<P>
       bootstrap.setClassLoader(classLoader);
 
       //
-      for (String bean : beans)
+      for (String declaration : declarations)
       {
-         Class<?> beanClazz = classLoader.loadClass(bean);
+         Class<?> beanClazz = classLoader.loadClass(declaration);
          bootstrap.declareBean(beanClazz, null);
+      }
+
+      //
+      for (Map.Entry<Class<?>, Object> binding : bindings.entrySet())
+      {
+         Class type = binding.getKey();
+         Object bean = binding.getValue();
+         bootstrap.bindBean(type, null, bean);
       }
 
       //
@@ -115,15 +134,26 @@ public class MockApplication<P>
       boot.start();
 
       //
-      context = boot.getContext();
+      this.context = boot.getContext();
+      this.boot = boot;
 
       //
       return this;
    }
-   
+
+   public ApplicationDescriptor getDescriptor()
+   {
+      return descriptor;
+   }
+
    public void declareBean(String className)
    {
-      beans.add(className);
+      declarations.add(className);
+   }
+   
+   public <T> void bindBean(Class<T> type, T bean)
+   {
+      bindings.put(type, bean);
    }
 
    public ApplicationContext getContext()
