@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -309,6 +310,58 @@ public class Tools
       return list;
    }
 
+   public static <E> Iterator<E> iterator(final E... elements) throws NullPointerException
+   {
+      return iterator(0, elements);
+   }
+
+   public static <E> Iterator<E> iterator(final int from, final E... elements) throws NullPointerException, IndexOutOfBoundsException
+   {
+      if (elements == null)
+      {
+         throw new NullPointerException("No null element array accepted");
+      }
+      if (from < 0)
+      {
+         throw new IndexOutOfBoundsException("From value " + from + " cannot be negative");
+      }
+      if (from > elements.length)
+      {
+         throw new IndexOutOfBoundsException("From value " + from + " cannot be greater than the array length " + elements.length);
+      }
+      if (elements.length == 0)
+      {
+         return Collections.<E>emptyList().iterator();
+      }
+      else
+      {
+         return new Iterator<E>()
+         {
+
+            /** . */
+            private int index = from;
+
+            public boolean hasNext()
+            {
+               return index < elements.length;
+            }
+
+            public E next()
+            {
+               if (!hasNext())
+               {
+                  throw new NoSuchElementException();
+               }
+               return elements[index++];
+            }
+
+            public void remove()
+            {
+               throw new UnsupportedOperationException();
+            }
+         };
+      }
+   }
    public static <S extends Serializable> S unserialize(Class<S> expectedType, File f) throws IOException, ClassNotFoundException
    {
       return unserialize(expectedType, new FileInputStream(f));
