@@ -121,7 +121,7 @@ public class MockApplication<P>
       return this;
    }
    
-   public <T> void declareBean(String className)
+   public void declareBean(String className)
    {
       beans.add(className);
    }
