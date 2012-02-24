@@ -244,13 +244,13 @@ public abstract class ApplicationRuntime<P, R, L>
          {
             logger.log("Building application");
             RAMFileSystem classes = new RAMFileSystem();
-            org.juzu.impl.compiler.Compiler compiler = new Compiler(devScanner.getFileSystem(), classLoaderFS, classes, classes);
+            Compiler compiler = new Compiler(devScanner.getFileSystem(), classLoaderFS, classes, classes);
             compiler.addAnnotationProcessor(new MainProcessor());
             List<CompilationError> res = compiler.compile();
             if (res.isEmpty())
             {
                this.classLoader = new URLClassLoader(new URL[]{classes.getURL()}, classLoaderFS.getClassLoader());
-               this.classes = (ReadFileSystem<RAMPath>)classes;
+               this.classes = classes;
                
                //
                doBoot();

@@ -23,7 +23,6 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.protocol.mock.MockApplication;
@@ -200,7 +199,6 @@ public abstract class AbstractTestCase extends TestCase
    {
       CompilerHelper<File, File> helper = compiler(packageName);
       helper.assertCompile();
-      InjectBootstrap bootstrap = injectImplementation.bootstrap();
-      return helper.application(bootstrap);
+      return helper.application(injectImplementation);
    }
 }

@@ -19,18 +19,16 @@
 
 package org.juzu.test;
 
-import org.juzu.Application;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.model.processor.MainProcessor;
-import org.juzu.impl.spi.inject.InjectBootstrap;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
+import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.protocol.mock.MockApplication;
 
 import javax.annotation.processing.Processor;
-import javax.enterprise.context.spi.Context;
-import javax.inject.Inject;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -69,10 +67,7 @@ public class CompilerHelper<I, O>
       try
       {
          builder = Compiler.builder();
-         builder.addClassPath(Application.class);
-         builder.addClassPath(Inject.class);
-         builder.addClassPath(CompilerHelper.class);
-         builder.addClassPath(Context.class);
+         builder.addClassPath(new ClassLoaderFileSystem(Thread.currentThread().getContextClassLoader()));
          builder.sourcePath(sourcePath);
          builder.sourceOutput(sourceOutput);
          builder.classOutput(classOutput);
@@ -144,12 +139,12 @@ public class CompilerHelper<I, O>
       }
    }
 
-   public MockApplication<?> application(InjectBootstrap bootstrap)
+   public MockApplication<?> application(InjectImplementation injectImplementation)
    {
       try
       {
          ClassLoader classLoader = new URLClassLoader(new URL[]{getClassOutput().getURL()}, Thread.currentThread().getContextClassLoader());
-         return new MockApplication<O>(getClassOutput(), classLoader, bootstrap);
+         return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation.bootstrap());
       }
       catch (Exception e)
       {

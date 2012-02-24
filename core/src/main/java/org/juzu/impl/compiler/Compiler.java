@@ -26,8 +26,6 @@ import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.SimpleFileSystem;
-import org.juzu.impl.spi.fs.disk.DiskFileSystem;
-import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Spliterator;
 import org.juzu.text.Location;
@@ -40,15 +38,12 @@ import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -116,35 +111,9 @@ public class Compiler
          return this;
       }
 
-      public Builder addClassPath(ReadFileSystem<?> classPath)
+      public Builder addClassPath(SimpleFileSystem<?> classPath)
       {
          classPaths.add(classPath);
-         return this;
-      }
-
-      public Builder addClassPath(Class<?> type) throws URISyntaxException, IOException
-      {
-         URL url = type.getProtectionDomain().getCodeSource().getLocation();
-         if (url.getProtocol().equals("file"))
-         {
-            File f = new File(url.toURI());
-            if (f.isDirectory())
-            {
-               classPaths.add(new DiskFileSystem(f));
-            }
-            else if (f.isFile() && f.getName().endsWith(".jar"))
-            {
-               classPaths.add(new JarFileSystem(new JarFile(f)));
-            }
-            else
-            {
-               throw new UnsupportedOperationException("Cannot handle path url " + url);
-            }
-         }
-         else
-         {
-            throw new UnsupportedOperationException("Cannot handle path url " + url);
-         }
          return this;
       }
 
