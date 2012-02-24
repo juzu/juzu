@@ -25,11 +25,13 @@ import org.juzu.impl.utils.Tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -113,7 +115,34 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<String>
          path = sb.substring(0, sb.length() - 1);
          url = classLoader.getResource(path);
       }
-      return url != null ? path : null;
+      if (url != null)
+      {
+         String protocol = url.getProtocol();
+         if ("file".equals(protocol))
+         {
+            try
+            {
+               File f = new File(url.toURI());
+               if (f.isDirectory())
+               {
+                  return sb.toString();
+               }
+               else
+               {
+                  return sb.substring(0, sb.length() - 1).toLowerCase();
+               }
+            }
+            catch (URISyntaxException e)
+            {
+               throw new IOException(e);
+            }
+         }
+         else
+         {
+            return path;
+         }
+      }
+      return null;
    }
 
    @Override
@@ -129,54 +158,84 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<String>
    @Override
    public Iterator<String> getChildren(String dir) throws IOException
    {
-      List<String> ret = new ArrayList<String>();
-      Enumeration<URL> e = classLoader.getResources(dir);
-      while (e.hasMoreElements())
+      if (dir.length() > 0 && dir.charAt(dir.length() - 1) == '/')
       {
-         URL url = e.nextElement();
-         String protocol = url.getProtocol();
-         if (protocol.equals("jar"))
+         List<String> ret = new ArrayList<String>();
+         Enumeration<URL> e = classLoader.getResources(dir);
+         while (e.hasMoreElements())
          {
-            String path = url.getPath();
-            int pos = path.indexOf("!/");
-            URL url2 = new URL(path.substring(0, pos));
-            String[] entries = cache.get(url2);
-            if (entries == null)
+            URL url = e.nextElement();
+            String protocol = url.getProtocol();
+            if ("jar".equals(protocol))
             {
-               JarInputStream in = new JarInputStream(url2.openStream());
+               String path = url.getPath();
+               int pos = path.indexOf("!/");
+               URL url2 = new URL(path.substring(0, pos));
+               String[] entries = cache.get(url2);
+               if (entries == null)
+               {
+                  JarInputStream in = new JarInputStream(url2.openStream());
+                  try
+                  {
+                     ArrayList<String> tmp = new ArrayList<String>();
+                     for (JarEntry jarEntry = in.getNextJarEntry();jarEntry != null;jarEntry = in.getNextJarEntry())
+                     {
+                        tmp.add(jarEntry.getName());
+                     }
+                     entries = tmp.toArray(new String[tmp.size()]);
+                     cache.put(url2, entries);
+                  }
+                  finally
+                  {
+                     Tools.safeClose(in);
+                  }
+               }
+               for (String entry : entries)
+               {
+                  if (entry.length() > dir.length() + 1 &&
+                     entry.startsWith(dir) &&
+                     entry.indexOf('/', dir.length() + 1) == -1)
+                  {
+                     ret.add(entry);
+                  }
+               }
+            }
+            else if ("file".equals(protocol))
+            {
+               File f;
                try
                {
-                  ArrayList<String> tmp = new ArrayList<String>();
-                  for (JarEntry jarEntry = in.getNextJarEntry();jarEntry != null;jarEntry = in.getNextJarEntry())
+                  f = new File(url.toURI());
+               }
+               catch (URISyntaxException e1)
+               {
+                  throw new IOException(e1);
+               }
+               File[] list = f.listFiles();
+               if (list != null)
+               {
+                  for (File file : list)
                   {
-                     tmp.add(jarEntry.getName());
+                     if (file.isFile())
+                     {
+                        ret.add(dir + file.getName());
+                     }
                   }
-                  entries = tmp.toArray(new String[tmp.size()]);
-                  cache.put(url2, entries);
-               }
-               finally
-               {
-                  Tools.safeClose(in);
                }
             }
-            for (String entry : entries)
+            else
             {
-               if (entry.length() > dir.length() + 1 &&
-                  entry.startsWith(dir) &&
-                  entry.indexOf('/', dir.length() + 1) == -1)
-               {
-                  ret.add(entry);
-               }
+               throw new UnsupportedOperationException("Protocol for URL " + url + " not yet handled");
             }
          }
-         else
-         {
-            throw new UnsupportedOperationException("todo");
-         }
+         return ret.iterator();
       }
-      return ret.iterator();
+      else
+      {
+         return Collections.<String>emptyList().iterator();
+      }
    }
-
+   
    @Override
    public boolean isDir(String path) throws IOException
    {

@@ -22,6 +22,7 @@ package org.juzu.impl.spi.fs.classloader;
 import junit.framework.TestCase;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.exporter.ExplodedExporter;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.juzu.impl.utils.Tools;
@@ -35,18 +36,40 @@ import java.util.Arrays;
 public class ClassLoaderFileSystemTestCase extends TestCase
 {
 
-   public void testFoo() throws Exception
+   /** . */
+   private JavaArchive jar;
+
    {
-      File f = File.createTempFile("test", ".jar");
-      f.deleteOnExit();
       JavaArchive jar = ShrinkWrap.create(JavaArchive.class);
       jar.addAsResource(new StringAsset("bar.txt_value"), "bar.txt");
       jar.addAsResource(new StringAsset("foo/bar.txt_value"), "foo/bar.txt");
       jar.addAsResource(new StringAsset("foo/bar/juu.txt_value"), "foo/bar/juu.txt");
-      jar.as(ZipExporter.class).exportTo(f, true);
 
       //
-      ClassLoader cl = new URLClassLoader(new URL[]{f.toURI().toURL()}, ClassLoader.getSystemClassLoader());
+      this.jar = jar;
+   }
+
+   public void testJar() throws Exception
+   {
+      File f = File.createTempFile("test", ".jar");
+      f.deleteOnExit();
+      jar.as(ZipExporter.class).exportTo(f, true);
+      assertFS(f.toURI().toURL());
+   }
+
+   public void testFile() throws Exception
+   {
+      File f = File.createTempFile("test", "");
+      assertTrue(f.delete());
+      assertTrue(f.mkdirs());
+      f.deleteOnExit();
+      File dir = jar.as(ExplodedExporter.class).exportExploded(f);
+      assertFS(dir.toURI().toURL());
+   }
+   
+   private void assertFS(URL base) throws Exception
+   {
+      ClassLoader cl = new URLClassLoader(new URL[]{base}, ClassLoader.getSystemClassLoader());
       ClassLoaderFileSystem fs = new ClassLoaderFileSystem(cl);
 
       //
