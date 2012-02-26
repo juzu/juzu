@@ -37,8 +37,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ClassLoaderFileSystem extends SimpleFileSystem<String>
@@ -174,21 +175,43 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<String>
                String[] entries = cache.get(url2);
                if (entries == null)
                {
-                  JarInputStream in = new JarInputStream(url2.openStream());
-                  try
+                  ArrayList<String> tmp = new ArrayList<String>();
+                  if ("file".equals(url2.getProtocol()))
                   {
-                     ArrayList<String> tmp = new ArrayList<String>();
-                     for (JarEntry jarEntry = in.getNextJarEntry();jarEntry != null;jarEntry = in.getNextJarEntry())
+                     // The fast way (but that requires a File object)
+                     try
                      {
-                        tmp.add(jarEntry.getName());
+                        File f = new File(url2.toURI());
+                        ZipFile jarFile = new ZipFile(f);
+                        for (Enumeration<? extends ZipEntry> en = jarFile.entries();en.hasMoreElements();)
+                        {
+                           ZipEntry jarEntry = en.nextElement();
+                           tmp.add(jarEntry.getName());
+                        }
                      }
-                     entries = tmp.toArray(new String[tmp.size()]);
-                     cache.put(url2, entries);
+                     catch (URISyntaxException e1)
+                     {
+                        throw new IOException("Could not access jar file " + url2, e1);
+                     }
                   }
-                  finally
+                  else
                   {
-                     Tools.safeClose(in);
+                     // The slow way
+                     ZipInputStream in = new ZipInputStream(url2.openStream());
+                     try
+                     {
+                        for (ZipEntry jarEntry = in.getNextEntry();jarEntry != null;jarEntry = in.getNextEntry())
+                        {
+                           tmp.add(jarEntry.getName());
+                        }
+                     }
+                     finally
+                     {
+                        Tools.safeClose(in);
+                     }
                   }
+                  entries = tmp.toArray(new String[tmp.size()]);
+                  cache.put(url2, entries);
                }
                for (String entry : entries)
                {

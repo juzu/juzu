@@ -28,7 +28,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class RAMURLStreamHandler extends URLStreamHandler
+public class RAMURLStreamHandler extends URLStreamHandler
 {
 
    /** . */
