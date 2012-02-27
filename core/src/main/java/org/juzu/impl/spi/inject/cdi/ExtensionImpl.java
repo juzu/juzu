@@ -23,14 +23,19 @@ import org.juzu.impl.inject.Export;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectManager;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Juzu CDI extension.
@@ -43,9 +48,13 @@ public class ExtensionImpl implements Extension
    /** . */
    private final CDIManager manager;
 
+   /** The singletons to shut down. */
+   private List<Bean<?>> singletons;
+
    public ExtensionImpl()
    {
       this.manager = CDIManager.boot.get();
+      this.singletons = new ArrayList<Bean<?>>();
    }
 
    <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat)
@@ -106,5 +115,22 @@ public class ExtensionImpl implements Extension
    {
       Bean bean = event.getBean();
       manager.beans.add(bean);
+      
+      //
+      if (bean.getScope() == Singleton.class)
+      {
+         singletons.add(bean);
+      }
+   }
+
+   public void beforeShutdown(@Observes BeforeShutdown event, BeanManager beanManager) 
+   {
+      // Take care of destroying singletons
+      for (Bean singleton : singletons)
+      {
+         CreationalContext cc = beanManager.createCreationalContext(singleton);
+         Object o = beanManager.getReference(singleton, singleton.getBeanClass(), cc);
+         singleton.destroy(o, cc);
+      }
    }
 }

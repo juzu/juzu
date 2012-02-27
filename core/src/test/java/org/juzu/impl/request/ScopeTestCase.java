@@ -41,7 +41,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       assertEquals(1, render.getAttributes().size());
       long identity = Registry.<Long>unset("car");
-      Identifiable car = (Identifiable)render.getAttributes().values().iterator().next();
+      Identifiable car = (Identifiable)render.getAttributes().values().iterator().next().get();
       assertEquals(car.getIdentityHashCode(), identity);
 
       //
@@ -64,7 +64,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       long identity1 = Registry.<Long>unset("car");
       assertEquals(1, client.getFlash(1).size());
-      Identifiable car1 = (Identifiable)client.getFlash(1).values().iterator().next();
+      Identifiable car1 = (Identifiable)client.getFlash(1).values().iterator().next().get();
       assertEquals(car1.getIdentityHashCode(), identity1);
 
       //
@@ -72,7 +72,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       long identity2 = Registry.<Long>unset("car");
       assertNotSame(identity1, identity2);
       assertEquals(1, client.getFlash(0).size());
-      Identifiable car2 = (Identifiable)client.getFlash(0).values().iterator().next();
+      Identifiable car2 = (Identifiable)client.getFlash(0).values().iterator().next().get();
       assertNotSame(car1, car2);
 
       //
@@ -80,7 +80,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       long identity3 = Registry.<Long>unset("car");
       assertEquals(identity2, identity3);
       assertEquals(1, client.getFlash(1).size());
-      Identifiable car3 = (Identifiable)client.getFlash(1).values().iterator().next();
+      Identifiable car3 = (Identifiable)client.getFlash(1).values().iterator().next().get();
       assertSame(car2, car3);
    }
 }

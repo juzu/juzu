@@ -24,25 +24,35 @@ import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
 import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.binder.LinkedBindingBuilder;
 import com.google.inject.binder.ScopedBindingBuilder;
 import com.google.inject.ProvisionException;
+import com.google.inject.internal.BindingImpl;
+import com.google.inject.internal.Scoping;
+import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Named;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectManager;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceManager implements InjectManager<Provider<?>, Object>
+public class GuiceManager implements InjectManager<GuiceBean, Object>
 {
 
    /** . */
@@ -62,6 +72,15 @@ public class GuiceManager implements InjectManager<Provider<?>, Object>
          @Override
          protected void configure()
          {
+            //
+            bindListener(Matchers.any(), new TypeListener()
+            {
+               public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter)
+               {
+                  encounter.register(new PostConstructInjectionListener());
+               }
+            });
+            
             // Bind guice scopes
             for (Scope scope : bootstrap.scopes)
             {
@@ -178,36 +197,43 @@ public class GuiceManager implements InjectManager<Provider<?>, Object>
       return classLoader;
    }
 
-   public Provider<?> resolveBean(Class<?> type)
+   public GuiceBean resolveBean(Class<?> type)
    {
-      return injector.getProvider(type);
+      Binding<?> binding = injector.getBinding(type);
+      return binding != null ? new GuiceBean(binding) : null;
    }
 
-   public Iterable<Provider<?>> resolveBeans(Class<?> type)
+   public Iterable<GuiceBean> resolveBeans(Class<?> type)
    {
-      List<Provider<?>> beans = new ArrayList<Provider<?>>();
-      for (Binding<?> binding : injector.getBindings().values())
+      List<GuiceBean> beans = new ArrayList<GuiceBean>();
+      Collection<Binding<?>> bindings = injector.getAllBindings().values();
+      for (Binding<?> binding : bindings)
       {
          Class bindingType = binding.getKey().getTypeLiteral().getRawType();
          if (type.isAssignableFrom(bindingType))
          {
-            beans.add(binding.getProvider());
+            beans.add(new GuiceBean(binding));
          }
       }
       return beans;
    }
 
-   public Provider resolveBean(String name)
+   public GuiceBean resolveBean(String name)
    {
       Key<?> key = nameMap.get(name);
-      return key != null ? injector.getProvider(key) : null;
+      GuiceBean bean = null;
+      if (key != null)
+      {
+         bean = new GuiceBean(injector.getBinding(key));
+      }
+      return bean;
    }
 
-   public Object create(Provider bean) throws InvocationTargetException
+   public Object create(GuiceBean bean) throws InvocationTargetException
    {
       try
       {
-         return bean.get();
+         return bean.binding.getProvider().get();
       }
       catch (ProvisionException e)
       {
@@ -215,12 +241,54 @@ public class GuiceManager implements InjectManager<Provider<?>, Object>
       }
    }
 
-   public void release(Object instance)
-   {
-   }
-
-   public Object get(Provider bean, Object instance)
+   public Object get(GuiceBean bean, Object instance) throws InvocationTargetException
    {
       return instance;
+   }
+
+   public void release(GuiceBean bean, Object instance)
+   {
+      Scoping scoping = ((BindingImpl)bean.binding).getScoping();
+      if (scoping.isNoScope())
+      {
+         invokePreDestroy(instance);
+      }
+   }
+   
+   static void invokePreDestroy(Object o)
+   {
+      for (Method method : o.getClass().getMethods())
+      {
+         if (
+            Modifier.isPublic(method.getModifiers()) &&
+               !Modifier.isStatic(method.getModifiers()) &&
+               method.getAnnotation(PreDestroy.class) != null)
+         {
+            try
+            {
+               method.invoke(o);
+            }
+            catch (IllegalAccessException e)
+            {
+               throw new UnsupportedOperationException("handle me gracefully", e);
+            }
+            catch (InvocationTargetException e)
+            {
+               throw new UnsupportedOperationException("handle me gracefully", e);
+            }
+         }
+      }
+   }
+
+   public void shutdown()
+   {
+      for (Binding<?> binding : injector.getAllBindings().values())
+      {
+         Scoping scoping = ((BindingImpl)binding).getScoping();
+         if (scoping == Scoping.SINGLETON_INSTANCE)
+         {
+            invokePreDestroy(binding.getProvider().get());
+         }
+      }
    }
 }

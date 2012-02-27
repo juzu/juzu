@@ -19,10 +19,10 @@
 
 package org.juzu.test.protocol.mock;
 
+import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.impl.application.ApplicationException;
-import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.Collections;
@@ -90,20 +90,20 @@ public class MockClient
    final MockApplication<?> application;
 
    /** . */
-   private final Map<Object, Object> session;
+   private final Map<Object, Scoped> session;
 
    /** . */
-   private Map<Object, Object> flash;
+   private Map<Object, Scoped> flash;
 
    /** . */
-   private final LinkedList<Map<Object, Object>> flashHistory;
+   private final LinkedList<Map<Object, Scoped>> flashHistory;
 
    public MockClient(MockApplication<?> application)
    {
       this.application = application;
-      this.session = new HashMap<Object, Object>();
+      this.session = new HashMap<Object, Scoped>();
       this.flash  = null;
-      this.flashHistory = new LinkedList<Map<Object, Object>>();
+      this.flashHistory = new LinkedList<Map<Object, Scoped>>();
    }
 
    public MockRenderBridge render(String methodId) throws ApplicationException
@@ -132,16 +132,16 @@ public class MockClient
       return request;
    }
 
-   public Object getFlashValue(Object key)
+   public Scoped getFlashValue(Object key)
    {
       return flash != null ? flash.get(key) : null;
    }
 
-   public void setFlashValue(Object key, Object value)
+   public void setFlashValue(Object key, Scoped value)
    {
       if (flash == null)
       {
-         flash = new HashMap<Object, Object>();
+         flash = new HashMap<Object, Scoped>();
       }
       flash.put(key, value);
    }
@@ -155,7 +155,7 @@ public class MockClient
       else if (request instanceof MockRenderBridge)
       {
          application.invoke(request);
-         flashHistory.addFirst(flash != null ? flash : Collections.emptyMap());
+         flashHistory.addFirst(flash != null ? flash : Collections.<Object, Scoped>emptyMap());
          flash = null;
       }
       else
@@ -164,12 +164,12 @@ public class MockClient
       }
    }
 
-   public Map<Object, Object> getFlash()
+   public Map<Object, Scoped> getFlash()
    {
       return flash;
    }
 
-   public Map<Object, Object> getFlash(int index)
+   public Map<Object, Scoped> getFlash(int index)
    {
       if (index < 0)
       {
@@ -185,7 +185,7 @@ public class MockClient
       }
    }
 
-   public Map<Object, Object> getSession()
+   public Map<Object, Scoped> getSession()
    {
       return session;
    }

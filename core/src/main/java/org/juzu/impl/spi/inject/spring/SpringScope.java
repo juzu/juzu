@@ -22,41 +22,59 @@ package org.juzu.impl.spi.inject.spring;
 import org.juzu.impl.inject.ScopeController;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class SpringScope implements Scope
 {
 
+   /** . */
+   private final DefaultListableBeanFactory factory;
+
+   /** . */
    private final org.juzu.impl.request.Scope scope;
 
    /** . */
    private final ScopeController controller;
 
-   public SpringScope(org.juzu.impl.request.Scope scope, ScopeController controller)
+   public SpringScope(DefaultListableBeanFactory factory, org.juzu.impl.request.Scope scope, ScopeController controller)
    {
+      this.factory = factory;
       this.scope = scope;
       this.controller = controller;
    }
 
    public Object get(String name, ObjectFactory<?> objectFactory)
    {
-      Object o = controller.get(scope, name);
-      if (o == null)
+      SpringScoped scoped = (SpringScoped)controller.get(scope, name);
+      if (scoped == null)
       {
-         o = objectFactory.getObject();
-         controller.put(scope, name, o);
+         // We register first the scoped object
+         // as creating the object from the factory
+         // will make a call in the method registerDestructionCallback
+         scoped = new SpringScoped(factory, name);
+         controller.put(scope, name, scoped);
+
+         // Create the object, it will likely create a registerDestructionCallback invocation
+         // to set the callback when the object will need to be destroyed
+         scoped.o = objectFactory.getObject();
       }
-      return o;
+      return scoped.o;
    }
 
    public Object remove(String name)
    {
-      throw new UnsupportedOperationException();
+      SpringScoped scoped = (SpringScoped)controller.get(scope, name);
+      return scoped != null ? scoped.o : null;
    }
 
    public void registerDestructionCallback(String name, Runnable callback)
    {
-      throw new UnsupportedOperationException();
+      SpringScoped scoped = (SpringScoped)controller.get(scope, name);
+      if (scoped != null)
+      {
+         scoped.destructionCallback = callback;
+      }
    }
 
    public Object resolveContextualObject(String key)

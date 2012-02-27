@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.core.io.UrlResource;
 
@@ -158,7 +159,7 @@ public class SpringBootstrap extends InjectBootstrap
       // Register scopes
       for (Scope scope : scopes)
       {
-         factory.registerScope(scope.name().toLowerCase(), new SpringScope(scope, ScopeController.INSTANCE));
+         factory.registerScope(scope.name().toLowerCase(), new SpringScope(factory, scope, ScopeController.INSTANCE));
       }
 
       //
@@ -185,6 +186,10 @@ public class SpringBootstrap extends InjectBootstrap
       beanPostProcessor.setAutowiredAnnotationType(Inject.class);
       beanPostProcessor.setBeanFactory(factory);
       factory.addBeanPostProcessor(beanPostProcessor);
+
+      //
+      CommonAnnotationBeanPostProcessor commonAnnotationBeanProcessor = new CommonAnnotationBeanPostProcessor();
+      factory.addBeanPostProcessor(commonAnnotationBeanProcessor);
 
       //
       Set cqt = new HashSet();

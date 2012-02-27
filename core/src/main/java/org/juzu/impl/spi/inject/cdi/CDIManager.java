@@ -28,7 +28,6 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +39,9 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
 
    /** . */
    static final ThreadLocal<CDIManager> boot = new ThreadLocal<CDIManager>();
+
+   /** . */
+   private final Container container;
 
    /** . */
    private BeanManager manager;
@@ -79,6 +81,7 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
       //
       this.classLoader = container.getClassLoader();
       this.manager = container.getManager();
+      this.container = container;
    }
 
    public String getImplementation()
@@ -142,7 +145,7 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
       return manager.createCreationalContext(bean);
    }
 
-   public void release(CreationalContext<?> instance)
+   public void release(Bean<?> bean, CreationalContext<?> instance)
    {
       instance.release();
    }
@@ -161,5 +164,10 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
       {
          throw new InvocationTargetException(e);
       }
+   }
+
+   public void shutdown()
+   {
+      container.stop();
    }
 }

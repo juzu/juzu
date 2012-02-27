@@ -25,9 +25,9 @@ import org.juzu.impl.request.Scope;
 public interface ScopingContext
 {
 
-   Object getContextualValue(Scope scope, Object key);
+   Scoped getContextualValue(Scope scope, Object key);
 
-   void setContextualValue(Scope scope, Object key, Object value);
+   void setContextualValue(Scope scope, Object key, Scoped value);
 
    boolean isActive(Scope scope);
 

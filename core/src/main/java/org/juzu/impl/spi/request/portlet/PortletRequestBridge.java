@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.request.HttpContext;
 import org.juzu.request.SecurityContext;
@@ -86,7 +87,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       return parameters;
    }
 
-   public void setFlashValue(Object key, Object value)
+   public void setFlashValue(Object key, Scoped value)
    {
       if (value == null)
       {
@@ -98,18 +99,18 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       }
    }
 
-   public Object getFlashValue(Object key)
+   public Scoped getFlashValue(Object key)
    {
-      Map<Object, Object> flash = getFlashContext();
+      Map<Object, Scoped> flash = getFlashContext();
       return flash != null ? flash.get(key) : null;
    }
 
-   public Object getRequestValue(Object key)
+   public Scoped getRequestValue(Object key)
    {
       return getRequestContext().get(key);
    }
 
-   public void setRequestValue(Object key, Object value)
+   public void setRequestValue(Object key, Scoped value)
    {
       if (value != null)
       {
@@ -121,17 +122,17 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       }
    }
 
-   private Map<Object, Object> getRequestContext()
+   private Map<Object, Scoped> getRequestContext()
    {
-      Map<Object, Object> store = (Map<Object, Object>)request.getAttribute("org.juzu.request_scope");
+      Map<Object, Scoped> store = (Map<Object, Scoped>)request.getAttribute("org.juzu.request_scope");
       if (store == null)
       {
-         request.setAttribute("org.juzu.request_scope", store = new HashMap<Object, Object>());
+         request.setAttribute("org.juzu.request_scope", store = new HashMap<Object, Scoped>());
       }
       return store;
    }
 
-   public void setSessionValue(Object key, Object value)
+   public void setSessionValue(Object key, Scoped value)
    {
       if (value == null)
       {
@@ -143,39 +144,39 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       }
    }
 
-   public Object getSessionValue(Object key)
+   public Scoped getSessionValue(Object key)
    {
       return getSessionContext().get(key);
    }
 
-   private Map<Object, Object> getSessionContext()
+   private Map<Object, Scoped> getSessionContext()
    {
       PortletSession session = request.getPortletSession();
-      Map<Object, Object> store = (Map<Object, Object>)session.getAttribute("org.juzu.session_scope");
+      Map<Object, Scoped> store = (Map<Object, Scoped>)session.getAttribute("org.juzu.session_scope");
       if (store == null)
       {
-         session.setAttribute("org.juzu.session_scope", store = new HashMap<Object, Object>());
+         session.setAttribute("org.juzu.session_scope", store = new HashMap<Object, Scoped>());
       }
       return store;
    }
 
-   private Map<Object, Object> getFlashContext()
+   private Map<Object, Scoped> getFlashContext()
    {
       PortletSession session = request.getPortletSession();
-      Map<Object, Object> store = (Map<Object, Object>)session.getAttribute("org.juzu.flash_scope");
+      Map<Object, Scoped> store = (Map<Object, Scoped>)session.getAttribute("org.juzu.flash_scope");
       if (store == null)
       {
-         session.setAttribute("org.juzu.flash_scope", store = new HashMap<Object, Object>());
+         session.setAttribute("org.juzu.flash_scope", store = new HashMap<Object, Scoped>());
       }
       return store;
    }
 
-   public Object getIdentityValue(Object key)
+   public Scoped getIdentityValue(Object key)
    {
       return null;
    }
 
-   public void setIdentityValue(Object key, Object value)
+   public void setIdentityValue(Object key, Scoped value)
    {
    }
 

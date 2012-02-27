@@ -17,20 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.scope;
-
-import org.juzu.RequestScoped;
-import org.juzu.impl.inject.Export;
-
-import javax.inject.Inject;
+package org.juzu.impl.spi.inject.bindsingleton;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Export
-public class ScopedInjected
+public class SingletonBound
 {
-
-   @Inject
-   @RequestScoped
-   public ScopedBean scoped;
-
 }

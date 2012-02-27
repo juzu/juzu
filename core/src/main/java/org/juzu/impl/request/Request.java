@@ -22,6 +22,7 @@ package org.juzu.impl.request;
 import org.juzu.RequestLifeCycle;
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopingContext;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.request.ActionBridge;
@@ -117,7 +118,7 @@ public class Request implements ScopingContext
       return context;
    }
 
-   public final Object getContextualValue(Scope scope, Object key)
+   public final Scoped getContextualValue(Scope scope, Object key)
    {
       switch (scope)
       {
@@ -134,7 +135,7 @@ public class Request implements ScopingContext
       }
    }
 
-   public final void setContextualValue(Scope scope, Object key, Object value)
+   public final void setContextualValue(Scope scope, Object key, Scoped value)
    {
       switch (scope)
       {
@@ -276,7 +277,7 @@ public class Request implements ScopingContext
          {
             if (instance != null)
             {
-               manager.release(instance);
+               manager.release(bean, instance);
             }
          }
       }

@@ -56,12 +56,13 @@ public class ScopeController
    /**
     * Obtain a scoped object.
     *
+    *
     * @param scope the scope
     * @param key the key
     * @return the scoped object or null
     * @throws IllegalStateException if the scope is not active
     */
-   public Object get(Scope scope, Object key) throws IllegalStateException
+   public Scoped get(Scope scope, Object key) throws IllegalStateException
    {
       ScopingContext ctx = currentContext.get();
       if (ctx == null)
@@ -78,12 +79,13 @@ public class ScopeController
    /**
     * Scope an object.
     *
+    *
     * @param scope the scope
     * @param key the key
-    * @param object the value
+    * @param scoped
     * @throws IllegalStateException if the scope is not active
     */
-   public void put(Scope scope, Object key, Object object) throws IllegalStateException
+   public void put(Scope scope, Object key, Scoped scoped) throws IllegalStateException
    {
       ScopingContext ctx = currentContext.get();
       if (ctx == null)
@@ -94,7 +96,7 @@ public class ScopeController
       {
          throw new IllegalStateException("Context not active");
       }
-      ctx.setContextualValue(scope, key, object);
+      ctx.setContextualValue(scope, key, scoped);
    }
 
    /**

@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.request;
 
 import org.juzu.Response;
+import org.juzu.impl.inject.Scoped;
 import org.juzu.request.HttpContext;
 import org.juzu.request.SecurityContext;
 import org.juzu.request.WindowContext;
@@ -38,21 +39,21 @@ public interface RequestBridge
     */
    Map<String, String[]> getParameters();
 
-   Object getFlashValue(Object key);
+   Scoped getFlashValue(Object key);
 
-   void setFlashValue(Object key, Object value);
+   void setFlashValue(Object key, Scoped value);
 
-   Object getRequestValue(Object key);
+   Scoped getRequestValue(Object key);
 
-   void setRequestValue(Object key, Object value);
+   void setRequestValue(Object key, Scoped value);
 
-   Object getSessionValue(Object key);
+   Scoped getSessionValue(Object key);
 
-   void setSessionValue(Object key, Object value);
+   void setSessionValue(Object key, Scoped value);
 
-   Object getIdentityValue(Object key);
+   Scoped getIdentityValue(Object key);
 
-   void setIdentityValue(Object key, Object value);
+   void setIdentityValue(Object key, Scoped value);
 
    HttpContext getHttpContext();
 

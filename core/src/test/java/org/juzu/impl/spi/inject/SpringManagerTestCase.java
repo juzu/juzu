@@ -19,12 +19,8 @@
 
 package org.juzu.impl.spi.inject;
 
-import org.juzu.impl.spi.inject.InjectBootstrap;
-import org.juzu.impl.spi.inject.InjectManagerTestCase;
 import org.juzu.impl.spi.inject.configuration.Declared;
 import org.juzu.impl.spi.inject.configuration.DeclaredInjected;
-import org.juzu.impl.spi.inject.lifecycle.Bean;
-import org.juzu.impl.spi.inject.lifecycle.Dependency;
 import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 import org.juzu.impl.utils.Tools;
 
@@ -81,4 +77,21 @@ public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Objec
       declared = (Declared)getBean("declared");
       assertNotNull(declared);
    }
+
+/*
+   @Override
+   public void testPreDestroyInScope() throws Exception
+   {
+   }
+
+   @Override
+   public void testPostConstruct() throws Exception
+   {
+   }
+
+   @Override
+   public void testPreDestroy() throws Exception
+   {
+   }
+*/
 }

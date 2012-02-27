@@ -35,8 +35,6 @@ public interface InjectManager<B, I>
 
    Iterable<B> resolveBeans(Class<?> type);
 
-   void release(I instance);
-
    /**
     * Create a bean instance for the specified bean.
     *
@@ -55,5 +53,13 @@ public interface InjectManager<B, I>
     * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
     */
    Object get(B bean, I instance) throws InvocationTargetException;
+
+   void release(B bean, I instance);
+
+   /**
+    * Shutdown the manager. The implementation should care bout shutting down the existing bean
+    * in particular the singleton beans that are managed outside of an explicit scope.
+    */
+   void shutdown();
 
 }

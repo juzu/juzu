@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.inject;
 
+import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopingContext;
 import org.juzu.impl.request.Scope;
 
@@ -30,14 +31,14 @@ public class ScopingContextImpl implements ScopingContext
 {
 
    /** . */
-   private final Map<ScopedKey, Object> entries = new HashMap<ScopedKey, Object>();
+   private final Map<ScopedKey, Scoped> entries = new HashMap<ScopedKey, Scoped>();
 
-   public Object getContextualValue(Scope scope, Object key)
+   public Scoped getContextualValue(Scope scope, Object key)
    {
       return entries.get(new ScopedKey(scope, key));
    }
 
-   public void setContextualValue(Scope scope, Object key, Object value)
+   public void setContextualValue(Scope scope, Object key, Scoped value)
    {
       if (value != null)
       {
@@ -54,7 +55,7 @@ public class ScopingContextImpl implements ScopingContext
       return true;
    }
 
-   public Map<ScopedKey, Object> getEntries()
+   public Map<ScopedKey, Scoped> getEntries()
    {
       return entries;
    }

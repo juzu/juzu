@@ -22,14 +22,11 @@ package org.juzu.impl.spi.inject.spring;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.springframework.beans.BeanInstantiationException;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 /**
  * <ul>
@@ -125,7 +122,16 @@ public class SpringManager implements InjectManager<String, Object>
       return instance;
    }
 
-   public void release(Object instance)
+   public void release(String bean, Object instance)
    {
+      if (factory.isPrototype(bean))
+      {
+         factory.destroyBean(bean, instance);
+      }
+   }
+
+   public void shutdown()
+   {
+      factory.destroySingletons();
    }
 }

@@ -57,16 +57,17 @@ final class ContextImpl implements Context
    {
       try
       {
-         Object o = controller.get(scope, contextual);
-         if (o == null)
+         CDIScoped<T> scoped = (CDIScoped<T>)controller.get(scope, contextual);
+         if (scoped == null)
          {
             if (creationalContext != null)
             {
-               o = contextual.create(creationalContext);
-               controller.put(scope, contextual, o);
+               T object = contextual.create(creationalContext);
+               scoped = new CDIScoped<T>(contextual, creationalContext, object);
+               controller.put(scope, contextual, scoped);
             }
          }
-         return (T)o;
+         return scoped != null ? scoped.object : null;
       }
       catch (IllegalStateException e)
       {

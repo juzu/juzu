@@ -49,13 +49,13 @@ public class GuiceScope implements Scope
       {
          public T get()
          {
-            T o = (T)controller.get(scope, key);
-            if (o == null)
+            GuiceScoped scoped = (GuiceScoped)controller.get(scope, key);
+            if (scoped == null)
             {
-               o = unscoped.get();
-               controller.put(scope, key, o);
+               scoped = new GuiceScoped(unscoped.get());
+               controller.put(scope, key, scoped);
             }
-            return o;
+            return (T)scoped.o;
          }
       };
    }

@@ -20,9 +20,10 @@
 package org.juzu.impl.spi.inject;
 
 import org.juzu.impl.inject.ScopeController;
+import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.request.Scope;
-import org.juzu.impl.spi.inject.bindsingleton.Singleton;
-import org.juzu.impl.spi.inject.bindsingleton.SingletonInjected;
+import org.juzu.impl.spi.inject.bindsingleton.SingletonBound;
+import org.juzu.impl.spi.inject.bindsingleton.SingletonBoundInjected;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
@@ -31,8 +32,11 @@ import org.juzu.impl.spi.inject.export.ExportedBean;
 import org.juzu.impl.spi.inject.export.NonExportedBean;
 import org.juzu.impl.spi.inject.implementationtype.Extended;
 import org.juzu.impl.spi.inject.implementationtype.Extension;
-import org.juzu.impl.spi.inject.lifecycle.Bean;
-import org.juzu.impl.spi.inject.lifecycle.Dependency;
+import org.juzu.impl.spi.inject.dependencyinjection.Bean;
+import org.juzu.impl.spi.inject.dependencyinjection.Dependency;
+import org.juzu.impl.spi.inject.lifecycle.scoped.LifeCycleScopedBean;
+import org.juzu.impl.spi.inject.lifecycle.singleton.LifeCycleSingletonBean;
+import org.juzu.impl.spi.inject.lifecycle.unscoped.LifeCycleUnscopedBean;
 import org.juzu.impl.spi.inject.managerinjection.ManagerInjected;
 import org.juzu.impl.spi.inject.named.NamedBean;
 import org.juzu.impl.spi.inject.named.NamedInjected;
@@ -45,8 +49,9 @@ import org.juzu.impl.spi.inject.requestscopedprovider.RequestBeanProvider;
 import org.juzu.impl.spi.inject.resolvebeans.ResolvableBean;
 import org.juzu.impl.spi.inject.resolvebeans.ResolveBeanSubclass1;
 import org.juzu.impl.spi.inject.resolvebeans.ResolveBeanSubclass2;
-import org.juzu.impl.spi.inject.scope.ScopedBean;
-import org.juzu.impl.spi.inject.scope.ScopedInjected;
+import org.juzu.impl.spi.inject.scope.scoped.ScopedBean;
+import org.juzu.impl.spi.inject.scope.scoped.ScopedInjected;
+import org.juzu.impl.spi.inject.scope.singleton.SingletonBean;
 import org.juzu.impl.spi.inject.siblingproducers.Ext1Producer;
 import org.juzu.impl.spi.inject.siblingproducers.Ext2Producer;
 import org.juzu.impl.spi.inject.siblingproducers.ProductExt1;
@@ -77,6 +82,9 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
 
    /** . */
    private DiskFileSystem fs;
+
+   /** . */
+   private ScopingContextImpl scopingContext;
 
    @Override
    protected void setUp() throws Exception
@@ -127,6 +135,29 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       return mgr.get(bean, beanInstance);
    }
 
+   protected final void beginScoping() throws Exception
+   {
+      if (scopingContext != null)
+      {
+         throw failure("Already scoping");
+      }
+      ScopeController.begin(scopingContext = new ScopingContextImpl());
+   }
+   
+   protected final void endScoping() throws Exception
+   {
+      if (scopingContext == null)
+      {
+         throw failure("Not scoping");
+      }
+      ScopeController.end();
+      for (Scoped scoped : scopingContext.getEntries().values())
+      {
+         scoped.destroy();
+      }
+      scopingContext = null;
+   }
+
    protected abstract InjectBootstrap getManager() throws Exception;
 
    public void testExport() throws Exception
@@ -142,9 +173,9 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(bean);
    }
 
-   public void testLifeCycle() throws Exception
+   public void testDependencyInjection() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "lifecycle");
+      init("org", "juzu", "impl", "spi", "inject", "dependencyinjection");
       bootstrap.declareBean(Bean.class, null);
       bootstrap.declareBean(Dependency.class, null);
       boot();
@@ -159,42 +190,53 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       beanObject.method();
       Dependency dependency = beanObject.getDependency();
       assertNotNull(dependency);
-      mgr.release(beanInstance);
+      mgr.release(bean, beanInstance);
    }
 
-   public void testScope() throws Exception
+   public void testScopeScoped() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "scope");
+      init("org", "juzu", "impl", "spi", "inject", "scope", "scoped");
       bootstrap.declareBean(ScopedInjected.class, null);
       bootstrap.declareBean(ScopedBean.class, null);
       boot(Scope.REQUEST);
 
       //
-      ScopingContextImpl context = new ScopingContextImpl();
-      ScopeController.begin(context);
+      beginScoping();
       try
       {
-         assertEquals(0, context.getEntries().size());
+         assertEquals(0, scopingContext.getEntries().size());
          ScopedInjected injected = getBean(ScopedInjected.class);
          assertNotNull(injected);
          assertNotNull(injected.scoped);
          String value = injected.scoped.getValue();
-         assertEquals(1, context.getEntries().size());
-         ScopedKey key = context.getEntries().keySet().iterator().next();
+         assertEquals(1, scopingContext.getEntries().size());
+         ScopedKey key = scopingContext.getEntries().keySet().iterator().next();
          assertEquals(Scope.REQUEST, key.getScope());
-         ScopedBean scoped = (ScopedBean)context.getEntries().get(key);
+         ScopedBean scoped = (ScopedBean)scopingContext.getEntries().get(key).get();
          assertEquals(scoped.getValue(), value);
       }
       finally
       {
-         ScopeController.end();
+         endScoping();
       }
+   }
+
+   public void testScopeSingleton() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "scope", "singleton");
+      bootstrap.declareBean(SingletonBean.class, null);
+      boot();
+
+      //
+      SingletonBean singleton1 = getBean(SingletonBean.class);
+      SingletonBean singleton2 = getBean(SingletonBean.class);
+      assertSame(singleton1, singleton2);
    }
 
    public void testNamed() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "named");
-      bootstrap.declareBean(NamedInjected.class, (Class<NamedInjected>)null);
+      bootstrap.declareBean(NamedInjected.class, null);
       bootstrap.declareBean(NamedBean.class, NamedBean.Foo.class);
       bootstrap.declareBean(NamedBean.class, NamedBean.Bar.class);
       boot();
@@ -291,16 +333,16 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(mgr, managerInjected.manager);
    }
 
-   public void testSingleton() throws Exception
+   public void testBindSingleton() throws Exception
    {
-      Singleton singleton = new Singleton();
+      SingletonBound singleton = new SingletonBound();
       init("org", "juzu", "impl", "spi", "inject", "bindsingleton");
-      bootstrap.declareBean(SingletonInjected.class, null);
-      bootstrap.bindBean(Singleton.class, singleton);
+      bootstrap.declareBean(SingletonBoundInjected.class, null);
+      bootstrap.bindBean(SingletonBound.class, singleton);
       boot();
 
       //
-      SingletonInjected injected = getBean(SingletonInjected.class);
+      SingletonBoundInjected injected = getBean(SingletonBoundInjected.class);
       assertNotNull(injected);
       assertNotNull(injected.singleton);
       assertSame(singleton, injected.singleton);
@@ -313,7 +355,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       boot(Scope.REQUEST);
 
       //
-      ScopeController.begin(new ScopingContextImpl());
+      beginScoping();
       try
       {
          RequestBean bean = getBean(RequestBean.class);
@@ -322,7 +364,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       }
       finally
       {
-         ScopeController.end();
+         endScoping();
       }
    }
 
@@ -421,5 +463,106 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
          classes.add(o.getClass());
       }
       assertEquals(Tools.<Class<?>>set(ResolveBeanSubclass1.class, ResolveBeanSubclass2.class), classes);
+   }
+   
+   public void testLifeCycleUnscoped() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "lifecycle", "unscoped");
+      bootstrap.declareBean(LifeCycleUnscopedBean.class, null);
+      boot();
+      
+      //
+      LifeCycleUnscopedBean.construct = 0;
+      LifeCycleUnscopedBean.destroy = 0;
+
+      //
+      beginScoping();
+      try
+      {
+         B bean = mgr.resolveBean(LifeCycleUnscopedBean.class);
+         I instance = mgr.create(bean);
+         LifeCycleUnscopedBean o = (LifeCycleUnscopedBean)mgr.get(bean, instance);
+         assertEquals(1, LifeCycleUnscopedBean.construct);
+         assertEquals(0, LifeCycleUnscopedBean.destroy);
+         mgr.release(bean, instance);
+         assertEquals(1, LifeCycleUnscopedBean.construct);
+         assertEquals(1, LifeCycleUnscopedBean.destroy);
+      }
+      finally
+      {
+         endScoping();
+      }
+      assertEquals(1, LifeCycleUnscopedBean.construct);
+      assertEquals(1, LifeCycleUnscopedBean.destroy);
+   }
+
+   public void testLifeCycleScoped() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "lifecycle", "scoped");
+      bootstrap.declareBean(LifeCycleScopedBean.class, null);
+      boot(Scope.SESSION);
+
+      //
+      LifeCycleScopedBean.construct = 0;
+      LifeCycleScopedBean.destroy = 0;
+
+      //
+      beginScoping();
+      try
+      {
+         B bean = mgr.resolveBean(LifeCycleScopedBean.class);
+         I instance = mgr.create(bean);
+         LifeCycleScopedBean o = (LifeCycleScopedBean)mgr.get(bean, instance);
+         assertNotNull(o);
+         o.m();
+         assertEquals(1, LifeCycleScopedBean.construct);
+         assertEquals(0, LifeCycleScopedBean.destroy);
+         mgr.release(bean, instance);
+         assertEquals(1, LifeCycleScopedBean.construct);
+         assertEquals(0, LifeCycleScopedBean.destroy);
+      }
+      finally
+      {
+         endScoping();
+      }
+      assertEquals(1, LifeCycleScopedBean.construct);
+      assertEquals(1, LifeCycleScopedBean.destroy);
+   }
+
+   public void testLifeCycleSingleton() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "lifecycle", "singleton");
+      bootstrap.declareBean(LifeCycleSingletonBean.class, null);
+      boot(Scope.SESSION);
+
+      //
+      LifeCycleSingletonBean.construct = 0;
+      LifeCycleSingletonBean.destroy = 0;
+
+      //
+      beginScoping();
+      try
+      {
+         B bean = mgr.resolveBean(LifeCycleSingletonBean.class);
+         I instance = mgr.create(bean);
+         LifeCycleSingletonBean o = (LifeCycleSingletonBean)mgr.get(bean, instance);
+         assertNotNull(o);
+         assertEquals(1, LifeCycleSingletonBean.construct);
+         assertEquals(0, LifeCycleSingletonBean.destroy);
+         mgr.release(bean, instance);
+         assertEquals(1, LifeCycleSingletonBean.construct);
+         assertEquals(0, LifeCycleSingletonBean.destroy);
+      }
+      finally
+      {
+         endScoping();
+      }
+      assertEquals(1, LifeCycleSingletonBean.construct);
+      assertEquals(0, LifeCycleSingletonBean.destroy);
+
+      //
+      mgr.shutdown();
+      assertEquals(1, LifeCycleSingletonBean.construct);
+      assertEquals(1, LifeCycleSingletonBean.destroy);
    }
 }

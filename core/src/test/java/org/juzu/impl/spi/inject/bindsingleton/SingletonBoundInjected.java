@@ -17,12 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.lifecycle;
+package org.juzu.impl.spi.inject.bindsingleton;
 
 import org.juzu.impl.inject.Export;
 
+import javax.inject.Inject;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class Dependency
+public class SingletonBoundInjected
 {
+
+   @Inject
+   public SingletonBound singleton;
+
 }

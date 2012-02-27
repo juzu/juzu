@@ -17,9 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.spring;
+package org.juzu.impl.spi.inject.dependencyinjection;
+
+import org.juzu.impl.inject.Export;
+
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SpringBean
+@Export
+public class Bean
 {
+
+   @Inject
+   private Dependency dependency;
+
+   public Dependency getDependency()
+   {
+      return dependency;
+   }
+
+   public void method()
+   {
+      System.out.println("boot");
+   }
 }

@@ -19,7 +19,7 @@
 
 package org.juzu.test.protocol.mock;
 
-import org.juzu.Response;
+import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.spi.request.RequestBridge;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public abstract class MockRequestBridge implements RequestBridge
    private final Map<String, String[]> parameters;
 
    /** . */
-   private final Map<Object, Object> attributes;
+   private final Map<Object, Scoped> attributes;
 
    /** . */
    private final MockHttpContext httpContext;
@@ -51,13 +51,13 @@ public abstract class MockRequestBridge implements RequestBridge
    {
       this.client = client;
       this.parameters = new HashMap<String, String[]>();
-      this.attributes = new HashMap<Object, Object>();
+      this.attributes = new HashMap<Object, Scoped>();
       this.httpContext = new MockHttpContext();
       this.securityContext = new MockSecurityContext();
       this.windowContext = new MockWindowContext();
    }
 
-   public Map<Object, Object> getAttributes()
+   public Map<Object, Scoped> getAttributes()
    {
       return attributes;
    }
@@ -67,22 +67,22 @@ public abstract class MockRequestBridge implements RequestBridge
       return parameters;
    }
 
-   public Object getFlashValue(Object key)
+   public Scoped getFlashValue(Object key)
    {
       return client.getFlashValue(key);
    }
 
-   public void setFlashValue(Object key, Object value)
+   public void setFlashValue(Object key, Scoped value)
    {
       client.setFlashValue(key, value);
    }
 
-   public Object getRequestValue(Object key)
+   public Scoped getRequestValue(Object key)
    {
       return attributes.get(key);
    }
 
-   public void setRequestValue(Object key, Object value)
+   public void setRequestValue(Object key, Scoped value)
    {
       if (value != null)
       {
@@ -94,12 +94,12 @@ public abstract class MockRequestBridge implements RequestBridge
       }
    }
 
-   public Object getSessionValue(Object key)
+   public Scoped getSessionValue(Object key)
    {
       return client.getSession().get(key);
    }
 
-   public void setSessionValue(Object key, Object value)
+   public void setSessionValue(Object key, Scoped value)
    {
       if (value != null)
       {
@@ -111,12 +111,12 @@ public abstract class MockRequestBridge implements RequestBridge
       }
    }
 
-   public Object getIdentityValue(Object key)
+   public Scoped getIdentityValue(Object key)
    {
       return null;
    }
 
-   public void setIdentityValue(Object key, Object value)
+   public void setIdentityValue(Object key, Scoped value)
    {
    }
 

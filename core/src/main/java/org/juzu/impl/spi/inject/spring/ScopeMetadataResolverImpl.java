@@ -25,6 +25,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ScopeMetadata;
 
+import javax.inject.Singleton;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -47,14 +48,23 @@ public class ScopeMetadataResolverImpl extends AnnotationScopeMetadataResolver
       {
          AnnotatedBeanDefinition annDef = (AnnotatedBeanDefinition) definition;
          Set<String> annotationTypes = annDef.getMetadata().getAnnotationTypes();
-
-         String scopeName = "prototype";
-         for (Scope scope : scopes)
+         
+         //
+         String scopeName;
+         if (annotationTypes.contains(Singleton.class.getName()))
          {
-            if (annotationTypes.contains(scope.getAnnotationType().getName()))
+            scopeName = "singleton";
+         }
+         else
+         {
+            scopeName = "prototype";
+            for (Scope scope : scopes)
             {
-               scopeName = scope.name().toLowerCase();
-               break;
+               if (annotationTypes.contains(scope.getAnnotationType().getName()))
+               {
+                  scopeName = scope.name().toLowerCase();
+                  break;
+               }
             }
          }
          metadata.setScopeName(scopeName);
