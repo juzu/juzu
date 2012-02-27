@@ -21,29 +21,20 @@ package org.juzu.impl.spi.fs.classloader;
 
 import junit.framework.TestCase;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.Asset;
-import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ExplodedExporter;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.juzu.impl.spi.fs.ram.RAMFile;
-import org.juzu.impl.spi.fs.ram.RAMFileSystem;
-import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.Tools;
-import sun.net.www.protocol.juzu.Handler;
+import sun.net.www.protocol.foo.Handler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Vector;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -73,59 +64,65 @@ public class ClassLoaderFileSystemTestCase extends TestCase
 
    public void testJarStream() throws Exception
    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      jar.as(ZipExporter.class).exportTo(baos);
-      byte[] bytes = baos.toByteArray();
-      RAMFile file = Handler.FS.getRoot().addFile("jarfile");
-      file.update(new Content(System.currentTimeMillis(), bytes, null));
-      URL url = Handler.FS.getURL(file);
-
-      //
-      final String abc = url.toString();
-      final URL fooURL = new URL("jar:" + abc + "!/foo/");
-      final URL barTxtURL = new URL("jar:" + abc + "!/foo/bar.txt");
-      final URL barURL = new URL("jar:" + abc + "!/foo/bar/");
-      final URL juuTxtURL = new URL("jar:" + abc + "!/foo/bar/juu.txt");
-
-      //
-      ClassLoader cl = new ClassLoader(ClassLoader.getSystemClassLoader())
+      try
       {
-         @Override
-         protected URL findResource(String name)
-         {
-            if ("foo/".equals(name))
-            {
-               return fooURL;
-            }
-            else if ("foo/bar.txt".equals(name))
-            {
-               return barTxtURL;
-            }
-            else if ("foo/bar/juu.txt".equals(name))
-            {
-               return barURL;
-            }
-            else if ("foo/bar/juu.txt".equals(name))
-            {
-               return juuTxtURL;
-            }
-            return null;
-         }
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         jar.as(ZipExporter.class).exportTo(baos);
+         byte[] bytes = baos.toByteArray();
+         Handler.bind("jarfile", bytes);
+         URL url = new URL("foo:jarfile");
 
-         @Override
-         protected Enumeration<URL> findResources(String name) throws IOException
-         {
-            Vector<URL> v = new Vector<URL>();
-            URL url = findResource(name);
-            if (url != null)
-            {
-               v.add(url);
-            }
-            return v.elements();
-         }
-      };
+         //
+         final String abc = url.toString();
+         final URL fooURL = new URL("jar:" + abc + "!/foo/");
+         final URL barTxtURL = new URL("jar:" + abc + "!/foo/bar.txt");
+         final URL barURL = new URL("jar:" + abc + "!/foo/bar/");
+         final URL juuTxtURL = new URL("jar:" + abc + "!/foo/bar/juu.txt");
 
-      assertFS(cl);
+         //
+         ClassLoader cl = new ClassLoader(ClassLoader.getSystemClassLoader())
+         {
+            @Override
+            protected URL findResource(String name)
+            {
+               if ("foo/".equals(name))
+               {
+                  return fooURL;
+               }
+               else if ("foo/bar.txt".equals(name))
+               {
+                  return barTxtURL;
+               }
+               else if ("foo/bar/juu.txt".equals(name))
+               {
+                  return barURL;
+               }
+               else if ("foo/bar/juu.txt".equals(name))
+               {
+                  return juuTxtURL;
+               }
+               return null;
+            }
+
+            @Override
+            protected Enumeration<URL> findResources(String name) throws IOException
+            {
+               Vector<URL> v = new Vector<URL>();
+               URL url = findResource(name);
+               if (url != null)
+               {
+                  v.add(url);
+               }
+               return v.elements();
+            }
+         };
+
+         assertFS(cl);
+      }
+      finally
+      {
+         Handler.clear();
+      }
    }
 
    public void testFile() throws Exception
