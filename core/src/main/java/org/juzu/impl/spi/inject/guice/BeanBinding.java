@@ -20,17 +20,15 @@
 package org.juzu.impl.spi.inject.guice;
 
 import javax.inject.Provider;
+import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class BeanBinding<T>
+abstract class BeanBinding<T>
 {
 
    /** . */
    final Class<T> type;
-
-   /** . */
-   final Class<? extends T> implementationType;
 
    /** . */
    final Annotation qualifier;
@@ -38,15 +36,93 @@ class BeanBinding<T>
    /** . */
    final Annotation scope;
 
-   /** . */
-   final Class<? extends Provider<T>> provider;
-
-   BeanBinding(Class<T> type, Class<? extends T> implementationType, Annotation qualifier, Annotation scope, Class<? extends Provider<T>> provider)
+   BeanBinding(Class<T> type, Class<? extends T> beanType)
    {
+      Annotation qualifier = null;
+      Annotation scope = null;
+      if (beanType != null)
+      {
+         for (Annotation ann : beanType.getDeclaredAnnotations())
+         {
+            if (ann.annotationType().getAnnotation(Qualifier.class) != null)
+            {
+               qualifier = ann;
+            }
+            if (ann.annotationType().getAnnotation(javax.inject.Scope.class) != null)
+            {
+               scope = ann;
+            }
+         }
+      }
+
+      //
       this.type = type;
-      this.implementationType = implementationType;
       this.qualifier = qualifier;
       this.scope = scope;
-      this.provider = provider;
+   }
+
+   static class ToType<T> extends BeanBinding<T>
+   {
+
+      /** . */
+      final Class<? extends T> implementationType;
+
+      ToType(Class<T> type, Class<? extends T> implementationType)
+      {
+         super(type, implementationType != null ? implementationType : type);
+
+         //
+         this.implementationType = implementationType;
+      }
+   }
+
+   static class ToProviderType<T> extends BeanBinding<T>
+   {
+
+      /** . */
+      final Class<? extends Provider<T>> provider;
+
+      ToProviderType(Class<T> type, Class<? extends Provider<T>> provider)
+      {
+         super(type, null);
+
+         //
+         this.provider = provider;
+      }
+   }
+
+   static class ToInstance<T> extends BeanBinding<T>
+   {
+
+      /** . */
+      final T instance;
+
+      ToInstance(Class<T> type, T instance)
+      {
+         super(type, (Class<T>)instance.getClass());
+
+         //
+         this.instance = instance;
+      }
+   }
+
+   static class ToProviderInstance<T> extends BeanBinding<T> implements com.google.inject.Provider<T>
+   {
+
+      /** . */
+      final Provider<? extends T> provider;
+
+      ToProviderInstance(Class<T> type, Provider<? extends T> provider)
+      {
+         super(type, null);
+
+         //
+         this.provider = provider;
+      }
+
+      public T get()
+      {
+         return provider.get();
+      }
    }
 }

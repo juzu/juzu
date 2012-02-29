@@ -27,6 +27,7 @@ import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingletonInjected;
 import org.juzu.impl.spi.inject.boundsingleton.qualifier.QualifiedBoundSingleton;
 import org.juzu.impl.spi.inject.boundsingleton.qualifier.QualifiedBoundSingletonInjected;
 import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundApple;
+import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruit;
 import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruitInjected;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
@@ -386,7 +387,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    {
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "supertype");
       BoundApple apple = new BoundApple();
-      bootstrap.bindBean(BoundApple.class, apple);
+      bootstrap.bindBean(BoundFruit.class, apple);
       bootstrap.declareBean(BoundFruitInjected.class, null);
       boot();
 

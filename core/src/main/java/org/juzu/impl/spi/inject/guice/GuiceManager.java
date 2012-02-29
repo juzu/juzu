@@ -101,65 +101,62 @@ public class GuiceManager implements InjectManager<GuiceBean, Object>
                {
                   b = a;
                }
+
+               //
                ScopedBindingBuilder c;
-               if (beanBinding.provider != null)
+               if (beanBinding instanceof BeanBinding.ToInstance)
                {
-                  c = b.toProvider(beanBinding.provider);
+                  BeanBinding.ToInstance d = (BeanBinding.ToInstance)beanBinding;
+                  b.toInstance(d.instance);
+                  c = b;
+               }
+               else if (beanBinding instanceof BeanBinding.ToProviderInstance)
+               {
+                  BeanBinding.ToProviderInstance d = (BeanBinding.ToProviderInstance)beanBinding;
+                  c = b.toProvider(d);
                }
                else
                {
-                  if (beanBinding.qualifier != null)
+                  if (beanBinding instanceof BeanBinding.ToProviderType)
                   {
-                     if (beanBinding.implementationType != null)
-                     {
-                        c = b.to(beanBinding.implementationType);
-                     }
-                     else
-                     {
-                        c = b.to(beanBinding.type);
-                     }
+                     BeanBinding.ToProviderType d = (BeanBinding.ToProviderType)beanBinding;
+                     c = b.toProvider(d.provider);
                   }
                   else
                   {
-                     if (beanBinding.implementationType != null)
+                     BeanBinding.ToType d = (BeanBinding.ToType)beanBinding;
+                     if (d.qualifier != null)
                      {
-                        c = b.to(beanBinding.implementationType);
+                        if (d.implementationType != null)
+                        {
+                           c = b.to(d.implementationType);
+                        }
+                        else
+                        {
+                           c = b.to(beanBinding.type);
+                        }
                      }
                      else
                      {
-                        c = b;
+                        if (d.implementationType != null)
+                        {
+                           c = b.to(d.implementationType);
+                        }
+                        else
+                        {
+                           c = b;
+                        }
                      }
                   }
-               }
-               if (beanBinding.scope != null)
-               {
-                  c.in(beanBinding.scope.annotationType());
-               }
-            }
-
-            //
-            for (Map.Entry<Class<?>, Provider<?>> entry : bootstrap.providers.entrySet())
-            {
-               final Provider<?> provider = entry.getValue();
-               AnnotatedBindingBuilder<Object> bind = bind((Class<Object>)entry.getKey());
-               com.google.inject.Provider<Object> guiceProvider = new com.google.inject.Provider<Object>()
-               {
-                  public Object get()
+                  if (beanBinding.scope != null)
                   {
-                     return provider.get();
+                     c.in(beanBinding.scope.annotationType());
                   }
-               };
-               bind.toProvider(guiceProvider);
+               }
             }
 
             // Bind the manager itself
             bind(InjectManager.class).toInstance(GuiceManager.this);
-
-            // Bind singletons
-            for (Map.Entry<Class<?>, Object> entry : bootstrap.singletons.entrySet())
-            {
-               bind((Class<Object>)entry.getKey(), entry.getValue());
-            }
          }
 
          private <T> void bind(Class<T> clazz, T instance)

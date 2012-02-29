@@ -25,13 +25,9 @@ import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 
 import javax.inject.Provider;
-import javax.inject.Qualifier;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -45,56 +41,26 @@ public class GuiceBootstrap extends InjectBootstrap
    final Set<Scope> scopes;
 
    /** . */
-   final Map<Class<?>, Object> singletons;
-
-   /** . */
-   final Map<Class<?>, Provider<?>> providers;
-
-   /** . */
    ClassLoader classLoader;
 
    public GuiceBootstrap()
    {
       this.bindings = new ArrayList<BeanBinding>();
       this.scopes = new HashSet<Scope>();
-      this.singletons = new HashMap<Class<?>, Object>();
-      this.providers = new HashMap<Class<?>, Provider<?>>();
    }
 
    @Override
    public <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType)
    {
-      add(type, implementationType, null);
+      bindings.add(new BeanBinding.ToType<T>(type, implementationType));
       return this;
    }
 
    @Override
    public <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
    {
-      add(type, null, provider);
+      bindings.add(new BeanBinding.ToProviderType<T>(type, provider));
       return this;
-   }
-
-   private <T> void add(Class<T> type, Class<? extends T> implementationType, Class<? extends Provider<T>> provider)
-   {
-      // Scope and qualifier discovery
-      Annotation qualifier = null;
-      Annotation scope = null;
-      Class<?> foo = implementationType != null ? implementationType : type;
-      for (Annotation ann : foo.getDeclaredAnnotations())
-      {
-         if (ann.annotationType().getAnnotation(Qualifier.class) != null)
-         {
-            qualifier = ann;
-         }
-         if (ann.annotationType().getAnnotation(javax.inject.Scope.class) != null)
-         {
-            scope = ann;
-         }
-      }
-
-      //
-      bindings.add(new BeanBinding<T>(type, implementationType, qualifier, scope, provider));
    }
 
    @Override
@@ -120,14 +86,14 @@ public class GuiceBootstrap extends InjectBootstrap
    @Override
    public <T> InjectBootstrap bindBean(Class<T> type, T instance)
    {
-      singletons.put(type, instance);
+      bindings.add(new BeanBinding.ToInstance<T>(type, instance));
       return this;
    }
 
    @Override
    public <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider)
    {
-      providers.put(type, provider);
+      bindings.add(new BeanBinding.ToProviderInstance<T>(type, provider));
       return this;
    }
 
