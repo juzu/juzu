@@ -48,7 +48,7 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
    private BeanManager manager;
 
    /** . */
-   final Map<Class<?>, AbstractBean> boundBeans;
+   final ArrayList<AbstractBean> boundBeans;
 
    /** . */
    final ClassLoader classLoader;
@@ -61,7 +61,7 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
 
    public CDIManager(
       Container container,
-      Map<Class<?>, AbstractBean> boundBeans,
+      ArrayList<AbstractBean> boundBeans,
       Set<Class<?>> declaredBeans) throws Exception
    {
       this.boundBeans = boundBeans;

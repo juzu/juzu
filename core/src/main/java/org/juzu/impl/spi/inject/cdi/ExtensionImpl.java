@@ -76,9 +76,9 @@ public class ExtensionImpl implements Extension
       //
       if (!veto)
       {
-         for (Class<?> boundBeanType : manager.boundBeans.keySet())
+         for (AbstractBean boundBean : manager.boundBeans)
          {
-            if (boundBeanType.isAssignableFrom(type))
+            if (boundBean.getBeanClass().isAssignableFrom(type))
             {
                veto = true;
             }
@@ -106,7 +106,7 @@ public class ExtensionImpl implements Extension
       event.addBean(new InstanceBean(InjectManager.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), manager));
 
       // Add singletons
-      for (AbstractBean bean : manager.boundBeans.values())
+      for (AbstractBean bean : manager.boundBeans)
       {
          event.addBean(bean);
       }

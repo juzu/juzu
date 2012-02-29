@@ -30,6 +30,10 @@ public class DeclaredQualifierBoundSingletonInjected
 
    @Inject
    @Colorized(Color.BLUE)
-   public DeclaredQualifierBoundSingleton singleton;
+   public DeclaredQualifierBoundSingleton blue;
+
+   @Inject
+   @Colorized(Color.RED)
+   public DeclaredQualifierBoundSingleton red;
 
 }

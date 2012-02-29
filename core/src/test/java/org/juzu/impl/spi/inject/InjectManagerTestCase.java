@@ -392,25 +392,33 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    {
       class ColorizedLiteral extends AnnotationLiteral<Colorized> implements Colorized
       {
+         final Color value;
+         ColorizedLiteral(Color value)
+         {
+            this.value = value;
+         }
          public Color value()
          {
-            return Color.BLUE;
+            return value;
          }
       }
-      Annotation blue = new ColorizedLiteral();
       
       //
-      DeclaredQualifierBoundSingleton singleton = new DeclaredQualifierBoundSingleton();
+      DeclaredQualifierBoundSingleton blue = new DeclaredQualifierBoundSingleton();
+      DeclaredQualifierBoundSingleton red = new DeclaredQualifierBoundSingleton();
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier", "declared");
       bootstrap.declareBean(DeclaredQualifierBoundSingletonInjected.class, null);
-      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.singleton(blue), singleton);
+      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), blue);
+      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), red);
       boot();
 
       //
       DeclaredQualifierBoundSingletonInjected injected = getBean(DeclaredQualifierBoundSingletonInjected.class);
       assertNotNull(injected);
-      assertNotNull(injected.singleton);
-      assertSame(singleton, injected.singleton);
+      assertNotNull(injected.blue);
+      assertNotNull(injected.red);
+      assertSame(blue, injected.blue);
+      assertSame(red, injected.red);
    }
 
    public void testBoundSingletonSuperType() throws Exception

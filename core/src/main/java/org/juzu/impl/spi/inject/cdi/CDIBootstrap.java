@@ -52,7 +52,7 @@ public class CDIBootstrap extends InjectBuilder
    private List<ReadFileSystem<?>> fileSystems;
 
    /** . */
-   private Map<Class<?>, AbstractBean> boundBeans;
+   private ArrayList<AbstractBean> boundBeans;
 
    /** . */
    private Set<Class<?>> declaredBeans;
@@ -61,7 +61,7 @@ public class CDIBootstrap extends InjectBuilder
    {
       this.scopes = new HashSet<Scope>();
       this.fileSystems = new ArrayList<ReadFileSystem<?>>();
-      this.boundBeans = new HashMap<Class<?>, AbstractBean>();
+      this.boundBeans = new ArrayList<AbstractBean>();
       this.declaredBeans = new HashSet<Class<?>>();
    }
 
@@ -130,14 +130,14 @@ public class CDIBootstrap extends InjectBuilder
       qualifierMap.put(Any.class, AbstractBean.ANY_QUALIFIER);
 
       //
-      boundBeans.put(type, new InstanceBean(type, new HashSet<Annotation>(qualifierMap.values()), instance));
+      boundBeans.add(new InstanceBean(type, new HashSet<Annotation>(qualifierMap.values()), instance));
       return this;
    }
 
    @Override
    public <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider)
    {
-      boundBeans.put(type, new ProviderBean(type, provider));
+      boundBeans.add(new ProviderBean(type, provider));
       return this;
    }
 
