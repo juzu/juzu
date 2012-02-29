@@ -32,7 +32,7 @@ public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Objec
 {
 
    @Override
-   protected InjectBootstrap getManager() throws Exception
+   protected InjectBuilder getManager() throws Exception
    {
       return new SpringBootstrap();
    }

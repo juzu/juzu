@@ -82,7 +82,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
 {
 
    /** . */
-   protected InjectBootstrap bootstrap;
+   protected InjectBuilder bootstrap;
 
    /** . */
    protected InjectManager<B, I> mgr;
@@ -104,7 +104,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertTrue(root.exists());
       assertTrue(root.isDirectory());
       DiskFileSystem fs = new DiskFileSystem(root, pkg);
-      InjectBootstrap bootstrap = getManager();
+      InjectBuilder bootstrap = getManager();
 
       //
       bootstrap.addFileSystem(fs);
@@ -165,7 +165,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       scopingContext = null;
    }
 
-   protected abstract InjectBootstrap getManager() throws Exception;
+   protected abstract InjectBuilder getManager() throws Exception;
 
    public void testExport() throws Exception
    {

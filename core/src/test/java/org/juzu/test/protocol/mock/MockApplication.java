@@ -20,7 +20,7 @@
 package org.juzu.test.protocol.mock;
 
 import org.juzu.impl.application.ApplicationException;
-import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
@@ -44,7 +44,7 @@ public class MockApplication<P>
 {
 
    /** . */
-   private final InjectBootstrap bootstrap;
+   private final InjectBuilder bootstrap;
 
    /** . */
    private final ReadFileSystem<P> classes;
@@ -58,7 +58,7 @@ public class MockApplication<P>
    /** . */
    InternalApplicationContext context;
 
-   public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectBootstrap bootstrap)
+   public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectBuilder bootstrap)
    {
       this.classes = classes;
       this.classLoader = classLoader;

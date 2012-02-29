@@ -24,23 +24,27 @@ import org.juzu.impl.spi.fs.ReadFileSystem;
 
 import javax.inject.Provider;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class InjectBootstrap
+/**
+ * A build for configuring an {@link InjectManager} implementation.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public abstract class InjectBuilder
 {
 
-   public abstract <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType);
+   public abstract <T> InjectBuilder declareBean(Class<T> type, Class<? extends T> implementationType);
 
-   public abstract <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider);
+   public abstract <T> InjectBuilder declareProvider(Class<T> type, Class<? extends Provider<T>> provider);
 
-   public abstract <T> InjectBootstrap bindBean(Class<T> type, T instance);
+   public abstract <T> InjectBuilder bindBean(Class<T> type, T instance);
 
-   public abstract <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider);
+   public abstract <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider);
 
-   public abstract <P> InjectBootstrap addFileSystem(ReadFileSystem<P> fs);
+   public abstract <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs);
 
-   public abstract InjectBootstrap addScope(Scope scope);
+   public abstract InjectBuilder addScope(Scope scope);
 
-   public abstract InjectBootstrap setClassLoader(ClassLoader classLoader);
+   public abstract InjectBuilder setClassLoader(ClassLoader classLoader);
 
    public abstract <B, I> InjectManager<B, I> create() throws Exception;
 

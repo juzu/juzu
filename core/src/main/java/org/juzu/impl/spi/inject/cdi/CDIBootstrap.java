@@ -21,7 +21,7 @@ package org.juzu.impl.spi.inject.cdi;
 
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
-import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.inject.cdi.weld.WeldContainer;
 import org.juzu.impl.spi.fs.ReadFileSystem;
@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIBootstrap extends InjectBootstrap
+public class CDIBootstrap extends InjectBuilder
 {
 
    /** . */
@@ -62,49 +62,49 @@ public class CDIBootstrap extends InjectBootstrap
    }
 
    @Override
-   public <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType)
+   public <T> InjectBuilder declareBean(Class<T> type, Class<? extends T> implementationType)
    {
       declaredBeans.add(implementationType != null ? implementationType : type);
       return this;
    }
 
    @Override
-   public <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
+   public <T> InjectBuilder declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
    {
       declaredBeans.add(provider);
       return this;
    }
 
    @Override
-   public <P> InjectBootstrap addFileSystem(ReadFileSystem<P> fs)
+   public <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs)
    {
       fileSystems.add(fs);
       return this;
    }
 
    @Override
-   public InjectBootstrap addScope(Scope scope)
+   public InjectBuilder addScope(Scope scope)
    {
       scopes.add(scope);
       return this;
    }
 
    @Override
-   public InjectBootstrap setClassLoader(ClassLoader classLoader)
+   public InjectBuilder setClassLoader(ClassLoader classLoader)
    {
       this.classLoader = classLoader;
       return this;
    }
 
    @Override
-   public <T> InjectBootstrap bindBean(Class<T> type, T instance)
+   public <T> InjectBuilder bindBean(Class<T> type, T instance)
    {
       boundBeans.put(type, new InstanceBean(type, instance));
       return this;
    }
 
    @Override
-   public <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider)
+   public <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider)
    {
       boundBeans.put(type, new ProviderBean(type, provider));
       return this;

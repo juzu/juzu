@@ -29,7 +29,7 @@ public class CDIManagerTestCase extends InjectManagerTestCase<Bean<?>, Creationa
 {
 
    @Override
-   protected InjectBootstrap getManager() throws Exception
+   protected InjectBuilder getManager() throws Exception
    {
       return new CDIBootstrap();
    }

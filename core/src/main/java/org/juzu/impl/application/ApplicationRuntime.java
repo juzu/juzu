@@ -29,7 +29,7 @@ import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
-import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 import org.juzu.impl.utils.DevClassLoader;
@@ -345,7 +345,7 @@ public abstract class ApplicationRuntime<P, R, L>
       JarFileSystem libs = new JarFileSystem(new JarFile(new File(mainURL.toURI())));
 
       //
-      InjectBootstrap injectBootstrap = injectImplementation.bootstrap();
+      InjectBuilder injectBootstrap = injectImplementation.bootstrap();
       injectBootstrap.addFileSystem(getClasses());
       injectBootstrap.addFileSystem(libs);
       injectBootstrap.setClassLoader(getClassLoader());

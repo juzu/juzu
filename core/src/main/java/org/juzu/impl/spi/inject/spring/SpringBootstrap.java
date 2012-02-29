@@ -22,7 +22,7 @@ package org.juzu.impl.spi.inject.spring;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
-import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SpringBootstrap extends InjectBootstrap
+public class SpringBootstrap extends InjectBuilder
 {
 
    /** . */
@@ -65,7 +65,7 @@ public class SpringBootstrap extends InjectBootstrap
    private URL configurationURL;
 
    @Override
-   public <T> InjectBootstrap declareBean(Class<T> type, Class<? extends T> implementationType)
+   public <T> InjectBuilder declareBean(Class<T> type, Class<? extends T> implementationType)
    {
       if (implementationType == null)
       {
@@ -100,14 +100,14 @@ public class SpringBootstrap extends InjectBootstrap
    }
 
    @Override
-   public <T> InjectBootstrap declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
+   public <T> InjectBuilder declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
    {
       // todo
       return this;
    }
 
    @Override
-   public <T> InjectBootstrap bindBean(Class<T> type, T instance)
+   public <T> InjectBuilder bindBean(Class<T> type, T instance)
    {
       String name = "" + Math.random();
       singletons.put(name, instance);
@@ -115,26 +115,26 @@ public class SpringBootstrap extends InjectBootstrap
    }
 
    @Override
-   public <T> InjectBootstrap bindProvider(Class<T> type, Provider<T> provider)
+   public <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider)
    {
       return bindBean(ProviderBean.class, new ProviderBean<T>(type, provider));
    }
 
    @Override
-   public <P> InjectBootstrap addFileSystem(ReadFileSystem<P> fs)
+   public <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs)
    {
       return this;
    }
 
    @Override
-   public InjectBootstrap addScope(Scope scope)
+   public InjectBuilder addScope(Scope scope)
    {
       scopes.add(scope);
       return this;
    }
 
    @Override
-   public InjectBootstrap setClassLoader(ClassLoader classLoader)
+   public InjectBuilder setClassLoader(ClassLoader classLoader)
    {
       this.classLoader = classLoader;
       return this;

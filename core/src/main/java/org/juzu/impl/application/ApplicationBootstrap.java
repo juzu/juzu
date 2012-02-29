@@ -23,7 +23,7 @@ import org.juzu.impl.inject.Binding;
 import org.juzu.impl.inject.Bindings;
 import org.juzu.impl.inject.MetaProvider;
 import org.juzu.impl.request.Scope;
-import org.juzu.impl.spi.inject.InjectBootstrap;
+import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerDescriptor;
@@ -41,7 +41,7 @@ public class ApplicationBootstrap
 {
 
    /** . */
-   public final InjectBootstrap bootstrap;
+   public final InjectBuilder bootstrap;
 
    /** . */
    public final ApplicationDescriptor descriptor;
@@ -49,7 +49,7 @@ public class ApplicationBootstrap
    /** . */
    private InternalApplicationContext context;
 
-   public ApplicationBootstrap(InjectBootstrap bootstrap, ApplicationDescriptor descriptor)
+   public ApplicationBootstrap(InjectBuilder bootstrap, ApplicationDescriptor descriptor)
    {
       this.bootstrap = bootstrap;
       this.descriptor = descriptor;

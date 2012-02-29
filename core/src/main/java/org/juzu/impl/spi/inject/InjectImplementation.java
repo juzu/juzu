@@ -30,7 +30,7 @@ public enum InjectImplementation
    CDI_WELD("cdi/weld")
    {
       @Override
-      public InjectBootstrap bootstrap()
+      public InjectBuilder bootstrap()
       {
          return new CDIBootstrap();
       }
@@ -39,7 +39,7 @@ public enum InjectImplementation
    INJECT_GUICE("inject/guice")
    {
       @Override
-      public InjectBootstrap bootstrap()
+      public InjectBuilder bootstrap()
       {
          return new GuiceBootstrap();
       }
@@ -48,7 +48,7 @@ public enum InjectImplementation
    INJECT_SPRING("inject/spring")
    {
       @Override
-      public InjectBootstrap bootstrap()
+      public InjectBuilder bootstrap()
       {
          return new SpringBootstrap();
       }
@@ -67,6 +67,6 @@ public enum InjectImplementation
       return value;
    }
 
-   public abstract InjectBootstrap bootstrap();
+   public abstract InjectBuilder bootstrap();
 
 }
