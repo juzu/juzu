@@ -45,6 +45,9 @@ abstract class AbstractBean implements Bean
    /** . */
    private final Set<Annotation> qualifiers;
 
+   /** . */
+   private Set<Type> types;
+
    AbstractBean(Class<?> type)
    {
       Set<Annotation> qualifiers = new HashSet<Annotation>();
@@ -59,15 +62,31 @@ abstract class AbstractBean implements Bean
       }
 
       //
+      HashSet<Type> types = new HashSet<Type>();
+      collectSuperTypes(type, types);
+
+      //
       this.type = type;
+      this.types = types;
       this.qualifiers = Collections.unmodifiableSet(qualifiers);
+   }
+
+   private void collectSuperTypes(Class<?> type, HashSet<Type> superTypes)
+   {
+      superTypes.add(type);
+      Class<?> superClassType = type.getSuperclass();
+      if (superClassType != null)
+      {
+         collectSuperTypes(superClassType, superTypes);
+      }
+      for (Class<?> interfaceType : type.getInterfaces())
+      {
+         collectSuperTypes(interfaceType, superTypes);
+      }
    }
 
    public Set<Type> getTypes()
    {
-      Set<Type> types = new HashSet<Type>();
-      types.add(type);
-      types.add(Object.class);
       return types;
    }
 

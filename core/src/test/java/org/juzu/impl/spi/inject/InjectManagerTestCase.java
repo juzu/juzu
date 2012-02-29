@@ -26,6 +26,8 @@ import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingleton;
 import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingletonInjected;
 import org.juzu.impl.spi.inject.boundsingleton.qualifier.QualifiedBoundSingleton;
 import org.juzu.impl.spi.inject.boundsingleton.qualifier.QualifiedBoundSingletonInjected;
+import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundApple;
+import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruitInjected;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
@@ -60,6 +62,8 @@ import org.juzu.impl.spi.inject.siblingproducers.ProductExt1;
 import org.juzu.impl.spi.inject.siblingproducers.ProductExt2;
 import org.juzu.impl.spi.inject.siblingproducers.ProductInjected;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.impl.spi.inject.supertype.Apple;
+import org.juzu.impl.spi.inject.supertype.FruitInjected;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 
@@ -276,6 +280,19 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertEquals(Qualified.Green.class, beanObject.getGreen().getClass());
    }
 
+   public void testSuperType() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "supertype");
+      bootstrap.declareBean(Apple.class, null);
+      bootstrap.declareBean(FruitInjected.class, null);
+      boot();
+
+      //
+      FruitInjected beanObject = getBean(FruitInjected.class);
+      assertNotNull(beanObject);
+      assertNotNull(beanObject.fruit);
+   }
+
    public void testProducer() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "producer");
@@ -335,7 +352,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(mgr, managerInjected.manager);
    }
 
-   public void testBoundSingleton() throws Exception
+   public void testBoundSingletonInjection() throws Exception
    {
       BoundSingleton singleton = new BoundSingleton();
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "injection");
@@ -350,7 +367,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(singleton, injected.singleton);
    }
 
-   public void testQualifiedBoundSingleton() throws Exception
+   public void testBoundSingletonQualifier() throws Exception
    {
       QualifiedBoundSingleton singleton = new QualifiedBoundSingleton();
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier");
@@ -363,6 +380,21 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(injected);
       assertNotNull(injected.singleton);
       assertSame(singleton, injected.singleton);
+   }
+
+   public void testBoundSingletonSuperType() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "supertype");
+      BoundApple apple = new BoundApple();
+      bootstrap.bindBean(BoundApple.class, apple);
+      bootstrap.declareBean(BoundFruitInjected.class, null);
+      boot();
+
+      //
+      BoundFruitInjected beanObject = getBean(BoundFruitInjected.class);
+      assertNotNull(beanObject);
+      assertNotNull(beanObject.fruit);
+      assertSame(apple, beanObject.fruit);
    }
 
    public void testRequestScopedProvider() throws Exception
