@@ -25,7 +25,12 @@ import java.lang.reflect.InvocationTargetException;
 public interface InjectManager<B, I>
 {
 
-   String getImplementation();
+   /**
+    * Returns the implementation.
+    *
+    * @return the implementation
+    */
+   InjectImplementation getImplementation();
 
    ClassLoader getClassLoader();
 

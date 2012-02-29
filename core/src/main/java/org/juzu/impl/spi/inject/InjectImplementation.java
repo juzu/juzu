@@ -27,7 +27,7 @@ import org.juzu.impl.spi.inject.spring.SpringBootstrap;
 public enum InjectImplementation
 {
 
-   CDI_WELD()
+   CDI_WELD("cdi/weld")
    {
       @Override
       public InjectBootstrap bootstrap()
@@ -36,7 +36,7 @@ public enum InjectImplementation
       }
    },
 
-   INJECT_GUICE()
+   INJECT_GUICE("inject/guice")
    {
       @Override
       public InjectBootstrap bootstrap()
@@ -45,7 +45,7 @@ public enum InjectImplementation
       }
    },
 
-   INJECT_SPRING()
+   INJECT_SPRING("inject/spring")
    {
       @Override
       public InjectBootstrap bootstrap()
@@ -53,6 +53,19 @@ public enum InjectImplementation
          return new SpringBootstrap();
       }
    };
+
+   /** . */
+   final String value;
+
+   private InjectImplementation(String value)
+   {
+      this.value = value;
+   }
+
+   public String getValue()
+   {
+      return value;
+   }
 
    public abstract InjectBootstrap bootstrap();
 

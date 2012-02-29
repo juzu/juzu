@@ -37,6 +37,7 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.InjectManager;
 
 import javax.annotation.PreDestroy;
@@ -184,9 +185,9 @@ public class GuiceManager implements InjectManager<GuiceBean, Object>
       this.classLoader = bootstrap.classLoader;
    }
 
-   public String getImplementation()
+   public InjectImplementation getImplementation()
    {
-      return "inject/guice";
+      return InjectImplementation.INJECT_GUICE;
    }
 
    public ClassLoader getClassLoader()

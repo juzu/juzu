@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.inject.cdi;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.InjectManager;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -84,9 +85,9 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
       this.container = container;
    }
 
-   public String getImplementation()
+   public InjectImplementation getImplementation()
    {
-      return "cdi/weld";
+      return InjectImplementation.CDI_WELD;
    }
 
    public ClassLoader getClassLoader()

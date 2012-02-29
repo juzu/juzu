@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.inject.spring;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -57,9 +58,9 @@ public class SpringManager implements InjectManager<String, Object>
       this.classLoader = classLoader;
    }
 
-   public String getImplementation()
+   public InjectImplementation getImplementation()
    {
-      return "inject/spring";
+      return InjectImplementation.INJECT_SPRING;
    }
 
    public ClassLoader getClassLoader()
