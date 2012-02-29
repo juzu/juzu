@@ -49,6 +49,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -89,14 +90,20 @@ public class GuiceManager implements InjectManager<GuiceBean, Object>
             }
 
             // Bind beans
-            for (BeanBinding beanBinding : bootstrap.bindings)
+            for (BeanBinding<?> beanBinding : bootstrap.bindings)
             {
                AnnotatedBindingBuilder a = bind(beanBinding.type);
                LinkedBindingBuilder b;
 
-               if (beanBinding.qualifier != null)
+               if (beanBinding.qualifiers != null && beanBinding.qualifiers.size() > 0)
                {
-                  b = a.annotatedWith(beanBinding.qualifier);
+                  Iterator<Annotation> i = beanBinding.qualifiers.iterator();
+                  // Construction to make compiler happy
+                  b = a.annotatedWith(i.next());
+                  while (i.hasNext())
+                  {
+                     b = a.annotatedWith(i.next());
+                  }
                }
                else
                {
@@ -126,7 +133,7 @@ public class GuiceManager implements InjectManager<GuiceBean, Object>
                   else
                   {
                      BeanBinding.ToType d = (BeanBinding.ToType)beanBinding;
-                     if (d.qualifier != null)
+                     if (d.qualifiers != null)
                      {
                         if (d.implementationType != null)
                         {

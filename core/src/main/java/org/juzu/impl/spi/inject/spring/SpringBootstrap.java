@@ -24,10 +24,13 @@ import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
+import org.springframework.beans.BeanMetadataAttribute;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
+import org.springframework.beans.factory.support.AutowireCandidateQualifier;
+import org.springframework.beans.factory.support.CglibSubclassingInstantiationStrategy;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
@@ -38,10 +41,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,7 +63,7 @@ public class SpringBootstrap extends InjectBuilder
    private Map<String, Class<?>> beans = new LinkedHashMap<String, Class<?>>();
 
    /** . */
-   private Map<String, Object> singletons = new LinkedHashMap<String, Object>();
+   private Map<String, SingletonBean> singletons = new LinkedHashMap<String, SingletonBean>();
 
    /** . */
    private Set<Scope> scopes = new LinkedHashSet<Scope>();
@@ -107,17 +114,44 @@ public class SpringBootstrap extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder bindBean(Class<T> type, T instance)
+   public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance)
    {
       String name = "" + Math.random();
-      singletons.put(name, instance);
+      List<AutowireCandidateQualifier> list = null;
+      if (qualifiers != null)
+      {
+         list = new ArrayList<AutowireCandidateQualifier>();
+         for (Annotation annotation : qualifiers)
+         {
+            Class<? extends Annotation> annotationType = annotation.annotationType();
+            AutowireCandidateQualifier md = new AutowireCandidateQualifier(annotationType.getName());
+            for (Method method : annotationType.getMethods())
+            {
+               if (method.getParameterTypes().length == 0 && method.getDeclaringClass() != Object.class)
+               {
+                  try
+                  {
+                     String attrName = method.getName();
+                     Object attrValue = method.invoke(annotation);
+                     md.addMetadataAttribute(new BeanMetadataAttribute(attrName, attrValue));
+                  }
+                  catch (Exception e)
+                  {
+                     throw new UnsupportedOperationException("handle me gracefully", e);
+                  }
+               }
+            }
+            list.add(md);
+         }
+      }
+      singletons.put(name, new SingletonBean(instance, list));
       return this;
    }
 
    @Override
    public <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider)
    {
-      return bindBean(ProviderBean.class, new ProviderBean<T>(type, provider));
+      return bindBean(ProviderFactory.class, null, new ProviderFactory<T>(type, provider));
    }
 
    @Override
@@ -155,6 +189,7 @@ public class SpringBootstrap extends InjectBuilder
 
       //
       factory.setBeanClassLoader(classLoader);
+      factory.setInstantiationStrategy(new SingletonInstantiationStrategy(new CglibSubclassingInstantiationStrategy(), singletons));
 
       // Register scopes
       for (Scope scope : scopes)
@@ -162,10 +197,21 @@ public class SpringBootstrap extends InjectBuilder
          factory.registerScope(scope.name().toLowerCase(), new SpringScope(factory, scope, ScopeController.INSTANCE));
       }
 
-      //
-      for (Map.Entry<String, Object> entry : singletons.entrySet())
+      // Bind singletons with associated factories
+      for (Map.Entry<String, SingletonBean> entry : singletons.entrySet())
       {
-         factory.registerSingleton(entry.getKey(), entry.getValue());
+         String name = entry.getKey();
+         SingletonBean bean = entry.getValue();
+         AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(bean.instance.getClass());
+         definition.setScope("singleton");
+         if (bean.qualifiers != null)
+         {
+            for (AutowireCandidateQualifier qualifier : bean.qualifiers)
+            {
+               definition.addQualifier(qualifier);
+            }
+         }
+         factory.registerBeanDefinition(name, definition);
       }
 
       //

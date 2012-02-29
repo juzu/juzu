@@ -25,6 +25,7 @@ import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 
 import javax.inject.Provider;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -84,9 +85,9 @@ public class GuiceBootstrap extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder bindBean(Class<T> type, T instance)
+   public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance)
    {
-      bindings.add(new BeanBinding.ToInstance<T>(type, instance));
+      bindings.add(new BeanBinding.ToInstance<T>(type, instance, qualifiers));
       return this;
    }
 

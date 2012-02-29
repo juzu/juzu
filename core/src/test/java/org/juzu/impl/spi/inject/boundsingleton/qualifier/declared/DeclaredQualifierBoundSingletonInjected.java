@@ -17,40 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.spring;
+package org.juzu.impl.spi.inject.boundsingleton.qualifier.declared;
 
-import org.springframework.beans.factory.FactoryBean;
+import org.juzu.impl.spi.inject.Color;
+import org.juzu.impl.spi.inject.Colorized;
 
-import javax.inject.Provider;
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProviderBean<T> implements FactoryBean<T>
+public class DeclaredQualifierBoundSingletonInjected
 {
 
-   /** . */
-   private final Class<T> type;
+   @Inject
+   @Colorized(Color.BLUE)
+   public DeclaredQualifierBoundSingleton singleton;
 
-   /** . */
-   private final Provider<T> provider;
-
-   public ProviderBean(Class<T> type, Provider<T> provider)
-   {
-      this.type = type;
-      this.provider = provider;
-   }
-
-   public T getObject() throws Exception
-   {
-      return provider.get();
-   }
-
-   public Class<?> getObjectType()
-   {
-      return type;
-   }
-
-   public boolean isSingleton()
-   {
-      return false;
-   }
 }

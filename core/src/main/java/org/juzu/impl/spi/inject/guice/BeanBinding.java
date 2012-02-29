@@ -22,6 +22,11 @@ package org.juzu.impl.spi.inject.guice;
 import javax.inject.Provider;
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 abstract class BeanBinding<T>
@@ -31,22 +36,37 @@ abstract class BeanBinding<T>
    final Class<T> type;
 
    /** . */
-   final Annotation qualifier;
+   final Collection<Annotation> qualifiers;
 
    /** . */
    final Annotation scope;
 
-   BeanBinding(Class<T> type, Class<? extends T> beanType)
+   BeanBinding(Class<T> type, Class<? extends T> beanType, Iterable<Annotation> declaredQualifiers)
    {
-      Annotation qualifier = null;
       Annotation scope = null;
+      Map<Class<?>, Annotation> qualifiers = null;
+      if (declaredQualifiers != null)
+      {
+         for (Annotation declaredQualifier : declaredQualifiers)
+         {
+            if (qualifiers == null)
+            {
+               qualifiers = new HashMap<Class<?>, Annotation>();
+            }
+            qualifiers.put(declaredQualifier.annotationType(), declaredQualifier);
+         }
+      }
       if (beanType != null)
       {
          for (Annotation ann : beanType.getDeclaredAnnotations())
          {
             if (ann.annotationType().getAnnotation(Qualifier.class) != null)
             {
-               qualifier = ann;
+               if (qualifiers == null)
+               {
+                  qualifiers = new HashMap<Class<?>, Annotation>();
+               }
+               qualifiers.put(ann.annotationType(), ann);
             }
             if (ann.annotationType().getAnnotation(javax.inject.Scope.class) != null)
             {
@@ -57,7 +77,7 @@ abstract class BeanBinding<T>
 
       //
       this.type = type;
-      this.qualifier = qualifier;
+      this.qualifiers = qualifiers != null ? qualifiers.values() : null;
       this.scope = scope;
    }
 
@@ -69,7 +89,7 @@ abstract class BeanBinding<T>
 
       ToType(Class<T> type, Class<? extends T> implementationType)
       {
-         super(type, implementationType != null ? implementationType : type);
+         super(type, implementationType != null ? implementationType : type, null);
 
          //
          this.implementationType = implementationType;
@@ -84,7 +104,7 @@ abstract class BeanBinding<T>
 
       ToProviderType(Class<T> type, Class<? extends Provider<T>> provider)
       {
-         super(type, null);
+         super(type, null, null);
 
          //
          this.provider = provider;
@@ -97,9 +117,9 @@ abstract class BeanBinding<T>
       /** . */
       final T instance;
 
-      ToInstance(Class<T> type, T instance)
+      ToInstance(Class<T> type, T instance, Iterable<Annotation> declaredQualifiers)
       {
-         super(type, (Class<T>)instance.getClass());
+         super(type, (Class<T>)instance.getClass(), declaredQualifiers);
 
          //
          this.instance = instance;
@@ -114,7 +134,7 @@ abstract class BeanBinding<T>
 
       ToProviderInstance(Class<T> type, Provider<? extends T> provider)
       {
-         super(type, null);
+         super(type, null, null);
 
          //
          this.provider = provider;

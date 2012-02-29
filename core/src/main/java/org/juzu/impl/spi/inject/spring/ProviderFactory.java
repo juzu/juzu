@@ -17,28 +17,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.cdi;
+package org.juzu.impl.spi.inject.spring;
 
-import javax.enterprise.context.spi.CreationalContext;
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import org.springframework.beans.factory.FactoryBean;
+
+import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class InstanceBean extends AbstractBean
+class ProviderFactory<T> implements FactoryBean<T>
 {
 
-   private final Object instance;
+   /** . */
+   private final Class<T> type;
 
-   InstanceBean(Class type, Set<Annotation> qualifiers, Object instance)
+   /** . */
+   private final Provider<T> provider;
+
+   ProviderFactory(Class<T> type, Provider<T> provider)
    {
-      super(type, qualifiers);
-
-      //
-      this.instance = instance;
+      this.type = type;
+      this.provider = provider;
    }
 
-   public Object create(CreationalContext creationalContext)
+   public T getObject() throws Exception
    {
-      return instance;
+      return provider.get();
+   }
+
+   public Class<?> getObjectType()
+   {
+      return type;
+   }
+
+   public boolean isSingleton()
+   {
+      return false;
    }
 }

@@ -63,7 +63,7 @@ public class ApplicationBootstrap
    private <B, I> void _start() throws Exception
    {
       // Bind the application descriptor
-      bootstrap.bindBean(ApplicationDescriptor.class, descriptor);
+      bootstrap.bindBean(ApplicationDescriptor.class, null, descriptor);
 
       // Bind the application context
       bootstrap.declareBean(ApplicationContext.class, InternalApplicationContext.class);

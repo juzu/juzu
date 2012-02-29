@@ -25,7 +25,7 @@ import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SpringScope implements Scope
+class SpringScope implements Scope
 {
 
    /** . */
@@ -37,7 +37,7 @@ public class SpringScope implements Scope
    /** . */
    private final ScopeController controller;
 
-   public SpringScope(DefaultListableBeanFactory factory, org.juzu.impl.request.Scope scope, ScopeController controller)
+   SpringScope(DefaultListableBeanFactory factory, org.juzu.impl.request.Scope scope, ScopeController controller)
    {
       this.factory = factory;
       this.scope = scope;

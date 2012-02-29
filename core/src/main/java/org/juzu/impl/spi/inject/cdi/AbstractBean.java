@@ -27,7 +27,6 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Qualifier;
 import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -40,6 +39,12 @@ abstract class AbstractBean implements Bean
 {
 
    /** . */
+   static final Annotation DEFAULT_QUALIFIER = new AnnotationLiteral<Default>() {};
+
+   /** . */
+   static final Annotation ANY_QUALIFIER = new AnnotationLiteral<Any>() {};
+
+   /** . */
    private final Class<?> type;
 
    /** . */
@@ -48,20 +53,8 @@ abstract class AbstractBean implements Bean
    /** . */
    private Set<Type> types;
 
-   AbstractBean(Class<?> type)
+   AbstractBean(Class<?> type, Set<Annotation> qualifiers)
    {
-      Set<Annotation> qualifiers = new HashSet<Annotation>();
-      qualifiers.add( new AnnotationLiteral<Default>() {} );
-      qualifiers.add( new AnnotationLiteral<Any>() {} );
-      for (Annotation annotation : type.getAnnotations())
-      {
-         if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
-         {
-            qualifiers.add(annotation);
-         }
-      }
-
-      //
       HashSet<Type> types = new HashSet<Type>();
       collectSuperTypes(type, types);
 

@@ -22,6 +22,7 @@ package org.juzu.impl.spi.inject.cdi;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectManager;
+import org.juzu.impl.utils.Tools;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
@@ -102,7 +103,7 @@ public class ExtensionImpl implements Extension
       }
 
       // Add the manager
-      event.addBean(new InstanceBean(InjectManager.class, manager));
+      event.addBean(new InstanceBean(InjectManager.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), manager));
 
       // Add singletons
       for (AbstractBean bean : manager.boundBeans.values())

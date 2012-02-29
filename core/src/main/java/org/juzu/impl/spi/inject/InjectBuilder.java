@@ -23,6 +23,7 @@ import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 
 import javax.inject.Provider;
+import java.lang.annotation.Annotation;
 
 /**
  * A build for configuring an {@link InjectManager} implementation.
@@ -36,7 +37,7 @@ public abstract class InjectBuilder
 
    public abstract <T> InjectBuilder declareProvider(Class<T> type, Class<? extends Provider<T>> provider);
 
-   public abstract <T> InjectBuilder bindBean(Class<T> type, T instance);
+   public abstract <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance);
 
    public abstract <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider);
 

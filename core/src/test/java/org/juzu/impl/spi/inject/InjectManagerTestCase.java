@@ -24,8 +24,10 @@ import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingleton;
 import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingletonInjected;
-import org.juzu.impl.spi.inject.boundsingleton.qualifier.QualifiedBoundSingleton;
-import org.juzu.impl.spi.inject.boundsingleton.qualifier.QualifiedBoundSingletonInjected;
+import org.juzu.impl.spi.inject.boundsingleton.qualifier.declared.DeclaredQualifierBoundSingleton;
+import org.juzu.impl.spi.inject.boundsingleton.qualifier.declared.DeclaredQualifierBoundSingletonInjected;
+import org.juzu.impl.spi.inject.boundsingleton.qualifier.introspected.IntrospectedQualifierBoundSingleton;
+import org.juzu.impl.spi.inject.boundsingleton.qualifier.introspected.IntrospectedQualifierBoundSingletonInjected;
 import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundApple;
 import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruit;
 import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruitInjected;
@@ -68,10 +70,13 @@ import org.juzu.impl.spi.inject.supertype.FruitInjected;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.naming.AuthenticationException;
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 
@@ -358,7 +363,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       BoundSingleton singleton = new BoundSingleton();
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "injection");
       bootstrap.declareBean(BoundSingletonInjected.class, null);
-      bootstrap.bindBean(BoundSingleton.class, singleton);
+      bootstrap.bindBean(BoundSingleton.class, null, singleton);
       boot();
 
       //
@@ -368,16 +373,41 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(singleton, injected.singleton);
    }
 
-   public void testBoundSingletonQualifier() throws Exception
+   public void testBoundSingletonQualifierIntrospected() throws Exception
    {
-      QualifiedBoundSingleton singleton = new QualifiedBoundSingleton();
-      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier");
-      bootstrap.declareBean(QualifiedBoundSingletonInjected.class, null);
-      bootstrap.bindBean(QualifiedBoundSingleton.class, singleton);
+      IntrospectedQualifierBoundSingleton singleton = new IntrospectedQualifierBoundSingleton();
+      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier", "introspected");
+      bootstrap.declareBean(IntrospectedQualifierBoundSingletonInjected.class, null);
+      bootstrap.bindBean(IntrospectedQualifierBoundSingleton.class, null, singleton);
       boot();
 
       //
-      QualifiedBoundSingletonInjected injected = getBean(QualifiedBoundSingletonInjected.class);
+      IntrospectedQualifierBoundSingletonInjected injected = getBean(IntrospectedQualifierBoundSingletonInjected.class);
+      assertNotNull(injected);
+      assertNotNull(injected.singleton);
+      assertSame(singleton, injected.singleton);
+   }
+
+   public void testBoundSingletonQualifierDeclared() throws Exception
+   {
+      class ColorizedLiteral extends AnnotationLiteral<Colorized> implements Colorized
+      {
+         public Color value()
+         {
+            return Color.BLUE;
+         }
+      }
+      Annotation blue = new ColorizedLiteral();
+      
+      //
+      DeclaredQualifierBoundSingleton singleton = new DeclaredQualifierBoundSingleton();
+      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier", "declared");
+      bootstrap.declareBean(DeclaredQualifierBoundSingletonInjected.class, null);
+      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.singleton(blue), singleton);
+      boot();
+
+      //
+      DeclaredQualifierBoundSingletonInjected injected = getBean(DeclaredQualifierBoundSingletonInjected.class);
       assertNotNull(injected);
       assertNotNull(injected.singleton);
       assertSame(singleton, injected.singleton);
@@ -387,7 +417,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    {
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "supertype");
       BoundApple apple = new BoundApple();
-      bootstrap.bindBean(BoundFruit.class, apple);
+      bootstrap.bindBean(BoundFruit.class, null, apple);
       bootstrap.declareBean(BoundFruitInjected.class, null);
       boot();
 

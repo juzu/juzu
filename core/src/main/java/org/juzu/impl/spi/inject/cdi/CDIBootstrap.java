@@ -26,7 +26,11 @@ import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.inject.cdi.weld.WeldContainer;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.inject.Provider;
+import javax.inject.Qualifier;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -97,9 +101,36 @@ public class CDIBootstrap extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder bindBean(Class<T> type, T instance)
+   public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance)
    {
-      boundBeans.put(type, new InstanceBean(type, instance));
+      Map<Class<? extends Annotation>, Annotation> qualifierMap = new HashMap<Class<? extends Annotation>, Annotation>();
+
+      //
+      if (qualifiers != null)
+      {
+         for (Annotation qualifier : qualifiers)
+         {
+            qualifierMap.put(qualifier.annotationType(), qualifier);
+         }
+      }
+      else
+      {
+         // Introspect qualifiers if the qualifiers were not set
+         for (Annotation annotation : type.getAnnotations())
+         {
+            if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
+            {
+               qualifierMap.put(annotation.annotationType(), annotation);
+            }
+         }
+      }
+
+      // Add those
+      qualifierMap.put(Default.class, AbstractBean.DEFAULT_QUALIFIER);
+      qualifierMap.put(Any.class, AbstractBean.ANY_QUALIFIER);
+
+      //
+      boundBeans.put(type, new InstanceBean(type, new HashSet<Annotation>(qualifierMap.values()), instance));
       return this;
    }
 

@@ -19,6 +19,8 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.impl.utils.Tools;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.inject.Provider;
 
@@ -31,7 +33,7 @@ class ProviderBean extends AbstractBean
 
    ProviderBean(Class type, Provider provider)
    {
-      super(type);
+      super(type, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER));
 
       //
       this.provider = provider;
