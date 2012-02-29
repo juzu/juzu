@@ -17,25 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.qualifier;
+package org.juzu.impl.spi.inject;
 
-import org.juzu.impl.inject.Export;
-import org.juzu.impl.spi.inject.Color;
-import org.juzu.impl.spi.inject.Colorized;
+import javax.inject.Qualifier;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Qualified
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Colorized
 {
 
-   @Export
-   @Colorized(Color.RED)
-   public static class Red extends Qualified
-   {
-   }
+   Color value();
 
-   @Export
-   @Colorized(Color.GREEN)
-   public static class Green extends Qualified
-   {
-   }
 }

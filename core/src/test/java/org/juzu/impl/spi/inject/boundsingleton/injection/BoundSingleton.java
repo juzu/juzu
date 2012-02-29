@@ -17,18 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.qualifier;
-
-import javax.inject.Qualifier;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+package org.juzu.impl.spi.inject.boundsingleton.injection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Colorized
+public class BoundSingleton
 {
-
-   Color value();
-
 }

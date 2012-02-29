@@ -22,8 +22,10 @@ package org.juzu.impl.spi.inject;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.request.Scope;
-import org.juzu.impl.spi.inject.bindsingleton.SingletonBound;
-import org.juzu.impl.spi.inject.bindsingleton.SingletonBoundInjected;
+import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingleton;
+import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingletonInjected;
+import org.juzu.impl.spi.inject.boundsingleton.qualifier.QualifiedBoundSingleton;
+import org.juzu.impl.spi.inject.boundsingleton.qualifier.QualifiedBoundSingletonInjected;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
@@ -333,16 +335,31 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(mgr, managerInjected.manager);
    }
 
-   public void testBindSingleton() throws Exception
+   public void testBoundSingleton() throws Exception
    {
-      SingletonBound singleton = new SingletonBound();
-      init("org", "juzu", "impl", "spi", "inject", "bindsingleton");
-      bootstrap.declareBean(SingletonBoundInjected.class, null);
-      bootstrap.bindBean(SingletonBound.class, singleton);
+      BoundSingleton singleton = new BoundSingleton();
+      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "injection");
+      bootstrap.declareBean(BoundSingletonInjected.class, null);
+      bootstrap.bindBean(BoundSingleton.class, singleton);
       boot();
 
       //
-      SingletonBoundInjected injected = getBean(SingletonBoundInjected.class);
+      BoundSingletonInjected injected = getBean(BoundSingletonInjected.class);
+      assertNotNull(injected);
+      assertNotNull(injected.singleton);
+      assertSame(singleton, injected.singleton);
+   }
+
+   public void testQualifiedBoundSingleton() throws Exception
+   {
+      QualifiedBoundSingleton singleton = new QualifiedBoundSingleton();
+      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier");
+      bootstrap.declareBean(QualifiedBoundSingletonInjected.class, null);
+      bootstrap.bindBean(QualifiedBoundSingleton.class, singleton);
+      boot();
+
+      //
+      QualifiedBoundSingletonInjected injected = getBean(QualifiedBoundSingletonInjected.class);
       assertNotNull(injected);
       assertNotNull(injected.singleton);
       assertSame(singleton, injected.singleton);

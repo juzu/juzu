@@ -17,12 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.qualifier;
+package org.juzu.impl.spi.inject.boundsingleton.injection;
+
+import org.juzu.impl.inject.Export;
+
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum Color
+@Export
+public class BoundSingletonInjected
 {
 
-   RED, GREEN, BLUE, WHITE, BLACK
+   @Inject
+   public BoundSingleton singleton;
 
 }

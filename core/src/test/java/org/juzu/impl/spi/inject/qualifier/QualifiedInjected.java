@@ -20,6 +20,8 @@
 package org.juzu.impl.spi.inject.qualifier;
 
 import org.juzu.impl.inject.Export;
+import org.juzu.impl.spi.inject.Color;
+import org.juzu.impl.spi.inject.Colorized;
 
 import javax.inject.Inject;
 

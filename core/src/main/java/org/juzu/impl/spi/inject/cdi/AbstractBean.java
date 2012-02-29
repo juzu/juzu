@@ -19,12 +19,15 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import org.springframework.expression.spel.ast.QualifiedIdentifier;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Qualifier;
 import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -37,11 +40,27 @@ abstract class AbstractBean implements Bean
 {
 
    /** . */
-   private final Class type;
+   private final Class<?> type;
 
-   AbstractBean(Class type)
+   /** . */
+   private final Set<Annotation> qualifiers;
+
+   AbstractBean(Class<?> type)
    {
+      Set<Annotation> qualifiers = new HashSet<Annotation>();
+      qualifiers.add( new AnnotationLiteral<Default>() {} );
+      qualifiers.add( new AnnotationLiteral<Any>() {} );
+      for (Annotation annotation : type.getAnnotations())
+      {
+         if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
+         {
+            qualifiers.add(annotation);
+         }
+      }
+
+      //
       this.type = type;
+      this.qualifiers = Collections.unmodifiableSet(qualifiers);
    }
 
    public Set<Type> getTypes()
@@ -54,9 +73,6 @@ abstract class AbstractBean implements Bean
 
    public Set<Annotation> getQualifiers()
    {
-      Set<Annotation> qualifiers = new HashSet<Annotation>();
-      qualifiers.add( new AnnotationLiteral<Default>() {} );
-      qualifiers.add( new AnnotationLiteral<Any>() {} );
       return qualifiers;
    }
 
