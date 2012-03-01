@@ -119,11 +119,18 @@ public class InvocationServlet extends HttpServlet
    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
       String s = req.getRequestURI().substring(req.getContextPath().length());
-      if ("/jquery.js".equals(s))
+      if (s.endsWith(".js"))
       {
          resp.setContentType("text/javascript");
          OutputStream out = resp.getOutputStream();
-         InputStream in = getServletContext().getResourceAsStream("/jquery.js");
+         InputStream in = getServletContext().getResourceAsStream(s);
+         Tools.copy(in, out);
+      }
+      else if (s.endsWith(".css"))
+      {
+         resp.setContentType("text/css");
+         OutputStream out = resp.getOutputStream();
+         InputStream in = getServletContext().getResourceAsStream(s);
          Tools.copy(in, out);
       }
       else

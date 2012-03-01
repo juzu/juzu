@@ -78,8 +78,10 @@ public abstract class AbstractHttpTestCase extends AbstractTestCase
    {
       URL descriptor = InvocationServlet.class.getResource("web.xml");
       URL jquery = InvocationServlet.class.getResource("jquery-1.7.1.js");
+      URL stylesheet = InvocationServlet.class.getResource("main.css");
       return ShrinkWrap.create(WebArchive.class, "juzu.war").
          addAsWebResource(jquery, "jquery.js").
+         addAsWebResource(stylesheet, "main.css").
          setWebXML(descriptor);
    }
 

@@ -64,6 +64,9 @@ public class ApplicationDescriptor
    /** . */
    private final List<Class<? extends Plugin>> plugins;
 
+   /** . */
+   private final Class<?> packageClass;
+
    public ApplicationDescriptor(
       Class<?> applicationClass,
       Class<?> defaultController,
@@ -87,6 +90,19 @@ public class ApplicationDescriptor
       finally
       {
          Tools.safeClose(in);
+      }
+
+      //
+      Class<?> packageClass;
+      try
+      {
+         packageClass = applicationClass.getClassLoader().loadClass(applicationClass.getPackage().getName() + ".package-info");
+      }
+      catch (ClassNotFoundException e)
+      {
+         AssertionError ae = new AssertionError("Cannot load package class");
+         ae.initCause(e);
+         throw ae;
       }
 
       //
@@ -133,6 +149,12 @@ public class ApplicationDescriptor
       this.controllerMethods = controllerMethods;
       this.templates = templates;
       this.plugins = plugins;
+      this.packageClass = packageClass;
+   }
+
+   public Class<?> getPackageClass()
+   {
+      return packageClass;
    }
 
    public Class<?> getApplicationClass()

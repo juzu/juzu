@@ -242,6 +242,9 @@ public abstract class Response
       /** . */
       private Collection<String> scripts = Collections.emptyList();
 
+      /** . */
+      private Collection<String> stylesheets = Collections.emptyList();
+
       public Render addScript(String script) throws NullPointerException
       {
          if (script == null)
@@ -256,9 +259,28 @@ public abstract class Response
          return this;
       }
 
+      public Render addStylesheet(String stylesheet) throws NullPointerException
+      {
+         if (stylesheet == null)
+         {
+            throw new NullPointerException("No null stylesheet accepted");
+         }
+         if (stylesheets.isEmpty())
+         {
+            stylesheets = new LinkedHashSet<String>();
+         }
+         stylesheets.add(stylesheet);
+         return this;
+      }
+
       public Collection<String> getScripts()
       {
          return scripts;
+      }
+
+      public Collection<String> getStylesheets()
+      {
+         return stylesheets;
       }
 
       public abstract String getTitle();

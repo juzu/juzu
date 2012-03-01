@@ -17,26 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application(
-   defaultController = org.sample.booking.controllers.Application.class,
-   plugins = {
-      AssetPlugin.class,
-      AjaxPlugin.class
-   })
-@Assets(
-   scripts = {
-      @Script(src = "public/javascripts/booking.js"),
-      @Script(src = "public/javascripts/jquery-1.7.1.min.js"),
-      @Script(src = "public/javascripts/jquery-ui-1.7.2.custom.min.js")
-   },
-   stylesheets = {
-      @Stylesheet(src = "public/stylesheets/main.css")
-   }
-)
-package org.sample.booking;
+@Application(plugins = AssetPlugin.class)
+@Assets(scripts = @Script(src = "jquery.js"), stylesheets = {@Stylesheet(src = "main.css"),@Stylesheet(src = "main.less")})
+package plugin.asset;
 
 import org.juzu.Application;
-import org.juzu.plugin.ajax.AjaxPlugin;
 import org.juzu.plugin.asset.AssetPlugin;
 import org.juzu.plugin.asset.Assets;
 import org.juzu.plugin.asset.Script;

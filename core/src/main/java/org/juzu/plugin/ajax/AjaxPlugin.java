@@ -107,6 +107,12 @@ public class AjaxPlugin extends Plugin
                   }
                }
 
+               @Override
+               public Collection<String> getStylesheets()
+               {
+                  return foo.getStylesheets();
+               }
+
                public void send(Printer printer) throws IOException
                {
 

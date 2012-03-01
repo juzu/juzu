@@ -54,19 +54,37 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       {
          Response.Content.Render render = (Response.Content.Render)response;
 
-         //
-         Collection<String> scripts = render.getScripts();
-         if (scripts.size() > 0)
+         // For now only in gatein since liferay won't support it very well
+         if (request.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container"))
          {
-            for (String script : scripts)
+            Collection<String> scripts = render.getScripts();
+            if (scripts.size() > 0)
             {
-               Element elt = this.response.createElement("script");
-               elt.setAttribute("type", "text/javascript");
-               elt.setAttribute("src", script);
-               this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+               for (String script : scripts)
+               {
+                  Element elt = this.response.createElement("script");
+                  elt.setAttribute("type", "text/javascript");
+                  elt.setAttribute("src", script);
+                  this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+               }
+            }
+            Collection<String> stylesheets = render.getStylesheets();
+            if (stylesheets.size() > 0)
+            {
+               for (String stylesheet : stylesheets)
+               {
+                  int pos = stylesheet.lastIndexOf('.');
+                  String ext = pos == -1 ? "css" : stylesheet.substring(pos + 1);
+                  Element elt = this.response.createElement("link");
+                  elt.setAttribute("media", "screen");
+                  elt.setAttribute("rel", "stylesheet");
+                  elt.setAttribute("type", "text/" + ext);
+                  elt.setAttribute("href", stylesheet);
+                  this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+               }
             }
          }
-         
+
          //
          String title = render.getTitle();
          if (title != null)

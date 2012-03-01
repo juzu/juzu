@@ -27,13 +27,4 @@
        <keywords>juzu,sample</keywords>
      </portlet-info>
    </portlet>
-   <filter>
-     <filter-name>HeaderFilter</filter-name>
-     <filter-class>org.sample.booking.portlet.HeaderFilter</filter-class>
-     <lifecycle>RENDER_PHASE</lifecycle>
-   </filter>
-   <filter-mapping>
-     <filter-name>HeaderFilter</filter-name>
-     <portlet-name>BookingPortlet</portlet-name>
-   </filter-mapping>
 </portlet-app>

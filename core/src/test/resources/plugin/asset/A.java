@@ -17,27 +17,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application(
-   defaultController = org.sample.booking.controllers.Application.class,
-   plugins = {
-      AssetPlugin.class,
-      AjaxPlugin.class
-   })
-@Assets(
-   scripts = {
-      @Script(src = "public/javascripts/booking.js"),
-      @Script(src = "public/javascripts/jquery-1.7.1.min.js"),
-      @Script(src = "public/javascripts/jquery-ui-1.7.2.custom.min.js")
-   },
-   stylesheets = {
-      @Stylesheet(src = "public/stylesheets/main.css")
-   }
-)
-package org.sample.booking;
+package plugin.asset;
 
-import org.juzu.Application;
-import org.juzu.plugin.ajax.AjaxPlugin;
-import org.juzu.plugin.asset.AssetPlugin;
-import org.juzu.plugin.asset.Assets;
-import org.juzu.plugin.asset.Script;
-import org.juzu.plugin.asset.Stylesheet;
+import org.juzu.Controller;
+import org.juzu.Resource;
+import org.juzu.Response;
+import org.juzu.View;
+import org.juzu.plugin.ajax.Ajax;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A extends Controller
+{
+   @View
+   public Response.Render index()
+   {
+      String content = "" +
+         "<script>\n" +
+         "$(function() {\n" +
+         "  $('#trigger').click(function() {\n" +
+         "    alert(\"OK MEN\");\n" +
+         "  });\n" +
+         "});\n" +
+         "</script>\n" +
+         "<a id='trigger' href='#'>click</a>";
+      return Response.render(content);
+   }
+}

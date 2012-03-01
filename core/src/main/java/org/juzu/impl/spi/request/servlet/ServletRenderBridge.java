@@ -66,6 +66,20 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
             writer.println("\"></script>");
          }
       }
+      Collection<String> stylesheets = render.getStylesheets();
+      if (stylesheets.size() > 0)
+      {
+         for (String stylesheet : stylesheets)
+         {
+            int pos = stylesheet.lastIndexOf('.');
+            String ext = pos == -1 ? "css" : stylesheet.substring(pos + 1);
+            writer.print("<link rel=\"stylesheet\" type=\"text/");
+            writer.print(ext);
+            writer.print("\" href=\"");
+            writer.print(stylesheet);
+            writer.println("\"></link>");
+         }
+      }
       writer.println("</head>");
       
       //
