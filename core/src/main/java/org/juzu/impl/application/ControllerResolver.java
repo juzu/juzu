@@ -26,11 +26,12 @@ import org.juzu.metadata.ControllerMethod;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Resolves a controller for a given input.
+ * Resolves controller method algorithm.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
@@ -38,7 +39,7 @@ public class ControllerResolver
 {
 
    /** . */
-   private final List<ControllerMethod> methods;
+   private final ControllerMethod[] methods;
 
    /** . */
    private final ApplicationDescriptor desc;
@@ -51,163 +52,171 @@ public class ControllerResolver
       }
 
       //
-      this.desc = desc;
-      this.methods = desc.getControllerMethods();
-   }
-
-   private class Foo implements Comparable<Foo>
-   {
-      int score;
-      ControllerMethod m;
-      private Foo(ControllerMethod m)
-      {
-         this.score = m.getArguments().size() + (m.getType() == desc.getDefaultController() ? 0 : 1000);
-         this.m = m;
-      }
-      public int compareTo(Foo o)
-      {
-         return score - o.score;
-      }
-   }
-
-   public ControllerMethod resolve(Phase phase, String methodId, final Set<String> parameterNames) throws AmbiguousResolutionException
-   {
-      ControllerMethod found = null;
+      List<ControllerMethod> methods = desc.getControllerMethods();
 
       //
-      if (methodId != null)
-      {
+      this.desc = desc;
+      this.methods = methods.toArray(new ControllerMethod[methods.size()]);
+   }
 
-         class Match implements Comparable<Match>
+   /**
+    * Resolves a controller for a phase, a method id and a set of parameter names. The algorithm attempts to resolve
+    * a single value with the following algorithm:
+    *
+    * <ul>
+    *    <li>Filter any controller method that doesn't match the method id.</li>
+    *    <li>When no method is retained, the null value is returned.</li>
+    *    <li>When several methods are retained the resulting list is sorted according <i>resolution order</i>.
+    *    If a first value is greater than all the others, this result is returned, otherwise a {@link AmbiguousResolutionException}
+    *    is thrown.</li>
+    * </ul>
+    *
+    * The <i>resolution order</i> uses three criteria for comparing two methods in the context of the specified parameter names.
+    *
+    * <ol>
+    *    <li>The greater number of matched specified parameters.</li>
+    *    <li>The lesser number of unmatched method arguments.</li>
+    *    <li>The lesser number of unmatched method parameers.</li>
+    * </ol>
+    *
+    * When the {@param methodId} is not specified the algorithm will be executed on a method set determined by:
+    * <ul>
+    *    <li>method with the name <i>index</i> are retained</li>
+    *    <li>if a default controller is specified by the application and at least one <i>index</i> method exist
+    *    on the default controller, any <i>index</i> method not on the default controller are discarded.</li>
+    * </ul>
+    * 
+    * @param phase the phrase
+    * @param methodId the method id
+    * @param parameterNames the parameter names
+    * @return the resolved controller method
+    * @throws NullPointerException if the parameter names set is nul
+    * @throws IllegalArgumentException if phase is not render when the method id is null
+    * @throws AmbiguousResolutionException if more than a single result is found
+    */
+   public ControllerMethod resolve(Phase phase, String methodId, final Set<String> parameterNames) throws IllegalArgumentException, AmbiguousResolutionException
+   {
+
+      if (parameterNames == null)
+      {
+         throw new NullPointerException("No null parameter names accepted");
+      }
+
+      // todo : take in account multi valued parameters
+      // todo : what happens with type conversion, somehow we should forbid m(String a) and m(int a)
+
+      class Match implements Comparable<Match>
+      {
+         final ControllerMethod method;
+         final int score1;
+         final int score2;
+         final int score3;
+         Match(ControllerMethod method)
          {
-            final ControllerMethod method;
-            final int score1;
-            final int score2;
-            Match(ControllerMethod method)
+            this.method = method;
+
+            // The number of matched parameters
+            HashSet<String> a = new HashSet<String>(parameterNames);
+            a.retainAll(method.getArgumentNames());
+            this.score1 = a.size();
+
+            // The number of unmatched arguments
+            a = new HashSet<String>(method.getArgumentNames());
+            a.removeAll(parameterNames);
+            this.score2 = a.size();
+
+            // The number of unmatched parameters
+            a = new HashSet<String>(parameterNames);
+            a.removeAll(method.getArgumentNames());
+            this.score3 = a.size();
+         }
+         public int compareTo(Match o)
+         {
+            int delta = o.score1 - score1;
+            if (delta == 0)
             {
-               this.method = method;
-               this.score1 = method.getArgumentNames().size() - parameterNames.size();
-               this.score2 = method.getArgumentNames().size();
-            }
-            public int compareTo(Match o)
-            {
-               int delta = score1 - o.score1;
+               delta = score2 - o.score2;
                if (delta == 0)
                {
-                  delta = score2 - o.score2;
+                  delta = score3 - o.score3;
                }
-               return delta;
             }
+            return delta;
          }
+         @Override
+         public String toString()
+         {
+            return "Match[score1=" + score1 + ",score2=" + score2 + ",score3=" + score3 + ",method=" + method + "]";
+         }
+      }
 
-         //
-         List<Match> matches = new ArrayList<Match>();
-         for (ControllerMethod method : methods)
+      //
+      List<Match> matches = new ArrayList<Match>();
+      if (methodId == null)
+      {
+         if (phase != Phase.RENDER)
          {
-            if (method.getId().equals(methodId) && method.getArgumentNames().containsAll(parameterNames))
-            {
-               //
-               matches.add(new Match(method));
-               break;
-            }
+            throw new IllegalArgumentException("Method id can only be null when the phase " + phase + " == " + Phase.RENDER);
          }
-         
-         //
-         if (matches.size() > 0)
+         else
          {
-            Collections.sort(matches);
-            Match first = matches.get(0);
-            if (matches.size() > 1)
+            for (ControllerMethod method : methods)
             {
-               Match second = matches.get(1);
-               if (first.compareTo(second) == 0)
+               if (method.getPhase() == Phase.RENDER && method.getName().equals("index"))
                {
-                  throw new AmbiguousResolutionException("Two methods satisfies the index criteria: " +
-                     first.method + " and " + second.method);
+                  matches.add(new Match(method));
                }
             }
-            else
+            for (int i = 0;i < matches.size();i++)
             {
-               found = first.method;
+               Match match = matches.get(i);
+               if (match.method.getType() == desc.getDefaultController())
+               {
+                  ArrayList<Match> sub = new ArrayList<Match>();
+                  for (int j = 0;j < matches.size();j++)
+                  {
+                     Match match2 = matches.get(j);
+                     if (match2.method.getType() == desc.getDefaultController())
+                     {
+                        sub.add(match2);
+                     }
+                  }
+                  matches = sub;
+                  break;
+               }
             }
          }
       }
-      else if (phase == Phase.RENDER)
+      else
       {
-         List<Foo> matches = new ArrayList<Foo>();
-
-         // Collect all index matches
          for (ControllerMethod method : methods)
          {
-            if (method.getPhase() == Phase.RENDER && method.getName().equals("index"))
+            if (method.getPhase() == phase && method.getId().equals(methodId))
             {
-               matches.add(new Foo(method));
+               matches.add(new Match(method));
             }
          }
+      }
 
-         //
-         int size = matches.size();
-         if (size > 0)
+      //
+      ControllerMethod found = null;
+      if (matches.size() > 0)
+      {
+         Collections.sort(matches);
+         Match first = matches.get(0);
+         if (matches.size() > 1)
          {
-            if (size > 1)
+            Match second = matches.get(1);
+            if (first.compareTo(second) == 0)
             {
-               Foo first = matches.get(0);
-               Foo second = matches.get(1);
-               if (first.score == second.score)
-               {
-                  // WE SHOULD NOT HAVE METHOD THAT RESOLVES TO AN AMBIGUITY AND WE CAN ENFORCE
-                  // THAT AT COMPILE TIME.
-                  // FOR INSTANCE WE COULD USE THE METHOD_ID AS WAY TO FIND THE METHOD
-                  // AND ENSURE THAT THE INDEX IS UNIQUE FOR A SINGLER APPLICATION
-                  // HAVING THE METHOD NAME AS METHOD ID WOULD HELP HOWEVER WE COULD HAVE TWO
-                  // CONTROLLER HAVING SAME IDS
-                  throw new AmbiguousResolutionException("Two methods satisfies the index criteria: " +
-                     first.m + " and " + second.m);
-               }
+               throw new AmbiguousResolutionException("Two methods satisfies the index criteria: " +
+                  first.method + " and " + second.method);
             }
-            found = matches.get(0).m;
          }
+         found = first.method;
       }
 
       //
       return found;
    }
-
-   private int getScore(ControllerMethod m)
-   {
-      return m.getArguments().size() + (m.getType() == desc.getDefaultController() ? 0 : 1000);
-   }
-
-/*
-         if (m1.getType() != desc.getDefaultController())
-         {
-            if (m2.getType() == desc.getDefaultController())
-            {
-               return -1;
-            }
-         }
-         else
-         {
-            if (m2.getType() != desc.getDefaultController())
-            {
-               return 1;
-            }
-         }
-
-         //
-         int s1 = m1.getArgumentParameters().size();
-         int s2 = m1.getArgumentParameters().size();
-         if (s1 == s2)
-         {
-            return 0;
-         }
-         else if (s1 < s2)
-         {
-            return 1;
-         }
-         else
-         {
-            return s2;
-         }
-*/
 }

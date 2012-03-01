@@ -20,6 +20,7 @@
 package org.juzu.impl.application;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.impl.utils.Tools;
 import org.juzu.request.Phase;
 import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.metadata.ControllerMethod;
@@ -31,6 +32,116 @@ import java.util.Collections;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerResolverTestCase extends AbstractTestCase
 {
+
+   /**
+    * No method id specified resolves to the <code>index</code> method of the unique controller.
+    *
+    * @throws Exception any exception
+    */
+   public void testResolveIndex() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_method");
+      compiler.assertCompile();
+      Class<?> appClass = compiler.assertClass("application.resolver.default_method.Default_methodApplication");
+
+      //
+      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+      ControllerResolver resolver = new ControllerResolver(desc);
+      ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
+      assertEquals("index", method.getName());
+   }
+
+   /**
+    * No method id specified finds ambiguous when it finds more than a unique <code>index</code>.
+    *
+    * @throws Exception any exception
+    */
+   public void testResolveAmbiguousIndex() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "ambiguous_method");
+      compiler.assertCompile();
+      Class<?> appClass = compiler.assertClass("application.resolver.ambiguous_method.Ambiguous_methodApplication");
+
+      //
+      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+      ControllerResolver resolver = new ControllerResolver(desc);
+      try
+      {
+         resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
+         fail();
+      }
+      catch (AmbiguousResolutionException e)
+      {
+      }
+   }
+
+   /**
+    * No method id specified resolves to the <code>index</code> method of the default specified controller.
+    *
+    * @throws Exception any exception
+    */
+   public void testDefaultControllerResolveIndex() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_controller");
+      compiler.assertCompile();
+      Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Default_controllerApplication");
+      Class<?> aClass = compiler.assertClass("application.resolver.default_controller.A");
+
+      //
+      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+      ControllerResolver resolver = new ControllerResolver(desc);
+      ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
+      assertEquals("index", method.getName());
+      assertSame(aClass, method.getMethod().getDeclaringClass());
+   }
+
+
+   /**
+    * Test method overloading resolution.
+    *
+    * @throws Exception any exception
+    */
+   public void testOverload() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "overload");
+      compiler.assertCompile();
+      Class<?> appClass = compiler.assertClass("application.resolver.overload.OverloadApplication");
+      Class<?> aClass = compiler.assertClass("application.resolver.overload.A");
+      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+      ControllerResolver resolver = new ControllerResolver(desc);
+
+      //
+      ControllerMethod method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set());
+      assertEquals("m", method.getName());
+      assertEquals(Tools.<String>set(), method.getArgumentNames());
+
+      //
+      method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("foo"));
+      assertEquals("m", method.getName());
+      assertEquals(Tools.<String>set("foo"), method.getArgumentNames());
+
+      //
+      method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("foo", "bar"));
+      assertEquals("m", method.getName());
+      assertEquals(Tools.<String>set("foo", "bar"), method.getArgumentNames());
+
+      //
+      method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("bar"));
+      assertEquals("m", method.getName());
+      assertEquals(Tools.<String>set("foo", "bar"), method.getArgumentNames());
+
+      //
+      method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("bar"));
+      assertEquals("m", method.getName());
+      assertEquals(Tools.<String>set("foo", "bar"), method.getArgumentNames());
+
+      //
+      method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("daa"));
+      assertEquals("m", method.getName());
+      assertEquals(Tools.<String>set(), method.getArgumentNames());
+   }
+
+
 
    public void testResolution() throws Exception
    {
@@ -64,52 +175,5 @@ public class ControllerResolverTestCase extends AbstractTestCase
 //      catch (AmbiguousResolutionException ignore)
 //      {
 //      }
-   }
-
-   public void testResolverDefaultMethod() throws Exception
-   {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_method");
-      compiler.assertCompile();
-      Class<?> appClass = compiler.assertClass("application.resolver.default_method.Default_methodApplication");
-
-      //
-      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc);
-      ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
-      assertEquals("index", method.getName());
-   }
-
-   public void testResolverAmbiguousMethod() throws Exception
-   {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "ambiguous_method");
-      compiler.assertCompile();
-      Class<?> appClass = compiler.assertClass("application.resolver.ambiguous_method.Ambiguous_methodApplication");
-
-      //
-      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc);
-      try
-      {
-         resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
-         fail();
-      }
-      catch (AmbiguousResolutionException e)
-      {
-      }
-   }
-
-   public void testResolverDefaultController() throws Exception
-   {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_controller");
-      compiler.assertCompile();
-      Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Default_controllerApplication");
-      Class<?> aClass = compiler.assertClass("application.resolver.default_controller.A");
-
-      //
-      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc);
-      ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
-      assertEquals("index", method.getName());
-      assertSame(aClass, method.getMethod().getDeclaringClass());
    }
 }

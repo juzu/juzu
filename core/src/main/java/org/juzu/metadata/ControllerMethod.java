@@ -130,6 +130,19 @@ public final class ControllerMethod
    @Override
    public String toString()
    {
-      return getClass().getSimpleName() + "[type=" + type.getName() + ",method=" + method + "]";
+      StringBuilder sb = new StringBuilder(getClass().getSimpleName());
+      sb.append("[type=").append(type.getName()).append(",method=");
+      sb.append(method.getName()).append("(");
+      Class<?>[] types = method.getParameterTypes();
+      for (int i = 0;i < types.length;i++)
+      {
+         if (i > 0)
+         {
+            sb.append(',');
+         }
+         sb.append(argumentList.get(i).getName()).append("=").append(types[i].getName());
+      }
+      sb.append(")]");
+      return sb.toString();
    }
 }

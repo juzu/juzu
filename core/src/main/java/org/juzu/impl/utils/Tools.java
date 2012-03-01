@@ -288,6 +288,11 @@ public class Tools
       }
    }
 
+   public static <E> HashSet<E> set()
+   {
+      return new HashSet<E>();
+   }
+
    public static <E> HashSet<E> set(E... elements)
    {
       HashSet<E> set = new HashSet<E>(elements.length);
