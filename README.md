@@ -50,25 +50,30 @@ Screencast
 # Roadmap
 
 - 0.5
+   - initial plugin support
+   - asset plugin
+   - ajax plugin
+   - lifecycle support with @PostConstruct and @PreDestroy
+- 0.6
     - tutorial (cont)
     - portlet eventing support
-    - header taglib
-- 0.6
+- 0.7
     - bean mapping
     - bean validation
-- 0.7
+- 0.8
     - request context stacking
     - extensible taglib
     - application import
-- 0.8
-    - module system
 - 0.9
+    - module system
+- 1.0
     - cross site scripting (xss) support
     - servlet support
     - routing engine
 
 Various things to do, not exhaustive that needs to go in the roadmap
 
+- integrate the Scoped destruction callback with the context (request,session,flash)
 - clarify how invocation URL are constructed and dispatched to the target (id versus resolution)
 - provide a deployment mode that get source from the file system wherever they are (in order to use the real sources)
 - parse error in template parser
@@ -80,6 +85,8 @@ Various things to do, not exhaustive that needs to go in the roadmap
 - weld declared beans and instance always have the Singleton scope and ignore the class setting
 - response : handle mime type
 - no files to compile -> javac message : see why
+- for plugins : think about an @Depends to define dependencies for ordering (?)
+- BUG with : @Application(plugins = AssetPlugin.class) when plugin does not exist
 
 # Deploy on
 
