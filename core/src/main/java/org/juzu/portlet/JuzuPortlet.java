@@ -377,7 +377,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    private void logThrowable(Throwable t)
    {
-      config.getPortletContext().log(t.getMessage(), t);
+      log.log(t.getMessage(), t);
    }
 
    private void logErrors(Collection<CompilationError> errors)
@@ -396,7 +396,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          }
          sb.append(':').append(error.getLocation().getLine()).append(':').append(error.getMessage()).append('\n');
       }
-      config.getPortletContext().log(sb.toString());
+      log.log(sb.toString());
    }
 
    private void renderThrowable(PrintWriter writer, Throwable t) throws PortletException, IOException
