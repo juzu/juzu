@@ -130,7 +130,7 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<String>
                }
                else
                {
-                  return sb.substring(0, sb.length() - 1).toLowerCase();
+                  return sb.substring(0, sb.length() - 1);
                }
             }
             catch (URISyntaxException e)
@@ -277,7 +277,7 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<String>
       URL url = classLoader.getResource(file);
       if (url == null)
       {
-         throw new UnsupportedOperationException("handle me correctly");
+         throw new IOException("Cannot find file " + url);
       }
 
       //
