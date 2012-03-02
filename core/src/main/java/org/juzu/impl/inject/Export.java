@@ -25,7 +25,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allow a type to be exported as a bean.
+ * When an injection container meets a bean annotated with this annotation, it must consider it only if it was clearly
+ * and explictly imported, otherwise it should be discarded.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */

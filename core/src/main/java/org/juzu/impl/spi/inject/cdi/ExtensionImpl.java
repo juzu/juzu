@@ -63,28 +63,35 @@ public class ExtensionImpl implements Extension
 
       AnnotatedType<T> annotatedType = pat.getAnnotatedType();
       Class<T> type = annotatedType.getJavaClass();
-      boolean veto; 
-      if (type.getName().startsWith("org.juzu."))
+
+      // Determine if bean is a singleton bound
+      boolean bound = false;
+      for (AbstractBean boundBean : manager.boundBeans)
       {
-         veto = !manager.declaredBeans.contains(type);
+         if (boundBean.getBeanClass().isAssignableFrom(type))
+         {
+            bound = true;
+         }
+      }
+
+      //
+      boolean veto;
+      if (bound)
+      {
+         veto = true;
       }
       else
       {
-         veto = false;
-      }
-      
-      //
-      if (!veto)
-      {
-         for (AbstractBean boundBean : manager.boundBeans)
+         if (manager.declaredBeans.contains(type))
          {
-            if (boundBean.getBeanClass().isAssignableFrom(type))
-            {
-               veto = true;
-            }
+            veto = false;
+         }
+         else
+         {
+            veto = manager.filter != null && !manager.filter.acceptBean(type);
          }
       }
-      
+
       //
       if (veto)
       {

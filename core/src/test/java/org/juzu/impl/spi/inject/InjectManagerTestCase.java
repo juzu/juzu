@@ -19,9 +19,11 @@
 
 package org.juzu.impl.spi.inject;
 
+import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.request.Scope;
+import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingleton;
 import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingletonInjected;
 import org.juzu.impl.spi.inject.boundsingleton.qualifier.declared.DeclaredQualifierBoundSingleton;
@@ -35,8 +37,6 @@ import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsChecke
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
 import org.juzu.impl.spi.inject.defaultscope.UndeclaredScopeBean;
-import org.juzu.impl.spi.inject.export.ExportedBean;
-import org.juzu.impl.spi.inject.export.NonExportedBean;
 import org.juzu.impl.spi.inject.implementationtype.Extended;
 import org.juzu.impl.spi.inject.implementationtype.Extension;
 import org.juzu.impl.spi.inject.dependencyinjection.Bean;
@@ -93,7 +93,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    protected InjectManager<B, I> mgr;
 
    /** . */
-   private DiskFileSystem fs;
+   private ReadFileSystem<?> fs;
 
    /** . */
    private ScopingContextImpl scopingContext;
@@ -108,12 +108,15 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       File root = new File(Bean.class.getProtectionDomain().getCodeSource().getLocation().toURI());
       assertTrue(root.exists());
       assertTrue(root.isDirectory());
-      DiskFileSystem fs = new DiskFileSystem(root, pkg);
-      InjectBuilder bootstrap = getManager();
+      init(new DiskFileSystem(root, pkg), Thread.currentThread().getContextClassLoader());
+   }
 
-      //
+   protected final void init(ReadFileSystem<?> fs, ClassLoader classLoader) throws Exception
+   {
+      InjectBuilder bootstrap = getManager();
       bootstrap.addFileSystem(fs);
-      bootstrap.setClassLoader(Thread.currentThread().getContextClassLoader());
+      bootstrap.setClassLoader(classLoader);
+      bootstrap.setFilter(BeanFilter.DEFAULT);
 
       //
       this.bootstrap = bootstrap;
@@ -171,19 +174,6 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    }
 
    protected abstract InjectBuilder getManager() throws Exception;
-
-   public void testExport() throws Exception
-   {
-      init("org", "juzu", "impl", "spi", "inject", "export");
-      bootstrap.declareBean(ExportedBean.class, null);
-      boot();
-
-      //
-      B bean = mgr.resolveBean(NonExportedBean.class);
-      assertNull(bean);
-      bean = mgr.resolveBean(ExportedBean.class);
-      assertNotNull(bean);
-   }
 
    public void testDependencyInjection() throws Exception
    {

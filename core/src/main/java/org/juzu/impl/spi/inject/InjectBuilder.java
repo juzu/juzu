@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.inject;
 
+import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 
@@ -46,6 +47,8 @@ public abstract class InjectBuilder
    public abstract InjectBuilder addScope(Scope scope);
 
    public abstract InjectBuilder setClassLoader(ClassLoader classLoader);
+   
+   public abstract InjectBuilder setFilter(BeanFilter filter);
 
    public abstract <B, I> InjectManager<B, I> create() throws Exception;
 

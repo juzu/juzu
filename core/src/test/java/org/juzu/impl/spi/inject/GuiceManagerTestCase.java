@@ -31,10 +31,4 @@ public class GuiceManagerTestCase extends InjectManagerTestCase<Binding, Object>
    {
       return new GuiceBootstrap();
    }
-
-   @Override
-   public void testExport() throws Exception
-   {
-      // Does not work
-   }
 }

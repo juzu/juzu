@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.inject.spring;
 
+import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
@@ -104,6 +105,12 @@ public class SpringBootstrap extends InjectBuilder
    public void setConfigurationURL(URL configurationURL)
    {
       this.configurationURL = configurationURL;
+   }
+
+   @Override
+   public InjectBuilder setFilter(BeanFilter filter)
+   {
+      return this;
    }
 
    @Override

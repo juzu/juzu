@@ -19,8 +19,13 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.Action;
+import org.juzu.Resource;
+import org.juzu.View;
+import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.inject.Binding;
 import org.juzu.impl.inject.Bindings;
+import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.MetaProvider;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBuilder;
@@ -33,6 +38,7 @@ import org.juzu.request.ApplicationContext;
 import org.juzu.template.Template;
 
 import javax.inject.Provider;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +73,31 @@ public class ApplicationBootstrap
 
       // Bind the application context
       bootstrap.declareBean(ApplicationContext.class, InternalApplicationContext.class);
+
+      //
+      bootstrap.setFilter(new BeanFilter()
+      {
+         public <T> boolean acceptBean(Class<T> beanType)
+         {
+            if (beanType.getName().startsWith("org.juzu.") || beanType.getAnnotation(Export.class) != null)
+            {
+               return false;
+            }
+            else
+            {
+               // Do that better with a meta annotation that describe Juzu annotation
+               // that veto beans
+               for (Method method : beanType.getMethods())
+               {
+                  if (method.getAnnotation(View.class) != null || method.getAnnotation(Action.class) != null || method.getAnnotation(Resource.class) != null)
+                  {
+                     return false;
+                  }
+               }
+               return true;
+            }
+         }
+      });
 
       // Bind the scopes
       for (Scope scope : Scope.values())

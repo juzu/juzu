@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.inject.cdi;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.InjectManager;
 
@@ -59,11 +60,16 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
    /** . */
    final ArrayList<Bean> beans;
 
+   /** . */
+   final BeanFilter filter;
+
    public CDIManager(
       Container container,
+      BeanFilter filter,
       ArrayList<AbstractBean> boundBeans,
       Set<Class<?>> declaredBeans) throws Exception
    {
+      this.filter = filter;
       this.boundBeans = boundBeans;
       this.declaredBeans = declaredBeans;
       this.beans = new ArrayList<Bean>();

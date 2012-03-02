@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.inject.guice;
 
+import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
@@ -95,6 +96,12 @@ public class GuiceBootstrap extends InjectBuilder
    public <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider)
    {
       bindings.add(new BeanBinding.ToProviderInstance<T>(type, provider));
+      return this;
+   }
+
+   @Override
+   public InjectBuilder setFilter(BeanFilter filter)
+   {
       return this;
    }
 

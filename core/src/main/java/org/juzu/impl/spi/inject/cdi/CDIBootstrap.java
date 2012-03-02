@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBuilder;
@@ -57,12 +58,16 @@ public class CDIBootstrap extends InjectBuilder
    /** . */
    private Set<Class<?>> declaredBeans;
 
+   /** . */
+   private BeanFilter filter;
+
    public CDIBootstrap()
    {
       this.scopes = new HashSet<Scope>();
       this.fileSystems = new ArrayList<ReadFileSystem<?>>();
       this.boundBeans = new ArrayList<AbstractBean>();
       this.declaredBeans = new HashSet<Class<?>>();
+      this.filter = null;
    }
 
    @Override
@@ -97,6 +102,13 @@ public class CDIBootstrap extends InjectBuilder
    public InjectBuilder setClassLoader(ClassLoader classLoader)
    {
       this.classLoader = classLoader;
+      return this;
+   }
+
+   @Override
+   public InjectBuilder setFilter(BeanFilter filter)
+   {
+      this.filter = filter;
       return this;
    }
 
@@ -149,6 +161,6 @@ public class CDIBootstrap extends InjectBuilder
       {
          container.addFileSystem(fs);
       }
-      return new CDIManager(container, boundBeans, declaredBeans);
+      return new CDIManager(container, filter, boundBeans, declaredBeans);
    }
 }
