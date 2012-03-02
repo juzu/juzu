@@ -61,6 +61,12 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<String>
       this.cache = new HashMap<URL, String[]>();
    }
 
+   @Override
+   public String getDescription()
+   {
+      return "classloader[]";
+   }
+
    public ClassLoader getClassLoader()
    {
       return classLoader;

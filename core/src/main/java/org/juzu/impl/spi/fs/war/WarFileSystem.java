@@ -67,7 +67,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
    }
 
    @Override
-   public String getRoot() throws IOException
+   public String getRoot()
    {
       return "/";
    }
@@ -235,6 +235,11 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
       return new WarFileSystem(mountPoint)
       {
          @Override
+         public String getDescription()
+         {
+            return "servlet[" + servletContext.getRealPath("/") + "]";
+         }
+         @Override
          protected Set<String> doGetResourcePaths(String path) throws IOException
          {
             return servletContext.getResourcePaths(path);
@@ -269,6 +274,11 @@ public abstract class WarFileSystem extends ReadFileSystem<String>
    {
       return new WarFileSystem(mountPoint)
       {
+         @Override
+         public String getDescription()
+         {
+            return "servlet[" + portletContext.getRealPath("/") + "]";
+         }
          @Override
          protected Set<String> doGetResourcePaths(String path) throws IOException
          {

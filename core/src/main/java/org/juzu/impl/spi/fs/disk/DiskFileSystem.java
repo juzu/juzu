@@ -79,6 +79,12 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
    }
 
    @Override
+   public String getDescription()
+   {
+      return "disk[" + root.getAbsolutePath() + "]";
+   }
+
+   @Override
    public boolean equals(File left, File right)
    {
       return left.equals(right);

@@ -44,6 +44,12 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
    }
 
    @Override
+   public String getDescription()
+   {
+      return "ram[]";
+   }
+
+   @Override
    public RAMDir addDir(RAMPath parent, String name) throws IOException
    {
       return parent.addDir(name);

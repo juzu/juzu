@@ -84,7 +84,8 @@ class ModelTemplateProcessContext extends ProcessContext
 
    protected Content resolveResource(FQN fqn, String extension)
    {
-      return env.resolveResource(fqn, extension);
+      ElementHandle.Package context = templateMetaModel.getApplication().getHandle();
+      return env.resolveResource(context, fqn, extension);
    }
 
    @Override

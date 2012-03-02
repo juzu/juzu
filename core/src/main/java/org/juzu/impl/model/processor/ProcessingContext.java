@@ -58,10 +58,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -87,7 +90,7 @@ public class ProcessingContext implements Filer, Elements
 
    /** Set for eclipse environment. */
    private final ReadFileSystem<File> sourcePath;
-   
+
    public ProcessingContext(ProcessingEnvironment env)
    {
       ReadFileSystem<File> sourcePath = null;
@@ -173,8 +176,77 @@ public class ProcessingContext implements Filer, Elements
       }
    }
 
-   public Content resolveResource(FQN fqn, String extension)
+   /** . */
+   private Map<ElementHandle<?>, ReadFileSystem<File>> sourcePathMap = new HashMap<ElementHandle<?>, ReadFileSystem<File>>();
+
+   private ReadFileSystem<File> getSourcePath(ElementHandle.Package context)
    {
+      if (sourcePath != null)
+      {
+         log.log("Found eclipse source path " + sourcePath + " for package " + context.getQN());
+         return sourcePath;
+      }
+      else
+      {
+         ReadFileSystem<File> sourcePath = sourcePathMap.get(context);
+         if (sourcePath == null)
+         {
+            try
+            {
+               PackageElement element = context.get(env);
+               log.log("Trying to find a native file system for package " + context.getQN());
+               List<? extends AnnotationMirror> annotations = element.getAnnotationMirrors();
+               if (annotations.size() > 0)
+               {
+                  log.log("Found package " + context.getQN() + " annotations " + annotations + " will use first one");
+                  AnnotationMirror annotation = annotations.get(0);
+                  Class<?> treesClass = ClassLoader.getSystemClassLoader().loadClass("com.sun.source.util.Trees");
+                  Method instanceMethod = treesClass.getMethod("instance", ProcessingEnvironment.class);
+                  Method getPathMethod = treesClass.getMethod("getPath", Element.class, AnnotationMirror.class);
+                  Object trees = instanceMethod.invoke(null, env);
+                  Object path = getPathMethod.invoke(trees, element, annotation);
+                  Method getCompilationUnitMethod = path.getClass().getMethod("getCompilationUnit");
+                  Object cu = getCompilationUnitMethod.invoke(path);
+                  Method getSourceFileMethod = cu.getClass().getMethod("getSourceFile");
+                  JavaFileObject file = (JavaFileObject)getSourceFileMethod.invoke(cu);
+                  URI uri = file.toUri();
+                  log.log("Resolved uri " + uri + " for package " + context.getQN());
+                  File f = new File(uri.getPath());
+                  if (f.exists() && f.isFile())
+                  {
+                     File dir = f.getParentFile().getParentFile();
+                     Name name = element.getQualifiedName();
+                     for (int i = 0;i < name.length();i++)
+                     {
+                        if (name.charAt(i) == '.')
+                        {
+                           dir = dir.getParentFile();
+                        }
+                     }
+                     sourcePathMap.put(context, sourcePath = new DiskFileSystem(dir));
+                  }
+               }
+               else
+               {
+                  log.log("Package " + context.getQN() + " is not annotated (does not make sense)");
+               }
+            }
+            catch (Exception ignore)
+            {
+               log.log("Could not resolve package " + context);
+            }
+         }
+         else
+         {
+            log.log("Found cached source path " + sourcePath.getDescription() + " for package " + context.getQN());
+         }
+         return sourcePath;
+      }
+   }
+
+   public Content resolveResource(ElementHandle.Package context, FQN fqn, String extension)
+   {
+      ReadFileSystem<File> sourcePath = getSourcePath(context);
       String path = "/" + fqn.getFullName().replace('.', '/') + "." + extension;
       if (sourcePath != null)
       {

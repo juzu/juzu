@@ -117,7 +117,7 @@ public class TemplateResolver implements Serializable
       for (Iterator<Template> i = templates.values().iterator();i.hasNext();)
       {
          Template template = i.next();
-         Content content = context.env.resolveResource(template.getFQN(), template.getExtension());
+         Content content = context.env.resolveResource(application.getHandle(), template.getFQN(), template.getExtension());
          if (content == null)
          {
             // That will generate a template not found error

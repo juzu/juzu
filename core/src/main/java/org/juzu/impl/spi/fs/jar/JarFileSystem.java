@@ -63,6 +63,12 @@ public class JarFileSystem extends ReadFileSystem<JarPath>
    }
 
    @Override
+   public String getDescription()
+   {
+      return "jar[" + jarURL + "]";
+   }
+
+   @Override
    public boolean equals(JarPath left, JarPath right)
    {
       return left == right;

@@ -109,6 +109,13 @@ public abstract class SimpleFileSystem<P>
       return getPath(Arrays.asList(names));
    }
 
+   /**
+    * Returns an description for the file system (for debugging purposes).
+    *
+    * @return the id
+    */
+   public abstract String getDescription();
+
    public abstract String getName(P path) throws IOException;
 
    public abstract P getPath(Iterable<String> names) throws IOException;
