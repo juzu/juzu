@@ -119,6 +119,24 @@ public class QN implements CharSequence, Serializable
       return value.subSequence(start, end);
    }
 
+   /**
+    * Returns the parent qn or null if it does not exist.
+    *
+    * @return the parent qn
+    */
+   public QN getParent()
+   {
+      int pos = value.lastIndexOf('.');
+      if (pos == -1)
+      {
+         return null;
+      }
+      else
+      {
+         return new QN(value.substring(0, pos));
+      }
+   }
+
    @Override
    public String toString()
    {

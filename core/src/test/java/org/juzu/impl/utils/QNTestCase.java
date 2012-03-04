@@ -125,4 +125,15 @@ public class QNTestCase extends TestCase
    {
       assertFalse(new QN(prefix).isPrefix(new QN(s)));
    }
+   
+   public void testParent()
+   {
+      QN abc = new QN("a.b.c");
+      QN ab = abc.getParent();
+      assertNotNull(ab);
+      assertEquals(new QN("a.b"), ab);
+      QN a = ab.getParent();
+      assertEquals(new QN("a"), a);
+      assertNull(a.getParent());
+   }
 }
