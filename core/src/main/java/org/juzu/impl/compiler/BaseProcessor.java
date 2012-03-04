@@ -98,7 +98,11 @@ public abstract class BaseProcessor extends AbstractProcessor
    private static void log(String name, CharSequence msg)
    {
       String s = format.get().format(new Date());
-      currentLog.get().append(s).append(" ").append("[").append(name).append("] ").append(msg).append(lineSep);
+      StringBuilder sb = currentLog.get();
+      if (sb != null)
+      {
+         sb.append(s).append(" ").append("[").append(name).append("] ").append(msg).append(lineSep);
+      }
    }
 
    private static void log(String name, CharSequence msg, Throwable t)
@@ -106,7 +110,11 @@ public abstract class BaseProcessor extends AbstractProcessor
       StringWriter buffer = new StringWriter();
       t.printStackTrace(new PrintWriter(buffer));
       log(name, msg);
-      currentLog.get().append(buffer);
+      StringBuilder sb = currentLog.get();
+      if (sb != null)
+      {
+         sb.append(buffer);
+      }
    }
 
    /** Controls how error are reported. */

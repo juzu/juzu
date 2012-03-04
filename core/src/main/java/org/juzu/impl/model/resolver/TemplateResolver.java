@@ -26,9 +26,9 @@ import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.model.meta.ApplicationMetaModel;
-import org.juzu.impl.model.meta.MethodMetaModel;
-import org.juzu.impl.model.meta.TemplateMetaModel;
-import org.juzu.impl.model.meta.TemplateRefMetaModel;
+import org.juzu.impl.model.meta.controller.MethodMetaModel;
+import org.juzu.impl.model.meta.template.TemplateMetaModel;
+import org.juzu.impl.model.meta.template.TemplateRefMetaModel;
 import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.ASTNode;
@@ -90,6 +90,12 @@ public class TemplateResolver implements Serializable
 
    public TemplateResolver(ApplicationMetaModel application)
    {
+      if (application == null)
+      {
+         throw new NullPointerException();
+      }
+
+      //
       this.application = application;
       this.templates = new HashMap<String, Template>();
       this.resourceCache = new HashMap<String, FileObject>();
@@ -160,7 +166,7 @@ public class TemplateResolver implements Serializable
       {
          //
          String originPath = template.getOriginPath();
-         TemplateMetaModel templateMeta = application.getTemplate(originPath);
+         TemplateMetaModel templateMeta = application.getTemplates().get(originPath);
 
          // We compute the class elements from the field elements (as eclipse will make the relationship)
          Set<FQN> types = new LinkedHashSet<FQN>();
@@ -210,7 +216,7 @@ public class TemplateResolver implements Serializable
                      @Override
                      public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException
                      {
-                        MethodMetaModel method = application.resolve(typeName, methodName, parameterMap.keySet());
+                        MethodMetaModel method = application.getControllers().resolve(typeName, methodName, parameterMap.keySet());
 
                         //
                         if (method == null)

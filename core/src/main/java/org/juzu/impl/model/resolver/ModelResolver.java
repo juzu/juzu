@@ -19,6 +19,11 @@
 
 package org.juzu.impl.model.resolver;
 
+import org.juzu.impl.model.meta.ApplicationsMetaModel;
+import org.juzu.impl.model.meta.controller.ControllerMetaModel;
+import org.juzu.impl.model.meta.controller.MethodMetaModel;
+import org.juzu.impl.model.meta.template.TemplateMetaModel;
+import org.juzu.impl.model.meta.template.TemplateRefMetaModel;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.utils.JSON;
 import org.juzu.metadata.Cardinality;
@@ -31,13 +36,9 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.model.meta.ApplicationMetaModel;
-import org.juzu.impl.model.meta.ControllerMetaModel;
 import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.model.meta.MetaModelEvent;
 import org.juzu.impl.model.meta.MetaModelObject;
-import org.juzu.impl.model.meta.MethodMetaModel;
-import org.juzu.impl.model.meta.TemplateMetaModel;
-import org.juzu.impl.model.meta.TemplateRefMetaModel;
 import org.juzu.impl.model.processor.ModelHandler;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.spi.template.TemplateProvider;
@@ -60,10 +61,10 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ModelResolver extends ModelHandler implements Serializable
+public class ModelResolver implements ModelHandler
 {
 
    /** . */
@@ -132,7 +133,6 @@ public class ModelResolver extends ModelHandler implements Serializable
       this.templateRepositoryMap = new HashMap<ElementHandle.Package, TemplateResolver>();
    }
 
-   @Override
    public void postActivate(ProcessingContext env)
    {
       // Discover the template providers
@@ -160,25 +160,21 @@ public class ModelResolver extends ModelHandler implements Serializable
       metaModel.postActivate(env);
    }
 
-   @Override
    public void processControllerMethod(ExecutableElement methodElt, String annotationName, Map<String, Object> annotationValues) throws CompilationException
    {
       metaModel.processControllerMethod(methodElt, annotationName, annotationValues);
    }
 
-   @Override
    public void processDeclarationTemplate(VariableElement variableElt, String annotationName, Map<String, Object> annotationValues) throws CompilationException
    {
       metaModel.processDeclarationTemplate(variableElt, annotationName, annotationValues);
    }
 
-   @Override
    public void processApplication(PackageElement packageElt, String annotationName, Map<String, Object> annotationValues) throws CompilationException
    {
       metaModel.processApplication(packageElt, annotationName, annotationValues);
    }
 
-   @Override
    public void postProcess() throws CompilationException
    {
       log.log("Meta model post processing");
@@ -282,7 +278,6 @@ public class ModelResolver extends ModelHandler implements Serializable
       }
    }
 
-   @Override
    public void prePassivate() throws CompilationException
    {
       log.log("Passivating meta model");
@@ -328,7 +323,7 @@ public class ModelResolver extends ModelHandler implements Serializable
       }
 
       // Application configs
-      for (ApplicationMetaModel application : metaModel.getApplications())
+      for (ApplicationMetaModel application : metaModel.getChild(ApplicationsMetaModel.KEY))
       {
          json.clear();
          ArrayList<String> controllers = new ArrayList<String>();
@@ -395,7 +390,7 @@ public class ModelResolver extends ModelHandler implements Serializable
          writer.append(",\n");
          writer.append(application.getEscapeXML() != null ? Boolean.toString(application.getEscapeXML()) : "null");
          writer.append(",\n");
-         writer.append("\"").append(application.getTemplatesQN()).append("\"");
+         writer.append("\"").append(application.getTemplates().getQN()).append("\"");
          writer.append(",\n");
          writer.append("java.util.Arrays.<Class<? extends org.juzu.plugin.Plugin>>asList(");
          List<FQN> plugins = application.getPlugins();
@@ -431,7 +426,7 @@ public class ModelResolver extends ModelHandler implements Serializable
    {
       FQN fqn = controller.getHandle().getFQN();
       Element origin = env.get(controller.getHandle());
-      List<MethodMetaModel> methods = controller.getMethods();
+      Collection<MethodMetaModel> methods = controller.getMethods();
       Writer writer = null;
       try
       {

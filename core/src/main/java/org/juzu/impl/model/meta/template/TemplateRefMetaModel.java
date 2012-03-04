@@ -17,10 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta;
+package org.juzu.impl.model.meta.template;
 
+import org.juzu.Path;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.meta.MetaModel;
+import org.juzu.impl.model.meta.MetaModelEvent;
+import org.juzu.impl.model.meta.MetaModelObject;
 import org.juzu.impl.utils.JSON;
+
+import javax.lang.model.element.VariableElement;
 
 /**
  * A reference to a template.
@@ -29,9 +35,6 @@ import org.juzu.impl.utils.JSON;
  */
 public class TemplateRefMetaModel extends MetaModelObject
 {
-
-   /** The related template if it exist. */
-   TemplateMetaModel template;
 
    /** . */
    final ElementHandle.Field handle;
@@ -45,6 +48,23 @@ public class TemplateRefMetaModel extends MetaModelObject
    {
       this.handle = handle;
       this.path = path;
+   }
+
+   public TemplateMetaModel getTemplate()
+   {
+      return getChild(TemplateMetaModel.KEY);
+   }
+   
+   public void setTemplate(TemplateMetaModel template)
+   {
+      if (template != null)
+      {
+         addChild(TemplateMetaModel.KEY, template, false);
+      }
+      else
+      {
+         removeChild(TemplateMetaModel.KEY);
+      }
    }
 
    public ElementHandle.Field getHandle()
@@ -61,7 +81,31 @@ public class TemplateRefMetaModel extends MetaModelObject
    {
       JSON json = new JSON();
       json.add("handle", handle);
-      json.add("template", template == null ? null : template.toJSON());
+      json.add("template", getChild(TemplateMetaModel.KEY));
       return json;
+   }
+
+   @Override
+   public boolean exist(MetaModel model)
+   {
+      VariableElement fieldElt = model.env.get(handle);
+      boolean exist = true;
+      if (fieldElt == null)
+      {
+         MetaModel.log.log("Removing handle " + handle + " that does not exist anymore");
+         exist = false;
+      }
+      else if (fieldElt.getAnnotation(Path.class) == null)
+      {
+         MetaModel.log.log("Removing handle " + handle + " that is not annoated anymore");
+         exist = false;
+      }
+      return exist;
+   }
+
+   @Override
+   protected void preRemove()
+   {
+      MetaModel.queue(MetaModelEvent.createRemoved(this));
    }
 }

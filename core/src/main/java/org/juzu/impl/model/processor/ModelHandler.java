@@ -28,16 +28,16 @@ import java.io.Serializable;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ModelHandler implements Serializable
+public interface ModelHandler extends Serializable
 {
-
-   public abstract void postActivate(ProcessingContext env);
 
    public abstract void processControllerMethod(ExecutableElement methodElt, String annotationName, Map<String, Object> annotationValues) throws CompilationException;
 
    public abstract void processDeclarationTemplate(VariableElement variableElt, String annotationName, Map<String, Object> annotationValues) throws CompilationException;
 
    public abstract void processApplication(PackageElement packageElt, String annotationName, Map<String, Object> annotationValues) throws CompilationException;
+
+   public abstract void postActivate(ProcessingContext env);
 
    public abstract void postProcess() throws CompilationException;
 

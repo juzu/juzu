@@ -19,34 +19,21 @@
 
 package org.juzu.impl.model.meta;
 
-import org.juzu.AmbiguousResolutionException;
-import org.juzu.impl.compiler.BaseProcessor;
+import org.juzu.Application;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.meta.controller.ApplicationControllersMetaModel;
+import org.juzu.impl.model.meta.template.ApplicationTemplatesMetaModel;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
-import org.juzu.impl.utils.Logger;
-import org.juzu.impl.utils.QN;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModelObject
 {
-
-   /** . */
-   private static final Logger log = BaseProcessor.getLogger(ApplicationMetaModel.class);
-
-   /** The controllers. */
-   LinkedHashMap<ElementHandle.Class, ControllerMetaModel> controllers = new LinkedHashMap<ElementHandle.Class, ControllerMetaModel>();
-
-   /** The templates. */
-   LinkedHashMap<String, TemplateMetaModel> templates = new LinkedHashMap<String, TemplateMetaModel>();
 
    /** . */
    final ElementHandle.Package handle;
@@ -55,16 +42,10 @@ public class ApplicationMetaModel extends MetaModelObject
    final FQN fqn;
 
    /** . */
-   final String defaultController;
-
-   /** . */
    final Boolean escapeXML;
 
    /** . */
-   final QN templatesQN;
-
-   /** . */
-   final MetaModel model;
+   public MetaModel model;
 
    /** . */
    final List<FQN> plugins;
@@ -73,36 +54,44 @@ public class ApplicationMetaModel extends MetaModelObject
    boolean modified;
 
    ApplicationMetaModel(
-      MetaModel model,
       ElementHandle.Package handle,
       String applicationName,
       String defaultController,
       Boolean escapeXML,
       List<FQN> plugins)
    {
-      this.model = model;
+      FQN fqn = new FQN(handle.getQN(), applicationName);
+
+      //
+      addChild(ApplicationControllersMetaModel.KEY, new ApplicationControllersMetaModel(defaultController));
+      addChild(ApplicationTemplatesMetaModel.KEY, new ApplicationTemplatesMetaModel(fqn.getPackageName().append("templates")));
+
+      //
       this.handle = handle;
-      this.fqn = new FQN(handle.getQN(), applicationName);
-      this.defaultController = defaultController;
+      this.fqn = fqn;
       this.escapeXML = escapeXML;
-      this.templatesQN = fqn.getPackageName().append("templates");
       this.modified = false;
       this.plugins = plugins;
    }
 
+   public ApplicationControllersMetaModel getControllers()
+   {
+      return getChild(ApplicationControllersMetaModel.KEY);
+   }
+
+   public ApplicationTemplatesMetaModel getTemplates()
+   {
+      return getChild(ApplicationTemplatesMetaModel.KEY);
+   }
+
    public String getDefaultController()
    {
-      return defaultController;
+      return getControllers().getDefaultController();
    }
 
    public Boolean getEscapeXML()
    {
       return escapeXML;
-   }
-
-   public QN getTemplatesQN()
-   {
-      return templatesQN;
    }
 
    public FQN getFQN()
@@ -115,81 +104,6 @@ public class ApplicationMetaModel extends MetaModelObject
       return handle;
    }
 
-   public TemplateMetaModel getTemplate(String path)
-   {
-      return templates.get(path);
-   }
-
-   public Collection<TemplateMetaModel> getTemplates()
-   {
-      return new ArrayList<TemplateMetaModel>(templates.values());
-   }
-
-   public Collection<ControllerMetaModel> getControllers()
-   {
-      return new ArrayList<ControllerMetaModel>(controllers.values());
-   }
-
-   public TemplateMetaModel addTemplate(TemplateRefMetaModel ref)
-   {
-      if (templates.containsKey(ref.path))
-      {
-         throw new IllegalStateException("Template path already existing");
-      }
-      TemplateMetaModel template = new TemplateMetaModel(this, ref);
-      templates.put(template.path, template);
-      model.queue(new MetaModelEvent(MetaModelEvent.AFTER_ADD, template));
-      return template;
-   }
-
-   public void removeTemplate(TemplateMetaModel template)
-   {
-      if (template.application != this)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (!templates.containsKey(template.path))
-      {
-         throw new IllegalStateException();
-      }
-      model.queue(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, template));
-      for (TemplateRefMetaModel ref : template.getRefs())
-      {
-         template.removeRef(ref);
-      }
-      templates.remove(template.getPath());
-      template.application = null;
-   }
-
-   public void addController(ControllerMetaModel controller)
-   {
-      if (controllers.containsKey(controller.handle))
-      {
-         throw new IllegalStateException();
-      }
-      controllers.put(controller.handle, controller);
-      controller.application = this;
-      model.queue(new MetaModelEvent(MetaModelEvent.AFTER_ADD, controller));
-   }
-
-   public void removeController(ControllerMetaModel controller)
-   {
-      if (controller.application != this)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (controllers.containsKey(controller.handle))
-      {
-         model.queue(new MetaModelEvent(MetaModelEvent.BEFORE_REMOVE, controller));
-         controllers.remove(controller.handle);
-         controller.application = null;
-      }
-      else
-      {
-         throw new IllegalStateException();
-      }
-   }
-
    public List<FQN> getPlugins()
    {
       return plugins;
@@ -200,55 +114,46 @@ public class ApplicationMetaModel extends MetaModelObject
       JSON json = new JSON();
       json.add("handle", handle);
       json.add("fqn", fqn);
-      json.add("defaultController", defaultController);
-      json.add("templates", templates.values());
-      json.add("controllers", controllers.keySet());
+      json.add("templates", getTemplates());
+      json.add("controllers", getControllers());
       json.add("plugins", plugins);
       return json;
    }
 
-   public MethodMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException
+   @Override
+   public boolean exist(MetaModel model)
    {
-      TreeSet<MethodMetaModel> set = new TreeSet<MethodMetaModel>(
-         new Comparator<MethodMetaModel>()
-         {
-            public int compare(MethodMetaModel o1, MethodMetaModel o2)
-            {
-               return ((Integer)o1.parameterNames.size()).compareTo(o2.parameterNames.size());
-            }
-         }
-      );
-      log.log("About to search method in controllers " + controllers.keySet());
-      for (ControllerMetaModel controller : controllers.values())
+      PackageElement element = model.env.get(handle);
+      boolean found = false;
+      if (element != null)
       {
-         for (MethodMetaModel method : controller.methods.values())
+         for (AnnotationMirror annotationMirror : element.getAnnotationMirrors())
          {
-            boolean add = false;
-            if (typeName == null || controller.getHandle().getFQN().getSimpleName().equals(typeName))
+            if (found = ((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().contentEquals(Application.class.getName()))
             {
-               if (method.name.equals(methodName) && method.parameterNames.containsAll(parameterNames))
-               {
-                  add = true;
-               }
-            }
-            log.log("Method " + method + ( add ? " added to" : " removed from" ) +  " search");
-            if (add)
-            {
-               set.add(method);
+               break;
             }
          }
       }
-      if (set.size() >= 1)
+      return found;
+   }
+
+   @Override
+   protected void postAttach(MetaModelObject parent)
+   {
+      if (parent instanceof ApplicationsMetaModel)
       {
-         MethodMetaModel method = set.iterator().next();
-         log.log("Resolved method " + method.getName() + " " + method.getParameterNames() + " for " + methodName + " "
-            + parameterNames + " among " + set);
-         return method;
+         model = ((ApplicationsMetaModel)parent).model;
       }
-      else
+   }
+
+   @Override
+   protected void preDetach(MetaModelObject parent)
+   {
+      if (parent instanceof ApplicationsMetaModel)
       {
-         log.log("Could not resolve method " + methodName + " " + parameterNames + " among " + set);
-         return null;
+         MetaModel.queue(MetaModelEvent.createRemoved(this));
+         model = null;
       }
    }
 }

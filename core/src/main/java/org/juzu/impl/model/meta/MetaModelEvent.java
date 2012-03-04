@@ -55,7 +55,7 @@ public class MetaModelEvent implements Serializable
    /** . */
    private final MetaModelObject object;
 
-   MetaModelEvent(int type, MetaModelObject object)
+   private MetaModelEvent(int type, MetaModelObject object)
    {
       if (type < 0 || type > 3)
       {

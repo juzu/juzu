@@ -19,6 +19,7 @@
 
 package org.juzu.impl.model.meta;
 
+import org.juzu.impl.model.meta.controller.ControllerMetaModel;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.FQN;
@@ -49,12 +50,12 @@ public class ControllerTestCase extends AbstractTestCase
       ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
       ControllerMetaModel controller = expected.addController("model.meta.controller.A");
       controller.addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
-      application.addController(controller);
+      application.getControllers().add(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
 
       //
       List<MetaModelEvent> events = mm.popEvents();
-      application = mm.getApplications().iterator().next();
+      application = mm.getChild(ApplicationsMetaModel.KEY).iterator().next();
       controller = application.getControllers().iterator().next();
       assertEquals(Arrays.asList(MetaModelEvent.createAdded(application), MetaModelEvent.createAdded(controller)), events);
    }
@@ -75,7 +76,7 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       helper.with(new MetaModelProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
-       mm = Tools.unserialize(MetaModel.class, ser);
+      mm = Tools.unserialize(MetaModel.class, ser);
 
       //
       MetaModel expected = new MetaModel();
@@ -86,9 +87,9 @@ public class ControllerTestCase extends AbstractTestCase
       List<MetaModelEvent> events = mm.popEvents();
       assertEquals(2, events.size());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-      assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
+      assertInstanceOf(ApplicationMetaModel.class, events.get(0).getObject());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
-      assertTrue(events.get(1).getObject() instanceof ControllerMetaModel);
+      assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
    }
 
    public void testChangeAnnotation() throws Exception
@@ -114,7 +115,7 @@ public class ControllerTestCase extends AbstractTestCase
       ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
       ControllerMetaModel controller = expected.addController("model.meta.controller.A");
       controller.addMethod(Phase.ACTION, "index", Collections.<Map.Entry<String, String>>emptyList());
-      application.addController(controller);
+      application.getControllers().add(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
 
       //
@@ -216,7 +217,7 @@ public class ControllerTestCase extends AbstractTestCase
       ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
       ControllerMetaModel controller = expected.addController("model.meta.controller.A");
       controller.addMethod(Phase.RENDER, "index", Collections.<String, String>emptyMap().entrySet());
-      application.addController(controller);
+      application.getControllers().add(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
@@ -252,7 +253,7 @@ public class ControllerTestCase extends AbstractTestCase
       ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
       ControllerMetaModel controller = expected.addController("model.meta.controller.A");
       controller.addMethod(Phase.RENDER, "index", Collections.<String, String>emptyMap().entrySet());
-      application.addController(controller);
+      application.getControllers().add(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 

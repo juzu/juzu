@@ -17,8 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta;
+package org.juzu.impl.model.meta.controller;
 
+import org.juzu.impl.model.meta.Key;
+import org.juzu.impl.model.meta.MetaModel;
+import org.juzu.impl.model.meta.MetaModelEvent;
+import org.juzu.impl.model.meta.MetaModelObject;
 import org.juzu.impl.utils.JSON;
 import org.juzu.metadata.Cardinality;
 import org.juzu.request.Phase;
@@ -35,7 +39,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -50,19 +54,15 @@ public class ControllerMetaModel extends MetaModelObject
    final MetaModel context;
 
    /** The application. */
-   ApplicationMetaModel application;
+   ApplicationControllersMetaModel controllers;
 
    /** . */
    final ElementHandle.Class handle;
-
-   /** . */
-   final LinkedHashMap<ElementHandle.Method, MethodMetaModel> methods;
 
    public ControllerMetaModel(MetaModel context, ElementHandle.Class handle)
    {
       this.context = context;
       this.handle = handle;
-      this.methods = new LinkedHashMap<ElementHandle.Method, MethodMetaModel>();
       this.modified = false;
    }
 
@@ -70,14 +70,8 @@ public class ControllerMetaModel extends MetaModelObject
    {
       JSON json = new JSON();
       json.add("handle", handle);
-      json.add("methods", methods.values());
-      json.add("application", application == null ? null : application.handle);
+      json.add("methods", getMethods());
       return json;
-   }
-
-   public ApplicationMetaModel getApplication()
-   {
-      return application;
    }
 
    public ElementHandle.Class getHandle()
@@ -85,9 +79,14 @@ public class ControllerMetaModel extends MetaModelObject
       return handle;
    }
 
-   public List<MethodMetaModel> getMethods()
+   public Collection<MethodMetaModel> getMethods()
    {
-      return new ArrayList<MethodMetaModel>(methods.values());
+      return getChildren(MethodMetaModel.class);
+   }
+   
+   public void remove(ElementHandle.Method handle)
+   {
+      removeChild(Key.of(handle, MethodMetaModel.class));
    }
 
    public MethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters)
@@ -102,20 +101,15 @@ public class ControllerMetaModel extends MetaModelObject
          parameterNames.add(entry.getKey());
       }
       ElementHandle.Method handle = ElementHandle.Method.create(this.handle.getFQN(), name, parameterTypes);
-      if (methods.containsKey(handle))
-      {
-         throw new IllegalStateException();
-      }
       MethodMetaModel method = new MethodMetaModel(
          handle,
-         this,
          null,
          phase,
          name,
          parameterTypes,
          parameterCardinalities,
          parameterNames);
-      methods.put(handle, method);
+      addChild(Key.of(handle, MethodMetaModel.class), method);
       return method;
    }
 
@@ -198,10 +192,14 @@ public class ControllerMetaModel extends MetaModelObject
             ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
 
             // First remove the previous method
-            methods.remove(origin);
+            Key<MethodMetaModel> key = Key.of(origin, MethodMetaModel.class);
+            if (getChild(key) != null)
+            {
+               removeChild(key);
+            }
 
             // Validate duplicate id within the same controller
-            for (MethodMetaModel existing : methods.values())
+            for (MethodMetaModel existing : getChildren(MethodMetaModel.class))
             {
                if (existing.id != null && existing.id.equals(id))
                {
@@ -212,17 +210,42 @@ public class ControllerMetaModel extends MetaModelObject
             //
             MethodMetaModel method = new MethodMetaModel(
                origin,
-               this,
                id,
                phase,
                methodElt.getSimpleName().toString(),
                parameterTypes,
                parameterCardinalities,
                parameterNames);
-            methods.put(origin, method);
+            addChild(key, method);
             modified = true;
             break;
          }
+      }
+   }
+
+   @Override
+   public boolean exist(MetaModel model)
+   {
+      return getChildren().size() > 0;
+   }
+
+   @Override
+   protected void preDetach(MetaModelObject parent)
+   {
+      if (parent instanceof ApplicationControllersMetaModel)
+      {
+         MetaModel.queue(MetaModelEvent.createRemoved(this));
+         controllers = null;
+      }
+   }
+
+   @Override
+   protected void postAttach(MetaModelObject parent)
+   {
+      if (parent instanceof ApplicationControllersMetaModel)
+      {
+         controllers = (ApplicationControllersMetaModel)parent;
+         MetaModel.queue(MetaModelEvent.createAdded(this));
       }
    }
 }

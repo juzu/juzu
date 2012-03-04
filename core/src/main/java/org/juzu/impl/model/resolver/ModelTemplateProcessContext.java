@@ -22,7 +22,7 @@ package org.juzu.impl.model.resolver;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.model.CompilationErrorCode;
-import org.juzu.impl.model.meta.TemplateMetaModel;
+import org.juzu.impl.model.meta.template.TemplateMetaModel;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.ParseException;
@@ -84,7 +84,7 @@ class ModelTemplateProcessContext extends ProcessContext
 
    protected Content resolveResource(FQN fqn, String extension)
    {
-      ElementHandle.Package context = templateMetaModel.getApplication().getHandle();
+      ElementHandle.Package context = templateMetaModel.getTemplates().getApplication().getHandle();
       return env.resolveResource(context, fqn, extension);
    }
 
@@ -103,7 +103,7 @@ class ModelTemplateProcessContext extends ProcessContext
       String extension = matcher.group(3);
 
       // Resolve the template fqn and the template name
-      String fqn = templateMetaModel.getApplication().getTemplatesQN().getValue();
+      String fqn = templateMetaModel.getTemplates().getQN().getValue();
       for (String name: Spliterator.split(folder + rawName, '/'))
       {
          if (fqn.length() == 0)

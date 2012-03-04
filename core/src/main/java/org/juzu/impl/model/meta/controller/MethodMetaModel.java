@@ -17,13 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta;
+package org.juzu.impl.model.meta.controller;
 
+import org.juzu.Action;
+import org.juzu.Resource;
+import org.juzu.View;
+import org.juzu.impl.model.meta.MetaModel;
+import org.juzu.impl.model.meta.MetaModelObject;
 import org.juzu.impl.utils.JSON;
 import org.juzu.metadata.Cardinality;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
 
+import javax.lang.model.element.ExecutableElement;
 import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -31,7 +37,7 @@ public class MethodMetaModel extends MetaModelObject
 {
 
    /** The controller. */
-   final ControllerMetaModel controller;
+   ControllerMetaModel controller;
 
    /** . */
    final ElementHandle.Method handle;
@@ -56,7 +62,6 @@ public class MethodMetaModel extends MetaModelObject
 
    MethodMetaModel(
       ElementHandle.Method handle,
-      ControllerMetaModel controller,
       String id,
       Phase phase,
       String name,
@@ -65,7 +70,6 @@ public class MethodMetaModel extends MetaModelObject
       ArrayList<String> parameterNames)
    {
       this.handle = handle;
-      this.controller = controller;
       this.id = id;
       this.phase = phase;
       this.name = name;
@@ -124,5 +128,21 @@ public class MethodMetaModel extends MetaModelObject
    public ArrayList<String> getParameterNames()
    {
       return parameterNames;
+   }
+
+   @Override
+   protected void postAttach(MetaModelObject parent)
+   {
+      controller = (ControllerMetaModel)parent;
+   }
+
+   @Override
+   public boolean exist(MetaModel model)
+   {
+      ExecutableElement methodElt = model.env.get(handle);
+      return methodElt != null && (
+         methodElt.getAnnotation(View.class) != null ||
+         methodElt.getAnnotation(Action.class) != null ||
+         methodElt.getAnnotation(Resource.class) != null);
    }
 }

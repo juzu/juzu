@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.inject.InjectImplementation;
+import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.protocol.mock.MockApplication;
 
@@ -200,5 +201,40 @@ public abstract class AbstractTestCase extends TestCase
       CompilerHelper<File, File> helper = compiler(packageName);
       helper.assertCompile();
       return helper.application(injectImplementation);
+   }
+
+   public static void assertEquals(JSON expected, JSON test)
+   {
+      if (expected != null)
+      {
+         if (test == null)
+         {
+            throw failure("Was expected " + expected + " to be not null");
+         }
+         else if (!expected.equals(test))
+         {
+            StringBuilder sb = null;
+            try
+            {
+               sb = new StringBuilder("expected <");
+               expected.toString(sb, 2);
+               sb.append(">  but was:<");
+               test.toString(sb, 2);
+               sb.append(">");
+               throw failure(sb.toString());
+            }
+            catch (IOException e)
+            {
+               throw failure("Unexpected", e);
+            }
+         }
+      }
+      else
+      {
+         if (test != null)
+         {
+            throw failure("Was expected " + test + " to be null");
+         }
+      }
    }
 }

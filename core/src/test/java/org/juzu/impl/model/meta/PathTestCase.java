@@ -19,12 +19,13 @@
 
 package org.juzu.impl.model.meta;
 
+import org.juzu.impl.model.meta.template.TemplateMetaModel;
+import org.juzu.impl.model.meta.template.TemplateRefMetaModel;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -43,8 +44,8 @@ public class PathTestCase extends AbstractTestCase
       MetaModel expected = new MetaModel();
       ApplicationMetaModel application = expected.addApplication("model.meta.path", "PathApplication");
       TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
-      TemplateMetaModel template = application.addTemplate(ref);
-      template.addRef(ref);
+      TemplateMetaModel template = application.getTemplates().add(ref);
+      ref.setTemplate(template);
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
@@ -67,8 +68,8 @@ public class PathTestCase extends AbstractTestCase
       MetaModel expected = new MetaModel();
       ApplicationMetaModel application = expected.addApplication("model.meta.path", "PathApplication");
       TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "bar.gtmpl");
-      TemplateMetaModel template = application.addTemplate(ref);
-      template.addRef(ref);
+      TemplateMetaModel template = application.getTemplates().add(ref);
+      ref.setTemplate(template);
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
@@ -143,18 +144,20 @@ public class PathTestCase extends AbstractTestCase
       MetaModel expected = new MetaModel();
       ApplicationMetaModel application = expected.addApplication("model.meta", "MetaApplication");
       TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
-      TemplateMetaModel template = application.addTemplate(ref);
-      template.addRef(ref);
+      TemplateMetaModel template = application.getTemplates().add(ref);
+      ref.setTemplate(template);
       assertEquals(expected.toJSON(), mm.toJSON());
 
       // Should also test objects....
       List<MetaModelEvent> events = mm.popEvents();
-      assertEquals(6, events.size());
+      assertEquals(4, events.size());
+
+      // 1 remove application
+      // 2 add application
+
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
-      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(2).getType());
+      assertEquals(MetaModelEvent.AFTER_ADD, events.get(2).getType());
       assertEquals(MetaModelEvent.AFTER_ADD, events.get(3).getType());
-      assertEquals(MetaModelEvent.AFTER_ADD, events.get(4).getType());
-      assertEquals(MetaModelEvent.AFTER_ADD, events.get(5).getType());
    }
 }

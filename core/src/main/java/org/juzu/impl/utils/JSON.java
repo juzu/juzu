@@ -165,12 +165,19 @@ public final class JSON
 
    public <E> JSON add(String name, Iterable<E> elements)
    {
-      ArrayList<Object> r = new ArrayList<Object>();
-      for (E element : elements)
+      if (elements != null)
       {
-         r.add(unwrap(element));
+         ArrayList<Object> r = new ArrayList<Object>();
+         for (E element : elements)
+         {
+            r.add(unwrap(element));
+         }
+         entries.put(name, r);
       }
-      entries.put(name, r);
+      else
+      {
+         engine.put(name, null);
+      }
       return this;
    }
    
