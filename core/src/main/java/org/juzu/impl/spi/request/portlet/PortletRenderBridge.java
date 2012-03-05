@@ -57,17 +57,6 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
          // For now only in gatein since liferay won't support it very well
          if (request.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container"))
          {
-            Collection<String> scripts = render.getScripts();
-            if (scripts.size() > 0)
-            {
-               for (String script : scripts)
-               {
-                  Element elt = this.response.createElement("script");
-                  elt.setAttribute("type", "text/javascript");
-                  elt.setAttribute("src", script);
-                  this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-               }
-            }
             Collection<String> stylesheets = render.getStylesheets();
             if (stylesheets.size() > 0)
             {
@@ -80,6 +69,18 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
                   elt.setAttribute("rel", "stylesheet");
                   elt.setAttribute("type", "text/" + ext);
                   elt.setAttribute("href", stylesheet);
+                  this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+               }
+            }
+
+            Collection<String> scripts = render.getScripts();
+            if (scripts.size() > 0)
+            {
+               for (String script : scripts)
+               {
+                  Element elt = this.response.createElement("script");
+                  elt.setAttribute("type", "text/javascript");
+                  elt.setAttribute("src", script);
                   this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
                }
             }
