@@ -56,16 +56,6 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       writer.println("<html>");
       
       writer.println("<head>");
-      Collection<String> scripts = render.getScripts();
-      if (scripts.size() > 0)
-      {
-         for (String script : scripts)
-         {
-            writer.print("<script type=\"text/javascript\" src=\"");
-            writer.print(script);
-            writer.println("\"></script>");
-         }
-      }
       Collection<String> stylesheets = render.getStylesheets();
       if (stylesheets.size() > 0)
       {
@@ -78,6 +68,16 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
             writer.print("\" href=\"");
             writer.print(stylesheet);
             writer.println("\"></link>");
+         }
+      }
+      Collection<String> scripts = render.getScripts();
+      if (scripts.size() > 0)
+      {
+         for (String script : scripts)
+         {
+            writer.print("<script type=\"text/javascript\" src=\"");
+            writer.print(script);
+            writer.println("\"></script>");
          }
       }
       writer.println("</head>");
