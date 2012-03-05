@@ -41,9 +41,16 @@ public class AjaxTestCase extends AbstractHttpTestCase
       //
       UserAgent ua = assertInitialPage();
       HtmlPage page = ua.getHomePage();
+
       HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
       trigger.click();
+
+      HtmlAnchor trigger2 = (HtmlAnchor)page.getElementById("trigger2");
+      trigger2.click();
+
       List<String> alerts = ua.getAlerts(page);
-      assertEquals(Arrays.asList("OK MEN"), alerts);
+      assertEquals(2, alerts.size());
+      assertEquals("OK MEN", alerts.get(0));
+      assertEquals("OK MEN 2", alerts.get(1));
    }
 }
