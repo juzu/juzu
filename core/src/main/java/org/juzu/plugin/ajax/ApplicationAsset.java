@@ -8,9 +8,11 @@ import org.juzu.metadata.ControllerMethod;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -55,11 +57,19 @@ public class ApplicationAsset extends Route implements Provider<ApplicationAsset
       printer.println("return {");
 
       //
-      for (Map.Entry<String, ControllerMethod> entry : table.entrySet())
+      Iterator<Map.Entry<String, ControllerMethod>> entryIterator = table.entrySet().iterator();
+      while (entryIterator.hasNext())
       {
+         Map.Entry<String, ControllerMethod> entry = entryIterator.next();
+
          printer.println(entry.getKey() + ":function(){");
          printer.println("return capture.foo(\"" + entry.getValue().getId() + "\");");
          printer.println("}");
+
+         if (entryIterator.hasNext())
+         {
+            printer.println(",");
+         }
       }
 
       //
