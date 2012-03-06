@@ -1,6 +1,6 @@
 package org.juzu.impl.model.meta.template;
 
-import org.juzu.impl.model.meta.ApplicationMetaModel;
+import org.juzu.impl.model.meta.application.ApplicationMetaModel;
 import org.juzu.impl.model.meta.Key;
 import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.model.meta.MetaModelEvent;
@@ -59,7 +59,7 @@ public class ApplicationTemplatesMetaModel extends MetaModelObject implements It
 
    public TemplateMetaModel add(TemplateRefMetaModel ref)
    {
-      TemplateMetaModel template = addChild(Key.of(ref.path, TemplateMetaModel.class), new TemplateMetaModel(ref), false);
+      TemplateMetaModel template = addChild(Key.of(ref.path, TemplateMetaModel.class), new TemplateMetaModel(ref.path));
       MetaModel.queue(MetaModelEvent.createAdded(template));
       return template;
    }

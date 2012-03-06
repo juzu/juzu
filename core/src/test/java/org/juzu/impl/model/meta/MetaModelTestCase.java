@@ -149,38 +149,6 @@ public class MetaModelTestCase extends AbstractTestCase
       assertSame(d, c.getChild(D));
    }
    
-   public void testWeakReference()
-   {
-      Simple a = new Simple("a");
-      Simple b = new Simple("b");
-      Simple c = new Simple("c");
-      a.addChild(C, c);
-      b.addChild(C, c, false);
-      
-      //
-      a.removeChild(C);
-      assertNull(b.getChild(C));
-   }
-   
-   public void testGarbageWeaklyReferenced()
-   {
-      MetaModel m = new MetaModel();
-      Simple a = new Simple("a");
-      Simple b = new Simple("b");
-      Simple c = new Simple("c");
-      m.addChild(A, a).addChild(C, c);
-      m.addChild(B, b).addChild(C, c, false);
-
-      //
-      a.exist = false;
-      m.postActivate((ProcessingContext)null);
-      
-      //
-      assertEquals(1, a.removed);
-      assertEquals(1, c.removed);
-
-   }
-
    static class Simple extends MetaModelObject
    {
 

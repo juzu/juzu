@@ -37,10 +37,10 @@ public class MetaModelObject implements Serializable
 
 
    /** The children. */
-   private final HashMap<Key<?>, Reference<MetaModelObject>> children = new HashMap<Key<?>, Reference<MetaModelObject>>();
+   private final HashMap<Key<?>, MetaModelObject> children = new HashMap<Key<?>, MetaModelObject>();
 
    /** The parents. */
-   private final HashMap<MetaModelObject, Reference<Key<?>>> parents = new HashMap<MetaModelObject, Reference<Key<?>>>();
+   private final HashMap<MetaModelObject, Key<?>> parents = new HashMap<MetaModelObject, Key<?>>();
 
    public final Collection<MetaModelObject> getParents()
    {
@@ -49,10 +49,10 @@ public class MetaModelObject implements Serializable
 
    public final <O extends MetaModelObject> O getChild(Key<O> key)
    {
-      Reference<MetaModelObject> child = children.get(key);
+      MetaModelObject child = children.get(key);
       if (child != null)
       {
-         return key.getType().cast(child.target);
+         return key.getType().cast(child);
       }
       else
       {
@@ -82,22 +82,17 @@ public class MetaModelObject implements Serializable
    public final <O extends MetaModelObject> Collection<O> getChildren(Class<O> filter)
    {
       ArrayList<O> list = new ArrayList<O>(children.size());
-      for (Reference<MetaModelObject> child : children.values())
+      for (MetaModelObject child : children.values())
       {
-         if (filter.isInstance(child.target))
+         if (filter.isInstance(child))
          {
-            list.add(filter.cast(child.target));
+            list.add(filter.cast(child));
          }
       }
       return list;
    }
 
    public final <O extends MetaModelObject> O addChild(Key<O> key, O child) throws IllegalArgumentException, IllegalStateException
-   {
-      return addChild(key, child, true);
-   }
-
-   public final <O extends MetaModelObject> O addChild(Key<O> key, O child, boolean strong) throws IllegalArgumentException, IllegalStateException
    {
       if (closure(child, new HashSet<MetaModelObject>()).contains(this))
       {
@@ -111,8 +106,8 @@ public class MetaModelObject implements Serializable
          }
          else
          {
-            children.put(key, new Reference<MetaModelObject>(child, strong));
-            child.parents.put(this, new Reference<Key<?>>(key, strong));
+            children.put(key, child);
+            child.parents.put(this, key);
 
             // Callback
             child.postAttach(this);
@@ -123,56 +118,31 @@ public class MetaModelObject implements Serializable
 
    public final <O extends MetaModelObject> O removeChild(Key<O> key)
    {
-      Reference<MetaModelObject> child = children.remove(key);
+      MetaModelObject child = children.remove(key);
       if (child != null)
       {
-         if (child.target.parents.remove(this) != null)
+         if (child.parents.remove(this) != null)
          {
-            child.target.preDetach(this);
+            child.preDetach(this);
             
-            // Check if it's not strongly referenced anymore
-            boolean remove = true;
-            for (Reference<Key<?>> parent : child.target.parents.values())
-            {
-               if (parent.strong)
-               {
-                  remove = false;
-               }
-            }
-
             // Remove orphan
-            if (remove)
+            if (child.parents.isEmpty())
             {
-               // Remove from parents (they must all be weakly referenced)
-               while (child.target.parents.size() > 0)
-               {
-                  Iterator<Map.Entry<MetaModelObject, Reference<Key<?>>>> iterator = child.target.parents.entrySet().iterator();
-                  Map.Entry<MetaModelObject, Reference<Key<?>>> entry = iterator.next();
-                  if (entry.getKey().children.remove(entry.getValue().target) == null)
-                  {
-                     throw new AssertionError();
-                  }
-                  else
-                  {
-                     iterator.remove();
-                  }
-               }
-
                // Remove children if needed
-               if (child.target.children.size() > 0)
+               if (child.children.size() > 0)
                {
-                  for (Key<?> key2 : new ArrayList<Key<?>>(child.target.children.keySet()))
+                  for (Key<?> key2 : new ArrayList<Key<?>>(child.children.keySet()))
                   {
-                     child.target.removeChild(key2);
+                     child.removeChild(key2);
                   }
                }
 
                // Remove callback
-               child.target.preRemove();
+               child.preRemove();
             }
 
             //
-            return key.getType().cast(child.target);
+            return key.getType().cast(child);
          }
          else
          {
@@ -190,11 +160,11 @@ public class MetaModelObject implements Serializable
       // We remove a node by detaching it from all its parents
       while (parents.size() > 0)
       {
-         Iterator<Map.Entry<MetaModelObject, Reference<Key<?>>>> iterator = parents.entrySet().iterator();
-         Map.Entry<MetaModelObject, Reference<Key<?>>> entry = iterator.next();
+         Iterator<Map.Entry<MetaModelObject, Key<?>>> iterator = parents.entrySet().iterator();
+         Map.Entry<MetaModelObject, Key<?>> entry = iterator.next();
          MetaModelObject parent = entry.getKey();
-         Reference<Key<?>> key = entry.getValue();
-         parent.removeChild(key.target);
+         Key<?> key = entry.getValue();
+         parent.removeChild(key);
       }
    }
 
@@ -249,9 +219,9 @@ public class MetaModelObject implements Serializable
       if (!closure.contains(node))
       {
          closure.add(node);
-         for (Reference<MetaModelObject> child : node.children.values())
+         for (MetaModelObject child : node.children.values())
          {
-            closure(child.target, closure);
+            closure(child, closure);
          }
       }
       return closure;

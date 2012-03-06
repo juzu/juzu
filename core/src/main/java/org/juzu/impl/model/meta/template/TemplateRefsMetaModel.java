@@ -1,10 +1,9 @@
 package org.juzu.impl.model.meta.template;
 
-import org.juzu.Path;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.model.meta.ApplicationMetaModel;
-import org.juzu.impl.model.meta.ApplicationsMetaModel;
+import org.juzu.impl.model.meta.application.ApplicationMetaModel;
+import org.juzu.impl.model.meta.application.ApplicationsMetaModel;
 import org.juzu.impl.model.meta.Key;
 import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.model.meta.MetaModelObject;
@@ -40,7 +39,7 @@ public class TemplateRefsMetaModel extends MetaModelObject
 
    public void processDeclarationTemplate(
       VariableElement variableElt,
-      String annotationName,
+      String annotationFQN,
       Map<String, Object> annotationValues) throws CompilationException
    {
       String path = (String)annotationValues.get("value");

@@ -19,15 +19,15 @@
 
 package org.juzu.impl.model.processor;
 
-import org.juzu.impl.model.resolver.ModelResolver;
+import org.juzu.impl.model.meta.MetaModel;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MainProcessor extends AbstractModelProcessor
 {
 
    @Override
-   protected ModelHandler createHandler()
+   protected MetaModel createHandler()
    {
-      return new ModelResolver();
+      return new MetaModel();
    }
 }

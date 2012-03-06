@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.resolver;
+package org.juzu.impl.model.meta.template;
 
 import org.juzu.Path;
 import org.juzu.impl.compiler.BaseProcessor;
@@ -25,10 +25,9 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.model.CompilationErrorCode;
-import org.juzu.impl.model.meta.ApplicationMetaModel;
+import org.juzu.impl.model.meta.application.ApplicationMetaModel;
 import org.juzu.impl.model.meta.controller.MethodMetaModel;
-import org.juzu.impl.model.meta.template.TemplateMetaModel;
-import org.juzu.impl.model.meta.template.TemplateRefMetaModel;
+import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.ASTNode;
@@ -107,8 +106,14 @@ public class TemplateResolver implements Serializable
    {
       return templates.values();
    }
+   
+   public void removeTemplate(String path)
+   {
+      // Shall we do something else ?
+      templates.remove(path);
+   }
 
-   void prePassivate()
+   public void prePassivate()
    {
       log.log("Evicting cache " + resourceCache.keySet());
       resourceCache.clear();
@@ -116,14 +121,14 @@ public class TemplateResolver implements Serializable
       classCache.clear();
    }
 
-   void process(ModelResolver context) throws CompilationException
+   public void process(TemplatePlugin plugin, ProcessingContext context) throws CompilationException
    {
       // Evict templates that are out of date
       log.log("Synchronizing existing templates " + templates.keySet());
       for (Iterator<Template> i = templates.values().iterator();i.hasNext();)
       {
          Template template = i.next();
-         Content content = context.env.resolveResource(application.getHandle(), template.getFQN(), template.getExtension());
+         Content content = context.resolveResource(application.getHandle(), template.getFQN(), template.getExtension());
          if (content == null)
          {
             // That will generate a template not found error
@@ -151,7 +156,7 @@ public class TemplateResolver implements Serializable
          if (template == null)
          {
             log.log("Compiling template " + templateMeta.getPath());
-            ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<String, Template>(copy), context.env);
+            ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<String, Template>(copy), context);
             Collection<Template> resolved = compiler.resolve(templateMeta);
             for (Template added : resolved)
             {
@@ -168,6 +173,7 @@ public class TemplateResolver implements Serializable
          String originPath = template.getOriginPath();
          TemplateMetaModel templateMeta = application.getTemplates().get(originPath);
 
+         //
          // We compute the class elements from the field elements (as eclipse will make the relationship)
          Set<FQN> types = new LinkedHashSet<FQN>();
          for (TemplateRefMetaModel ref : templateMeta.getRefs())
@@ -179,27 +185,27 @@ public class TemplateResolver implements Serializable
          int index = 0;
          for (FQN type : types)
          {
-            elements[index++] = context.env.getTypeElement(type.getFullName());
+            elements[index++] = context.getTypeElement(type.getFullName());
          }
 
          // Resolve the stub
-         resolveStub(template, context, elements);
+         resolveStub(template, plugin, context, elements);
 
          // Resolve the qualified class
          resolvedQualified(template, context, elements);
 
          //
-         resolveScript(template, context, elements);
+         resolveScript(template, plugin, context, elements);
       }
    }
 
-   private void resolveScript(final Template template, final ModelResolver context, final Element[] elements)
+   private void resolveScript(final Template template, final TemplatePlugin plugin, final ProcessingContext context, final Element[] elements)
    {
-      context.env.executeWithin(elements[0], new Callable<Void>()
+      context.executeWithin(elements[0], new Callable<Void>()
       {
          public Void call() throws Exception
          {
-            TemplateProvider provider = context.providers.get(template.getExtension());
+            TemplateProvider provider = plugin.providers.get(template.getExtension());
 
             // If it's the cache we do nothing
             String key = template.getFQN().getFullName() + ".groovy";
@@ -239,7 +245,7 @@ public class TemplateResolver implements Serializable
                   tcc.emit(generator, ast);
 
                   //
-                  FileObject scriptFile = context.env.createResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension(), elements);
+                  FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension(), elements);
                   writer = scriptFile.openWriter();
                   writer.write(generator.toString());
 
@@ -270,7 +276,7 @@ public class TemplateResolver implements Serializable
       });
    }
 
-   private void resolvedQualified(Template template, ModelResolver context, Element[] elements)
+   private void resolvedQualified(Template template, ProcessingContext context, Element[] elements)
    {
       if (classCache.containsKey(template.getFQN()))
       {
@@ -283,7 +289,7 @@ public class TemplateResolver implements Serializable
       try
       {
          // Template qualified class
-         FileObject classFile = context.env.createSourceFile(template.getFQN().getFullName(), elements);
+         FileObject classFile = context.createSourceFile(template.getFQN().getFullName(), elements);
          writer = classFile.openWriter();
          writer.append("package ").append(template.getFQN().getPackageName()).append(";\n");
          writer.append("import ").append(Tools.getImport(Path.class)).append(";\n");
@@ -357,7 +363,7 @@ public class TemplateResolver implements Serializable
       }
    }
 
-   private void resolveStub(Template template, ModelResolver context, Element[] elements)
+   private void resolveStub(Template template, TemplatePlugin plugin, ProcessingContext context, Element[] elements)
    {
       if (stubCache.containsKey(template.getFQN()))
       {
@@ -367,12 +373,12 @@ public class TemplateResolver implements Serializable
 
       //
       FQN stubFQN = new FQN(template.getFQN().getFullName() + "_");
-      TemplateProvider provider = context.providers.get(template.getExtension());
+      TemplateProvider provider = plugin.providers.get(template.getExtension());
       Writer writer = null;
       try
       {
          // Template stub
-         JavaFileObject stubFile = context.env.createSourceFile(stubFQN.getFullName(), elements);
+         JavaFileObject stubFile = context.createSourceFile(stubFQN.getFullName(), elements);
          writer = stubFile.openWriter();
          writer.append("package ").append(stubFQN.getPackageName()).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");

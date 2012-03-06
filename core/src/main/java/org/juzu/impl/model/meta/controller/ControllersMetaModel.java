@@ -2,8 +2,8 @@ package org.juzu.impl.model.meta.controller;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.model.meta.ApplicationMetaModel;
-import org.juzu.impl.model.meta.ApplicationsMetaModel;
+import org.juzu.impl.model.meta.application.ApplicationMetaModel;
+import org.juzu.impl.model.meta.application.ApplicationsMetaModel;
 import org.juzu.impl.model.meta.Key;
 import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.model.meta.MetaModelEvent;
@@ -59,7 +59,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
 
    public void processControllerMethod(
       ExecutableElement methodElt,
-      String annotationName,
+      String annotationFQN,
       Map<String, Object> annotationValues) throws CompilationException
    {
       TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
@@ -71,7 +71,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
       }
       controller.addMethod(
          methodElt,
-         annotationName,
+         annotationFQN,
          annotationValues);
    }
 

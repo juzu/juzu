@@ -59,7 +59,7 @@ public class TemplateRefMetaModel extends MetaModelObject
    {
       if (template != null)
       {
-         addChild(TemplateMetaModel.KEY, template, false);
+         addChild(TemplateMetaModel.KEY, template);
       }
       else
       {

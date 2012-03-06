@@ -25,8 +25,8 @@ import org.juzu.Path;
 import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.compiler.BaseProcessor;
-import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.model.CompilationErrorCode;
+import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
@@ -39,17 +39,13 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.tools.FileObject;
-import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -68,7 +64,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
       Application.class};
 
    /** . */
-   private ModelHandler model;
+   private MetaModel model;
 
    /** . */
    private Set<TypeElement> annotations;
@@ -106,7 +102,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
       log.log("Using processing nev " + processingEnv.getClass().getName());
    }
 
-   protected abstract ModelHandler createHandler();
+   protected abstract MetaModel createHandler();
 
    @Override
    protected ErrorCode decode(String key)
@@ -165,7 +161,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                   FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "model2.ser");
                   in = file.openInputStream();
                   ObjectInputStream ois = new ObjectInputStream(in);
-                  model = (ModelHandler)ois.readObject();
+                  model = (MetaModel)ois.readObject();
                   log.log("Loaded model from " + file.toUri());
                }
                catch (Exception e)
@@ -194,7 +190,6 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                      {
                         if (annotationMirror.getAnnotationType().asElement().equals(annotationElt))
                         {
-                           String annotationName = annotationElt.getSimpleName().toString();
                            Map<String, Object> annotationValues = new HashMap<String, Object>();
                            for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet())
                            {
@@ -203,44 +198,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                               annotationValues.put(m, value);
                            }
                            String annotationFQN = annotationElt.getQualifiedName().toString();
-                           if (annotationFQN.equals("org.juzu.View") || annotationFQN.equals("org.juzu.Action") || annotationFQN.equals("org.juzu.Resource"))
-                           {
-                              ExecutableElement executableElt = (ExecutableElement)annotatedElt;
-                              log.log("Processing controller method " + executableElt + " found on type " +  executableElt.getEnclosingElement() + " annotated by " + annotationMirror);
-                              model.processControllerMethod(
-                                 executableElt,
-                                 annotationName,
-                                 annotationValues);
-                           }
-                           else if (annotationFQN.equals("org.juzu.Path"))
-                           {
-                              if (annotatedElt instanceof VariableElement)
-                              {
-                                 VariableElement variableElt = (VariableElement)annotatedElt;
-                                 log.log("Processing template declaration " + variableElt.getEnclosingElement() + "#"  + variableElt + " annotated by " + annotationMirror);
-                                 model.processDeclarationTemplate(
-                                    variableElt,
-                                    annotationName,
-                                    annotationValues);
-                              }
-                              else if (annotatedElt instanceof TypeElement)
-                              {
-                                 // We ignore it on purpose
-                              }
-                              else
-                              {
-                                 throw new CompilationException(annotatedElt, CompilationErrorCode.ANNOTATION_UNSUPPORTED);
-                              }
-                           }
-                           else if (annotationFQN.equals("org.juzu.Application"))
-                           {
-                              log.log("Processing application " + annotatedElt + " annotated by " + annotationMirror);
-                              model.processApplication(
-                                 (PackageElement)annotatedElt,
-                                 annotationName,
-                                 annotationValues);
-                           }
-                           break;
+                           model.processAnnotation(annotatedElt, annotationFQN, annotationValues);
                         }
                      }
                   }

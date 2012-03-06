@@ -22,29 +22,32 @@ package org.juzu.impl.model.meta;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.meta.application.ApplicationMetaModel;
+import org.juzu.impl.model.meta.application.ApplicationPlugin;
+import org.juzu.impl.model.meta.application.ApplicationsMetaModel;
 import org.juzu.impl.model.meta.controller.ControllerMetaModel;
+import org.juzu.impl.model.meta.controller.ControllerPlugin;
 import org.juzu.impl.model.meta.controller.ControllersMetaModel;
+import org.juzu.impl.model.meta.template.TemplatePlugin;
 import org.juzu.impl.model.meta.template.TemplateRefMetaModel;
 import org.juzu.impl.model.meta.template.TemplateRefsMetaModel;
-import org.juzu.impl.model.processor.ModelHandler;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.QN;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.Element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class MetaModel extends MetaModelObject implements ModelHandler
+public final class MetaModel extends MetaModelObject
 {
 
    /** . */
@@ -57,13 +60,35 @@ public final class MetaModel extends MetaModelObject implements ModelHandler
    private final LinkedList<MetaModelEvent> queue = new LinkedList<MetaModelEvent>();
 
    /** . */
+   private final LinkedList<MetaModelEvent> queue2 = new LinkedList<MetaModelEvent>();
+
+   /** . */
    private static final ThreadLocal<MetaModel> current = new ThreadLocal<MetaModel>();
+
+   /** The meta model plugins. */
+   private List<MetaModelPlugin> plugins;
 
    public MetaModel()
    {
-      addChild(ControllersMetaModel.KEY, new ControllersMetaModel());
-      addChild(TemplateRefsMetaModel.KEY, new TemplateRefsMetaModel());
-      addChild(ApplicationsMetaModel.KEY, new ApplicationsMetaModel());
+      this.plugins = new ArrayList<MetaModelPlugin>();
+
+      //
+      addPlugin(new ApplicationPlugin());
+      addPlugin(new ControllerPlugin());
+      addPlugin(new TemplatePlugin());
+   }
+   
+   public void addPlugin(MetaModelPlugin plugin)
+   {
+      plugins.add(plugin);
+      
+      //
+      plugin.init(this);
+   }
+
+   public Iterable<MetaModelPlugin> getPlugins()
+   {
+      return plugins;
    }
 
    public JSON toJSON()
@@ -73,6 +98,16 @@ public final class MetaModel extends MetaModelObject implements ModelHandler
       json.add("templates", getChild(TemplateRefsMetaModel.KEY));
       json.add("controllers", getChild(ControllersMetaModel.KEY));
       return json;
+   }
+
+   //
+
+   public void processAnnotation(Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
+   {
+      for (MetaModelPlugin plugin : plugins)
+      {
+         plugin.processAnnotation(this, element, annotationFQN, annotationValues);
+      }
    }
 
    //
@@ -94,36 +129,22 @@ public final class MetaModel extends MetaModelObject implements ModelHandler
 
    //
 
-   public void processControllerMethod(
-      ExecutableElement methodElt,
-      String annotationName,
-      Map<String, Object> annotationValues) throws CompilationException
-   {
-      getChild(ControllersMetaModel.KEY).processControllerMethod(methodElt, annotationName, annotationValues);
-   }
-
-   public void processDeclarationTemplate(
-      VariableElement variableElt,
-      String annotationName,
-      Map<String, Object> annotationValues) throws CompilationException
-   {
-      getChild(TemplateRefsMetaModel.KEY).processDeclarationTemplate(variableElt, annotationName, annotationValues);
-   }
-
-   public void processApplication(
-      PackageElement packageElt,
-      String annotationName,
-      Map<String, Object> annotationValues) throws CompilationException
-   {
-      getChild(ApplicationsMetaModel.KEY).processApplication(packageElt, annotationName, annotationValues);
-   }
-
    public void postActivate(ProcessingContext env)
    {
       this.env = env;
       current.set(this);
+
+      //
       garbage(this, this, new HashSet<MetaModelObject>());
+
+      //
       postActivate(this, this, new HashSet<MetaModelObject>());
+      
+      //
+      for (MetaModelPlugin plugin : plugins)
+      {
+         plugin.postActivate(this);
+      }
    }
 
    private void garbage(MetaModel model, MetaModelObject object, HashSet<MetaModelObject> visited)
@@ -162,6 +183,24 @@ public final class MetaModel extends MetaModelObject implements ModelHandler
    public void postProcess() throws CompilationException
    {
       postProcess(this, this, new HashSet<MetaModelObject>());
+
+      // For now we do this way lter we poll
+      for (Iterator<MetaModelEvent> i = queue2.iterator();i.hasNext();)
+      {
+         MetaModelEvent event = i.next();
+         i.remove();
+         log.log("Processing meta model event " + event.getType() + " " + event.getObject());
+         for (MetaModelPlugin plugin : plugins)
+         {
+            plugin.processEvent(this, event);
+         }
+      }
+
+      // log.log("Processing templates");
+      for (MetaModelPlugin plugin : plugins)
+      {
+         plugin.postProcess(this);
+      }
    }
 
    private void postProcess(MetaModel model, MetaModelObject object, HashSet<MetaModelObject> visited)
@@ -182,6 +221,12 @@ public final class MetaModel extends MetaModelObject implements ModelHandler
       try
       {
          prePassivate(this, this, new HashSet<MetaModelObject>());
+
+         //
+         for (MetaModelPlugin plugin : plugins)
+         {
+            plugin.prePassivate(this);
+         }
       }
       finally
       {
@@ -227,6 +272,7 @@ public final class MetaModel extends MetaModelObject implements ModelHandler
       {
          MetaModel.log.log("Queue event " + event.getType() + " " + event.getObject());
          model.queue.add(event);
+         model.queue2.add(event);
       }
    }
 }

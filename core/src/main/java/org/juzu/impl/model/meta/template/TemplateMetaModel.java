@@ -45,9 +45,9 @@ public class TemplateMetaModel extends MetaModelObject
    /** . */
    final String path;
 
-   public TemplateMetaModel(TemplateRefMetaModel ref)
+   public TemplateMetaModel(String path)
    {
-      this.path = ref.path;
+      this.path = path;
    }
 
    public ApplicationTemplatesMetaModel getTemplates()
@@ -81,12 +81,25 @@ public class TemplateMetaModel extends MetaModelObject
       return refs;
    }
 
+   /** . */
+   private int refCount = 0;
+
+   @Override
+   public boolean exist(MetaModel model)
+   {
+      return refCount == 0 || templates == null;
+   }
+
    @Override
    protected void postAttach(MetaModelObject parent)
    {
       if (parent instanceof ApplicationTemplatesMetaModel)
       {
          this.templates = (ApplicationTemplatesMetaModel)parent;
+      }
+      else if (parent instanceof TemplateRefMetaModel)
+      {
+         refCount++;
       }
    }
 
@@ -95,8 +108,12 @@ public class TemplateMetaModel extends MetaModelObject
    {
       if (parent instanceof ApplicationTemplatesMetaModel)
       {
+         MetaModel.queue(MetaModelEvent.createRemoved(this, templates.application.getHandle()));
          this.templates = null;
-         MetaModel.queue(MetaModelEvent.createRemoved(this));
+      }
+      else if (parent instanceof TemplateRefMetaModel)
+      {
+         refCount--;
       }
    }
 }

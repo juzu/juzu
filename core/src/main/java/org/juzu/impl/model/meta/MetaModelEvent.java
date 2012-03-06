@@ -25,19 +25,34 @@ import java.io.Serializable;
 public class MetaModelEvent implements Serializable
 {
 
+   public static MetaModelEvent createAdded(MetaModelObject object, Object payload)
+   {
+      return new MetaModelEvent(AFTER_ADD, object, payload);
+   }
+
    public static MetaModelEvent createAdded(MetaModelObject object)
    {
-      return new MetaModelEvent(AFTER_ADD, object);
+      return new MetaModelEvent(AFTER_ADD, object, null);
+   }
+
+   public static MetaModelEvent createUpdated(MetaModelObject object, Object payload)
+   {
+      return new MetaModelEvent(UPDATED, object, payload);
    }
 
    public static MetaModelEvent createUpdated(MetaModelObject object)
    {
-      return new MetaModelEvent(UPDATED, object);
+      return new MetaModelEvent(UPDATED, object, null);
+   }
+
+   public static MetaModelEvent createRemoved(MetaModelObject object, Object payload)
+   {
+      return new MetaModelEvent(BEFORE_REMOVE, object, payload);
    }
 
    public static MetaModelEvent createRemoved(MetaModelObject object)
    {
-      return new MetaModelEvent(BEFORE_REMOVE, object);
+      return new MetaModelEvent(BEFORE_REMOVE, object, null);
    }
 
    /** . */
@@ -55,7 +70,10 @@ public class MetaModelEvent implements Serializable
    /** . */
    private final MetaModelObject object;
 
-   private MetaModelEvent(int type, MetaModelObject object)
+   /** . */
+   private final Object payload;
+
+   private MetaModelEvent(int type, MetaModelObject object, Object payload)
    {
       if (type < 0 || type > 3)
       {
@@ -69,6 +87,7 @@ public class MetaModelEvent implements Serializable
       //
       this.type = type;
       this.object = object;
+      this.payload = payload;
    }
 
    public int getType()
@@ -79,6 +98,11 @@ public class MetaModelEvent implements Serializable
    public MetaModelObject getObject()
    {
       return object;
+   }
+
+   public Object getPayload()
+   {
+      return payload;
    }
 
    @Override

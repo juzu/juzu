@@ -1,10 +1,9 @@
 package org.juzu.impl.model.meta.controller;
 
 import org.juzu.AmbiguousResolutionException;
-import org.juzu.impl.model.meta.ApplicationMetaModel;
+import org.juzu.impl.model.meta.application.ApplicationMetaModel;
 import org.juzu.impl.model.meta.Key;
 import org.juzu.impl.model.meta.MetaModel;
-import org.juzu.impl.model.meta.MetaModelEvent;
 import org.juzu.impl.model.meta.MetaModelObject;
 import org.juzu.impl.utils.JSON;
 

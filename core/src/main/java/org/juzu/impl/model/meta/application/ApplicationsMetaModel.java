@@ -1,7 +1,11 @@
-package org.juzu.impl.model.meta;
+package org.juzu.impl.model.meta.application;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.meta.Key;
+import org.juzu.impl.model.meta.MetaModel;
+import org.juzu.impl.model.meta.MetaModelEvent;
+import org.juzu.impl.model.meta.MetaModelObject;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 
@@ -44,7 +48,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
 
    public void processApplication(
       PackageElement packageElt,
-      String annotationName,
+      String annotationFQN,
       Map<String, Object> annotationValues) throws CompilationException
    {
       TypeMirror defaultControllerElt = (TypeMirror)annotationValues.get("defaultController");

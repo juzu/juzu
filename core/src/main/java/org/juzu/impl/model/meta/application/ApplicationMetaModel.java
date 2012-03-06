@@ -17,10 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta;
+package org.juzu.impl.model.meta.application;
 
 import org.juzu.Application;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.model.meta.MetaModel;
+import org.juzu.impl.model.meta.MetaModelEvent;
+import org.juzu.impl.model.meta.MetaModelObject;
 import org.juzu.impl.model.meta.controller.ApplicationControllersMetaModel;
 import org.juzu.impl.model.meta.template.ApplicationTemplatesMetaModel;
 import org.juzu.impl.utils.FQN;

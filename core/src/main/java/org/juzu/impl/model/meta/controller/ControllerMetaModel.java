@@ -115,7 +115,7 @@ public class ControllerMetaModel extends MetaModelObject
 
    void addMethod(
       ExecutableElement methodElt,
-      String annotationName,
+      String annotationFQN,
       Map<String, Object> annotationValues)
    {
       String id = (String)annotationValues.get("id");
@@ -123,7 +123,7 @@ public class ControllerMetaModel extends MetaModelObject
       //
       for (Phase phase : Phase.values())
       {
-         if (phase.annotation.getSimpleName().equals(annotationName))
+         if (phase.annotation.getName().equals(annotationFQN))
          {
             List<? extends TypeMirror> parameterTypeMirrors = ((ExecutableType)methodElt.asType()).getParameterTypes();
             List<? extends VariableElement> parameterVariableElements = methodElt.getParameters();
