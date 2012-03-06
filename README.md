@@ -87,6 +87,7 @@ Various things to do, not exhaustive that needs to go in the roadmap
 - no files to compile -> javac message : see why
 - for plugins : think about an @Depends to define dependencies for ordering (?)
 - BUG with : @Application(plugins = AssetPlugin.class) when plugin does not exist
+- look at integrating mustache : https://github.com/spullara/mustache.java
 
 # Deploy on
 
