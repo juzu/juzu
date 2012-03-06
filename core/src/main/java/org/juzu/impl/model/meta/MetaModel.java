@@ -19,18 +19,18 @@
 
 package org.juzu.impl.model.meta;
 
+import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationPlugin;
+import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.model.meta.application.ApplicationMetaModel;
-import org.juzu.impl.model.meta.application.ApplicationPlugin;
-import org.juzu.impl.model.meta.application.ApplicationsMetaModel;
-import org.juzu.impl.model.meta.controller.ControllerMetaModel;
-import org.juzu.impl.model.meta.controller.ControllerPlugin;
-import org.juzu.impl.model.meta.controller.ControllersMetaModel;
-import org.juzu.impl.model.meta.template.TemplatePlugin;
-import org.juzu.impl.model.meta.template.TemplateRefMetaModel;
-import org.juzu.impl.model.meta.template.TemplateRefsMetaModel;
+import org.juzu.impl.controller.metamodel.ControllerMetaModel;
+import org.juzu.impl.controller.metamodel.ControllerPlugin;
+import org.juzu.impl.controller.metamodel.ControllersMetaModel;
+import org.juzu.impl.template.metamodel.TemplatePlugin;
+import org.juzu.impl.template.metamodel.TemplateRefMetaModel;
+import org.juzu.impl.template.metamodel.TemplateRefsMetaModel;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;

@@ -19,6 +19,10 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.controller.ControllerResolver;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
+import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.plugin.Plugin;
 import org.juzu.request.Phase;
 import org.juzu.impl.inject.Export;
@@ -29,10 +33,6 @@ import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.spi.request.ResourceBridge;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.metadata.ControllerParameter;
-import org.juzu.request.ApplicationContext;
 import org.juzu.request.RequestContext;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.utils.Spliterator;

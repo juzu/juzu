@@ -1,7 +1,7 @@
 package org.juzu.impl.model.meta;
 
+import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.model.meta.application.ApplicationMetaModel;
 import org.juzu.impl.utils.JSON;
 
 import javax.lang.model.element.Element;

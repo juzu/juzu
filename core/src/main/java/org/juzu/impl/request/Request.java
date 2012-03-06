@@ -21,7 +21,9 @@ package org.juzu.impl.request;
 
 import org.juzu.RequestLifeCycle;
 import org.juzu.Response;
+import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopingContext;
 import org.juzu.impl.spi.inject.InjectManager;
@@ -29,10 +31,8 @@ import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.spi.request.ResourceBridge;
-import org.juzu.metadata.ControllerMethod;
 import org.juzu.plugin.Plugin;
 import org.juzu.request.ActionContext;
-import org.juzu.request.ApplicationContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
 import org.juzu.request.ResourceContext;
@@ -64,7 +64,7 @@ public class Request implements ScopingContext
    private Response response;
 
    public Request(
-      ApplicationContext application, 
+      ApplicationContext application,
       ControllerMethod method,
       Map<String, String[]> parameters,
       Object[] args, 

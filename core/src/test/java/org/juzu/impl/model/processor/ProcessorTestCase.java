@@ -21,7 +21,7 @@ package org.juzu.impl.model.processor;
 
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.model.CompilationErrorCode;
-import org.juzu.impl.model.meta.template.TemplatePlugin;
+import org.juzu.impl.template.metamodel.TemplatePlugin;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;

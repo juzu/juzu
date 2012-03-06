@@ -19,10 +19,10 @@
 
 package org.juzu.request;
 
-import org.juzu.Response;
+import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.RequestBridge;
-import org.juzu.metadata.ControllerMethod;
 
 import java.util.Map;
 

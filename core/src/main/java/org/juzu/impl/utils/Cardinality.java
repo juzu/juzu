@@ -17,39 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.metadata;
-
-import java.util.Collections;
-import java.util.List;
+package org.juzu.impl.utils;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerDescriptor
+public enum Cardinality
 {
 
-   /** . */
-   private final Class<?> type;
+   SINGLE,
 
-   /** . */
-   private final List<ControllerMethod> methods;
+   ARRAY,
 
-   public ControllerDescriptor(Class<?> type, List<ControllerMethod> methods)
-   {
-      this.type = type;
-      this.methods = Collections.unmodifiableList(methods);
-   }
+   LIST
 
-   public String getTypeName()
-   {
-      return type.getName();
-   }
-
-   public Class<?> getType()
-   {
-      return type;
-   }
-
-   public List<ControllerMethod> getMethods()
-   {
-      return methods;
-   }
 }

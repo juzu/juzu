@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta.template;
+package org.juzu.impl.template.metamodel;
 
 import org.juzu.impl.model.meta.Key;
 import org.juzu.impl.model.meta.MetaModel;

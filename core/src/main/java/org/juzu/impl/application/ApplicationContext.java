@@ -17,12 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.request;
+package org.juzu.impl.application;
 
-import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.request.RequestBridge;
-import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.plugin.Plugin;
 import org.juzu.template.Template;
 import org.juzu.template.TemplateRenderContext;

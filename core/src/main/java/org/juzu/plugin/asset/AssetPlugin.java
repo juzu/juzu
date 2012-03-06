@@ -2,8 +2,8 @@ package org.juzu.plugin.asset;
 
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.request.Request;
-import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.plugin.Plugin;
 import org.juzu.request.Phase;
 

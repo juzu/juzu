@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta.template;
+package org.juzu.impl.template.metamodel;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class ModelTemplateProcessContext extends ProcessContext

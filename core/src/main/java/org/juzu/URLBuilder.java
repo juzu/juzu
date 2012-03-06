@@ -19,8 +19,8 @@
 
 package org.juzu;
 
+import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.metadata.ControllerMethod;
 
 import java.util.HashMap;
 import java.util.Map;

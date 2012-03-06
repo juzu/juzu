@@ -17,37 +17,39 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.metadata;
+package org.juzu.impl.controller.descriptor;
 
-import org.juzu.Path;
-import org.juzu.template.Template;
+import java.util.Collections;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateDescriptor
+public class ControllerDescriptor
 {
 
    /** . */
-   private final String path;
+   private final Class<?> type;
 
    /** . */
-   private final Class<? extends Template> template;
+   private final List<ControllerMethod> methods;
 
-   public TemplateDescriptor(Class<? extends Template> template)
+   public ControllerDescriptor(Class<?> type, List<ControllerMethod> methods)
    {
-      Path path = template.getAnnotation(Path.class);
-
-      //
-      this.path = path.value();
-      this.template = template;
+      this.type = type;
+      this.methods = Collections.unmodifiableList(methods);
    }
 
-   public String getPath()
+   public String getTypeName()
    {
-      return path;
+      return type.getName();
    }
 
-   public Class<? extends Template> getType()
+   public Class<?> getType()
    {
-      return template;
+      return type;
+   }
+
+   public List<ControllerMethod> getMethods()
+   {
+      return methods;
    }
 }

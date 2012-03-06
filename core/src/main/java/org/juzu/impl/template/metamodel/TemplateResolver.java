@@ -17,16 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta.template;
+package org.juzu.impl.template.metamodel;
 
 import org.juzu.Path;
+import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.controller.metamodel.MethodMetaModel;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.model.CompilationErrorCode;
-import org.juzu.impl.model.meta.application.ApplicationMetaModel;
-import org.juzu.impl.model.meta.controller.MethodMetaModel;
 import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.spi.template.TemplateProvider;
@@ -34,13 +35,12 @@ import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
+import org.juzu.impl.template.metadata.TemplateDescriptor;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.utils.Tools;
-import org.juzu.metadata.TemplateDescriptor;
-import org.juzu.request.ApplicationContext;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.Element;

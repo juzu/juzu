@@ -19,13 +19,13 @@
 
 package org.juzu.test.protocol.http;
 
+import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.asset.Registration;
 import org.juzu.impl.asset.Router;
 import org.juzu.impl.asset.Server;
 import org.juzu.impl.spi.request.servlet.ServletRequestBridge;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
-import org.juzu.request.ApplicationContext;
 import org.juzu.test.AbstractHttpTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
 

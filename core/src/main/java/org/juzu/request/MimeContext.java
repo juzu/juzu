@@ -21,11 +21,12 @@ package org.juzu.request;
 
 import org.juzu.Response;
 import org.juzu.URLBuilder;
+import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
+import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.metadata.ControllerParameter;
 import org.juzu.text.WriterPrinter;
 
 import java.io.IOException;

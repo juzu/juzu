@@ -17,8 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.metadata;
+package org.juzu.impl.controller.descriptor;
 
+import org.juzu.impl.utils.Cardinality;
 import org.juzu.impl.utils.Tools;
 
 /**

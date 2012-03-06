@@ -19,14 +19,14 @@
 
 package org.juzu.test.protocol.mock;
 
+import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
-import org.juzu.metadata.ApplicationDescriptor;
 import org.juzu.impl.application.InternalApplicationContext;
-import org.juzu.request.ApplicationContext;
 import org.juzu.impl.application.ApplicationBootstrap;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;

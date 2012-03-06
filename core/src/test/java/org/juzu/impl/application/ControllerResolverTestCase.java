@@ -20,10 +20,11 @@
 package org.juzu.impl.application;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.controller.ControllerResolver;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.utils.Tools;
 import org.juzu.request.Phase;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.metadata.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 

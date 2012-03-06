@@ -1,4 +1,4 @@
-package org.juzu.impl.model.meta.application;
+package org.juzu.impl.application.metamodel;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;

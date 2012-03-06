@@ -1,7 +1,7 @@
-package org.juzu.impl.model.meta.controller;
+package org.juzu.impl.controller.metamodel;
 
 import org.juzu.AmbiguousResolutionException;
-import org.juzu.impl.model.meta.application.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.model.meta.Key;
 import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.model.meta.MetaModelObject;

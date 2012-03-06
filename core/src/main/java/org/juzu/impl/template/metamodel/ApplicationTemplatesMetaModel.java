@@ -1,6 +1,6 @@
-package org.juzu.impl.model.meta.template;
+package org.juzu.impl.template.metamodel;
 
-import org.juzu.impl.model.meta.application.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.model.meta.Key;
 import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.model.meta.MetaModelEvent;

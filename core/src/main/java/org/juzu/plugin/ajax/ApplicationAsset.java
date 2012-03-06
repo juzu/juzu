@@ -1,14 +1,13 @@
 package org.juzu.plugin.ajax;
 
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.asset.Route;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.utils.Path;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.metadata.ControllerMethod;
 
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;

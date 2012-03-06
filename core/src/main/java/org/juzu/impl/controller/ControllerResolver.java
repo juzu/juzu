@@ -17,12 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.application;
+package org.juzu.impl.controller;
 
 import org.juzu.AmbiguousResolutionException;
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.request.Phase;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.metadata.ControllerMethod;
 
 import java.util.ArrayList;
 import java.util.Collections;

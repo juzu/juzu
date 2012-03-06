@@ -19,9 +19,10 @@
 
 package org.juzu.request;
 
+import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.RenderBridge;
-import org.juzu.metadata.ControllerMethod;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RenderContext extends MimeContext

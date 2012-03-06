@@ -1,5 +1,6 @@
-package org.juzu.impl.model.meta.application;
+package org.juzu.impl.application.metamodel;
 
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.model.CompilationErrorCode;
 import org.juzu.impl.model.meta.MetaModel;
@@ -10,7 +11,6 @@ import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
-import org.juzu.metadata.ApplicationDescriptor;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;

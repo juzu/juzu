@@ -17,14 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta.controller;
+package org.juzu.impl.controller.metamodel;
 
 import org.juzu.impl.model.meta.Key;
 import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.model.meta.MetaModelEvent;
 import org.juzu.impl.model.meta.MetaModelObject;
+import org.juzu.impl.utils.Cardinality;
 import org.juzu.impl.utils.JSON;
-import org.juzu.metadata.Cardinality;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;

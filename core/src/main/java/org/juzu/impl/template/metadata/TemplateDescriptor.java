@@ -17,16 +17,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.metadata;
+package org.juzu.impl.template.metadata;
+
+import org.juzu.Path;
+import org.juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum Cardinality
+public class TemplateDescriptor
 {
 
-   SINGLE,
+   /** . */
+   private final String path;
 
-   ARRAY,
+   /** . */
+   private final Class<? extends Template> template;
 
-   LIST
+   public TemplateDescriptor(Class<? extends Template> template)
+   {
+      Path path = template.getAnnotation(Path.class);
 
+      //
+      this.path = path.value();
+      this.template = template;
+   }
+
+   public String getPath()
+   {
+      return path;
+   }
+
+   public Class<? extends Template> getType()
+   {
+      return template;
+   }
 }

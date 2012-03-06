@@ -20,10 +20,11 @@
 package org.juzu.request;
 
 import org.juzu.Response;
+import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
+import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.ActionBridge;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.metadata.ControllerParameter;
 
 import java.util.HashMap;
 import java.util.List;

@@ -17,8 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.metadata;
+package org.juzu.impl.application.metadata;
 
+import org.juzu.impl.controller.descriptor.ControllerDescriptor;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
+import org.juzu.impl.template.metadata.TemplateDescriptor;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.Plugin;

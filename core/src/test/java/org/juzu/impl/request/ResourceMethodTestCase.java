@@ -19,11 +19,11 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.metadata.Cardinality;
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.controller.descriptor.ControllerMethod;
+import org.juzu.impl.controller.descriptor.ControllerParameter;
+import org.juzu.impl.utils.Cardinality;
 import org.juzu.request.Phase;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.metadata.ControllerMethod;
-import org.juzu.metadata.ControllerParameter;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 

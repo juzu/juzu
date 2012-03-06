@@ -21,8 +21,8 @@ package org.juzu.template;
 
 import org.juzu.Response;
 import org.juzu.UndeclaredIOException;
+import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.InternalApplicationContext;
-import org.juzu.request.ApplicationContext;
 import org.juzu.request.MimeContext;
 import org.juzu.request.RequestContext;
 import org.juzu.text.Printer;

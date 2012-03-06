@@ -19,7 +19,7 @@
 
 package org.juzu.impl.model.meta;
 
-import org.juzu.impl.model.meta.application.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.model.processor.MainProcessor;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;

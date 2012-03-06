@@ -19,6 +19,7 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.asset.Registration;
 import org.juzu.impl.asset.Router;
 import org.juzu.impl.asset.Server;
@@ -39,8 +40,6 @@ import org.juzu.impl.utils.DevClassLoader;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
-import org.juzu.metadata.ApplicationDescriptor;
-import org.juzu.request.ApplicationContext;
 
 import javax.portlet.PortletException;
 import java.io.File;
