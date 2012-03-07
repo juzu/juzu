@@ -131,6 +131,7 @@ public class AjaxPlugin extends Plugin
                      printer.write("\" data-url=\"");
                      printer.write(baseURL);
                      printer.write("\"/>");
+                     printer.write("</div>");
                   }
 
                   // The page
