@@ -48,6 +48,16 @@ public class BindingTestCase extends AbstractInjectTestCase
       assertEquals("pass", render.getContent());
    }
 
+   public void testMetaProvider() throws Exception
+   {
+      MockApplication<?> app = application("inject", "binding", "metaprovider").init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      assertEquals("pass", render.getContent());
+   }
+
    public void testProvider() throws Exception
    {
       MockApplication<?> app = application("inject", "binding", "provider").init();

@@ -18,8 +18,8 @@
  */
 
 @Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceProvider.class))
-package inject.binding.provider;
+@Bindings(@Binding(value = Service.class, implementation = MetaProviderImpl.class))
+package inject.binding.metaprovider;
 
 import org.juzu.Application;
 import org.juzu.impl.inject.Binding;

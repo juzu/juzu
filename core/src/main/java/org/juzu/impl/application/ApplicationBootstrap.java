@@ -125,23 +125,28 @@ public class ApplicationBootstrap
       {
          for (Binding binding : bindings.value())
          {
-            Class<?> clazz = binding.value();
+            Class<?>[] types = binding.value();
             Class<?> implementation = binding.implementation();
-
-            //
-            if (MetaProvider.class.isAssignableFrom(implementation))
+            for (Class<?> type : types)
             {
-               MetaProvider mp = (MetaProvider)implementation.newInstance();
-               Provider provider = mp.getProvider(clazz);
-               bootstrap.bindProvider(clazz, provider);
-            }
-            else
-            {
-               if (implementation == Object.class)
+               if (MetaProvider.class.isAssignableFrom(implementation))
                {
-                  implementation = null;
+                  MetaProvider mp = (MetaProvider)implementation.newInstance();
+                  Provider provider = mp.getProvider(type);
+                  bootstrap.bindProvider(type, provider);
                }
-               bootstrap.declareBean((Class)clazz, (Class)implementation);
+               else if (Provider.class.isAssignableFrom(implementation))
+               {
+                  bootstrap.declareProvider(type, (Class)implementation);
+               }
+               else
+               {
+                  if (implementation == Object.class)
+                  {
+                     implementation = null;
+                  }
+                  bootstrap.declareBean((Class)type, (Class)implementation);
+               }
             }
          }
       }

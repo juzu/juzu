@@ -17,9 +17,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package inject.binding.provider;
+package inject.binding.metaprovider;
+
+import org.juzu.Controller;
+import org.juzu.Response;
+import org.juzu.View;
+
+import javax.inject.Inject;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServiceImpl implements Service
+public class A extends Controller
 {
+
+   @Inject
+   Service service;
+
+   @View
+   public Response.Content index() throws IOException
+   {
+      return Response.content(service != null ? "pass" : "");
+   }
 }

@@ -17,10 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceProvider.class))
-package inject.binding.provider;
+package inject.binding.metaprovider;
 
-import org.juzu.Application;
-import org.juzu.impl.inject.Binding;
-import org.juzu.impl.inject.Bindings;
+import javax.inject.Provider;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ProviderImpl<T> implements Provider<T>
+{
+
+   /** . */
+   private T instance;
+
+   public ProviderImpl(T instance)
+   {
+      this.instance = instance;
+   }
+
+   public T get()
+   {
+      return instance;
+   }
+}

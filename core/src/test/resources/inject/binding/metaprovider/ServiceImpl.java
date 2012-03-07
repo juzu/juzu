@@ -17,10 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceProvider.class))
-package inject.binding.provider;
+package inject.binding.metaprovider;
 
-import org.juzu.Application;
-import org.juzu.impl.inject.Binding;
-import org.juzu.impl.inject.Bindings;
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ServiceImpl implements Service
+{
+}

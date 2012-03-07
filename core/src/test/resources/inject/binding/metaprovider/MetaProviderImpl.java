@@ -17,24 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package inject.binding.provider;
+package inject.binding.metaprovider;
+
+import org.juzu.impl.inject.MetaProvider;
 
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProviderImpl<T> implements Provider<T>
+public class MetaProviderImpl implements MetaProvider
 {
-
-   /** . */
-   private T instance;
-
-   public ProviderImpl(T instance)
+   public <T> Provider<? extends T> getProvider(Class<T> implementationType)
    {
-      this.instance = instance;
-   }
-
-   public T get()
-   {
-      return instance;
+      if (implementationType == Service.class)
+      {
+         return (Provider<? extends T>)new ProviderImpl<Service>(new ServiceImpl());
+      }
+      else
+      {
+         throw new AssertionError();
+      }
    }
 }

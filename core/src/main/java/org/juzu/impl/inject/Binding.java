@@ -31,7 +31,7 @@ public @interface Binding
 {
 
 
-   Class<?> value();
+   Class<?>[] value();
 
    Class<?> implementation() default Object.class;
 
