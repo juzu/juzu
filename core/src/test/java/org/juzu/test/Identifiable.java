@@ -25,5 +25,11 @@ package org.juzu.test;
  */
 public interface Identifiable
 {
+
+   /** . */
+   int CONSTRUCTED = 0, MANAGED = 1, DESTROYED = 2;
+   
    long getIdentityHashCode();
+   
+   int getStatus();
 }

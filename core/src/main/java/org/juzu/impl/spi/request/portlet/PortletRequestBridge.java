@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.request.HttpContext;
@@ -77,7 +78,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       this.windowContext = new PortletWindowContext(this);
    }
 
-   public String getMethodId()
+   public final String getMethodId()
    {
       return methodId;
    }
@@ -87,111 +88,142 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       return parameters;
    }
 
-   public void setFlashValue(Object key, Scoped value)
-   {
-      if (value == null)
-      {
-         getFlashContext().remove(key);
-      }
-      else
-      {
-         getFlashContext().put(key, value);
-      }
-   }
-
-   public Scoped getFlashValue(Object key)
-   {
-      Map<Object, Scoped> flash = getFlashContext();
-      return flash != null ? flash.get(key) : null;
-   }
-
-   public Scoped getRequestValue(Object key)
-   {
-      return getRequestContext().get(key);
-   }
-
-   public void setRequestValue(Object key, Scoped value)
-   {
-      if (value != null)
-      {
-         getRequestContext().remove(key);
-      }
-      else
-      {
-         getRequestContext().put(key, value);
-      }
-   }
-
-   private Map<Object, Scoped> getRequestContext()
-   {
-      Map<Object, Scoped> store = (Map<Object, Scoped>)request.getAttribute("org.juzu.request_scope");
-      if (store == null)
-      {
-         request.setAttribute("org.juzu.request_scope", store = new HashMap<Object, Scoped>());
-      }
-      return store;
-   }
-
-   public void setSessionValue(Object key, Scoped value)
-   {
-      if (value == null)
-      {
-         getSessionContext().remove(key);
-      }
-      else
-      {
-         getSessionContext().put(key, value);
-      }
-   }
-
-   public Scoped getSessionValue(Object key)
-   {
-      return getSessionContext().get(key);
-   }
-
-   private Map<Object, Scoped> getSessionContext()
-   {
-      PortletSession session = request.getPortletSession();
-      Map<Object, Scoped> store = (Map<Object, Scoped>)session.getAttribute("org.juzu.session_scope");
-      if (store == null)
-      {
-         session.setAttribute("org.juzu.session_scope", store = new HashMap<Object, Scoped>());
-      }
-      return store;
-   }
-
-   private Map<Object, Scoped> getFlashContext()
-   {
-      PortletSession session = request.getPortletSession();
-      Map<Object, Scoped> store = (Map<Object, Scoped>)session.getAttribute("org.juzu.flash_scope");
-      if (store == null)
-      {
-         session.setAttribute("org.juzu.flash_scope", store = new HashMap<Object, Scoped>());
-      }
-      return store;
-   }
-
-   public Scoped getIdentityValue(Object key)
-   {
-      return null;
-   }
-
-   public void setIdentityValue(Object key, Scoped value)
-   {
-   }
-
-   public HttpContext getHttpContext()
+   public final HttpContext getHttpContext()
    {
       return httpContext;
    }
 
-   public SecurityContext getSecurityContext()
+   public final SecurityContext getSecurityContext()
    {
       return securityContext;
    }
 
-   public WindowContext getWindowContext()
+   public final WindowContext getWindowContext()
    {
       return windowContext;
+   }
+
+   public final Scoped getRequestValue(Object key)
+   {
+      ScopedContext context = getRequestContext(false);
+      return context != null ? context.get(key) : null;
+   }
+
+   public final void setRequestValue(Object key, Scoped value)
+   {
+      if (value != null)
+      {
+         ScopedContext context = getRequestContext(false);
+         if (context != null)
+         {
+            context.set(key, null);
+         }
+      }
+      else
+      {
+         getRequestContext(true).set(key, value);
+      }
+   }
+
+   public final Scoped getFlashValue(Object key)
+   {
+      ScopedContext context = getFlashContext(false);
+      return context != null ? context.get(key) : null;
+   }
+
+   public final void setFlashValue(Object key, Scoped value)
+   {
+      if (value == null)
+      {
+         ScopedContext context = getFlashContext(false);
+         if (context != null)
+         {
+            context.set(key, null);
+         }
+      }
+      else
+      {
+         getFlashContext(true).set(key, value);
+      }
+   }
+
+   public final Scoped getSessionValue(Object key)
+   {
+      ScopedContext context = getSessionContext(false);
+      return context != null ? context.get(key) : null;
+   }
+
+   public final void setSessionValue(Object key, Scoped value)
+   {
+      if (value == null)
+      {
+         ScopedContext context = getSessionContext(false);
+         if (context != null)
+         {
+            context.set(key, null);
+         }
+      }
+      else
+      {
+         getSessionContext(true).set(key, value);
+      }
+   }
+
+   public final Scoped getIdentityValue(Object key)
+   {
+      return null;
+   }
+
+   public final void setIdentityValue(Object key, Scoped value)
+   {
+   }
+
+   public void close()
+   {
+      ScopedContext context = getRequestContext(false);
+      if (context != null)
+      {
+         context.close();
+      }
+   }
+
+   protected final ScopedContext getRequestContext(boolean create)
+   {
+      ScopedContext context = (ScopedContext)request.getAttribute("org.juzu.request_scope");
+      if (context == null && create)
+      {
+         request.setAttribute("org.juzu.request_scope", context = new ScopedContext());
+      }
+      return context;
+   }
+
+   protected final ScopedContext getFlashContext(boolean create)
+   {
+      ScopedContext context = null;
+      PortletSession session = request.getPortletSession(create);
+      if (session != null)
+      {
+         context = (ScopedContext)session.getAttribute("org.juzu.flash_scope");
+         if (context == null && create)
+         {
+            session.setAttribute("org.juzu.flash_scope", context = new ScopedContext());
+         }
+      }
+      return context;
+   }
+
+   protected final ScopedContext getSessionContext(boolean create)
+   {
+      ScopedContext context = null;
+      PortletSession session = request.getPortletSession(create);
+      if (session != null)
+      {
+         context = (ScopedContext)session.getAttribute("org.juzu.session_scope");
+         if (context == null && create)
+         {
+            session.setAttribute("org.juzu.session_scope", context = new ScopedContext());
+         }
+      }
+      return context;
    }
 }

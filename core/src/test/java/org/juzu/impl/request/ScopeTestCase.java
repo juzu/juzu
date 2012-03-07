@@ -19,12 +19,16 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.impl.inject.Scoped;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.Identifiable;
 import org.juzu.test.Registry;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
 import org.juzu.test.protocol.mock.MockRenderBridge;
+import org.juzu.test.protocol.mock.MockRequestBridge;
+
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ScopeTestCase extends AbstractInjectTestCase
@@ -38,19 +42,45 @@ public class ScopeTestCase extends AbstractInjectTestCase
 
       //
       MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals(1, render.getAttributes().size());
-      long identity = Registry.<Long>unset("car");
-      Identifiable car = (Identifiable)render.getAttributes().values().iterator().next().get();
-      assertEquals(car.getIdentityHashCode(), identity);
 
       //
-      client.invoke(Registry.<String>unset("action"));
-      assertNotNull(Registry.get("car"));
+      MockRequestBridge request = client.render();
+      List<Scoped> attributes = request.getAttributesHistory();
+      assertEquals(1, attributes.size());
+      Identifiable car = (Identifiable)attributes.iterator().next().get();
+      assertEquals(Identifiable.DESTROYED, car.getStatus());
 
       //
-      client.invoke(Registry.<String>unset("resource"));
-      assertNotNull(Registry.get("car"));
+      long id1 = Registry.<Long>unset("car");
+      assertEquals(car.getIdentityHashCode(), id1);
+      assertEquals(Identifiable.MANAGED, (int)Registry.<Integer>unset("status"));
+
+      //
+      request = client.invoke(Registry.<String>unset("action"));
+      attributes = request.getAttributesHistory();
+      assertEquals(1, attributes.size());
+      car = (Identifiable)attributes.iterator().next().get();
+      assertEquals(Identifiable.DESTROYED, car.getStatus());
+
+      //
+      long id2 = Registry.<Long>unset("car");
+      assertNotSame(id1, id2);
+      assertEquals(id2, id2);
+      assertEquals(Identifiable.MANAGED, (int)Registry.<Integer>unset("status"));
+
+      //
+      request = client.invoke(Registry.<String>unset("resource"));
+      attributes = request.getAttributesHistory();
+      assertEquals(1, attributes.size());
+      car = (Identifiable)attributes.iterator().next().get();
+      assertEquals(Identifiable.DESTROYED, car.getStatus());
+
+      //
+      long id3 = Registry.<Long>unset("car");
+      assertNotSame(id1, id3);
+      assertNotSame(id2, id3);
+      assertEquals(car.getIdentityHashCode(), id3);
+      assertEquals(Identifiable.MANAGED, (int)Registry.<Integer>unset("status"));
    }
 
    public void testFlashScope() throws Exception
@@ -61,26 +91,79 @@ public class ScopeTestCase extends AbstractInjectTestCase
 
       //
       MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      long identity1 = Registry.<Long>unset("car");
-      assertEquals(1, client.getFlash(1).size());
-      Identifiable car1 = (Identifiable)client.getFlash(1).values().iterator().next().get();
-      assertEquals(car1.getIdentityHashCode(), identity1);
-
-      //
-      client.invoke(Registry.<String>unset("action"));
-      long identity2 = Registry.<Long>unset("car");
-      assertNotSame(identity1, identity2);
-      assertEquals(1, client.getFlash(0).size());
-      Identifiable car2 = (Identifiable)client.getFlash(0).values().iterator().next().get();
-      assertNotSame(car1, car2);
 
       //
       client.render();
-      long identity3 = Registry.<Long>unset("car");
-      assertEquals(identity2, identity3);
-      assertEquals(1, client.getFlash(1).size());
-      Identifiable car3 = (Identifiable)client.getFlash(1).values().iterator().next().get();
+      long id1 = Registry.<Long>unset("car");
+      int status = Registry.<Integer>unset("status");
+      assertEquals(Identifiable.MANAGED, status);
+      assertEquals(1, client.getFlashHistory(1).size());
+      Identifiable car1 = (Identifiable)client.getFlashHistory(1).iterator().next().get();
+      assertEquals(car1.getIdentityHashCode(), id1);
+      assertEquals(Identifiable.DESTROYED, car1.getStatus());
+
+      //
+      client.invoke(Registry.<String>unset("action"));
+      long id2 = Registry.<Long>unset("car");
+      status = Registry.<Integer>unset("status");
+      assertEquals(Identifiable.MANAGED, status);
+      assertNotSame(id1, id2);
+      assertEquals(1, client.getFlashHistory(0).size());
+      Identifiable car2 = (Identifiable)client.getFlashHistory(0).iterator().next().get();
+      assertNotSame(car1, car2);
+      assertEquals(Identifiable.MANAGED, car2.getStatus());
+
+      //
+      client.render();
+      long id3 = Registry.<Long>unset("car");
+      status = Registry.<Integer>unset("status");
+      assertEquals(Identifiable.MANAGED, status);
+      assertEquals(id2, id3);
+      assertEquals(1, client.getFlashHistory(1).size());
+      Identifiable car3 = (Identifiable)client.getFlashHistory(1).iterator().next().get();
       assertSame(car2, car3);
+      assertEquals(Identifiable.DESTROYED, car2.getStatus());
+   }
+
+   public void testSessionScope() throws Exception
+   {
+      MockApplication<?> app = application("request", "scope", "session");
+      app.declareBean("request.scope.session.Car");
+      app.init();
+
+      //
+      MockClient client = app.client();
+
+      //
+      client.render();
+      long id1 = Registry.<Long>unset("car");
+      int status = Registry.<Integer>unset("status");
+      assertEquals(Identifiable.MANAGED, status);
+      assertEquals(1, client.getSession().size());
+      Identifiable car1 = (Identifiable)client.getSession().iterator().next().get();
+      assertEquals(car1.getIdentityHashCode(), id1);
+      assertEquals(Identifiable.MANAGED, car1.getStatus());
+
+      //
+      client.invoke(Registry.<String>unset("action"));
+      long id2 = Registry.<Long>unset("car");
+      status = Registry.<Integer>unset("status");
+      assertEquals(Identifiable.MANAGED, status);
+      assertNotSame(id1, id2);
+      assertEquals(1, client.getSession().size());
+      Identifiable car2 = (Identifiable)client.getSession().iterator().next().get();
+      assertSame(car1, car2);
+      assertEquals(Identifiable.MANAGED, car2.getStatus());
+
+      //
+      client.render();
+      long id3 = Registry.<Long>unset("car");
+      status = Registry.<Integer>unset("status");
+      assertEquals(Identifiable.MANAGED, status);
+      assertEquals(id2, id3);
+      assertEquals(1, client.getSession().size());
+      Identifiable car3 = (Identifiable)client.getSession().iterator().next().get();
+      assertSame(car2, car3);
+      assertEquals(Identifiable.MANAGED, car2.getStatus());
    }
 }

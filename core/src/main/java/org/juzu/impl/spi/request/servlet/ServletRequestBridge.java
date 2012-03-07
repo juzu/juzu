@@ -21,6 +21,7 @@ package org.juzu.impl.spi.request.servlet;
 
 import org.juzu.Response;
 import org.juzu.impl.inject.Scoped;
+import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.request.HttpContext;
 import org.juzu.request.Phase;
@@ -121,105 +122,109 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
 
    //
 
-   public String getNamespace()
+   public final String getNamespace()
    {
       return "window_ns";
    }
 
-   public String getId()
+   public final String getId()
    {
       return "window_id";
    }
    //
 
-   public Map<String, String[]> getParameters()
+   public final Map<String, String[]> getParameters()
    {
       return parameters;
    }
 
-   public Scoped getRequestValue(Object key)
+   public final HttpContext getHttpContext()
    {
-      return getRequestContext().get(key);
+      return this;
    }
 
-   public void setRequestValue(Object key, Scoped value)
+   public final WindowContext getWindowContext()
+   {
+      return this;
+   }
+
+   public final SecurityContext getSecurityContext()
+   {
+      return null;
+   }
+
+   public final Scoped getRequestValue(Object key)
+   {
+      ScopedContext context = getRequestContext(false);
+      return context != null ? context.get(key) : null;
+   }
+
+   public final void setRequestValue(Object key, Scoped value)
    {
       if (value != null)
       {
-         getRequestContext().remove(key);
+         ScopedContext context = getRequestContext(false);
+         if (context != null)
+         {
+            context.set(key, null);
+         }
       }
       else
       {
-         getRequestContext().put(key, value);
+         getRequestContext(true).set(key, value);
       }
    }
 
-   private Map<Object, Scoped> getRequestContext()
+   public final Scoped getFlashValue(Object key)
    {
-      Map<Object, Scoped> store = (Map<Object, Scoped>)req.getAttribute("org.juzu.request_scope");
-      if (store == null)
-      {
-         req.setAttribute("org.juzu.request_scope", store = new HashMap<Object, Scoped>());
-      }
-      return store;
+      ScopedContext context = getFlashContext(false);
+      return context != null ? context.get(key) : null;
    }
 
-   public void setSessionValue(Object key, Scoped value)
+   public final void setFlashValue(Object key, Scoped value)
    {
       if (value == null)
       {
-         getSessionContext().remove(key);
+         ScopedContext context = getFlashContext(false);
+         if (context != null)
+         {
+            context.set(key, null);
+         }
       }
       else
       {
-         getSessionContext().put(key, value);
+         getFlashContext(true).set(key, value);
       }
    }
 
-   public Scoped getSessionValue(Object key)
+   public final Scoped getSessionValue(Object key)
    {
-      return getSessionContext().get(key);
+      ScopedContext context = getSessionContext(false);
+      return context != null ? context.get(key) : null;
    }
 
-   public HttpContext getHttpContext()
+   public final void setSessionValue(Object key, Scoped value)
    {
-      return this;
+      if (value == null)
+      {
+         ScopedContext context = getSessionContext(false);
+         if (context != null)
+         {
+            context.set(key, null);
+         }
+      }
+      else
+      {
+         getSessionContext(true).set(key, value);
+      }
    }
 
-   public WindowContext getWindowContext()
-   {
-      return this;
-   }
-
-   public SecurityContext getSecurityContext()
+   public final Scoped getIdentityValue(Object key)
    {
       return null;
    }
 
-   public void setFlashValue(Object key, Scoped value)
-   {
-      if (value == null)
-      {
-         getFlashContext().remove(key);
-      }
-      else
-      {
-         getFlashContext().put(key, value);
-      }
-   }
-
-   public Scoped getFlashValue(Object key)
-   {
-      Map<Object, Scoped> flash = getFlashContext();
-      return flash != null ? flash.get(key) : null;
-   }
-
-   public Scoped getIdentityValue(Object key)
-   {
-      return null;
-   }
-
-   public void setIdentityValue(Object key, Scoped value)
+   public final void setIdentityValue(Object key, Scoped value)
    {
    }
 
@@ -228,29 +233,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       throw new UnsupportedOperationException("todo");
    }
 
-   private Map<Object, Scoped> getSessionContext()
-   {
-      HttpSession session = req.getSession();
-      Map<Object, Scoped> store = (Map<Object, Scoped>)session.getAttribute("org.juzu.session_scope");
-      if (store == null)
-      {
-         session.setAttribute("org.juzu.session_scope", store = new HashMap<Object, Scoped>());
-      }
-      return store;
-   }
-
-   private Map<Object, Scoped> getFlashContext()
-   {
-      HttpSession session = req.getSession();
-      Map<Object, Scoped> store = (Map<Object, Scoped>)session.getAttribute("org.juzu.flash_scope");
-      if (store == null)
-      {
-         session.setAttribute("org.juzu.flash_scope", store = new HashMap<Object, Scoped>());
-      }
-      return store;
-   }
-
-   public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
+   public final String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
    {
       StringBuilder buffer = new StringBuilder();
       buffer.append(req.getScheme());
@@ -283,5 +266,54 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
          }
       }
       return buffer.toString();
+   }
+
+   public void close()
+   {
+      ScopedContext context = getRequestContext(false);
+      if (context != null)
+      {
+         context.close();
+      }
+   }
+
+   protected final ScopedContext getRequestContext(boolean create)
+   {
+      ScopedContext context = (ScopedContext)req.getAttribute("org.juzu.request_scope");
+      if (context == null && create)
+      {
+         req.setAttribute("org.juzu.request_scope", context = new ScopedContext());
+      }
+      return context;
+   }
+
+   protected final ScopedContext getFlashContext(boolean create)
+   {
+      ScopedContext context = null;
+      HttpSession session = req.getSession(create);
+      if (session != null)
+      {
+         context = (ScopedContext)session.getAttribute("org.juzu.flash_scope");
+         if (context == null && create)
+         {
+            session.setAttribute("org.juzu.flash_scope", context = new ScopedContext());
+         }
+      }
+      return context;
+   }
+
+   protected final ScopedContext getSessionContext(boolean create)
+   {
+      ScopedContext context = null;
+      HttpSession session = req.getSession(create);
+      if (session != null)
+      {
+         context = (ScopedContext)session.getAttribute("org.juzu.session_scope");
+         if (context == null && create)
+         {
+            session.setAttribute("org.juzu.session_scope", context = new ScopedContext());
+         }
+      }
+      return context;
    }
 }

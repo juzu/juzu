@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.request.servlet;
 
 import org.juzu.Response;
+import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.text.WriterPrinter;
 
@@ -91,5 +92,15 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       //
       writer.println("</body>");
       writer.println("</html>");
+   }
+
+   @Override
+   public void close()
+   {
+      ScopedContext context = getFlashContext(false);
+      if (context != null)
+      {
+         context.close();
+      }
    }
 }

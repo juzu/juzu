@@ -17,41 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package request.scope.request;
+@Application
+package request.scope.session;
 
-import org.juzu.RequestScoped;
-import org.juzu.test.Identifiable;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@RequestScoped
-public class Car implements Identifiable
-{
-
-   /** . */
-   private int status = CONSTRUCTED;
-
-   public long getIdentityHashCode()
-   {
-      return System.identityHashCode(this);
-   }
-
-   @PostConstruct
-   public void create()
-   {
-      status = MANAGED;
-   }
-
-   @PreDestroy
-   public void destroy()
-   {
-      status = DESTROYED;
-   }
-
-   public int getStatus()
-   {
-      return status;
-   }
-}
+import org.juzu.Application;

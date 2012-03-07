@@ -20,9 +20,13 @@
 package org.juzu.test.protocol.mock;
 
 import org.juzu.impl.inject.Scoped;
+import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.impl.utils.Tools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -36,7 +40,7 @@ public abstract class MockRequestBridge implements RequestBridge
    private final Map<String, String[]> parameters;
 
    /** . */
-   private final Map<Object, Scoped> attributes;
+   private final ScopedContext attributes;
 
    /** . */
    private final MockHttpContext httpContext;
@@ -47,19 +51,23 @@ public abstract class MockRequestBridge implements RequestBridge
    /** . */
    private final MockWindowContext windowContext;
 
+   /** . */
+   private final List<Scoped> attributesHistory;
+
    public MockRequestBridge(MockClient client)
    {
       this.client = client;
       this.parameters = new HashMap<String, String[]>();
-      this.attributes = new HashMap<Object, Scoped>();
+      this.attributes = new ScopedContext();
       this.httpContext = new MockHttpContext();
       this.securityContext = new MockSecurityContext();
       this.windowContext = new MockWindowContext();
+      this.attributesHistory = new ArrayList<Scoped>();
    }
 
-   public Map<Object, Scoped> getAttributes()
+   public List<Scoped> getAttributesHistory()
    {
-      return attributes;
+      return attributesHistory;
    }
 
    public Map<String, String[]> getParameters()
@@ -86,11 +94,11 @@ public abstract class MockRequestBridge implements RequestBridge
    {
       if (value != null)
       {
-         attributes.put(key, value);
+         attributes.set(key, value);
       }
       else
       {
-         attributes.remove(key);
+         attributes.set(key, null);
       }
    }
 
@@ -103,11 +111,11 @@ public abstract class MockRequestBridge implements RequestBridge
    {
       if (value != null)
       {
-         client.getSession().put(key, value);
+         client.getSession().set(key, value);
       }
       else
       {
-         client.getSession().remove(key);
+         client.getSession().set(key, null);
       }
    }
 
@@ -133,5 +141,11 @@ public abstract class MockRequestBridge implements RequestBridge
    public MockWindowContext getWindowContext()
    {
       return windowContext;
+   }
+
+   void close()
+   {
+      attributesHistory.addAll(Tools.list(attributes));
+      attributes.close();
    }
 }

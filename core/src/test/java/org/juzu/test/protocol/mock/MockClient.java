@@ -20,16 +20,16 @@
 package org.juzu.test.protocol.mock;
 
 import org.juzu.impl.inject.Scoped;
+import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.utils.JSON;
+import org.juzu.impl.utils.Tools;
 import org.juzu.request.Phase;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A conversation between a client and the application.
@@ -90,20 +90,20 @@ public class MockClient
    final MockApplication<?> application;
 
    /** . */
-   private final Map<Object, Scoped> session;
+   private ScopedContext session;
 
    /** . */
-   private Map<Object, Scoped> flash;
+   private ScopedContext flash;
 
    /** . */
-   private final LinkedList<Map<Object, Scoped>> flashHistory;
+   private final LinkedList<List<Scoped>> flashHistory;
 
    public MockClient(MockApplication<?> application)
    {
       this.application = application;
-      this.session = new HashMap<Object, Scoped>();
+      this.session = new ScopedContext();
       this.flash  = null;
-      this.flashHistory = new LinkedList<Map<Object, Scoped>>();
+      this.flashHistory = new LinkedList<List<Scoped>>();
    }
 
    public MockRenderBridge render(String methodId) throws ApplicationException
@@ -141,35 +141,37 @@ public class MockClient
    {
       if (flash == null)
       {
-         flash = new HashMap<Object, Scoped>();
+         flash = new ScopedContext();
       }
-      flash.put(key, value);
+      flash.set(key, value);
    }
 
    private void invoke(MockRequestBridge request) throws ApplicationException
    {
-      if (request instanceof MockActionBridge)
+      try
       {
          application.invoke(request);
       }
-      else if (request instanceof MockRenderBridge)
+      finally
       {
-         application.invoke(request);
-         flashHistory.addFirst(flash != null ? flash : Collections.<Object, Scoped>emptyMap());
-         flash = null;
-      }
-      else
-      {
-         application.invoke(request);
+         request.close();
+         if (request instanceof MockRenderBridge)
+         {
+            if (flash != null)
+            {
+               flashHistory.addFirst(Tools.list(flash));
+               flash.close();
+               flash = null;
+            }
+            else
+            {
+               flashHistory.addFirst(Collections.<Scoped>emptyList());
+            }
+         }
       }
    }
 
-   public Map<Object, Scoped> getFlash()
-   {
-      return flash;
-   }
-
-   public Map<Object, Scoped> getFlash(int index)
+   public List<Scoped> getFlashHistory(int index)
    {
       if (index < 0)
       {
@@ -177,7 +179,7 @@ public class MockClient
       }
       if (index == 0)
       {
-         return flash;
+         return Tools.list(flash);
       }
       else
       {
@@ -185,8 +187,14 @@ public class MockClient
       }
    }
 
-   public Map<Object, Scoped> getSession()
+   public ScopedContext getSession()
    {
       return session;
+   }
+   
+   public void invalidate()
+   {
+      session.close();
+      session = new ScopedContext();
    }
 }

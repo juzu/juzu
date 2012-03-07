@@ -37,6 +37,7 @@ public class A
       {
          long code = car.getIdentityHashCode();
          Registry.set("car", code);
+         Registry.set("status", car.getStatus());
       }
       catch (ContextNotActiveException expected)
       {
@@ -50,6 +51,7 @@ public class A
    public void index()
    {
       Registry.set("car", car.getIdentityHashCode());
+      Registry.set("status", car.getStatus());
       Registry.set("action", A_.actionURL().toString());
 //      Registry.set("resource", A_.resourceURL().toString());
    }

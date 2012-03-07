@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
+import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.w3c.dom.Element;
 
@@ -92,6 +93,16 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
          {
             setTitle(title);
          }
+      }
+   }
+
+   @Override
+   public void close()
+   {
+      ScopedContext context = getFlashContext(false);
+      if (context != null)
+      {
+         context.close();
       }
    }
 }

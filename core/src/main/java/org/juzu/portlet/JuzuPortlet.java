@@ -191,14 +191,19 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
    {
+      PortletActionBridge bridge = new PortletActionBridge(request, response);
       try
       {
-         runtime.getContext().invoke(new PortletActionBridge(request, response));
+         runtime.getContext().invoke(bridge);
       }
       catch (ApplicationException e)
       {
          // For now we do that until we find something better specially for the dev mode
          throw new PortletException(e.getCause());
+      }
+      finally
+      {
+         bridge.close();
       }
    }
 
@@ -235,15 +240,19 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             {
                public void call() throws Throwable
                {
+                  PortletRenderBridge bridge = new PortletRenderBridge(request, response, !prod);
                   try
                   {
-                     PortletRenderBridge bridge = new PortletRenderBridge(request, response, !prod);
                      runtime.getContext().invoke(bridge);
                      bridge.commit();
                   }
                   catch (ApplicationException e)
                   {
                      throw e.getCause();
+                  }
+                  finally
+                  {
+                     bridge.close();
                   }
                }
             });
@@ -257,15 +266,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             else
             {
                renderThrowable(response.getWriter(), e);
-            }
-         }
-         finally
-         {
-            // Clean up flash scope
-            PortletSession session = request.getPortletSession(false);
-            if (session != null)
-            {
-               session.removeAttribute("org.juzu.flash_scope");
             }
          }
       }
@@ -294,15 +294,19 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             {
                public void call() throws Throwable
                {
+                  PortletResourceBridge bridge = new PortletResourceBridge(request, response, !prod);
                   try
                   {
-                     PortletResourceBridge bridge = new PortletResourceBridge(request, response, !prod);
                      runtime.getContext().invoke(bridge);
                      bridge.commit();
                   }
                   catch (ApplicationException e)
                   {
                      throw e.getCause();
+                  }
+                  finally
+                  {
+                     bridge.close();
                   }
                }
             });

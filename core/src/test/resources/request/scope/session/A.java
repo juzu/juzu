@@ -17,11 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package request.scope.request;
+package request.scope.session;
 
 import org.juzu.Action;
-import org.juzu.View;
 import org.juzu.Resource;
+import org.juzu.View;
 import org.juzu.test.Registry;
 
 import javax.enterprise.context.ContextNotActiveException;

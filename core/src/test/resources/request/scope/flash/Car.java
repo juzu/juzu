@@ -22,13 +22,36 @@ package request.scope.flash;
 import org.juzu.FlashScoped;
 import org.juzu.test.Identifiable;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @FlashScoped
 public class Car implements Identifiable
 {
 
+   /** . */
+   private int status = CONSTRUCTED;
+
    public long getIdentityHashCode()
    {
       return System.identityHashCode(this);
+   }
+
+   @PostConstruct
+   public void create()
+   {
+      status = MANAGED;
+   }
+
+   @PreDestroy
+   public void destroy()
+   {
+      status = DESTROYED;
+   }
+
+   public int getStatus()
+   {
+      return status;
    }
 }

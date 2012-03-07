@@ -17,16 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package request.scope.request;
+package request.scope.session;
 
-import org.juzu.RequestScoped;
+import org.juzu.FlashScoped;
+import org.juzu.SessionScoped;
 import org.juzu.test.Identifiable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@RequestScoped
+@SessionScoped
 public class Car implements Identifiable
 {
 
@@ -37,7 +38,7 @@ public class Car implements Identifiable
    {
       return System.identityHashCode(this);
    }
-
+   
    @PostConstruct
    public void create()
    {
