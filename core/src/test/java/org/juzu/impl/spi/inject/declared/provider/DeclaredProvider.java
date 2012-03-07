@@ -17,15 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.siblingproducers;
+package org.juzu.impl.spi.inject.declared.provider;
 
-import org.juzu.impl.spi.inject.declared.provider.DeclaredProviderProduct;
+import org.juzu.impl.inject.Export;
+
+import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProductExt2 extends DeclaredProviderProduct
+@Export
+public class DeclaredProvider implements Provider<DeclaredProviderProduct>
 {
-   public ProductExt2()
+   public DeclaredProviderProduct get()
    {
-      super("ext2");
+      return new DeclaredProviderProduct("Foo");
    }
 }

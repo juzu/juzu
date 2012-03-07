@@ -36,6 +36,8 @@ import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruitInjected;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
+import org.juzu.impl.spi.inject.declared.producer.DeclaredProducer;
+import org.juzu.impl.spi.inject.declared.producer.DeclaredProducerProduct;
 import org.juzu.impl.spi.inject.defaultscope.UndeclaredScopeBean;
 import org.juzu.impl.spi.inject.implementationtype.Extended;
 import org.juzu.impl.spi.inject.implementationtype.Extension;
@@ -47,8 +49,8 @@ import org.juzu.impl.spi.inject.lifecycle.unscoped.LifeCycleUnscopedBean;
 import org.juzu.impl.spi.inject.managerinjection.ManagerInjected;
 import org.juzu.impl.spi.inject.named.NamedBean;
 import org.juzu.impl.spi.inject.named.NamedInjected;
-import org.juzu.impl.spi.inject.producer.Producer;
-import org.juzu.impl.spi.inject.producer.Product;
+import org.juzu.impl.spi.inject.declared.provider.DeclaredProvider;
+import org.juzu.impl.spi.inject.declared.provider.DeclaredProviderProduct;
 import org.juzu.impl.spi.inject.qualifier.Qualified;
 import org.juzu.impl.spi.inject.qualifier.QualifiedInjected;
 import org.juzu.impl.spi.inject.requestscopedprovider.RequestBean;
@@ -135,10 +137,12 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    protected final <T> T getBean(Class<T> beanType) throws Exception
    {
       B bean = mgr.resolveBean(beanType);
-      assertNotNull(bean);
+      assertNotNull("Could not resolve bean of type " + beanType, bean);
       I beanInstance = mgr.create(bean);
-      assertNotNull(beanInstance);
-      return (T)mgr.get(bean, beanInstance);
+      assertNotNull("Could not create bean instance of type " + beanType + " from bean " + bean, beanInstance);
+      Object o = mgr.get(bean, beanInstance);
+      assertNotNull("Could not obtain bean object from bean instance " + beanInstance + " of type " + beanType, o);
+      return beanType.cast(o);
    }
 
    protected final Object getBean(String beanName) throws Exception
@@ -289,14 +293,25 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(beanObject.fruit);
    }
 
-   public void testProducer() throws Exception
+   public void testDeclaredProvider() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "producer");
-      bootstrap.declareProvider(Product.class, Producer.class);
+      init("org", "juzu", "impl", "spi", "inject", "declared", "provider");
+      bootstrap.declareProvider(DeclaredProviderProduct.class, DeclaredProvider.class);
       boot();
 
       //
-      Product product = getBean(Product.class);
+      DeclaredProviderProduct product = getBean(DeclaredProviderProduct.class);
+      assertNotNull(product);
+   }
+
+   public void testDeclaredProducer() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "declared", "producer");
+      bootstrap.declareProvider(DeclaredProducerProduct.class, DeclaredProducer.class);
+      boot();
+
+      //
+      DeclaredProducerProduct product = getBean(DeclaredProducerProduct.class);
       assertNotNull(product);
    }
 
@@ -327,11 +342,11 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testProvider() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "provider");
-      bootstrap.bindProvider(Product.class, new Producer());
+      bootstrap.bindProvider(DeclaredProviderProduct.class, new DeclaredProvider());
       boot();
 
       //
-      Product product = getBean(Product.class);
+      DeclaredProviderProduct product = getBean(DeclaredProviderProduct.class);
       assertNotNull(product);
    }
 

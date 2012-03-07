@@ -17,16 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.producer;
+package org.juzu.impl.spi.inject.declared.producer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Product
+public class DeclaredProducerProduct
 {
 
    /** . */
    private String name;
 
-   public Product(String name)
+   public DeclaredProducerProduct(String name)
    {
       this.name = name;
    }

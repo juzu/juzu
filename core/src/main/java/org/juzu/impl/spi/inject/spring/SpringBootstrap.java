@@ -72,6 +72,22 @@ public class SpringBootstrap extends InjectBuilder
    /** . */
    private URL configurationURL;
 
+   public URL getConfigurationURL()
+   {
+      return configurationURL;
+   }
+
+   public void setConfigurationURL(URL configurationURL)
+   {
+      this.configurationURL = configurationURL;
+   }
+
+   @Override
+   public InjectBuilder setFilter(BeanFilter filter)
+   {
+      return this;
+   }
+
    @Override
    public <T> InjectBuilder declareBean(Class<T> type, Class<? extends T> implementationType)
    {
@@ -94,29 +110,6 @@ public class SpringBootstrap extends InjectBuilder
 
       //
       beans.put(name, implementationType);
-      return this;
-   }
-
-   public URL getConfigurationURL()
-   {
-      return configurationURL;
-   }
-
-   public void setConfigurationURL(URL configurationURL)
-   {
-      this.configurationURL = configurationURL;
-   }
-
-   @Override
-   public InjectBuilder setFilter(BeanFilter filter)
-   {
-      return this;
-   }
-
-   @Override
-   public <T> InjectBuilder declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
-   {
-      // todo
       return this;
    }
 
@@ -156,9 +149,29 @@ public class SpringBootstrap extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider)
+   public <T> InjectBuilder bindProvider(Class<T> type, final Provider<T> provider)
    {
-      return bindBean(ProviderFactory.class, null, new ProviderFactory<T>(type, provider));
+      return bindBean(ProviderFactory.class, null, new ProviderFactory<T>(type)
+      {
+         @Override
+         public Provider<T> getProvider()
+         {
+            return provider;
+         }
+      });
+   }
+
+   @Override
+   public <T> InjectBuilder declareProvider(Class<T> type, final Class<? extends Provider<T>> provider)
+   {
+      return bindBean(ProviderFactory.class, null, new ProviderFactory<T>(type)
+      {
+         @Override
+         public Provider<T> getProvider() throws Exception
+         {
+            return provider.newInstance();
+         }
+      });
    }
 
    @Override

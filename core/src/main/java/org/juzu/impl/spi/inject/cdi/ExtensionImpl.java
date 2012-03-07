@@ -26,7 +26,12 @@ import org.juzu.impl.utils.Tools;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -34,9 +39,16 @@ import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Juzu CDI extension.
@@ -45,6 +57,11 @@ import java.util.List;
  */
 public class ExtensionImpl implements Extension
 {
+
+   /** . */
+   private final static AnnotationLiteral<Produces> PRODUCES_ANNOTATION_LITERAL = new AnnotationLiteral<Produces>()
+   {
+   };
 
    /** . */
    private final CDIManager manager;
@@ -84,6 +101,149 @@ public class ExtensionImpl implements Extension
       {
          if (manager.declaredBeans.contains(type))
          {
+            if (Provider.class.isAssignableFrom(type))
+            {
+               final AnnotatedType<T> at = pat.getAnnotatedType();
+
+               AnnotatedType<T> providerType = new AnnotatedType<T>() {
+
+                  public Class<T> getJavaClass()
+                  {
+                     return at.getJavaClass();
+                  }
+
+                  public Set<AnnotatedConstructor<T>> getConstructors()
+                  {
+                     return at.getConstructors();
+                  }
+
+                  public Set<AnnotatedMethod<? super T>> getMethods()
+                  {
+                     Set<AnnotatedMethod<? super T>> ams = at.getMethods();
+                     for (final AnnotatedMethod<? super T> am : ams)
+                     {
+                        final AnnotatedMethod<T> a = (AnnotatedMethod<T>)am;
+                        Method method = am.getJavaMember();
+                        if (method.getName().equals("get") && method.getParameterTypes().length == 0)
+                        {
+                           Produces produces = am.getAnnotation(Produces.class);
+                           if (produces == null)
+                           {
+                              // We need to annotate this method with @Produces for CDI
+                              AnnotatedMethod<T> am2 = new AnnotatedMethod<T>()
+                              {
+                                 public Method getJavaMember()
+                                 {
+                                    return am.getJavaMember();
+                                 }
+
+                                 public List<AnnotatedParameter<T>> getParameters()
+                                 {
+                                    return a.getParameters();
+                                 }
+
+                                 public boolean isStatic()
+                                 {
+                                    return am.isStatic();
+                                 }
+
+                                 public AnnotatedType<T> getDeclaringType()
+                                 {
+                                    return a.getDeclaringType();
+                                 }
+
+                                 public Type getBaseType()
+                                 {
+                                    return am.getBaseType();
+                                 }
+
+                                 public Set<Type> getTypeClosure()
+                                 {
+                                    return am.getTypeClosure();
+                                 }
+
+                                 public <T extends Annotation> T getAnnotation(Class<T> annotationType)
+                                 {
+                                    if (annotationType == Produces.class)
+                                    {
+                                       return (T)PRODUCES_ANNOTATION_LITERAL;
+                                    }
+                                    else
+                                    {
+                                       return am.getAnnotation(annotationType);
+                                    }
+                                 }
+
+                                 public Set<Annotation> getAnnotations()
+                                 {
+                                    Set<Annotation> annotations = am.getAnnotations();
+                                    for (Annotation annotation : annotations)
+                                    {
+                                       if (annotation instanceof Produces)
+                                       {
+                                          return annotations;
+                                       }
+                                    }
+                                    annotations = new HashSet<Annotation>(annotations);
+                                    annotations.add(PRODUCES_ANNOTATION_LITERAL);
+                                    return annotations;
+                                 }
+
+                                 public boolean isAnnotationPresent(Class<? extends Annotation> annotationType)
+                                 {
+                                    return Produces.class.isInstance(annotationType) || am.isAnnotationPresent(annotationType);
+                                 }
+                              };
+                              
+                              //
+                              ams = new HashSet<AnnotatedMethod<? super T>>(ams);
+                              ams.remove(am);
+                              ams.add(am2);
+                           }
+                           
+                           // We are done here, no need to inspect other methods
+                           break;
+                        }
+                     }
+                     return ams;
+                  }
+
+                  public Set<AnnotatedField<? super T>> getFields()
+                  {
+                     return at.getFields();
+                  }
+
+                  public Type getBaseType()
+                  {
+                     return at.getBaseType();
+                  }
+
+                  public Set<Type> getTypeClosure()
+                  {
+                     return at.getTypeClosure();
+                  }
+
+                  public <T extends Annotation> T getAnnotation(Class<T> annotationType)
+                  {
+                     return at.getAnnotation(annotationType);
+                  }
+
+                  public Set<Annotation> getAnnotations()
+                  {
+                     return at.getAnnotations() ;
+                  }
+
+                  public boolean isAnnotationPresent(Class<? extends Annotation> annotationType)
+                  {
+                     return at.isAnnotationPresent(annotationType);
+                  }
+               };
+               
+               // Use our patched type
+               pat.setAnnotatedType(providerType);
+            }
+            
+            //
             veto = false;
          }
          else

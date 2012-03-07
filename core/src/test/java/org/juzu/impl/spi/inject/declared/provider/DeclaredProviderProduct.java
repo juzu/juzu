@@ -17,15 +17,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.siblingproducers;
-
-import org.juzu.impl.spi.inject.declared.provider.DeclaredProviderProduct;
+package org.juzu.impl.spi.inject.declared.provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProductExt2 extends DeclaredProviderProduct
+public class DeclaredProviderProduct
 {
-   public ProductExt2()
+
+   /** . */
+   private String name;
+
+   public DeclaredProviderProduct(String name)
    {
-      super("ext2");
+      this.name = name;
+   }
+
+   public String getName()
+   {
+      return name;
    }
 }

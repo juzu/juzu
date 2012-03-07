@@ -24,23 +24,29 @@ import org.springframework.beans.factory.FactoryBean;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class ProviderFactory<T> implements FactoryBean<T>
+abstract class ProviderFactory<T> implements FactoryBean<T>
 {
 
    /** . */
    private final Class<T> type;
 
    /** . */
-   private final Provider<T> provider;
+   private Provider<T> provider;
 
-   ProviderFactory(Class<T> type, Provider<T> provider)
+   ProviderFactory(Class<T> type)
    {
       this.type = type;
-      this.provider = provider;
+      this.provider = null;
    }
+   
+   public abstract Provider<T> getProvider() throws Exception;
 
    public T getObject() throws Exception
    {
+      if (provider == null)
+      {
+         provider = getProvider();
+      }
       return provider.get();
    }
 

@@ -47,11 +47,6 @@ public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Objec
    {
    }
 
-   @Override
-   public void testProducer() throws Exception
-   {
-   }
-
    public void testConfigurationURL() throws Exception
    {
       URL configurationURL = Declared.class.getResource("spring.xml");
