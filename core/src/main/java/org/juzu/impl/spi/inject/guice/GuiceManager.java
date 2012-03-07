@@ -41,7 +41,6 @@ import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.InjectManager;
 
 import javax.annotation.PreDestroy;
-import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -66,7 +65,7 @@ public class GuiceManager implements InjectManager<GuiceBean, Object>
    /** . */
    private final Map<String, Key<?>> nameMap;
 
-   public GuiceManager(final GuiceBootstrap bootstrap)
+   public GuiceManager(final GuiceBuilder bootstrap)
    {
 
       AbstractModule module = new AbstractModule()

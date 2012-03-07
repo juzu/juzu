@@ -23,7 +23,7 @@ import org.juzu.impl.inject.Export;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
-import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
+import org.juzu.impl.spi.inject.cdi.CDIBuilder;
 import org.juzu.test.CompilerHelper;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -38,7 +38,7 @@ public class CDIManagerTestCase extends InjectManagerTestCase<Bean<?>, Creationa
    @Override
    protected InjectBuilder getManager() throws Exception
    {
-      return new CDIBootstrap();
+      return new CDIBuilder();
    }
 
    public void testExport() throws Exception

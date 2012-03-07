@@ -20,7 +20,7 @@
 package org.juzu.impl.spi.inject;
 
 import com.google.inject.Binding;
-import org.juzu.impl.spi.inject.guice.GuiceBootstrap;
+import org.juzu.impl.spi.inject.guice.GuiceBuilder;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class GuiceManagerTestCase extends InjectManagerTestCase<Binding, Object>
@@ -29,6 +29,6 @@ public class GuiceManagerTestCase extends InjectManagerTestCase<Binding, Object>
    @Override
    protected InjectBuilder getManager() throws Exception
    {
-      return new GuiceBootstrap();
+      return new GuiceBuilder();
    }
 }

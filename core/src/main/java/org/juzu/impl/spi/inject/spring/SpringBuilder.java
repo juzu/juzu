@@ -54,7 +54,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SpringBootstrap extends InjectBuilder
+public class SpringBuilder extends InjectBuilder
 {
 
    /** . */

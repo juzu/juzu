@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIBootstrap extends InjectBuilder
+public class CDIBuilder extends InjectBuilder
 {
 
    /** . */
@@ -61,7 +61,7 @@ public class CDIBootstrap extends InjectBuilder
    /** . */
    private BeanFilter filter;
 
-   public CDIBootstrap()
+   public CDIBuilder()
    {
       this.scopes = new HashSet<Scope>();
       this.fileSystems = new ArrayList<ReadFileSystem<?>>();

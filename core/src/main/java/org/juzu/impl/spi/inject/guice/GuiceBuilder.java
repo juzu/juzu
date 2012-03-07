@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceBootstrap extends InjectBuilder
+public class GuiceBuilder extends InjectBuilder
 {
 
    /** . */
@@ -45,7 +45,7 @@ public class GuiceBootstrap extends InjectBuilder
    /** . */
    ClassLoader classLoader;
 
-   public GuiceBootstrap()
+   public GuiceBuilder()
    {
       this.bindings = new ArrayList<BeanBinding>();
       this.scopes = new HashSet<Scope>();

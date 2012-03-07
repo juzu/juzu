@@ -19,9 +19,9 @@
 
 package org.juzu.impl.spi.inject;
 
-import org.juzu.impl.spi.inject.cdi.CDIBootstrap;
-import org.juzu.impl.spi.inject.guice.GuiceBootstrap;
-import org.juzu.impl.spi.inject.spring.SpringBootstrap;
+import org.juzu.impl.spi.inject.cdi.CDIBuilder;
+import org.juzu.impl.spi.inject.guice.GuiceBuilder;
+import org.juzu.impl.spi.inject.spring.SpringBuilder;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum InjectImplementation
@@ -32,7 +32,7 @@ public enum InjectImplementation
       @Override
       public InjectBuilder bootstrap()
       {
-         return new CDIBootstrap();
+         return new CDIBuilder();
       }
    },
 
@@ -41,7 +41,7 @@ public enum InjectImplementation
       @Override
       public InjectBuilder bootstrap()
       {
-         return new GuiceBootstrap();
+         return new GuiceBuilder();
       }
    },
 
@@ -50,7 +50,7 @@ public enum InjectImplementation
       @Override
       public InjectBuilder bootstrap()
       {
-         return new SpringBootstrap();
+         return new SpringBuilder();
       }
    };
 

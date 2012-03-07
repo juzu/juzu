@@ -35,7 +35,7 @@ import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectImplementation;
-import org.juzu.impl.spi.inject.spring.SpringBootstrap;
+import org.juzu.impl.spi.inject.spring.SpringBuilder;
 import org.juzu.impl.utils.DevClassLoader;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;
@@ -370,13 +370,13 @@ public abstract class ApplicationRuntime<P, R, L>
       injectBootstrap.setClassLoader(getClassLoader());
 
       //
-      if (injectBootstrap instanceof SpringBootstrap)
+      if (injectBootstrap instanceof SpringBuilder)
       {
          R springName = resources.getPath("spring.xml");
          if (springName != null)
          {
             URL configurationURL = resources.getURL(springName);
-            ((SpringBootstrap)injectBootstrap).setConfigurationURL(configurationURL);
+            ((SpringBuilder)injectBootstrap).setConfigurationURL(configurationURL);
          }
       }
 

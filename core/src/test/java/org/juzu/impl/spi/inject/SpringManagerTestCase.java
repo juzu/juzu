@@ -21,7 +21,7 @@ package org.juzu.impl.spi.inject;
 
 import org.juzu.impl.spi.inject.configuration.Declared;
 import org.juzu.impl.spi.inject.configuration.DeclaredInjected;
-import org.juzu.impl.spi.inject.spring.SpringBootstrap;
+import org.juzu.impl.spi.inject.spring.SpringBuilder;
 import org.juzu.impl.utils.Tools;
 
 import java.io.InputStream;
@@ -34,7 +34,7 @@ public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Objec
    @Override
    protected InjectBuilder getManager() throws Exception
    {
-      return new SpringBootstrap();
+      return new SpringBuilder();
    }
 
    @Override
@@ -58,7 +58,7 @@ public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Objec
       //
       init("org", "juzu", "impl", "spi", "inject", "configuration");
       bootstrap.declareBean(DeclaredInjected.class, null);
-      ((SpringBootstrap)bootstrap).setConfigurationURL(configurationURL);
+      ((SpringBuilder)bootstrap).setConfigurationURL(configurationURL);
       boot();
 
       //
