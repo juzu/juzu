@@ -123,7 +123,7 @@ public class MockApplication<P>
    public void declareBean(String className) throws ClassNotFoundException
    {
       Class<?> beanClazz = classLoader.loadClass(className);
-      bootstrap.declareBean(beanClazz, null);
+      bootstrap.declareBean(beanClazz, null, null);
    }
    
    public <T> void bindBean(Class<T> type, Iterable<Annotation> qualifiers, T bean)

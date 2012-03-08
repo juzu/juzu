@@ -17,19 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.inject;
+package org.juzu.impl.spi.inject.declared.qualifier.declared.provider;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.juzu.impl.spi.inject.Color;
+import org.juzu.impl.spi.inject.Colorized;
+
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
-public @interface Bindings
+public class DeclaredQualifierDeclaredProviderInjected
 {
 
-   Binding[] value() default {};
+   @Inject
+   @Colorized(Color.BLUE)
+   public DeclaredQualifierDeclaredProvider blue;
 
+   @Inject
+   @Colorized(Color.RED)
+   public DeclaredQualifierDeclaredProvider red;
+
+   @Inject
+   @Colorized(Color.GREEN)
+   public DeclaredQualifierDeclaredProvider green;
 }

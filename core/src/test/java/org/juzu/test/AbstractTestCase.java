@@ -103,6 +103,18 @@ public abstract class AbstractTestCase extends TestCase
       }
    }
 
+   public static <T> T assertNotInstanceOf(Class<?> expectedInstance, T o)
+   {
+      if (expectedInstance.isInstance(o))
+      {
+         throw failure("Was expecting " + o + " not to be an instance of " + expectedInstance.getName());
+      }
+      else
+      {
+         return o;
+      }
+   }
+
    public static void assertDelete(File f)
    {
       if (!f.exists())

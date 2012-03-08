@@ -17,10 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceImpl.class))
-package inject.binding.implementation;
+package org.juzu.impl.spi.inject.declared.qualifier.declared.bean;
 
-import org.juzu.Application;
-import org.juzu.inject.Binding;
-import org.juzu.inject.Bindings;
+import org.juzu.impl.spi.inject.Color;
+import org.juzu.impl.spi.inject.Colorized;
+
+import javax.inject.Inject;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class DeclaredQualifierDeclaredBeanInjected
+{
+
+   @Inject
+   @Colorized(Color.BLUE)
+   public DeclaredQualifierDeclaredBean blue;
+
+   @Inject
+   @Colorized(Color.RED)
+   public DeclaredQualifierDeclaredBean red;
+
+   @Inject
+   @Colorized(Color.GREEN)
+   public DeclaredQualifierDeclaredBean green;
+}

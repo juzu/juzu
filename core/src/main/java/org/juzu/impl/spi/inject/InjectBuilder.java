@@ -34,9 +34,9 @@ import java.lang.annotation.Annotation;
 public abstract class InjectBuilder
 {
 
-   public abstract <T> InjectBuilder declareBean(Class<T> type, Class<? extends T> implementationType);
+   public abstract <T> InjectBuilder declareBean(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends T> implementationType);
 
-   public abstract <T> InjectBuilder declareProvider(Class<T> type, Class<? extends Provider<T>> provider);
+   public abstract <T> InjectBuilder declareProvider(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider);
 
    public abstract <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance);
 

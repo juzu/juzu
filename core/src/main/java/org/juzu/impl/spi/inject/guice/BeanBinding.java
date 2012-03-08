@@ -87,9 +87,9 @@ abstract class BeanBinding<T>
       /** . */
       final Class<? extends T> implementationType;
 
-      ToType(Class<T> type, Class<? extends T> implementationType)
+      ToType(Class<T> type, Class<? extends T> implementationType, Iterable<Annotation> declaredQualifiers)
       {
-         super(type, implementationType != null ? implementationType : type, null);
+         super(type, implementationType != null ? implementationType : type, declaredQualifiers);
 
          //
          this.implementationType = implementationType;
@@ -102,9 +102,9 @@ abstract class BeanBinding<T>
       /** . */
       final Class<? extends Provider<T>> provider;
 
-      ToProviderType(Class<T> type, Class<? extends Provider<T>> provider)
+      ToProviderType(Class<T> type, Class<? extends Provider<T>> provider, Iterable<Annotation> declaredQualifiers)
       {
-         super(type, null, null);
+         super(type, null, declaredQualifiers);
 
          //
          this.provider = provider;

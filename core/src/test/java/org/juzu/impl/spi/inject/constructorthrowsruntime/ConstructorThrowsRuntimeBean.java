@@ -26,6 +26,6 @@ public class ConstructorThrowsRuntimeBean
 {
    public ConstructorThrowsRuntimeBean()
    {
-      throw new ConcurrentModificationException();
+      throw new ConcurrentModificationException("DON'T FREAK OUT");
    }
 }

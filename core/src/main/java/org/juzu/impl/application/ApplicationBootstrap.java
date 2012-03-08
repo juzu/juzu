@@ -25,8 +25,8 @@ import org.juzu.View;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.descriptor.ControllerDescriptor;
 import org.juzu.impl.inject.BeanFilter;
-import org.juzu.impl.inject.Binding;
-import org.juzu.impl.inject.Bindings;
+import org.juzu.inject.Binding;
+import org.juzu.inject.Bindings;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.MetaProvider;
 import org.juzu.impl.request.Scope;
@@ -37,8 +37,11 @@ import org.juzu.plugin.Plugin;
 import org.juzu.template.Template;
 
 import javax.inject.Provider;
+import javax.inject.Qualifier;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -71,7 +74,7 @@ public class ApplicationBootstrap
       bootstrap.bindBean(ApplicationDescriptor.class, null, descriptor);
 
       // Bind the application context
-      bootstrap.declareBean(ApplicationContext.class, InternalApplicationContext.class);
+      bootstrap.declareBean(ApplicationContext.class, null, InternalApplicationContext.class);
 
       //
       bootstrap.setFilter(new BeanFilter()
@@ -107,13 +110,13 @@ public class ApplicationBootstrap
       // Bind the controllers
       for (ControllerDescriptor controller : descriptor.getControllers())
       {
-         bootstrap.declareBean(controller.getType(), (Class)null);
+         bootstrap.declareBean(controller.getType(), null, (Class)null);
       }
 
       // Bind the templates
       for (TemplateDescriptor template : descriptor.getTemplates())
       {
-         bootstrap.declareBean(Template.class, template.getType());
+         bootstrap.declareBean(Template.class, null, template.getType());
       }
 
       //
@@ -125,28 +128,38 @@ public class ApplicationBootstrap
       {
          for (Binding binding : bindings.value())
          {
-            Class<?>[] types = binding.value();
+            Class<?> type = binding.value();
             Class<?> implementation = binding.implementation();
-            for (Class<?> type : types)
+            if (MetaProvider.class.isAssignableFrom(implementation))
             {
-               if (MetaProvider.class.isAssignableFrom(implementation))
+               MetaProvider mp = (MetaProvider)implementation.newInstance();
+               Provider provider = mp.getProvider(type);
+               bootstrap.bindProvider(type, provider);
+            }
+            else if (Provider.class.isAssignableFrom(implementation))
+            {
+               Method m = implementation.getMethod("get");
+               ArrayList<Annotation> qualifiers = null;
+               for (Annotation annotation : m.getAnnotations())
                {
-                  MetaProvider mp = (MetaProvider)implementation.newInstance();
-                  Provider provider = mp.getProvider(type);
-                  bootstrap.bindProvider(type, provider);
-               }
-               else if (Provider.class.isAssignableFrom(implementation))
-               {
-                  bootstrap.declareProvider(type, (Class)implementation);
-               }
-               else
-               {
-                  if (implementation == Object.class)
+                  if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
                   {
-                     implementation = null;
+                     if (qualifiers == null)
+                     {
+                        qualifiers = new ArrayList<Annotation>();
+                     }
+                     qualifiers.add(annotation);
                   }
-                  bootstrap.declareBean((Class)type, (Class)implementation);
                }
+               bootstrap.declareProvider(type, qualifiers, (Class)implementation);
+            }
+            else
+            {
+               if (implementation == Object.class)
+               {
+                  implementation = null;
+               }
+               bootstrap.declareBean((Class)type, null, (Class)implementation);
             }
          }
       }
@@ -157,7 +170,7 @@ public class ApplicationBootstrap
       // Declare the plugins
       for (Class<? extends Plugin> pluginType : plugins)
       {
-         bootstrap.declareBean(pluginType, null);
+         bootstrap.declareBean(pluginType, null, null);
       }
 
       //

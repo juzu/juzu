@@ -57,7 +57,7 @@ public class SpringManagerTestCase extends InjectManagerTestCase<Class<?>, Objec
 
       //
       init("org", "juzu", "impl", "spi", "inject", "configuration");
-      bootstrap.declareBean(DeclaredInjected.class, null);
+      bootstrap.declareBean(DeclaredInjected.class, null, null);
       ((SpringBuilder)bootstrap).setConfigurationURL(configurationURL);
       boot();
 

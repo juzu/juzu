@@ -24,6 +24,6 @@ public class ConstructorThrowsErrorBean
 {
    public ConstructorThrowsErrorBean()
    {
-      throw new UnknownError();
+      throw new UnknownError("DON'T FREAK OUT");
    }
 }

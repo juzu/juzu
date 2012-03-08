@@ -32,7 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -55,9 +54,6 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
    final ClassLoader classLoader;
 
    /** . */
-   final Set<Class<?>> declaredBeans;
-
-   /** . */
    final ArrayList<Bean> beans;
 
    /** . */
@@ -66,12 +62,10 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
    public CDIManager(
       Container container,
       BeanFilter filter,
-      ArrayList<AbstractBean> boundBeans,
-      Set<Class<?>> declaredBeans) throws Exception
+      ArrayList<AbstractBean> boundBeans) throws Exception
    {
       this.filter = filter;
       this.boundBeans = boundBeans;
-      this.declaredBeans = declaredBeans;
       this.beans = new ArrayList<Bean>();
 
       //
@@ -165,6 +159,7 @@ public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
       }
       catch (CreationException e)
       {
+         e.printStackTrace();
          throw new InvocationTargetException(e.getCause());
       }
       catch (RuntimeException e)

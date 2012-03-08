@@ -36,8 +36,14 @@ import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruitInjected;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
+import org.juzu.impl.spi.inject.declared.qualifier.declared.bean.DeclaredQualifierDeclaredBean;
+import org.juzu.impl.spi.inject.declared.qualifier.declared.bean.DeclaredQualifierDeclaredBeanInjected;
 import org.juzu.impl.spi.inject.declared.producer.DeclaredProducer;
 import org.juzu.impl.spi.inject.declared.producer.DeclaredProducerProduct;
+import org.juzu.impl.spi.inject.declared.qualifier.declared.provider.ColorlessProvider;
+import org.juzu.impl.spi.inject.declared.qualifier.declared.provider.DeclaredQualifierDeclaredProvider;
+import org.juzu.impl.spi.inject.declared.qualifier.declared.provider.DeclaredQualifierDeclaredProviderInjected;
+import org.juzu.impl.spi.inject.declared.qualifier.declared.provider.GreenProvider;
 import org.juzu.impl.spi.inject.defaultscope.UndeclaredScopeBean;
 import org.juzu.impl.spi.inject.implementationtype.Extended;
 import org.juzu.impl.spi.inject.implementationtype.Extension;
@@ -72,7 +78,6 @@ import org.juzu.impl.spi.inject.supertype.FruitInjected;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 
-import javax.enterprise.util.AnnotationLiteral;
 import javax.naming.AuthenticationException;
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -182,8 +187,8 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testDependencyInjection() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "dependencyinjection");
-      bootstrap.declareBean(Bean.class, null);
-      bootstrap.declareBean(Dependency.class, null);
+      bootstrap.declareBean(Bean.class, null, null);
+      bootstrap.declareBean(Dependency.class, null, null);
       boot();
 
       //
@@ -202,8 +207,8 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testScopeScoped() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "scope", "scoped");
-      bootstrap.declareBean(ScopedInjected.class, null);
-      bootstrap.declareBean(ScopedBean.class, null);
+      bootstrap.declareBean(ScopedInjected.class, null, null);
+      bootstrap.declareBean(ScopedBean.class, null, null);
       boot(Scope.REQUEST);
 
       //
@@ -230,7 +235,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testScopeSingleton() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "scope", "singleton");
-      bootstrap.declareBean(SingletonBean.class, null);
+      bootstrap.declareBean(SingletonBean.class, null, null);
       boot();
 
       //
@@ -242,9 +247,9 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testNamed() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "named");
-      bootstrap.declareBean(NamedInjected.class, null);
-      bootstrap.declareBean(NamedBean.class, NamedBean.Foo.class);
-      bootstrap.declareBean(NamedBean.class, NamedBean.Bar.class);
+      bootstrap.declareBean(NamedInjected.class, null, null);
+      bootstrap.declareBean(NamedBean.class, null, NamedBean.Foo.class);
+      bootstrap.declareBean(NamedBean.class, null, NamedBean.Bar.class);
       boot();
 
       //
@@ -266,9 +271,9 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testQualifier() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "qualifier");
-      bootstrap.declareBean(QualifiedInjected.class, (Class<QualifiedInjected>)null);
-      bootstrap.declareBean(Qualified.class, Qualified.Red.class);
-      bootstrap.declareBean(Qualified.class, Qualified.Green.class);
+      bootstrap.declareBean(QualifiedInjected.class, null, (Class<QualifiedInjected>)null);
+      bootstrap.declareBean(Qualified.class, null, Qualified.Red.class);
+      bootstrap.declareBean(Qualified.class, null, Qualified.Green.class);
       boot();
 
       //
@@ -283,8 +288,8 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testSuperType() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "supertype");
-      bootstrap.declareBean(Apple.class, null);
-      bootstrap.declareBean(FruitInjected.class, null);
+      bootstrap.declareBean(Apple.class, null, null);
+      bootstrap.declareBean(FruitInjected.class, null, null);
       boot();
 
       //
@@ -293,10 +298,29 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(beanObject.fruit);
    }
 
+   public void testBoundSingletonQualifierDeclared() throws Exception
+   {
+      DeclaredQualifierBoundSingleton blue = new DeclaredQualifierBoundSingleton();
+      DeclaredQualifierBoundSingleton red = new DeclaredQualifierBoundSingleton();
+      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier", "declared");
+      bootstrap.declareBean(DeclaredQualifierBoundSingletonInjected.class, null, null);
+      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), blue);
+      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), red);
+      boot();
+
+      //
+      DeclaredQualifierBoundSingletonInjected injected = getBean(DeclaredQualifierBoundSingletonInjected.class);
+      assertNotNull(injected);
+      assertNotNull(injected.blue);
+      assertNotNull(injected.red);
+      assertSame(blue, injected.blue);
+      assertSame(red, injected.red);
+   }
+
    public void testDeclaredProvider() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "declared", "provider");
-      bootstrap.declareProvider(DeclaredProviderProduct.class, DeclaredProvider.class);
+      bootstrap.declareProvider(DeclaredProviderProduct.class, null, DeclaredProvider.class);
       boot();
 
       //
@@ -307,7 +331,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testDeclaredProducer() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "declared", "producer");
-      bootstrap.declareProvider(DeclaredProducerProduct.class, DeclaredProducer.class);
+      bootstrap.declareProvider(DeclaredProducerProduct.class, null, DeclaredProducer.class);
       boot();
 
       //
@@ -318,9 +342,9 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testSiblingProducers() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "siblingproducers");
-      bootstrap.declareBean(ProductInjected.class, null);
-      bootstrap.declareProvider(ProductExt1.class, Ext1Producer.class);
-      bootstrap.declareProvider(ProductExt2.class, Ext2Producer.class);
+      bootstrap.declareBean(ProductInjected.class, null, null);
+      bootstrap.declareProvider(ProductExt1.class, null, Ext1Producer.class);
+      bootstrap.declareProvider(ProductExt2.class, null, Ext2Producer.class);
       bootstrap.addFileSystem(fs);
       boot();
 
@@ -353,7 +377,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testInjectManager() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "managerinjection");
-      bootstrap.declareBean(ManagerInjected.class, null);
+      bootstrap.declareBean(ManagerInjected.class, null, null);
       boot();
 
       //
@@ -367,7 +391,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    {
       BoundSingleton singleton = new BoundSingleton();
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "injection");
-      bootstrap.declareBean(BoundSingletonInjected.class, null);
+      bootstrap.declareBean(BoundSingletonInjected.class, null, null);
       bootstrap.bindBean(BoundSingleton.class, null, singleton);
       boot();
 
@@ -382,7 +406,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    {
       IntrospectedQualifierBoundSingleton singleton = new IntrospectedQualifierBoundSingleton();
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier", "introspected");
-      bootstrap.declareBean(IntrospectedQualifierBoundSingletonInjected.class, null);
+      bootstrap.declareBean(IntrospectedQualifierBoundSingletonInjected.class, null, null);
       bootstrap.bindBean(IntrospectedQualifierBoundSingleton.class, null, singleton);
       boot();
 
@@ -393,37 +417,54 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(singleton, injected.singleton);
    }
 
-   public void testBoundSingletonQualifierDeclared() throws Exception
+   public void testDeclaredQualifierDeclaredBean() throws Exception
    {
-      class ColorizedLiteral extends AnnotationLiteral<Colorized> implements Colorized
-      {
-         final Color value;
-         ColorizedLiteral(Color value)
-         {
-            this.value = value;
-         }
-         public Color value()
-         {
-            return value;
-         }
-      }
-      
-      //
-      DeclaredQualifierBoundSingleton blue = new DeclaredQualifierBoundSingleton();
-      DeclaredQualifierBoundSingleton red = new DeclaredQualifierBoundSingleton();
-      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier", "declared");
-      bootstrap.declareBean(DeclaredQualifierBoundSingletonInjected.class, null);
-      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), blue);
-      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), red);
+      init("org", "juzu", "impl", "spi", "inject", "declared", "qualifier", "declared", "bean");
+      bootstrap.declareBean(DeclaredQualifierDeclaredBeanInjected.class, null, null);
+      bootstrap.declareBean(DeclaredQualifierDeclaredBean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), null);
+      bootstrap.declareBean(DeclaredQualifierDeclaredBean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), null);
+      bootstrap.declareBean(DeclaredQualifierDeclaredBean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), DeclaredQualifierDeclaredBean.Green.class);
       boot();
 
       //
-      DeclaredQualifierBoundSingletonInjected injected = getBean(DeclaredQualifierBoundSingletonInjected.class);
+      DeclaredQualifierDeclaredBeanInjected injected = getBean(DeclaredQualifierDeclaredBeanInjected.class);
       assertNotNull(injected);
       assertNotNull(injected.blue);
       assertNotNull(injected.red);
-      assertSame(blue, injected.blue);
-      assertSame(red, injected.red);
+      assertNotNull(injected.green);
+      assertNotSame(injected.blue.getId(), injected.red.getId());
+      assertNotSame(injected.green.getId(), injected.red.getId());
+      assertNotSame(injected.blue.getId(), injected.green.getId());
+      assertInstanceOf(DeclaredQualifierDeclaredBean.class, injected.blue);
+      assertInstanceOf(DeclaredQualifierDeclaredBean.class, injected.red);
+      assertInstanceOf(DeclaredQualifierDeclaredBean.Green.class, injected.green);
+      assertNotInstanceOf(DeclaredQualifierDeclaredBean.Green.class, injected.blue);
+      assertNotInstanceOf(DeclaredQualifierDeclaredBean.Green.class, injected.red);
+   }
+
+   public void testDeclaredQualifierDeclaredProvider() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "declared", "qualifier", "declared", "provider");
+      bootstrap.declareBean(DeclaredQualifierDeclaredProviderInjected.class, null, null);
+      bootstrap.declareProvider(DeclaredQualifierDeclaredProvider.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), ColorlessProvider.class);
+      bootstrap.declareProvider(DeclaredQualifierDeclaredProvider.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), ColorlessProvider.class);
+      bootstrap.declareProvider(DeclaredQualifierDeclaredProvider.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), GreenProvider.class);
+      boot();
+
+      //
+      DeclaredQualifierDeclaredProviderInjected injected = getBean(DeclaredQualifierDeclaredProviderInjected.class);
+      assertNotNull(injected);
+      assertNotNull(injected.blue);
+      assertNotNull(injected.red);
+      assertNotNull(injected.green);
+      assertNotSame(injected.blue.getId(), injected.red.getId());
+      assertNotSame(injected.green.getId(), injected.red.getId());
+      assertNotSame(injected.blue.getId(), injected.green.getId());
+      assertInstanceOf(DeclaredQualifierDeclaredProvider.class, injected.blue);
+      assertInstanceOf(DeclaredQualifierDeclaredProvider.class, injected.red);
+      assertInstanceOf(DeclaredQualifierDeclaredProvider.Green.class, injected.green);
+      assertNotInstanceOf(DeclaredQualifierDeclaredProvider.Green.class, injected.blue);
+      assertNotInstanceOf(DeclaredQualifierDeclaredProvider.Green.class, injected.red);
    }
 
    public void testBoundSingletonSuperType() throws Exception
@@ -431,7 +472,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "supertype");
       BoundApple apple = new BoundApple();
       bootstrap.bindBean(BoundFruit.class, null, apple);
-      bootstrap.declareBean(BoundFruitInjected.class, null);
+      bootstrap.declareBean(BoundFruitInjected.class, null, null);
       boot();
 
       //
@@ -444,7 +485,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testRequestScopedProvider() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "requestscopedprovider");
-      bootstrap.declareProvider(RequestBean.class, RequestBeanProvider.class);
+      bootstrap.declareProvider(RequestBean.class, null, RequestBeanProvider.class);
       boot(Scope.REQUEST);
 
       //
@@ -464,7 +505,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testImplementationType() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "implementationtype");
-      bootstrap.declareBean(Extended.class, Extension.class);
+      bootstrap.declareBean(Extended.class, null, Extension.class);
       boot();
 
       //
@@ -475,7 +516,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testDefaultScope() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "defaultscope");
-      bootstrap.declareBean(UndeclaredScopeBean.class, null);
+      bootstrap.declareBean(UndeclaredScopeBean.class, null, null);
       boot();
 
       //
@@ -487,7 +528,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testConstructorThrowsChecked() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "constructorthrowschecked");
-      bootstrap.declareBean(ConstructorThrowsCheckedBean.class, null);
+      bootstrap.declareBean(ConstructorThrowsCheckedBean.class, null, null);
       boot();
 
       //
@@ -505,7 +546,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testConstructorThrowsRuntime() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "constructorthrowsruntime");
-      bootstrap.declareBean(ConstructorThrowsRuntimeBean.class, null);
+      bootstrap.declareBean(ConstructorThrowsRuntimeBean.class, null, null);
       boot();
 
       //
@@ -523,7 +564,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testConstructorThrowsError() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "constructorthrowserror");
-      bootstrap.declareBean(ConstructorThrowsErrorBean.class, null);
+      bootstrap.declareBean(ConstructorThrowsErrorBean.class, null, null);
       boot();
 
       //
@@ -541,8 +582,8 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testResolvableBeans() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "resolvebeans");
-      bootstrap.declareBean(ResolveBeanSubclass1.class, null);
-      bootstrap.declareBean(ResolveBeanSubclass2.class, null);
+      bootstrap.declareBean(ResolveBeanSubclass1.class, null, null);
+      bootstrap.declareBean(ResolveBeanSubclass2.class, null, null);
       boot();
       
       //
@@ -561,7 +602,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testLifeCycleUnscoped() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "lifecycle", "unscoped");
-      bootstrap.declareBean(LifeCycleUnscopedBean.class, null);
+      bootstrap.declareBean(LifeCycleUnscopedBean.class, null, null);
       boot();
       
       //
@@ -592,7 +633,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testLifeCycleScoped() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "lifecycle", "scoped");
-      bootstrap.declareBean(LifeCycleScopedBean.class, null);
+      bootstrap.declareBean(LifeCycleScopedBean.class, null, null);
       boot(Scope.SESSION);
 
       //
@@ -625,7 +666,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testLifeCycleSingleton() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "lifecycle", "singleton");
-      bootstrap.declareBean(LifeCycleSingletonBean.class, null);
+      bootstrap.declareBean(LifeCycleSingletonBean.class, null, null);
       boot(Scope.SESSION);
 
       //

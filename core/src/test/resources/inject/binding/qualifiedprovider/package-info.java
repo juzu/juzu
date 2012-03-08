@@ -17,23 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.inject;
+@Application
+@Bindings( {
+   @Binding(value = Service.class, implementation = FooServiceProvider.class),
+   @Binding(value = Service.class, implementation = BarServiceProvider.class)
+   })
+package inject.binding.qualifiedprovider;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({})
-public @interface Binding
-{
-
-
-   Class<?>[] value();
-
-   Class<?> implementation() default Object.class;
-
-
-}
+import org.juzu.Application;
+import org.juzu.inject.Binding;
+import org.juzu.inject.Bindings;

@@ -67,4 +67,14 @@ public class BindingTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       assertEquals("pass", render.getContent());
    }
+
+   public void testQualifiedProvider() throws Exception
+   {
+      MockApplication<?> app = application("inject", "binding", "qualifiedprovider").init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      assertEquals("pass", render.getContent());
+   }
 }

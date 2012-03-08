@@ -17,30 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.cdi;
+package org.juzu.inject;
 
-import org.juzu.impl.utils.Tools;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.inject.Provider;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class ProviderBean extends AbstractBean
+@Retention(RetentionPolicy.RUNTIME)
+@Target({})
+public @interface Binding
 {
 
-   /** . */
-   private final Provider provider;
 
-   ProviderBean(Class type, Provider provider)
-   {
-      super(type, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER));
+   Class<?> value();
 
-      //
-      this.provider = provider;
-   }
+   Class<?> implementation() default Object.class;
 
-   public Object create(CreationalContext creationalContext)
-   {
-      return provider.get();
-   }
+
 }

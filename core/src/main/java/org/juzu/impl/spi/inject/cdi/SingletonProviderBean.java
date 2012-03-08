@@ -20,25 +20,25 @@
 package org.juzu.impl.spi.inject.cdi;
 
 import javax.enterprise.context.spi.CreationalContext;
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class InstanceBean extends AbstractBean
+class SingletonProviderBean extends AbstractSingletonBean
 {
 
-   private final Object instance;
+   /** . */
+   private final Provider provider;
 
-   InstanceBean(Class type, Set<Annotation> qualifiers, Object instance)
+   SingletonProviderBean(Class type, Provider provider)
    {
-      super(type, qualifiers);
+      super(type, null);
 
       //
-      this.instance = instance;
+      this.provider = provider;
    }
 
    public Object create(CreationalContext creationalContext)
    {
-      return instance;
+      return provider.get();
    }
 }

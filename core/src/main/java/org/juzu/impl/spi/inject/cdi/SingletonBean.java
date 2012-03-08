@@ -17,10 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceImpl.class))
-package inject.binding.implementation;
+package org.juzu.impl.spi.inject.cdi;
 
-import org.juzu.Application;
-import org.juzu.inject.Binding;
-import org.juzu.inject.Bindings;
+import javax.enterprise.context.spi.CreationalContext;
+import java.lang.annotation.Annotation;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+class SingletonBean extends AbstractSingletonBean
+{
+
+   private final Object instance;
+
+   SingletonBean(Class type, Iterable<Annotation> qualifiers, Object instance)
+   {
+      super(type, qualifiers);
+
+      //
+      this.instance = instance;
+   }
+
+   public Object create(CreationalContext creationalContext)
+   {
+      return instance;
+   }
+}

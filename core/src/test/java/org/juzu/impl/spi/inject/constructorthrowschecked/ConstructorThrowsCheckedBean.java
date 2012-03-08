@@ -26,6 +26,6 @@ public class ConstructorThrowsCheckedBean
 {
    public ConstructorThrowsCheckedBean() throws Exception
    {
-      throw new AuthenticationException();
+      throw new AuthenticationException("DON'T FREAK OUT");
    }
 }

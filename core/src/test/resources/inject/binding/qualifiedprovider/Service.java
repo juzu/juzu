@@ -17,10 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceImpl.class))
-package inject.binding.implementation;
+package inject.binding.qualifiedprovider;
 
-import org.juzu.Application;
-import org.juzu.inject.Binding;
-import org.juzu.inject.Bindings;
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public interface Service
+{
+   String getName();
+}

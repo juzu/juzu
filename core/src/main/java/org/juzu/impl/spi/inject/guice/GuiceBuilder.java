@@ -52,16 +52,16 @@ public class GuiceBuilder extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder declareBean(Class<T> type, Class<? extends T> implementationType)
+   public <T> InjectBuilder declareBean(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
    {
-      bindings.add(new BeanBinding.ToType<T>(type, implementationType));
+      bindings.add(new BeanBinding.ToType<T>(type, implementationType, qualifiers));
       return this;
    }
 
    @Override
-   public <T> InjectBuilder declareProvider(Class<T> type, Class<? extends Provider<T>> provider)
+   public <T> InjectBuilder declareProvider(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
    {
-      bindings.add(new BeanBinding.ToProviderType<T>(type, provider));
+      bindings.add(new BeanBinding.ToProviderType<T>(type, provider, qualifiers));
       return this;
    }
 
