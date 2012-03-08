@@ -27,20 +27,62 @@ import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 
 /**
- * A build for configuring an {@link InjectManager} implementation.
+ * A builder for configuring an {@link InjectManager} implementation.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 public abstract class InjectBuilder
 {
 
-   public abstract <T> InjectBuilder declareBean(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends T> implementationType);
+   /**
+    * Declares a bean, bound to an optional implementation.
+    *
+    * @param beanType the bean declared bean type
+    * @param beanQualifiers the bean qualifiers
+    * @param implementationType the bean implementation type
+    * @param <T> the bean generic type
+    * @return this builder
+    */
+   public abstract <T> InjectBuilder declareBean(
+      Class<T> beanType,
+      Iterable<Annotation> beanQualifiers,
+      Class<? extends T> implementationType);
 
-   public abstract <T> InjectBuilder declareProvider(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider);
+   /**
+    * Declares a bean that will be obtained by the specified provider.
+    *
+    * @param beanType the bean declared bean type
+    * @param beanQualifiers the bean qualifiers
+    * @param providerType the bean provider type
+    * @param <T> the bean generic type
+    * @return this builder
+    */
+   public abstract <T> InjectBuilder declareProvider(
+      Class<T> beanType,
+      Iterable<Annotation> beanQualifiers,
+      Class<? extends Provider<T>> providerType);
 
-   public abstract <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance);
+   /**
+    * Bind a bean type to a specified bean instance.
+    *
+    * @param beanType the bean declared bean type
+    * @param beanQualifiers the bean qualifiers
+    * @param instance the bean instance
+    * @param <T> the bean generic type
+    * @return this builder
+    */
+   public abstract <T> InjectBuilder bindBean(Class<T> beanType, Iterable<Annotation> beanQualifiers, T instance);
 
-   public abstract <T> InjectBuilder bindProvider(Class<T> type, Iterable<Annotation> qualifiers, Provider<T> provider);
+   /**
+    * Bind a bean type to a specified bean provider.
+    *
+    * @param beanType the bean declared bean type
+    * @param beanQualifiers the bean qualifiers
+    * @param provider the bean provider
+    * @param <T> the bean generic type
+    * @return this builder
+    */
+   public abstract <T> InjectBuilder bindProvider(Class<T> beanType, Iterable<Annotation> beanQualifiers, Provider<T> provider);
 
    public abstract <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs);
 
