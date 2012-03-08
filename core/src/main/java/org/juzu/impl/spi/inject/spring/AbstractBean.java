@@ -2,6 +2,7 @@ package org.juzu.impl.spi.inject.spring;
 
 import org.springframework.beans.BeanMetadataAttribute;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract public class AbstractBean
+abstract class AbstractBean
 {
 
    /** . */
@@ -18,7 +19,7 @@ abstract public class AbstractBean
    /** . */
    final List<AutowireCandidateQualifier> qualifiers;
 
-   public AbstractBean(Class<?> type, Iterable<Annotation> qualifiers)
+   AbstractBean(Class<?> type, Iterable<Annotation> qualifiers)
    {
       List<AutowireCandidateQualifier> list = null;
       if (qualifiers != null)
@@ -52,4 +53,7 @@ abstract public class AbstractBean
       this.type = type;
       this.qualifiers = list;
    }
+
+   abstract void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory);
+
 }

@@ -44,6 +44,10 @@ import org.juzu.impl.spi.inject.declared.bean.qualifier.declared.DeclaredQualifi
 import org.juzu.impl.spi.inject.declared.producer.injection.DeclaredProducer;
 import org.juzu.impl.spi.inject.declared.producer.injection.DeclaredProducerProduct;
 import org.juzu.impl.spi.inject.declared.producer.injection.DeclaredProducerProductInjected;
+import org.juzu.impl.spi.inject.declared.provider.injected.DeclaredProviderInjected;
+import org.juzu.impl.spi.inject.declared.provider.injected.DeclaredProviderInjectedDependency;
+import org.juzu.impl.spi.inject.declared.provider.injected.DeclaredProviderInjectedProduct;
+import org.juzu.impl.spi.inject.declared.provider.injected.DeclaredProviderInjectedProductInjected;
 import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProvider;
 import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProviderProduct;
 import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProviderProductInjected;
@@ -359,6 +363,22 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       //
       DeclaredProviderProduct product = getBean(DeclaredProviderProduct.class);
       assertNotNull(product);
+   }
+
+   public void testProviderInjected() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "declared", "provider", "injected");
+      DeclaredProviderInjectedDependency dependency = new DeclaredProviderInjectedDependency();
+      bootstrap.bindBean(DeclaredProviderInjectedDependency.class, null, dependency);
+      bootstrap.declareProvider(DeclaredProviderInjectedProduct.class, null, DeclaredProviderInjected.class);
+      bootstrap.declareBean(DeclaredProviderInjectedProductInjected.class, null, null);
+      boot();
+
+      //
+      DeclaredProviderInjectedProductInjected injected = getBean(DeclaredProviderInjectedProductInjected.class);
+      assertNotNull(injected);
+      assertNotNull(injected.product);
+      assertSame(dependency, injected.product.dependency);
    }
 
    public void testInjectManager() throws Exception

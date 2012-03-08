@@ -30,7 +30,14 @@ public class MetaProviderImpl implements MetaProvider
    {
       if (implementationType == Service.class)
       {
-         return (Provider<? extends T>)new ProviderImpl<Service>(new ServiceImpl());
+         Provider<Service> provider = new Provider<Service>()
+         {
+            public Service get()
+            {
+               return new ServiceImpl();
+            }
+         };
+         return (Provider<? extends T>)provider;
       }
       else
       {

@@ -14,12 +14,12 @@ class SingletonInstantiationStrategy implements InstantiationStrategy
 {
 
    /** . */
-   private final Map<String, AbstractBean> singletons;
+   private final Map<String, Object> singletons;
 
    /** . */
    private final InstantiationStrategy delegate;
 
-   SingletonInstantiationStrategy(InstantiationStrategy delegate, Map<String, AbstractBean> singletons)
+   SingletonInstantiationStrategy(InstantiationStrategy delegate, Map<String, Object> singletons)
    {
       this.delegate = delegate;
       this.singletons = singletons;
@@ -27,30 +27,30 @@ class SingletonInstantiationStrategy implements InstantiationStrategy
 
    public Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner) throws BeansException
    {
-      AbstractBean bean = singletons.get(beanName);
-      if (bean instanceof SingletonBean)
+      Object instance = singletons.get(beanName);
+      if (instance != null)
       {
-         return ((SingletonBean)bean).instance;
+         return instance;
       }
       return delegate.instantiate(beanDefinition, beanName, owner);
    }
 
    public Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner, Constructor<?> ctor, Object[] args) throws BeansException
    {
-      AbstractBean bean = singletons.get(beanName);
-      if (bean instanceof SingletonBean)
+      Object instance = singletons.get(beanName);
+      if (instance != null)
       {
-         return ((SingletonBean)bean).instance;
+         return instance;
       }
       return delegate.instantiate(beanDefinition, beanName, owner, ctor, args);
    }
 
    public Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner, Object factoryBean, Method factoryMethod, Object[] args) throws BeansException
    {
-      AbstractBean bean = singletons.get(beanName);
-      if (bean instanceof SingletonBean)
+      Object instance = singletons.get(beanName);
+      if (instance != null)
       {
-         return ((SingletonBean)bean).instance;
+         return instance;
       }
       return delegate.instantiate(beanDefinition, beanName, owner, factoryBean, factoryMethod, args);
    }
