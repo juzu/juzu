@@ -40,7 +40,7 @@ public abstract class InjectBuilder
 
    public abstract <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance);
 
-   public abstract <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider);
+   public abstract <T> InjectBuilder bindProvider(Class<T> type, Iterable<Annotation> qualifiers, Provider<T> provider);
 
    public abstract <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs);
 

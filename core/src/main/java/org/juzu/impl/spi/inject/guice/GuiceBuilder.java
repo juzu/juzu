@@ -93,9 +93,9 @@ public class GuiceBuilder extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder bindProvider(Class<T> type, Provider<T> provider)
+   public <T> InjectBuilder bindProvider(Class<T> type, Iterable<Annotation> qualifiers, Provider<T> provider)
    {
-      bindings.add(new BeanBinding.ToProviderInstance<T>(type, provider));
+      bindings.add(new BeanBinding.ToProviderInstance<T>(type, provider, qualifiers));
       return this;
    }
 

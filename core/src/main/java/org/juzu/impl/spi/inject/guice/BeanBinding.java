@@ -132,9 +132,9 @@ abstract class BeanBinding<T>
       /** . */
       final Provider<? extends T> provider;
 
-      ToProviderInstance(Class<T> type, Provider<? extends T> provider)
+      ToProviderInstance(Class<T> type, Provider<? extends T> provider, Iterable<Annotation> declaredQualifiers)
       {
-         super(type, null, null);
+         super(type, null, declaredQualifiers);
 
          //
          this.provider = provider;

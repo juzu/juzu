@@ -114,9 +114,9 @@ public class SpringBuilder extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder bindProvider(Class<T> type, final Provider<T> provider)
+   public <T> InjectBuilder bindProvider(Class<T> type, Iterable<Annotation> qualifiers, final Provider<T> provider)
    {
-      return bindBean(ProviderFactory.class, null, new ProviderFactory<T>(type)
+      return bindBean(ProviderFactory.class, qualifiers, new ProviderFactory<T>(type)
       {
          @Override
          public Provider<T> getProvider()

@@ -41,7 +41,6 @@ import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -134,7 +133,7 @@ public class ApplicationBootstrap
             {
                MetaProvider mp = (MetaProvider)implementation.newInstance();
                Provider provider = mp.getProvider(type);
-               bootstrap.bindProvider(type, provider);
+               bootstrap.bindProvider(type, null, provider);
             }
             else if (Provider.class.isAssignableFrom(implementation))
             {

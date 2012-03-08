@@ -33,6 +33,9 @@ import org.juzu.impl.spi.inject.bound.bean.qualifier.introspected.IntrospectedQu
 import org.juzu.impl.spi.inject.bound.bean.supertype.BoundBeanApple;
 import org.juzu.impl.spi.inject.bound.bean.supertype.BoundBeanFruit;
 import org.juzu.impl.spi.inject.bound.bean.supertype.BoundBeanFruitInjected;
+import org.juzu.impl.spi.inject.bound.provider.qualifier.declared.DeclaredQualifierBoundProvider;
+import org.juzu.impl.spi.inject.bound.provider.qualifier.declared.DeclaredQualifierBoundProviderInjected;
+import org.juzu.impl.spi.inject.bound.provider.qualifier.declared.GenericProvider;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
@@ -350,7 +353,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    public void testProvider() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "provider");
-      bootstrap.bindProvider(DeclaredProviderProduct.class, new DeclaredProvider());
+      bootstrap.bindProvider(DeclaredProviderProduct.class, null, new DeclaredProvider());
       boot();
 
       //
@@ -399,6 +402,26 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(injected);
       assertNotNull(injected.singleton);
       assertSame(singleton, injected.singleton);
+   }
+
+   public void testBoundProviderQualifierDeclared() throws Exception
+   {
+      init("org", "juzu", "impl", "spi", "inject", "bound", "provider", "qualifier", "declared");
+      bootstrap.declareBean(DeclaredQualifierBoundProviderInjected.class, null, null);
+      DeclaredQualifierBoundProvider blue = new DeclaredQualifierBoundProvider();
+      DeclaredQualifierBoundProvider red = new DeclaredQualifierBoundProvider();
+      DeclaredQualifierBoundProvider green = new DeclaredQualifierBoundProvider.Green();
+      bootstrap.bindProvider(DeclaredQualifierBoundProvider.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), new GenericProvider(blue));
+      bootstrap.bindProvider(DeclaredQualifierBoundProvider.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), new GenericProvider(red));
+      bootstrap.bindProvider(DeclaredQualifierBoundProvider.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), new GenericProvider(green));
+      boot();
+
+      //
+      DeclaredQualifierBoundProviderInjected injected = getBean(DeclaredQualifierBoundProviderInjected.class);
+      assertNotNull(injected);
+      assertSame(blue, injected.blue);
+      assertSame(red, injected.red);
+      assertSame(green, injected.green);
    }
 
    public void testDeclaredQualifierDeclaredBean() throws Exception

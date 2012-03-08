@@ -17,29 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.cdi;
+package org.juzu.impl.spi.inject.bound.provider.qualifier.declared;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.inject.Provider;
-import java.lang.annotation.Annotation;
+import org.juzu.impl.spi.inject.Color;
+import org.juzu.impl.spi.inject.Colorized;
+
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class SingletonProviderBean extends AbstractSingletonBean
+public class DeclaredQualifierBoundProviderInjected
 {
 
-   /** . */
-   private final Provider provider;
+   @Inject
+   @Colorized(Color.BLUE)
+   public DeclaredQualifierBoundProvider blue;
 
-   SingletonProviderBean(Class type, Iterable<Annotation> qualifiers, Provider provider)
-   {
-      super(type, qualifiers);
+   @Inject
+   @Colorized(Color.RED)
+   public DeclaredQualifierBoundProvider red;
 
-      //
-      this.provider = provider;
-   }
+   @Inject
+   @Colorized(Color.GREEN)
+   public DeclaredQualifierBoundProvider green;
 
-   public Object create(CreationalContext creationalContext)
-   {
-      return provider.get();
-   }
 }
