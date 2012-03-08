@@ -17,15 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.siblingproducers;
+package org.juzu.impl.spi.inject.declared.bean.qualifier.declared;
 
-import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProviderProduct;
+import org.juzu.impl.spi.inject.Color;
+import org.juzu.impl.spi.inject.Colorized;
+
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProductExt2 extends DeclaredProviderProduct
+public class DeclaredQualifierDeclaredBeanInjected
 {
-   public ProductExt2()
-   {
-      super("ext2");
-   }
+
+   @Inject
+   @Colorized(Color.BLUE)
+   public DeclaredQualifierDeclaredBean blue;
+
+   @Inject
+   @Colorized(Color.RED)
+   public DeclaredQualifierDeclaredBean red;
+
+   @Inject
+   @Colorized(Color.GREEN)
+   public DeclaredQualifierDeclaredBean green;
 }

@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.inject.siblingproducers;
 
-import org.juzu.impl.spi.inject.declared.provider.DeclaredProviderProduct;
+import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProviderProduct;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ProductExt1 extends DeclaredProviderProduct

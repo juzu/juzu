@@ -24,39 +24,39 @@ import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
-import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingleton;
-import org.juzu.impl.spi.inject.boundsingleton.injection.BoundSingletonInjected;
-import org.juzu.impl.spi.inject.boundsingleton.qualifier.declared.DeclaredQualifierBoundSingleton;
-import org.juzu.impl.spi.inject.boundsingleton.qualifier.declared.DeclaredQualifierBoundSingletonInjected;
-import org.juzu.impl.spi.inject.boundsingleton.qualifier.introspected.IntrospectedQualifierBoundSingleton;
-import org.juzu.impl.spi.inject.boundsingleton.qualifier.introspected.IntrospectedQualifierBoundSingletonInjected;
-import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundApple;
-import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruit;
-import org.juzu.impl.spi.inject.boundsingleton.supertype.BoundFruitInjected;
+import org.juzu.impl.spi.inject.bound.bean.injection.BoundBean;
+import org.juzu.impl.spi.inject.bound.bean.injection.BoundBeanInjected;
+import org.juzu.impl.spi.inject.bound.bean.qualifier.declared.DeclaredQualifierBoundBean;
+import org.juzu.impl.spi.inject.bound.bean.qualifier.declared.DeclaredQualifierBoundBeanInjected;
+import org.juzu.impl.spi.inject.bound.bean.qualifier.introspected.IntrospectedQualifierBoundBean;
+import org.juzu.impl.spi.inject.bound.bean.qualifier.introspected.IntrospectedQualifierBoundBeanInjected;
+import org.juzu.impl.spi.inject.bound.bean.supertype.BoundBeanApple;
+import org.juzu.impl.spi.inject.bound.bean.supertype.BoundBeanFruit;
+import org.juzu.impl.spi.inject.bound.bean.supertype.BoundBeanFruitInjected;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
-import org.juzu.impl.spi.inject.declared.qualifier.declared.bean.DeclaredQualifierDeclaredBean;
-import org.juzu.impl.spi.inject.declared.qualifier.declared.bean.DeclaredQualifierDeclaredBeanInjected;
-import org.juzu.impl.spi.inject.declared.producer.DeclaredProducer;
-import org.juzu.impl.spi.inject.declared.producer.DeclaredProducerProduct;
-import org.juzu.impl.spi.inject.declared.qualifier.declared.provider.ColorlessProvider;
-import org.juzu.impl.spi.inject.declared.qualifier.declared.provider.DeclaredQualifierDeclaredProvider;
-import org.juzu.impl.spi.inject.declared.qualifier.declared.provider.DeclaredQualifierDeclaredProviderInjected;
-import org.juzu.impl.spi.inject.declared.qualifier.declared.provider.GreenProvider;
-import org.juzu.impl.spi.inject.defaultscope.UndeclaredScopeBean;
+import org.juzu.impl.spi.inject.declared.bean.qualifier.declared.DeclaredQualifierDeclaredBean;
+import org.juzu.impl.spi.inject.declared.bean.qualifier.declared.DeclaredQualifierDeclaredBeanInjected;
+import org.juzu.impl.spi.inject.declared.producer.injection.DeclaredProducer;
+import org.juzu.impl.spi.inject.declared.producer.injection.DeclaredProducerProduct;
+import org.juzu.impl.spi.inject.declared.producer.injection.DeclaredProducerProductInjected;
+import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProvider;
+import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProviderProduct;
+import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProviderProductInjected;
+import org.juzu.impl.spi.inject.declared.provider.qualifier.declared.ColorlessProvider;
+import org.juzu.impl.spi.inject.declared.provider.qualifier.declared.DeclaredQualifierDeclaredProvider;
+import org.juzu.impl.spi.inject.declared.provider.qualifier.declared.DeclaredQualifierDeclaredProviderInjected;
+import org.juzu.impl.spi.inject.declared.provider.qualifier.declared.GreenProvider;
+import org.juzu.impl.spi.inject.scope.defaultscope.UndeclaredScopeBean;
 import org.juzu.impl.spi.inject.implementationtype.Extended;
 import org.juzu.impl.spi.inject.implementationtype.Extension;
-import org.juzu.impl.spi.inject.dependencyinjection.Bean;
-import org.juzu.impl.spi.inject.dependencyinjection.Dependency;
 import org.juzu.impl.spi.inject.lifecycle.scoped.LifeCycleScopedBean;
 import org.juzu.impl.spi.inject.lifecycle.singleton.LifeCycleSingletonBean;
 import org.juzu.impl.spi.inject.lifecycle.unscoped.LifeCycleUnscopedBean;
 import org.juzu.impl.spi.inject.managerinjection.ManagerInjected;
 import org.juzu.impl.spi.inject.named.NamedBean;
 import org.juzu.impl.spi.inject.named.NamedInjected;
-import org.juzu.impl.spi.inject.declared.provider.DeclaredProvider;
-import org.juzu.impl.spi.inject.declared.provider.DeclaredProviderProduct;
 import org.juzu.impl.spi.inject.qualifier.Qualified;
 import org.juzu.impl.spi.inject.qualifier.QualifiedInjected;
 import org.juzu.impl.spi.inject.requestscopedprovider.RequestBean;
@@ -112,7 +112,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
 
    protected final void init(String... pkg) throws Exception
    {
-      File root = new File(Bean.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+      File root = new File(InjectManagerTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
       assertTrue(root.exists());
       assertTrue(root.isDirectory());
       init(new DiskFileSystem(root, pkg), Thread.currentThread().getContextClassLoader());
@@ -183,26 +183,6 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    }
 
    protected abstract InjectBuilder getManager() throws Exception;
-
-   public void testDependencyInjection() throws Exception
-   {
-      init("org", "juzu", "impl", "spi", "inject", "dependencyinjection");
-      bootstrap.declareBean(Bean.class, null, null);
-      bootstrap.declareBean(Dependency.class, null, null);
-      boot();
-
-      //
-      B bean = mgr.resolveBean(Bean.class);
-      assertNotNull(bean);
-      I beanInstance = mgr.create(bean);
-      assertNotNull(beanInstance);
-      Bean beanObject = getBean(Bean.class);
-      assertNotNull(beanObject);
-      beanObject.method();
-      Dependency dependency = beanObject.getDependency();
-      assertNotNull(dependency);
-      mgr.release(bean, beanInstance);
-   }
 
    public void testScopeScoped() throws Exception
    {
@@ -298,18 +278,18 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(beanObject.fruit);
    }
 
-   public void testBoundSingletonQualifierDeclared() throws Exception
+   public void testBoundBeanQualifierDeclared() throws Exception
    {
-      DeclaredQualifierBoundSingleton blue = new DeclaredQualifierBoundSingleton();
-      DeclaredQualifierBoundSingleton red = new DeclaredQualifierBoundSingleton();
-      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier", "declared");
-      bootstrap.declareBean(DeclaredQualifierBoundSingletonInjected.class, null, null);
-      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), blue);
-      bootstrap.bindBean(DeclaredQualifierBoundSingleton.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), red);
+      DeclaredQualifierBoundBean blue = new DeclaredQualifierBoundBean();
+      DeclaredQualifierBoundBean red = new DeclaredQualifierBoundBean();
+      init("org", "juzu", "impl", "spi", "inject", "bound", "bean", "qualifier", "declared");
+      bootstrap.declareBean(DeclaredQualifierBoundBeanInjected.class, null, null);
+      bootstrap.bindBean(DeclaredQualifierBoundBean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), blue);
+      bootstrap.bindBean(DeclaredQualifierBoundBean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), red);
       boot();
 
       //
-      DeclaredQualifierBoundSingletonInjected injected = getBean(DeclaredQualifierBoundSingletonInjected.class);
+      DeclaredQualifierBoundBeanInjected injected = getBean(DeclaredQualifierBoundBeanInjected.class);
       assertNotNull(injected);
       assertNotNull(injected.blue);
       assertNotNull(injected.red);
@@ -317,26 +297,30 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(red, injected.red);
    }
 
-   public void testDeclaredProvider() throws Exception
+   public void testDeclaredProviderInjection() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "declared", "provider");
+      init("org", "juzu", "impl", "spi", "inject", "declared", "provider", "injection");
       bootstrap.declareProvider(DeclaredProviderProduct.class, null, DeclaredProvider.class);
+      bootstrap.declareBean(DeclaredProviderProductInjected.class, null, null);
       boot();
 
       //
-      DeclaredProviderProduct product = getBean(DeclaredProviderProduct.class);
-      assertNotNull(product);
+      DeclaredProviderProductInjected injected = getBean(DeclaredProviderProductInjected.class);
+      assertNotNull(injected);
+      assertNotNull(injected.dependency);
    }
 
-   public void testDeclaredProducer() throws Exception
+   public void testDeclaredProducerInjection() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "declared", "producer");
+      init("org", "juzu", "impl", "spi", "inject", "declared", "producer", "injection");
       bootstrap.declareProvider(DeclaredProducerProduct.class, null, DeclaredProducer.class);
+      bootstrap.declareBean(DeclaredProducerProductInjected.class, null, null);
       boot();
 
       //
-      DeclaredProducerProduct product = getBean(DeclaredProducerProduct.class);
-      assertNotNull(product);
+      DeclaredProducerProductInjected injected = getBean(DeclaredProducerProductInjected.class);
+      assertNotNull(injected);
+      assertNotNull(injected.dependency);
    }
 
    public void testSiblingProducers() throws Exception
@@ -387,31 +371,31 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(mgr, managerInjected.manager);
    }
 
-   public void testBoundSingletonInjection() throws Exception
+   public void testBoundBeanInjection() throws Exception
    {
-      BoundSingleton singleton = new BoundSingleton();
-      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "injection");
-      bootstrap.declareBean(BoundSingletonInjected.class, null, null);
-      bootstrap.bindBean(BoundSingleton.class, null, singleton);
+      BoundBean singleton = new BoundBean();
+      init("org", "juzu", "impl", "spi", "inject", "bound", "bean", "injection");
+      bootstrap.declareBean(BoundBeanInjected.class, null, null);
+      bootstrap.bindBean(BoundBean.class, null, singleton);
       boot();
 
       //
-      BoundSingletonInjected injected = getBean(BoundSingletonInjected.class);
+      BoundBeanInjected injected = getBean(BoundBeanInjected.class);
       assertNotNull(injected);
-      assertNotNull(injected.singleton);
-      assertSame(singleton, injected.singleton);
+      assertNotNull(injected.dependency);
+      assertSame(singleton, injected.dependency);
    }
 
-   public void testBoundSingletonQualifierIntrospected() throws Exception
+   public void testBoundBeanQualifierIntrospected() throws Exception
    {
-      IntrospectedQualifierBoundSingleton singleton = new IntrospectedQualifierBoundSingleton();
-      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "qualifier", "introspected");
-      bootstrap.declareBean(IntrospectedQualifierBoundSingletonInjected.class, null, null);
-      bootstrap.bindBean(IntrospectedQualifierBoundSingleton.class, null, singleton);
+      IntrospectedQualifierBoundBean singleton = new IntrospectedQualifierBoundBean();
+      init("org", "juzu", "impl", "spi", "inject", "bound", "bean", "qualifier", "introspected");
+      bootstrap.declareBean(IntrospectedQualifierBoundBeanInjected.class, null, null);
+      bootstrap.bindBean(IntrospectedQualifierBoundBean.class, null, singleton);
       boot();
 
       //
-      IntrospectedQualifierBoundSingletonInjected injected = getBean(IntrospectedQualifierBoundSingletonInjected.class);
+      IntrospectedQualifierBoundBeanInjected injected = getBean(IntrospectedQualifierBoundBeanInjected.class);
       assertNotNull(injected);
       assertNotNull(injected.singleton);
       assertSame(singleton, injected.singleton);
@@ -444,7 +428,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
 
    public void testDeclaredQualifierDeclaredProvider() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "declared", "qualifier", "declared", "provider");
+      init("org", "juzu", "impl", "spi", "inject", "declared", "provider", "qualifier", "declared");
       bootstrap.declareBean(DeclaredQualifierDeclaredProviderInjected.class, null, null);
       bootstrap.declareProvider(DeclaredQualifierDeclaredProvider.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), ColorlessProvider.class);
       bootstrap.declareProvider(DeclaredQualifierDeclaredProvider.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), ColorlessProvider.class);
@@ -467,16 +451,16 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotInstanceOf(DeclaredQualifierDeclaredProvider.Green.class, injected.red);
    }
 
-   public void testBoundSingletonSuperType() throws Exception
+   public void testBoundBeanBeanSuperType() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "boundsingleton", "supertype");
-      BoundApple apple = new BoundApple();
-      bootstrap.bindBean(BoundFruit.class, null, apple);
-      bootstrap.declareBean(BoundFruitInjected.class, null, null);
+      init("org", "juzu", "impl", "spi", "inject", "bound", "bean", "supertype");
+      BoundBeanApple apple = new BoundBeanApple();
+      bootstrap.bindBean(BoundBeanFruit.class, null, apple);
+      bootstrap.declareBean(BoundBeanFruitInjected.class, null, null);
       boot();
 
       //
-      BoundFruitInjected beanObject = getBean(BoundFruitInjected.class);
+      BoundBeanFruitInjected beanObject = getBean(BoundBeanFruitInjected.class);
       assertNotNull(beanObject);
       assertNotNull(beanObject.fruit);
       assertSame(apple, beanObject.fruit);
@@ -515,7 +499,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
 
    public void testDefaultScope() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "defaultscope");
+      init("org", "juzu", "impl", "spi", "inject", "scope", "defaultscope");
       bootstrap.declareBean(UndeclaredScopeBean.class, null, null);
       boot();
 

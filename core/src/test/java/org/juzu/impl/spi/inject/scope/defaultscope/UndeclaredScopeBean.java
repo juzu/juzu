@@ -17,15 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.inject.siblingproducers;
+package org.juzu.impl.spi.inject.scope.defaultscope;
 
-import org.juzu.impl.spi.inject.declared.provider.injection.DeclaredProviderProduct;
+import org.juzu.impl.inject.Export;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProductExt2 extends DeclaredProviderProduct
+@Export
+public class UndeclaredScopeBean
 {
-   public ProductExt2()
+
+   /** . */
+   private static int sequence = 0;
+
+   /** . */
+   public final int count;
+
+   public UndeclaredScopeBean()
    {
-      super("ext2");
+      count = sequence++;
    }
 }
