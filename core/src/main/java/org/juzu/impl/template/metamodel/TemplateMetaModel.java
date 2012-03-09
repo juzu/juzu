@@ -19,10 +19,10 @@
 
 package org.juzu.impl.template.metamodel;
 
-import org.juzu.impl.model.meta.Key;
-import org.juzu.impl.model.meta.MetaModel;
-import org.juzu.impl.model.meta.MetaModelEvent;
-import org.juzu.impl.model.meta.MetaModelObject;
+import org.juzu.impl.metamodel.Key;
+import org.juzu.impl.metamodel.MetaModel;
+import org.juzu.impl.metamodel.MetaModelEvent;
+import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.JSON;
 
 import java.util.ArrayList;

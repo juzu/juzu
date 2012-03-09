@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta;
+package org.juzu.impl.metamodel;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.utils.JSON;

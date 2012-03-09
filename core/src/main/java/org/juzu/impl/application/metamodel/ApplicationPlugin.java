@@ -2,12 +2,12 @@ package org.juzu.impl.application.metamodel;
 
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.model.CompilationErrorCode;
-import org.juzu.impl.model.meta.MetaModel;
-import org.juzu.impl.model.meta.MetaModelEvent;
-import org.juzu.impl.model.meta.MetaModelObject;
-import org.juzu.impl.model.meta.MetaModelPlugin;
-import org.juzu.impl.model.processor.ProcessingContext;
+import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.metamodel.MetaModel;
+import org.juzu.impl.metamodel.MetaModelEvent;
+import org.juzu.impl.metamodel.MetaModelObject;
+import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.metamodel.ProcessingContext;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
@@ -128,7 +128,7 @@ public class ApplicationPlugin extends MetaModelPlugin
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elt, CompilationErrorCode.CANNOT_WRITE_APPLICATION, application.getFQN());
+         throw new CompilationException(e, elt, MetaModelErrorCode.CANNOT_WRITE_APPLICATION, application.getFQN());
       }
       finally
       {
@@ -152,7 +152,7 @@ public class ApplicationPlugin extends MetaModelPlugin
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, CompilationErrorCode.CANNOT_WRITE_CONFIG);
+         throw new CompilationException(e, MetaModelErrorCode.CANNOT_WRITE_CONFIG);
       }
       finally
       {
@@ -180,7 +180,7 @@ public class ApplicationPlugin extends MetaModelPlugin
          }
          catch (IOException e)
          {
-            throw new CompilationException(e, model.env.get(application.getHandle()), CompilationErrorCode.CANNOT_WRITE_APPLICATION_CONFIG, application.getFQN());
+            throw new CompilationException(e, model.env.get(application.getHandle()), MetaModelErrorCode.CANNOT_WRITE_APPLICATION_CONFIG, application.getFQN());
          }
          finally
          {

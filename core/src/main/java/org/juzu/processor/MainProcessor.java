@@ -17,17 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.processor;
+package org.juzu.processor;
 
-import org.juzu.impl.model.meta.MetaModel;
+import org.juzu.impl.metamodel.ModelProcessor;
+import org.juzu.impl.metamodel.MetaModel;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MainProcessor extends AbstractModelProcessor
+public class MainProcessor extends ModelProcessor
 {
-
-   @Override
-   protected MetaModel createHandler()
-   {
-      return new MetaModel();
-   }
 }

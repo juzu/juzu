@@ -20,13 +20,12 @@
 package org.juzu.impl.tags;
 
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.model.CompilationErrorCode;
+import org.juzu.impl.metamodel.MetaModelErrorCode;
 import org.juzu.impl.template.compiler.ExtendedTagHandler;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.compiler.ProcessPhase;
 import org.juzu.impl.template.compiler.Template;
-import org.juzu.impl.utils.ErrorCode;
 import org.juzu.template.Renderable;
 import org.juzu.template.TemplateRenderContext;
 
@@ -81,7 +80,7 @@ public class DecorateTag extends ExtendedTagHandler
       Template resolved = phase.resolveTemplate(path);
       if (resolved == null)
       {
-         throw new CompilationException(CompilationErrorCode.TEMPLATE_NOT_RESOLVED, path);
+         throw new CompilationException(MetaModelErrorCode.TEMPLATE_NOT_RESOLVED, path);
       }
    }
 

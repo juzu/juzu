@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.processor;
+package org.juzu.impl.metamodel;
 
 import org.juzu.Action;
 import org.juzu.Application;
@@ -25,8 +25,6 @@ import org.juzu.Path;
 import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.compiler.BaseProcessor;
-import org.juzu.impl.model.CompilationErrorCode;
-import org.juzu.impl.model.meta.MetaModel;
 import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
@@ -52,7 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractModelProcessor extends BaseProcessor
+public abstract class ModelProcessor extends BaseProcessor
 {
 
    /** . */
@@ -102,12 +100,10 @@ public abstract class AbstractModelProcessor extends BaseProcessor
       log.log("Using processing nev " + processingEnv.getClass().getName());
    }
 
-   protected abstract MetaModel createHandler();
-
    @Override
    protected ErrorCode decode(String key)
    {
-      for (CompilationErrorCode c : CompilationErrorCode.values())
+      for (MetaModelErrorCode c : MetaModelErrorCode.values())
       {
          if (c.getKey().equals(key))
          {
@@ -167,7 +163,7 @@ public abstract class AbstractModelProcessor extends BaseProcessor
                catch (Exception e)
                {
                   log.log("Created new model");
-                  model = createHandler();
+                  model = new MetaModel();
                }
                finally
                {

@@ -2,10 +2,10 @@ package org.juzu.impl.application.metamodel;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.model.meta.Key;
-import org.juzu.impl.model.meta.MetaModel;
-import org.juzu.impl.model.meta.MetaModelEvent;
-import org.juzu.impl.model.meta.MetaModelObject;
+import org.juzu.impl.metamodel.Key;
+import org.juzu.impl.metamodel.MetaModel;
+import org.juzu.impl.metamodel.MetaModelEvent;
+import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 

@@ -17,7 +17,7 @@
  * 02110-1301 USA(""), or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model;
+package org.juzu.impl.metamodel;
 
 import org.juzu.impl.utils.ErrorCode;
 
@@ -26,7 +26,7 @@ import org.juzu.impl.utils.ErrorCode;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public enum CompilationErrorCode implements ErrorCode
+public enum MetaModelErrorCode implements ErrorCode
 {
 
    CANNOT_WRITE_CONFIG("The configuration cannot be written"),
@@ -62,7 +62,7 @@ public enum CompilationErrorCode implements ErrorCode
    /** . */
    private final String message;
 
-   CompilationErrorCode(String message)
+   MetaModelErrorCode(String message)
    {
       this.message = message;
    }

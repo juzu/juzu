@@ -21,7 +21,7 @@ package org.juzu.test;
 
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
-import org.juzu.impl.model.processor.MainProcessor;
+import org.juzu.processor.MainProcessor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;

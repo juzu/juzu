@@ -27,7 +27,7 @@ import org.juzu.impl.compiler.*;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
 import org.juzu.impl.fs.FileSystemScanner;
-import org.juzu.impl.model.processor.MainProcessor;
+import org.juzu.processor.MainProcessor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;

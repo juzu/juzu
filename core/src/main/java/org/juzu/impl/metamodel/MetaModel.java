@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.meta;
+package org.juzu.impl.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationPlugin;
@@ -31,7 +31,6 @@ import org.juzu.impl.controller.metamodel.ControllersMetaModel;
 import org.juzu.impl.template.metamodel.TemplatePlugin;
 import org.juzu.impl.template.metamodel.TemplateRefMetaModel;
 import org.juzu.impl.template.metamodel.TemplateRefsMetaModel;
-import org.juzu.impl.model.processor.ProcessingContext;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;

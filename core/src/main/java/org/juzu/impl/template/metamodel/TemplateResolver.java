@@ -27,8 +27,8 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.controller.metamodel.MethodMetaModel;
 import org.juzu.impl.inject.Export;
-import org.juzu.impl.model.CompilationErrorCode;
-import org.juzu.impl.model.processor.ProcessingContext;
+import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.metamodel.ProcessingContext;
 import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.ASTNode;
@@ -227,7 +227,7 @@ public class TemplateResolver implements Serializable
                         //
                         if (method == null)
                         {
-                           throw new CompilationException(CompilationErrorCode.CONTROLLER_METHOD_NOT_RESOLVED, methodName + "(" + parameterMap + ")");
+                           throw new CompilationException(MetaModelErrorCode.CONTROLLER_METHOD_NOT_RESOLVED, methodName + "(" + parameterMap + ")");
                         }
 
                         //
@@ -258,7 +258,7 @@ public class TemplateResolver implements Serializable
                }
                catch (IOException e)
                {
-                  throw new CompilationException(e, CompilationErrorCode.CANNOT_WRITE_TEMPLATE_SCRIPT, template.getPath());
+                  throw new CompilationException(e, MetaModelErrorCode.CANNOT_WRITE_TEMPLATE_SCRIPT, template.getPath());
                }
                finally
                {
@@ -355,7 +355,7 @@ public class TemplateResolver implements Serializable
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elements[0], CompilationErrorCode.CANNOT_WRITE_TEMPLATE_CLASS, template.getPath());
+         throw new CompilationException(e, elements[0], MetaModelErrorCode.CANNOT_WRITE_TEMPLATE_CLASS, template.getPath());
       }
       finally
       {
@@ -395,7 +395,7 @@ public class TemplateResolver implements Serializable
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elements[0], CompilationErrorCode.CANNOT_WRITE_TEMPLATE_STUB, template.getPath());
+         throw new CompilationException(e, elements[0], MetaModelErrorCode.CANNOT_WRITE_TEMPLATE_STUB, template.getPath());
       }
       finally
       {

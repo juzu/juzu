@@ -17,16 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.model.processor;
+package org.juzu.impl.metamodel;
 
 import org.juzu.impl.compiler.CompilationError;
-import org.juzu.impl.model.CompilationErrorCode;
+import org.juzu.impl.metamodel.MetaModelErrorCode;
 import org.juzu.impl.template.metamodel.TemplatePlugin;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.utils.Content;
+import org.juzu.processor.MainProcessor;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 
@@ -93,7 +94,7 @@ public class ProcessorTestCase extends AbstractTestCase
       List<CompilationError> errors = helper.failCompile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
-      assertEquals(CompilationErrorCode.TEMPLATE_NOT_RESOLVED.toString(), error.getCode());
+      assertEquals(MetaModelErrorCode.TEMPLATE_NOT_RESOLVED.toString(), error.getCode());
       assertEquals(2, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
       assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
