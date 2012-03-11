@@ -25,6 +25,7 @@ import org.juzu.Path;
 import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.compiler.BaseProcessor;
+import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
@@ -46,7 +47,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -62,7 +65,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
       Application.class};
 
    /** . */
-   private MetaModel model;
+   private MetaModel metaModel;
 
    /** . */
    private Set<TypeElement> annotations;
@@ -77,13 +80,14 @@ public abstract class MetaModelProcessor extends BaseProcessor
    private final Logger log = BaseProcessor.getLogger(getClass());
 
    /** . */
+   private List<Plugin> plugins;
+
+   /** . */
    private ProcessingContext context;
 
    @Override
    protected void doInit(ProcessingEnvironment processingEnv)
    {
-
-      //
       HashSet<TypeElement> annotations = new HashSet<TypeElement>();
       for (Class c : annotationTypes)
       {
@@ -95,6 +99,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
       this.annotations = annotations;
       this.index = 0;
       this.context = new ProcessingContext(processingEnv);
+      this.plugins = Tools.list(ServiceLoader.load(Plugin.class));
 
       //
       log.log("Using processing nev " + processingEnv.getClass().getName());
@@ -124,16 +129,16 @@ public abstract class MetaModelProcessor extends BaseProcessor
 
             //
             log.log("Passivating model");
-            model.prePassivate();
+            metaModel.prePassivate();
 
             // Passivate model
             ObjectOutputStream out = null;
             try
             {
-               FileObject file = filer.createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "model2.ser");
+               FileObject file = filer.createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "metamodel.ser");
                out = new ObjectOutputStream(file.openOutputStream());
-               out.writeObject(model);
-               model = null;
+               out.writeObject(metaModel);
+               metaModel = null;
             }
             catch (IOException e)
             {
@@ -149,21 +154,30 @@ public abstract class MetaModelProcessor extends BaseProcessor
             log.log("Starting APT round #" + index);
 
             //
-            if (model == null)
+            if (metaModel == null)
             {
                InputStream in = null;
                try
                {
-                  FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "model2.ser");
+                  FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "metamodel.ser");
                   in = file.openInputStream();
                   ObjectInputStream ois = new ObjectInputStream(in);
-                  model = (MetaModel)ois.readObject();
+                  metaModel = (MetaModel)ois.readObject();
                   log.log("Loaded model from " + file.toUri());
                }
                catch (Exception e)
                {
-                  log.log("Created new model");
-                  model = new MetaModel();
+                  log.log("Created new meta model");
+                  MetaModel metaModel = new MetaModel();
+                  log.log("Adding meta model plugins");
+                  for (Plugin plugin : plugins)
+                  {
+                     log.log("Adding meta model plugin: " + plugin.getName());
+                     metaModel.addPlugin(plugin.getName(), plugin.newMetaModelPlugin());
+                  }
+                  
+                  //
+                  this.metaModel = metaModel;
                }
                finally
                {
@@ -172,7 +186,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
 
                // Activate
                log.log("Activating model");
-               model.postActivate(context);
+               metaModel.postActivate(context);
             }
 
             //
@@ -194,7 +208,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
                               annotationValues.put(m, value);
                            }
                            String annotationFQN = annotationElt.getQualifiedName().toString();
-                           model.processAnnotation(annotatedElt, annotationFQN, annotationValues);
+                           metaModel.processAnnotation(annotatedElt, annotationFQN, annotationValues);
                         }
                      }
                   }
@@ -203,7 +217,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
 
             //
             log.log("Post processing model");
-            model.postProcess();
+            metaModel.postProcess();
 
             //
             log.log("Ending APT round #" + index++);

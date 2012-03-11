@@ -89,7 +89,7 @@ class ModelTemplateProcessContext extends ProcessContext
    @Override
    protected Template resolveTemplate(String originPath, String path)
    {
-      Matcher matcher = TemplatePlugin.TEMPLATE_PATH_PATTERN.matcher(path);
+      Matcher matcher = TemplateMetaModelPlugin.TEMPLATE_PATH_PATTERN.matcher(path);
 
       //
       if (!matcher.matches())

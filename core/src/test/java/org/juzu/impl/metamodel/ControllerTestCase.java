@@ -22,8 +22,8 @@ package org.juzu.impl.metamodel;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.controller.metamodel.ControllerMetaModel;
-import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelEvent;
+import org.juzu.impl.controller.metamodel.ControllerMetaModelPlugin;
+import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import org.juzu.processor.MainProcessor;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
@@ -48,10 +48,12 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
 
       //
-      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
       MetaModel expected = new MetaModel();
+      expected.addPlugin("controller", new ControllerMetaModelPlugin());
+      expected.addPlugin("template", new TemplateMetaModelPlugin());
       ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
       ControllerMetaModel controller = expected.addController("model.meta.controller.A");
       controller.addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
@@ -69,7 +71,7 @@ public class ControllerTestCase extends AbstractTestCase
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
       helper.assertCompile();
-      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
       mm.popEvents();
       Tools.serialize(mm, ser);
@@ -134,7 +136,7 @@ public class ControllerTestCase extends AbstractTestCase
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
       helper.assertCompile();
-      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
       mm.popEvents();
       Tools.serialize(mm, ser);
@@ -165,7 +167,7 @@ public class ControllerTestCase extends AbstractTestCase
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
       helper.assertCompile();
-      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
       mm.popEvents();
       Tools.serialize(mm, ser);
@@ -199,7 +201,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
 
       //
-      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
       mm.popEvents();
       Tools.serialize(mm, ser);
@@ -235,7 +237,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
 
       //
-      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
       mm.popEvents();
       Tools.serialize(mm, ser);
@@ -271,7 +273,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
 
       //
-      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
       mm.popEvents();
       Tools.serialize(mm, ser);
@@ -301,7 +303,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
 
       //
-      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
       mm.popEvents();
       Tools.serialize(mm, ser);

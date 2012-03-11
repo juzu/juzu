@@ -104,14 +104,8 @@ public class ApplicationBootstrap
          bootstrap.addScope(scope);
       }
 
-      // Bind the controllers
-      for (BeanDescriptor bean : descriptor.getController().getBeans())
-      {
-         bootstrap.declareBean((Class)bean.getDeclaredType(), null, (Class)bean.getImplementationType());
-      }
-
-      // Bind the templates
-      for (BeanDescriptor bean : descriptor.getTemplates().getBeans())
+      // Bind the beans
+      for (BeanDescriptor bean : descriptor.getBeans())
       {
          bootstrap.declareBean((Class)bean.getDeclaredType(), null, (Class)bean.getImplementationType());
       }

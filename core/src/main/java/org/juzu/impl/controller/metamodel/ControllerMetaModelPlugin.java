@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerPlugin extends MetaModelPlugin
+public class ControllerMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
@@ -94,14 +94,22 @@ public class ControllerPlugin extends MetaModelPlugin
    }
 
    @Override
-   public void emitConfig(ApplicationMetaModel application, JSON json)
+   public JSON emitConfig(ApplicationMetaModel application)
    {
       ArrayList<String> controllers = new ArrayList<String>();
       for (ControllerMetaModel controller : application.getControllers())
       {
          controllers.add(controller.getHandle().getFQN().getFullName() + "_");
       }
-      json.setList("controllers", controllers);
+      
+      //
+      JSON config = new JSON();
+      config.set("default", application.getDefaultController());
+      config.setList("controllers", controllers);
+      config.set("escapeXML", application.getEscapeXML());
+
+      //
+      return config;
    }
 
    private void emitController(ProcessingContext env, ControllerMetaModel controller) throws CompilationException

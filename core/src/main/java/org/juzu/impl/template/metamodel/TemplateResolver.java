@@ -121,7 +121,7 @@ public class TemplateResolver implements Serializable
       classCache.clear();
    }
 
-   public void process(TemplatePlugin plugin, ProcessingContext context) throws CompilationException
+   public void process(TemplateMetaModelPlugin plugin, ProcessingContext context) throws CompilationException
    {
       // Evict templates that are out of date
       log.log("Synchronizing existing templates " + templates.keySet());
@@ -199,7 +199,7 @@ public class TemplateResolver implements Serializable
       }
    }
 
-   private void resolveScript(final Template template, final TemplatePlugin plugin, final ProcessingContext context, final Element[] elements)
+   private void resolveScript(final Template template, final TemplateMetaModelPlugin plugin, final ProcessingContext context, final Element[] elements)
    {
       context.executeWithin(elements[0], new Callable<Void>()
       {
@@ -363,7 +363,7 @@ public class TemplateResolver implements Serializable
       }
    }
 
-   private void resolveStub(Template template, TemplatePlugin plugin, ProcessingContext context, Element[] elements)
+   private void resolveStub(Template template, TemplateMetaModelPlugin plugin, ProcessingContext context, Element[] elements)
    {
       if (stubCache.containsKey(template.getFQN()))
       {

@@ -22,7 +22,6 @@ public abstract class MetaModelPlugin implements Serializable
 
    public void postActivate(MetaModel moel)
    {
-
    }
 
    public void processAnnotation(
@@ -43,10 +42,10 @@ public abstract class MetaModelPlugin implements Serializable
 
    public void prePassivate(MetaModel model)
    {
-
    }
    
-   public void emitConfig(ApplicationMetaModel application, JSON json)
+   public JSON emitConfig(ApplicationMetaModel application)
    {
+      return null;
    }
 }

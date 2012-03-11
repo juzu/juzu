@@ -1,6 +1,7 @@
 package org.juzu.impl.template.metadata;
 
 import org.juzu.impl.metadata.BeanDescriptor;
+import org.juzu.impl.metadata.Descriptor;
 import org.juzu.impl.utils.JSON;
 import org.juzu.template.Template;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplatesDescriptor
+public class TemplatesDescriptor extends Descriptor
 {
 
    /** . */
@@ -21,13 +22,13 @@ public class TemplatesDescriptor
    /** . */
    private final ArrayList<BeanDescriptor> beans; 
 
-   public TemplatesDescriptor(ClassLoader loader, String packageName, JSON json) throws Exception
+   public TemplatesDescriptor(ClassLoader loader, JSON config) throws Exception
    {
       ArrayList<BeanDescriptor> beans = new ArrayList<BeanDescriptor>();
       List<TemplateDescriptor> templates = new ArrayList<TemplateDescriptor>();
 
       // Load templates
-      for (String fqn : json.getList("templates", String.class))
+      for (String fqn : config.getList("templates", String.class))
       {
          Class<?> clazz = loader.loadClass(fqn);
          Field f = clazz.getField("DESCRIPTOR");
@@ -35,6 +36,9 @@ public class TemplatesDescriptor
          templates.add(descriptor);
          beans.add(new BeanDescriptor(Template.class, null, descriptor.getType()));
       }
+      
+      //
+      String packageName = config.getString("package");
 
       //
       this.templates = templates;

@@ -38,6 +38,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -133,6 +134,14 @@ public class Tools
       catch (NoSuchMethodException e)
       {
          return null;
+      }
+   }
+
+   public static <E> void addAll(Collection<? super E> collection, Iterable<E> elements)
+   {
+      for (E element : elements)
+      {
+         collection.add(element);
       }
    }
 

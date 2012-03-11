@@ -20,15 +20,13 @@
 package org.juzu.impl.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
-import org.juzu.impl.application.metamodel.ApplicationPlugin;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.controller.metamodel.ControllerMetaModel;
-import org.juzu.impl.controller.metamodel.ControllerPlugin;
 import org.juzu.impl.controller.metamodel.ControllersMetaModel;
-import org.juzu.impl.template.metamodel.TemplatePlugin;
 import org.juzu.impl.template.metamodel.TemplateRefMetaModel;
 import org.juzu.impl.template.metamodel.TemplateRefsMetaModel;
 import org.juzu.impl.utils.FQN;
@@ -41,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,27 +64,25 @@ public final class MetaModel extends MetaModelObject
    private static final ThreadLocal<MetaModel> current = new ThreadLocal<MetaModel>();
 
    /** The meta model plugins. */
-   private List<MetaModelPlugin> plugins;
+   private LinkedHashMap<String, MetaModelPlugin> plugins;
 
    public MetaModel()
    {
-      this.plugins = new ArrayList<MetaModelPlugin>();
+      this.plugins = new LinkedHashMap<String, MetaModelPlugin>();
 
       //
-      addPlugin(new ApplicationPlugin());
-      addPlugin(new ControllerPlugin());
-      addPlugin(new TemplatePlugin());
+      addPlugin("application", new ApplicationMetaModelPlugin());
    }
    
-   public void addPlugin(MetaModelPlugin plugin)
+   public void addPlugin(String name, MetaModelPlugin plugin)
    {
-      plugins.add(plugin);
+      plugins.put(name, plugin);
       
       //
       plugin.init(this);
    }
 
-   public Iterable<MetaModelPlugin> getPlugins()
+   public LinkedHashMap<String, MetaModelPlugin> getPlugins()
    {
       return plugins;
    }
@@ -103,7 +100,7 @@ public final class MetaModel extends MetaModelObject
 
    public void processAnnotation(Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
    {
-      for (MetaModelPlugin plugin : plugins)
+      for (MetaModelPlugin plugin : plugins.values())
       {
          plugin.processAnnotation(this, element, annotationFQN, annotationValues);
       }
@@ -140,7 +137,7 @@ public final class MetaModel extends MetaModelObject
       postActivate(this, this, new HashSet<MetaModelObject>());
       
       //
-      for (MetaModelPlugin plugin : plugins)
+      for (MetaModelPlugin plugin : plugins.values())
       {
          plugin.postActivate(this);
       }
@@ -189,14 +186,14 @@ public final class MetaModel extends MetaModelObject
          MetaModelEvent event = i.next();
          i.remove();
          log.log("Processing meta model event " + event.getType() + " " + event.getObject());
-         for (MetaModelPlugin plugin : plugins)
+         for (MetaModelPlugin plugin : plugins.values())
          {
             plugin.processEvent(this, event);
          }
       }
 
       // log.log("Processing templates");
-      for (MetaModelPlugin plugin : plugins)
+      for (MetaModelPlugin plugin : plugins.values())
       {
          plugin.postProcess(this);
       }
@@ -222,7 +219,7 @@ public final class MetaModel extends MetaModelObject
          prePassivate(this, this, new HashSet<MetaModelObject>());
 
          //
-         for (MetaModelPlugin plugin : plugins)
+         for (MetaModelPlugin plugin : plugins.values())
          {
             plugin.prePassivate(this);
          }

@@ -20,6 +20,9 @@
 package org.juzu.impl.application.metadata;
 
 import org.juzu.impl.controller.descriptor.ControllerDescriptor;
+import org.juzu.impl.metadata.BeanDescriptor;
+import org.juzu.impl.metadata.Descriptor;
+import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.impl.template.metadata.TemplatesDescriptor;
 import org.juzu.impl.utils.JSON;
@@ -27,10 +30,14 @@ import org.juzu.impl.utils.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationDescriptor
+public class ApplicationDescriptor extends Descriptor
 {
 
    /** . */
@@ -54,21 +61,19 @@ public class ApplicationDescriptor
    /** . */
    private final TemplatesDescriptor templates;
 
-   public ApplicationDescriptor(
-      Class<?> applicationClass,
-      Class<?> defaultController,
-      Boolean escapeXML,
-      String templatesPackageName,
-      List<Class<? extends LifeCyclePlugin>> plugins)
+   /** . */
+   private final Map<String, Descriptor> pluginDescriptors;
+
+   public ApplicationDescriptor(Class<?> applicationClass, List<Class<? extends LifeCyclePlugin>> plugins)
    {
       // Load config
-      JSON props;
+      JSON config;
       InputStream in = null;
       try
       {
          in = applicationClass.getResourceAsStream("config.json");
          String s = Tools.read(in);
-         props = (JSON)JSON.parse(s);
+         config = (JSON)JSON.parse(s);
       }
       catch (IOException e)
       {
@@ -91,42 +96,57 @@ public class ApplicationDescriptor
          ae.initCause(e);
          throw ae;
       }
-
-      ControllerDescriptor controller;
-      TemplatesDescriptor templates;
-
+      
       //
-      try
+      HashMap<String, Descriptor> pluginDescriptors = new HashMap<String, Descriptor>(); 
+      HashMap<String, Plugin> pluginMap = new HashMap<String, Plugin>(); 
+      for (Plugin plugin : ServiceLoader.load(Plugin.class))
       {
-         // Load controller;
-         controller = new ControllerDescriptor(
-            applicationClass.getClassLoader(),
-            escapeXML,
-            defaultController,
-            props
-         );
-         
-         //
-         templates = new TemplatesDescriptor(
-            applicationClass.getClassLoader(),
-            templatesPackageName,
-            props);
+         pluginMap.put(plugin.getName(), plugin);
       }
-      catch (Exception e)
+      
+      //
+      for (String name : config.names())
       {
-         AssertionError ae = new AssertionError("Cannot load config");
-         ae.initCause(e);
-         throw ae;
+         Plugin plugin = pluginMap.get(name);
+         if (plugin == null)
+         {
+            throw new UnsupportedOperationException("Handle me gracefully : missing plugin " + name);
+         }
+         JSON pluginConfig = config.getJSON(name);
+         try
+         {
+            Descriptor pluginDescriptor = plugin.loadDescriptor(applicationClass.getClassLoader(), pluginConfig);
+            pluginDescriptors.put(name, pluginDescriptor);
+         }
+         catch (Exception e)
+         {
+            AssertionError ae = new AssertionError("Cannot load config");
+            ae.initCause(e);
+            throw ae;
+         }
       }
 
       //
       this.applicationClass = applicationClass;
       this.name = applicationClass.getSimpleName();
       this.packageName = applicationClass.getPackage().getName();
-      this.templates = templates;
+      this.templates = (TemplatesDescriptor)pluginDescriptors.get("template");
       this.plugins = plugins;
       this.packageClass = packageClass;
-      this.controller = controller;
+      this.controller = (ControllerDescriptor)pluginDescriptors.get("controller");
+      this.pluginDescriptors = pluginDescriptors;
+   }
+
+   @Override
+   public Iterable<BeanDescriptor> getBeans()
+   {
+      ArrayList<BeanDescriptor> beans = new ArrayList<BeanDescriptor>();
+      for (Descriptor descriptor : pluginDescriptors.values())
+      {
+         Tools.addAll(beans, descriptor.getBeans());
+      }
+      return beans;
    }
 
    public Class<?> getPackageClass()

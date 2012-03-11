@@ -1,6 +1,7 @@
 package org.juzu.impl.controller.descriptor;
 
 import org.juzu.impl.metadata.BeanDescriptor;
+import org.juzu.impl.metadata.Descriptor;
 import org.juzu.impl.utils.JSON;
 
 import java.lang.reflect.Field;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerDescriptor
+public class ControllerDescriptor extends Descriptor
 {
 
    /** . */
@@ -27,20 +28,14 @@ public class ControllerDescriptor
    /** . */
    private final Boolean escapeXML;
 
-   public ControllerDescriptor(
-      ClassLoader loader,
-      Boolean escapeXML,
-      Class<?> defaultController,
-      JSON json) throws Exception
+   public ControllerDescriptor(ClassLoader loader, JSON config) throws Exception
    {
-
-      //
       List<ControllerBean> controllers = new ArrayList<ControllerBean>();
       List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
       ArrayList<BeanDescriptor> beans = new ArrayList<BeanDescriptor>();
-
+      
       // Load controllers
-      for (String fqn : json.getList("controllers", String.class))
+      for (String fqn : config.getList("controllers", String.class))
       {
          Class<?> clazz = loader.loadClass(fqn);
          Field f = clazz.getField("DESCRIPTOR");
@@ -48,6 +43,17 @@ public class ControllerDescriptor
          controllers.add(controller);
          controllerMethods.addAll(controller.getMethods());
          beans.add(new BeanDescriptor(controller.getType(), null, null));
+      }
+      
+      //
+      Boolean escapeXML = config.getBoolean("escapeXML");
+      
+      //
+      Class<?> defaultController = null;
+      String defaultControllerName = config.getString("default");
+      if (defaultControllerName != null)
+      {
+         defaultController = loader.loadClass(defaultControllerName);
       }
 
       //
@@ -72,7 +78,6 @@ public class ControllerDescriptor
    {
       return escapeXML;
    }
-
 
    public List<ControllerBean> getControllers()
    {

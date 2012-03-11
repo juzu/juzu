@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplatePlugin extends MetaModelPlugin
+public class TemplateMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
@@ -155,17 +155,24 @@ public class TemplatePlugin extends MetaModelPlugin
    }
 
    @Override
-   public void emitConfig(ApplicationMetaModel application, JSON json)
+   public JSON emitConfig(ApplicationMetaModel application)
    {
       TemplateResolver repo = templateRepositoryMap.get(application.getHandle());
       if (repo != null)
       {
+         JSON config = new JSON();
          ArrayList<String> templates = new ArrayList<String>();
          for (Template template : repo.getTemplates())
          {
             templates.add(template.getFQN().getFullName());
          }
-         json.setList("templates", templates);
+         config.setList("templates", templates);
+         config.set("package", application.getTemplates().getQN().toString());
+         return config;
+      }
+      else
+      {
+         return null;
       }
    }
 }

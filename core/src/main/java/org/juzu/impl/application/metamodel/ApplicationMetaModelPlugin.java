@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationPlugin extends MetaModelPlugin
+public class ApplicationMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
@@ -101,12 +101,6 @@ public class ApplicationPlugin extends MetaModelPlugin
          writer.append("public static final ").append(APPLICATION_DESCRIPTOR).append(" DESCRIPTOR = new ").append(APPLICATION_DESCRIPTOR).append("(");
          writer.append(fqn.getSimpleName()).append(".class");
          writer.append(",\n");
-         writer.append(application.getDefaultController() != null ? (application.getDefaultController() + ".class") : "null");
-         writer.append(",\n");
-         writer.append(application.getEscapeXML() != null ? Boolean.toString(application.getEscapeXML()) : "null");
-         writer.append(",\n");
-         writer.append("\"").append(application.getTemplates().getQN()).append("\"");
-         writer.append(",\n");
          writer.append("java.util.Arrays.<Class<? extends ");
          writer.append(LifeCyclePlugin.class.getName());
          writer.append(">>asList(");
@@ -141,8 +135,8 @@ public class ApplicationPlugin extends MetaModelPlugin
 
    private void emitConfig(MetaModel model)
    {
-      JSON json = new JSON();
-      json.merge(moduleConfig);
+      JSON config = new JSON();
+      config.merge(moduleConfig);
 
       // Module config
       Writer writer = null;
@@ -151,7 +145,7 @@ public class ApplicationPlugin extends MetaModelPlugin
          //
          FileObject fo = model.env.createResource(StandardLocation.CLASS_OUTPUT, "org.juzu", "config.json");
          writer = fo.openWriter();
-         json.toString(writer);
+         config.toString(writer, 2);
       }
       catch (IOException e)
       {
@@ -165,12 +159,16 @@ public class ApplicationPlugin extends MetaModelPlugin
       // Application configs
       for (ApplicationMetaModel application : model.getChild(ApplicationsMetaModel.KEY))
       {
-         json.clear();
+         config.clear();
 
          // Emit config
-         for (MetaModelPlugin plugin : model.getPlugins())
+         for (Map.Entry<String, MetaModelPlugin> entry : model.getPlugins().entrySet())
          {
-            plugin.emitConfig(application, json);
+            JSON pluginConfig = entry.getValue().emitConfig(application);
+            if (pluginConfig != null)
+            {
+               config.set(entry.getKey(), pluginConfig);
+            }
          }
 
          //
@@ -179,7 +177,7 @@ public class ApplicationPlugin extends MetaModelPlugin
          {
             FileObject fo = model.env.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.json");
             writer = fo.openWriter();
-            json.toString(writer);
+            config.toString(writer, 2);
          }
          catch (IOException e)
          {

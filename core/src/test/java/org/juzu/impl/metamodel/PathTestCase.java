@@ -20,9 +20,9 @@
 package org.juzu.impl.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
-import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelEvent;
+import org.juzu.impl.controller.metamodel.ControllerMetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplateMetaModel;
+import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplateRefMetaModel;
 import org.juzu.processor.MainProcessor;
 import org.juzu.impl.utils.Tools;
@@ -42,10 +42,12 @@ public class PathTestCase extends AbstractTestCase
       helper.assertCompile();
 
       //
-      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
       MetaModel expected = new MetaModel();
+      expected.addPlugin("controller", new ControllerMetaModelPlugin());
+      expected.addPlugin("template", new TemplateMetaModelPlugin());
       ApplicationMetaModel application = expected.addApplication("model.meta.path", "PathApplication");
       TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
       TemplateMetaModel template = application.getTemplates().add(ref);
@@ -69,10 +71,12 @@ public class PathTestCase extends AbstractTestCase
 
       //
       helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
-      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
       MetaModel expected = new MetaModel();
+      expected.addPlugin("controller", new ControllerMetaModelPlugin());
+      expected.addPlugin("template", new TemplateMetaModelPlugin());
       ApplicationMetaModel application = expected.addApplication("model.meta.path", "PathApplication");
       TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "bar.gtmpl");
       TemplateMetaModel template = application.getTemplates().add(ref);
@@ -93,10 +97,12 @@ public class PathTestCase extends AbstractTestCase
 
       //
       helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
-      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
       MetaModel expected = new MetaModel();
+      expected.addPlugin("controller", new ControllerMetaModelPlugin());
+      expected.addPlugin("template", new TemplateMetaModelPlugin());
       expected.addApplication("model.meta.path", "PathApplication");
       assertEquals(expected.toJSON(), mm.toJSON());
    }
@@ -113,10 +119,12 @@ public class PathTestCase extends AbstractTestCase
 
       //
       helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
-      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
+      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
       MetaModel expected = new MetaModel();
+      expected.addPlugin("controller", new ControllerMetaModelPlugin());
+      expected.addPlugin("template", new TemplateMetaModelPlugin());
       expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
       assertEquals(expected.toJSON(), mm.toJSON());
    }
@@ -127,7 +135,7 @@ public class PathTestCase extends AbstractTestCase
       helper.assertCompile();
 
       //
-      File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
       mm.popEvents();
       Tools.serialize(mm, ser);
@@ -148,10 +156,12 @@ public class PathTestCase extends AbstractTestCase
 
       //
       helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "model2.ser"));
+      mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
       MetaModel expected = new MetaModel();
+      expected.addPlugin("controller", new ControllerMetaModelPlugin());
+      expected.addPlugin("template", new TemplateMetaModelPlugin());
       ApplicationMetaModel application = expected.addApplication("model.meta", "MetaApplication");
       TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
       TemplateMetaModel template = application.getTemplates().add(ref);

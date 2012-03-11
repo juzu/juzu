@@ -13,6 +13,6 @@ public abstract class Descriptor
     *
     * @return the list of bean ot install
     */
-   protected abstract Iterable<BeanDescriptor> getBeans();
+   public abstract Iterable<BeanDescriptor> getBeans();
 
 }
