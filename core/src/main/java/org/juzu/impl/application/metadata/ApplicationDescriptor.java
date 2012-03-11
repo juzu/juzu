@@ -20,10 +20,10 @@
 package org.juzu.impl.application.metadata;
 
 import org.juzu.impl.controller.descriptor.ControllerDescriptor;
+import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.impl.template.metadata.TemplatesDescriptor;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
-import org.juzu.plugin.Plugin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,7 @@ public class ApplicationDescriptor
    private final String name;
 
    /** . */
-   private final List<Class<? extends Plugin>> plugins;
+   private final List<Class<? extends LifeCyclePlugin>> plugins;
 
    /** . */
    private final Class<?> packageClass;
@@ -59,7 +59,7 @@ public class ApplicationDescriptor
       Class<?> defaultController,
       Boolean escapeXML,
       String templatesPackageName,
-      List<Class<? extends Plugin>> plugins)
+      List<Class<? extends LifeCyclePlugin>> plugins)
    {
       // Load config
       JSON props;
@@ -164,7 +164,7 @@ public class ApplicationDescriptor
       return templates;
    }
 
-   public List<Class<? extends Plugin>> getPlugins()
+   public List<Class<? extends LifeCyclePlugin>> getPlugins()
    {
       return plugins;
    }

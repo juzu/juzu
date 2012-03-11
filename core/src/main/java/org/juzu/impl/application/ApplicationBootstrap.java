@@ -25,6 +25,7 @@ import org.juzu.View;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.metadata.BeanDescriptor;
+import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.inject.Binding;
 import org.juzu.inject.Bindings;
 import org.juzu.impl.inject.Export;
@@ -32,7 +33,6 @@ import org.juzu.impl.inject.MetaProvider;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
-import org.juzu.plugin.Plugin;
 
 import javax.inject.Provider;
 import javax.inject.Qualifier;
@@ -162,10 +162,10 @@ public class ApplicationBootstrap
       }
 
       //
-      List<Class<? extends Plugin>> plugins = descriptor.getPlugins();
+      List<Class<? extends LifeCyclePlugin>> plugins = descriptor.getPlugins();
 
       // Declare the plugins
-      for (Class<? extends Plugin> pluginType : plugins)
+      for (Class<? extends LifeCyclePlugin> pluginType : plugins)
       {
          bootstrap.declareBean(pluginType, null, null);
       }

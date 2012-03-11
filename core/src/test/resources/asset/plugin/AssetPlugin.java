@@ -5,9 +5,9 @@ import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.asset.Registration;
 import org.juzu.impl.asset.Route;
 import org.juzu.impl.asset.Router;
+import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.utils.Path;
-import org.juzu.plugin.Plugin;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -19,7 +19,7 @@ import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Singleton
-public class AssetPlugin extends Plugin
+public class AssetPlugin extends LifeCyclePlugin
 {
 
    public static class RouteImpl extends Route

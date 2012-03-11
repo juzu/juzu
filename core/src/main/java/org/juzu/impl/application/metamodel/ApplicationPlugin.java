@@ -8,6 +8,7 @@ import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.metamodel.ProcessingContext;
+import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
@@ -106,7 +107,9 @@ public class ApplicationPlugin extends MetaModelPlugin
          writer.append(",\n");
          writer.append("\"").append(application.getTemplates().getQN()).append("\"");
          writer.append(",\n");
-         writer.append("java.util.Arrays.<Class<? extends org.juzu.plugin.Plugin>>asList(");
+         writer.append("java.util.Arrays.<Class<? extends ");
+         writer.append(LifeCyclePlugin.class.getName());
+         writer.append(">>asList(");
          List<FQN> plugins = application.getPlugins();
          for (int i = 0;i < plugins.size();i++)
          {

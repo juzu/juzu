@@ -23,7 +23,7 @@ import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.ControllerResolver;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.controller.descriptor.ControllerParameter;
-import org.juzu.plugin.Plugin;
+import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.request.Phase;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.ScopeController;
@@ -73,7 +73,7 @@ public class InternalApplicationContext extends ApplicationContext
    static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
    /** . */
-   public ArrayList<Plugin> plugins;
+   public ArrayList<LifeCyclePlugin> plugins;
 
    @Inject
    public InternalApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor) throws Exception
@@ -84,19 +84,19 @@ public class InternalApplicationContext extends ApplicationContext
       this.plugins = getPlugins(injectManager);
    }
    
-   private <B, I> ArrayList<Plugin> getPlugins(InjectManager<B, I> manager) throws Exception
+   private <B, I> ArrayList<LifeCyclePlugin> getPlugins(InjectManager<B, I> manager) throws Exception
    {
-      ArrayList<Plugin> plugins = new ArrayList<Plugin>();
-      for (B pluginBean : manager.resolveBeans(Plugin.class))
+      ArrayList<LifeCyclePlugin> plugins = new ArrayList<LifeCyclePlugin>();
+      for (B pluginBean : manager.resolveBeans(LifeCyclePlugin.class))
       {
          I pluginInstance = manager.create(pluginBean);
-         Plugin plugin = (Plugin)manager.get(pluginBean, pluginInstance);
+         LifeCyclePlugin plugin = (LifeCyclePlugin)manager.get(pluginBean, pluginInstance);
          plugins.add(plugin);
       }
       return plugins;
    }
    
-   public List<Plugin> getPlugins()
+   public List<LifeCyclePlugin> getPlugins()
    {
       return plugins;
    }

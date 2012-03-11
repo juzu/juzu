@@ -17,13 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.plugin;
+package org.juzu.impl.request;
 
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.request.Request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Plugin
+public abstract class LifeCyclePlugin
 {
    public void invoke(Request request) throws ApplicationException
    {

@@ -25,8 +25,8 @@ import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.asset.Registration;
 import org.juzu.impl.asset.Router;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
+import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.impl.request.Request;
-import org.juzu.plugin.Plugin;
 import org.juzu.request.RenderContext;
 import org.juzu.text.Printer;
 
@@ -41,7 +41,7 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Singleton
-public class AjaxPlugin extends Plugin
+public class AjaxPlugin extends LifeCyclePlugin
 {
 
    /** . */

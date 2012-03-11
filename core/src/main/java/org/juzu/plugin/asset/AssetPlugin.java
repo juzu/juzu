@@ -3,14 +3,14 @@ package org.juzu.plugin.asset;
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.impl.request.Request;
-import org.juzu.plugin.Plugin;
 import org.juzu.request.Phase;
 
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetPlugin extends Plugin
+public class AssetPlugin extends LifeCyclePlugin
 {
 
    /** . */

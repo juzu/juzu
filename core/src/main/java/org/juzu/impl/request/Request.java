@@ -31,7 +31,6 @@ import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.spi.request.ResourceBridge;
-import org.juzu.plugin.Plugin;
 import org.juzu.request.ActionContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
@@ -168,7 +167,7 @@ public class Request implements ScopingContext
    {
       if (index >= 0 && index < application.getPlugins().size())
       {
-         Plugin plugin = application.getPlugins().get(index);
+         LifeCyclePlugin plugin = application.getPlugins().get(index);
          try
          {
             index++;

@@ -21,11 +21,11 @@ package plugin.failure;
 
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.impl.request.Request;
-import org.juzu.plugin.Plugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PluginImpl extends Plugin
+public class PluginImpl extends LifeCyclePlugin
 {
    public PluginImpl()
    {
