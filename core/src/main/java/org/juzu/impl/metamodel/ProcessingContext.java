@@ -169,7 +169,7 @@ public class ProcessingContext implements Filer, Elements
       }
       catch (Exception e)
       {
-         throw new CompilationException(e, element, MetaModelErrorCode.UNEXPECTED_ERROR, e.getMessage());
+         throw new CompilationException(e, element, MetaModelError.UNEXPECTED_ERROR, e.getMessage());
       }
    }
 

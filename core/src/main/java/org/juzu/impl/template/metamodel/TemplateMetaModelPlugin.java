@@ -3,7 +3,7 @@ package org.juzu.impl.template.metamodel;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
@@ -90,7 +90,7 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
          }
          else
          {
-            throw new CompilationException(element, MetaModelErrorCode.ANNOTATION_UNSUPPORTED);
+            throw new CompilationException(element, MetaModelError.ANNOTATION_UNSUPPORTED);
          }
       }
    }

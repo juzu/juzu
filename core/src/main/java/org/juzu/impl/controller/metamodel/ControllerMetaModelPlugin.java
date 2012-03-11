@@ -8,7 +8,7 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.controller.descriptor.ControllerBean;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.controller.descriptor.ControllerParameter;
-import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
@@ -280,7 +280,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, origin, MetaModelErrorCode.CANNOT_WRITE_CONTROLLER_COMPANION, controller.getHandle().getFQN());
+         throw new CompilationException(e, origin, MetaModelError.CANNOT_WRITE_CONTROLLER_COMPANION, controller.getHandle().getFQN());
       }
       finally
       {

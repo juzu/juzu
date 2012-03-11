@@ -21,7 +21,7 @@ package org.juzu.impl.template.metamodel;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.ProcessingContext;
 import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.Template;
@@ -94,7 +94,7 @@ class ModelTemplateProcessContext extends ProcessContext
       //
       if (!matcher.matches())
       {
-         throw new CompilationException(MetaModelErrorCode.TEMPLATE_ILLEGAL_PATH, path);
+         throw new CompilationException(MetaModelError.TEMPLATE_ILLEGAL_PATH, path);
       }
       String folder = matcher.group(1);
       String rawName = matcher.group(2);
@@ -119,7 +119,7 @@ class ModelTemplateProcessContext extends ProcessContext
       Content content = resolveResource(stubFQN, extension);
       if (content == null)
       {
-         throw new CompilationException(MetaModelErrorCode.TEMPLATE_NOT_RESOLVED, fqn);
+         throw new CompilationException(MetaModelError.TEMPLATE_NOT_RESOLVED, fqn);
       }
 
       // Parse to AST
@@ -130,7 +130,7 @@ class ModelTemplateProcessContext extends ProcessContext
       }
       catch (org.juzu.impl.template.ast.ParseException e)
       {
-         throw new CompilationException(MetaModelErrorCode.TEMPLATE_SYNTAX_ERROR, path);
+         throw new CompilationException(MetaModelError.TEMPLATE_SYNTAX_ERROR, path);
       }
 
       // Add template to application

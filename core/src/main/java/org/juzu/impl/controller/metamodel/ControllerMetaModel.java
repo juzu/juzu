@@ -19,7 +19,7 @@
 
 package org.juzu.impl.controller.metamodel;
 
-import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.Key;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
@@ -152,7 +152,7 @@ public class ControllerMetaModel extends MetaModelObject
                      {
                         if (dt.getTypeArguments().size() != 1)
                         {
-                           throw new CompilationException(parameterVariableElement, MetaModelErrorCode.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                           throw new CompilationException(parameterVariableElement, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
                         }
                         else
                         {
@@ -173,16 +173,16 @@ public class ControllerMetaModel extends MetaModelObject
                      parameterSimpleTypeMirror = arrayType.getComponentType();
                      break;
                   default:
-                     throw new CompilationException(parameterVariableElement, MetaModelErrorCode.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                     throw new CompilationException(parameterVariableElement, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
                }
                if (parameterSimpleTypeMirror.getKind() != TypeKind.DECLARED)
                {
-                  throw new CompilationException(parameterVariableElement, MetaModelErrorCode.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                  throw new CompilationException(parameterVariableElement, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
                }
                DeclaredType parameterSimpleType = (DeclaredType)parameterSimpleTypeMirror;
                if (!parameterSimpleType.asElement().toString().equals("java.lang.String"))
                {
-                  throw new CompilationException(parameterVariableElement, MetaModelErrorCode.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                  throw new CompilationException(parameterVariableElement, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
                }
                parameterCardinalities.add(cardinality);
                parameterNames.add(parameterVariableElement.getSimpleName().toString());
@@ -203,7 +203,7 @@ public class ControllerMetaModel extends MetaModelObject
             {
                if (existing.id != null && existing.id.equals(id))
                {
-                  throw new CompilationException(methodElt, MetaModelErrorCode.CONTROLLER_METHOD_DUPLICATE_ID, id);
+                  throw new CompilationException(methodElt, MetaModelError.CONTROLLER_METHOD_DUPLICATE_ID, id);
                }
             }
 

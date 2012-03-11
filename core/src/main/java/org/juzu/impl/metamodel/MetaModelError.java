@@ -26,7 +26,7 @@ import org.juzu.impl.utils.ErrorCode;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public enum MetaModelErrorCode implements ErrorCode
+public enum MetaModelError implements ErrorCode
 {
 
    CANNOT_WRITE_CONFIG("The configuration cannot be written"),
@@ -62,7 +62,7 @@ public enum MetaModelErrorCode implements ErrorCode
    /** . */
    private final String message;
 
-   MetaModelErrorCode(String message)
+   MetaModelError(String message)
    {
       this.message = message;
    }

@@ -2,7 +2,7 @@ package org.juzu.impl.application.metamodel;
 
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
@@ -125,7 +125,7 @@ public class ApplicationMetaModelPlugin extends MetaModelPlugin
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elt, MetaModelErrorCode.CANNOT_WRITE_APPLICATION, application.getFQN());
+         throw new CompilationException(e, elt, MetaModelError.CANNOT_WRITE_APPLICATION, application.getFQN());
       }
       finally
       {
@@ -149,7 +149,7 @@ public class ApplicationMetaModelPlugin extends MetaModelPlugin
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, MetaModelErrorCode.CANNOT_WRITE_CONFIG);
+         throw new CompilationException(e, MetaModelError.CANNOT_WRITE_CONFIG);
       }
       finally
       {
@@ -181,7 +181,7 @@ public class ApplicationMetaModelPlugin extends MetaModelPlugin
          }
          catch (IOException e)
          {
-            throw new CompilationException(e, model.env.get(application.getHandle()), MetaModelErrorCode.CANNOT_WRITE_APPLICATION_CONFIG, application.getFQN());
+            throw new CompilationException(e, model.env.get(application.getHandle()), MetaModelError.CANNOT_WRITE_APPLICATION_CONFIG, application.getFQN());
          }
          finally
          {

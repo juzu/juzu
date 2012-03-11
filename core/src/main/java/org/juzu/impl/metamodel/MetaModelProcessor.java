@@ -111,7 +111,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
    @Override
    protected ErrorCode decode(String key)
    {
-      for (MetaModelErrorCode c : MetaModelErrorCode.values())
+      for (MetaModelError c : MetaModelError.values())
       {
          if (c.getKey().equals(key))
          {

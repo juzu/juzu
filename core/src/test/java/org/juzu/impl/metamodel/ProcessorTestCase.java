@@ -93,7 +93,7 @@ public class ProcessorTestCase extends AbstractTestCase
       List<CompilationError> errors = helper.failCompile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
-      assertEquals(MetaModelErrorCode.TEMPLATE_NOT_RESOLVED.toString(), error.getCode());
+      assertEquals(MetaModelError.TEMPLATE_NOT_RESOLVED.toString(), error.getCode());
       assertEquals(2, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
       assertNotNull(classOutput.getPath("processor", "simple", "A.class"));

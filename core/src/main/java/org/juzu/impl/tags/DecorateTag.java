@@ -20,7 +20,7 @@
 package org.juzu.impl.tags;
 
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.ExtendedTagHandler;
 import org.juzu.impl.spi.template.TemplateStub;
@@ -80,7 +80,7 @@ public class DecorateTag extends ExtendedTagHandler
       Template resolved = phase.resolveTemplate(path);
       if (resolved == null)
       {
-         throw new CompilationException(MetaModelErrorCode.TEMPLATE_NOT_RESOLVED, path);
+         throw new CompilationException(MetaModelError.TEMPLATE_NOT_RESOLVED, path);
       }
    }
 
