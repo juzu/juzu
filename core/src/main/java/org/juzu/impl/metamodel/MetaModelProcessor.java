@@ -19,11 +19,7 @@
 
 package org.juzu.impl.metamodel;
 
-import org.juzu.Action;
 import org.juzu.Application;
-import org.juzu.Path;
-import org.juzu.Resource;
-import org.juzu.View;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.utils.ErrorCode;
@@ -45,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,14 +52,6 @@ import java.util.Set;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MetaModelProcessor extends BaseProcessor
 {
-
-   /** . */
-   private static final Class<?>[] annotationTypes = {
-      View.class,
-      Action.class,
-      Resource.class,
-      Path.class,
-      Application.class};
 
    /** . */
    private MetaModel metaModel;
@@ -88,21 +77,35 @@ public abstract class MetaModelProcessor extends BaseProcessor
    @Override
    protected void doInit(ProcessingEnvironment processingEnv)
    {
-      HashSet<TypeElement> annotations = new HashSet<TypeElement>();
-      for (Class c : annotationTypes)
-      {
-         annotations.add(processingEnv.getElementUtils().getTypeElement(c.getName()));
-      }
+      log.log("Using processing nev " + processingEnv.getClass().getName());
 
+      //
+      ArrayList<Plugin> plugins = Tools.list(ServiceLoader.load(Plugin.class));
+      StringBuilder msg = new StringBuilder("Using plugins:");
+      for (Plugin plugin : plugins)
+      {
+         msg.append(" ").append(plugin.getName());
+      }
+      log.log(msg);
+
+      // 
+      HashSet<TypeElement> supportedAnnotationTypes = new HashSet<TypeElement>();
+      supportedAnnotationTypes.add(processingEnv.getElementUtils().getTypeElement(Application.class.getName()));
+      for (Plugin plugin : plugins)
+      {
+         for (String supportedAnnotationName : plugin.getSupportedAnnotationTypes())
+         {
+            TypeElement supportedAnnotationType = processingEnv.getElementUtils().getTypeElement(supportedAnnotationName);
+            supportedAnnotationTypes.add(supportedAnnotationType);
+         }
+      }
+      
       //
       this.filer = processingEnv.getFiler();
-      this.annotations = annotations;
+      this.annotations = supportedAnnotationTypes;
       this.index = 0;
       this.context = new ProcessingContext(processingEnv);
-      this.plugins = Tools.list(ServiceLoader.load(Plugin.class));
-
-      //
-      log.log("Using processing nev " + processingEnv.getClass().getName());
+      this.plugins = plugins;
    }
 
    @Override

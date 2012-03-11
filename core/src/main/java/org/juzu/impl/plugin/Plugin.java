@@ -4,6 +4,12 @@ import org.juzu.impl.metadata.Descriptor;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.JSON;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Base class for a plugin.
  *
@@ -23,6 +29,12 @@ public abstract class Plugin
    public String getName()
    {
       return name;
+   }
+
+   public Set<String> getSupportedAnnotationTypes()
+   {
+      SupportedAnnotationTypes annotations = this.getClass().getAnnotation(SupportedAnnotationTypes.class);
+      return annotations != null ? new HashSet<String>(Arrays.asList(annotations.value())) : Collections.<String>emptySet();
    }
 
    /**

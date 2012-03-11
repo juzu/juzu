@@ -7,7 +7,10 @@ import org.juzu.impl.template.metadata.TemplatesDescriptor;
 import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import org.juzu.impl.utils.JSON;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@SupportedAnnotationTypes({"org.juzu.Path"})
 public class TemplatePlugin extends Plugin
 {
 

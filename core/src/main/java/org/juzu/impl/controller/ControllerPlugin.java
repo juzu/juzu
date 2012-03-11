@@ -7,7 +7,10 @@ import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.utils.JSON;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@SupportedAnnotationTypes({"org.juzu.View","org.juzu.Action","org.juzu.Resource"})
 public class ControllerPlugin extends Plugin
 {
 
