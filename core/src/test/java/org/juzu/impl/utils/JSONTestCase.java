@@ -38,7 +38,7 @@ public class JSONTestCase extends TestCase
 
    public void testWriteMap() throws Exception
    {
-      assertEquals("{\"a\":\"a_value\",\"b\":2}", JSON.toString(new JSON().add("a", "a_value").add("b", 2), new StringBuilder()).toString());
+      assertEquals("{\"a\":\"a_value\",\"b\":2}", JSON.toString(new JSON().set("a", "a_value").set("b", 2), new StringBuilder()).toString());
    }
 
    public void testReadArray() throws Exception
@@ -113,26 +113,26 @@ public class JSONTestCase extends TestCase
          }
          public JSON toJSON()
          {
-            return new JSON().add("value", value);
+            return new JSON().set("value", value);
          }
       }
-      JSON json = new JSON().add("foo", new Foo("bar"));
-      assertEquals(new JSON().add("value", "bar"), json.getJSON("foo"));
+      JSON json = new JSON().set("foo", new Foo("bar"));
+      assertEquals(new JSON().set("value", "bar"), json.getJSON("foo"));
    }
 
    public void testUnwrapArray() throws Exception
    {
-      JSON json = new JSON().add("foo", (Object)new String[]{"bar_1","bar_2"});
+      JSON json = new JSON().set("foo", (Object)new String[]{"bar_1", "bar_2"});
       assertEquals(Arrays.asList("bar_1", "bar_2"), json.getList("foo"));
    }
    
    public void testCastToString() throws Exception
    {
-      assertEquals("bar", new JSON().add("foo", "bar").getString("foo"));
+      assertEquals("bar", new JSON().set("foo", "bar").getString("foo"));
       assertNull(new JSON().getString("foo"));
       try
       {
-         new JSON().add("foo", true).getString("foo");
+         new JSON().set("foo", true).getString("foo");
          fail();
       }
       catch (ClassCastException ignore)
@@ -142,13 +142,13 @@ public class JSONTestCase extends TestCase
 
    public void testCastToList() throws Exception
    {
-      assertEquals(Arrays.asList("bar"), new JSON().add("foo", Arrays.asList("bar")).getList("foo"));
-      assertEquals(Arrays.asList("bar"), new JSON().add("foo", Arrays.asList("bar")).getList("foo", String.class));
+      assertEquals(Arrays.asList("bar"), new JSON().setList("foo", Arrays.asList("bar")).getList("foo"));
+      assertEquals(Arrays.asList("bar"), new JSON().setList("foo", Arrays.asList("bar")).getList("foo", String.class));
       assertNull(new JSON().getList("foo"));
       assertNull(new JSON().getList("foo", Boolean.class));
       try
       {
-         new JSON().add("foo", true).getList("foo");
+         new JSON().set("foo", true).getList("foo");
          fail();
       }
       catch (ClassCastException ignore)
@@ -156,7 +156,7 @@ public class JSONTestCase extends TestCase
       }
       try
       {
-         new JSON().add("foo", true).getList("foo", String.class);
+         new JSON().set("foo", true).getList("foo", String.class);
          fail();
       }
       catch (ClassCastException ignore)
@@ -164,7 +164,7 @@ public class JSONTestCase extends TestCase
       }
       try
       {
-         new JSON().add("foo", Arrays.asList("String")).getList("foo", Boolean.class);
+         new JSON().setList("foo", Arrays.asList("String")).getList("foo", Boolean.class);
          fail();
       }
       catch (ClassCastException ignore)
@@ -174,14 +174,23 @@ public class JSONTestCase extends TestCase
 
    public void testCastToJSON() throws Exception
    {
-      assertEquals(new JSON(), new JSON().add("foo", new JSON()).getJSON("foo"));
+      assertEquals(new JSON(), new JSON().set("foo", new JSON()).getJSON("foo"));
       try
       {
-         new JSON().add("foo", true).getJSON("foo");
+         new JSON().set("foo", true).getJSON("foo");
          fail();
       }
       catch (ClassCastException ignore)
       {
       }
+   }
+   
+   public void testNull() throws Exception
+   {
+      JSON json = new JSON().set("foo", null);
+      String s = json.toString();
+      assertEquals("{\"foo\":null}", s);
+      JSON unmarshalled = (JSON)JSON.parse(s);
+      assertEquals(json, unmarshalled);
    }
 }

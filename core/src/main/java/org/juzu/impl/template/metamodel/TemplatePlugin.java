@@ -165,7 +165,7 @@ public class TemplatePlugin extends MetaModelPlugin
          {
             templates.add(template.getFQN().getFullName());
          }
-         json.add("templates", templates);
+         json.setList("templates", templates);
       }
    }
 }

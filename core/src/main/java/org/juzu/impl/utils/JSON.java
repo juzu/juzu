@@ -39,7 +39,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * A simple JSON object useful for marshalling and unmarshalling data.
+ * 
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 public final class JSON
 {
 
@@ -142,48 +146,33 @@ public final class JSON
       return false;
    }
 
-   public <E> JSON add(Map<String, E> map)
+   public <E> JSON merge(Map<String, E> map)
    {
       for (Map.Entry<String, E> entry : map.entrySet())
       {
-         add(entry.getKey(), entry.getValue());
+         set(entry.getKey(), entry.getValue());
       }
       return this;
    }
 
-   public <E> JSON add(String name, Map<String, E> map)
+   public <E> JSON setMap(String name, Map<String, E> map)
    {
-      entries.put(name, new JSON().add(map));
-      return this;
+      return set(name, map);
    }
 
-   public <E> JSON add(String name, E... elements)
+   public <E> JSON setList(String name, E... elements)
    {
-      add(name, (Object)elements);
-      return this;
+      return set(name, elements);
    }
 
-   public <E> JSON add(String name, Iterable<E> elements)
+   public <E> JSON setList(String name, Iterable<E> elements)
    {
-      if (elements != null)
-      {
-         ArrayList<Object> r = new ArrayList<Object>();
-         for (E element : elements)
-         {
-            r.add(unwrap(element));
-         }
-         entries.put(name, r);
-      }
-      else
-      {
-         engine.put(name, null);
-      }
-      return this;
+      return set(name, elements);
    }
    
-   public JSON add(String name, Object json)
+   public JSON set(String name, Object o)
    {
-      entries.put(name, unwrap(json));
+      entries.put(name, unwrap(o));
       return this;
    }
 
@@ -202,7 +191,7 @@ public final class JSON
       return ret;
    }
 
-   private Object unwrap(Object o)
+   private static Object unwrap(Object o)
    {
       if (o == null || o instanceof JSON)
       {
@@ -219,7 +208,19 @@ public final class JSON
          }
          else
          {
-            if (o instanceof Iterable<?>)
+            if (o instanceof Map<?, ?>)
+            {
+               Map<?, ?> map = (Map<?, ?>)o;
+               JSON json = new JSON();
+               for (Map.Entry<?, ?> entry : map.entrySet())
+               {
+                  String name = entry.getKey().toString();
+                  Object value = unwrap(entry.getValue());
+                  json.entries.put(name, value);
+               }
+               o = json;
+            }
+            else if (o instanceof Iterable<?>)
             {
                ArrayList<Object> r = new ArrayList<Object>();
                for (Object element : (Iterable<?>)o)

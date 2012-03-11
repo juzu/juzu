@@ -51,11 +51,11 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
    public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
    {
       JSON url = new JSON();
-      url.add("phase", phase.name());
-      url.add("parameters", parameters);
+      url.set("phase", phase.name());
+      url.setMap("parameters", parameters);
       if (escapeXML != null)
       {
-         url.add("escapeXML", escapeXML);
+         url.set("escapeXML", escapeXML);
       }
       return url.toString();
    }

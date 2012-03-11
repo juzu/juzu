@@ -81,12 +81,12 @@ public class MethodMetaModel extends MetaModelObject
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("handle", handle);
-      json.add("id", id);
-      json.add("phase", phase);
-      json.add("name", name);
-      json.add("parameterTypes", new ArrayList<String>(parameterTypes));
-      json.add("parameterNames", new ArrayList<String>(parameterNames));
+      json.set("handle", handle);
+      json.set("id", id);
+      json.set("phase", phase);
+      json.set("name", name);
+      json.setList("parameterTypes", new ArrayList<String>(parameterTypes));
+      json.setList("parameterNames", new ArrayList<String>(parameterNames));
       return json;
    }
 

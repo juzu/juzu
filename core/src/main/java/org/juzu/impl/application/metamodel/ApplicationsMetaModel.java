@@ -32,7 +32,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("values", getChildren(ApplicationMetaModel.class));
+      json.setList("values", getChildren(ApplicationMetaModel.class));
       return json;
    }
 

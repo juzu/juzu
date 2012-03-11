@@ -31,7 +31,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("values", getChildren(ControllerMetaModel.class));
+      json.setList("values", getChildren(ControllerMetaModel.class));
       return json;
    }
 

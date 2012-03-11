@@ -48,7 +48,7 @@ public abstract class Key<O extends MetaModelObject> implements Serializable
       @Override
       public JSON toJSON()
       {
-         return new JSON().add("type",type.getName());
+         return new JSON().set("type", type.getName());
       }
 
       @Override
@@ -119,7 +119,7 @@ public abstract class Key<O extends MetaModelObject> implements Serializable
       @Override
       public JSON toJSON()
       {
-         return new JSON().add("value", value).add("type", type.getName());
+         return new JSON().set("value", value).set("type", type.getName());
       }
 
       @Override

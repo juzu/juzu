@@ -69,8 +69,8 @@ public class ControllerMetaModel extends MetaModelObject
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("handle", handle);
-      json.add("methods", getMethods());
+      json.set("handle", handle);
+      json.setList("methods", getMethods());
       return json;
    }
 

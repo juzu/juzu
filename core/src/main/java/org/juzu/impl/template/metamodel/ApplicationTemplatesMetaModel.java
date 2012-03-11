@@ -32,8 +32,8 @@ public class ApplicationTemplatesMetaModel extends MetaModelObject implements It
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("values", getChildren(TemplateMetaModel.class));
-      json.add("qn", qn);
+      json.setList("values", getChildren(TemplateMetaModel.class));
+      json.set("qn", qn);
       return json;
    }
 

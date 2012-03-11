@@ -2,7 +2,7 @@ Object.prototype.toJava = function() {
   var m = new org.juzu.impl.utils.JSON();
   for (var key in this)
     if (this.hasOwnProperty(key))
-      m.add(key, this[key].toJava());
+      m.set(key, this[key] == null ? null : this[key].toJava());
   return m;
 };
 Array.prototype.toJava = function() {

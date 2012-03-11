@@ -101,7 +101,7 @@ public class ControllerPlugin extends MetaModelPlugin
       {
          controllers.add(controller.getHandle().getFQN().getFullName() + "_");
       }
-      json.add("controllers", controllers);
+      json.setList("controllers", controllers);
    }
 
    private void emitController(ProcessingContext env, ControllerMetaModel controller) throws CompilationException

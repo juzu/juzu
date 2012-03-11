@@ -142,7 +142,7 @@ public class ApplicationPlugin extends MetaModelPlugin
    private void emitConfig(MetaModel model)
    {
       JSON json = new JSON();
-      json.add(moduleConfig);
+      json.merge(moduleConfig);
 
       // Module config
       Writer writer = null;

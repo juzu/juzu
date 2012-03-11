@@ -28,7 +28,7 @@ public class TemplateRefsMetaModel extends MetaModelObject
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("values", getChildren(TemplateRefMetaModel.class));
+      json.setList("values", getChildren(TemplateRefMetaModel.class));
       return json;
    }
 

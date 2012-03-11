@@ -34,8 +34,8 @@ public class ApplicationControllersMetaModel extends MetaModelObject implements 
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("defaultController", defaultController);
-      json.add("values", getChildren(ControllerMetaModel.class));
+      json.set("defaultController", defaultController);
+      json.setList("values", getChildren(ControllerMetaModel.class));
       return json;
    }
 

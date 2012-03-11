@@ -63,8 +63,8 @@ public class TemplateMetaModel extends MetaModelObject
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("path", path);
-      json.add("refs", getKeys(TemplateRefMetaModel.class));
+      json.set("path", path);
+      json.setList("refs", getKeys(TemplateRefMetaModel.class));
       return json;
    }
 

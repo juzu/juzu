@@ -93,9 +93,9 @@ public final class MetaModel extends MetaModelObject
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.add("applications", getChild(ApplicationsMetaModel.KEY));
-      json.add("templates", getChild(TemplateRefsMetaModel.KEY));
-      json.add("controllers", getChild(ControllersMetaModel.KEY));
+      json.setList("applications", getChild(ApplicationsMetaModel.KEY));
+      json.set("templates", getChild(TemplateRefsMetaModel.KEY));
+      json.setList("controllers", getChild(ControllersMetaModel.KEY));
       return json;
    }
 
