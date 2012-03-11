@@ -17,9 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.template.ast;
 
 import junit.framework.TestCase;
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;

@@ -21,6 +21,7 @@ package org.juzu.impl.template;
 
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
 import org.juzu.impl.template.compiler.ProcessContext;
@@ -132,7 +133,7 @@ public class TagTestCase extends AbstractInjectTestCase
                      System.currentTimeMillis()
                   );
                }
-               catch (ParseException e)
+               catch (org.juzu.impl.template.ast.ParseException e)
                {
                   throw failure(e);
                }

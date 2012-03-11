@@ -20,7 +20,7 @@
 package org.juzu.impl.template.compiler;
 
 import org.juzu.impl.spi.template.TemplateEmitter;
-import org.juzu.impl.template.ASTNode;
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.template.TagHandler;
 import org.juzu.text.Location;

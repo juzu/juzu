@@ -23,8 +23,7 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.MetaModelErrorCode;
 import org.juzu.impl.metamodel.ProcessingContext;
-import org.juzu.impl.template.ASTNode;
-import org.juzu.impl.template.ParseException;
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.template.compiler.ProcessContext;
 import org.juzu.impl.template.compiler.ProcessPhase;
@@ -129,7 +128,7 @@ class ModelTemplateProcessContext extends ProcessContext
       {
          templateAST = ASTNode.Template.parse(content.getCharSequence());
       }
-      catch (ParseException e)
+      catch (org.juzu.impl.template.ast.ParseException e)
       {
          throw new CompilationException(MetaModelErrorCode.TEMPLATE_SYNTAX_ERROR, path);
       }

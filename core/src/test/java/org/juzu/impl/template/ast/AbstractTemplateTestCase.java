@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.template.ast;
 
 import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
@@ -70,7 +70,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
          });
          tcc.emit(generator, ASTNode.Template.parse(text));
       }
-      catch (ParseException e)
+      catch (org.juzu.impl.template.ast.ParseException e)
       {
          throw failure(e);
       }

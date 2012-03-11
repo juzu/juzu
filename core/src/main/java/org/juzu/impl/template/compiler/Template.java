@@ -19,7 +19,7 @@
 
 package org.juzu.impl.template.compiler;
 
-import org.juzu.impl.template.ASTNode;
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.utils.FQN;
 
 import java.io.Serializable;

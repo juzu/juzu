@@ -5,7 +5,7 @@ options
 
 PARSER_BEGIN(TemplateParser)
 
-package org.juzu.impl.template;
+package org.juzu.impl.template.ast;
 
 import java.util.ArrayList;
 import org.juzu.text.Location;

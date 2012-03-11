@@ -17,8 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.template.ast;
 
+import org.juzu.impl.template.ast.ASTNode;
+import org.juzu.impl.template.ast.SectionType;
 import org.juzu.impl.utils.Builder;
 import org.juzu.test.AbstractTestCase;
 
@@ -40,7 +42,7 @@ public class TemplateParserTestCase extends AbstractTestCase
       {
          return ASTNode.Template.parse(s).getChildren();
       }
-      catch (ParseException e)
+      catch (org.juzu.impl.template.ast.ParseException e)
       {
          throw failure(e);
       }
@@ -146,7 +148,7 @@ public class TemplateParserTestCase extends AbstractTestCase
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", " ")).addChild(new ASTNode.Section(SectionType.STRING, ""))), parse("#{foo a=' '}#{/foo}"));
    }
 
-   public void testParseNestedTag() throws IOException, ParseException
+   public void testParseNestedTag() throws IOException, org.juzu.impl.template.ast.ParseException
    {
       List<ASTNode.Block<?>> o = parse("#{foo} ${bar} #{/foo}");
       List<ASTNode.Block<?>> expected = Collections.<ASTNode.Block<?>>singletonList(

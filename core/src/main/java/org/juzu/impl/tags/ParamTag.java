@@ -19,13 +19,10 @@
 
 package org.juzu.impl.tags;
 
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.ExtendedTagHandler;
-import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.compiler.ProcessPhase;
 import org.juzu.impl.template.compiler.Template;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ParamTag extends ExtendedTagHandler

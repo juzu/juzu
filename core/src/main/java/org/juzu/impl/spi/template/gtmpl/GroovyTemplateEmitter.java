@@ -20,7 +20,7 @@
 package org.juzu.impl.spi.template.gtmpl;
 
 import org.juzu.impl.spi.template.TemplateEmitter;
-import org.juzu.impl.template.SectionType;
+import org.juzu.impl.template.ast.SectionType;
 import org.juzu.impl.utils.Tools;
 import org.juzu.text.Location;
 

@@ -21,9 +21,9 @@ package org.juzu.impl.tags;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.metamodel.MetaModelErrorCode;
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.ExtendedTagHandler;
 import org.juzu.impl.spi.template.TemplateStub;
-import org.juzu.impl.template.ASTNode;
 import org.juzu.impl.template.compiler.ProcessPhase;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.template.Renderable;

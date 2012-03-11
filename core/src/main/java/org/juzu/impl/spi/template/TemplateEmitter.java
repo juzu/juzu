@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.template;
 
-import org.juzu.impl.template.SectionType;
+import org.juzu.impl.template.ast.SectionType;
 import org.juzu.text.Location;
 
 import java.io.IOException;

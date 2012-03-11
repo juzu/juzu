@@ -25,7 +25,7 @@ import org.juzu.impl.tags.IncludeTag;
 import org.juzu.impl.tags.InsertTag;
 import org.juzu.impl.tags.ParamTag;
 import org.juzu.impl.tags.TitleTag;
-import org.juzu.impl.template.ASTNode;
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.template.TagHandler;
 
 import java.util.HashMap;

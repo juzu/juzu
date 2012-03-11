@@ -17,16 +17,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.template.ast;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum SectionType
+public class OffsetTokenManager extends TemplateParserTokenManager
 {
 
-   STRING,
+   public OffsetTokenManager(SimpleCharStream stream)
+   {
+      super(stream);
+   }
 
-   SCRIPTLET,
+   protected Token jjFillToken()
+   {
+      Token t = super.jjFillToken();
+      t.beginOffset = ((OffsetCharStream)input_stream).beginOffset-1;
+      t.endOffset = ((OffsetCharStream)input_stream).currentOffset;
+      return t;
+   }
 
-   EXPR
+   public OffsetCharStream getStream()
+   {
+      return (OffsetCharStream)input_stream;
+   }
 
 }

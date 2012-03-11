@@ -17,28 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template;
+package org.juzu.impl.template.ast;
+
+import org.juzu.text.Coordinate;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class OffsetTokenManager extends TemplateParserTokenManager
+public class OffsetToken
 {
 
-   public OffsetTokenManager(SimpleCharStream stream)
+   /** . */
+   public int beginOffset;
+
+   /** . */
+   public int endOffset;
+
+   public Coordinate getBegin()
    {
-      super(stream);
+      return new Coordinate(beginOffset, ((Token)this).beginColumn, ((Token)this).beginLine);
    }
 
-   protected Token jjFillToken()
+   public Coordinate getEnd()
    {
-      Token t = super.jjFillToken();
-      t.beginOffset = ((OffsetCharStream)input_stream).beginOffset-1;
-      t.endOffset = ((OffsetCharStream)input_stream).currentOffset;
-      return t;
+      return new Coordinate(endOffset, ((Token)this).endColumn, ((Token)this).endLine);
    }
-
-   public OffsetCharStream getStream()
-   {
-      return (OffsetCharStream)input_stream;
-   }
-
 }

@@ -31,7 +31,7 @@ import org.juzu.impl.metamodel.MetaModelErrorCode;
 import org.juzu.impl.metamodel.ProcessingContext;
 import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.spi.template.TemplateProvider;
-import org.juzu.impl.template.ASTNode;
+import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
