@@ -28,7 +28,7 @@ public class ApplicationAsset extends Route implements Provider<ApplicationAsset
    {
       //
       Map<String, ControllerMethod> table = new HashMap<String, ControllerMethod>();
-      for (ControllerMethod cm : desc.getControllerMethods())
+      for (ControllerMethod cm : desc.getController().getMethods())
       {
          Ajax ajax = cm.getMethod().getAnnotation(Ajax.class);
          if (ajax != null)

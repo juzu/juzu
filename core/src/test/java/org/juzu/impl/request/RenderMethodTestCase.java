@@ -55,7 +55,7 @@ public class RenderMethodTestCase extends AbstractTestCase
 
    public void testNoArg() throws Exception
    {
-      ControllerMethod cm = descriptor.getControllerMethod(aClass, "noArg");
+      ControllerMethod cm = descriptor.getController().getMethod(aClass, "noArg");
       assertEquals("noArg", cm.getName());
       assertEquals(Phase.RENDER, cm.getPhase());
       assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArguments());
@@ -63,7 +63,7 @@ public class RenderMethodTestCase extends AbstractTestCase
 
    public void testStringArg() throws Exception
    {
-      ControllerMethod cm = descriptor.getControllerMethod(aClass, "oneArg", String.class);
+      ControllerMethod cm = descriptor.getController().getMethod(aClass, "oneArg", String.class);
       assertEquals("oneArg", cm.getName());
       assertEquals(Phase.RENDER, cm.getPhase());
       assertEquals(Arrays.asList(new ControllerParameter("foo", Cardinality.SINGLE)), cm.getArguments());

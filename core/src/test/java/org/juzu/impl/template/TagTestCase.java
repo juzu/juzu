@@ -107,7 +107,7 @@ public class TagTestCase extends AbstractInjectTestCase
       // Manufacture a template
       // to be removed later when we improve this
       // but for now it will be enough
-      TemplateDescriptor desc = app.getContext().getDescriptor().getTemplate("foo.gtmpl");
+      TemplateDescriptor desc = app.getContext().getDescriptor().getTemplates().getTemplate("foo.gtmpl");
       assertNotNull(desc);
       Template foo = new Template("index.gtmpl", new ASTNode.Template(), new FQN(desc.getType()), "groovy", "foo.gtmpl", System.currentTimeMillis());
 

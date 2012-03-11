@@ -1,25 +1,11 @@
-/*
- * Copyright (C) 2011 eXo Platform SAS.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
 package org.juzu.impl.controller.descriptor;
 
-import java.util.Collections;
+import org.juzu.impl.metadata.BeanDescriptor;
+import org.juzu.impl.utils.JSON;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -27,29 +13,112 @@ public class ControllerDescriptor
 {
 
    /** . */
-   private final Class<?> type;
+   private final Class<?> defaultController;
+
+   /** . */
+   private final List<ControllerBean> controllers;
 
    /** . */
    private final List<ControllerMethod> methods;
 
-   public ControllerDescriptor(Class<?> type, List<ControllerMethod> methods)
+   /** . */
+   private final ArrayList<BeanDescriptor> beans;
+
+   /** . */
+   private final Boolean escapeXML;
+
+   public ControllerDescriptor(
+      ClassLoader loader,
+      Boolean escapeXML,
+      Class<?> defaultController,
+      JSON json) throws Exception
    {
-      this.type = type;
-      this.methods = Collections.unmodifiableList(methods);
+
+      //
+      List<ControllerBean> controllers = new ArrayList<ControllerBean>();
+      List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
+      ArrayList<BeanDescriptor> beans = new ArrayList<BeanDescriptor>();
+
+      // Load controllers
+      for (String fqn : json.getList("controllers", String.class))
+      {
+         Class<?> clazz = loader.loadClass(fqn);
+         Field f = clazz.getField("DESCRIPTOR");
+         ControllerBean controller = (ControllerBean)f.get(null);
+         controllers.add(controller);
+         controllerMethods.addAll(controller.getMethods());
+         beans.add(new BeanDescriptor(controller.getType(), null, null));
+      }
+
+      //
+      this.escapeXML = escapeXML;
+      this.defaultController = defaultController;
+      this.controllers = controllers;
+      this.methods = controllerMethods;
+      this.beans = beans;
+   }
+   
+   public Iterable<BeanDescriptor> getBeans()
+   {
+      return beans;
    }
 
-   public String getTypeName()
+   public Class<?> getDefault()
    {
-      return type.getName();
+      return defaultController;
    }
 
-   public Class<?> getType()
+   public Boolean getEscapeXML()
    {
-      return type;
+      return escapeXML;
+   }
+
+
+   public List<ControllerBean> getControllers()
+   {
+      return controllers;
    }
 
    public List<ControllerMethod> getMethods()
    {
       return methods;
+   }
+
+   public ControllerMethod getMethod(Class<?> type, String name, Class<?>... parameterTypes)
+   {
+      for (int i = 0;i < methods.size();i++)
+      {
+         ControllerMethod cm = methods.get(i);
+         Method m = cm.getMethod();
+         if (type.equals(cm.getType()) && m.getName().equals(name))
+         {
+            Class<?>[] a = m.getParameterTypes();
+            if (a.length == parameterTypes.length)
+            {
+               for (int j = 0;j < parameterTypes.length;j++)
+               {
+                  if (!a[j].equals(parameterTypes[j]))
+                  {
+                     continue;
+                  }
+               }
+               return cm;
+            }
+         }
+      }
+      return null;
+   }
+
+   public ControllerMethod getMethodById(String methodId)
+   {
+      for (int i = 0;i < methods.size();i++)
+      {
+         ControllerMethod cm = methods.get(i);
+         if (cm.getId().equals(methodId))
+         {
+            return cm;
+         }
+      }
+      return null;
    }
 }

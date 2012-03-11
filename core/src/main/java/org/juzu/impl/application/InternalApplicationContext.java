@@ -80,7 +80,7 @@ public class InternalApplicationContext extends ApplicationContext
    {
       this.descriptor = descriptor;
       this.injectManager = injectManager;
-      this.controllerResolver = new ControllerResolver(descriptor);
+      this.controllerResolver = new ControllerResolver(descriptor.getController());
       this.plugins = getPlugins(injectManager);
    }
    
@@ -269,7 +269,7 @@ public class InternalApplicationContext extends ApplicationContext
    {
       try
       {
-         StringBuilder id = new StringBuilder(descriptor.getTemplatesPackageName());
+         StringBuilder id = new StringBuilder(descriptor.getTemplates().getPackageName());
          String relativePath = path.substring(0, path.indexOf('.'));
          for (String name : Spliterator.split(relativePath, '/'))
          {

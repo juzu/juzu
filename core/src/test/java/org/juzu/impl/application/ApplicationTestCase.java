@@ -40,7 +40,7 @@ public class ApplicationTestCase extends AbstractTestCase
 
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      assertSame(aClass, desc.getDefaultController());
+      assertSame(aClass, desc.getController().getDefault());
    }
 
    public void _testMethodId() throws Exception
@@ -52,9 +52,9 @@ public class ApplicationTestCase extends AbstractTestCase
 
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerMethod a = desc.getControllerMethod(aClass, "a");
-      ControllerMethod b = desc.getControllerMethod(aClass, "b");
-      ControllerMethod c = desc.getControllerMethod(aClass, "c");
+      ControllerMethod a = desc.getController().getMethod(aClass, "a");
+      ControllerMethod b = desc.getController().getMethod(aClass, "b");
+      ControllerMethod c = desc.getController().getMethod(aClass, "c");
 
       //
       assertEquals("foo", a.getId());
@@ -62,9 +62,9 @@ public class ApplicationTestCase extends AbstractTestCase
       assertEquals("juu", c.getId());
 
       //
-      assertSame(a, desc.getControllerMethodById("foo"));
-      assertSame(b, desc.getControllerMethodById("bar"));
-      assertSame(c, desc.getControllerMethodById("juu"));
+      assertSame(a, desc.getController().getMethodById("foo"));
+      assertSame(b, desc.getController().getMethodById("bar"));
+      assertSame(c, desc.getController().getMethodById("juu"));
    }
 
    public void _testDuplicateMethod() throws Exception

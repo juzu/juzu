@@ -5,7 +5,7 @@ import org.juzu.URLBuilder;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.controller.descriptor.ControllerDescriptor;
+import org.juzu.impl.controller.descriptor.ControllerBean;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.metamodel.MetaModelErrorCode;
@@ -41,7 +41,7 @@ public class ControllerPlugin extends MetaModelPlugin
    private static final String CONTROLLER_METHOD = ControllerMethod.class.getSimpleName();
 
    /** . */
-   private static final String CONTROLLER_DESCRIPTOR = ControllerDescriptor.class.getSimpleName();
+   private static final String CONTROLLER_DESCRIPTOR = ControllerBean.class.getSimpleName();
 
    /** . */
    private static final String CONTROLLER_PARAMETER = ControllerParameter.class.getSimpleName();
@@ -129,7 +129,7 @@ public class ControllerPlugin extends MetaModelPlugin
          writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Response.Update.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(ControllerBean.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Cardinality.class)).append(";\n");
 

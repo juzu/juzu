@@ -20,17 +20,13 @@
 package org.juzu.impl.application.metadata;
 
 import org.juzu.impl.controller.descriptor.ControllerDescriptor;
-import org.juzu.impl.controller.descriptor.ControllerMethod;
-import org.juzu.impl.template.metadata.TemplateDescriptor;
+import org.juzu.impl.template.metadata.TemplatesDescriptor;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.Plugin;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -47,28 +43,16 @@ public class ApplicationDescriptor
    private final String name;
 
    /** . */
-   private Class<?> defaultController;
-
-   /** . */
-   private final Boolean escapeXML;
-
-   /** . */
-   private final List<ControllerDescriptor> controllers;
-
-   /** . */
-   private final List<ControllerMethod> controllerMethods;
-
-   /** . */
-   private final String templatesPackageName;
-
-   /** . */
-   private final List<TemplateDescriptor> templates;
-
-   /** . */
    private final List<Class<? extends Plugin>> plugins;
 
    /** . */
    private final Class<?> packageClass;
+
+   /** . */
+   private final ControllerDescriptor controller;
+
+   /** . */
+   private final TemplatesDescriptor templates;
 
    public ApplicationDescriptor(
       Class<?> applicationClass,
@@ -108,31 +92,25 @@ public class ApplicationDescriptor
          throw ae;
       }
 
-      //
-      List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();
-      List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
-      List<TemplateDescriptor> templates = new ArrayList<TemplateDescriptor>();
+      ControllerDescriptor controller;
+      TemplatesDescriptor templates;
 
+      //
       try
       {
-         // Load controllers
-         for (String fqn : props.getList("controllers", String.class))
-         {
-            Class<?> clazz = applicationClass.getClassLoader().loadClass(fqn);
-            Field f = clazz.getField("DESCRIPTOR");
-            ControllerDescriptor controller = (ControllerDescriptor)f.get(null);
-            controllers.add(controller);
-            controllerMethods.addAll(controller.getMethods());
-         }
-
-         // Load templates
-         for (String fqn : props.getList("templates", String.class))
-         {
-            Class<?> clazz = applicationClass.getClassLoader().loadClass(fqn);
-            Field f = clazz.getField("DESCRIPTOR");
-            TemplateDescriptor descriptor = (TemplateDescriptor)f.get(null);
-            templates.add(descriptor);
-         }
+         // Load controller;
+         controller = new ControllerDescriptor(
+            applicationClass.getClassLoader(),
+            escapeXML,
+            defaultController,
+            props
+         );
+         
+         //
+         templates = new TemplatesDescriptor(
+            applicationClass.getClassLoader(),
+            templatesPackageName,
+            props);
       }
       catch (Exception e)
       {
@@ -145,14 +123,10 @@ public class ApplicationDescriptor
       this.applicationClass = applicationClass;
       this.name = applicationClass.getSimpleName();
       this.packageName = applicationClass.getPackage().getName();
-      this.templatesPackageName = templatesPackageName;
-      this.defaultController = defaultController;
-      this.escapeXML = escapeXML;
-      this.controllers = controllers;
-      this.controllerMethods = controllerMethods;
       this.templates = templates;
       this.plugins = plugins;
       this.packageClass = packageClass;
+      this.controller = controller;
    }
 
    public Class<?> getPackageClass()
@@ -175,93 +149,19 @@ public class ApplicationDescriptor
       return packageName;
    }
 
-   public Boolean getEscapeXML()
-   {
-      return escapeXML;
-   }
-
    public String getName()
    {
       return name;
    }
 
-   public Class<?> getDefaultController()
+   public ControllerDescriptor getController()
    {
-      return defaultController;
+      return controller;
    }
 
-   public List<ControllerDescriptor> getControllers()
-   {
-      return controllers;
-   }
-
-   public List<ControllerMethod> getControllerMethods()
-   {
-      return controllerMethods;
-   }
-
-   public List<TemplateDescriptor> getTemplates()
+   public TemplatesDescriptor getTemplates()
    {
       return templates;
-   }
-   
-   public TemplateDescriptor getTemplate(String path) throws NullPointerException
-   {
-      if (path == null)
-      {
-         throw new NullPointerException("No null path accepted");
-      }
-      for (TemplateDescriptor template : templates)
-      {
-         if (template.getPath().equals(path))
-         {
-            return template;
-         }
-      }
-      return null;
-   }
-
-   public ControllerMethod getControllerMethod(Class<?> type, String name, Class<?>... parameterTypes)
-   {
-      for (int i = 0;i < controllerMethods.size();i++)
-      {
-         ControllerMethod cm = controllerMethods.get(i);
-         Method m = cm.getMethod();
-         if (type.equals(cm.getType()) && m.getName().equals(name))
-         {
-            Class<?>[] a = m.getParameterTypes();
-            if (a.length == parameterTypes.length)
-            {
-               for (int j = 0;j < parameterTypes.length;j++)
-               {
-                  if (!a[j].equals(parameterTypes[j]))
-                  {
-                     continue;
-                  }
-               }
-               return cm;
-            }
-         }
-      }
-      return null;
-   }
-
-   public ControllerMethod getControllerMethodById(String methodId)
-   {
-      for (int i = 0;i < controllerMethods.size();i++)
-      {
-         ControllerMethod cm = controllerMethods.get(i);
-         if (cm.getId().equals(methodId))
-         {
-            return cm;
-         }
-      }
-      return null;
-   }
-
-   public String getTemplatesPackageName()
-   {
-      return templatesPackageName;
    }
 
    public List<Class<? extends Plugin>> getPlugins()

@@ -23,8 +23,8 @@ import org.juzu.Action;
 import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
-import org.juzu.impl.controller.descriptor.ControllerDescriptor;
 import org.juzu.impl.inject.BeanFilter;
+import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.inject.Binding;
 import org.juzu.inject.Bindings;
 import org.juzu.impl.inject.Export;
@@ -32,9 +32,7 @@ import org.juzu.impl.inject.MetaProvider;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
-import org.juzu.impl.template.metadata.TemplateDescriptor;
 import org.juzu.plugin.Plugin;
-import org.juzu.template.Template;
 
 import javax.inject.Provider;
 import javax.inject.Qualifier;
@@ -107,15 +105,15 @@ public class ApplicationBootstrap
       }
 
       // Bind the controllers
-      for (ControllerDescriptor controller : descriptor.getControllers())
+      for (BeanDescriptor bean : descriptor.getController().getBeans())
       {
-         bootstrap.declareBean(controller.getType(), null, (Class)null);
+         bootstrap.declareBean((Class)bean.getDeclaredType(), null, (Class)bean.getImplementationType());
       }
 
       // Bind the templates
-      for (TemplateDescriptor template : descriptor.getTemplates())
+      for (BeanDescriptor bean : descriptor.getTemplates().getBeans())
       {
-         bootstrap.declareBean(Template.class, null, template.getType());
+         bootstrap.declareBean((Class)bean.getDeclaredType(), null, (Class)bean.getImplementationType());
       }
 
       //
@@ -179,16 +177,6 @@ public class ApplicationBootstrap
       B contextBean = manager.resolveBean(ApplicationContext.class);
       I contextInstance = manager.create(contextBean);
       
-      // Get plugins
-      ArrayList<Plugin> p = new ArrayList<Plugin>();
-      for (Class<? extends Plugin> pluginType : plugins)
-      {
-         B pluginBean = manager.resolveBean(pluginType);
-         I pluginInstance = manager.create(pluginBean);
-         Object o = manager.get(pluginBean, pluginInstance);
-         p.add((Plugin)o);
-      }
-
       //
       this.context = (InternalApplicationContext)manager.get(contextBean, contextInstance);
    }

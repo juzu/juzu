@@ -20,7 +20,7 @@
 package org.juzu.impl.controller;
 
 import org.juzu.AmbiguousResolutionException;
-import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.controller.descriptor.ControllerDescriptor;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.request.Phase;
 
@@ -42,9 +42,9 @@ public class ControllerResolver
    private final ControllerMethod[] methods;
 
    /** . */
-   private final ApplicationDescriptor desc;
+   private final ControllerDescriptor desc;
 
-   public ControllerResolver(ApplicationDescriptor desc) throws NullPointerException
+   public ControllerResolver(ControllerDescriptor desc) throws NullPointerException
    {
       if (desc == null)
       {
@@ -52,7 +52,7 @@ public class ControllerResolver
       }
 
       //
-      List<ControllerMethod> methods = desc.getControllerMethods();
+      List<ControllerMethod> methods = desc.getMethods();
 
       //
       this.desc = desc;
@@ -170,13 +170,13 @@ public class ControllerResolver
             for (int i = 0;i < matches.size();i++)
             {
                Match match = matches.get(i);
-               if (match.method.getType() == desc.getDefaultController())
+               if (match.method.getType() == desc.getDefault())
                {
                   ArrayList<Match> sub = new ArrayList<Match>();
                   for (int j = 0;j < matches.size();j++)
                   {
                      Match match2 = matches.get(j);
-                     if (match2.method.getType() == desc.getDefaultController())
+                     if (match2.method.getType() == desc.getDefault())
                      {
                         sub.add(match2);
                      }

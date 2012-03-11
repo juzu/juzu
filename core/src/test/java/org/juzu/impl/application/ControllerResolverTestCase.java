@@ -47,7 +47,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc);
+      ControllerResolver resolver = new ControllerResolver(desc.getController());
       ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
       assertEquals("index", method.getName());
    }
@@ -65,7 +65,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc);
+      ControllerResolver resolver = new ControllerResolver(desc.getController());
       try
       {
          resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
@@ -90,7 +90,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc);
+      ControllerResolver resolver = new ControllerResolver(desc.getController());
       ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
       assertEquals("index", method.getName());
       assertSame(aClass, method.getMethod().getDeclaringClass());
@@ -109,7 +109,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       Class<?> appClass = compiler.assertClass("application.resolver.overload.OverloadApplication");
       Class<?> aClass = compiler.assertClass("application.resolver.overload.A");
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc);
+      ControllerResolver resolver = new ControllerResolver(desc.getController());
 
       //
       ControllerMethod method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set());
@@ -153,9 +153,9 @@ public class ControllerResolverTestCase extends AbstractTestCase
       Class<?> aClass = compiler.assertClass("application.resolver.method.A");
       Class<?> clazz = compiler.assertClass("application.resolver.method.MethodApplication");
       ApplicationDescriptor desc = (ApplicationDescriptor)clazz.getField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc);
-      ControllerMethod cm1_ = desc.getControllerMethod(aClass, "noArg");
-      ControllerMethod cm2_ = desc.getControllerMethod(aClass, "fooArg", String.class);
+      ControllerResolver resolver = new ControllerResolver(desc.getController());
+      ControllerMethod cm1_ = desc.getController().getMethod(aClass, "noArg");
+      ControllerMethod cm2_ = desc.getController().getMethod(aClass, "fooArg", String.class);
 
       //
       ControllerMethod cm1 = resolver.resolve(Phase.RENDER, cm1_.getId(), cm1_.getArgumentNames());

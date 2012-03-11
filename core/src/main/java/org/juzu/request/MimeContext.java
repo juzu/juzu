@@ -58,7 +58,7 @@ public abstract class MimeContext extends RequestContext
 
       // Bridge escape XML value
       ApplicationDescriptor desc = application.getDescriptor();
-      builder.escapeXML(desc.getEscapeXML());
+      builder.escapeXML(desc.getController().getEscapeXML());
 
       //
       return builder;
