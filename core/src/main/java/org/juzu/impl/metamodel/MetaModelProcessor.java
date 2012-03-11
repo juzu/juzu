@@ -50,7 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ModelProcessor extends BaseProcessor
+public abstract class MetaModelProcessor extends BaseProcessor
 {
 
    /** . */

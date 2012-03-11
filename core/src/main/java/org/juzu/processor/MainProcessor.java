@@ -19,10 +19,9 @@
 
 package org.juzu.processor;
 
-import org.juzu.impl.metamodel.ModelProcessor;
-import org.juzu.impl.metamodel.MetaModel;
+import org.juzu.impl.metamodel.MetaModelProcessor;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MainProcessor extends ModelProcessor
+public class MainProcessor extends MetaModelProcessor
 {
 }
