@@ -25,9 +25,6 @@ import org.juzu.View;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.metadata.BeanDescriptor;
-import org.juzu.impl.request.LifeCyclePlugin;
-import org.juzu.inject.Binding;
-import org.juzu.inject.Bindings;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.MetaProvider;
 import org.juzu.impl.request.Scope;
@@ -39,7 +36,6 @@ import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationBootstrap
@@ -107,61 +103,39 @@ public class ApplicationBootstrap
       // Bind the beans
       for (BeanDescriptor bean : descriptor.getBeans())
       {
-         bootstrap.declareBean((Class)bean.getDeclaredType(), null, (Class)bean.getImplementationType());
-      }
-
-      //
-      Class<?> s = descriptor.getPackageClass();
-
-      // Bind the bean bindings
-      Bindings bindings = s.getAnnotation(Bindings.class);
-      if (bindings != null)
-      {
-         for (Binding binding : bindings.value())
+         Class<?> type = bean.getDeclaredType();
+         Class<?> implementation = bean.getImplementationType();
+         if (implementation == null)
          {
-            Class<?> type = binding.value();
-            Class<?> implementation = binding.implementation();
-            if (MetaProvider.class.isAssignableFrom(implementation))
-            {
-               MetaProvider mp = (MetaProvider)implementation.newInstance();
-               Provider provider = mp.getProvider(type);
-               bootstrap.bindProvider(type, null, provider);
-            }
-            else if (Provider.class.isAssignableFrom(implementation))
-            {
-               Method m = implementation.getMethod("get");
-               ArrayList<Annotation> qualifiers = null;
-               for (Annotation annotation : m.getAnnotations())
-               {
-                  if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
-                  {
-                     if (qualifiers == null)
-                     {
-                        qualifiers = new ArrayList<Annotation>();
-                     }
-                     qualifiers.add(annotation);
-                  }
-               }
-               bootstrap.declareProvider(type, qualifiers, (Class)implementation);
-            }
-            else
-            {
-               if (implementation == Object.class)
-               {
-                  implementation = null;
-               }
-               bootstrap.declareBean((Class)type, null, (Class)implementation);
-            }
+            bootstrap.declareBean(type, null, null);
          }
-      }
-
-      //
-      List<Class<? extends LifeCyclePlugin>> plugins = descriptor.getPlugins();
-
-      // Declare the plugins
-      for (Class<? extends LifeCyclePlugin> pluginType : plugins)
-      {
-         bootstrap.declareBean(pluginType, null, null);
+         else if (MetaProvider.class.isAssignableFrom(implementation))
+         {
+            MetaProvider mp = (MetaProvider)implementation.newInstance();
+            Provider provider = mp.getProvider(type);
+            bootstrap.bindProvider(type, null, provider);
+         }
+         else if (Provider.class.isAssignableFrom(implementation))
+         {
+            Method m = implementation.getMethod("get");
+            ArrayList<Annotation> qualifiers = null;
+            for (Annotation annotation : m.getAnnotations())
+            {
+               if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
+               {
+                  if (qualifiers == null)
+                  {
+                     qualifiers = new ArrayList<Annotation>();
+                  }
+                  qualifiers.add(annotation);
+               }
+            }
+            bootstrap.declareProvider(type, qualifiers, (Class)implementation);
+         }
+         else
+         {
+            bootstrap.declareBean((Class)type, null, (Class)implementation);
+         }
       }
 
       //

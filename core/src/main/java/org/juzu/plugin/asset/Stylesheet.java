@@ -1,6 +1,7 @@
 package org.juzu.plugin.asset;
 
-import java.lang.annotation.ElementType;
+import org.juzu.impl.plugin.asset.AssetLocation;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;

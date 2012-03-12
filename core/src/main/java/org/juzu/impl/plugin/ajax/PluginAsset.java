@@ -1,4 +1,4 @@
-package org.juzu.plugin.ajax;
+package org.juzu.impl.plugin.ajax;
 
 import org.juzu.impl.asset.Route;
 import org.juzu.impl.utils.Path;
@@ -20,7 +20,7 @@ public class PluginAsset extends Route
    {
       try
       {
-         scriptJS = Tools.read(AjaxPlugin.class.getResource("script.js"));
+         scriptJS = Tools.read(AjaxLifeCycle.class.getResource("script.js"));
       }
       catch (IOException e)
       {

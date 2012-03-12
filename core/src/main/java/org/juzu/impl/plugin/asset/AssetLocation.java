@@ -1,4 +1,4 @@
-package org.juzu.plugin.asset;
+package org.juzu.impl.plugin.asset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum AssetLocation

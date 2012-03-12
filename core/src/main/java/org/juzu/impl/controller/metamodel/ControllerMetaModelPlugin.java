@@ -1,10 +1,14 @@
 package org.juzu.impl.controller.metamodel;
 
+import org.juzu.Application;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.controller.descriptor.ControllerBean;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.controller.descriptor.ControllerParameter;
@@ -13,7 +17,6 @@ import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.metamodel.MetaModelPlugin;
-import org.juzu.impl.metamodel.ProcessingContext;
 import org.juzu.impl.utils.Cardinality;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
@@ -23,8 +26,12 @@ import org.juzu.request.MimeContext;
 import org.juzu.request.Phase;
 
 import javax.annotation.Generated;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
@@ -59,24 +66,46 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
    public static final String CARDINALITY = Cardinality.class.getSimpleName();
 
    @Override
-   public void init(MetaModel model)
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values) throws CompilationException
    {
-      model.addChild(ControllersMetaModel.KEY, new ControllersMetaModel());
-   }
-
-   @Override
-   public void processAnnotation(MetaModel model, Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
-   {
-      if (annotationFQN.equals("org.juzu.View") || annotationFQN.equals("org.juzu.Action") || annotationFQN.equals("org.juzu.Resource"))
+      ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
+      if (fqn.equals("org.juzu.View") || fqn.equals("org.juzu.Action") || fqn.equals("org.juzu.Resource"))
       {
-         ExecutableElement executableElt = (ExecutableElement)element;
-         MetaModel.log.log("Processing controller method " + executableElt + " found on type " +  executableElt.getEnclosingElement());
-         model.getChild(ControllersMetaModel.KEY).processControllerMethod(executableElt, annotationFQN, annotationValues);
+         ExecutableElement methodElt = (ExecutableElement)element;
+         MetaModel.log.log("Processing controller method " + methodElt + " found on type " + methodElt.getEnclosingElement());
+         TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
+         ElementHandle.Class handle = ElementHandle.Class.create(controllerElt);
+         ControllerMetaModel controller = ac.get(handle);
+         if (controller == null)
+         {
+            ac.add(controller = new ControllerMetaModel(handle));
+         }
+         controller.addMethod(
+            application.model,
+            methodElt,
+            fqn,
+            values
+         );
       }
    }
 
    @Override
-   public void processEvent(MetaModel model, MetaModelEvent event)
+   public void postConstruct(ApplicationMetaModel application)
+   {
+      ControllersMetaModel controllers = new ControllersMetaModel();
+      PackageElement pkg = application.model.env.get(application.getHandle());
+      AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
+      Map<String, Object> values = Tools.foo(annotation);
+      Boolean escapeXML = (Boolean)values.get("escapeXML");
+      TypeMirror defaultControllerElt = (TypeMirror)values.get("defaultController");
+      String defaultController = defaultControllerElt != null ? defaultControllerElt.toString() : null;
+      controllers.escapeXML = escapeXML;
+      controllers.defaultController = defaultController;
+      application.addChild(ControllersMetaModel.KEY, controllers);
+   }
+
+   @Override
+   public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event)
    {
       MetaModelObject obj = event.getObject();
       if (obj instanceof ControllerMetaModel)
@@ -87,26 +116,29 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                break;
             case MetaModelEvent.UPDATED:
             case MetaModelEvent.AFTER_ADD:
-               emitController(model.env, (ControllerMetaModel)obj);
+               emitController(applications.getContext(), (ControllerMetaModel)obj);
                break;
          }
       }
    }
 
    @Override
-   public JSON emitConfig(ApplicationMetaModel application)
+   public JSON getDescriptor(ApplicationMetaModel application)
    {
+      ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
+
+      //
       ArrayList<String> controllers = new ArrayList<String>();
-      for (ControllerMetaModel controller : application.getControllers())
+      for (ControllerMetaModel controller : ac)
       {
          controllers.add(controller.getHandle().getFQN().getFullName() + "_");
       }
       
       //
       JSON config = new JSON();
-      config.set("default", application.getDefaultController());
-      config.setList("controllers", controllers);
-      config.set("escapeXML", application.getEscapeXML());
+      config.set("default", ac.defaultController);
+      config.set("escapeXML", ac.escapeXML);
+      config.map("controllers", controllers);
 
       //
       return config;

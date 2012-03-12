@@ -1,21 +1,16 @@
 package org.juzu.impl.controller.metamodel;
 
-import org.juzu.impl.application.metamodel.ApplicationMetaModel;
-import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
-import org.juzu.impl.compiler.CompilationException;
+import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.Key;
 import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.JSON;
-import org.juzu.impl.utils.QN;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllersMetaModel extends MetaModelObject implements Iterable<ControllerMetaModel>
@@ -25,13 +20,20 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
    public final static Key<ControllersMetaModel> KEY = Key.of(ControllersMetaModel.class);
 
    /** . */
-   MetaModel model;
-   
+   String defaultController;
+
+   /** . */
+   Boolean escapeXML;
+
+   public ControllersMetaModel()
+   {
+   }
+
    @Override
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.setList("values", getChildren(ControllerMetaModel.class));
+      json.map("values", getChildren(ControllerMetaModel.class));
       return json;
    }
 
@@ -39,73 +41,67 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
    {
       return getChildren(ControllerMetaModel.class).iterator();
    }
-
-   ControllerMetaModel get(ElementHandle.Class handle)
+   
+   public ControllerMetaModel get(ElementHandle.Class handle)
    {
       return getChild(Key.of(handle, ControllerMetaModel.class));
    }
 
-   public ControllerMetaModel add(ElementHandle.Class handle)
+   public void add(ControllerMetaModel controller)
    {
-      Key<ControllerMetaModel> key = Key.of(handle, ControllerMetaModel.class);
-      if (getChild(key) != null)
-      {
-         throw new IllegalStateException();
-      }
-      ControllerMetaModel controller = new ControllerMetaModel(model, handle);
-      addChild(key, controller);
-      return controller;
+      addChild(Key.of(controller.handle, ControllerMetaModel.class), controller);
    }
 
-   public void processControllerMethod(
-      ExecutableElement methodElt,
-      String annotationFQN,
-      Map<String, Object> annotationValues) throws CompilationException
+   public void remove(ControllerMetaModel controller)
    {
-      TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
-      ElementHandle.Class handle = ElementHandle.Class.create(controllerElt);
-      ControllerMetaModel controller = get(handle);
-      if (controller == null)
+      if (controller.controllers != this)
       {
-         controller = add(handle);
+         throw new IllegalArgumentException();
       }
-      controller.addMethod(
-         methodElt,
-         annotationFQN,
-         annotationValues);
+      removeChild(Key.of(controller.handle, ControllerMetaModel.class));
    }
 
-   public void postProcess(MetaModel model)
+   public MethodMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException
    {
+      TreeSet<MethodMetaModel> set = new TreeSet<MethodMetaModel>(
+         new Comparator<MethodMetaModel>()
+         {
+            public int compare(MethodMetaModel o1, MethodMetaModel o2)
+            {
+               return ((Integer)o1.parameterNames.size()).compareTo(o2.parameterNames.size());
+            }
+         }
+      );
       for (ControllerMetaModel controller : getChildren(ControllerMetaModel.class))
       {
-         if (controller.controllers == null)
+         for (MethodMetaModel method : controller.getMethods())
          {
-            PackageElement packageElt = model.env.getPackageOf(model.env.get(controller.handle));
-            QN packageQN = new QN(packageElt.getQualifiedName());
-            for (ApplicationMetaModel application : model.getChild(ApplicationsMetaModel.KEY))
+            boolean add = false;
+            if (typeName == null || controller.getHandle().getFQN().getSimpleName().equals(typeName))
             {
-               if (application.getFQN().getPackageName().isPrefix(packageQN))
+               if (method.name.equals(methodName) && method.parameterNames.containsAll(parameterNames))
                {
-                  application.getControllers().add(controller);
-                  controller.modified = false;
+                  add = true;
                }
             }
-         }
-         else
-         {
-            if (controller.modified)
+            MetaModel.log.log("Method " + method + ( add ? " added to" : " removed from" ) +  " search");
+            if (add)
             {
-               MetaModel.queue(MetaModelEvent.createUpdated(controller));
-               controller.modified = false;
+               set.add(method);
             }
          }
       }
-   }
-
-   @Override
-   protected void postAttach(MetaModelObject parent)
-   {
-      model = (MetaModel)parent;
+      if (set.size() >= 1)
+      {
+         MethodMetaModel method = set.iterator().next();
+         MetaModel.log.log("Resolved method " + method.getName() + " " + method.getParameterNames() + " for " + methodName + " "
+            + parameterNames + " among " + set);
+         return method;
+      }
+      else
+      {
+         MetaModel.log.log("Could not resolve method " + methodName + " " + parameterNames + " among " + set);
+         return null;
+      }
    }
 }

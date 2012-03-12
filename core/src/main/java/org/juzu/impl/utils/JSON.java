@@ -48,6 +48,9 @@ public final class JSON
 {
 
    /** . */
+   private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+   /** . */
    private static final ScriptEngine engine;
 
    static
@@ -104,7 +107,7 @@ public final class JSON
          Object obj = entry.get(i);
          if (!elementType.isInstance(obj))
          {
-            throw new ClassCastException("Cannot cast " + obj + " to class " + elementType.getName());
+            throw new ClassCastException("Cannot cast " + obj + "with class " + obj.getClass().getName() + " to class " + elementType.getName());
          }
       }
       return (List<E>)entry;
@@ -146,6 +149,11 @@ public final class JSON
       return false;
    }
 
+   public <E> JSON merge(JSON json)
+   {
+      return merge(json.entries);
+   }
+
    public <E> JSON merge(Map<String, E> map)
    {
       for (Map.Entry<String, E> entry : map.entrySet())
@@ -155,17 +163,22 @@ public final class JSON
       return this;
    }
 
-   public <E> JSON setMap(String name, Map<String, E> map)
+   public <E> JSON map(String name, Map<String, E> map)
    {
       return set(name, map);
    }
 
-   public <E> JSON setList(String name, E... elements)
+   public JSON list(String name)
+   {
+      return set(name, EMPTY_STRING_ARRAY);
+   }
+
+   public <E> JSON list(String name, E... elements)
    {
       return set(name, elements);
    }
 
-   public <E> JSON setList(String name, Iterable<E> elements)
+   public <E> JSON map(String name, Iterable<E> elements)
    {
       return set(name, elements);
    }

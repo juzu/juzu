@@ -17,19 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.inject;
+package plugin.lifecycle;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.request.RequestLifeCycle;
+import org.juzu.impl.request.Request;
+import org.juzu.test.Registry;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
-public @interface Bindings
+public class LifeCycleImpl extends RequestLifeCycle
 {
+   public LifeCycleImpl()
+   {
+      Registry.compareAndSet("plugin.lifecycle", null, "created");
+   }
 
-   Binding[] value() default {};
-
+   @Override
+   public void invoke(Request request) throws ApplicationException
+   {
+      Registry.compareAndSet("plugin.lifecycle", "created", "before");
+      super.invoke(request);
+      Registry.compareAndSet("plugin.lifecycle", "before", "after");
+   }
 }

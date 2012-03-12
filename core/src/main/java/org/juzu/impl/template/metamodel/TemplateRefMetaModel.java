@@ -22,7 +22,6 @@ package org.juzu.impl.template.metamodel;
 import org.juzu.Path;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.JSON;
 
@@ -48,23 +47,6 @@ public class TemplateRefMetaModel extends MetaModelObject
    {
       this.handle = handle;
       this.path = path;
-   }
-
-   public TemplateMetaModel getTemplate()
-   {
-      return getChild(TemplateMetaModel.KEY);
-   }
-   
-   public void setTemplate(TemplateMetaModel template)
-   {
-      if (template != null)
-      {
-         addChild(TemplateMetaModel.KEY, template);
-      }
-      else
-      {
-         removeChild(TemplateMetaModel.KEY);
-      }
    }
 
    public ElementHandle.Field getHandle()
@@ -101,11 +83,5 @@ public class TemplateRefMetaModel extends MetaModelObject
          exist = false;
       }
       return exist;
-   }
-
-   @Override
-   protected void preRemove()
-   {
-      MetaModel.queue(MetaModelEvent.createRemoved(this));
    }
 }

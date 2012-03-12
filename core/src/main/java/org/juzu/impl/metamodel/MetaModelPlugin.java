@@ -1,7 +1,7 @@
 package org.juzu.impl.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
-import org.juzu.impl.compiler.CompilationException;
+import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.utils.JSON;
 
 import javax.lang.model.element.Element;
@@ -13,38 +13,57 @@ import java.util.Map;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class MetaModelPlugin implements Serializable
+public class MetaModelPlugin implements Serializable
 {
    
-   public void init(MetaModel model)
+   public void init(ApplicationsMetaModel applications)
    {
    }
 
-   public void postActivate(MetaModel moel)
+   public void postActivateApplicationsMetaModel(ApplicationsMetaModel applications)
    {
    }
 
-   public void processAnnotation(
-      MetaModel model,
-      Element element,
-      String annotationFQN,
-      Map<String, Object> annotationValues) throws CompilationException
+   public void postActivate(ApplicationMetaModel application)
    {
    }
 
-   public void processEvent(MetaModel model, MetaModelEvent event)
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values)
    {
    }
 
-   public void postProcess(MetaModel model)
+   public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event)
    {
    }
 
-   public void prePassivate(MetaModel model)
+   public void postProcess(ApplicationMetaModel application)
    {
    }
-   
-   public JSON emitConfig(ApplicationMetaModel application)
+
+   public void prePassivate(ApplicationMetaModel model)
+   {
+   }
+
+   public void prePassivate(ApplicationsMetaModel applications)
+   {
+   }
+
+   public void postConstruct(ApplicationMetaModel application)
+   {
+   }
+
+   public void preDestroy(ApplicationMetaModel application)
+   {
+   }
+
+   /**
+    * Returns the plugin descriptor for the specified application or null if the plugin should not
+    * be involved at runtime.
+    *
+    * @param application the application
+    * @return the descriptor
+    */
+   public JSON getDescriptor(ApplicationMetaModel application)
    {
       return null;
    }

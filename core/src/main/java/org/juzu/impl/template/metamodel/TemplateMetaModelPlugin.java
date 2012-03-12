@@ -1,12 +1,11 @@
 package org.juzu.impl.template.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelEvent;
-import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.compiler.Template;
@@ -37,20 +36,13 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
    /** . */
    Map<String, TemplateProvider> providers;
 
-   /** . */
-   private Map<ElementHandle.Package, TemplateResolver> templateRepositoryMap;
-
    @Override
-   public void init(MetaModel model)
+   public void init(ApplicationsMetaModel applications)
    {
-      model.addChild(TemplateRefsMetaModel.KEY, new TemplateRefsMetaModel());
-
-      //
-      this.templateRepositoryMap = new HashMap<ElementHandle.Package, TemplateResolver>();
    }
 
    @Override
-   public void postActivate(MetaModel moel)
+   public void postActivateApplicationsMetaModel(ApplicationsMetaModel applications)
    {
       // Discover the template providers
       ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, TemplateProvider.class.getClassLoader());
@@ -74,15 +66,28 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
    }
 
    @Override
-   public void processAnnotation(MetaModel model, Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
+   public void postConstruct(ApplicationMetaModel application)
    {
-      if (annotationFQN.equals("org.juzu.Path"))
+      application.addChild(TemplatesMetaModel.KEY, new TemplatesMetaModel());
+   }
+
+   @Override
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values) throws CompilationException
+   {
+      if (fqn.equals("org.juzu.Path"))
       {
          if (element instanceof VariableElement)
          {
             VariableElement variableElt = (VariableElement)element;
             MetaModel.log.log("Processing template declaration " + variableElt.getEnclosingElement() + "#"  + variableElt);
-            model.getChild(TemplateRefsMetaModel.KEY).processDeclarationTemplate(variableElt, annotationFQN, annotationValues);
+
+            //
+            TemplatesMetaModel at = application.getChild(TemplatesMetaModel.KEY);
+
+            //
+            String path = (String)values.get("value");
+            ElementHandle.Field handle = ElementHandle.Field.create(variableElt);
+            at.add(handle, path);
          }
          else if (element instanceof TypeElement)
          {
@@ -96,83 +101,37 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
    }
 
    @Override
-   public void processEvent(MetaModel model, MetaModelEvent event)
+   public void prePassivate(ApplicationMetaModel model)
    {
-      MetaModelObject obj = event.getObject();
-      if (obj instanceof ApplicationMetaModel)
-      {
-         ApplicationMetaModel application = (ApplicationMetaModel)obj;
-         if (event.getType() == MetaModelEvent.AFTER_ADD)
-         {
-            templateRepositoryMap.put(application.getHandle(), new TemplateResolver(application));
-         }
-         else if (event.getType() == MetaModelEvent.BEFORE_REMOVE)
-         {
-            templateRepositoryMap.remove(application.getHandle());
-         }
-      }
-      else if (obj instanceof TemplateMetaModel)
-      {
-         TemplateMetaModel template = (TemplateMetaModel)obj;
-         if (event.getType() == MetaModelEvent.AFTER_ADD)
-         {
-            // ?
-         }
-         else if (event.getType() == MetaModelEvent.BEFORE_REMOVE)
-         {
-            ElementHandle.Package handle = (ElementHandle.Package)event.getPayload();
-            TemplateResolver resolver = templateRepositoryMap.get(handle);
-            if (resolver != null)
-            {
-               resolver.removeTemplate(template.getPath());
-            }
-         }
-      }
+      MetaModel.log.log("Passivating template resolver for " + model.getHandle());
+      model.getTemplates().resolver.prePassivate();
    }
 
    @Override
-   public void prePassivate(MetaModel model)
+   public void prePassivate(ApplicationsMetaModel applications)
    {
       MetaModel.log.log("Passivating templates");
-      for (TemplateResolver repo : templateRepositoryMap.values())
-      {
-         repo.prePassivate();
-      }
-
-      //
       this.providers = null;
    }
 
    @Override
-   public void postProcess(MetaModel model)
+   public void postProcess(ApplicationMetaModel application)
    {
-      MetaModel.log.log("Processing templates");
-      for (Map.Entry<ElementHandle.Package, TemplateResolver> entry : templateRepositoryMap.entrySet())
-      {
-         TemplateResolver repo = entry.getValue();
-         repo.process(this, model.env);
-      }
+      MetaModel.log.log("Processing templates of " + application.getHandle());
+      application.getTemplates().resolver.process(this, application.model.env);
    }
 
    @Override
-   public JSON emitConfig(ApplicationMetaModel application)
+   public JSON getDescriptor(ApplicationMetaModel application)
    {
-      TemplateResolver repo = templateRepositoryMap.get(application.getHandle());
-      if (repo != null)
+      JSON config = new JSON();
+      ArrayList<String> templates = new ArrayList<String>();
+      for (Template template : application.getTemplates().resolver.getTemplates())
       {
-         JSON config = new JSON();
-         ArrayList<String> templates = new ArrayList<String>();
-         for (Template template : repo.getTemplates())
-         {
-            templates.add(template.getFQN().getFullName());
-         }
-         config.setList("templates", templates);
-         config.set("package", application.getTemplates().getQN().toString());
-         return config;
+         templates.add(template.getFQN().getFullName());
       }
-      else
-      {
-         return null;
-      }
+      config.map("templates", templates);
+      config.set("package", application.getTemplates().getQN().toString());
+      return config;
    }
 }

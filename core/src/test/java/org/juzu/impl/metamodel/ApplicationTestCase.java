@@ -20,8 +20,7 @@
 package org.juzu.impl.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
-import org.juzu.impl.controller.metamodel.ControllerMetaModelPlugin;
-import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
+import org.juzu.impl.utils.JSON;
 import org.juzu.processor.MainProcessor;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
@@ -41,17 +40,20 @@ public class ApplicationTestCase extends AbstractTestCase
 
       //
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
 
       //
-      MetaModel expected = new MetaModel();
-      expected.addPlugin("controller", new ControllerMetaModelPlugin());
-      expected.addPlugin("template", new TemplateMetaModelPlugin());
-      expected.addApplication("model.meta.application", "ApplicationApplication");
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON()
+         .list("applications", new JSON().
+            list("controllers").
+            set("fqn", "model.meta.application.ApplicationApplication").
+            set("handle", "ElementHandle.Package[qn=model.meta.application]").
+            list("templates")
+         );
+      assertEquals(expected, mm.toJSON());
    }
 
    public void testUpdate() throws Exception
@@ -62,7 +64,7 @@ public class ApplicationTestCase extends AbstractTestCase
       //
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -73,17 +75,20 @@ public class ApplicationTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.UPDATED, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
 
       //
-      MetaModel expected = new MetaModel();
-      expected.addPlugin("controller", new ControllerMetaModelPlugin());
-      expected.addPlugin("template", new TemplateMetaModelPlugin());
-      expected.addApplication("model.meta.application", "ApplicationApplication");
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON()
+         .list("applications", new JSON().
+            list("controllers").
+            set("fqn", "model.meta.application.ApplicationApplication").
+            set("handle", "ElementHandle.Package[qn=model.meta.application]").
+            list("templates")
+         );
+      assertEquals(expected, mm.toJSON());
    }
 
    public void testRemove() throws Exception
@@ -94,7 +99,7 @@ public class ApplicationTestCase extends AbstractTestCase
       //
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -107,15 +112,13 @@ public class ApplicationTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
 
       //
-      MetaModel expected = new MetaModel();
-      expected.addPlugin("controller", new ControllerMetaModelPlugin());
-      expected.addPlugin("template", new TemplateMetaModelPlugin());
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON().list("applications");
+      assertEquals(expected, mm.toJSON());
    }
 }

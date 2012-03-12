@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.plugin.ajax;
+package org.juzu.impl.plugin.ajax;
 
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
@@ -25,7 +25,7 @@ import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.asset.Registration;
 import org.juzu.impl.asset.Router;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
-import org.juzu.impl.request.LifeCyclePlugin;
+import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
 import org.juzu.request.RenderContext;
 import org.juzu.text.Printer;
@@ -41,7 +41,7 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Singleton
-public class AjaxPlugin extends LifeCyclePlugin
+public class AjaxLifeCycle extends RequestLifeCycle
 {
 
    /** . */
@@ -51,7 +51,7 @@ public class AjaxPlugin extends LifeCyclePlugin
    private Registration<ApplicationAsset> applicationRegistration;
 
    @Inject
-   public AjaxPlugin(
+   public AjaxLifeCycle(
       ApplicationDescriptor desc,
       @Named("plugin") Router plugin,
       @Named("application") Router application)

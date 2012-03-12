@@ -17,8 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application(plugins = AjaxPlugin.class)
+@Application()
 package plugin.ajax;
 
 import org.juzu.Application;
-import org.juzu.plugin.ajax.AjaxPlugin;

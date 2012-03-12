@@ -19,7 +19,6 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.RequestLifeCycle;
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.ApplicationException;
@@ -167,7 +166,7 @@ public class Request implements ScopingContext
    {
       if (index >= 0 && index < application.getPlugins().size())
       {
-         LifeCyclePlugin plugin = application.getPlugins().get(index);
+         RequestLifeCycle plugin = application.getPlugins().get(index);
          try
          {
             index++;
@@ -239,9 +238,9 @@ public class Request implements ScopingContext
             }
 
             // Begin request callback
-            if (o instanceof RequestLifeCycle)
+            if (o instanceof org.juzu.RequestLifeCycle)
             {
-               ((RequestLifeCycle)o).beginRequest(context);
+               ((org.juzu.RequestLifeCycle)o).beginRequest(context);
             }
 
             // Invoke method on controller
@@ -259,11 +258,11 @@ public class Request implements ScopingContext
             }
             finally
             {
-               if (o instanceof RequestLifeCycle)
+               if (o instanceof org.juzu.RequestLifeCycle)
                {
                   try
                   {
-                     ((RequestLifeCycle)o).endRequest(context);
+                     ((org.juzu.RequestLifeCycle)o).endRequest(context);
                   }
                   catch (Exception e)
                   {

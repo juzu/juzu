@@ -1,7 +1,9 @@
 package org.juzu.impl.plugin;
 
+import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.impl.metadata.Descriptor;
 import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.utils.JSON;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -42,7 +44,10 @@ public abstract class Plugin
     *
     * @return the meta model plugin type
     */
-   public abstract MetaModelPlugin newMetaModelPlugin();
+   public MetaModelPlugin newMetaModelPlugin()
+   {
+      return new MetaModelPlugin();
+   }
 
    /**
     * Returns the plugin descriptor.
@@ -52,6 +57,29 @@ public abstract class Plugin
     * @param config the plugin config
     * @throws Exception any exception
     */
-   public abstract Descriptor loadDescriptor(ClassLoader loader, JSON config) throws Exception;
+   public Descriptor loadDescriptor(ClassLoader loader, JSON config) throws Exception
+   {
+      return new Descriptor()
+      {
+         @Override
+         public Iterable<BeanDescriptor> getBeans()
+         {
+            Class<? extends RequestLifeCycle> lifeCycleClass = getLifeCycleClass();
+            if (lifeCycleClass != null)
+            {
+               return Collections.singletonList(new BeanDescriptor(lifeCycleClass, null, null));
+            }
+            else
+            {
+               return null;
+            }
+         }
+      };
+   }
+   
+   public Class<? extends RequestLifeCycle> getLifeCycleClass()
+   {
+      return null;
+   }
 
 }

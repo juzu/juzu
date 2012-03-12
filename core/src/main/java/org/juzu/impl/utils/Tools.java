@@ -19,7 +19,10 @@
 
 package org.juzu.impl.utils;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,9 +43,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
@@ -494,5 +499,35 @@ public class Tools
       {
          throw new AssertionError();
       }
+   }
+   
+   public static AnnotationMirror getAnnotation(Element element, String annotationFQN)
+   {
+      for (AnnotationMirror mirror : element.getAnnotationMirrors())
+      {
+         if (mirror.getAnnotationType().toString().equals(annotationFQN))
+         {
+            return mirror;
+         }
+      }
+      return null;
+   }
+   
+   public static Map<String, Object> foo(AnnotationMirror annotation) throws NullPointerException
+   {
+      if (annotation == null)
+      {
+         throw new NullPointerException("No null annotation allowed");
+      }
+
+      //
+      Map<String, Object> values = new HashMap<String, Object>();
+      for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation.getElementValues().entrySet())
+      {
+         String m = entry.getKey().getSimpleName().toString();
+         Object value = entry.getValue().getValue();
+         values.put(m, value);
+      }
+      return values;
    }
 }

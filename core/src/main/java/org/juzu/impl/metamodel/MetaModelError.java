@@ -55,9 +55,7 @@ public enum MetaModelError implements ErrorCode
 
    TEMPLATE_ILLEGAL_PATH("The reference to the template %1$s is malformed"),
 
-   ANNOTATION_UNSUPPORTED("The annotation of this element cannot be supported"),
-
-   UNEXPECTED_ERROR("Unexpected error: %1$s");
+   ANNOTATION_UNSUPPORTED("The annotation of this element cannot be supported");
 
    /** . */
    private final String message;

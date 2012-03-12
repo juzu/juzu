@@ -19,7 +19,6 @@
 
 package org.juzu.impl.metamodel;
 
-import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.utils.JSON;
 
 import java.io.Serializable;
@@ -35,12 +34,22 @@ import java.util.Set;
 public class MetaModelObject implements Serializable
 {
 
-
    /** The children. */
    private final HashMap<Key<?>, MetaModelObject> children = new HashMap<Key<?>, MetaModelObject>();
 
    /** The parents. */
    private final HashMap<MetaModelObject, Key<?>> parents = new HashMap<MetaModelObject, Key<?>>();
+
+   /** . */
+   private MetaModel metaModel;
+
+   public MetaModelObject()
+   {
+      if (this instanceof MetaModel)
+      {
+         metaModel = (MetaModel)this;
+      }
+   }
 
    public final Collection<MetaModelObject> getParents()
    {
@@ -102,15 +111,32 @@ public class MetaModelObject implements Serializable
       {
          if (child.parents.containsKey(this))
          {
-            throw new IllegalArgumentException("Child cannot be added");
+            throw new IllegalArgumentException("Child " + child + " cannot be added for key " + key + " because parent already contains it");
          }
          else
          {
+            if (child.parents.size() == 0)
+            {
+               // Note : it may be null
+               child.metaModel = metaModel;
+
+               // Post construct
+               child.postConstruct();
+            }
+            else if (child.metaModel != metaModel)
+            {
+               throw new UnsupportedOperationException("handle me gracefully " + child.metaModel + " " + metaModel);
+            }
+
+            // Wire
             children.put(key, child);
             child.parents.put(this, key);
+            
 
-            // Callback
+            // Post attach
             child.postAttach(this);
+
+            //
             return child;
          }
       }
@@ -139,6 +165,9 @@ public class MetaModelObject implements Serializable
 
                // Remove callback
                child.preRemove();
+
+               //
+               child.metaModel = null;
             }
 
             //
@@ -168,6 +197,15 @@ public class MetaModelObject implements Serializable
       }
    }
 
+   public void queue(MetaModelEvent event)
+   {
+      metaModel.queue(event);
+   }
+   
+   protected void postConstruct()
+   {
+   }
+
    protected void preDetach(MetaModelObject parent)
    {
    }
@@ -194,18 +232,6 @@ public class MetaModelObject implements Serializable
    public JSON toJSON()
    {
       return new JSON();
-   }
-
-   public void postActivate(MetaModel model)
-   {
-   }
-
-   public void postProcess(MetaModel model) throws CompilationException
-   {
-   }
-
-   public void prePassivate(MetaModel model)
-   {
    }
 
    @Override

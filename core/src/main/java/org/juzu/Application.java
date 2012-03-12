@@ -19,7 +19,7 @@
 
 package org.juzu;
 
-import org.juzu.impl.request.LifeCyclePlugin;
+import org.juzu.impl.request.RequestLifeCycle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -67,6 +67,6 @@ public @interface Application
     *
     * @return the plugins
     */
-   Class<? extends LifeCyclePlugin>[] plugins() default {};
+   Class<? extends RequestLifeCycle>[] plugins() default {};
 
 }

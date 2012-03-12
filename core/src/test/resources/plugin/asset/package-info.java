@@ -17,12 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application(plugins = AssetPlugin.class)
+@Application()
 @Assets(scripts = @Script(src = "jquery.js"), stylesheets = {@Stylesheet(src = "main.css"),@Stylesheet(src = "main.less")})
 package plugin.asset;
 
 import org.juzu.Application;
-import org.juzu.plugin.asset.AssetPlugin;
 import org.juzu.plugin.asset.Assets;
 import org.juzu.plugin.asset.Script;
 import org.juzu.plugin.asset.Stylesheet;

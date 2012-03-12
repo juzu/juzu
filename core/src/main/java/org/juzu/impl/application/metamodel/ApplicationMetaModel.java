@@ -21,18 +21,21 @@ package org.juzu.impl.application.metamodel;
 
 import org.juzu.Application;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.controller.metamodel.ApplicationControllersMetaModel;
+import org.juzu.impl.controller.metamodel.ControllersMetaModel;
+import org.juzu.impl.controller.metamodel.ControllerMetaModel;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
-import org.juzu.impl.template.metamodel.ApplicationTemplatesMetaModel;
+import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.template.metamodel.TemplatesMetaModel;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModelObject
@@ -45,56 +48,46 @@ public class ApplicationMetaModel extends MetaModelObject
    final FQN fqn;
 
    /** . */
-   final Boolean escapeXML;
-
-   /** . */
    public MetaModel model;
-
-   /** . */
-   final List<FQN> plugins;
 
    /** . */
    boolean modified;
 
+   /** . */
+   final Map<BufKey, Map<String, Object>> toProcess;
+
+   /** . */
+   final Map<BufKey, Map<String, Object>> processed;
+
    ApplicationMetaModel(
       ElementHandle.Package handle,
-      String applicationName,
-      String defaultController,
-      Boolean escapeXML,
-      List<FQN> plugins)
+      String applicationName)
    {
       FQN fqn = new FQN(handle.getQN(), applicationName);
 
-      //
-      addChild(ApplicationControllersMetaModel.KEY, new ApplicationControllersMetaModel(defaultController));
-      addChild(ApplicationTemplatesMetaModel.KEY, new ApplicationTemplatesMetaModel(fqn.getPackageName().append("templates")));
-
-      //
+      //                    
       this.handle = handle;
       this.fqn = fqn;
-      this.escapeXML = escapeXML;
       this.modified = false;
-      this.plugins = plugins;
+      this.toProcess = new HashMap<BufKey, Map<String, Object>>();
+      this.processed = new HashMap<BufKey, Map<String, Object>>();
    }
 
-   public ApplicationControllersMetaModel getControllers()
+   public ControllersMetaModel getControllers()
    {
-      return getChild(ApplicationControllersMetaModel.KEY);
+      return getChild(ControllersMetaModel.KEY);
    }
 
-   public ApplicationTemplatesMetaModel getTemplates()
+   public TemplatesMetaModel getTemplates()
    {
-      return getChild(ApplicationTemplatesMetaModel.KEY);
+      return getChild(TemplatesMetaModel.KEY);
    }
 
-   public String getDefaultController()
+   public ControllerMetaModel addController(String className)
    {
-      return getControllers().getDefaultController();
-   }
-
-   public Boolean getEscapeXML()
-   {
-      return escapeXML;
+      ControllerMetaModel controller = new ControllerMetaModel(ElementHandle.Class.create(new FQN(className)));
+      getChild(ControllersMetaModel.KEY).add(controller);
+      return controller;
    }
 
    public FQN getFQN()
@@ -107,19 +100,13 @@ public class ApplicationMetaModel extends MetaModelObject
       return handle;
    }
 
-   public List<FQN> getPlugins()
-   {
-      return plugins;
-   }
-
    public JSON toJSON()
    {
       JSON json = new JSON();
       json.set("handle", handle);
       json.set("fqn", fqn);
-      json.setList("templates", getTemplates());
-      json.setList("controllers", getControllers());
-      json.setList("plugins", plugins);
+      json.map("templates", getTemplates());
+      json.map("controllers", getControllers());
       return json;
    }
 
@@ -146,7 +133,15 @@ public class ApplicationMetaModel extends MetaModelObject
    {
       if (parent instanceof ApplicationsMetaModel)
       {
-         model = ((ApplicationsMetaModel)parent).model;
+         queue(MetaModelEvent.createAdded(this));
+         ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
+         model = applications.model;
+
+         //
+         for (MetaModelPlugin plugin : applications.plugins.values())
+         {
+            plugin.postConstruct(this);
+         }
       }
    }
 
@@ -155,7 +150,20 @@ public class ApplicationMetaModel extends MetaModelObject
    {
       if (parent instanceof ApplicationsMetaModel)
       {
-         MetaModel.queue(MetaModelEvent.createRemoved(this));
+         ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
+
+         //
+         for (MetaModelPlugin plugin : applications.plugins.values())
+         {
+            plugin.preDestroy(this);
+         }
+
+         //
+         applications.toProcess.putAll(processed);
+         toProcess.clear();
+
+         //
+         queue(MetaModelEvent.createRemoved(this));
          model = null;
       }
    }

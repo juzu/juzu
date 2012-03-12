@@ -17,14 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.metamodel;
+package org.juzu.impl.compiler;
 
-import org.juzu.impl.compiler.BaseProcessor;
-import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.utils.Content;
+import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Spliterator;
@@ -169,7 +167,18 @@ public class ProcessingContext implements Filer, Elements
       }
       catch (Exception e)
       {
-         throw new CompilationException(e, element, MetaModelError.UNEXPECTED_ERROR, e.getMessage());
+         throw new CompilationException(e, element, new ErrorCode()
+         {
+            public String getKey()
+            {
+               return "UNEXPECTED_ERROR";
+            }
+
+            public String getMessage()
+            {
+               return "Unexpected error: %1$s";
+            }
+         }, e.getMessage());
       }
    }
 

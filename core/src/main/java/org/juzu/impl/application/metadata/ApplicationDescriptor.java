@@ -23,7 +23,6 @@ import org.juzu.impl.controller.descriptor.ControllerDescriptor;
 import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.impl.metadata.Descriptor;
 import org.juzu.impl.plugin.Plugin;
-import org.juzu.impl.request.LifeCyclePlugin;
 import org.juzu.impl.template.metadata.TemplatesDescriptor;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
@@ -32,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -50,9 +48,6 @@ public class ApplicationDescriptor extends Descriptor
    private final String name;
 
    /** . */
-   private final List<Class<? extends LifeCyclePlugin>> plugins;
-
-   /** . */
    private final Class<?> packageClass;
 
    /** . */
@@ -64,7 +59,7 @@ public class ApplicationDescriptor extends Descriptor
    /** . */
    private final Map<String, Descriptor> pluginDescriptors;
 
-   public ApplicationDescriptor(Class<?> applicationClass, List<Class<? extends LifeCyclePlugin>> plugins)
+   public ApplicationDescriptor(Class<?> applicationClass)
    {
       // Load config
       JSON config;
@@ -132,7 +127,6 @@ public class ApplicationDescriptor extends Descriptor
       this.name = applicationClass.getSimpleName();
       this.packageName = applicationClass.getPackage().getName();
       this.templates = (TemplatesDescriptor)pluginDescriptors.get("template");
-      this.plugins = plugins;
       this.packageClass = packageClass;
       this.controller = (ControllerDescriptor)pluginDescriptors.get("controller");
       this.pluginDescriptors = pluginDescriptors;
@@ -182,10 +176,5 @@ public class ApplicationDescriptor extends Descriptor
    public TemplatesDescriptor getTemplates()
    {
       return templates;
-   }
-
-   public List<Class<? extends LifeCyclePlugin>> getPlugins()
-   {
-      return plugins;
    }
 }

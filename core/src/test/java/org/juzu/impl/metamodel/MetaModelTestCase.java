@@ -1,9 +1,6 @@
 package org.juzu.impl.metamodel;
 
-import org.juzu.impl.metamodel.Key;
-import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelObject;
-import org.juzu.impl.metamodel.ProcessingContext;
+import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.test.AbstractTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

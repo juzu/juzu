@@ -3,5 +3,5 @@
 package inject.binding.declaration;
 
 import org.juzu.Application;
-import org.juzu.inject.Binding;
-import org.juzu.inject.Bindings;
+import org.juzu.plugin.binding.Binding;
+import org.juzu.plugin.binding.Bindings;

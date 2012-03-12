@@ -24,6 +24,7 @@ import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.controller.metamodel.ControllerMetaModel;
 import org.juzu.impl.controller.metamodel.ControllerMetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
+import org.juzu.impl.utils.JSON;
 import org.juzu.processor.MainProcessor;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
@@ -51,19 +52,29 @@ public class ControllerTestCase extends AbstractTestCase
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
-      MetaModel expected = new MetaModel();
-      expected.addPlugin("controller", new ControllerMetaModelPlugin());
-      expected.addPlugin("template", new TemplateMetaModelPlugin());
-      ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
-      ControllerMetaModel controller = expected.addController("model.meta.controller.A");
-      controller.addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
-      application.getControllers().add(controller);
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON()
+         .list("applications", new JSON().
+            list("controllers", new JSON().
+               set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+               list("methods", new JSON().
+                  set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+                  set("id", null).
+                  set("name", "index").
+                  list("parameterNames").
+                  list("parameterTypes").
+                  set("phase", "RENDER")
+               )
+            ).
+            set("fqn", "model.meta.controller.ControllerApplication").
+            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+            list("templates")
+         );
+      assertEquals(expected, mm.toJSON());
 
       //
-      List<MetaModelEvent> events = mm.popEvents();
-      application = mm.getChild(ApplicationsMetaModel.KEY).iterator().next();
-      controller = application.getControllers().iterator().next();
+      List<MetaModelEvent> events = mm.getQueue().clear();
+      ApplicationMetaModel application = mm.getChild(ApplicationsMetaModel.KEY).iterator().next();
+      ControllerMetaModel controller = application.getControllers().iterator().next();
       assertEquals(Arrays.asList(MetaModelEvent.createAdded(application), MetaModelEvent.createAdded(controller)), events);
    }
 
@@ -73,7 +84,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -87,11 +98,11 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       MetaModel expected = new MetaModel();
-      expected.addController("model.meta.controller.A").addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
+//      expected.addController("model.meta.controller.A").addMethod(Phase.RENDER, "index", Collections.<Map.Entry<String, String>>emptyList());
       assertEquals(expected.toJSON(), mm.toJSON());
 
       //
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(2, events.size());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
       assertInstanceOf(ApplicationMetaModel.class, events.get(0).getObject());
@@ -105,7 +116,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "model2.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -120,13 +131,13 @@ public class ControllerTestCase extends AbstractTestCase
       //
       MetaModel expected = new MetaModel();
       ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
-      ControllerMetaModel controller = expected.addController("model.meta.controller.A");
+      ControllerMetaModel controller = application.addController("model.meta.controller.A");
       controller.addMethod(Phase.ACTION, "index", Collections.<Map.Entry<String, String>>emptyList());
       application.getControllers().add(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
 
       //
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.UPDATED, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
@@ -138,7 +149,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -157,7 +168,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertEquals(expected.toJSON(), mm.toJSON());
 
       //
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
@@ -169,7 +180,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -181,7 +192,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
@@ -203,7 +214,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -214,7 +225,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.UPDATED, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
@@ -222,7 +233,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       MetaModel expected = new MetaModel();
       ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
-      ControllerMetaModel controller = expected.addController("model.meta.controller.A");
+      ControllerMetaModel controller = application.addController("model.meta.controller.A");
       controller.addMethod(Phase.RENDER, "index", Collections.<String, String>emptyMap().entrySet());
       application.getControllers().add(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
@@ -239,7 +250,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -250,7 +261,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.UPDATED, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
@@ -258,7 +269,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       MetaModel expected = new MetaModel();
       ApplicationMetaModel application = expected.addApplication("model.meta.controller", "ControllerApplication");
-      ControllerMetaModel controller = expected.addController("model.meta.controller.A");
+      ControllerMetaModel controller = application.addController("model.meta.controller.A");
       controller.addMethod(Phase.RENDER, "index", Collections.<String, String>emptyMap().entrySet());
       application.getControllers().add(controller);
       assertEquals(expected.toJSON(), mm.toJSON());
@@ -275,7 +286,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -286,7 +297,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(1, events.size());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
@@ -305,7 +316,7 @@ public class ControllerTestCase extends AbstractTestCase
       //
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -326,7 +337,7 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       mm = Tools.unserialize(MetaModel.class, ser);
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
       assertEquals(2, events.size());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
       assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.A")), ((ControllerMetaModel)events.get(0).getObject()).getHandle());

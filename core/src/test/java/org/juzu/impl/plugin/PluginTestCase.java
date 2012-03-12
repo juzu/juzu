@@ -32,7 +32,8 @@ public class PluginTestCase extends AbstractInjectTestCase
    public void testLifeCycle() throws Exception
    {
       assertNull(Registry.get("plugin.lifecycle"));
-      MockApplication<?> app = application("plugin", "lifecycle").init();
+
+      MockApplication<?> app = application("plugin", "lifecycle").declareBean("plugin.lifecycle.LifeCycleImpl").init();
       assertEquals("created", Registry.get("plugin.lifecycle"));
 
       //
@@ -43,7 +44,7 @@ public class PluginTestCase extends AbstractInjectTestCase
 
    public void testFailure() throws Exception
    {
-      MockApplication<?> app = application("plugin", "failure").init();
+      MockApplication<?> app = application("plugin", "failure").declareBean("plugin.failure.FailureLifeCycle").init();
 
       //
       MockClient client = app.client();

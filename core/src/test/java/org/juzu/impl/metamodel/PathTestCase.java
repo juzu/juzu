@@ -19,11 +19,9 @@
 
 package org.juzu.impl.metamodel;
 
-import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.controller.metamodel.ControllerMetaModelPlugin;
-import org.juzu.impl.template.metamodel.TemplateMetaModel;
 import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
-import org.juzu.impl.template.metamodel.TemplateRefMetaModel;
+import org.juzu.impl.utils.JSON;
 import org.juzu.processor.MainProcessor;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
@@ -45,14 +43,17 @@ public class PathTestCase extends AbstractTestCase
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
-      MetaModel expected = new MetaModel();
-      expected.addPlugin("controller", new ControllerMetaModelPlugin());
-      expected.addPlugin("template", new TemplateMetaModelPlugin());
-      ApplicationMetaModel application = expected.addApplication("model.meta.path", "PathApplication");
-      TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
-      TemplateMetaModel template = application.getTemplates().add(ref);
-      ref.setTemplate(template);
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON()
+         .list("applications", new JSON().
+            list("controllers").
+            set("fqn", "model.meta.path.PathApplication").
+            set("handle", "ElementHandle.Package[qn=model.meta.path]").
+            list("templates", new JSON().
+               set("path", "foo.gtmpl").
+               list("refs")
+            )
+         );
+      assertEquals(expected, mm.toJSON());
    }
 
    public void testChangeValue() throws Exception
@@ -74,14 +75,17 @@ public class PathTestCase extends AbstractTestCase
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
-      MetaModel expected = new MetaModel();
-      expected.addPlugin("controller", new ControllerMetaModelPlugin());
-      expected.addPlugin("template", new TemplateMetaModelPlugin());
-      ApplicationMetaModel application = expected.addApplication("model.meta.path", "PathApplication");
-      TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "bar.gtmpl");
-      TemplateMetaModel template = application.getTemplates().add(ref);
-      ref.setTemplate(template);
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON()
+         .list("applications", new JSON().
+            list("controllers").
+            set("fqn", "model.meta.path.PathApplication").
+            set("handle", "ElementHandle.Package[qn=model.meta.path]").
+            list("templates", new JSON().
+               set("path", "bar.gtmpl").
+               list("refs")
+            )
+         );
+      assertEquals(expected, mm.toJSON());
    }
 
    public void testRemoveAnnotation() throws Exception
@@ -100,11 +104,14 @@ public class PathTestCase extends AbstractTestCase
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
-      MetaModel expected = new MetaModel();
-      expected.addPlugin("controller", new ControllerMetaModelPlugin());
-      expected.addPlugin("template", new TemplateMetaModelPlugin());
-      expected.addApplication("model.meta.path", "PathApplication");
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON()
+         .list("applications", new JSON().
+            list("controllers").
+            set("fqn", "model.meta.path.PathApplication").
+            set("handle", "ElementHandle.Package[qn=model.meta.path]").
+            list("templates")
+         );
+      assertEquals(expected, mm.toJSON());
    }
 
    public void testPathRemoveApplication() throws Exception
@@ -125,7 +132,6 @@ public class PathTestCase extends AbstractTestCase
       MetaModel expected = new MetaModel();
       expected.addPlugin("controller", new ControllerMetaModelPlugin());
       expected.addPlugin("template", new TemplateMetaModelPlugin());
-      expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
@@ -137,7 +143,7 @@ public class PathTestCase extends AbstractTestCase
       //
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.popEvents();
+      mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
       //
@@ -159,17 +165,21 @@ public class PathTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
-      MetaModel expected = new MetaModel();
-      expected.addPlugin("controller", new ControllerMetaModelPlugin());
-      expected.addPlugin("template", new TemplateMetaModelPlugin());
-      ApplicationMetaModel application = expected.addApplication("model.meta", "MetaApplication");
-      TemplateRefMetaModel ref = expected.addTemplateRef("model.meta.path.A", "index", "foo.gtmpl");
-      TemplateMetaModel template = application.getTemplates().add(ref);
-      ref.setTemplate(template);
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON()
+         .list("applications", new JSON().
+            list("controllers").
+            set("fqn", "model.meta.MetaApplication").
+            set("handle", "ElementHandle.Package[qn=model.meta]").
+            list("templates", new JSON().
+               set("path", "foo.gtmpl").
+               list("refs")
+            )
+         );
+      assertEquals(expected, mm.toJSON());
 
       // Should also test objects....
-      List<MetaModelEvent> events = mm.popEvents();
+      List<MetaModelEvent> events = mm.getQueue().clear();
+      System.out.println("events = " + events);
       assertEquals(4, events.size());
 
       // 1 remove application

@@ -1,9 +1,8 @@
 package org.juzu.impl.template.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.Key;
-import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.QN;
@@ -11,28 +10,26 @@ import org.juzu.impl.utils.QN;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationTemplatesMetaModel extends MetaModelObject implements Iterable<TemplateMetaModel>
+public class TemplatesMetaModel extends MetaModelObject implements Iterable<TemplateMetaModel>
 {
 
    /** . */
-   public final static Key<ApplicationTemplatesMetaModel> KEY = Key.of(ApplicationTemplatesMetaModel.class);
+   public final static Key<TemplatesMetaModel> KEY = Key.of(TemplatesMetaModel.class);
 
    /** . */
    ApplicationMetaModel application;
 
    /** . */
-   final QN qn;
+   private QN qn;
 
-   public ApplicationTemplatesMetaModel(QN qn)
-   {
-      this.qn = qn;
-   }
+   /** . */
+   TemplateResolver resolver;
 
    @Override
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.setList("values", getChildren(TemplateMetaModel.class));
+      json.map("values", getChildren(TemplateMetaModel.class));
       json.set("qn", qn);
       return json;
    }
@@ -57,11 +54,20 @@ public class ApplicationTemplatesMetaModel extends MetaModelObject implements It
       return getChildren(TemplateMetaModel.class).iterator();
    }
 
-   public TemplateMetaModel add(TemplateRefMetaModel ref)
+   public TemplateRefMetaModel add(ElementHandle.Field handle, String path)
    {
-      TemplateMetaModel template = addChild(Key.of(ref.path, TemplateMetaModel.class), new TemplateMetaModel(ref.path));
-      MetaModel.queue(MetaModelEvent.createAdded(template));
-      return template;
+      TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new TemplateRefMetaModel(handle, path));
+
+      //
+      TemplateMetaModel template = getChild(Key.of(path, TemplateMetaModel.class));
+      if (template == null)
+      {
+         template = addChild(Key.of(path, TemplateMetaModel.class), new TemplateMetaModel(path));
+      }
+      
+      //
+      ref.addChild(TemplateMetaModel.KEY, template);
+      return ref;
    }
 
    public void remove(TemplateMetaModel template)
@@ -76,6 +82,11 @@ public class ApplicationTemplatesMetaModel extends MetaModelObject implements It
    @Override
    protected void postAttach(MetaModelObject parent)
    {
-      this.application = (ApplicationMetaModel)parent;
+      if (parent instanceof ApplicationMetaModel)
+      {
+         this.application = (ApplicationMetaModel)parent;
+         this.qn = application.getFQN().getPackageName().append("templates");
+         this.resolver = new TemplateResolver(application);
+      }
    }
 }

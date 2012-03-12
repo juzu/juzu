@@ -40,7 +40,7 @@ public class TemplateMetaModel extends MetaModelObject
    public final static Key<TemplateMetaModel> KEY = Key.of(TemplateMetaModel.class);
 
    /** The related application. */
-   ApplicationTemplatesMetaModel templates;
+   TemplatesMetaModel templates;
 
    /** . */
    final String path;
@@ -50,7 +50,7 @@ public class TemplateMetaModel extends MetaModelObject
       this.path = path;
    }
 
-   public ApplicationTemplatesMetaModel getTemplates()
+   public TemplatesMetaModel getTemplates()
    {
       return templates;
    }
@@ -64,7 +64,7 @@ public class TemplateMetaModel extends MetaModelObject
    {
       JSON json = new JSON();
       json.set("path", path);
-      json.setList("refs", getKeys(TemplateRefMetaModel.class));
+      json.map("refs", getKeys(TemplateRefMetaModel.class));
       return json;
    }
 
@@ -93,9 +93,10 @@ public class TemplateMetaModel extends MetaModelObject
    @Override
    protected void postAttach(MetaModelObject parent)
    {
-      if (parent instanceof ApplicationTemplatesMetaModel)
+      if (parent instanceof TemplatesMetaModel)
       {
-         this.templates = (ApplicationTemplatesMetaModel)parent;
+         queue(MetaModelEvent.createAdded(this));
+         this.templates = (TemplatesMetaModel)parent;
       }
       else if (parent instanceof TemplateRefMetaModel)
       {
@@ -106,9 +107,10 @@ public class TemplateMetaModel extends MetaModelObject
    @Override
    protected void preDetach(MetaModelObject parent)
    {
-      if (parent instanceof ApplicationTemplatesMetaModel)
+      if (parent instanceof TemplatesMetaModel)
       {
-         MetaModel.queue(MetaModelEvent.createRemoved(this, templates.application.getHandle()));
+         templates.resolver.removeTemplate(path);
+         queue(MetaModelEvent.createRemoved(this, templates.application.getHandle()));
          this.templates = null;
       }
       else if (parent instanceof TemplateRefMetaModel)

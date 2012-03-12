@@ -20,28 +20,17 @@
 package org.juzu.impl.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
-import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.controller.metamodel.ControllerMetaModel;
-import org.juzu.impl.controller.metamodel.ControllersMetaModel;
-import org.juzu.impl.template.metamodel.TemplateRefMetaModel;
-import org.juzu.impl.template.metamodel.TemplateRefsMetaModel;
-import org.juzu.impl.utils.FQN;
+import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.QN;
 
 import javax.lang.model.element.Element;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -55,72 +44,33 @@ public final class MetaModel extends MetaModelObject
    public ProcessingContext env;
 
    /** . */
-   private final LinkedList<MetaModelEvent> queue = new LinkedList<MetaModelEvent>();
+   private final EventQueue queue = new EventQueue();
 
    /** . */
-   private final LinkedList<MetaModelEvent> queue2 = new LinkedList<MetaModelEvent>();
+   private final EventQueue dispatch = new EventQueue();
 
    /** . */
    private static final ThreadLocal<MetaModel> current = new ThreadLocal<MetaModel>();
 
-   /** The meta model plugins. */
-   private LinkedHashMap<String, MetaModelPlugin> plugins;
+
+   /** . */
+   private final ApplicationsMetaModel applications = new ApplicationsMetaModel();
 
    public MetaModel()
    {
-      this.plugins = new LinkedHashMap<String, MetaModelPlugin>();
-
-      //
-      addPlugin("application", new ApplicationMetaModelPlugin());
+      addChild(ApplicationsMetaModel.KEY, applications);
    }
    
    public void addPlugin(String name, MetaModelPlugin plugin)
    {
-      plugins.put(name, plugin);
-      
-      //
-      plugin.init(this);
-   }
-
-   public LinkedHashMap<String, MetaModelPlugin> getPlugins()
-   {
-      return plugins;
+      applications.addPlugin(name, plugin);
    }
 
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.setList("applications", getChild(ApplicationsMetaModel.KEY));
-      json.set("templates", getChild(TemplateRefsMetaModel.KEY));
-      json.setList("controllers", getChild(ControllersMetaModel.KEY));
+      json.map("applications", getChild(ApplicationsMetaModel.KEY));
       return json;
-   }
-
-   //
-
-   public void processAnnotation(Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
-   {
-      for (MetaModelPlugin plugin : plugins.values())
-      {
-         plugin.processAnnotation(this, element, annotationFQN, annotationValues);
-      }
-   }
-
-   //
-
-   public ApplicationMetaModel addApplication(String packageName, String applicationName)
-   {
-      return getChild(ApplicationsMetaModel.KEY).add(ElementHandle.Package.create(new QN(packageName)), applicationName, null, null, Collections.<FQN>emptyList());
-   }
-
-   public TemplateRefMetaModel addTemplateRef(String className, String fieldName, String path)
-   {
-      return getChild(TemplateRefsMetaModel.KEY).add(ElementHandle.Field.create(new FQN(className), fieldName), path);
-   }
-
-   public ControllerMetaModel addController(String className)
-   {
-      return getChild(ControllersMetaModel.KEY).add(ElementHandle.Class.create(new FQN(className)));
    }
 
    //
@@ -134,14 +84,46 @@ public final class MetaModel extends MetaModelObject
       garbage(this, this, new HashSet<MetaModelObject>());
 
       //
-      postActivate(this, this, new HashSet<MetaModelObject>());
-      
+      applications.postActivate(this);
+   }
+
+   public void processAnnotation(Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
+   {
+      MetaModel.log.log("Processing annotation " + element);
+      applications.processAnnotation(this, element, annotationFQN, annotationValues);
+   }
+
+   public void postProcess() throws CompilationException
+   {
+      // For now we do this way lter we poll
+      applications.processEvents(this, dispatch);
+
       //
-      for (MetaModelPlugin plugin : plugins.values())
+      MetaModel.log.log("Post processing");
+      applications.postProcess(this);
+   }
+
+   public void prePassivate()
+   {
+      try
       {
-         plugin.postActivate(this);
+         applications.prePassivate(this);
+      }
+      finally
+      {
+         this.env = null;
+         current.set(null);
       }
    }
+
+   //
+
+   public ApplicationMetaModel addApplication(String packageName, String applicationName)
+   {
+      return applications.add(ElementHandle.Package.create(new QN(packageName)), applicationName);
+   }
+
+   //
 
    private void garbage(MetaModel model, MetaModelObject object, HashSet<MetaModelObject> visited)
    {
@@ -163,112 +145,15 @@ public final class MetaModel extends MetaModelObject
       }
    }
 
-   private void postActivate(MetaModel model, MetaModelObject object, HashSet<MetaModelObject> visited)
+   @Override
+   public void queue(MetaModelEvent event)
    {
-      if (!visited.contains(object))
-      {
-         object.postActivate(model);
-         visited.add(this);
-         for (MetaModelObject child : object.getChildren())
-         {
-            postActivate(model, child, visited);
-         }
-      }
+      queue.queue(event);
+      dispatch.queue(event);
    }
 
-   public void postProcess() throws CompilationException
+   public EventQueue getQueue()
    {
-      postProcess(this, this, new HashSet<MetaModelObject>());
-
-      // For now we do this way lter we poll
-      for (Iterator<MetaModelEvent> i = queue2.iterator();i.hasNext();)
-      {
-         MetaModelEvent event = i.next();
-         i.remove();
-         log.log("Processing meta model event " + event.getType() + " " + event.getObject());
-         for (MetaModelPlugin plugin : plugins.values())
-         {
-            plugin.processEvent(this, event);
-         }
-      }
-
-      // log.log("Processing templates");
-      for (MetaModelPlugin plugin : plugins.values())
-      {
-         plugin.postProcess(this);
-      }
-   }
-
-   private void postProcess(MetaModel model, MetaModelObject object, HashSet<MetaModelObject> visited)
-   {
-      if (!visited.contains(object))
-      {
-         object.postProcess(model);
-         visited.add(this);
-         for (MetaModelObject child : object.getChildren())
-         {
-            postProcess(model, child, visited);
-         }
-      }
-   }
-
-   public void prePassivate()
-   {
-      try
-      {
-         prePassivate(this, this, new HashSet<MetaModelObject>());
-
-         //
-         for (MetaModelPlugin plugin : plugins.values())
-         {
-            plugin.prePassivate(this);
-         }
-      }
-      finally
-      {
-         this.env = null;
-         current.set(null);
-      }
-   }
-
-   private void prePassivate(MetaModel model, MetaModelObject object, HashSet<MetaModelObject> visited)
-   {
-      if (!visited.contains(object))
-      {
-         object.prePassivate(model);
-         visited.add(this);
-         for (MetaModelObject child : object.getChildren())
-         {
-            prePassivate(model, child, visited);
-         }
-      }
-   }
-
-   public List<MetaModelEvent> popEvents()
-   {
-      ArrayList<MetaModelEvent> copy = new ArrayList<MetaModelEvent>(queue);
-      queue.clear();
-      return copy;
-   }
-
-   public MetaModelEvent popEvent()
-   {
-      return queue.isEmpty() ? null : queue.removeFirst();
-   }
-
-   public boolean hasEvents()
-   {
-      return !queue.isEmpty();
-   }
-
-   public static void queue(MetaModelEvent event)
-   {
-      MetaModel model = current.get();
-      if (model != null)
-      {
-         MetaModel.log.log("Queue event " + event.getType() + " " + event.getObject());
-         model.queue.add(event);
-         model.queue2.add(event);
-      }
+      return queue;
    }
 }

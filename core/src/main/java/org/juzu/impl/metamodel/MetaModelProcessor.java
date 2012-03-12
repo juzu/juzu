@@ -21,6 +21,7 @@ package org.juzu.impl.metamodel;
 
 import org.juzu.Application;
 import org.juzu.impl.compiler.BaseProcessor;
+import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Logger;
@@ -31,9 +32,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -42,7 +41,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -77,10 +75,10 @@ public abstract class MetaModelProcessor extends BaseProcessor
    @Override
    protected void doInit(ProcessingEnvironment processingEnv)
    {
-      log.log("Using processing nev " + processingEnv.getClass().getName());
+      log.log("Using processing env " + processingEnv.getClass().getName());
 
       //
-      ArrayList<Plugin> plugins = Tools.list(ServiceLoader.load(Plugin.class));
+      ArrayList<Plugin> plugins = Tools.list(ServiceLoader.load(Plugin.class, Plugin.class.getClassLoader()));
       StringBuilder msg = new StringBuilder("Using plugins:");
       for (Plugin plugin : plugins)
       {
@@ -203,13 +201,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
                      {
                         if (annotationMirror.getAnnotationType().asElement().equals(annotationElt))
                         {
-                           Map<String, Object> annotationValues = new HashMap<String, Object>();
-                           for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet())
-                           {
-                              String m = entry.getKey().getSimpleName().toString();
-                              Object value = entry.getValue().getValue();
-                              annotationValues.put(m, value);
-                           }
+                           Map<String, Object> annotationValues = Tools.foo(annotationMirror);
                            String annotationFQN = annotationElt.getQualifiedName().toString();
                            metaModel.processAnnotation(annotatedElt, annotationFQN, annotationValues);
                         }

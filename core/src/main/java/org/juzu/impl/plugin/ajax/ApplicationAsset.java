@@ -1,9 +1,10 @@
-package org.juzu.plugin.ajax;
+package org.juzu.impl.plugin.ajax;
 
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.asset.Route;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.utils.Path;
+import org.juzu.plugin.ajax.Ajax;
 
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;

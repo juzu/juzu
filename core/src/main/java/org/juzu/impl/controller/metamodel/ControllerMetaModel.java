@@ -50,18 +50,14 @@ public class ControllerMetaModel extends MetaModelObject
    /** A flag for handling modified event. */
    boolean modified;
 
-   /** . */
-   final MetaModel context;
-
    /** The application. */
-   ApplicationControllersMetaModel controllers;
+   ControllersMetaModel controllers;
 
    /** . */
    final ElementHandle.Class handle;
 
-   public ControllerMetaModel(MetaModel context, ElementHandle.Class handle)
+   public ControllerMetaModel(ElementHandle.Class handle)
    {
-      this.context = context;
       this.handle = handle;
       this.modified = false;
    }
@@ -70,7 +66,7 @@ public class ControllerMetaModel extends MetaModelObject
    {
       JSON json = new JSON();
       json.set("handle", handle);
-      json.setList("methods", getMethods());
+      json.map("methods", getMethods());
       return json;
    }
 
@@ -114,6 +110,7 @@ public class ControllerMetaModel extends MetaModelObject
    }
 
    void addMethod(
+      MetaModel context,
       ExecutableElement methodElt,
       String annotationFQN,
       Map<String, Object> annotationValues)
@@ -232,9 +229,9 @@ public class ControllerMetaModel extends MetaModelObject
    @Override
    protected void preDetach(MetaModelObject parent)
    {
-      if (parent instanceof ApplicationControllersMetaModel)
+      if (parent instanceof ControllersMetaModel)
       {
-         MetaModel.queue(MetaModelEvent.createRemoved(this));
+         queue(MetaModelEvent.createRemoved(this));
          controllers = null;
       }
    }
@@ -242,10 +239,10 @@ public class ControllerMetaModel extends MetaModelObject
    @Override
    protected void postAttach(MetaModelObject parent)
    {
-      if (parent instanceof ApplicationControllersMetaModel)
+      if (parent instanceof ControllersMetaModel)
       {
-         controllers = (ApplicationControllersMetaModel)parent;
-         MetaModel.queue(MetaModelEvent.createAdded(this));
+         controllers = (ControllersMetaModel)parent;
+         queue(MetaModelEvent.createAdded(this));
       }
    }
 }

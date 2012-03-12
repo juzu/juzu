@@ -17,12 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application(
-   defaultController = org.sample.booking.controllers.Application.class,
-   plugins = {
-      AssetPlugin.class,
-      AjaxPlugin.class
-   })
+@Application(defaultController = org.sample.booking.controllers.Application.class)
 @Assets(
    scripts = {
       @Script(src = "public/javascripts/jquery-1.7.1.min.js"),
@@ -36,8 +31,6 @@
 package org.sample.booking;
 
 import org.juzu.Application;
-import org.juzu.plugin.ajax.AjaxPlugin;
-import org.juzu.plugin.asset.AssetPlugin;
 import org.juzu.plugin.asset.Assets;
 import org.juzu.plugin.asset.Script;
 import org.juzu.plugin.asset.Stylesheet;

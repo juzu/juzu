@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.inject;
+package org.juzu.plugin.binding;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

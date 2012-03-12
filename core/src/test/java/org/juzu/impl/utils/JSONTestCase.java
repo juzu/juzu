@@ -142,8 +142,8 @@ public class JSONTestCase extends TestCase
 
    public void testCastToList() throws Exception
    {
-      assertEquals(Arrays.asList("bar"), new JSON().setList("foo", Arrays.asList("bar")).getList("foo"));
-      assertEquals(Arrays.asList("bar"), new JSON().setList("foo", Arrays.asList("bar")).getList("foo", String.class));
+      assertEquals(Arrays.asList("bar"), new JSON().map("foo", Arrays.asList("bar")).getList("foo"));
+      assertEquals(Arrays.asList("bar"), new JSON().map("foo", Arrays.asList("bar")).getList("foo", String.class));
       assertNull(new JSON().getList("foo"));
       assertNull(new JSON().getList("foo", Boolean.class));
       try
@@ -164,7 +164,7 @@ public class JSONTestCase extends TestCase
       }
       try
       {
-         new JSON().setList("foo", Arrays.asList("String")).getList("foo", Boolean.class);
+         new JSON().map("foo", Arrays.asList("String")).getList("foo", Boolean.class);
          fail();
       }
       catch (ClassCastException ignore)

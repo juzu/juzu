@@ -347,6 +347,11 @@ public abstract class ElementHandle<E extends Element> implements Serializable
          return new Field(fqn, name);
       }
 
+      public static Field create(String fqn, String name)
+      {
+         return new Field(new FQN(fqn), name);
+      }
+
       public static Field create(FQN fqn, String name)
       {
          return new Field(fqn, name);

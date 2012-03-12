@@ -17,16 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.request;
+package org.juzu.plugin.binding;
 
-import org.juzu.impl.application.ApplicationException;
-import org.juzu.impl.request.Request;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class LifeCyclePlugin
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PACKAGE)
+public @interface Bindings
 {
-   public void invoke(Request request) throws ApplicationException
-   {
-      request.invoke();
-   }
+
+   Binding[] value() default {};
+
 }

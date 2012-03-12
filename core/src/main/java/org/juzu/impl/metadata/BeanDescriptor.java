@@ -29,7 +29,7 @@ public final class BeanDescriptor
    public BeanDescriptor(
       Class<?> declaredType,
       Set<? extends Annotation> qualifiers,
-      Class<?> implementationType) throws NullPointerException, IllegalAccessException
+      Class<?> implementationType) throws NullPointerException, IllegalArgumentException
    {
       if (declaredType == null)
       {

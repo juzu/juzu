@@ -20,7 +20,7 @@
 package org.juzu.impl.application;
 
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
-import org.juzu.impl.request.LifeCyclePlugin;
+import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.template.Template;
@@ -40,7 +40,7 @@ public abstract class ApplicationContext
    
    public abstract ClassLoader getClassLoader();
 
-   public abstract List<LifeCyclePlugin> getPlugins();
+   public abstract List<RequestLifeCycle> getPlugins();
 
    public abstract ApplicationDescriptor getDescriptor();
 

@@ -21,8 +21,8 @@ package org.juzu.impl.template.metamodel;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.metamodel.MetaModelError;
-import org.juzu.impl.metamodel.ProcessingContext;
 import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.template.compiler.ProcessContext;

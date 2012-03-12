@@ -1,16 +1,19 @@
-package org.juzu.plugin.asset;
+package org.juzu.impl.plugin.asset;
 
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
-import org.juzu.impl.request.LifeCyclePlugin;
+import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
+import org.juzu.plugin.asset.Assets;
+import org.juzu.plugin.asset.Script;
+import org.juzu.plugin.asset.Stylesheet;
 import org.juzu.request.Phase;
 
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetPlugin extends LifeCyclePlugin
+public class AssetLifeCycle extends RequestLifeCycle
 {
 
    /** . */
@@ -23,7 +26,7 @@ public class AssetPlugin extends LifeCyclePlugin
    private final String[] stylesheets;
 
    @Inject
-   public AssetPlugin(ApplicationDescriptor desc)
+   public AssetLifeCycle(ApplicationDescriptor desc)
    {
       String[] scripts;
       String[] stylesheets;

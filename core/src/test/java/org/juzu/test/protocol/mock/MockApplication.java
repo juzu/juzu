@@ -120,15 +120,21 @@ public class MockApplication<P>
       return descriptor;
    }
 
-   public void declareBean(String className) throws ClassNotFoundException
+   public MockApplication<P> declareBean(Class<?> beanClass) throws ClassNotFoundException
    {
-      Class<?> beanClazz = classLoader.loadClass(className);
-      bootstrap.declareBean(beanClazz, null, null);
+      bootstrap.declareBean(beanClass, null, null);
+      return this;
+   }
+
+   public MockApplication<P> declareBean(String className) throws ClassNotFoundException
+   {
+      return declareBean(classLoader.loadClass(className));
    }
    
-   public <T> void bindBean(Class<T> type, Iterable<Annotation> qualifiers, T bean)
+   public <T> MockApplication<P> bindBean(Class<T> type, Iterable<Annotation> qualifiers, T bean)
    {
       bootstrap.bindBean(type, qualifiers, bean);
+      return this;
    }
 
    public ApplicationContext getContext()
