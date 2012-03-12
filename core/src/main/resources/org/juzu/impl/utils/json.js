@@ -1,15 +1,15 @@
 Object.prototype.toJava = function() {
   var m = new org.juzu.impl.utils.JSON();
-  for (var key in this)
-    if (this.hasOwnProperty(key))
-      m.set(key, this[key] == null ? null : this[key].toJava());
+  for (var k in this)
+    if (this.hasOwnProperty(k))
+      m.set(k, this[k] == null ? null : this[k].toJava());
   return m;
 };
 Array.prototype.toJava = function() {
   var l = this.length;
   var a = new java.util.ArrayList();
   for (var i = 0;i < l;i++)
-    a.add(this[i]);
+    a.add(this[i].toJava());
   return a;
 };
 String.prototype.toJava = function() {

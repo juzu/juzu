@@ -193,4 +193,12 @@ public class JSONTestCase extends TestCase
       JSON unmarshalled = (JSON)JSON.parse(s);
       assertEquals(json, unmarshalled);
    }
+
+   public void testParseArray() throws Exception
+   {
+      String s = "{\"a\":[{\"b\":\"c\"}]}";
+      JSON json = (JSON)JSON.parse(s);
+      JSON expected = new JSON().set("a", Arrays.asList(new JSON().set("b", "c")));
+      assertEquals(expected, json);
+   }
 }
