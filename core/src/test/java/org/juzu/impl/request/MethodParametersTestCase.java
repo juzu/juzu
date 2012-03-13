@@ -39,23 +39,23 @@ public class MethodParametersTestCase extends AbstractInjectTestCase
 
       //
       MockRenderBridge render = client.render("none");
-      MockRenderBridge mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals("", mv.getContent());
+      MockRenderBridge mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+      assertEquals("", mv.assertStringResult());
 
       //
       render = client.render("0");
-      mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals("", mv.getContent());
+      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+      assertEquals("", mv.assertStringResult());
 
       //
       render = client.render("1");
-      mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals(Arrays.asList("bar").toString(), mv.getContent());
+      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+      assertEquals(Arrays.asList("bar").toString(), mv.assertStringResult());
 
       //
       render = client.render("2");
-      mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.getContent());
+      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+      assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
    }
 
    public void testStringList() throws Exception
@@ -67,22 +67,22 @@ public class MethodParametersTestCase extends AbstractInjectTestCase
 
       //
       MockRenderBridge render = client.render("none");
-      MockRenderBridge mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals("", mv.getContent());
+      MockRenderBridge mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+      assertEquals("", mv.assertStringResult());
 
       //
       render = client.render("0");
-      mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals("", mv.getContent());
+      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+      assertEquals("", mv.assertStringResult());
 
       //
       render = client.render("1");
-      mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals(Arrays.asList("bar").toString(), mv.getContent());
+      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+      assertEquals(Arrays.asList("bar").toString(), mv.assertStringResult());
 
       //
       render = client.render("2");
-      mv = (MockRenderBridge)client.invoke(render.getContent());
-      assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.getContent());
+      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+      assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
    }
 }

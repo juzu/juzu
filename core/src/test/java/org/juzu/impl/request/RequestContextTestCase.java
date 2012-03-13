@@ -36,7 +36,7 @@ public class RequestContextTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("render_phase", render.getContent());
+      assertEquals("render_phase", render.assertStringResult());
 
       //
       String url = render.getTitle();

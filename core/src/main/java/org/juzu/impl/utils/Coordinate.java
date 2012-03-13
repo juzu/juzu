@@ -17,27 +17,45 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.ast;
+package org.juzu.impl.utils;
 
-import org.juzu.impl.utils.Coordinate;
+import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class OffsetToken
+public class Coordinate implements Serializable
 {
 
    /** . */
-   public int beginOffset;
+   private final int offset;
 
    /** . */
-   public int endOffset;
+   private final Location position;
 
-   public Coordinate getBegin()
+   public Coordinate(int offset, Location position)
    {
-      return new Coordinate(beginOffset, ((Token)this).beginColumn, ((Token)this).beginLine);
+      this.offset = offset;
+      this.position = position;
    }
 
-   public Coordinate getEnd()
+   public Coordinate(int offset, int col, int line)
    {
-      return new Coordinate(endOffset, ((Token)this).endColumn, ((Token)this).endLine);
+      this.offset = offset;
+      this.position = new Location(col, line);
+   }
+
+   public int getOffset()
+   {
+      return offset;
+   }
+
+   public Location getPosition()
+   {
+      return position;
+   }
+
+   @Override
+   public String toString()
+   {
+      return getClass().getSimpleName() + "[offset=" + offset + ",position=" + position + "]";
    }
 }

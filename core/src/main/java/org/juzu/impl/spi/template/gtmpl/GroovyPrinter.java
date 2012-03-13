@@ -23,8 +23,8 @@ import groovy.lang.GString;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
+import org.juzu.io.CharArray;
 import org.juzu.template.TemplateRenderContext;
-import org.juzu.text.CharArray;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -97,7 +97,7 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
 
    public final void println() throws IOException
    {
-      renderContext.getPrinter().write('\n');
+      renderContext.getPrinter().append('\n');
    }
 
    /**
@@ -143,7 +143,7 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
    {
       if (o instanceof CharArray)
       {
-         renderContext.getPrinter().write((CharArray)o);
+         renderContext.getPrinter().append((CharArray)o);
       }
       else if (o instanceof GString)
       {
@@ -153,11 +153,11 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
          {
             values[i] = format(values[i]);
          }
-         renderContext.getPrinter().write(o.toString());
+         renderContext.getPrinter().append(o.toString());
       }
       else
       {
-         renderContext.getPrinter().write(toString(o));
+         renderContext.getPrinter().append(toString(o));
       }
    }
 }

@@ -17,20 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.text;
+@Application
+package request.resource.binary;
 
-import java.io.IOException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Printer
-{
-
-   void write(char c) throws IOException;
-
-   void write(String s) throws IOException;
-
-   void write(CharSequence s) throws IOException;
-
-   void write(CharArray chars) throws IOException;
-
-}
+import org.juzu.Application;

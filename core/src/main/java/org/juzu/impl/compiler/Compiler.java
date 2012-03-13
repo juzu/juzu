@@ -27,8 +27,8 @@ import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.SimpleFileSystem;
 import org.juzu.impl.utils.ErrorCode;
+import org.juzu.impl.utils.Location;
 import org.juzu.impl.utils.Spliterator;
-import org.juzu.text.Location;
 
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;

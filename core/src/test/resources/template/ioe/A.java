@@ -24,8 +24,8 @@ import org.juzu.Path;
 import org.juzu.Response;
 import org.juzu.UndeclaredIOException;
 import org.juzu.View;
+import org.juzu.io.AppendableStream;
 import org.juzu.template.Template;
-import org.juzu.text.WriterPrinter;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class A extends Controller
    public Response.Content index()
    {
       String ret = "";
-      WriterPrinter printer = new WriterPrinter(new Appendable()
+      AppendableStream printer = new AppendableStream(new Appendable()
       {
          public Appendable append(CharSequence csq) throws IOException
          {

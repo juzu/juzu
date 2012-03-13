@@ -24,10 +24,10 @@ import org.juzu.impl.template.compiler.EmitPhase;
 import org.juzu.impl.utils.MethodInvocation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
+import org.juzu.io.AppendableStream;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.text.WriterPrinter;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -103,6 +103,6 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
    {
       GroovyTemplateStub template = template(text);
       TemplateRenderContext renderContext = new TemplateRenderContext(template, attributes, locale);
-      renderContext.render(new WriterPrinter(appendable));
+      renderContext.render(new AppendableStream(appendable));
    }
 }

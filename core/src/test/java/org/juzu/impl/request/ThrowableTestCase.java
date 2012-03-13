@@ -143,7 +143,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       try
       {
-         client.invoke(render.getContent());
+         client.invoke(render.assertStringResult());
          fail();
       }
       catch (ApplicationException e)
@@ -161,7 +161,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       try
       {
-         client.invoke(render.getContent());
+         client.invoke(render.assertStringResult());
          fail();
       }
       catch (ApplicationException e)
@@ -179,7 +179,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       try
       {
-         client.invoke(render.getContent());
+         client.invoke(render.assertStringResult());
          fail();
       }
       catch (ApplicationException e)
@@ -197,7 +197,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       try
       {
-         client.invoke(render.getContent());
+         client.invoke(render.assertStringResult());
          fail();
       }
       catch (ApplicationException e)
@@ -215,7 +215,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       try
       {
-         client.invoke(render.getContent());
+         client.invoke(render.assertStringResult());
          fail();
       }
       catch (ApplicationException e)
@@ -233,7 +233,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       MockRenderBridge render = client.render();
       try
       {
-         client.invoke(render.getContent());
+         client.invoke(render.assertStringResult());
          fail();
       }
       catch (ApplicationException e)

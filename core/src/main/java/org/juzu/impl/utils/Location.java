@@ -17,45 +17,64 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.text;
+package org.juzu.impl.utils;
 
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Coordinate implements Serializable
+public class Location implements Serializable
 {
 
    /** . */
-   private final int offset;
+   private final int col;
 
    /** . */
-   private final Location position;
+   private final int line;
 
-   public Coordinate(int offset, Location position)
+   public Location(int col, int line)
    {
-      this.offset = offset;
-      this.position = position;
+      if (col < 0)
+      {
+         throw new IllegalArgumentException();
+      }
+      if (line < 0)
+      {
+         throw new IllegalArgumentException();
+      }
+
+      //
+      this.col = col;
+      this.line = line;
    }
 
-   public Coordinate(int offset, int col, int line)
+   public int getCol()
    {
-      this.offset = offset;
-      this.position = new Location(col, line);
+      return col;
    }
 
-   public int getOffset()
+   public int getLine()
    {
-      return offset;
+      return line;
    }
 
-   public Location getPosition()
+   @Override
+   public boolean equals(Object obj)
    {
-      return position;
+      if (obj == this)
+      {
+         return true;
+      }
+      if (obj instanceof Location)
+      {
+         Location that = (Location)obj;
+         return col == that.col && line == that.line;
+      }
+      return false;
    }
 
    @Override
    public String toString()
    {
-      return getClass().getSimpleName() + "[offset=" + offset + ",position=" + position + "]";
+      return "Location[col=" + col + ",line=" + line + "]";
    }
 }

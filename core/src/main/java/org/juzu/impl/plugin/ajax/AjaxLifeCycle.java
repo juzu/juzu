@@ -29,7 +29,7 @@ import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.utils.Tools;
 import org.juzu.request.RenderContext;
-import org.juzu.text.Printer;
+import org.juzu.io.CharStream;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -110,32 +110,32 @@ public class AjaxLifeCycle extends RequestLifeCycle
                   return foo.getStylesheets();
                }
 
-               public void send(Printer printer) throws IOException
+               public void send(CharStream stream) throws IOException
                {
 
                   // FOR NOW WE DO WITH THE METHOD NAME
                   // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
 
                   //
-                  printer.write("<div class=\"jz\">\n");
+                  stream.append("<div class=\"jz\">\n");
                   
                   //
                   for (Map.Entry<String, ControllerMethod> entry : applicationRegistration.getRoute().table.entrySet())
                   {
                      String baseURL = ((RenderContext)request.getContext()).createURLBuilder(entry.getValue()).toString();
-                     printer.write("<div data-method-id=\"");
-                     printer.write(entry.getValue().getId());
-                     printer.write("\" data-url=\"");
-                     printer.write(baseURL);
-                     printer.write("\"/>");
-                     printer.write("</div>");
+                     stream.append("<div data-method-id=\"");
+                     stream.append(entry.getValue().getId());
+                     stream.append("\" data-url=\"");
+                     stream.append(baseURL);
+                     stream.append("\"/>");
+                     stream.append("</div>");
                   }
 
                   // The page
-                  foo.send(printer);
+                  foo.send(stream);
 
                   //
-                  printer.write("</div>");
+                  stream.append("</div>");
                }
             };
             request.setResponse(response);

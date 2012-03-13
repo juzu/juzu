@@ -20,10 +20,10 @@
 package org.juzu.impl.template.ast;
 
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
+import org.juzu.io.AppendableStream;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.template.TemplateRenderContext;
 import org.juzu.test.protocol.mock.MockPrinter;
-import org.juzu.text.WriterPrinter;
 
 import java.awt.*;
 import java.io.IOException;
@@ -376,7 +376,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       out = null;
       Writer writer = new StringWriter();
       GroovyTemplateStub template = template("<% " + TemplateRenderingTestCase.class.getName() + ".out = out; %>");
-      new TemplateRenderContext(template).render(new WriterPrinter(writer));
+      new TemplateRenderContext(template).render(new AppendableStream(writer));
       assertNotNull(out);
    }
 

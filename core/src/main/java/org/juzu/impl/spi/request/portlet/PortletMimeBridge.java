@@ -22,12 +22,15 @@ package org.juzu.impl.spi.request.portlet;
 import org.juzu.Response;
 import org.juzu.request.Phase;
 import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.text.Printer;
-import org.juzu.text.WriterPrinter;
+import org.juzu.io.BinaryOutputStream;
+import org.juzu.io.BinaryStream;
+import org.juzu.io.CharStream;
+import org.juzu.io.AppendableStream;
 
 import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
@@ -37,40 +40,39 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
 {
 
    /** . */
-   private final Printer printer;
+   private String mimeType;
+   
+   /** . */
+   private Object result;
 
    /** . */
-   private StringBuilder writer;
+   private final boolean buffer;
 
    PortletMimeBridge(Rq request, Rs response, boolean buffer) throws IOException
    {
       super(request, response);
 
       //
-      if (buffer)
-      {
-         this.writer = new StringBuilder();
-         this.printer = new WriterPrinter(writer);
-      }
-      else
-      {
-         this.writer = null;
-         this.printer = new WriterPrinter(response.getWriter());
-      }
+      this.buffer = buffer;
    }
    
    public void commit() throws IOException
    {
-      if (writer != null)
+      if (result != null)
       {
-         response.getWriter().write(writer.toString());
-         writer.setLength(0);
+         if (mimeType != null)
+         {
+            response.setContentType(mimeType);
+         }
+         if (result instanceof String)
+         {
+            response.getWriter().write((String)result);
+         }
+         else 
+         {
+            response.getPortletOutputStream().write((byte[])result);
+         }
       }
-   }
-
-   public Printer getPrinter()
-   {
-      return printer;
    }
 
    public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
@@ -117,6 +119,52 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
 
    public void setResponse(Response response) throws IllegalStateException, IOException
    {
-      ((Response.Content)response).send(printer);
+      Response.Content content = (Response.Content)response;
+      
+      //
+      String mimeType = content.getMimeType();
+      if (mimeType != null)
+      {
+         if (buffer)
+         {
+            this.mimeType = mimeType;
+         }
+         else
+         {
+            this.response.setContentType(mimeType);
+         }
+      }
+      
+      // Send content
+      if (content.getKind() == CharStream.class)
+      {
+         CharStream stream;
+         if (buffer)
+         {
+            StringBuilder sb = new StringBuilder();
+            stream = new AppendableStream(sb);
+            ((Response.Content<CharStream>)response).send(stream);
+            result = sb.toString();
+         }
+         else
+         {
+            ((Response.Content<CharStream>)response).send(new AppendableStream(this.response.getWriter()));
+         }
+      }
+      else
+      {
+         BinaryStream stream;
+         if (buffer)
+         {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            stream = new BinaryOutputStream(baos);
+            ((Response.Content<BinaryStream>)response).send(stream);
+            result = baos.toByteArray();
+         }
+         else
+         {
+            ((Response.Content<BinaryStream>)response).send(new BinaryOutputStream(this.response.getPortletOutputStream()));
+         }
+      }
    }
 }

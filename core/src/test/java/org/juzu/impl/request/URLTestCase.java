@@ -37,7 +37,7 @@ public class URLTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      JSON url = (JSON)JSON.parse(render.getContent());
+      JSON url = (JSON)JSON.parse(render.assertStringResult());
       assertFalse(url.contains("escapeXML"));
    }
 
@@ -49,7 +49,7 @@ public class URLTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      JSON url = (JSON)JSON.parse(render.getContent());
+      JSON url = (JSON)JSON.parse(render.assertStringResult());
       assertEquals(Boolean.TRUE, url.get("escapeXML"));
    }
 }

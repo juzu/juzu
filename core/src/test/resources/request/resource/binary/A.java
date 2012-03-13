@@ -17,64 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.text;
+package request.resource.binary;
 
-import java.io.Serializable;
+import org.juzu.Controller;
+import org.juzu.Resource;
+import org.juzu.Response;
+import org.juzu.View;
+
+import javax.naming.AuthenticationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Location implements Serializable
+public class A extends Controller
 {
 
-   /** . */
-   private final int col;
-
-   /** . */
-   private final int line;
-
-   public Location(int col, int line)
+   public A()
    {
-      if (col < 0)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (line < 0)
-      {
-         throw new IllegalArgumentException();
-      }
-
-      //
-      this.col = col;
-      this.line = line;
    }
 
-   public int getCol()
+   @Resource
+   public Response.Content.Resource resource() throws AuthenticationException
    {
-      return col;
+      return Response.ok("application/octet-stream", new ByteArrayInputStream("hello".getBytes()));
    }
 
-   public int getLine()
+   @View
+   public Response.Content index() throws IOException
    {
-      return line;
-   }
-
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == this)
-      {
-         return true;
-      }
-      if (obj instanceof Location)
-      {
-         Location that = (Location)obj;
-         return col == that.col && line == that.line;
-      }
-      return false;
-   }
-
-   @Override
-   public String toString()
-   {
-      return "Location[col=" + col + ",line=" + line + "]";
+      return Response.content(A_.resourceURL().toString());
    }
 }

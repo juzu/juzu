@@ -36,7 +36,19 @@ public class ResourceTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      MockResourceBridge resource = (MockResourceBridge)client.invoke(render.getContent());
+      MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
       resource.assertNotFound();
+   }
+
+   public void testBinary() throws Exception
+   {
+      MockApplication<?> app = application("request", "resource", "binary").init();
+
+      //
+      MockClient client = app.client();
+      MockRenderBridge render = client.render();
+      MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
+      assertEquals("hello", new String(resource.assertBinaryResult(), "UTF-8"));
+      assertEquals("application/octet-stream", resource.getMimeType());
    }
 }

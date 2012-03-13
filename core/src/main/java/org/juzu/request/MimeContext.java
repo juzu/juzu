@@ -27,7 +27,7 @@ import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.text.WriterPrinter;
+import org.juzu.io.AppendableStream;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -139,7 +139,7 @@ public abstract class MimeContext extends RequestContext
    {
       // Consume response here
       StringBuilder buffer = new StringBuilder();
-      WriterPrinter printer = new WriterPrinter(buffer);
+      AppendableStream printer = new AppendableStream(buffer);
       response.send(printer);
       if (response instanceof Response.Content.Render)
       {

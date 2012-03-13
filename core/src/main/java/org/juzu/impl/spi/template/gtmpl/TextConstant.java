@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.template.gtmpl;
 
-import org.juzu.text.CharArray;
+import org.juzu.io.CharArray;
 
 /**
  * This object encapsulate the generation of a method that outputs the specified text.

@@ -10,7 +10,7 @@ import org.juzu.plugin.asset.Assets;
 import org.juzu.plugin.asset.Script;
 import org.juzu.plugin.asset.Stylesheet;
 import org.juzu.request.Phase;
-import org.juzu.text.Printer;
+import org.juzu.io.CharStream;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -112,9 +112,9 @@ public class AssetLifeCycle extends RequestLifeCycle
                }
 
                @Override
-               public void send(Printer printer) throws IOException
+               public void send(CharStream stream) throws IOException
                {
-                  render.send(printer);
+                  render.send(stream);
                }
             };
 

@@ -20,13 +20,12 @@
 package org.juzu.impl.template.ast;
 
 import junit.framework.TestCase;
-import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
+import org.juzu.io.AppendableStream;
 import org.juzu.template.TemplateRenderContext;
-import org.juzu.text.WriterPrinter;
 
 import java.io.StringWriter;
 import java.util.Collections;
@@ -42,7 +41,7 @@ public class TemplateBuilderTestCase extends TestCase
       new EmitPhase(new EmitContext()).emit(generator, ASTNode.Template.parse("a<%=foo%>c"));
       GroovyTemplateStub s = generator.build("template_" + Math.abs(new Random().nextLong()));
       StringWriter out = new StringWriter();
-      new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(new WriterPrinter(out));
+      new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(new AppendableStream(out));
       assertEquals("abc", out.toString());
    }
 

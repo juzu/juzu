@@ -22,7 +22,7 @@ package org.juzu.impl.spi.request.servlet;
 import org.juzu.Response;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RenderBridge;
-import org.juzu.text.WriterPrinter;
+import org.juzu.io.AppendableStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,7 +47,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
    public void setResponse(Response response) throws IllegalStateException, IOException
    {
       Response.Content.Render render = (Response.Render)response;
-      resp.setContentType("text/html");
+      resp.setContentType(render.getMimeType());
 
       //
       PrintWriter writer = resp.getWriter();
@@ -83,7 +83,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       writer.println("<body>");
 
       // Send response
-      render.send(new WriterPrinter(writer));
+      render.send(new AppendableStream(writer));
 
       //
       writer.println("</body>");

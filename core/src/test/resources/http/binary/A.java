@@ -17,27 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.ast;
+package http.binary;
 
-import org.juzu.impl.utils.Coordinate;
+import org.juzu.Resource;
+import org.juzu.Response;
+import org.juzu.View;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class OffsetToken
+import java.io.ByteArrayInputStream;
+
+/** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
+public class A
 {
-
-   /** . */
-   public int beginOffset;
-
-   /** . */
-   public int endOffset;
-
-   public Coordinate getBegin()
+   
+   @View
+   public Response.Content index(String p)
    {
-      return new Coordinate(beginOffset, ((Token)this).beginColumn, ((Token)this).beginLine);
+      return Response.render("" + A_.resourceURL());
    }
-
-   public Coordinate getEnd()
+   
+   @Resource 
+   public Response.Content resource()
    {
-      return new Coordinate(endOffset, ((Token)this).endColumn, ((Token)this).endLine);
+      return Response.ok("application/octet-stream", new ByteArrayInputStream("hello".getBytes()));
    }
 }

@@ -49,6 +49,6 @@ public class PluginTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("pass", render.getContent());
+      assertEquals("pass", render.assertStringResult());
    }
 }

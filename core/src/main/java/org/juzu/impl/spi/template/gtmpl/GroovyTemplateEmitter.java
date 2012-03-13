@@ -21,8 +21,8 @@ package org.juzu.impl.spi.template.gtmpl;
 
 import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.template.ast.SectionType;
+import org.juzu.impl.utils.Location;
 import org.juzu.impl.utils.Tools;
-import org.juzu.text.Location;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -35,6 +35,6 @@ public class ELTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("A", render.getContent());
+      assertEquals("A", render.assertStringResult());
    }
 }

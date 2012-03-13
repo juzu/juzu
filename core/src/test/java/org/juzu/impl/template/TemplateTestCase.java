@@ -63,7 +63,7 @@ import org.juzu.test.protocol.mock.MockClient;
    {
       MockApplication<?> app = application("template", "relativepath").init();
       MockClient client = app.client();
-      assertEquals("relative_path_template", client.render().getContent());
+      assertEquals("relative_path_template", client.render().assertStringResult());
    }
 
    public void testTyped() throws Exception
@@ -73,7 +73,7 @@ import org.juzu.test.protocol.mock.MockClient;
       {
          MockApplication<?> app = application("template", "typed").init();
          MockClient client = app.client();
-         assertEquals("typed_template", client.render().getContent());
+         assertEquals("typed_template", client.render().assertStringResult());
       }
    }
 
@@ -81,6 +81,6 @@ import org.juzu.test.protocol.mock.MockClient;
    {
       MockApplication<?> app = application("template", "ioe").init();
       MockClient client = app.client();
-      assertEquals("pass", client.render().getContent());
+      assertEquals("pass", client.render().assertStringResult());
    }
 }

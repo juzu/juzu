@@ -35,7 +35,7 @@ public class BindingTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("pass", render.getContent());
+      assertEquals("pass", render.assertStringResult());
    }
 
    public void testImplementation() throws Exception
@@ -45,7 +45,7 @@ public class BindingTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("pass", render.getContent());
+      assertEquals("pass", render.assertStringResult());
    }
 
    public void testMetaProvider() throws Exception
@@ -55,7 +55,7 @@ public class BindingTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("pass", render.getContent());
+      assertEquals("pass", render.assertStringResult());
    }
 
    public void testProvider() throws Exception
@@ -65,7 +65,7 @@ public class BindingTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("pass", render.getContent());
+      assertEquals("pass", render.assertStringResult());
    }
 
    public void testQualifiedProvider() throws Exception
@@ -75,6 +75,6 @@ public class BindingTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("pass", render.getContent());
+      assertEquals("pass", render.assertStringResult());
    }
 }

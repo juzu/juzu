@@ -17,27 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.template.ast;
+package org.juzu.io;
 
-import org.juzu.impl.utils.Coordinate;
+import java.io.IOException;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class OffsetToken
+/**
+ * Extends the appendable interface and add support for the {@link CharArray} class.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public interface CharStream extends Stream, Appendable
 {
 
-   /** . */
-   public int beginOffset;
+   CharStream append(CharArray chars) throws IOException;
 
-   /** . */
-   public int endOffset;
+   CharStream append(CharSequence csq) throws IOException;
 
-   public Coordinate getBegin()
-   {
-      return new Coordinate(beginOffset, ((Token)this).beginColumn, ((Token)this).beginLine);
-   }
+   CharStream append(CharSequence csq, int start, int end) throws IOException;
 
-   public Coordinate getEnd()
-   {
-      return new Coordinate(endOffset, ((Token)this).endColumn, ((Token)this).endLine);
-   }
+   CharStream append(char c) throws IOException;
+
 }

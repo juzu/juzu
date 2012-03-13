@@ -19,10 +19,10 @@
 
 package org.juzu.impl.template.ast;
 
+import org.juzu.impl.utils.Coordinate;
+import org.juzu.impl.utils.Location;
 import org.juzu.impl.utils.Tools;
 import org.juzu.template.TagHandler;
-import org.juzu.text.Coordinate;
-import org.juzu.text.Location;
 
 import java.io.Serializable;
 import java.io.StringReader;

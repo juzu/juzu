@@ -38,7 +38,7 @@ public class ActionTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      MockActionBridge action = (MockActionBridge)client.invoke(render.getContent());
+      MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
       action.assertNoResponse();
    }
 
@@ -49,7 +49,7 @@ public class ActionTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      MockActionBridge action = (MockActionBridge)client.invoke(render.getContent());
+      MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
       action.assertRedirect("http://www.julienviet.com");
    }
 
@@ -60,7 +60,7 @@ public class ActionTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      MockActionBridge action = (MockActionBridge)client.invoke(render.getContent());
+      MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
       action.assertRender("render", Collections.singletonMap("arg", "arg_value"));
    }
 }

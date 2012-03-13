@@ -48,7 +48,7 @@ public class TagTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      String out = render.getContent();
+      String out = render.assertStringResult();
       assertEquals("<foo>bar</foo>", out);
    }
 
@@ -59,7 +59,7 @@ public class TagTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      String out = render.getContent();
+      String out = render.assertStringResult();
       assertEquals("<foo>bar</foo>", out);
    }
 
@@ -70,7 +70,7 @@ public class TagTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      String out = render.getContent();
+      String out = render.assertStringResult();
       assertEquals("foo", out);
    }
 
@@ -81,7 +81,7 @@ public class TagTestCase extends AbstractInjectTestCase
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      String url = render.getContent();
+      String url = render.assertStringResult();
       assertEquals("the_title", render.getTitle());
       render = (MockRenderBridge)client.invoke(url);
       assertEquals("4", render.getTitle());
@@ -96,7 +96,7 @@ public class TagTestCase extends AbstractInjectTestCase
          //
          MockClient client = app.client();
          MockRenderBridge render = client.render();
-         String content = render.getContent();
+         String content = render.assertStringResult();
          assertEquals("foo_value", content);
       }
    }

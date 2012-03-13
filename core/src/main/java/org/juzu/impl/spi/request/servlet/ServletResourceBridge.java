@@ -21,11 +21,15 @@ package org.juzu.impl.spi.request.servlet;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ResourceBridge;
-import org.juzu.text.WriterPrinter;
+import org.juzu.impl.utils.Tools;
+import org.juzu.io.AppendableStream;
+import org.juzu.io.BinaryOutputStream;
+import org.juzu.io.CharStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -39,9 +43,12 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
 
    public void setResponse(Response response) throws IllegalStateException, IOException
    {
-      if (response instanceof Response.Content.Resource)
+      Response.Content content = (Response.Content)response;
+      
+      //
+      if (content instanceof Response.Content.Resource)
       {
-         Response.Content.Resource resource = (Response.Content.Resource)response;
+         Response.Content.Resource resource = (Response.Content.Resource)content;
          int status = resource.getStatus();
          if (status != 200)
          {
@@ -49,13 +56,37 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
          }
       }
 
-      //
-      resp.setContentType("text/html");
-
-      //
-      PrintWriter writer = resp.getWriter();
+      // Set mime type
+      String mimeType = content.getMimeType();
+      if (mimeType != null)
+      {
+         resp.setContentType(mimeType);
+      }
 
       // Send response
-      ((Response.Resource)response).send(new WriterPrinter(writer));
+      if (content.getKind() == CharStream.class)
+      {
+         PrintWriter writer = resp.getWriter();
+         try
+         {
+            ((Response.Resource)response).send(new AppendableStream(writer));
+         }
+         finally
+         {
+            Tools.safeClose(writer);
+         }
+      }
+      else
+      {
+         OutputStream out = resp.getOutputStream();
+         try
+         {
+            ((Response.Resource)response).send(new BinaryOutputStream(out));
+         }
+         finally
+         {
+            Tools.safeClose(out);
+         }
+      }
    }
 }

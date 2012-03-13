@@ -17,46 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.text;
+@Application
+package http.binary;
 
-import java.io.IOException;
-
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WriterPrinter implements Printer
-{
-
-   /** . */
-   protected final Appendable writer;
-
-   public WriterPrinter(Appendable writer)
-   {
-      if (writer == null)
-      {
-         throw new NullPointerException("No null writer accepted");
-      }
-
-      //
-      this.writer = writer;
-   }
-
-   public void write(char c) throws IOException
-   {
-      writer.append(c);
-   }
-
-   public void write(CharSequence s) throws IOException
-   {
-      writer.append(s);
-   }
-
-   public void write(String s) throws IOException
-   {
-      writer.append(s);
-   }
-
-   public void write(CharArray chars) throws IOException
-   {
-      chars.write(writer);
-   }
-}
+import org.juzu.Application;

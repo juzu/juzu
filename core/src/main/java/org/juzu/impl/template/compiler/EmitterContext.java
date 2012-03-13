@@ -21,7 +21,7 @@ package org.juzu.impl.template.compiler;
 
 import org.juzu.impl.spi.template.TemplateEmitter;
 import org.juzu.impl.template.ast.SectionType;
-import org.juzu.text.Location;
+import org.juzu.impl.utils.Location;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class EmitterContext

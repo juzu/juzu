@@ -20,9 +20,12 @@
 package org.juzu;
 
 import org.juzu.impl.utils.Tools;
-import org.juzu.text.Printer;
+import org.juzu.io.BinaryStream;
+import org.juzu.io.CharStream;
+import org.juzu.io.Stream;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -231,17 +234,25 @@ public abstract class Response
       }
    }
 
-   public static class Content extends Response
+   public static abstract class Content<S extends Stream> extends Response
    {
+      
+      public abstract Class<S> getKind();
+      
+      public String getMimeType()
+      {
+         // No specific mime type yet
+         return null;
+      }
 
-      public void send(Printer printer) throws IOException
+      public void send(S stream) throws IOException
       {
          // Do nothing
       }
 
    }
 
-   public static class Render extends Content
+   public static class Render extends Content<CharStream>
    {
 
       public Iterator<String> getScripts()
@@ -258,7 +269,19 @@ public abstract class Response
       {
          return null;
       }
-      
+
+      @Override
+      public String getMimeType()
+      {
+         return "text/html";
+      }
+
+      @Override
+      public Class<CharStream> getKind()
+      {
+         return CharStream.class;
+      }
+
       @Override
       public String toString()
       {
@@ -339,7 +362,7 @@ public abstract class Response
       }
    }
 
-   public static abstract class Resource extends Content
+   public static abstract class Resource<S extends Stream> extends Content<S>
    {
 
       public abstract int getStatus();
@@ -356,13 +379,19 @@ public abstract class Response
       return new Response.Redirect(location);
    }
 
-   public static Content content(final String content)
+   public static Content<CharStream> content(final String content)
    {
-      return new Content()
+      return new Content<CharStream>()
       {
-         public void send(Printer printer) throws IOException
+         @Override
+         public Class<CharStream> getKind()
          {
-            printer.write(content);
+            return CharStream.class;
+         }
+
+         public void send(CharStream stream) throws IOException
+         {
+            stream.append(content);
          }
       };
    }
@@ -376,56 +405,120 @@ public abstract class Response
    {
       return new Render.Base(title)
       {
-         public void send(Printer printer) throws IOException
+         public void send(CharStream stream) throws IOException
          {
             if (content != null)
             {
-               printer.write(content);
+               stream.append(content);
             }
          }
       };
    }
 
-   public static Resource ok()
+   public static Resource<?> ok()
    {
-      return ok(null);
+      return ok((String)null);
    }
 
-   public static Resource ok(String content)
+   public static Resource<CharStream> ok(String content)
    {
       return status(200, content);
    }
 
-   public static Resource notFound()
+   public static Resource<BinaryStream> ok(String mimeType, InputStream content)
+   {
+      return status(200, mimeType, content);
+   }
+
+   public static Resource<BinaryStream> ok(InputStream content)
+   {
+      return ok(null, content);
+   }
+
+   public static Resource<?> notFound()
    {
       return notFound(null);
    }
 
-   public static Resource notFound(String content)
+   public static Resource<CharStream> notFound(String content)
    {
       return status(404, content);
    }
 
-   public static Resource status(int code)
+   public static Resource<?> status(int code)
    {
-      return status(code, null);
+      return status(code, (String)null);
    }
 
-   public static Resource status(final int code, final String content)
+   public static Resource<CharStream> status(final int code, final String content)
    {
-      return new Resource()
+      return new Resource<CharStream>()
       {
+         @Override
+         public String getMimeType()
+         {
+            return "text/html";
+         }
+
+         @Override
+         public Class<CharStream> getKind()
+         {
+            return CharStream.class;
+         }
+
          @Override
          public int getStatus()
          {
             return code;
          }
 
-         public void send(Printer printer) throws IOException
+         public void send(CharStream stream) throws IOException
          {
             if (content != null)
             {
-               printer.write(content);
+               stream.append(content);
+            }
+         }
+      };
+   }
+
+   public static Resource<BinaryStream> status(int code, InputStream content)
+   {
+      return status(code, null, content);
+   }
+
+   public static Resource<BinaryStream> status(final int code, final String mimeType, final InputStream content)
+   {
+      return new Resource<BinaryStream>()
+      {
+         @Override
+         public Class<BinaryStream> getKind()
+         {
+            return BinaryStream.class;
+         }
+
+         @Override
+         public String getMimeType()
+         {
+            return mimeType;
+         }
+
+         @Override
+         public int getStatus()
+         {
+            return code;
+         }
+
+         @Override
+         public void send(BinaryStream stream) throws IOException
+         {
+            if (content != null)
+            {
+               byte[] buffer = new byte[256];
+               for (int l;(l = content.read(buffer)) != -1;)
+               {
+                  stream.append(buffer, 0, l);
+               }
             }
          }
       };

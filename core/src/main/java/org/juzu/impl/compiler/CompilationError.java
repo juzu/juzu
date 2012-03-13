@@ -20,7 +20,7 @@
 package org.juzu.impl.compiler;
 
 import org.juzu.impl.utils.ErrorCode;
-import org.juzu.text.Location;
+import org.juzu.impl.utils.Location;
 
 import java.io.File;
 import java.util.List;

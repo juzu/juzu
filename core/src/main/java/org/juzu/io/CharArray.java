@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.text;
+package org.juzu.io;
 
 import java.io.IOException;
 import java.io.OutputStream;

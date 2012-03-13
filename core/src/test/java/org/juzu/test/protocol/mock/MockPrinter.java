@@ -19,10 +19,10 @@
 
 package org.juzu.test.protocol.mock;
 
-import org.juzu.text.WriterPrinter;
+import org.juzu.io.AppendableStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockPrinter extends WriterPrinter
+public class MockPrinter extends AppendableStream
 {
 
    public MockPrinter()
@@ -32,6 +32,6 @@ public class MockPrinter extends WriterPrinter
 
    public StringBuilder getContent()
    {
-      return (StringBuilder)writer;
+      return (StringBuilder)delegate;
    }
 }

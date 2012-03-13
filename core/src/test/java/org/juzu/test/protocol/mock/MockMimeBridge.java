@@ -23,8 +23,12 @@ import org.juzu.Response;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
-import org.juzu.text.Printer;
+import org.juzu.io.BinaryOutputStream;
+import org.juzu.io.BinaryStream;
+import org.juzu.io.AppendableStream;
+import org.juzu.test.AbstractTestCase;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -33,19 +37,29 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
 {
 
    /** . */
-   private final MockPrinter printer;
+   private Object result;
+
+   /** . */
+   private String mimeType;
 
    public MockMimeBridge(MockClient client)
    {
       super(client);
-
-      //
-      printer = new MockPrinter();
    }
 
-   public String getContent()
+   public String assertStringResult()
    {
-      return printer.getContent().toString();
+      return AbstractTestCase.assertInstanceOf(String.class, result);
+   }
+
+   public byte[] assertBinaryResult()
+   {
+      return AbstractTestCase.assertInstanceOf(byte[].class, result);
+   }
+
+   public String getMimeType()
+   {
+      return mimeType;
    }
 
    public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
@@ -60,17 +74,25 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
       return url.toString();
    }
 
-   public Printer getPrinter()
-   {
-      return printer;
-   }
-
    public void setResponse(Response response) throws IllegalStateException, IOException
    {
-      if (response instanceof Response.Content)
+      if (response instanceof Response.Content<?>)
       {
-         Response.Content stream = (Response.Content)response;
-         stream.send(printer);
+         Response.Content content = (Response.Content)response;
+         if (content.getKind() == BinaryStream.class)
+         {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            BinaryOutputStream bos = new BinaryOutputStream(baos);
+            content.send(bos);
+            result = baos.toByteArray();
+         }
+         else 
+         {
+            StringBuilder builder = new StringBuilder();
+            content.send(new AppendableStream(builder));
+            result = builder.toString();
+         }
+         mimeType = content.getMimeType();
       }
       else
       {

@@ -20,7 +20,7 @@
 package org.juzu.impl.spi.template;
 
 import org.juzu.impl.template.ast.SectionType;
-import org.juzu.text.Location;
+import org.juzu.impl.utils.Location;
 
 import java.io.IOException;
 import java.util.List;
