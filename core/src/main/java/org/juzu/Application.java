@@ -62,11 +62,4 @@ public @interface Application
     */
    boolean escapeXML() default false;
 
-   /**
-    * Returns the list of application plugins.
-    *
-    * @return the plugins
-    */
-   Class<? extends RequestLifeCycle>[] plugins() default {};
-
 }
