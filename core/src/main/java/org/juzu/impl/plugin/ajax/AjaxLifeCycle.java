@@ -93,6 +93,7 @@ public class AjaxLifeCycle extends RequestLifeCycle
                   try
                   {
                      ArrayList<String> scripts = new ArrayList<String>(foo.getScripts());
+                     scripts.addAll(super.getScripts());
                      StringBuilder sb1 = new StringBuilder();
                      pluginRegistration.getRoute().getContext().renderURL(sb1);
                      scripts.add(sb1.toString());
@@ -110,7 +111,9 @@ public class AjaxLifeCycle extends RequestLifeCycle
                @Override
                public Collection<String> getStylesheets()
                {
-                  return foo.getStylesheets();
+                  ArrayList<String> stylesheets = new ArrayList<String>(foo.getStylesheets());
+                  stylesheets.addAll(super.getStylesheets());
+                  return stylesheets;
                }
 
                public void send(Printer printer) throws IOException
