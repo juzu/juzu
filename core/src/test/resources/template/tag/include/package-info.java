@@ -17,29 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package template.tag.resolve;
-
-import org.juzu.Path;
-import org.juzu.View;
-import org.juzu.template.Template;
-
-import javax.inject.Inject;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-
-   @Path("index.gtmpl")
-   @Inject
-   Template index;
-
-   @Path("foo.gtmpl")
-   @Inject
-   Template foo;
-
-   @View
-   public void index()
-   {
-      index.render();
-   }
-}
+@Application
+package template.tag.include;
+import org.juzu.Application;

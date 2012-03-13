@@ -65,7 +65,7 @@ public class TagTestCase extends AbstractInjectTestCase
 
    public void testInclude() throws Exception
    {
-      MockApplication<?> app = application("template", "tag", "resolve").init();
+      MockApplication<?> app = application("template", "tag", "include").init();
 
       //
       MockClient client = app.client();
