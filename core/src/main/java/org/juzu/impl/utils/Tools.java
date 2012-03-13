@@ -56,6 +56,23 @@ public class Tools
 {
 
    /** . */
+   private static final Iterator EMPTY = new Iterator()
+   {
+      public boolean hasNext()
+      {
+         return false;
+      }
+      public Object next()
+      {
+         throw new NoSuchElementException();
+      }
+      public void remove()
+      {
+         throw new UnsupportedOperationException();
+      }
+   };
+
+   /** . */
    public static Pattern EMPTY_NO_RECURSE = Pattern.compile("");
 
    /** . */
@@ -381,6 +398,70 @@ public class Tools
          };
       }
    }
+
+   public static <E> Iterator<E> emptyIterator()
+   {
+      @SuppressWarnings("unchecked")
+      Iterator<E> iterator = EMPTY;
+      return iterator;
+   }
+
+   public static <E> Iterator<E> append(final Iterator<E> iterator, final E... elements)
+   {
+      return new Iterator<E>()
+      {
+
+         /** -1 means the iterator should be used, otherwise it's the index. */
+         int index = -1;
+         
+         public boolean hasNext()
+         {
+            if (index == -1)
+            {
+               if (iterator.hasNext())
+               {
+                  return true;
+               }
+               else
+               {
+                  index = 0;
+               }
+            }
+            return index < elements.length;
+         }
+
+         public E next()
+         {
+            if (index == -1)
+            {
+               if (iterator.hasNext())
+               {
+                  return iterator.next();
+               }
+               else
+               {
+                  index = 0;
+               }
+            }
+            if (index < elements.length)
+            {
+               return elements[index++];
+            }
+            else
+            {
+               throw new NoSuchElementException();
+            }
+         }
+
+         public void remove()
+         {
+            throw new UnsupportedOperationException();
+         }
+      };
+
+
+   }
+
    public static <S extends Serializable> S unserialize(Class<S> expectedType, File f) throws IOException, ClassNotFoundException
    {
       return unserialize(expectedType, new FileInputStream(f));

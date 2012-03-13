@@ -19,14 +19,15 @@
 
 package org.juzu.impl.utils;
 
-import junit.framework.TestCase;
+import org.juzu.test.AbstractTestCase;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ToolsTestCase extends TestCase
+public class ToolsTestCase extends AbstractTestCase
 {
 
    public void testEmptyNoRecursePackageMatcher()
@@ -101,5 +102,30 @@ public class ToolsTestCase extends TestCase
       ret = Tools.split("", '.', 1);
       assertEquals(1, ret.length);
       assertEquals(null, ret[0]);
+   }
+   
+   public void testIteratorAppend()
+   {
+      Iterator i = Tools.append(Collections.emptyList().iterator(), "foo");
+      assertTrue(i.hasNext());
+      assertEquals("foo", i.next());
+      assertFalse(i.hasNext());
+      assertNoSuchElement(i);
+      
+      //
+      i = Tools.append(Collections.singletonList("foo").iterator());
+      assertTrue(i.hasNext());
+      assertEquals("foo", i.next());
+      assertFalse(i.hasNext());
+      assertNoSuchElement(i);
+
+      //
+      i = Tools.append(Collections.singletonList("foo").iterator(), "bar");
+      assertTrue(i.hasNext());
+      assertEquals("foo", i.next());
+      assertTrue(i.hasNext());
+      assertEquals("bar", i.next());
+      assertFalse(i.hasNext());
+      assertNoSuchElement(i);
    }
 }

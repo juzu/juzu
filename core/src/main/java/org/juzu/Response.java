@@ -19,11 +19,13 @@
 
 package org.juzu;
 
+import org.juzu.impl.utils.Tools;
 import org.juzu.text.Printer;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -229,66 +231,111 @@ public abstract class Response
       }
    }
 
-   public static abstract class Content extends Response
+   public static class Content extends Response
    {
 
-      public abstract void send(Printer printer) throws IOException;
+      public void send(Printer printer) throws IOException
+      {
+         // Do nothing
+      }
 
    }
 
-   public static abstract class Render extends Content
+   public static class Render extends Content
    {
 
-      /** . */
-      private Collection<String> scripts = Collections.emptyList();
-
-      /** . */
-      private Collection<String> stylesheets = Collections.emptyList();
-
-      public Render addScript(String script) throws NullPointerException
+      public Iterator<String> getScripts()
       {
-         if (script == null)
-         {
-            throw new NullPointerException("No null script accepted");
-         }
-         if (scripts.isEmpty())
-         {
-            scripts = new LinkedHashSet<String>();
-         }
-         scripts.add(script);
-         return this;
+         return Tools.emptyIterator();
       }
 
-      public Render addStylesheet(String stylesheet) throws NullPointerException
+      public Iterator<String> getStylesheets()
       {
-         if (stylesheet == null)
-         {
-            throw new NullPointerException("No null stylesheet accepted");
-         }
-         if (stylesheets.isEmpty())
-         {
-            stylesheets = new LinkedHashSet<String>();
-         }
-         stylesheets.add(stylesheet);
-         return this;
+         return Tools.emptyIterator();
       }
 
-      public Collection<String> getScripts()
+      public String getTitle()
       {
-         return scripts;
+         return null;
       }
-
-      public Collection<String> getStylesheets()
-      {
-         return stylesheets;
-      }
-
-      public abstract String getTitle();
-
+      
       @Override
       public String toString()
       {
          return "Response.Render[]";
+      }
+
+      public static class Base extends Render
+      {
+
+         /** . */
+         private String title;
+         
+         /** . */
+         private Collection<String> scripts = Collections.emptyList();
+
+         /** . */
+         private Collection<String> stylesheets = Collections.emptyList();
+
+         public Base(String title)
+         {
+            this.title = title;
+         }
+
+         public Base()
+         {
+         }
+
+         @Override
+         public String getTitle()
+         {
+            return title;
+         }
+
+         public void setTitle(String title)
+         {
+            this.title = title;
+         }
+
+         @Override
+         public Iterator<String> getScripts()
+         {
+            return scripts.iterator();
+         }
+
+         @Override
+         public Iterator<String> getStylesheets()
+         {
+            return stylesheets.iterator();
+         }
+
+         public Base addScript(String script) throws NullPointerException
+         {
+            if (script == null)
+            {
+               throw new NullPointerException("No null script accepted");
+            }
+            if (scripts.isEmpty())
+            {
+               scripts = new LinkedHashSet<String>();
+            }
+            scripts.add(script);
+            return this;
+         }
+
+         public Base addStylesheet(String stylesheet) throws NullPointerException
+         {
+            if (stylesheet == null)
+            {
+               throw new NullPointerException("No null stylesheet accepted");
+            }
+            if (stylesheets.isEmpty())
+            {
+               stylesheets = new LinkedHashSet<String>();
+            }
+            stylesheets.add(stylesheet);
+            return this;
+         }
       }
    }
 
@@ -320,25 +367,15 @@ public abstract class Response
       };
    }
 
-   public static Render render(String content)
+   public static Render.Base render(String content)
    {
       return render(null, content);
    }
 
-   public static Render render(final String title, final String content)
+   public static Render.Base render(final String title, final String content)
    {
-      return new Render()
+      return new Render.Base(title)
       {
-
-         /** . */
-         private String _title = title;
-
-         @Override
-         public String getTitle()
-         {
-            return _title;
-         }
-
          public void send(Printer printer) throws IOException
          {
             if (content != null)

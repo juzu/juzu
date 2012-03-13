@@ -5,12 +5,16 @@ import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
+import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.asset.Assets;
 import org.juzu.plugin.asset.Script;
 import org.juzu.plugin.asset.Stylesheet;
 import org.juzu.request.Phase;
+import org.juzu.text.Printer;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetLifeCycle extends RequestLifeCycle
@@ -83,31 +87,39 @@ public class AssetLifeCycle extends RequestLifeCycle
          Response response = request.getResponse();
          if (response instanceof Response.Render && (scripts.length > 0 || stylesheets.length > 0))
          {
-            Response.Render render = (Response.Render)response;
-            for (String script : scripts)
-            {
-               if (script.startsWith("http://") || script.startsWith("https://") || script.startsWith("/"))
-               {
-                  render.addScript(script);
-               }
-               else 
-               {
-                  
-                  render.addScript(request.getContext().getHttpContext().getContextPath() + "/" + script); 
-               }
-            }
-            for (String stylesheet : stylesheets)
-            {
-               if (stylesheet.startsWith("http://") || stylesheet.startsWith("https://") || stylesheet.startsWith("/"))
-               {
-                  render.addStylesheet(stylesheet);
-               }
-               else
-               {
+            final Response.Render render = (Response.Render)response;
 
-                  render.addStylesheet(request.getContext().getHttpContext().getContextPath() + "/" + stylesheet);
+            //
+            Response.Render assetRender = new Response.Render()
+            {
+
+               @Override
+               public Iterator<String> getScripts()
+               {
+                  return Tools.append(render.getScripts(), scripts);
                }
-            }
+
+               @Override
+               public Iterator<String> getStylesheets()
+               {
+                  return Tools.append(render.getStylesheets(), stylesheets);
+               }
+
+               @Override
+               public String getTitle()
+               {
+                  return render.getTitle();
+               }
+
+               @Override
+               public void send(Printer printer) throws IOException
+               {
+                  render.send(printer);
+               }
+            };
+
+            // Use our response
+            request.setResponse(assetRender);
          }
       }
    }

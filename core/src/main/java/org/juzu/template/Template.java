@@ -80,13 +80,11 @@ public abstract class Template
             final TemplateRenderContext renderContext = applicationContext.render(this, parameters, locale);
             Response.Render render = new Response.Content.Render()
             {
-
                @Override
                public String getTitle()
                {
                   return renderContext.getTitle();
                }
-
                public void send(Printer printer) throws IOException
                {
                   renderContext.render(printer);

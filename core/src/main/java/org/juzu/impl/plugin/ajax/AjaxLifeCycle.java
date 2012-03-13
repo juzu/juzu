@@ -27,6 +27,7 @@ import org.juzu.impl.asset.Router;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
+import org.juzu.impl.utils.Tools;
 import org.juzu.request.RenderContext;
 import org.juzu.text.Printer;
 
@@ -35,8 +36,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -88,18 +88,15 @@ public class AjaxLifeCycle extends RequestLifeCycle
                }
 
                @Override
-               public Collection<String> getScripts()
+               public Iterator<String> getScripts()
                {
                   try
                   {
-                     ArrayList<String> scripts = new ArrayList<String>(foo.getScripts());
                      StringBuilder sb1 = new StringBuilder();
                      pluginRegistration.getRoute().getContext().renderURL(sb1);
-                     scripts.add(sb1.toString());
                      StringBuilder sb2 = new StringBuilder();
                      applicationRegistration.getRoute().getContext().renderURL(sb2);
-                     scripts.add(sb2.toString());
-                     return scripts;
+                     return Tools.append(foo.getScripts(), sb1.toString(), sb2.toString());
                   }
                   catch (IOException e)
                   {
@@ -108,7 +105,7 @@ public class AjaxLifeCycle extends RequestLifeCycle
                }
 
                @Override
-               public Collection<String> getStylesheets()
+               public Iterator<String> getStylesheets()
                {
                   return foo.getStylesheets();
                }

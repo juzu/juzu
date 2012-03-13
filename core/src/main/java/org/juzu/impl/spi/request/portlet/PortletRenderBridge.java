@@ -28,7 +28,7 @@ import javax.portlet.MimeResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
@@ -58,32 +58,28 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
          // For now only in gatein since liferay won't support it very well
          if (request.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container"))
          {
-            Collection<String> stylesheets = render.getStylesheets();
-            if (stylesheets.size() > 0)
+            Iterator<String> stylesheets = render.getStylesheets();
+            while (stylesheets.hasNext())
             {
-               for (String stylesheet : stylesheets)
-               {
-                  int pos = stylesheet.lastIndexOf('.');
-                  String ext = pos == -1 ? "css" : stylesheet.substring(pos + 1);
-                  Element elt = this.response.createElement("link");
-                  elt.setAttribute("media", "screen");
-                  elt.setAttribute("rel", "stylesheet");
-                  elt.setAttribute("type", "text/" + ext);
-                  elt.setAttribute("href", stylesheet);
-                  this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-               }
+               String stylesheet = stylesheets.next();
+               int pos = stylesheet.lastIndexOf('.');
+               String ext = pos == -1 ? "css" : stylesheet.substring(pos + 1);
+               Element elt = this.response.createElement("link");
+               elt.setAttribute("media", "screen");
+               elt.setAttribute("rel", "stylesheet");
+               elt.setAttribute("type", "text/" + ext);
+               elt.setAttribute("href", getAssetURL(stylesheet));
+               this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
             }
 
-            Collection<String> scripts = render.getScripts();
-            if (scripts.size() > 0)
+            Iterator<String> scripts = render.getScripts();
+            while (scripts.hasNext())
             {
-               for (String script : scripts)
-               {
-                  Element elt = this.response.createElement("script");
-                  elt.setAttribute("type", "text/javascript");
-                  elt.setAttribute("src", script);
-                  this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-               }
+               String script = scripts.next();
+               Element elt = this.response.createElement("script");
+               elt.setAttribute("type", "text/javascript");
+               elt.setAttribute("src", getAssetURL(script));
+               this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
             }
          }
 
@@ -93,6 +89,18 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
          {
             setTitle(title);
          }
+      }
+   }
+   
+   private String getAssetURL(String url)
+   {
+      if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"))
+      {
+         return url;
+      }
+      else
+      {
+         return request.getContextPath() + "/" + url;
       }
    }
 

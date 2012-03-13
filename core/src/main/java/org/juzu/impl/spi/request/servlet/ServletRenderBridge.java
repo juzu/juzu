@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -57,29 +57,25 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       writer.println("<html>");
       
       writer.println("<head>");
-      Collection<String> stylesheets = render.getStylesheets();
-      if (stylesheets.size() > 0)
+      Iterator<String> stylesheets = render.getStylesheets();
+      while (stylesheets.hasNext())
       {
-         for (String stylesheet : stylesheets)
-         {
-            int pos = stylesheet.lastIndexOf('.');
-            String ext = pos == -1 ? "css" : stylesheet.substring(pos + 1);
-            writer.print("<link rel=\"stylesheet\" type=\"text/");
-            writer.print(ext);
-            writer.print("\" href=\"");
-            writer.print(stylesheet);
-            writer.println("\"></link>");
-         }
+         String stylesheet = stylesheets.next();
+         int pos = stylesheet.lastIndexOf('.');
+         String ext = pos == -1 ? "css" : stylesheet.substring(pos + 1);
+         writer.print("<link rel=\"stylesheet\" type=\"text/");
+         writer.print(ext);
+         writer.print("\" href=\"");
+         writer.print(getAssetURL(stylesheet));
+         writer.println("\"></link>");
       }
-      Collection<String> scripts = render.getScripts();
-      if (scripts.size() > 0)
+      Iterator<String> scripts = render.getScripts();
+      while (scripts.hasNext())
       {
-         for (String script : scripts)
-         {
-            writer.print("<script type=\"text/javascript\" src=\"");
-            writer.print(script);
-            writer.println("\"></script>");
-         }
+         String script = scripts.next();
+         writer.print("<script type=\"text/javascript\" src=\"");
+         writer.print(getAssetURL(script));
+         writer.println("\"></script>");
       }
       writer.println("</head>");
       
@@ -92,6 +88,18 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       //
       writer.println("</body>");
       writer.println("</html>");
+   }
+
+   private String getAssetURL(String url)
+   {
+      if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"))
+      {
+         return url;
+      }
+      else
+      {
+         return req.getContextPath() + "/" + url;
+      }
    }
 
    @Override

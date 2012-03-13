@@ -30,6 +30,8 @@ import org.juzu.test.protocol.mock.MockApplication;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractTestCase extends TestCase
@@ -247,6 +249,18 @@ public abstract class AbstractTestCase extends TestCase
          {
             throw failure("Was expected " + test + " to be null");
          }
+      }
+   }
+
+   public static void assertNoSuchElement(Iterator<?> iterator)
+   {
+      try
+      {
+         Object next = iterator.next();
+         fail("Was not expecting to obtain " + next + " element from an iterator");
+      }
+      catch (NoSuchElementException expected)
+      {
       }
    }
 }
