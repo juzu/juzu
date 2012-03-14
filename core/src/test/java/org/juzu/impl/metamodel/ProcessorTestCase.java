@@ -19,6 +19,7 @@
 
 package org.juzu.impl.metamodel;
 
+import org.junit.Test;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import org.juzu.impl.spi.fs.ReadFileSystem;
@@ -38,6 +39,7 @@ import java.util.regex.Matcher;
 public class ProcessorTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testTemplatePathMatching()
    {
       assertNotMatch("a");
@@ -166,6 +168,7 @@ public class ProcessorTestCase extends AbstractTestCase
       assertFalse("Was not expecting templates to be identical", c1.getCharSequence().toString().equals(c2.getCharSequence().toString()));
    }
 
+   @Test
    public void testRemoveTemplate() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "processor", "simple");

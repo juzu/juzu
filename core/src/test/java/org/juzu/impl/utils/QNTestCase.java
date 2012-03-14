@@ -19,12 +19,14 @@
 
 package org.juzu.impl.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.juzu.test.AbstractTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class QNTestCase extends TestCase
+public class QNTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testIAE()
    {
       assertIAE(".");
@@ -46,6 +48,7 @@ public class QNTestCase extends TestCase
       }
    }
 
+   @Test
    public void testValues()
    {
       assertQN("");
@@ -61,6 +64,7 @@ public class QNTestCase extends TestCase
       assertEquals(value, qn.getValue());
    }
 
+   @Test
    public void testAppend()
    {
       assertAppend("a", "", "a");
@@ -96,6 +100,7 @@ public class QNTestCase extends TestCase
       assertEquals(expected, new QN(qn).append(simpleName).getValue());
    }
 
+   @Test
    public void testPrefix()
    {
       assertPrefix("", "");
@@ -125,7 +130,8 @@ public class QNTestCase extends TestCase
    {
       assertFalse(new QN(prefix).isPrefix(new QN(s)));
    }
-   
+
+   @Test
    public void testParent()
    {
       QN abc = new QN("a.b.c");

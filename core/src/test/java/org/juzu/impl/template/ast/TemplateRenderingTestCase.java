@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template.ast;
 
+import org.junit.Test;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.io.AppendableStream;
 import org.juzu.template.TemplateExecutionException;
@@ -44,7 +45,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
    private DateFormat dateFormatEN;
 
    @Override
-   protected void setUp() throws Exception
+   public void setUp() throws Exception
    {
       super.setUp();
 
@@ -65,6 +66,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
    }
 */
 
+   @Test
    public void testDate1() throws Exception
    {
       Date dateToTest = new Date(0);
@@ -74,6 +76,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals(dateToTest.toString(), render(template));
    }
 
+   @Test
    public void testDate2() throws Exception
    {
       Date dateToTest = new Date(0);
@@ -83,6 +86,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals(dateToTest.toString(), render(template));
    }
 
+   @Test
    public void testDate3() throws Exception
    {
       Date dateToTest = new Date(0);
@@ -92,6 +96,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals(dateToTest.toString(), render(template));
    }
 
+   @Test
    public void testFoo() throws Exception
    {
       String template = "a";
@@ -99,6 +104,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("a", render);
    }
 
+   @Test
    public void testBar() throws Exception
    {
       String template = "<%='a'%>";
@@ -106,6 +112,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("a", render);
    }
 
+   @Test
    public void testFooBar() throws Exception
    {
       String template = "a<%='b'%>c";
@@ -113,6 +120,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("abc", render);
    }
 
+   @Test
    public void testJuu() throws Exception
    {
       String template = "<% out.print(\"a\"); %>";
@@ -120,6 +128,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("a", render);
    }
 
+   @Test
    public void testLineBreak() throws Exception
    {
       String template = "\n";
@@ -127,6 +136,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("\n", render);
    }
 
+   @Test
    public void testMultiLine() throws Exception
    {
       String template =
@@ -138,6 +148,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("a\nb\nc\nd", render);
    }
 
+   @Test
    public void testIf() throws Exception
    {
       String template =
@@ -149,6 +160,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("a\nb\n", s);
    }
 
+   @Test
    public void testLineComment() throws Exception
    {
       String template = "<% // foo %>a\nb";
@@ -156,6 +168,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("a\nb", s);
    }
 
+   @Test
    public void testContextResolution() throws Exception
    {
       String template = "<%= foo %>";
@@ -165,6 +178,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("bar", s);
    }
 
+   @Test
    public void testDollarInExpression() throws Exception
    {
       String template = "<%= \"$foo\" %>";
@@ -174,6 +188,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("bar", s);
    }
 
+   @Test
    public void testEscapeDollarInExpression() throws Exception
    {
       String template = "<%= \"\\$foo\" %>";
@@ -183,6 +198,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("$foo", s);
    }
 
+   @Test
    public void testEscapeDollarInText() throws Exception
    {
       String template = "\\$foo";
@@ -192,6 +208,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("$foo", s);
    }
 
+   @Test
    public void testDollarInScriplet() throws Exception
    {
       String template = "<% out.print(\"$foo\") %>";
@@ -201,6 +218,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("bar", s);
    }
 
+   @Test
    public void testEscapeDollarInScriplet() throws Exception
    {
       String template = "<% out.print(\"\\$foo\") %>";
@@ -210,6 +228,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("$foo", s);
    }
 
+   @Test
    public void testQuote() throws Exception
    {
       String template = "\"";
@@ -217,6 +236,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       assertEquals("\"", s);
    }
 
+   @Test
    public void testNoArgURL() throws Exception
    {
       String s = render("@{foo()}");
@@ -254,6 +274,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
    }
 */
 
+   @Test
    public void testException() throws Exception
    {
       String template = "<% throw new java.awt.AWTException(); %>";
@@ -268,6 +289,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       }
    }
 
+   @Test
    public void testRuntimeException() throws Exception
    {
       String template = "<% throw new java.util.EmptyStackException(); %>";
@@ -282,12 +304,14 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       }
    }
 
+   @Test
    public void testSiblingClosures() throws IOException
    {
       GroovyTemplateStub template = template("#{title value=a/}#{title value=b/}");
       template.getClassName();
    }
 
+   @Test
    public void testIOException() throws Exception
    {
       String template = "<% throw new java.io.IOException(); %>";
@@ -325,6 +349,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       }
    }
 
+   @Test
    public void testError() throws Exception
    {
       String template = "<% throw new java.awt.AWTError(); %>";
@@ -337,6 +362,8 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       {
       }
    }
+
+   @Test
    public void testThrowable() throws Exception
    {
       String template = "<% throw new Throwable(); %>";
@@ -350,12 +377,14 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
       }
    }
 
+   @Test
    public void testScriptLineNumber() throws Exception
    {
       testLineNumber("<%");
       assertLineNumber(2, "throw new Exception('e')", "<%\nthrow new Exception('e')%>");
    }
 
+   @Test
    public void testExpressionLineNumber() throws Exception
    {
       testLineNumber("<%=");
@@ -371,6 +400,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase
 
    public static Object out;
 
+   @Test
    public void testWriterAccess() throws Exception
    {
       out = null;

@@ -19,6 +19,8 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockActionBridge;
 import org.juzu.test.protocol.mock.MockApplication;
@@ -29,6 +31,12 @@ import org.juzu.test.protocol.mock.MockRenderBridge;
 public class RequestContextTestCase extends AbstractInjectTestCase
 {
 
+   public RequestContextTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testInjection() throws Exception
    {
       MockApplication<?> app = application("request", "context").init();

@@ -19,6 +19,7 @@
 
 package org.juzu.impl.application;
 
+import org.junit.Test;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.ControllerResolver;
@@ -39,6 +40,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
     *
     * @throws Exception any exception
     */
+   @Test
    public void testResolveIndex() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_method");
@@ -57,6 +59,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
     *
     * @throws Exception any exception
     */
+   @Test
    public void testResolveAmbiguousIndex() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "resolver", "ambiguous_method");
@@ -81,6 +84,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
     *
     * @throws Exception any exception
     */
+   @Test
    public void testDefaultControllerResolveIndex() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_controller");
@@ -102,6 +106,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
     *
     * @throws Exception any exception
     */
+   @Test
    public void testOverload() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "resolver", "overload");
@@ -142,8 +147,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       assertEquals(Tools.<String>set(), method.getArgumentNames());
    }
 
-
-
+   @Test
    public void testResolution() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "resolver", "method");

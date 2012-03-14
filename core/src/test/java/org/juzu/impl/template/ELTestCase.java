@@ -19,6 +19,8 @@
 
 package org.juzu.impl.template;
 
+import org.junit.Test;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
@@ -28,6 +30,12 @@ import org.juzu.test.protocol.mock.MockRenderBridge;
 public class ELTestCase extends AbstractInjectTestCase
 {
 
+   public ELTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testResolveBean() throws Exception
    {
       MockApplication<?> app = application("template", "el").init();

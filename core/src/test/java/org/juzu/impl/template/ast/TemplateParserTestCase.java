@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template.ast;
 
+import org.junit.Test;
 import org.juzu.impl.template.ast.ASTNode;
 import org.juzu.impl.template.ast.SectionType;
 import org.juzu.impl.utils.Builder;
@@ -47,62 +48,74 @@ public class TemplateParserTestCase extends AbstractTestCase
          throw failure(e);
       }
    }
-   
+
+   @Test
    public void testEmpty() throws IOException
    {
       assertEquals(Collections.<ASTNode.Block<?>>emptyList(), parse(""));
    }
 
+   @Test
    public void testText() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.STRING, "a")), parse("a"));
    }
 
+   @Test
    public void testSingleEmptyScriplet() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.SCRIPTLET, "")), parse("<%%>"));
    }
 
+   @Test
    public void testSingleEmptyExpression() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "")), parse("<%=%>"));
    }
 
+   @Test
    public void testSingleScriplet() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.SCRIPTLET, "a")), parse("<%a%>"));
    }
 
+   @Test
    public void testSingleExpression() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "a")), parse("<%=a%>"));
    }
 
+   @Test
    public void testPercentScriplet() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.SCRIPTLET, "%")), parse("<%%%>"));
    }
 
+   @Test
    public void testPercentExpression() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "%")), parse("<%=%%>"));
    }
 
+   @Test
    public void testStartAngleBracketScriplet() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.SCRIPTLET, "<")), parse("<%<%>"));
    }
 
+   @Test
    public void testStartAngleBracketExpression() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "<")), parse("<%=<%>"));
    }
 
+   @Test
    public void testCurlyExpression() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Section(SectionType.EXPR, "a")), parse("${a}"));
    }
 
+   @Test
    public void testParseURL() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parse("@{a()}"));
@@ -130,6 +143,7 @@ public class TemplateParserTestCase extends AbstractTestCase
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL("a", "b", Collections.<String, String>emptyMap())), parse("@{a.b()}"));
    }
 
+   @Test
    public void testParseTag() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo")), parse("#{foo/}"));
@@ -148,6 +162,7 @@ public class TemplateParserTestCase extends AbstractTestCase
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Tag("foo", Collections.singletonMap("a", " ")).addChild(new ASTNode.Section(SectionType.STRING, ""))), parse("#{foo a=' '}#{/foo}"));
    }
 
+   @Test
    public void testParseNestedTag() throws IOException, org.juzu.impl.template.ast.ParseException
    {
       List<ASTNode.Block<?>> o = parse("#{foo} ${bar} #{/foo}");
@@ -160,6 +175,7 @@ public class TemplateParserTestCase extends AbstractTestCase
       assertEquals(expected, o);
    }
 
+   @Test
    public void testSimpleScript() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(
@@ -169,6 +185,7 @@ public class TemplateParserTestCase extends AbstractTestCase
          ), parse("a<%b%>c"));
    }
 
+   @Test
    public void testSimpleScript2() throws IOException
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(
@@ -178,6 +195,7 @@ public class TemplateParserTestCase extends AbstractTestCase
          ), parse("a<%=b%>c"));
    }
 
+   @Test
    public void testWindowsLineBreak() throws IOException
    {
 

@@ -19,7 +19,9 @@
 
 package org.juzu.impl.template;
 
+import org.junit.Test;
 import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.template.TemplateExecutionException;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
@@ -32,6 +34,12 @@ import java.util.ConcurrentModificationException;
 public class ThrowableTestCase extends AbstractInjectTestCase
 {
 
+   public ThrowableTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testChecked() throws Exception
    {
       MockApplication<?> app = application("template", "throwable", "checked").init();
@@ -48,6 +56,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testRuntime() throws Exception
    {
       MockApplication<?> app = application("template", "throwable", "runtime").init();
@@ -64,6 +73,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testError() throws Exception
    {
       MockApplication<?> app = application("template", "throwable", "error").init();

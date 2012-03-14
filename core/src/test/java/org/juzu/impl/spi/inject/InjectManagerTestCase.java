@@ -19,11 +19,16 @@
 
 package org.juzu.impl.spi.inject;
 
+import org.junit.Test;
 import org.juzu.impl.inject.BeanFilter;
+import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.ram.RAMDir;
+import org.juzu.impl.spi.fs.ram.RAMFileSystem;
+import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.inject.bound.bean.injection.BoundBean;
 import org.juzu.impl.spi.inject.bound.bean.injection.BoundBeanInjected;
 import org.juzu.impl.spi.inject.bound.bean.qualifier.declared.DeclaredQualifierBoundBean;
@@ -36,6 +41,8 @@ import org.juzu.impl.spi.inject.bound.bean.supertype.BoundBeanFruitInjected;
 import org.juzu.impl.spi.inject.bound.provider.qualifier.declared.DeclaredQualifierBoundProvider;
 import org.juzu.impl.spi.inject.bound.provider.qualifier.declared.DeclaredQualifierBoundProviderInjected;
 import org.juzu.impl.spi.inject.bound.provider.qualifier.declared.GenericProvider;
+import org.juzu.impl.spi.inject.configuration.Declared;
+import org.juzu.impl.spi.inject.configuration.DeclaredInjected;
 import org.juzu.impl.spi.inject.constructorthrowschecked.ConstructorThrowsCheckedBean;
 import org.juzu.impl.spi.inject.constructorthrowserror.ConstructorThrowsErrorBean;
 import org.juzu.impl.spi.inject.constructorthrowsruntime.ConstructorThrowsRuntimeBean;
@@ -80,15 +87,21 @@ import org.juzu.impl.spi.inject.siblingproducers.ProductExt1;
 import org.juzu.impl.spi.inject.siblingproducers.ProductExt2;
 import org.juzu.impl.spi.inject.siblingproducers.ProductInjected;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.impl.spi.inject.spring.SpringBuilder;
 import org.juzu.impl.spi.inject.supertype.Apple;
 import org.juzu.impl.spi.inject.supertype.FruitInjected;
 import org.juzu.impl.utils.Tools;
-import org.juzu.test.AbstractTestCase;
+import org.juzu.test.AbstractInjectTestCase;
+import org.juzu.test.CompilerHelper;
 
+import javax.enterprise.inject.spi.Bean;
 import javax.naming.AuthenticationException;
 import java.io.File;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -97,7 +110,7 @@ import java.util.HashSet;
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
+public class InjectManagerTestCase<B, I> extends AbstractInjectTestCase
 {
 
    /** . */
@@ -112,9 +125,9 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
    /** . */
    private ScopingContextImpl scopingContext;
 
-   @Override
-   protected void setUp() throws Exception
+   public InjectManagerTestCase(InjectImplementation di)
    {
+      super(di);
    }
 
    protected final void init(String... pkg) throws Exception
@@ -189,8 +202,12 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       scopingContext = null;
    }
 
-   protected abstract InjectBuilder getManager() throws Exception;
+   protected InjectBuilder getManager() throws Exception
+   {
+      return getDI().bootstrap();
+   }
 
+   @Test
    public void testScopeScoped() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "scope", "scoped");
@@ -219,6 +236,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       }
    }
 
+   @Test
    public void testScopeSingleton() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "scope", "singleton");
@@ -231,6 +249,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(singleton1, singleton2);
    }
 
+   @Test
    public void testNamed() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "named");
@@ -255,6 +274,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNull(mgr.resolveBean("juu"));
    }
 
+   @Test
    public void testQualifier() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "qualifier");
@@ -272,6 +292,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertEquals(Qualified.Green.class, beanObject.getGreen().getClass());
    }
 
+   @Test
    public void testSuperType() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "supertype");
@@ -285,6 +306,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(beanObject.fruit);
    }
 
+   @Test
    public void testBoundBeanQualifierDeclared() throws Exception
    {
       DeclaredQualifierBoundBean blue = new DeclaredQualifierBoundBean();
@@ -304,6 +326,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(red, injected.red);
    }
 
+   @Test
    public void testDeclaredProviderInjection() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "declared", "provider", "injection");
@@ -317,6 +340,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(injected.dependency);
    }
 
+   @Test
    public void testDeclaredProducerInjection() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "declared", "producer", "injection");
@@ -330,6 +354,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(injected.dependency);
    }
 
+   @Test
    public void testSiblingProducers() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "siblingproducers");
@@ -354,6 +379,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(productInjected.productExt2);
    }
 
+   @Test
    public void testProvider() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "provider");
@@ -365,6 +391,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotNull(product);
    }
 
+   @Test
    public void testProviderInjected() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "declared", "provider", "injected");
@@ -381,6 +408,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(dependency, injected.product.dependency);
    }
 
+   @Test
    public void testInjectManager() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "managerinjection");
@@ -394,6 +422,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(mgr, managerInjected.manager);
    }
 
+   @Test
    public void testBoundBeanInjection() throws Exception
    {
       BoundBean singleton = new BoundBean();
@@ -409,6 +438,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(singleton, injected.dependency);
    }
 
+   @Test
    public void testBoundBeanQualifierIntrospected() throws Exception
    {
       IntrospectedQualifierBoundBean singleton = new IntrospectedQualifierBoundBean();
@@ -424,6 +454,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(singleton, injected.singleton);
    }
 
+   @Test
    public void testBoundProviderQualifierDeclared() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "bound", "provider", "qualifier", "declared");
@@ -444,6 +475,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(green, injected.green);
    }
 
+   @Test
    public void testDeclaredQualifierDeclaredBean() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "declared", "qualifier", "declared", "bean");
@@ -469,6 +501,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotInstanceOf(DeclaredQualifierDeclaredBean.Green.class, injected.red);
    }
 
+   @Test
    public void testDeclaredQualifierDeclaredProvider() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "declared", "provider", "qualifier", "declared");
@@ -494,6 +527,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertNotInstanceOf(DeclaredQualifierDeclaredProvider.Green.class, injected.red);
    }
 
+   @Test
    public void testBoundBeanBeanSuperType() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "bound", "bean", "supertype");
@@ -509,6 +543,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertSame(apple, beanObject.fruit);
    }
 
+   @Test
    public void testRequestScopedProvider() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "requestscopedprovider");
@@ -529,6 +564,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       }
    }
 
+   @Test
    public void testImplementationType() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "implementationtype");
@@ -540,6 +576,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertEquals(Extension.class, extended.getClass());
    }
 
+   @Test
    public void testDefaultScope() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "scope", "defaultscope");
@@ -552,6 +589,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertTrue(bean1.count != bean2.count);
    }
 
+   @Test
    public void testConstructorThrowsChecked() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "constructorthrowschecked");
@@ -570,6 +608,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       }
    }
 
+   @Test
    public void testConstructorThrowsRuntime() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "constructorthrowsruntime");
@@ -588,6 +627,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       }
    }
 
+   @Test
    public void testConstructorThrowsError() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "constructorthrowserror");
@@ -605,7 +645,8 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
          assertInstanceOf(UnknownError.class, e.getCause());
       }
    }
-   
+
+   @Test
    public void testResolvableBeans() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "resolvebeans");
@@ -625,7 +666,8 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       }
       assertEquals(Tools.<Class<?>>set(ResolveBeanSubclass1.class, ResolveBeanSubclass2.class), classes);
    }
-   
+
+   @Test
    public void testLifeCycleUnscoped() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "lifecycle", "unscoped");
@@ -657,6 +699,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertEquals(1, LifeCycleUnscopedBean.destroy);
    }
 
+   @Test
    public void testLifeCycleScoped() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "lifecycle", "scoped");
@@ -690,6 +733,7 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       assertEquals(1, LifeCycleScopedBean.destroy);
    }
 
+   @Test
    public void testLifeCycleSingleton() throws Exception
    {
       init("org", "juzu", "impl", "spi", "inject", "lifecycle", "singleton");
@@ -725,5 +769,79 @@ public abstract class InjectManagerTestCase<B, I> extends AbstractTestCase
       mgr.shutdown();
       assertEquals(1, LifeCycleSingletonBean.construct);
       assertEquals(1, LifeCycleSingletonBean.destroy);
+   }
+
+   @Test
+   public void testConfigurationURL() throws Exception
+   {
+      if (di == InjectImplementation.INJECT_SPRING)
+      {
+         URL configurationURL = Declared.class.getResource("spring.xml");
+         assertNotNull(configurationURL);
+         InputStream in = configurationURL.openStream();
+         assertNotNull(in);
+         Tools.safeClose(in);
+
+         //
+         init("org", "juzu", "impl", "spi", "inject", "configuration");
+         bootstrap.declareBean(DeclaredInjected.class, null, null);
+         ((SpringBuilder)bootstrap).setConfigurationURL(configurationURL);
+         boot();
+
+         //
+         DeclaredInjected injected = getBean(DeclaredInjected.class);
+         assertNotNull(injected);
+         assertNotNull(injected.getDeclared());
+
+         //
+         Declared declared = getBean(Declared.class);
+         assertNotNull(declared);
+         declared = (Declared)getBean("declared");
+         assertNotNull(declared);
+      }
+   }
+
+   @Test
+   public void testExport() throws Exception
+   {
+      if (di == InjectImplementation.CDI_WELD)
+      {
+         RAMFileSystem sources = new RAMFileSystem();
+         RAMFileSystem classes = new RAMFileSystem();
+
+         //
+         RAMDir foo = sources.addDir(sources.getRoot(), "foo");
+         foo.addFile("Bean1.java").update("package foo; public class Bean1 {}");
+         foo.addFile("Bean2.java").update("package foo; @" + Export.class.getName() + " public class Bean2 {}");
+         foo.addFile("Bean3.java").update("package foo; @" + Export.class.getName() + " public class Bean3 {}");
+         foo.addFile("Bean4.java").update("package foo; @" + Export.class.getName() + " public class Bean4 {}");
+
+         //
+         CompilerHelper<RAMPath, RAMPath> helper = new CompilerHelper<RAMPath, RAMPath>(sources, classes);
+         helper.assertCompile();
+         URLClassLoader classLoader = new URLClassLoader(new URL[]{classes.getURL()}, Thread.currentThread().getContextClassLoader());
+
+         //
+         Class bean1Class = classLoader.loadClass("foo.Bean1");
+         Class bean2Class = classLoader.loadClass("foo.Bean2");
+         Class bean3Class = classLoader.loadClass("foo.Bean3");
+         Class bean4Class = classLoader.loadClass("foo.Bean4");
+
+         //
+         init(classes, classLoader);
+         bootstrap.declareBean(bean2Class, null, null);
+         bootstrap.bindBean(bean3Class, null, bean3Class.newInstance());
+         boot();
+
+         //
+         B bean1 = mgr.resolveBean(bean1Class);
+         assertNotNull(bean1);
+         B bean2 = mgr.resolveBean(bean2Class);
+         assertNotNull(bean2);
+         B bean3 = mgr.resolveBean(bean3Class);
+         assertNotNull(bean3);
+         B bean4 = mgr.resolveBean(bean4Class);
+         assertNull(bean4);
+      }
    }
 }

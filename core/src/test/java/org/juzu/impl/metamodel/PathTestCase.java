@@ -19,6 +19,7 @@
 
 package org.juzu.impl.metamodel;
 
+import org.junit.Test;
 import org.juzu.impl.controller.metamodel.ControllerMetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import org.juzu.impl.utils.JSON;
@@ -34,6 +35,7 @@ import java.util.List;
 public class PathTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testBuild() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
@@ -56,6 +58,7 @@ public class PathTestCase extends AbstractTestCase
       assertEquals(expected, mm.toJSON());
    }
 
+   @Test
    public void testChangeValue() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
@@ -88,6 +91,7 @@ public class PathTestCase extends AbstractTestCase
       assertEquals(expected, mm.toJSON());
    }
 
+   @Test
    public void testRemoveAnnotation() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
@@ -114,6 +118,7 @@ public class PathTestCase extends AbstractTestCase
       assertEquals(expected, mm.toJSON());
    }
 
+   @Test
    public void testPathRemoveApplication() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
@@ -135,6 +140,7 @@ public class PathTestCase extends AbstractTestCase
       assertEquals(expected.toJSON(), mm.toJSON());
    }
 
+   @Test
    public void testRefactorApplication() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());

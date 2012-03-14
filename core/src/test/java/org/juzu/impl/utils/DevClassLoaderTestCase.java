@@ -25,6 +25,7 @@ import org.jboss.shrinkwrap.api.exporter.ExplodedExporter;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Test;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.File;
@@ -42,7 +43,7 @@ public class DevClassLoaderTestCase extends AbstractTestCase
    private File targetDir;
 
    @Override
-   protected void setUp() throws Exception
+   public void setUp()
    {
       String targetPath = System.getProperty("targetDir");
       assertNotNull(targetPath);
@@ -104,6 +105,7 @@ public class DevClassLoaderTestCase extends AbstractTestCase
       }
    }
 
+   @Test
    public void testLoad() throws Exception
    {
       JavaArchive classes = ShrinkWrap.create(JavaArchive.class).addClass(Dev.class).addAsResource(new StringAsset("classes_resource_value"), "classes_resource");
@@ -145,6 +147,7 @@ public class DevClassLoaderTestCase extends AbstractTestCase
       assertEquals("lib_resource_value", Tools.read(libResource));
    }
 
+   @Test
    public void testShadowedResource() throws Exception
    {
       JavaArchive classes = ShrinkWrap.create(JavaArchive.class).addAsResource(new StringAsset("classes_resource_value"), "resource");

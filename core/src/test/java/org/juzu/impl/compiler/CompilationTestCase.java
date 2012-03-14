@@ -20,6 +20,7 @@
 package org.juzu.impl.compiler;
 
 import junit.framework.AssertionFailedError;
+import org.junit.Test;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMDir;
@@ -59,6 +60,7 @@ import java.util.regex.Matcher;
 public class CompilationTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testErrorCodePattern()
    {
       asserNotMatch("");
@@ -85,6 +87,7 @@ public class CompilationTestCase extends AbstractTestCase
       assertEquals(expectedArguments, matcher.group(2));
    }
 
+   @Test
    public void testBar() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("compiler", "disk");
@@ -93,6 +96,7 @@ public class CompilationTestCase extends AbstractTestCase
       assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
    }
 
+   @Test
    public void testGetResourceFromProcessor() throws Exception
    {
       DiskFileSystem input = diskFS("compiler", "getresource");
@@ -232,6 +236,7 @@ public class CompilationTestCase extends AbstractTestCase
       }
    }
 
+   @Test
    public void testProcessor() throws Exception
    {
       DiskFileSystem ramFS = diskFS("compiler", "processor");
@@ -244,12 +249,14 @@ public class CompilationTestCase extends AbstractTestCase
       assertEquals(1, compiler.getSourceOutput().size(ReadFileSystem.FILE));
    }
 
+   @Test
    public void testCompilationFailure() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("compiler", "failure");
       assertEquals(1, compiler.failCompile().size());
    }
 
+   @Test
    public void testAnnotationException() throws Exception
    {
       DiskFileSystem fs = diskFS("compiler", "annotationexception");
@@ -315,6 +322,7 @@ public class CompilationTestCase extends AbstractTestCase
       assertNull(error.getLocation());
    }
 
+   @Test
    public void testErrorCode() throws IOException
    {
       final ErrorCode code = new ErrorCode()
@@ -361,6 +369,7 @@ public class CompilationTestCase extends AbstractTestCase
       assertEquals(Arrays.asList("5", "foobar"), error.getArguments());
    }
 
+   @Test
    public void testIncremental() throws IOException
    {
       RAMFileSystem sourcePath = new RAMFileSystem();
@@ -447,11 +456,13 @@ public class CompilationTestCase extends AbstractTestCase
       }
    }
 
+   @Test
    public void testSourceOutputResource() throws IOException
    {
       testResource(StandardLocation.SOURCE_OUTPUT);
    }
 
+   @Test
    public void testClassOutputResource() throws IOException
    {
       testResource(StandardLocation.CLASS_OUTPUT);

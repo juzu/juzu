@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template;
 
+import org.junit.Test;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
@@ -29,12 +30,14 @@ import java.util.List;
 public class URLTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testResolution() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("template", "url", "resolution");
       compiler.assertCompile();
    }
 
+   @Test
    public void testInvalidMethodName() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("template", "url", "invalid_method_name");
@@ -44,6 +47,7 @@ public class URLTestCase extends AbstractTestCase
       assertEquals("/template/url/invalid_method_name/A.java", error.getSource());
    }
 
+   @Test
    public void testInvalidMethodArgs() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("template", "url", "invalid_method_args");
@@ -53,6 +57,7 @@ public class URLTestCase extends AbstractTestCase
       assertEquals("/template/url/invalid_method_args/A.java", error.getSource());
    }
 
+   @Test
    public void testOverload() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("template", "url", "overload");

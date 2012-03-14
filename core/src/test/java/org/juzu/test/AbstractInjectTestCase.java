@@ -19,57 +19,36 @@
 
 package org.juzu.test;
 
-import junit.framework.AssertionFailedError;
-import junit.framework.Test;
-import junit.framework.TestListener;
-import junit.framework.TestResult;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.protocol.mock.MockApplication;
 
-import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@RunWith(value = Parameterized.class)
 public abstract class AbstractInjectTestCase extends AbstractTestCase
 {
 
    /** . */
-   private InjectImplementation di;
+   protected final InjectImplementation di;
 
-   /** . */
-   private String testName;
-
-   /** . */
-   private final TestListener listener = new TestListener() {
-      public void addError(Test test, Throwable throwable) {
-      }
-      public void addFailure(Test test, AssertionFailedError assertionFailedError) {
-      }
-      public void endTest(Test test) {
-         testName = null;
-      }
-      public void startTest(Test test) {
-         testName = ((AbstractTestCase)test).getName();
-      }
-   };
-
-   @Override
-   public void run(TestResult result)
+   protected AbstractInjectTestCase(InjectImplementation di)
    {
-      result.addListener(listener);
+      this.di = di;
+   }
 
-      //
-      for (InjectImplementation impl : InjectImplementation.values())
-      {
-         // Clear registry before test
-         Registry.clear();
-
-         //
-         di = impl;
-         super.run(result);
-      }
-
-      //
-      result.removeListener(listener);
+   @Parameterized.Parameters
+   public static Collection<Object[]> data()
+   {
+      Object[][] data = new Object[][] {
+         { InjectImplementation.CDI_WELD },
+         { InjectImplementation.INJECT_SPRING },
+         { InjectImplementation.INJECT_GUICE }
+      };
+      return Arrays.asList(data);
    }
 
    public InjectImplementation getDI()

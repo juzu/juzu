@@ -19,17 +19,19 @@
 
 package org.juzu.impl.spi.fs.disk;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.test.AbstractTestCase;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DiskFileSystemTestCase extends TestCase
+public class DiskFileSystemTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testFoo() throws Exception
    {
       File root = new File(System.getProperty("test.resources"));

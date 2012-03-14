@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.fs.ram;
 
+import org.junit.Test;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
@@ -30,6 +31,7 @@ import java.util.List;
 public class RAMFileSystemTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testLastModified() throws IOException
    {
       RAMFileSystem fs = new RAMFileSystem();
@@ -41,6 +43,7 @@ public class RAMFileSystemTestCase extends AbstractTestCase
       assertTrue(now < fs.getLastModified(fooTxt));
    }
 
+   @Test
    public void testCopy() throws IOException
    {
       RAMFileSystem src = new RAMFileSystem();

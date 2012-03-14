@@ -19,6 +19,7 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.controller.descriptor.ControllerParameter;
@@ -35,7 +36,7 @@ public class RenderMethodTestCase extends AbstractTestCase
 {
 
    @Override
-   protected void setUp() throws Exception
+   public void setUp() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("request", "method", "render");
       compiler.assertCompile();
@@ -53,6 +54,7 @@ public class RenderMethodTestCase extends AbstractTestCase
    /** . */
    private ApplicationDescriptor descriptor;
 
+   @Test
    public void testNoArg() throws Exception
    {
       ControllerMethod cm = descriptor.getController().getMethod(aClass, "noArg");
@@ -61,6 +63,7 @@ public class RenderMethodTestCase extends AbstractTestCase
       assertEquals(Collections.<ControllerParameter>emptyList(), cm.getArguments());
    }
 
+   @Test
    public void testStringArg() throws Exception
    {
       ControllerMethod cm = descriptor.getController().getMethod(aClass, "oneArg", String.class);

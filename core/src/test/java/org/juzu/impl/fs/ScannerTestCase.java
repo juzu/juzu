@@ -19,6 +19,7 @@
 
 package org.juzu.impl.fs;
 
+import org.junit.Test;
 import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
@@ -31,6 +32,7 @@ import java.util.Collections;
 public class ScannerTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testFoo() throws IOException
    {
       RAMFileSystem fs = new RAMFileSystem();
@@ -61,7 +63,8 @@ public class ScannerTestCase extends AbstractTestCase
       assertEquals(Collections.singletonMap("foo/bar.txt", Change.REMOVE), scanner.scan());
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
    }
-   
+
+   @Test
    public void testIgnoreHiddenFile() throws IOException
    {
       RAMFileSystem fs = new RAMFileSystem();
@@ -74,6 +77,7 @@ public class ScannerTestCase extends AbstractTestCase
       assertEquals(Collections.emptyMap(), scanner.scan());
    }
 
+   @Test
    public void testIgnoreHiddenDir() throws IOException
    {
       RAMFileSystem fs = new RAMFileSystem();

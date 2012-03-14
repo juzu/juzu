@@ -19,6 +19,7 @@
 
 package org.juzu.impl.utils;
 
+import org.junit.Test;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.Collections;
 public class IterableArrayTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testSimple()
    {
       String[] a = {"a","b"};

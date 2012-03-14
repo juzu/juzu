@@ -19,13 +19,16 @@
 
 package org.juzu.impl.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.juzu.test.AbstractTestCase;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CharSequenceReaderTestCase extends TestCase
+public class CharSequenceReaderTestCase extends AbstractTestCase
 {
+
+   @Test
 
    public void testEmpty() throws IOException
    {
@@ -33,6 +36,7 @@ public class CharSequenceReaderTestCase extends TestCase
       assertEquals(-1, reader.read());
    }
 
+   @Test
    public void testSimple() throws IOException
    {
       CharSequenceReader reader = new CharSequenceReader("foo");
@@ -42,6 +46,7 @@ public class CharSequenceReaderTestCase extends TestCase
       assertEquals(-1, reader.read());
    }
 
+   @Test
    public void testUnread() throws IOException
    {
       CharSequenceReader reader = new CharSequenceReader("");

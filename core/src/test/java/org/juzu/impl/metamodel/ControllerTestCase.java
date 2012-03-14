@@ -19,6 +19,7 @@
 
 package org.juzu.impl.metamodel;
 
+import org.junit.Test;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.controller.metamodel.ControllerMetaModel;
@@ -43,6 +44,7 @@ import java.util.Map;
 public class ControllerTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testBuild() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());

@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template;
 
+import org.junit.Test;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
 import org.juzu.impl.template.ast.ASTNode;
@@ -40,6 +41,11 @@ import java.util.HashMap;
 public class TagTestCase extends AbstractInjectTestCase
 {
 
+   public TagTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
    public void _testSimple() throws Exception
    {
       MockApplication<?> app = application("template", "tag", "simple").init();
@@ -52,6 +58,7 @@ public class TagTestCase extends AbstractInjectTestCase
       assertEquals("<foo>bar</foo>", out);
    }
 
+   @Test
    public void testDecorate() throws Exception
    {
       MockApplication<?> app = application("template", "tag", "decorate").init();
@@ -63,6 +70,7 @@ public class TagTestCase extends AbstractInjectTestCase
       assertEquals("<foo>bar</foo>", out);
    }
 
+   @Test
    public void testInclude() throws Exception
    {
       MockApplication<?> app = application("template", "tag", "include").init();
@@ -74,6 +82,7 @@ public class TagTestCase extends AbstractInjectTestCase
       assertEquals("foo", out);
    }
 
+   @Test
    public void testTitle() throws Exception
    {
       MockApplication<?> app = application("template", "tag", "title").init();
@@ -87,6 +96,7 @@ public class TagTestCase extends AbstractInjectTestCase
       assertEquals("4", render.getTitle());
    }
 
+   @Test
    public void testParam() throws Exception
    {
       if (getDI() != InjectImplementation.INJECT_GUICE)
@@ -100,7 +110,8 @@ public class TagTestCase extends AbstractInjectTestCase
          assertEquals("foo_value", content);
       }
    }
-   
+
+   @Test
    public void testRecompileTemplate() throws Exception
    {
       MockApplication<?> app = application("template", "tag", "decorate").init();

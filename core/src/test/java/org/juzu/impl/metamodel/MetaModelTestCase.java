@@ -1,5 +1,6 @@
 package org.juzu.impl.metamodel;
 
+import org.junit.Test;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.test.AbstractTestCase;
 
@@ -19,6 +20,7 @@ public class MetaModelTestCase extends AbstractTestCase
    /** . */
    private static final Key<MetaModelObject> D = Key.of("d", MetaModelObject.class);
 
+   @Test
    public void testCannotRemoveRoot()
    {
       Simple a = new Simple("a");
@@ -32,6 +34,7 @@ public class MetaModelTestCase extends AbstractTestCase
       assertEquals(0, b.removed);
    }
 
+   @Test
    public void testTransitiveRemove()
    {
       Simple a = new Simple("a");
@@ -46,6 +49,7 @@ public class MetaModelTestCase extends AbstractTestCase
       assertEquals(1, c.removed);
    }
 
+   @Test
    public void testTransitiveRemoveChild()
    {
       Simple a = new Simple("a");
@@ -59,7 +63,8 @@ public class MetaModelTestCase extends AbstractTestCase
       assertEquals(1, b.removed);
       assertEquals(1, c.removed);
    }
-   
+
+   @Test
    public void testRemoveOrphan()
    {
       Simple a = new Simple("a");
@@ -75,6 +80,7 @@ public class MetaModelTestCase extends AbstractTestCase
       assertEquals(1, c.removed);
    }
 
+   @Test
    public void testTransitiveGarbage()
    {
       MetaModel m = new MetaModel();
@@ -91,6 +97,7 @@ public class MetaModelTestCase extends AbstractTestCase
       assertEquals(1, b.removed);
    }
 
+   @Test
    public void testForcedGarbage()
    {
       MetaModel m = new MetaModel();
@@ -107,6 +114,7 @@ public class MetaModelTestCase extends AbstractTestCase
       assertEquals(1, b.removed);
    }
 
+   @Test
    public void testForcedGarbage2()
    {
       MetaModel m = new MetaModel();
@@ -132,6 +140,7 @@ public class MetaModelTestCase extends AbstractTestCase
       assertEquals(1, c.removed);
    }
 
+   @Test
    public void testBug()
    {
       Simple a = new Simple("a");

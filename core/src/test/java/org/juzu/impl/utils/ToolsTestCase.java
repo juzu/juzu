@@ -19,6 +19,7 @@
 
 package org.juzu.impl.utils;
 
+import org.junit.Test;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.Arrays;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 public class ToolsTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testEmptyNoRecursePackageMatcher()
    {
       Pattern p = Tools.getPackageMatcher("", false);
@@ -38,6 +40,7 @@ public class ToolsTestCase extends AbstractTestCase
       assertFalse(p.matcher("foo.bar").matches());
    }
 
+   @Test
    public void testEmptyRecursePackageMatcher()
    {
       Pattern p = Tools.getPackageMatcher("", true);
@@ -46,6 +49,7 @@ public class ToolsTestCase extends AbstractTestCase
       assertTrue(p.matcher("foo.bar").matches());
    }
 
+   @Test
    public void testNoRecursePackageMatcher()
    {
       Pattern p = Tools.getPackageMatcher("foo", false);
@@ -56,6 +60,7 @@ public class ToolsTestCase extends AbstractTestCase
       assertFalse(p.matcher("foo.bar.juu").matches());
    }
 
+   @Test
    public void testRecursePackageMatcher()
    {
       Pattern p = Tools.getPackageMatcher("foo", true);
@@ -67,6 +72,7 @@ public class ToolsTestCase extends AbstractTestCase
       assertFalse(p.matcher("foobar").matches());
    }
 
+   @Test
    public void testUnquote()
    {
       assertEquals("", Tools.unquote(""));
@@ -82,6 +88,7 @@ public class ToolsTestCase extends AbstractTestCase
       assertEquals("\"a'", Tools.unquote("\"a'"));
    }
 
+   @Test
    public void testSplit()
    {
       assertEquals(Collections.<String>emptyList(), Arrays.asList(Tools.split("", '.')));
@@ -103,7 +110,8 @@ public class ToolsTestCase extends AbstractTestCase
       assertEquals(1, ret.length);
       assertEquals(null, ret[0]);
    }
-   
+
+   @Test
    public void testIteratorAppend()
    {
       Iterator i = Tools.append(Collections.emptyList().iterator(), "foo");

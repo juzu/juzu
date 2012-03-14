@@ -20,17 +20,21 @@
 package org.juzu.impl.utils;
 
 import junit.framework.TestCase;
+import org.junit.Test;
+import org.juzu.test.AbstractTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SpliteratorTestCase extends TestCase
+public class SpliteratorTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testEmptyString()
    {
       Spliterator i = new Spliterator("", '.');
       assertFalse(i.hasNext());
    }
 
+   @Test
    public void testSeparatorString()
    {
       Spliterator i = new Spliterator(".", '.');
@@ -41,6 +45,7 @@ public class SpliteratorTestCase extends TestCase
       assertFalse(i.hasNext());
    }
 
+   @Test
    public void testEntireString()
    {
       Spliterator i = new Spliterator("a", '.');
@@ -49,6 +54,7 @@ public class SpliteratorTestCase extends TestCase
       assertFalse(i.hasNext());
    }
 
+   @Test
    public void testNormal()
    {
       Spliterator i = new Spliterator("a.b", '.');

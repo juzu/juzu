@@ -19,6 +19,7 @@
 
 package org.juzu.impl.template;
 
+import org.junit.Test;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
@@ -27,8 +28,13 @@ import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-   public class TemplateTestCase extends AbstractInjectTestCase
+public class TemplateTestCase extends AbstractInjectTestCase
 {
+
+   public TemplateTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
 
    public void _testSimple() throws Exception
    {
@@ -59,6 +65,7 @@ import org.juzu.test.protocol.mock.MockClient;
 */
    }
 
+   @Test
    public void testRelativePath() throws Exception
    {
       MockApplication<?> app = application("template", "relativepath").init();
@@ -66,6 +73,7 @@ import org.juzu.test.protocol.mock.MockClient;
       assertEquals("relative_path_template", client.render().assertStringResult());
    }
 
+   @Test
    public void testTyped() throws Exception
    {
       // Does not work with Guice at the moment
@@ -77,6 +85,7 @@ import org.juzu.test.protocol.mock.MockClient;
       }
    }
 
+   @Test
    public void testUndeclaredIOE() throws Exception
    {
       MockApplication<?> app = application("template", "ioe").init();

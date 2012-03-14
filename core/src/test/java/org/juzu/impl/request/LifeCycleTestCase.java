@@ -19,6 +19,7 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.Registry;
@@ -29,6 +30,12 @@ import org.juzu.test.protocol.mock.MockClient;
 public class LifeCycleTestCase extends AbstractInjectTestCase
 {
 
+   public LifeCycleTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testRenderPhase() throws Exception
    {
       if (getDI() == InjectImplementation.CDI_WELD)

@@ -58,16 +58,14 @@ public abstract class AbstractHttpTestCase extends AbstractTestCase
       return currentTest.application;
    }
 
-   @Before
    @Override
-   public void setUp() throws Exception
+   public void setUp()
    {
       currentTest = this;
    }
 
-   @After
    @Override
-   public void tearDown() throws Exception
+   public void tearDown()
    {
       application = null;
       currentTest = null;

@@ -19,13 +19,14 @@
 
 package org.juzu.impl.spi.fs.classloader;
 
-import junit.framework.TestCase;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ExplodedExporter;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Test;
 import org.juzu.impl.utils.Tools;
+import org.juzu.test.AbstractTestCase;
 import sun.net.www.protocol.foo.Handler;
 
 import java.io.ByteArrayOutputStream;
@@ -38,7 +39,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ClassLoaderFileSystemTestCase extends TestCase
+public class ClassLoaderFileSystemTestCase extends AbstractTestCase
 {
 
    /** . */
@@ -54,6 +55,7 @@ public class ClassLoaderFileSystemTestCase extends TestCase
       this.jar = jar;
    }
 
+   @Test
    public void testJarFile() throws Exception
    {
       File f = File.createTempFile("test", ".jar");
@@ -62,6 +64,7 @@ public class ClassLoaderFileSystemTestCase extends TestCase
       assertFS(f.toURI().toURL());
    }
 
+   @Test
    public void testJarStream() throws Exception
    {
       try
@@ -125,6 +128,7 @@ public class ClassLoaderFileSystemTestCase extends TestCase
       }
    }
 
+   @Test
    public void testFile() throws Exception
    {
       File f = File.createTempFile("test", "");

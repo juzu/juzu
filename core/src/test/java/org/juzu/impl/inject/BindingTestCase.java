@@ -19,6 +19,8 @@
 
 package org.juzu.impl.inject;
 
+import org.junit.Test;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
@@ -28,6 +30,12 @@ import org.juzu.test.protocol.mock.MockRenderBridge;
 public class BindingTestCase extends AbstractInjectTestCase
 {
 
+   public BindingTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testDeclaration() throws Exception
    {
       MockApplication<?> app = application("inject", "binding", "declaration").init();
@@ -38,6 +46,7 @@ public class BindingTestCase extends AbstractInjectTestCase
       assertEquals("pass", render.assertStringResult());
    }
 
+   @Test
    public void testImplementation() throws Exception
    {
       MockApplication<?> app = application("inject", "binding", "implementation").init();
@@ -48,6 +57,7 @@ public class BindingTestCase extends AbstractInjectTestCase
       assertEquals("pass", render.assertStringResult());
    }
 
+   @Test
    public void testMetaProvider() throws Exception
    {
       MockApplication<?> app = application("inject", "binding", "metaprovider").init();
@@ -58,6 +68,7 @@ public class BindingTestCase extends AbstractInjectTestCase
       assertEquals("pass", render.assertStringResult());
    }
 
+   @Test
    public void testProvider() throws Exception
    {
       MockApplication<?> app = application("inject", "binding", "provider").init();
@@ -68,6 +79,7 @@ public class BindingTestCase extends AbstractInjectTestCase
       assertEquals("pass", render.assertStringResult());
    }
 
+   @Test
    public void testQualifiedProvider() throws Exception
    {
       MockApplication<?> app = application("inject", "binding", "qualifiedprovider").init();

@@ -19,12 +19,14 @@
 
 package org.juzu.impl.utils;
 
+import org.junit.Test;
 import org.juzu.test.AbstractTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TrimmingExceptionTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testEmpty()
    {
       try
@@ -44,6 +46,7 @@ public class TrimmingExceptionTestCase extends AbstractTestCase
       }
    }
 
+   @Test
    public void testException()
    {
       try
@@ -66,6 +69,7 @@ public class TrimmingExceptionTestCase extends AbstractTestCase
       }
    }
 
+   @Test
    public void testCause()
    {
       try

@@ -19,6 +19,8 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
@@ -30,6 +32,12 @@ import java.util.Arrays;
 public class MethodParametersTestCase extends AbstractInjectTestCase
 {
 
+   public MethodParametersTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testStringArray() throws Exception
    {
       MockApplication<?> app = application("request", "method", "parameters", "string", "array").init();
@@ -58,6 +66,7 @@ public class MethodParametersTestCase extends AbstractInjectTestCase
       assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
    }
 
+   @Test
    public void testStringList() throws Exception
    {
       MockApplication<?> app = application("request", "method", "parameters", "string", "list").init();

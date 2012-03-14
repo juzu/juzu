@@ -19,6 +19,8 @@
 
 package org.juzu.impl.plugin;
 
+import org.junit.Test;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.Registry;
 import org.juzu.test.protocol.mock.MockApplication;
@@ -29,9 +31,15 @@ import org.juzu.test.protocol.mock.MockRenderBridge;
 public class PluginTestCase extends AbstractInjectTestCase
 {
 
+   public PluginTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testLifeCycle() throws Exception
    {
-      assertNull(Registry.get("plugin.lifecycle"));
+      Registry.unset("plugin.lifecycle");
 
       MockApplication<?> app = application("plugin", "lifecycle").declareBean("plugin.lifecycle.LifeCycleImpl").init();
       assertEquals("created", Registry.get("plugin.lifecycle"));
@@ -42,6 +50,7 @@ public class PluginTestCase extends AbstractInjectTestCase
       assertEquals("after", Registry.get("plugin.lifecycle"));
    }
 
+   @Test
    public void testFailure() throws Exception
    {
       MockApplication<?> app = application("plugin", "failure").declareBean("plugin.failure.FailureLifeCycle").init();

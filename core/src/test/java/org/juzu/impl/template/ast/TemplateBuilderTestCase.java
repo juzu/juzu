@@ -19,23 +19,25 @@
 
 package org.juzu.impl.template.ast;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.juzu.impl.template.compiler.EmitContext;
 import org.juzu.impl.template.compiler.EmitPhase;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import org.juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
 import org.juzu.io.AppendableStream;
 import org.juzu.template.TemplateRenderContext;
+import org.juzu.test.AbstractTestCase;
 
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Random;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateBuilderTestCase extends TestCase
+public class TemplateBuilderTestCase extends AbstractTestCase
 {
 
-   public void testFoo() throws Exception
+   @Test
+public void testFoo() throws Exception
    {
       GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
       new EmitPhase(new EmitContext()).emit(generator, ASTNode.Template.parse("a<%=foo%>c"));

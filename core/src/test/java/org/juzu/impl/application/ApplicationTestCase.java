@@ -19,6 +19,7 @@
 
 package org.juzu.impl.application;
 
+import org.junit.Test;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
@@ -31,6 +32,7 @@ import java.util.List;
 public class ApplicationTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testDefaultController() throws Exception
    {
       CompilerHelper<?, ?> compiler = compiler("application", "default_controller");

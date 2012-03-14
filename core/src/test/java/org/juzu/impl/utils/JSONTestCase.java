@@ -19,16 +19,18 @@
 
 package org.juzu.impl.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.juzu.test.AbstractTestCase;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JSONTestCase extends TestCase
+public class JSONTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testReadMap() throws Exception
    {
       JSON o = (JSON)JSON.parse("{\"a\":\"b\"}");
@@ -36,11 +38,13 @@ public class JSONTestCase extends TestCase
       assertEquals("b", o.get("a"));
    }
 
+   @Test
    public void testWriteMap() throws Exception
    {
       assertEquals("{\"a\":\"a_value\",\"b\":2}", JSON.toString(new JSON().set("a", "a_value").set("b", 2), new StringBuilder()).toString());
    }
 
+   @Test
    public void testReadArray() throws Exception
    {
       List<?> o = (List<?>)JSON.parse("[\"a\",\"b\"]");
@@ -49,11 +53,13 @@ public class JSONTestCase extends TestCase
       assertEquals("b", o.get(1));
    }
 
+   @Test
    public void testWriteArray() throws Exception
    {
       assertEquals("[0]", JSON.toString(Arrays.asList(0), new StringBuilder()).toString());
    }
 
+   @Test
    public void testReadString() throws Exception
    {
       assertEquals("abc", (String)JSON.parse("\"abc\""));
@@ -68,6 +74,7 @@ public class JSONTestCase extends TestCase
       assertEquals("\\", (String)JSON.parse("\"\\\\\""));
    }
 
+   @Test
    public void testWriteString() throws Exception
    {
       assertEquals("\"a\"", JSON.toString("a", new StringBuilder()).toString());
@@ -79,29 +86,34 @@ public class JSONTestCase extends TestCase
       assertEquals("\"\\t\"", JSON.toString("\t", new StringBuilder()).toString());
    }
 
+   @Test
    public void testReadBoolean() throws Exception
    {
       assertEquals(true, JSON.parse("true"));
       assertEquals(false, JSON.parse("false"));
    }
 
+   @Test
    public void testWriteBoolean() throws Exception
    {
       assertEquals("true", JSON.toString(true, new StringBuilder()).toString());
       assertEquals("false", JSON.toString(false, new StringBuilder()).toString());
    }
 
+   @Test
    public void testReadNumber() throws Exception
    {
       assertEquals(123, JSON.parse("123"));
    }
 
+   @Test
    public void testWriteNumber() throws Exception
    {
       assertEquals("0", JSON.toString(0, new StringBuilder()).toString());
       assertEquals("0", JSON.toString(0L, new StringBuilder()).toString());
    }
-   
+
+   @Test
    public void testToJSON() throws Exception
    {
       class Foo
@@ -120,12 +132,14 @@ public class JSONTestCase extends TestCase
       assertEquals(new JSON().set("value", "bar"), json.getJSON("foo"));
    }
 
+   @Test
    public void testUnwrapArray() throws Exception
    {
       JSON json = new JSON().set("foo", (Object)new String[]{"bar_1", "bar_2"});
       assertEquals(Arrays.asList("bar_1", "bar_2"), json.getList("foo"));
    }
-   
+
+   @Test
    public void testCastToString() throws Exception
    {
       assertEquals("bar", new JSON().set("foo", "bar").getString("foo"));
@@ -140,6 +154,7 @@ public class JSONTestCase extends TestCase
       }
    }
 
+   @Test
    public void testCastToList() throws Exception
    {
       assertEquals(Arrays.asList("bar"), new JSON().map("foo", Arrays.asList("bar")).getList("foo"));
@@ -172,6 +187,7 @@ public class JSONTestCase extends TestCase
       }
    }
 
+   @Test
    public void testCastToJSON() throws Exception
    {
       assertEquals(new JSON(), new JSON().set("foo", new JSON()).getJSON("foo"));
@@ -184,7 +200,8 @@ public class JSONTestCase extends TestCase
       {
       }
    }
-   
+
+   @Test
    public void testNull() throws Exception
    {
       JSON json = new JSON().set("foo", null);
@@ -194,6 +211,7 @@ public class JSONTestCase extends TestCase
       assertEquals(json, unmarshalled);
    }
 
+   @Test
    public void testParseArray() throws Exception
    {
       String s = "{\"a\":[{\"b\":\"c\"}]}";

@@ -19,8 +19,12 @@
 
 package org.juzu.test;
 
+import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.inject.InjectImplementation;
@@ -34,8 +38,19 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractTestCase extends TestCase
+//@RunWith(JUnit38ClassRunner.class)
+public abstract class AbstractTestCase extends Assert
 {
+
+   @Before
+   public void setUp() throws Exception
+   {
+   }
+
+   @After
+   public void tearDown()
+   {
+   }
 
    /**
     * Wait for at least one millisecond, based on the current time clock.
@@ -135,6 +150,14 @@ public abstract class AbstractTestCase extends TestCase
       return new DiskFileSystem(root, packageName);
    }
 
+   @Rule
+   public TestName name = new TestName();
+   
+   public final String getName()
+   {
+      return name.getMethodName();
+   }
+   
    public CompilerHelper<File, File> compiler(String... packageName)
    {
       DiskFileSystem input = diskFS(packageName);
@@ -163,7 +186,8 @@ public abstract class AbstractTestCase extends TestCase
       }
 
       // Find
-      String pkg = Tools.join('.', packageName) + "#" + getName();
+      String s = name.getMethodName();
+      String pkg = Tools.join('.', packageName) + "#" + s;
       File f2 = new File(a, pkg);
       for (int count = 0;;count++)
       {

@@ -19,6 +19,8 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockActionBridge;
 import org.juzu.test.protocol.mock.MockApplication;
@@ -31,6 +33,12 @@ import java.util.Collections;
 public class ActionTestCase extends AbstractInjectTestCase
 {
 
+   public ActionTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testNoOp() throws Exception
    {
       MockApplication<?> app = application("request", "action", "noop").init();
@@ -42,6 +50,7 @@ public class ActionTestCase extends AbstractInjectTestCase
       action.assertNoResponse();
    }
 
+   @Test
    public void testRedirect() throws Exception
    {
       MockApplication<?> app = application("request", "action", "redirect").init();
@@ -53,6 +62,7 @@ public class ActionTestCase extends AbstractInjectTestCase
       action.assertRedirect("http://www.julienviet.com");
    }
 
+   @Test
    public void testRender() throws Exception
    {
       MockApplication<?> app = application("request", "action", "render").init();

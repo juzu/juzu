@@ -19,7 +19,9 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
 import org.juzu.URLBuilder;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.utils.JSON;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
@@ -30,6 +32,12 @@ import org.juzu.test.protocol.mock.MockRenderBridge;
 public class URLTestCase extends AbstractInjectTestCase
 {
 
+   public URLTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testSimple() throws Exception
    {
       MockApplication<?> app = application("request", "url", "simple");
@@ -42,6 +50,7 @@ public class URLTestCase extends AbstractInjectTestCase
       assertFalse(url.getJSON("properties").contains(URLBuilder.ESCAPE_XML.class.getName()));
    }
 
+   @Test
    public void testEscapeXML() throws Exception
    {
       MockApplication<?> app = application("request", "url", "escapexml");
@@ -54,6 +63,7 @@ public class URLTestCase extends AbstractInjectTestCase
       assertEquals(Boolean.TRUE, url.getJSON("properties").get(URLBuilder.ESCAPE_XML.class.getName()));
    }
 
+   @Test
    public void testInvalidProperty() throws Exception
    {
       MockApplication<?> app = application("request", "url", "invalidproperty");

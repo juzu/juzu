@@ -19,7 +19,9 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
 import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
@@ -31,7 +33,12 @@ import java.util.ConcurrentModificationException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ThrowableTestCase extends AbstractInjectTestCase
 {
+   public ThrowableTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
 
+   @Test
    public void testConstructorChecked() throws Exception
    {
       MockApplication<?> app = application("request", "constructor", "throwable", "checked").init();
@@ -49,6 +56,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testConstructorRuntime() throws Exception
    {
       MockApplication<?> app = application("request", "constructor", "throwable", "runtime").init();
@@ -66,6 +74,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testConstructorError() throws Exception
    {
       MockApplication<?> app = application("request", "constructor", "throwable", "error").init();
@@ -83,6 +92,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testRenderChecked() throws Exception
    {
       MockApplication<?> app = application("request", "render", "throwable", "checked").init();
@@ -100,6 +110,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testRenderRuntime() throws Exception
    {
       MockApplication<?> app = application("request", "render", "throwable", "runtime").init();
@@ -117,6 +128,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testRenderError() throws Exception
    {
       MockApplication<?> app = application("request", "render", "throwable", "error").init();
@@ -134,6 +146,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testActionChecked() throws Exception
    {
       MockApplication<?> app = application("request", "action", "throwable", "checked").init();
@@ -152,6 +165,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testActionRuntime() throws Exception
    {
       MockApplication<?> app = application("request", "action", "throwable", "runtime").init();
@@ -170,6 +184,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testActionError() throws Exception
    {
       MockApplication<?> app = application("request", "action", "throwable", "error").init();
@@ -188,6 +203,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testResourceChecked() throws Exception
    {
       MockApplication<?> app = application("request", "resource", "throwable", "checked").init();
@@ -206,6 +222,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testResourceRuntime() throws Exception
    {
       MockApplication<?> app = application("request", "resource", "throwable", "runtime").init();
@@ -224,6 +241,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase
       }
    }
 
+   @Test
    public void testResourceError() throws Exception
    {
       MockApplication<?> app = application("request", "resource", "throwable", "error").init();

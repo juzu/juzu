@@ -19,14 +19,16 @@
 
 package org.juzu.impl.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.juzu.test.AbstractTestCase;
 
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PathTestCase extends TestCase
+public class PathTestCase extends AbstractTestCase
 {
-   
+
+   @Test
    public void testParse()
    {
       assertPath("");
@@ -38,7 +40,8 @@ public class PathTestCase extends TestCase
       assertPath("a/b", "a", "b");
       assertPath("a//b", "a", "b");
    }
-   
+
+   @Test
    public void testNext()
    {
       Path a = Path.parse("a/b/c", '/');
@@ -51,6 +54,7 @@ public class PathTestCase extends TestCase
       assertNull(next.next());
    }
 
+   @Test
    public void testToString()
    {
       assertEquals("Path[]", Path.parse("", '/').toString());

@@ -19,6 +19,8 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockActionBridge;
 import org.juzu.test.protocol.mock.MockApplication;
@@ -35,6 +37,12 @@ public class RenderTestCase extends AbstractInjectTestCase
 
    private static final Pattern P = Pattern.compile("([0-9]+)\\[(.*)\\]");
 
+   public RenderTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testIndex() throws Exception
    {
       MockApplication<?> app = application("request", "render", "index").init();
@@ -45,6 +53,7 @@ public class RenderTestCase extends AbstractInjectTestCase
       assertEquals("index", render.assertStringResult());
    }
 
+   @Test
    public void testParameterizedIndex() throws Exception
    {
       MockApplication<?> app = application("request", "render", "parameterizedindex").init();
@@ -65,6 +74,7 @@ public class RenderTestCase extends AbstractInjectTestCase
       assertEquals("0", m.group(1));
    }
 
+   @Test
    public void testOverridenIndex() throws Exception
    {
       MockApplication<?> app = application("request", "render", "overridenindex").init();
@@ -85,6 +95,7 @@ public class RenderTestCase extends AbstractInjectTestCase
       assertEquals("0", m.group(1));
    }
 
+   @Test
    public void testResponse() throws Exception
    {
       MockApplication<?> app = application("request", "render", "response").init();
@@ -94,6 +105,7 @@ public class RenderTestCase extends AbstractInjectTestCase
       assertEquals("foo", render.assertStringResult());
    }
 
+   @Test
    public void testUpdate() throws Exception
    {
       MockApplication<?> app = application("request", "render", "update").init();

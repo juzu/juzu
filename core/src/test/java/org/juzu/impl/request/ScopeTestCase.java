@@ -19,7 +19,9 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
 import org.juzu.impl.inject.Scoped;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.Identifiable;
 import org.juzu.test.Registry;
@@ -34,6 +36,12 @@ import java.util.List;
 public class ScopeTestCase extends AbstractInjectTestCase
 {
 
+   public ScopeTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testRequestScope() throws Exception
    {
       MockApplication<?> app = application("request", "scope", "request");
@@ -83,6 +91,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       assertEquals(Identifiable.MANAGED, (int)Registry.<Integer>unset("status"));
    }
 
+   @Test
    public void testFlashScope() throws Exception
    {
       MockApplication<?> app = application("request", "scope", "flash");
@@ -125,6 +134,7 @@ public class ScopeTestCase extends AbstractInjectTestCase
       assertEquals(Identifiable.DESTROYED, car2.getStatus());
    }
 
+   @Test
    public void testSessionScope() throws Exception
    {
       MockApplication<?> app = application("request", "scope", "session");

@@ -19,6 +19,8 @@
 
 package org.juzu.impl.request;
 
+import org.junit.Test;
+import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
@@ -29,6 +31,12 @@ import org.juzu.test.protocol.mock.MockResourceBridge;
 public class ResourceTestCase extends AbstractInjectTestCase
 {
 
+   public ResourceTestCase(InjectImplementation di)
+   {
+      super(di);
+   }
+
+   @Test
    public void testNotFound() throws Exception
    {
       MockApplication<?> app = application("request", "resource", "notfound").init();
@@ -40,6 +48,7 @@ public class ResourceTestCase extends AbstractInjectTestCase
       resource.assertNotFound();
    }
 
+   @Test
    public void testBinary() throws Exception
    {
       MockApplication<?> app = application("request", "resource", "binary").init();

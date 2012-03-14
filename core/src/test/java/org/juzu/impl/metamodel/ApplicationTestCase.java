@@ -19,6 +19,7 @@
 
 package org.juzu.impl.metamodel;
 
+import org.junit.Test;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.utils.JSON;
 import org.juzu.processor.MainProcessor;
@@ -33,6 +34,7 @@ import java.util.List;
 public class ApplicationTestCase extends AbstractTestCase
 {
 
+   @Test
    public void testAdd() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "application").with(new MainProcessor());
@@ -56,6 +58,7 @@ public class ApplicationTestCase extends AbstractTestCase
       assertEquals(expected, mm.toJSON());
    }
 
+   @Test
    public void testUpdate() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "application").with(new MainProcessor());
@@ -91,6 +94,7 @@ public class ApplicationTestCase extends AbstractTestCase
       assertEquals(expected, mm.toJSON());
    }
 
+   @Test
    public void testRemove() throws Exception
    {
       CompilerHelper<File, File> helper = compiler("model", "meta", "application").with(new MainProcessor());
