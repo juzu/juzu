@@ -8,6 +8,7 @@ import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.binding.Bindings;
 
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
@@ -32,17 +33,28 @@ public class BindingMetaModelPlugin extends MetaModelPlugin
          ArrayList<JSON> list = new ArrayList<JSON>();
          if (value != null)
          {
-            List<AnnotationMirror> bindings;
+            List<?> bindings;
             if (value instanceof List<?>)
             {
-               bindings = (List<AnnotationMirror>)value;
+               bindings = (List<?>)value;
             }
-            else
+            else 
             {
-               bindings = Collections.singletonList((AnnotationMirror)value);
+               bindings = Collections.singletonList(value);
             }
-            for (AnnotationMirror binding : bindings)
+            for (int i = 0; i < bindings.size(); i++)
             {
+               AnnotationMirror binding;
+               Object v = bindings.get(i);
+               if(v instanceof AnnotationValue) 
+               {
+                  binding = (AnnotationMirror)((AnnotationValue) v).getValue();
+               }
+               else
+               {
+                  binding = (AnnotationMirror) v;
+               }
+               
                Map<String, Object> bindingValues = Tools.foo(binding);
                TypeMirror bindingValue = (TypeMirror)bindingValues.get("value");
                TypeMirror bindingImplementation = (TypeMirror)bindingValues.get("implementation");
