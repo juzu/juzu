@@ -32,9 +32,9 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletActionBridge extends ServletRequestBridge implements ActionBridge
 {
-   ServletActionBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
+   ServletActionBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
    {
-      super(req, resp, parameters);
+      super(req, resp, methodId, parameters);
    }
 
    @Override
@@ -43,12 +43,7 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
       if (response instanceof Response.Update)
       {
          Response.Update update = (Response.Update)response;
-         Map<String, String[]> parameters = new HashMap<String, String[]>();
-         for (Map.Entry<String, String> entry : update.getParameters().entrySet())
-         {
-            parameters.put(entry.getKey(), new String[]{entry.getValue()});
-         }
-         String url = renderURL(Phase.RENDER, null, parameters);
+         String url = renderURL(Phase.RENDER, update.getParameters(), update.getProperties());
          resp.sendRedirect(url);
       }
       else if (response instanceof Response.Redirect)

@@ -19,12 +19,14 @@
 
 package org.juzu.impl.spi.request.servlet;
 
+import org.juzu.PropertyType;
 import org.juzu.Response;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.request.HttpContext;
 import org.juzu.request.Phase;
+import org.juzu.request.RequestContext;
 import org.juzu.request.SecurityContext;
 import org.juzu.request.WindowContext;
 
@@ -46,6 +48,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
    {
       Phase phase = Phase.RENDER;
       Map<String, String[]> parameters = new HashMap<String, String[]>();
+      String methodId = null;
       for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet())
       {
          String name = entry.getKey();
@@ -53,6 +56,10 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
          if (name.equals("juzu.phase"))
          {
             phase = Phase.valueOf(value[0]);
+         }
+         else if (name.equals("juzu.op"))
+         {
+            methodId = value[0];
          }
          else
          {
@@ -64,11 +71,11 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       switch (phase)
       {
          case RENDER:
-            return new ServletRenderBridge(req, resp, parameters);
+            return new ServletRenderBridge(req, resp, methodId, parameters);
          case ACTION:
-            return new ServletActionBridge(req, resp, parameters);
+            return new ServletActionBridge(req, resp, methodId, parameters);
          case RESOURCE:
-            return new ServletResourceBridge(req, resp, parameters);
+            return new ServletResourceBridge(req, resp, methodId, parameters);
          default:
             throw new UnsupportedOperationException("todo");
       }
@@ -83,13 +90,18 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
    /** . */
    final Map<String, String[]> parameters;
 
+   /** . */
+   final String methodId;
+
    ServletRequestBridge(
       HttpServletRequest req, 
       HttpServletResponse resp, 
+      String methodId,
       Map<String, String[]> parameters)
    {
       this.req = req;
       this.resp = resp;
+      this.methodId = methodId;
       this.parameters = parameters;
    }
    
@@ -118,6 +130,15 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
    public String getContextPath()
    {
       return req.getContextPath();
+   }
+
+   public <T> T getProperty(PropertyType<T> propertyType)
+   {
+      if (RequestContext.METHOD_ID.equals(propertyType))
+      {
+         return propertyType.getType().cast(methodId);
+      }
+      return null;
    }
 
    //
@@ -233,7 +254,13 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       throw new UnsupportedOperationException("todo");
    }
 
-   public final String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
+   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
+   {
+      // For now we don't validate anything
+      return null;
+   }
+
+   public final String renderURL(Phase phase, Map<String, String[]> parameters, Map<PropertyType<?>, ?> properties)
    {
       StringBuilder buffer = new StringBuilder();
       buffer.append(req.getScheme());
@@ -247,6 +274,15 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       buffer.append(req.getContextPath());
       buffer.append(req.getServletPath());
       buffer.append("?juzu.phase=").append(phase);
+      
+      //
+      Object methodId = properties != null ? properties.get(RequestContext.METHOD_ID) : null;
+      if (methodId != null)
+      {
+         buffer.append("&juzu.op=").append(methodId);
+      }
+
+      //
       for (Map.Entry<String, String[]> parameter : parameters.entrySet())
       {
          String name = parameter.getKey();

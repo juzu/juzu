@@ -17,20 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.request.servlet;
+@Application
+package request.url.invalidproperty;
 
-import org.juzu.impl.spi.request.MimeBridge;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge
-{
-
-   ServletMimeBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
-   {
-      super(req, resp, methodId, parameters);
-   }
-}
+import org.juzu.Application;

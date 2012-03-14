@@ -19,10 +19,13 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.PropertyType;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.portlet.JuzuPortlet;
 import org.juzu.request.HttpContext;
+import org.juzu.request.RequestContext;
 import org.juzu.request.SecurityContext;
 import org.juzu.request.WindowContext;
 
@@ -30,6 +33,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -59,14 +63,21 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
 
    PortletRequestBridge(Rq request, Rs response)
    {
-      Map<String, String[]> parameters = request.getParameterMap();
-      String methodId= request.getParameter("op");
-      if (methodId != null)
+      String methodId = null;
+      Map<String, String[]> parameters = new HashMap<String, String[]>(request.getParameterMap());
+      for (Iterator<Map.Entry<String, String[]>> i = parameters.entrySet().iterator();i.hasNext();)
       {
-         parameters = new HashMap<String, String[]>(parameters);
-         parameters.remove("op");
+         Map.Entry<String, String[]> parameter = i.next();
+         String key = parameter.getKey();
+         if (key.startsWith("juzu."))
+         {
+            if (parameter.getKey().equals("juzu.op"))
+            {
+               methodId = parameter.getValue()[0];
+            }
+            i.remove();
+         }
       }
-
 
       //
       this.request = request;
@@ -78,9 +89,22 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       this.windowContext = new PortletWindowContext(this);
    }
 
-   public final String getMethodId()
+   public <T> T getProperty(PropertyType<T> propertyType)
    {
-      return methodId;
+      Object propertyValue = null;
+      if (JuzuPortlet.PORTLET_MODE.equals(propertyType))
+      {
+         propertyValue = request.getPortletMode();
+      }
+      else if (JuzuPortlet.WINDOW_STATE.equals(propertyType))
+      {
+         propertyValue = request.getWindowState();
+      }
+      else if (RequestContext.METHOD_ID.equals(propertyType))
+      {
+         propertyValue = methodId;
+      }
+      return propertyValue == null ? null : propertyType.getType().cast(propertyValue);
    }
 
    public final Map<String, String[]> getParameters()

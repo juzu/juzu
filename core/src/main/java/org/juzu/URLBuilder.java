@@ -21,6 +21,7 @@ package org.juzu;
 
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.spi.request.MimeBridge;
+import org.juzu.request.RequestContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,8 +53,14 @@ import java.util.Map;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class URLBuilder
+public final class URLBuilder
 {
+
+   /** Escape XML type literal. */
+   public static class ESCAPE_XML extends PropertyType<Boolean> {}
+
+   /** Escape XML type literal instance. */
+   public static ESCAPE_XML ESCAPE_XML = new ESCAPE_XML();
 
    /** . */
    private static final String[] EMPTY_STRING_ARRAY = new String[0];
@@ -68,18 +75,18 @@ public class URLBuilder
    private Map<String, String[]> parameters;
 
    /** . */
-   private Boolean escapeXML;
+   private Map<PropertyType<?>, Object> properties;
 
    public URLBuilder(MimeBridge bridge, ControllerMethod method)
    {
-      HashMap<String, String[]> parameters = new HashMap<String, String[]>();
-      parameters.put("juzu.op", new String[]{method.getId()});
+      HashMap<PropertyType<?>, Object> properties = new HashMap<PropertyType<?>, Object>();
+      properties.put(RequestContext.METHOD_ID, method.getId());
       
       //
       this.bridge = bridge;
       this.method = method;
-      this.escapeXML = null;
-      this.parameters = parameters;
+      this.parameters = new HashMap<String, String[]>();
+      this.properties = properties;
    }
 
    /**
@@ -140,7 +147,41 @@ public class URLBuilder
 
    public URLBuilder escapeXML(Boolean escapeXML)
    {
-      this.escapeXML = escapeXML;
+      setProperty(ESCAPE_XML, escapeXML);
+      return this;
+   }
+
+   /**
+    * Set or clear a property of the URL.
+    *
+    * @param propertyType the property type
+    * @param propertyValue the property value
+    * @param <T> the property generic type
+    * @return this URL builder
+    * @throws IllegalArgumentException if the property is not valid
+    */
+   public <T> URLBuilder setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException
+   {
+      if (propertyValue == null)
+      {
+         if (properties != null)
+         {
+            properties.remove(propertyType);
+         }
+      }
+      else
+      {
+         String invalid = bridge.checkPropertyValidity(method.getPhase(), propertyType, propertyValue);
+         if (invalid != null)
+         {
+            throw new IllegalArgumentException(invalid);
+         }
+         if (properties == null)
+         {
+            properties = new HashMap<PropertyType<?>, Object>();
+         }
+         properties.put(propertyType, propertyValue);
+      }
       return this;
    }
 
@@ -151,6 +192,6 @@ public class URLBuilder
     */
    public String toString()
    {
-      return bridge.renderURL(method.getPhase(), escapeXML, parameters);
+      return bridge.renderURL(method.getPhase(), parameters, properties);
    }
 }

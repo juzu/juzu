@@ -19,6 +19,7 @@
 
 package org.juzu.request;
 
+import org.juzu.PropertyType;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.request.Request;
@@ -29,6 +30,12 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class RequestContext
 {
+
+   /** Phase type literal. */
+   public static class METHOD_ID extends PropertyType<String> {}
+
+   /** Phase type literal instance. */
+   public static METHOD_ID METHOD_ID = new METHOD_ID();
 
    /** . */
    protected final ApplicationContext application;
@@ -69,6 +76,11 @@ public abstract class RequestContext
    public SecurityContext getSecurityContext()
    {
       return getBridge().getSecurityContext();
+   }
+   
+   public <T> T getProperty(PropertyType<T> propertyType)
+   {
+      return getBridge().getProperty(propertyType);
    }
 
    public abstract Phase getPhase();

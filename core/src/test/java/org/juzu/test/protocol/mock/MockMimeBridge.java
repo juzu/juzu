@@ -19,13 +19,16 @@
 
 package org.juzu.test.protocol.mock;
 
+import org.juzu.PropertyType;
 import org.juzu.Response;
+import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.io.BinaryOutputStream;
 import org.juzu.io.BinaryStream;
 import org.juzu.io.AppendableStream;
+import org.juzu.request.RequestContext;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.ByteArrayOutputStream;
@@ -42,9 +45,9 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
    /** . */
    private String mimeType;
 
-   public MockMimeBridge(MockClient client)
+   public MockMimeBridge(MockClient client, String methodId, Map<String, String[]> parameters)
    {
-      super(client);
+      super(client, methodId, parameters);
    }
 
    public String assertStringResult()
@@ -62,15 +65,48 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
       return mimeType;
    }
 
-   public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
+   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
    {
+      if (propertyType == URLBuilder.ESCAPE_XML)
+      {
+         // OK
+         return null;
+      }
+      else if (propertyType == RequestContext.METHOD_ID)
+      {
+         // OK
+         return null;
+      }
+      else
+      {
+         return "Unsupported property " + propertyType + " = " + propertyValue;
+      }
+   }
+
+   public String renderURL(Phase phase, Map<String, String[]> parameters, Map<PropertyType<?>, ?> properties)
+   {
+      JSON props = new JSON();
+      if (properties != null)
+      {
+         for (Map.Entry<PropertyType<?>, ?> entry : properties.entrySet())
+         {
+            String valid = checkPropertyValidity(phase, (PropertyType)entry.getKey(), entry.getValue());
+            if (valid != null)
+            {
+               throw new IllegalArgumentException(valid);
+            }
+            else
+            {
+               props.set(entry.getKey().getClass().getName(), entry.getValue());
+            }
+         }
+      }
+
+      //
       JSON url = new JSON();
       url.set("phase", phase.name());
       url.map("parameters", parameters);
-      if (escapeXML != null)
-      {
-         url.set("escapeXML", escapeXML);
-      }
+      url.set("properties", props);
       return url.toString();
    }
 

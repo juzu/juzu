@@ -26,7 +26,6 @@ import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.ActionBridge;
 
-import java.util.HashMap;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -58,9 +57,7 @@ public class ActionContext extends RequestContext
 
    public Response.Update createResponse(ControllerMethod method) throws IllegalStateException
    {
-      HashMap<String, String> parameters = new HashMap<String, String>();
-      parameters.put("juzu.op", method.getId());
-      return new Response.Update(parameters);
+      return new Response.Update().setProperty(RequestContext.METHOD_ID, method.getId());
    }
 
    public Response.Update createResponse(ControllerMethod method, Object arg) throws IllegalStateException

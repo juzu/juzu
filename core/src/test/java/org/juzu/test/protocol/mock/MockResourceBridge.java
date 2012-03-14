@@ -24,6 +24,7 @@ import org.juzu.Response;
 import org.juzu.impl.spi.request.ResourceBridge;
 
 import java.io.IOException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
@@ -32,9 +33,9 @@ public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
    /** . */
    private int status;
    
-   public MockResourceBridge(MockClient client)
+   public MockResourceBridge(MockClient client, String methodId, Map<String, String[]> parameters)
    {
-      super(client);
+      super(client, methodId, parameters);
    }
 
    public void assertOk()

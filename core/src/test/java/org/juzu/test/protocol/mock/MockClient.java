@@ -25,11 +25,14 @@ import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
 import org.juzu.request.Phase;
 import org.juzu.impl.application.ApplicationException;
+import org.juzu.request.RequestContext;
 import org.juzu.test.AbstractTestCase;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A conversation between a client and the application.
@@ -41,40 +44,38 @@ public class MockClient
 
    private MockRequestBridge create(String url)
    {
+      //
       MockRequestBridge request;
-      JSON json;
       try
       {
-         json = (JSON)JSON.parse(url);
+         JSON json = (JSON)JSON.parse(url);
+         
+         //
+         JSON jsonParams = json.getJSON("parameters");
+         Map<String, String[]> parameters = new HashMap<String, String[]>();
+         for (String name : jsonParams.names())
+         {
+            List<? extends String> value = jsonParams.getList(name, String.class);
+            parameters.put(name, value.toArray(new String[value.size()]));
+         }
+         
+         //
+         String methodId = json.getJSON("properties").getString(RequestContext.METHOD_ID.class.getName());
+
          Phase phase = Phase.valueOf(json.getString("phase"));
          switch (phase)
          {
             case ACTION:
-               request = new MockActionBridge(this);
+               request = new MockActionBridge(this, methodId, parameters);
                break;
             case RENDER:
-               request =  new MockRenderBridge(this);
+               request =  new MockRenderBridge(this, methodId, parameters);
                break;
             case RESOURCE:
-               request =  new MockResourceBridge(this);
+               request =  new MockResourceBridge(this, methodId, parameters);
                break;
             default:
                throw AbstractTestCase.failure("Not yet supported " + phase);
-         }
-      }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
-
-      //
-      try
-      {
-         JSON jsonParams = json.getJSON("parameters");
-         for (String name : jsonParams.names())
-         {
-            List<? extends String> value = jsonParams.getList(name, String.class);
-            request.getParameters().put(name, value.toArray(new String[value.size()]));
          }
       }
       catch (Exception e)
@@ -108,21 +109,14 @@ public class MockClient
 
    public MockRenderBridge render(String methodId) throws ApplicationException
    {
-      MockRenderBridge render = new MockRenderBridge(this);
-
-      // This is an hack for unit testing purpose
-      render.getParameters().put("juzu.op", new String[]{methodId});
-
-      //
+      MockRenderBridge render = new MockRenderBridge(this, methodId, new HashMap<String, String[]>());
       invoke(render);
       return render;
    }
 
    public MockRenderBridge render() throws ApplicationException
    {
-      MockRenderBridge render = new MockRenderBridge(this);
-      invoke(render);
-      return render;
+      return render(null);
    }
 
    public MockRequestBridge invoke(String url) throws ApplicationException

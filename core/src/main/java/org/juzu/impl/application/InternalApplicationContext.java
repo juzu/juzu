@@ -139,8 +139,10 @@ public class InternalApplicationContext extends ApplicationContext
       }
       
       //
+      String methodId = bridge.getProperty(RequestContext.METHOD_ID);
+
+      //
       Map<String, String[]> parameters = new HashMap<String, String[]>();
-      String methodId = null;
       for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet())
       {
          String name = entry.getKey();

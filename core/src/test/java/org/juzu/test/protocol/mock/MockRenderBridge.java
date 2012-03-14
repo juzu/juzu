@@ -23,6 +23,7 @@ import org.juzu.Response;
 import org.juzu.impl.spi.request.RenderBridge;
 
 import java.io.IOException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockRenderBridge extends MockMimeBridge implements RenderBridge
@@ -31,9 +32,9 @@ public class MockRenderBridge extends MockMimeBridge implements RenderBridge
    /** . */
    private String title;
 
-   public MockRenderBridge(MockClient client)
+   public MockRenderBridge(MockClient client, String methodId, Map<String, String[]> parameters)
    {
-      super(client);
+      super(client, methodId, parameters);
    }
 
    public String getTitle()

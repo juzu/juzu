@@ -21,6 +21,7 @@ package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
+import org.juzu.request.RenderContext;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -51,10 +52,15 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       if (response instanceof Response.Update)
       {
          done = true;
-         Response.Update render = (Response.Update)response;
-         for (Map.Entry<String, String> entry : render.getParameters().entrySet())
+         Response.Update update = (Response.Update)response;
+         for (Map.Entry<String, String[]> entry : update.getParameters().entrySet())
          {
             super.response.setRenderParameter(entry.getKey(), entry.getValue());
+         }
+         Object methodId = update.getProperties().get(RenderContext.METHOD_ID);
+         if (methodId != null)
+         {
+            super.response.setRenderParameter("juzu.op", methodId.toString());
          }
       }
       else

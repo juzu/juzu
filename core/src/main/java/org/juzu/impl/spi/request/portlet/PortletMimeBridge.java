@@ -19,20 +19,30 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.PropertyType;
 import org.juzu.Response;
+import org.juzu.URLBuilder;
+import org.juzu.portlet.JuzuPortlet;
 import org.juzu.request.Phase;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.io.BinaryOutputStream;
 import org.juzu.io.BinaryStream;
 import org.juzu.io.CharStream;
 import org.juzu.io.AppendableStream;
+import org.juzu.request.RequestContext;
 
 import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletModeException;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+import javax.portlet.WindowState;
+import javax.portlet.WindowStateException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Enumeration;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -75,7 +85,50 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       }
    }
 
-   public String renderURL(Phase phase, Boolean escapeXML, Map<String, String[]> parameters)
+   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
+   {
+      if (propertyType == JuzuPortlet.PORTLET_MODE)
+      {
+         if (phase == Phase.RESOURCE)
+         {
+            return "Resource URL don't have portlet modes";
+         }
+         PortletMode portletMode = (PortletMode)propertyValue;
+         for (Enumeration<PortletMode> e = request.getPortalContext().getSupportedPortletModes();e.hasMoreElements();)
+         {
+            PortletMode next = e.nextElement();
+            if (next.equals(portletMode))
+            {
+               return null;
+            }
+         }
+         return "Unsupported portlet mode " + portletMode;
+      }
+      else if (propertyType == JuzuPortlet.WINDOW_STATE)
+      {
+         if (phase == Phase.RESOURCE)
+         {
+            return "Resource URL don't have windwo state";
+         }
+         WindowState windowState = (WindowState)propertyValue;
+         for (Enumeration<WindowState> e = request.getPortalContext().getSupportedWindowStates();e.hasMoreElements();)
+         {
+            WindowState next = e.nextElement();
+            if (next.equals(windowState))
+            {
+               return null;
+            }
+         }
+         return "Unsupported window state " + windowState;
+      }
+      else
+      {
+         // For now we ignore other properties
+         return null;
+      }
+   }
+
+   public String renderURL(Phase phase, Map<String, String[]> parameters, Map<PropertyType<?>, ?> properties)
    {
       BaseURL url;
       switch (phase)
@@ -93,11 +146,71 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
             throw new AssertionError("Unexpected phase " + phase);
       }
 
-      //
+      // Set generic parameters
       url.setParameters(parameters);
 
       //
-      if (escapeXML != null && escapeXML)
+      boolean escapeXML = false;
+      if (properties != null)
+      {
+         Object escapeXMLProperty = properties.get(URLBuilder.ESCAPE_XML);
+         if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty))
+         {
+            escapeXML = true;
+         }
+         
+         // Handle portlet mode
+         Object portletModeProperty = properties.get(JuzuPortlet.PORTLET_MODE);
+         if (portletModeProperty != null)
+         {
+            if (url instanceof PortletURL)
+            {
+               try
+               {
+                  ((PortletURL)url).setPortletMode((PortletMode)portletModeProperty);
+               }
+               catch (PortletModeException e)
+               {
+                  throw new IllegalArgumentException(e);
+               }
+            }
+            else
+            {
+               throw new IllegalArgumentException();
+            }
+         }
+         
+         // Handle window state
+         Object windowStateProperty = properties.get(JuzuPortlet.WINDOW_STATE);
+         if (windowStateProperty != null)
+         {
+            if (url instanceof PortletURL)
+            {
+               try
+               {
+                  ((PortletURL)url).setWindowState((WindowState)windowStateProperty);
+               }
+               catch (WindowStateException e)
+               {
+                  throw new IllegalArgumentException(e);
+               }
+            }
+            else
+            {
+               throw new IllegalArgumentException();
+            }
+         }
+
+         // Set method id
+         Object methodId = properties.get(RequestContext.METHOD_ID);
+         if (methodId != null)
+         {
+            url.setParameter("juzu.op", methodId.toString());
+         }
+      }
+
+      //
+      if (escapeXML)
       {
          try
          {

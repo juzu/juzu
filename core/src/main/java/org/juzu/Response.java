@@ -26,8 +26,10 @@ import org.juzu.io.Stream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -127,6 +129,9 @@ import java.util.Map;
 public abstract class Response
 {
 
+   /** . */
+   private static final Map EMPTY_MAP = Collections.emptyMap();
+   
    /**
     * A response instructing to execute a render phase of a controller method after the current interaction.
     */
@@ -134,27 +139,28 @@ public abstract class Response
    {
 
       /** . */
-      final Map<String, String> parameters;
+      private Map<String, String[]> parameters;
 
-      public Update(Map<String, String> parameters)
+      /** . */
+      private Map<PropertyType<?>, Object> properties;
+
+      public Update()
       {
-         this.parameters = parameters;
+         this.parameters = EMPTY_MAP;
+         this.properties = EMPTY_MAP;
       }
 
       /**
-       * Set a parameter for the controller method.
+       * Set a parameter, if the value is null, the parameter is removed.
        *
        * @param parameterName the parameter name
        * @param parameterValue the parameter value
        * @return this object
+       * @throws NullPointerException if the paraemter name is null
        */
-      public Update setParameter(String parameterName, String parameterValue)
+      public Update setParameter(String parameterName, String parameterValue) throws NullPointerException
       {
          if (parameterName == null)
-         {
-            throw new NullPointerException();
-         }
-         if (parameterValue == null)
          {
             throw new NullPointerException();
          }
@@ -162,13 +168,64 @@ public abstract class Response
          {
             throw new IllegalArgumentException("Parameter name cannot start with <juzu.> prefix");
          }
-         this.parameters.put(parameterName, parameterValue);
+         if (parameterValue != null)
+         {
+            if (parameters == EMPTY_MAP)
+            {
+               parameters = new HashMap<String, String[]>();
+            }
+            parameters.put(parameterName, new String[]{parameterValue});
+         }
+         else
+         {
+            if (parameters.size() > 0)
+            {
+               parameters.remove(parameterName);
+            }
+         }
          return this;
       }
 
-      public Map<String, String> getParameters()
+      /**
+       * Set a property, if the value is null, the property is removed.
+       *
+       * @param propertyType the property type
+       * @param propertyValue the property value
+       * @return this object
+       * @throws NullPointerException if the property type is null
+       */
+      public <T> Update setProperty(PropertyType<T> propertyType, T propertyValue)
+      {
+         if (propertyType == null)
+         {
+            throw new NullPointerException("No null property type allowed");
+         }
+         if (propertyValue != null)
+         {
+            if (properties == EMPTY_MAP)
+            {
+               properties = new HashMap<PropertyType<?>, Object>();
+            }
+            properties.put(propertyType, propertyValue);
+         }
+         else
+         {
+            if (properties.size() > 0)
+            {
+               properties.remove(propertyType);
+            }
+         }
+         return this;
+      }
+
+      public Map<String, String[]> getParameters()
       {
          return parameters;
+      }
+
+      public Map<PropertyType<?>, ?> getProperties()
+      {
+         return properties;
       }
 
       @Override
@@ -181,7 +238,22 @@ public abstract class Response
          if (obj instanceof Update)
          {
             Update that = (Update)obj;
-            return parameters.equals(that.parameters);
+            if (parameters.keySet().equals(that.parameters.keySet()))
+            {
+               for (Map.Entry<String, String[]> entry : parameters.entrySet())
+               {
+                  String[] value = that.parameters.get(entry.getKey());
+                  if  (!Arrays.equals(entry.getValue(), value))
+                  {
+                     return false;
+                  }
+               }
+            }
+            else
+            {
+               return false;
+            }
+            return properties.equals(that.properties);
          }
          return false;
       }
@@ -189,7 +261,7 @@ public abstract class Response
       @Override
       public String toString()
       {
-         return "Response.Update[parameters" + parameters + "]";
+         return "Response.Update[parameters" + parameters + ",properties=" + properties + "]";
       }
    }
 

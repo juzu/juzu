@@ -34,9 +34,9 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletRenderBridge extends ServletMimeBridge implements RenderBridge
 {
-   ServletRenderBridge(HttpServletRequest req, HttpServletResponse resp, Map<String, String[]> parameters)
+   ServletRenderBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
    {
-      super(req, resp, parameters);
+      super(req, resp, methodId, parameters);
    }
 
    public void setTitle(String title)

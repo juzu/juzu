@@ -19,6 +19,7 @@
 
 package org.juzu.portlet;
 
+import org.juzu.PropertyType;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.ApplicationRuntime;
 import org.juzu.impl.asset.Server;
@@ -38,6 +39,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
@@ -45,6 +47,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceServingPortlet;
+import javax.portlet.WindowState;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -58,6 +61,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class JuzuPortlet implements Portlet, ResourceServingPortlet
 {
+
+   /** . */
+   public static final class PORTLET_MODE extends PropertyType<PortletMode> {}
+
+   /** . */
+   public static final class WINDOW_STATE extends PropertyType<WindowState> {}
+
+   /** . */
+   public static final PORTLET_MODE PORTLET_MODE = new PORTLET_MODE();
+
+   /** . */
+   public static final WINDOW_STATE WINDOW_STATE = new WINDOW_STATE();
 
    /** . */
    private PortletConfig config;

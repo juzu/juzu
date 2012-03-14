@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request;
 
+import org.juzu.PropertyType;
 import org.juzu.Response;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.request.HttpContext;
@@ -38,6 +39,8 @@ public interface RequestBridge
     * @return the request parameters
     */
    Map<String, String[]> getParameters();
+
+   <T> T getProperty(PropertyType<T> propertyType);
 
    Scoped getFlashValue(Object key);
 

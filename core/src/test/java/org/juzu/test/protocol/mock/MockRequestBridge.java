@@ -19,13 +19,14 @@
 
 package org.juzu.test.protocol.mock;
 
+import org.juzu.PropertyType;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.utils.Tools;
+import org.juzu.request.RequestContext;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,9 @@ public abstract class MockRequestBridge implements RequestBridge
 
    /** . */
    protected final MockClient client;
+
+   /** . */
+   private final String methodId;
 
    /** . */
    private final Map<String, String[]> parameters;
@@ -54,10 +58,11 @@ public abstract class MockRequestBridge implements RequestBridge
    /** . */
    private final List<Scoped> attributesHistory;
 
-   public MockRequestBridge(MockClient client)
+   public MockRequestBridge(MockClient client, String methodId, Map<String, String[]> parameters)
    {
       this.client = client;
-      this.parameters = new HashMap<String, String[]>();
+      this.methodId = methodId;
+      this.parameters = parameters;
       this.attributes = new ScopedContext();
       this.httpContext = new MockHttpContext();
       this.securityContext = new MockSecurityContext();
@@ -68,6 +73,15 @@ public abstract class MockRequestBridge implements RequestBridge
    public List<Scoped> getAttributesHistory()
    {
       return attributesHistory;
+   }
+
+   public <T> T getProperty(PropertyType<T> propertyType)
+   {
+      if (RequestContext.METHOD_ID.equals(propertyType))
+      {
+         return propertyType.getType().cast(methodId);
+      }
+      return null;
    }
 
    public Map<String, String[]> getParameters()

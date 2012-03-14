@@ -17,39 +17,32 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.spi.request;
+package request.url.invalidproperty;
 
 import org.juzu.PropertyType;
-import org.juzu.request.Phase;
-
-import java.util.Map;
+import org.juzu.Response;
+import org.juzu.URLBuilder;
+import org.juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface MimeBridge extends RequestBridge
+public class A
 {
 
-   /**
-    *
-    * @param phase the phase
-    * @param propertyType the property type
-    * @param propertyValue the property value
-    * @param <T> the property generic type
-    * @return null when the property is valid, an error message otherwise
-    */
-   <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue);
-   
-   /**
-    * Renders an URL.
-    *
-    * @param phase the phase
-    * @param parameters the url parameters
-    * @param properties the url properties
-    * @return the rendered URL
-    * @throws IllegalArgumentException if any argument is not valid
-    */
-   String renderURL(
-      Phase phase,
-      Map<String, String[]> parameters,
-      Map<PropertyType<?>, ?> properties) throws IllegalArgumentException;
+   static class MyPropertyType extends PropertyType<String> {}
 
+   @View
+   public Response index()
+   {
+      URLBuilder builder = A_.indexURL();
+      try
+      {
+         builder.setProperty(new MyPropertyType(), "foo");
+         return Response.render("fail");
+      }
+      catch (IllegalArgumentException e)
+      {
+         // OK
+         return Response.render("pass");
+      }
+   }
 }
