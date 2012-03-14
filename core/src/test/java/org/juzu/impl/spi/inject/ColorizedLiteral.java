@@ -9,7 +9,7 @@ public class ColorizedLiteral extends AnnotationLiteral<Colorized> implements Co
    /** . */
    final Color value;
 
-   ColorizedLiteral(Color value)
+   public ColorizedLiteral(Color value)
    {
       this.value = value;
    }
