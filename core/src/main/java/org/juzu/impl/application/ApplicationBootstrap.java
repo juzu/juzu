@@ -48,7 +48,7 @@ public class ApplicationBootstrap
    public final ApplicationDescriptor descriptor;
 
    /** . */
-   private InternalApplicationContext context;
+   private ApplicationContext context;
 
    public ApplicationBootstrap(InjectBuilder bootstrap, ApplicationDescriptor descriptor)
    {
@@ -67,7 +67,7 @@ public class ApplicationBootstrap
       bootstrap.bindBean(ApplicationDescriptor.class, null, descriptor);
 
       // Bind the application context
-      bootstrap.declareBean(ApplicationContext.class, null, InternalApplicationContext.class);
+      bootstrap.declareBean(ApplicationContext.class, null, null);
 
       //
       bootstrap.setFilter(new BeanFilter()
@@ -146,10 +146,10 @@ public class ApplicationBootstrap
       I contextInstance = manager.create(contextBean);
       
       //
-      this.context = (InternalApplicationContext)manager.get(contextBean, contextInstance);
+      this.context = (ApplicationContext)manager.get(contextBean, contextInstance);
    }
    
-   public InternalApplicationContext getContext()
+   public ApplicationContext getContext()
    {
       return context;
    }

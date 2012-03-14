@@ -30,9 +30,9 @@ public class ApplicationTemplateRenderContext extends TemplateRenderContext
 {
 
    /** . */
-   private final InternalApplicationContext applicationContext;
+   private final ApplicationContext applicationContext;
 
-   public ApplicationTemplateRenderContext(InternalApplicationContext applicationContext, TemplateStub stub, Map<String, ?> attributes, Locale locale)
+   public ApplicationTemplateRenderContext(ApplicationContext applicationContext, TemplateStub stub, Map<String, ?> attributes, Locale locale)
    {
       super(stub, attributes, locale);
 

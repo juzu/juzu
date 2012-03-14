@@ -26,7 +26,6 @@ import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
-import org.juzu.impl.application.InternalApplicationContext;
 import org.juzu.impl.application.ApplicationBootstrap;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
@@ -52,7 +51,7 @@ public class MockApplication<P>
    final ClassLoader classLoader;
 
    /** . */
-   InternalApplicationContext context;
+   ApplicationContext context;
 
    /** . */
    private ApplicationBootstrap boot;

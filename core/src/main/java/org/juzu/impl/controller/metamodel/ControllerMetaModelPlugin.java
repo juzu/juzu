@@ -3,7 +3,7 @@ package org.juzu.impl.controller.metamodel;
 import org.juzu.Application;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
-import org.juzu.impl.application.InternalApplicationContext;
+import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.CompilationException;
@@ -165,7 +165,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
          writer.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(URLBuilder.class)).append(";\n");
-         writer.append("import ").append(Tools.getImport(InternalApplicationContext.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Response.Update.class)).append(";\n");
@@ -232,7 +232,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                   }
                   writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
                }
-               writer.append(") { return ((ActionContext)InternalApplicationContext.getCurrentRequest()).createResponse(").append(methodRef);
+               writer.append(") { return ((ActionContext)ApplicationContext.getCurrentRequest()).createResponse(").append(methodRef);
                switch (method.getParameterTypes().size())
                {
                   case 0:
@@ -266,7 +266,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                }
                writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
             }
-            writer.append(") { return ((MimeContext)InternalApplicationContext.getCurrentRequest()).createURLBuilder(").append(methodRef);
+            writer.append(") { return ((MimeContext)ApplicationContext.getCurrentRequest()).createURLBuilder(").append(methodRef);
             switch (method.getParameterNames().size())
             {
                case 0:
