@@ -17,6 +17,7 @@ import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.utils.Cardinality;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
@@ -172,6 +173,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
          writer.append("import ").append(Tools.getImport(ControllerBean.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Cardinality.class)).append(";\n");
+         writer.append("import ").append(Tools.getImport(Request.class)).append(";\n");
 
          // Open class
          writer.append("@Generated(value={})\n");
@@ -232,7 +234,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                   }
                   writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
                }
-               writer.append(") { return ((ActionContext)ApplicationContext.getCurrentRequest()).createResponse(").append(methodRef);
+               writer.append(") { return ((ActionContext)Request.getCurrent().getContext()).createResponse(").append(methodRef);
                switch (method.getParameterTypes().size())
                {
                   case 0:
@@ -266,7 +268,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                }
                writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
             }
-            writer.append(") { return ((MimeContext)ApplicationContext.getCurrentRequest()).createURLBuilder(").append(methodRef);
+            writer.append(") { return ((MimeContext)Request.getCurrent().getContext()).createURLBuilder(").append(methodRef);
             switch (method.getParameterNames().size())
             {
                case 0:

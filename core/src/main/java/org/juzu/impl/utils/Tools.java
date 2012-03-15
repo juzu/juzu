@@ -384,6 +384,13 @@ public class Tools
       return list;
    }
 
+   public static <E> ArrayList<E> list(E... elements)
+   {
+      ArrayList<E> set = new ArrayList<E>(elements.length);
+      Collections.addAll(set, elements);
+      return set;
+   }
+
    public static <E> Iterator<E> iterator(final E... elements) throws NullPointerException
    {
       return iterator(0, elements);

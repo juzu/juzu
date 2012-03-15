@@ -55,11 +55,6 @@ import java.util.Map;
 public class ApplicationContext
 {
 
-   public static RequestContext getCurrentRequest()
-   {
-      return current.get().getContext();
-   }
-
    /** . */
    private final ApplicationDescriptor descriptor;
 
@@ -68,9 +63,6 @@ public class ApplicationContext
 
    /** . */
    private final ControllerResolver controllerResolver;
-
-   /** . */
-   static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
    /** . */
    public ArrayList<RequestLifeCycle> plugins;
@@ -188,15 +180,11 @@ public class ApplicationContext
       {
          ClassLoader classLoader = injectManager.getClassLoader();
          Thread.currentThread().setContextClassLoader(classLoader);
-         current.set(request);
          ScopeController.begin(request);
-
-         //
          request.invoke();
       }
       finally
       {
-         current.set(null);
          ScopeController.end();
          Thread.currentThread().setContextClassLoader(oldCL);
       }

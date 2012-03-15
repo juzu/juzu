@@ -1,6 +1,6 @@
 package org.juzu.impl.asset;
 
-import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.utils.NameLiteral;
 import org.juzu.impl.utils.Path;
 import org.juzu.request.HttpContext;
@@ -33,7 +33,7 @@ public class Server
             @Override
             public void renderURL(Appendable out) throws IOException
             {
-               RequestContext ctx = ApplicationContext.getCurrentRequest();
+               RequestContext ctx = Request.getCurrent().getContext();
                HttpContext http = ctx.getHttpContext();
                out.append(http.getScheme()).append("://");
                out.append(http.getServerName());

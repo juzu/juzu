@@ -1,0 +1,40 @@
+A portlet provides a ##PortletPreferences## object for loading and saveing user preferences, it
+is a collection of key and values of type string, very much like a map. Juzu does not wrap the preferences
+object, instead it can be injected via the ##@Inject## annotation:
+
+{{java}}
+{@include examples.tutorial.weather7.Weather#preferences}
+{{/java}}
+
+The preferences object is available during the various phases of the application and can be used to retrieve and
+store user preferences, but keep in mind that storing preferences can only be done an action phase.
+
+{{note}}The preferences object is bound in the IOC container with the request scope, since the validity
+of the preferences object is associated with a portlet request. There is no need to declared the request
+scope in the preferences injection.{{/note}}
+
+= Reading preferences =
+
+To use the preferences in the templates we have modified the template to contain an additional ##grade## parameter
+that will be configured by the ##index## method when it renders the template. The grade value is obtained from
+the ##preferences## field at the beginning of the ##index## method:
+
+{{java}}
+{@include examples.tutorial.weather7.Weather#index(java.lang.String)}
+{{/java}}
+
+= Writing preferences =
+
+Preferences can be updated during the action phase of the application. The action phase is triggered by a form
+in the template:
+
+{{code href=examples/tutorial/weather7/templates/index.gtmpl/}}
+
+The form action value is set to ##@{updateGrade()}## URL that will invoke the corresponding method in the controller:
+
+{{java}}
+{@include examples.tutorial.weather7.Weather#updateGrade(java.lang.String)}
+{{/java}}
+
+The ##updateGrade## action updates the preferences and then invoke the ##store()## method to persist the changes.
+

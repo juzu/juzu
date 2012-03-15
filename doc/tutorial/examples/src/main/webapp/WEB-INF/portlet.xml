@@ -131,4 +131,24 @@
       <keywords>juzu,sample</keywords>
     </portlet-info>
   </portlet>
+  <portlet>
+    <portlet-name>Weather7Portlet</portlet-name>
+    <display-name xml:lang="EN">Juzu Preferences</display-name>
+    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>Weather7Application</value>
+    </init-param>
+    <init-param>
+      <name>juzu.run_mode</name>
+      <value>dev</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>Weather 7</title>
+      <keywords>juzu,sample</keywords>
+    </portlet-info>
+  </portlet>
 </portlet-app>

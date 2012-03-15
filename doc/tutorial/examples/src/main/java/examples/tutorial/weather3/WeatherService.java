@@ -21,7 +21,7 @@ package examples.tutorial.weather3;
 
 import org.xml.sax.InputSource;
 
-import javax.xml.xpath.XPathException;
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -30,21 +30,21 @@ import javax.xml.xpath.XPathFactory;
 public class WeatherService
 {
 
-   private final XPathExpression xpath;
-
-   public WeatherService() throws XPathException
+   public String getTemperature(String location)
    {
-      xpath = XPathFactory.newInstance().newXPath().compile("//temp_c/@data");
+      return getTemperature(location, "c");
    }
 
-   public String getTemperature(String location)
+   public String getTemperature(String location, String grade)
    {
       try
       {
+         XPath xpath = XPathFactory.newInstance().newXPath();
+         XPathExpression expr = xpath.compile("//temp_" + grade + "/@data");
          String url = "http://www.google.com/ig/api?weather=" + location;
          InputSource src = new InputSource(url);
          src.setEncoding("ISO-8859-1");
-         return xpath.evaluate(src);
+         return expr.evaluate(src);
       }
       catch (XPathExpressionException e)
       {

@@ -22,6 +22,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <scope>provided</scope>

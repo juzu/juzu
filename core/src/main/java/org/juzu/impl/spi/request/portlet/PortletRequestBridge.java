@@ -29,6 +29,7 @@ import org.juzu.request.RequestContext;
 import org.juzu.request.SecurityContext;
 import org.juzu.request.WindowContext;
 
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
@@ -88,7 +89,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       this.securityContext = new PortletSecurityContext(request);
       this.windowContext = new PortletWindowContext(this);
    }
-
+   
    public <T> T getProperty(PropertyType<T> propertyType)
    {
       Object propertyValue = null;

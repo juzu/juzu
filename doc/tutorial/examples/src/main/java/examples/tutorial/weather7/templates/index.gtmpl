@@ -1,0 +1,23 @@
+#{param name=location/}
+#{param name=temperature/}
+#{param name=locations/}
+#{param name=grade/}
+
+<form style="float:right" action="@{updateGrade()}" method="post">
+    <select name="grade" onChange="javascript:this.form.submit();">
+        <option value="c" <%=grade=='c'?'selected':''%>>celsius</option>
+        <option value="f" <%=grade=='f'?'selected':''%>>fahrenheit</option>
+    </select>
+</form>
+
+The weather temperature in ${location} is ${temperature} degrees.
+
+<ul><% locations.each() { location -> %>
+    <li><a href="@{index(location = location)}">${location}</a></li>
+    <% } %>
+</ul>
+
+<form action="@{add()}" method="post">
+    <input type="text" name="location" value=""/>
+    <input type="submit"/>
+</form>

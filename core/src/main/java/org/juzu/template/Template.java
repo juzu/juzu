@@ -22,6 +22,7 @@ package org.juzu.template;
 import org.juzu.Response;
 import org.juzu.UndeclaredIOException;
 import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.request.Request;
 import org.juzu.request.MimeContext;
 import org.juzu.request.RequestContext;
 import org.juzu.io.CharStream;
@@ -72,7 +73,7 @@ public abstract class Template
    {
       try
       {
-         RequestContext context = ApplicationContext.getCurrentRequest();
+         RequestContext context = Request.getCurrent().getContext();
          if (context instanceof MimeContext)
          {
             MimeContext mime = (MimeContext)context;

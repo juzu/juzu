@@ -19,7 +19,6 @@
 
 package org.juzu.impl.request;
 
-import org.juzu.IdentityScoped;
 import org.juzu.Response;
 import org.juzu.Scope;
 import org.juzu.impl.application.ApplicationContext;
@@ -44,6 +43,14 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Request implements ScopingContext
 {
+
+   public static Request getCurrent()
+   {
+      return current.get();
+   }
+
+   /** . */
+   private static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
    /** . */
    private final ApplicationContext application;
@@ -92,6 +99,10 @@ public class Request implements ScopingContext
       this.application = application;
    }
 
+   public RequestBridge getBridge()
+   {
+      return bridge;
+   }
 
    public Response getResponse()
    {
@@ -172,50 +183,66 @@ public class Request implements ScopingContext
 
    public void invoke() throws ApplicationException
    {
-      if (index >= 0 && index < application.getPlugins().size())
+      boolean set = current.get() == null;
+      try
       {
-         RequestLifeCycle plugin = application.getPlugins().get(index);
-         try
+         if (set)
          {
-            index++;
-            plugin.invoke(this);
+            current.set(this);
          }
-         finally
+
+         if (index >= 0 && index < application.getPlugins().size())
          {
-            index--;
+            RequestLifeCycle plugin = application.getPlugins().get(index);
+            try
+            {
+               index++;
+               plugin.invoke(this);
+            }
+            finally
+            {
+               index--;
+            }
          }
-      }
-      else if (index == application.getPlugins().size())
-      {
-         //
-         Object ret = doInvoke(this, args, application.getInjectManager());
+         else if (index == application.getPlugins().size())
+         {
+            //
+            Object ret = doInvoke(this, args, application.getInjectManager());
+   
+            //
+            if (ret instanceof Response)
+            {
+               // We should check that it matches....
+               // btw we should try to enforce matching during compilation phase
+               // @Action -> Response.Action
+               // @View -> Response.Mime
+               // as we can do it
+               response = (Response)ret;
+            }
+         }
+         else
+         {
+            throw new AssertionError();
+         }
 
          //
-         if (ret instanceof Response)
+         if (index == 0 && response != null)
          {
-            // We should check that it matches....
-            // btw we should try to enforce matching during compilation phase
-            // @Action -> Response.Action
-            // @View -> Response.Mime
-            // as we can do it
-            response = (Response)ret;
+            try
+            {
+               bridge.setResponse(response);
+            }
+            catch (IOException e)
+            {
+               throw new UnsupportedOperationException("handle me gracefully");
+            }
          }
       }
-      else
+      finally
       {
-         throw new AssertionError();
-      }
-
-      //
-      if (index == 0 && response != null)
-      {
-         try
+         if (set)
          {
-            bridge.setResponse(response);
-         }
-         catch (IOException e)
-         {
-            throw new UnsupportedOperationException("handle me gracefully");
+            current.set(null);
          }
       }
    }

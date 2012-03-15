@@ -57,8 +57,8 @@ public class ApplicationDescriptor extends Descriptor
    private final TemplatesDescriptor templates;
 
    /** . */
-   private final Map<String, Descriptor> pluginDescriptors;
-
+   private final Map<String, Descriptor> plugins;
+   
    public ApplicationDescriptor(Class<?> applicationClass)
    {
       // Load config
@@ -129,18 +129,36 @@ public class ApplicationDescriptor extends Descriptor
       this.templates = (TemplatesDescriptor)pluginDescriptors.get("template");
       this.packageClass = packageClass;
       this.controller = (ControllerDescriptor)pluginDescriptors.get("controller");
-      this.pluginDescriptors = pluginDescriptors;
+      this.plugins = pluginDescriptors;
+   }
+
+   private ApplicationDescriptor(ApplicationDescriptor that, Map<String, Descriptor> plugins)
+   {
+      this.applicationClass = that.applicationClass;
+      this.name = that.applicationClass.getSimpleName();
+      this.packageName = that.applicationClass.getPackage().getName();
+      this.templates = that.templates;
+      this.packageClass = that.packageClass;
+      this.controller = that.controller;
+      this.plugins = plugins;
    }
 
    @Override
    public Iterable<BeanDescriptor> getBeans()
    {
       ArrayList<BeanDescriptor> beans = new ArrayList<BeanDescriptor>();
-      for (Descriptor descriptor : pluginDescriptors.values())
+      for (Descriptor descriptor : plugins.values())
       {
          Tools.addAll(beans, descriptor.getBeans());
       }
       return beans;
+   }
+   
+   public ApplicationDescriptor addPlugins(Map<String, Descriptor> plugins)
+   {
+      Map<String, Descriptor> tmp = new HashMap<String, Descriptor>(this.plugins);
+      tmp.putAll(plugins);
+      return new ApplicationDescriptor(this, tmp);
    }
 
    public Class<?> getPackageClass()
