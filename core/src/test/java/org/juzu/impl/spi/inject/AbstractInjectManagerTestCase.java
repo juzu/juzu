@@ -25,6 +25,7 @@ import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
+import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractInjectTestCase;
 
 import java.io.File;
@@ -52,6 +53,11 @@ public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInject
       super(di);
    }
 
+   protected final void init() throws Exception
+   {
+      init(Tools.split(getClass().getPackage().getName(), '.'));
+   }
+   
    protected final void init(String... pkg) throws Exception
    {
       File root = new File(AbstractInjectManagerTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());

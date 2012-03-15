@@ -16,7 +16,7 @@ public class BoundBeanBeanSuperTypeTestCase<B, I> extends AbstractInjectManagerT
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "bound", "bean", "supertype");
+      init();
       Apple apple = new Apple();
       bootstrap.bindBean(Fruit.class, null, apple);
       bootstrap.declareBean(Injected.class, null, null);

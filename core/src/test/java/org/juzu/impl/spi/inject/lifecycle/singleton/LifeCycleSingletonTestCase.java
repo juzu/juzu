@@ -17,7 +17,7 @@ public class LifeCycleSingletonTestCase<B, I> extends AbstractInjectManagerTestC
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "lifecycle", "singleton");
+      init();
       bootstrap.declareBean(Bean.class, null, null);
       boot(Scope.SESSION);
 

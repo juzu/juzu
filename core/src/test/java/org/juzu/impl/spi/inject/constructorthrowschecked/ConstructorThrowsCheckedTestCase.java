@@ -19,7 +19,7 @@ public class ConstructorThrowsCheckedTestCase<B, I> extends AbstractInjectManage
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "constructorthrowschecked");
+      init();
       bootstrap.declareBean(Bean.class, null, null);
       boot();
 

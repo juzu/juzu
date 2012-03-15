@@ -21,7 +21,7 @@ public class BoundProviderQualifierDeclaredTestCase<B, I> extends AbstractInject
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "bound", "provider", "qualifier", "declared");
+      init();
       bootstrap.declareBean(Injected.class, null, null);
       Bean blue = new Bean();
       Bean red = new Bean();

@@ -21,7 +21,7 @@ public class DeclaredQualifierDeclaredProviderTestCase<B, I> extends AbstractInj
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "declared", "provider", "qualifier", "declared");
+      init();
       bootstrap.declareBean(Injected.class, null, null);
       bootstrap.declareProvider(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), ColorlessProvider.class);
       bootstrap.declareProvider(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), ColorlessProvider.class);

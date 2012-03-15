@@ -20,7 +20,7 @@ public class ResolvableBeansTestCase<B, I> extends AbstractInjectManagerTestCase
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "resolvebeans");
+      init();
       bootstrap.declareBean(Bean1.class, null, null);
       bootstrap.declareBean(Bean2.class, null, null);
       boot();

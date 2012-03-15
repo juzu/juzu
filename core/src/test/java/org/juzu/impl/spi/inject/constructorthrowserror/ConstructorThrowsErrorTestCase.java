@@ -18,7 +18,7 @@ public class ConstructorThrowsErrorTestCase<B, I> extends AbstractInjectManagerT
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "constructorthrowserror");
+      init();
       bootstrap.declareBean(Bean.class, null, null);
       boot();
 

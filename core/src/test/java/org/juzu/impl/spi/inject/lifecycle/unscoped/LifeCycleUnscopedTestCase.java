@@ -16,7 +16,7 @@ public class LifeCycleUnscopedTestCase<B, I> extends AbstractInjectManagerTestCa
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "lifecycle", "unscoped");
+      init();
       bootstrap.declareBean(Bean.class, null, null);
       boot();
 

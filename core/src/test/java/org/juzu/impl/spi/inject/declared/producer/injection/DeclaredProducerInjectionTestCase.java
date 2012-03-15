@@ -16,7 +16,7 @@ public class DeclaredProducerInjectionTestCase<B, I> extends AbstractInjectManag
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "declared", "producer", "injection");
+      init();
       bootstrap.declareProvider(Bean.class, null, BeanProducer.class);
       bootstrap.declareBean(Injected.class, null, null);
       boot();

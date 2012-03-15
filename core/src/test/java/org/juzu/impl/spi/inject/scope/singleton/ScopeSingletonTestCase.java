@@ -16,7 +16,7 @@ public class ScopeSingletonTestCase<B, I> extends AbstractInjectManagerTestCase<
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "scope", "singleton");
+      init();
       bootstrap.declareBean(Bean.class, null, null);
       boot();
 

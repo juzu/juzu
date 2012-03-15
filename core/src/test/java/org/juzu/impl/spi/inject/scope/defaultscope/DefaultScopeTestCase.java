@@ -16,7 +16,7 @@ public class DefaultScopeTestCase<B, I> extends AbstractInjectManagerTestCase<B,
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "scope", "defaultscope");
+      init();
       bootstrap.declareBean(Bean.class, null, null);
       boot();
 

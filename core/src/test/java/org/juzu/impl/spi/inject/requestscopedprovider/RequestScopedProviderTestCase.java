@@ -17,7 +17,7 @@ public class RequestScopedProviderTestCase<B, I> extends AbstractInjectManagerTe
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "requestscopedprovider");
+      init();
       bootstrap.declareProvider(Bean.class, null, BeanProvider.class);
       boot(Scope.REQUEST);
 

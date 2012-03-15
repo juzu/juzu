@@ -16,7 +16,7 @@ public class QualifierTestCase<B, I> extends AbstractInjectManagerTestCase<B, I>
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "qualifier");
+      init();
       bootstrap.declareBean(Injected.class, null, (Class<Injected>)null);
       bootstrap.declareBean(Bean.class, null, Bean.Red.class);
       bootstrap.declareBean(Bean.class, null, Bean.Green.class);

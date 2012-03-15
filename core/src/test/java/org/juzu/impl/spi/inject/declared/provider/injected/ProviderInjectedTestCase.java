@@ -16,7 +16,7 @@ public class ProviderInjectedTestCase<B, I> extends AbstractInjectManagerTestCas
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "declared", "provider", "injected");
+      init();
       Dependency dependency = new Dependency();
       bootstrap.bindBean(Dependency.class, null, dependency);
       bootstrap.declareProvider(Bean.class, null, DependencyProvider.class);

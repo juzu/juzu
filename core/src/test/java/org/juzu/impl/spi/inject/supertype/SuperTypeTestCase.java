@@ -16,7 +16,7 @@ public class SuperTypeTestCase<B, I> extends AbstractInjectManagerTestCase<B, I>
    @Test
    public void testSuperType() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "supertype");
+      init();
       bootstrap.declareBean(Apple.class, null, null);
       bootstrap.declareBean(Injected.class, null, null);
       boot();

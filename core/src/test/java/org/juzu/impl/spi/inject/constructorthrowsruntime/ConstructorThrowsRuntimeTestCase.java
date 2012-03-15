@@ -19,7 +19,7 @@ public class ConstructorThrowsRuntimeTestCase<B, I> extends AbstractInjectManage
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "constructorthrowsruntime");
+      init();
       bootstrap.declareBean(Bean.class, null, null);
       boot();
 

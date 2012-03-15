@@ -16,7 +16,7 @@ public class InjectManagerTestCase<B, I> extends AbstractInjectManagerTestCase<B
    @Test
    public void test() throws Exception
    {
-      init("org", "juzu", "impl", "spi", "inject", "managerinjection");
+      init();
       bootstrap.declareBean(Injected.class, null, null);
       boot();
 

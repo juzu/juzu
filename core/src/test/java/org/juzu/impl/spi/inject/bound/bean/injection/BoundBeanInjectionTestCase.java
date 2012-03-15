@@ -17,7 +17,7 @@ public class BoundBeanInjectionTestCase<B, I> extends AbstractInjectManagerTestC
    public void test() throws Exception
    {
       Bean singleton = new Bean();
-      init("org", "juzu", "impl", "spi", "inject", "bound", "bean", "injection");
+      init();
       bootstrap.declareBean(Injected.class, null, null);
       bootstrap.bindBean(Bean.class, null, singleton);
       boot();
