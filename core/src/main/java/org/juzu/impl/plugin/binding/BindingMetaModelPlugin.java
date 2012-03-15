@@ -4,16 +4,10 @@ import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.JSON;
-import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.binding.Bindings;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,44 +24,23 @@ public class BindingMetaModelPlugin extends MetaModelPlugin
    {
       if (fqn.equals(Bindings.class.getName()))
       {
-         Object value = values.get("value");
+         List<Map<String, Object>> bindings = (List<Map<String, Object>>)values.get("value");
          ArrayList<JSON> list = new ArrayList<JSON>();
-         if (value != null)
+         if (bindings != null)
          {
-            List<?> bindings;
-            if (value instanceof List<?>)
+            for (Map<String, Object> binding : bindings)
             {
-               bindings = new ArrayList<Object>((List<?>)value);
-            }
-            else 
-            {
-               bindings = Collections.singletonList(value);
-            }
-            for (int i = 0; i < bindings.size(); i++)
-            {
-               AnnotationMirror binding;
-               Object v = bindings.get(i);
-               if(v instanceof AnnotationValue) 
-               {
-                  binding = (AnnotationMirror)((AnnotationValue) v).getValue();
-               }
-               else
-               {
-                  binding = (AnnotationMirror) v;
-               }
-               
-               Map<String, Object> bindingValues = Tools.foo(binding);
-               TypeMirror bindingValue = (TypeMirror)bindingValues.get("value");
-               TypeMirror bindingImplementation = (TypeMirror)bindingValues.get("implementation");
-               VariableElement scope = (VariableElement)bindingValues.get("scope");
-               JSON a = new JSON().set("value", bindingValue.toString());
+               ElementHandle.Class bindingValue = (ElementHandle.Class)binding.get("value");
+               ElementHandle.Class bindingImplementation = (ElementHandle.Class)binding.get("implementation");
+               String scope = (String)binding.get("scope");
+               JSON a = new JSON().set("value", bindingValue.getFQN().toString());
                if (bindingImplementation != null)
                {
-                  a.set("implementation", bindingImplementation.toString());
+                  a.set("implementation", bindingImplementation.getFQN().toString());
                }
                if (scope != null)
                {
-                  a.set("scope", scope.getSimpleName().toString().toLowerCase());
+                  a.set("scope", scope);
                }
                list.add(a);
             }

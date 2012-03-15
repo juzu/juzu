@@ -97,8 +97,8 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
       AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
       Map<String, Object> values = Tools.foo(annotation);
       Boolean escapeXML = (Boolean)values.get("escapeXML");
-      TypeMirror defaultControllerElt = (TypeMirror)values.get("defaultController");
-      String defaultController = defaultControllerElt != null ? defaultControllerElt.toString() : null;
+      ElementHandle.Class defaultControllerElt = (ElementHandle.Class)values.get("defaultController");
+      String defaultController = defaultControllerElt != null ? defaultControllerElt.getFQN().toString() : null;
       controllers.escapeXML = escapeXML;
       controllers.defaultController = defaultController;
       application.addChild(ControllersMetaModel.KEY, controllers);
