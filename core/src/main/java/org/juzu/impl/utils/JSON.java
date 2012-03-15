@@ -25,6 +25,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * 
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class JSON
+public final class JSON implements Serializable
 {
 
    /** . */
