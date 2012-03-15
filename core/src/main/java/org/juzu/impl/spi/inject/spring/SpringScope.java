@@ -32,12 +32,12 @@ class SpringScope implements Scope
    private final DefaultListableBeanFactory factory;
 
    /** . */
-   private final org.juzu.impl.request.Scope scope;
+   private final org.juzu.Scope scope;
 
    /** . */
    private final ScopeController controller;
 
-   SpringScope(DefaultListableBeanFactory factory, org.juzu.impl.request.Scope scope, ScopeController controller)
+   SpringScope(DefaultListableBeanFactory factory, org.juzu.Scope scope, ScopeController controller)
    {
       this.factory = factory;
       this.scope = scope;

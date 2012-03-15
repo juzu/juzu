@@ -19,9 +19,9 @@
 
 package org.juzu.impl.spi.inject.spring;
 
+import org.juzu.Scope;
 import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.inject.ScopeController;
-import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
@@ -101,13 +101,13 @@ public class SpringBuilder extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder declareBean(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
+   public <T> InjectBuilder declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
    {
       if (implementationType == null)
       {
          implementationType = type;
       }
-      return declareBean(new DeclaredBean(implementationType, qualifiers));
+      return declareBean(new DeclaredBean(implementationType, beanScope, qualifiers));
    }
 
    @Override
@@ -117,15 +117,15 @@ public class SpringBuilder extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder bindProvider(Class<T> beanType, Iterable<Annotation> beanQualifiers, final Provider<T> provider)
+   public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, final Provider<T> provider)
    {
-      return declareBean(new SingletonProviderBean(beanType, beanQualifiers, provider));
+      return declareBean(new SingletonProviderBean(beanType, beanScope, beanQualifiers, provider));
    }
 
    @Override
-   public <T> InjectBuilder declareProvider(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
+   public <T> InjectBuilder declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
    {
-      return declareBean(new DeclaredProviderBean(type, qualifiers, provider));
+      return declareBean(new DeclaredProviderBean(type, beanScope, qualifiers, provider));
    }
 
    @Override
@@ -168,7 +168,10 @@ public class SpringBuilder extends InjectBuilder
       // Register scopes
       for (Scope scope : scopes)
       {
-         factory.registerScope(scope.name().toLowerCase(), new SpringScope(factory, scope, ScopeController.INSTANCE));
+         if (!scope.isBuiltIn())
+         {
+            factory.registerScope(scope.name().toLowerCase(), new SpringScope(factory, scope, ScopeController.INSTANCE));
+         }
       }
 
       //

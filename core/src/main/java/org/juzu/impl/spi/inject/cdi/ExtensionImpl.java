@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
-import org.juzu.impl.request.Scope;
+import org.juzu.Scope;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.utils.Tools;
 
@@ -97,7 +97,10 @@ public class ExtensionImpl implements Extension
       //
       for (Scope scope : container.scopes)
       {
-         event.addContext(new ContextImpl(container.scopeController, scope, scope.getAnnotationType()));
+         if (!scope.isBuiltIn())
+         {
+            event.addContext(new ContextImpl(container.scopeController, scope, scope.getAnnotationType()));
+         }
       }
 
       // Add the manager

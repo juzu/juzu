@@ -19,9 +19,9 @@
 
 package org.juzu.impl.spi.inject;
 
+import org.juzu.Scope;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopingContext;
-import org.juzu.impl.request.Scope;
 
 import java.util.HashMap;
 import java.util.Map;

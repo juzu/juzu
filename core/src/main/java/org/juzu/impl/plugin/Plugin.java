@@ -67,7 +67,7 @@ public abstract class Plugin
             Class<? extends RequestLifeCycle> lifeCycleClass = getLifeCycleClass();
             if (lifeCycleClass != null)
             {
-               return Collections.singletonList(new BeanDescriptor(lifeCycleClass, null, null));
+               return Collections.singletonList(new BeanDescriptor(lifeCycleClass, null, null, null));
             }
             else
             {

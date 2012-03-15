@@ -22,10 +22,10 @@ public class DeclaredQualifierDeclaredProviderTestCase<B, I> extends AbstractInj
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Injected.class, null, null);
-      bootstrap.declareProvider(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), ColorlessProvider.class);
-      bootstrap.declareProvider(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), ColorlessProvider.class);
-      bootstrap.declareProvider(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), GreenProvider.class);
+      bootstrap.declareBean(Injected.class, null, null, null);
+      bootstrap.declareProvider(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), ColorlessProvider.class);
+      bootstrap.declareProvider(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), ColorlessProvider.class);
+      bootstrap.declareProvider(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), GreenProvider.class);
       boot();
 
       //

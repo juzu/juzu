@@ -19,7 +19,7 @@
 
 package org.juzu.impl.spi.inject.spring;
 
-import org.juzu.impl.request.Scope;
+import org.juzu.Scope;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;

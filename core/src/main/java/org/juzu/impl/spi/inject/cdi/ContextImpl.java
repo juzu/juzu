@@ -19,8 +19,8 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.Scope;
 import org.juzu.impl.inject.ScopeController;
-import org.juzu.impl.request.Scope;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.Context;

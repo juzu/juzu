@@ -1,8 +1,10 @@
 package org.juzu.impl.metadata;
 
+import org.juzu.Scope;
+
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Describes a bean registered in an IOC container.
@@ -20,15 +22,19 @@ public final class BeanDescriptor
    /** The bean declared type. */
    private final Class<?> declaredType;
 
+   /** The bean scope. */
+   private final Scope scope;
+
    /** The bean qualifiers. */
-   private final Set<? extends Annotation> qualifiers;
+   private final List<Annotation> qualifiers;
 
    /** The bean implementation type. */
    private final Class<?> implementationType;
 
    public BeanDescriptor(
       Class<?> declaredType,
-      Set<? extends Annotation> qualifiers,
+      Scope scope,
+      List<Annotation> qualifiers,
       Class<?> implementationType) throws NullPointerException, IllegalArgumentException
    {
       if (declaredType == null)
@@ -48,6 +54,7 @@ public final class BeanDescriptor
       
       //
       this.declaredType = declaredType;
+      this.scope = scope;
       this.qualifiers = qualifiers;
       this.implementationType = implementationType;
    }
@@ -57,7 +64,12 @@ public final class BeanDescriptor
       return declaredType;
    }
 
-   public Set<? extends Annotation> getQualifiers()
+   public Scope getScope()
+   {
+      return scope;
+   }
+
+   public List<Annotation> getQualifiers()
    {
       return qualifiers;
    }

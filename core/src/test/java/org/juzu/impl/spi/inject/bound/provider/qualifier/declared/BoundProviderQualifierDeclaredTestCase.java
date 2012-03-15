@@ -22,13 +22,13 @@ public class BoundProviderQualifierDeclaredTestCase<B, I> extends AbstractInject
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Injected.class, null, null);
+      bootstrap.declareBean(Injected.class, null, null, null);
       Bean blue = new Bean();
       Bean red = new Bean();
       Bean green = new Bean.Green();
-      bootstrap.bindProvider(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), new BeanProvider(blue));
-      bootstrap.bindProvider(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), new BeanProvider(red));
-      bootstrap.bindProvider(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), new BeanProvider(green));
+      bootstrap.bindProvider(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), new BeanProvider(blue));
+      bootstrap.bindProvider(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), new BeanProvider(red));
+      bootstrap.bindProvider(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), new BeanProvider(green));
       boot();
 
       //

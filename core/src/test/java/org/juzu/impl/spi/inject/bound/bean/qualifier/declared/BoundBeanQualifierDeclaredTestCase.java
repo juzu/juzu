@@ -24,7 +24,7 @@ public class BoundBeanQualifierDeclaredTestCase<B, I> extends AbstractInjectMana
       Bean blue = new Bean();
       Bean red = new Bean();
       init();
-      bootstrap.declareBean(Injected.class, null, null);
+      bootstrap.declareBean(Injected.class, null, null, null);
       bootstrap.bindBean(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), blue);
       bootstrap.bindBean(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), red);
       boot();

@@ -1,7 +1,7 @@
 package org.juzu.impl.spi.inject.requestscopedprovider;
 
 import org.junit.Test;
-import org.juzu.impl.request.Scope;
+import org.juzu.Scope;
 import org.juzu.impl.spi.inject.AbstractInjectManagerTestCase;
 import org.juzu.impl.spi.inject.InjectImplementation;
 
@@ -18,7 +18,7 @@ public class RequestScopedProviderTestCase<B, I> extends AbstractInjectManagerTe
    public void test() throws Exception
    {
       init();
-      bootstrap.declareProvider(Bean.class, null, BeanProvider.class);
+      bootstrap.declareProvider(Bean.class, null, null, BeanProvider.class);
       boot(Scope.REQUEST);
 
       //

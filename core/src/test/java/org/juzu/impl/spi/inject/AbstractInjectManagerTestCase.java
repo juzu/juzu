@@ -19,10 +19,10 @@
 
 package org.juzu.impl.spi.inject;
 
+import org.juzu.Scope;
 import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.inject.Scoped;
-import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.utils.Tools;

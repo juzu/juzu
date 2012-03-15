@@ -19,8 +19,8 @@
 
 package org.juzu.impl.spi.inject.guice;
 
+import org.juzu.Scope;
 import org.juzu.impl.inject.BeanFilter;
-import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.fs.ReadFileSystem;
@@ -52,16 +52,16 @@ public class GuiceBuilder extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder declareBean(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
+   public <T> InjectBuilder declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
    {
-      bindings.add(new BeanBinding.ToType<T>(type, implementationType, qualifiers));
+      bindings.add(new BeanBinding.ToType<T>(type, beanScope, qualifiers, implementationType));
       return this;
    }
 
    @Override
-   public <T> InjectBuilder declareProvider(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
+   public <T> InjectBuilder declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
    {
-      bindings.add(new BeanBinding.ToProviderType<T>(type, provider, qualifiers));
+      bindings.add(new BeanBinding.ToProviderType<T>(type, beanScope, qualifiers, provider));
       return this;
    }
 
@@ -88,14 +88,14 @@ public class GuiceBuilder extends InjectBuilder
    @Override
    public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance)
    {
-      bindings.add(new BeanBinding.ToInstance<T>(type, instance, qualifiers));
+      bindings.add(new BeanBinding.ToInstance<T>(type, qualifiers, instance));
       return this;
    }
 
    @Override
-   public <T> InjectBuilder bindProvider(Class<T> beanType, Iterable<Annotation> beanQualifiers, Provider<T> provider)
+   public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider)
    {
-      bindings.add(new BeanBinding.ToProviderInstance<T>(beanType, provider, beanQualifiers));
+      bindings.add(new BeanBinding.ToProviderInstance<T>(beanType, beanScope, beanQualifiers, provider));
       return this;
    }
 

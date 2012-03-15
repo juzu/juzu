@@ -27,8 +27,8 @@ import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.bootstrap.spi.Metadata;
+import org.juzu.Scope;
 import org.juzu.impl.inject.ScopeController;
-import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.cdi.Container;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 

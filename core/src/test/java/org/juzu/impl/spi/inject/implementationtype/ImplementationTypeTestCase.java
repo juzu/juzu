@@ -17,7 +17,7 @@ public class ImplementationTypeTestCase<B, I> extends AbstractInjectManagerTestC
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(AbstractBean.class, null, Bean.class);
+      bootstrap.declareBean(AbstractBean.class, null, null, Bean.class);
       boot();
 
       //

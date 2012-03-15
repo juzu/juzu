@@ -21,13 +21,13 @@ package org.juzu.impl.application;
 
 import org.juzu.Action;
 import org.juzu.Resource;
+import org.juzu.Scope;
 import org.juzu.View;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.MetaProvider;
-import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
 
@@ -36,6 +36,7 @@ import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationBootstrap
@@ -67,7 +68,7 @@ public class ApplicationBootstrap
       bootstrap.bindBean(ApplicationDescriptor.class, null, descriptor);
 
       // Bind the application context
-      bootstrap.declareBean(ApplicationContext.class, null, null);
+      bootstrap.declareBean(ApplicationContext.class, null, null, null);
 
       //
       bootstrap.setFilter(new BeanFilter()
@@ -107,18 +108,18 @@ public class ApplicationBootstrap
          Class<?> implementation = bean.getImplementationType();
          if (implementation == null)
          {
-            bootstrap.declareBean(type, null, null);
+            bootstrap.declareBean(type, bean.getScope(), bean.getQualifiers(), null);
          }
          else if (MetaProvider.class.isAssignableFrom(implementation))
          {
             MetaProvider mp = (MetaProvider)implementation.newInstance();
             Provider provider = mp.getProvider(type);
-            bootstrap.bindProvider(type, null, provider);
+            bootstrap.bindProvider(type, bean.getScope(), bean.getQualifiers(), provider);
          }
          else if (Provider.class.isAssignableFrom(implementation))
          {
             Method m = implementation.getMethod("get");
-            ArrayList<Annotation> qualifiers = null;
+            Collection<Annotation> qualifiers = bean.getQualifiers();
             for (Annotation annotation : m.getAnnotations())
             {
                if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
@@ -130,11 +131,11 @@ public class ApplicationBootstrap
                   qualifiers.add(annotation);
                }
             }
-            bootstrap.declareProvider(type, qualifiers, (Class)implementation);
+            bootstrap.declareProvider(type, bean.getScope(), qualifiers, (Class)implementation);
          }
          else
          {
-            bootstrap.declareBean((Class)type, null, (Class)implementation);
+            bootstrap.declareBean((Class)type, bean.getScope(), bean.getQualifiers(), (Class)implementation);
          }
       }
 

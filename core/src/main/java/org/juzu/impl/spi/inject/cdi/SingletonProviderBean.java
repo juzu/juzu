@@ -19,6 +19,8 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.Scope;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
@@ -30,9 +32,9 @@ class SingletonProviderBean extends AbstractSingletonBean
    /** . */
    private final Provider provider;
 
-   SingletonProviderBean(Class type, Iterable<Annotation> qualifiers, Provider provider)
+   SingletonProviderBean(Class type, Scope scope, Iterable<Annotation> qualifiers, Provider provider)
    {
-      super(type, qualifiers);
+      super(type, scope, qualifiers);
 
       //
       this.provider = provider;

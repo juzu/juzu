@@ -17,9 +17,9 @@ public class SiblingProducersTestCase<B, I> extends AbstractInjectManagerTestCas
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Injected.class, null, null);
-      bootstrap.declareProvider(Bean1.class, null, Bean1Provider.class);
-      bootstrap.declareProvider(Bean2.class, null, Bean2Provider.class);
+      bootstrap.declareBean(Injected.class, null, null, null);
+      bootstrap.declareProvider(Bean1.class, null, null, Bean1Provider.class);
+      bootstrap.declareProvider(Bean2.class, null, null, Bean2Provider.class);
       bootstrap.addFileSystem(fs);
       boot();
 

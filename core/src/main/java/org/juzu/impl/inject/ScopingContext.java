@@ -19,7 +19,7 @@
 
 package org.juzu.impl.inject;
 
-import org.juzu.impl.request.Scope;
+import org.juzu.Scope;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface ScopingContext

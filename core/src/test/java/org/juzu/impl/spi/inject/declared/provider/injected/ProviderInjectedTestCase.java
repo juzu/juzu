@@ -19,8 +19,8 @@ public class ProviderInjectedTestCase<B, I> extends AbstractInjectManagerTestCas
       init();
       Dependency dependency = new Dependency();
       bootstrap.bindBean(Dependency.class, null, dependency);
-      bootstrap.declareProvider(Bean.class, null, DependencyProvider.class);
-      bootstrap.declareBean(Injected.class, null, null);
+      bootstrap.declareProvider(Bean.class, null, null, DependencyProvider.class);
+      bootstrap.declareBean(Injected.class, null, null, null);
       boot();
 
       //

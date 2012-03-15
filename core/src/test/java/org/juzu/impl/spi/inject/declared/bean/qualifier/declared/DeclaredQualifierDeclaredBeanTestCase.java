@@ -22,10 +22,10 @@ public class DeclaredQualifierDeclaredBeanTestCase<B, I> extends AbstractInjectM
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Injected.class, null, null);
-      bootstrap.declareBean(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), null);
-      bootstrap.declareBean(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), null);
-      bootstrap.declareBean(Bean.class, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), Bean.Green.class);
+      bootstrap.declareBean(Injected.class, null, null, null);
+      bootstrap.declareBean(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.BLUE)), null);
+      bootstrap.declareBean(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.RED)), null);
+      bootstrap.declareBean(Bean.class, null, Collections.<Annotation>singleton(new ColorizedLiteral(Color.GREEN)), Bean.Green.class);
       boot();
 
       //

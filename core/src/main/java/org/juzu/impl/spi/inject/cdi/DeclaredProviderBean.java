@@ -1,5 +1,7 @@
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.Scope;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -27,9 +29,9 @@ class DeclaredProviderBean extends AbstractDeclaredBean
    /** . */
    protected InjectionTarget providerIT;
 
-   DeclaredProviderBean(Class<?> type, Iterable<Annotation> qualifiers, Class<? extends Provider> providerType)
+   DeclaredProviderBean(Class<?> type, Scope scope, Iterable<Annotation> qualifiers, Class<? extends Provider> providerType)
    {
-      super(type, qualifiers);
+      super(type, scope, qualifiers);
       
       //
       this.providerType = providerType;

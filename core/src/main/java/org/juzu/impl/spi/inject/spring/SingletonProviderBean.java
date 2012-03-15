@@ -1,5 +1,6 @@
 package org.juzu.impl.spi.inject.spring;
 
+import org.juzu.Scope;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -15,11 +16,15 @@ class SingletonProviderBean extends AbstractBean
    /** . */
    final Provider provider;
 
-   SingletonProviderBean(Class type, Iterable<Annotation> qualifiers, Provider provider)
+   /** . */
+   final Scope scope;
+
+   SingletonProviderBean(Class type, Scope scope, Iterable<Annotation> qualifiers, Provider provider)
    {
       super(type, qualifiers);
 
       //
+      this.scope = scope;
       this.provider = provider;
    }
 
@@ -34,11 +39,22 @@ class SingletonProviderBean extends AbstractBean
 
       //
       AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
-      ScopeMetadata scopeMD = builder.scopeResolver.resolveScopeMetadata(definition);
-      if (scopeMD != null)
+
+      //
+      if (scope != null)
       {
-         definition.setScope(scopeMD.getScopeName());
+         definition.setScope(scope.name().toLowerCase());
       }
+      else
+      {
+         ScopeMetadata scopeMD = builder.scopeResolver.resolveScopeMetadata(definition);
+         if (scopeMD != null)
+         {
+            definition.setScope(scopeMD.getScopeName());
+         }
+      }
+
+      //
       if (qualifiers != null)
       {
          for (AutowireCandidateQualifier qualifier : qualifiers)
@@ -46,8 +62,21 @@ class SingletonProviderBean extends AbstractBean
             definition.addQualifier(qualifier);
          }
       }
+
+      //
+      if (qualifiers != null)
+      {
+         for (AutowireCandidateQualifier qualifier : qualifiers)
+         {
+            definition.addQualifier(qualifier);
+         }
+      }
+
+      //
       definition.setFactoryBeanName(_name);
       definition.setFactoryMethodName("get");
+
+      //
       factory.registerBeanDefinition(name, definition);
    }
 }

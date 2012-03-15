@@ -19,6 +19,8 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.Scope;
+
 import javax.enterprise.context.spi.CreationalContext;
 import java.lang.annotation.Annotation;
 
@@ -30,7 +32,7 @@ class SingletonBean extends AbstractSingletonBean
 
    SingletonBean(Class type, Iterable<Annotation> qualifiers, Object instance)
    {
-      super(type, qualifiers);
+      super(type, Scope.SINGLETON, qualifiers);
 
       //
       this.instance = instance;

@@ -17,8 +17,8 @@ public class DeclaredProviderInjectionTestCase<B, I> extends AbstractInjectManag
    public void test() throws Exception
    {
       init();
-      bootstrap.declareProvider(Bean.class, null, BeanProvider.class);
-      bootstrap.declareBean(Injected.class, null, null);
+      bootstrap.declareProvider(Bean.class, null, null, BeanProvider.class);
+      bootstrap.declareBean(Injected.class, null, null, null);
       boot();
 
       //
@@ -31,7 +31,7 @@ public class DeclaredProviderInjectionTestCase<B, I> extends AbstractInjectManag
    public void testProvider() throws Exception
    {
       init();
-      bootstrap.bindProvider(Bean.class, null, new BeanProvider());
+      bootstrap.bindProvider(Bean.class, null, null, new BeanProvider());
       boot();
 
       //

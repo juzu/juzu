@@ -121,7 +121,7 @@ public class MockApplication<P>
 
    public MockApplication<P> declareBean(Class<?> beanClass) throws ClassNotFoundException
    {
-      bootstrap.declareBean(beanClass, null, null);
+      bootstrap.declareBean(beanClass, null, null, null);
       return this;
    }
 

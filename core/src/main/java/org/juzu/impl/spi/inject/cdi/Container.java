@@ -19,8 +19,8 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.Scope;
 import org.juzu.impl.inject.ScopeController;
-import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 
 import javax.enterprise.inject.spi.BeanManager;

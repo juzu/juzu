@@ -31,7 +31,7 @@ public class ConfigurationTestCase<B, I> extends AbstractInjectManagerTestCase<B
 
          //
          init();
-         bootstrap.declareBean(Injected.class, null, null);
+         bootstrap.declareBean(Injected.class, null, null, null);
          ((SpringBuilder)bootstrap).setConfigurationURL(configurationURL);
          boot();
 

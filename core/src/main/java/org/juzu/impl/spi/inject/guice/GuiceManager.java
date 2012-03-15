@@ -35,8 +35,8 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Named;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
+import org.juzu.Scope;
 import org.juzu.impl.inject.ScopeController;
-import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.InjectManager;
 
@@ -85,7 +85,10 @@ public class GuiceManager implements InjectManager<GuiceBean, Object>
             // Bind guice scopes
             for (Scope scope : bootstrap.scopes)
             {
-               bindScope(scope.getAnnotationType(), new GuiceScope(scope, ScopeController.INSTANCE));
+               if (!scope.isBuiltIn())
+               {
+                  bindScope(scope.getAnnotationType(), new GuiceScope(scope, ScopeController.INSTANCE));
+               }
             }
 
             // Bind beans
@@ -121,6 +124,10 @@ public class GuiceManager implements InjectManager<GuiceBean, Object>
                {
                   BeanBinding.ToProviderInstance d = (BeanBinding.ToProviderInstance)beanBinding;
                   c = b.toProvider(d);
+                  if (beanBinding.scopeType != null)
+                  {
+                     c.in(beanBinding.scopeType);
+                  }
                }
                else
                {
@@ -155,9 +162,9 @@ public class GuiceManager implements InjectManager<GuiceBean, Object>
                         }
                      }
                   }
-                  if (beanBinding.scope != null)
+                  if (beanBinding.scopeType != null)
                   {
-                     c.in(beanBinding.scope.annotationType());
+                     c.in(beanBinding.scopeType);
                   }
                }
             }

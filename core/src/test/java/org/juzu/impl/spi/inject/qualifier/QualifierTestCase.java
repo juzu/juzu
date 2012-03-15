@@ -17,9 +17,9 @@ public class QualifierTestCase<B, I> extends AbstractInjectManagerTestCase<B, I>
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Injected.class, null, (Class<Injected>)null);
-      bootstrap.declareBean(Bean.class, null, Bean.Red.class);
-      bootstrap.declareBean(Bean.class, null, Bean.Green.class);
+      bootstrap.declareBean(Injected.class, null, null, (Class<Injected>)null);
+      bootstrap.declareBean(Bean.class, null, null, Bean.Red.class);
+      bootstrap.declareBean(Bean.class, null, null, Bean.Green.class);
       boot();
 
       //

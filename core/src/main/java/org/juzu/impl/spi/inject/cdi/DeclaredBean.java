@@ -1,5 +1,7 @@
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.Scope;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
@@ -16,9 +18,9 @@ class DeclaredBean extends AbstractDeclaredBean
    /** . */
    protected AnnotatedType at;
 
-   DeclaredBean(Class<?> type, Iterable<Annotation> qualifiers)
+   DeclaredBean(Class<?> type, Scope scope, Iterable<Annotation> qualifiers)
    {
-      super(type, qualifiers);
+      super(type, scope, qualifiers);
    }
 
    void register(BeanManager manager)

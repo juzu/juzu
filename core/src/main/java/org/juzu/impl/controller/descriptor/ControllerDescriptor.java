@@ -42,7 +42,7 @@ public class ControllerDescriptor extends Descriptor
          ControllerBean controller = (ControllerBean)f.get(null);
          controllers.add(controller);
          controllerMethods.addAll(controller.getMethods());
-         beans.add(new BeanDescriptor(controller.getType(), null, null));
+         beans.add(new BeanDescriptor(controller.getType(), null, null, null));
       }
       
       //

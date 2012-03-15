@@ -32,12 +32,12 @@ import org.juzu.impl.inject.ScopeController;
 public class GuiceScope implements Scope
 {
 
-   private final org.juzu.impl.request.Scope scope;
+   private final org.juzu.Scope scope;
 
    /** . */
    private final ScopeController controller;
 
-   public GuiceScope(org.juzu.impl.request.Scope scope, ScopeController controller)
+   public GuiceScope(org.juzu.Scope scope, ScopeController controller)
    {
       this.scope = scope;
       this.controller = controller;

@@ -20,7 +20,7 @@ public class ConstructorThrowsRuntimeTestCase<B, I> extends AbstractInjectManage
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Bean.class, null, null);
+      bootstrap.declareBean(Bean.class, null, null, null);
       boot();
 
       //

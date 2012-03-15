@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
@@ -27,6 +28,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Named;
 import javax.inject.Qualifier;
+import javax.inject.Scope;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -52,6 +54,9 @@ abstract class AbstractBean implements Bean
    private final Set<Annotation> qualifiers;
 
    /** . */
+   private Class<? extends Annotation> scope;
+
+   /** . */
    private final Set<Type> types;
 
    /** . */
@@ -60,10 +65,33 @@ abstract class AbstractBean implements Bean
    /** . */
    private String name;
 
-   AbstractBean(Class<?> type, Iterable<Annotation> qualifiers)
+   AbstractBean(Class<?> type, org.juzu.Scope scope, Iterable<Annotation> qualifiers)
    {
       HashSet<Type> types = new HashSet<Type>();
       collectSuperTypes(type, types);
+
+      // Determine scope
+      Class<? extends Annotation> scopeAnnotation = null;
+      if (scope != null)
+      {
+         scopeAnnotation = scope.getAnnotationType();
+      }
+      else
+      {
+         for (Annotation annotation : type.getAnnotations())
+         {
+            Class<? extends Annotation> annotationType = annotation.annotationType();
+            if (annotationType.getAnnotation(Scope.class) != null)
+            {
+               scopeAnnotation = annotationType;
+               break;
+            }
+         }
+         if (scopeAnnotation == null)
+         {
+            scopeAnnotation = Dependent.class;
+         }
+      }
 
       // Build the qualifier map
       Map<Class<? extends Annotation>, Annotation> qualifierMap = new HashMap<Class<? extends Annotation>, Annotation>();
@@ -101,6 +129,7 @@ abstract class AbstractBean implements Bean
       this.types = types;
       this.qualifiers = Collections.unmodifiableSet(new HashSet<Annotation>(qualifierMap.values()));
       this.name = name;
+      this.scope = scopeAnnotation;
    }
 
    private void collectSuperTypes(Class<?> type, HashSet<Type> superTypes)
@@ -122,42 +151,47 @@ abstract class AbstractBean implements Bean
       this.manager = manager;
    }
 
-   public Set<Type> getTypes()
+   public final Set<Type> getTypes()
    {
       return types;
    }
 
-   public Set<Annotation> getQualifiers()
+   public final Class<? extends Annotation> getScope()
+   {
+      return scope;
+   }
+
+   public final Set<Annotation> getQualifiers()
    {
       return qualifiers;
    }
 
-   public String getName()
+   public final String getName()
    {
       return name;
    }
 
-   public Set<Class<? extends Annotation>> getStereotypes()
+   public final Set<Class<? extends Annotation>> getStereotypes()
    {
       return Collections.emptySet();
    }
 
-   public Class<?> getBeanClass()
+   public final Class<?> getBeanClass()
    {
       return type;
    }
 
-   public boolean isAlternative()
+   public final boolean isAlternative()
    {
       return false;
    }
 
-   public boolean isNullable()
+   public final boolean isNullable()
    {
       return false;
    }
 
-   public Set<InjectionPoint> getInjectionPoints()
+   public final Set<InjectionPoint> getInjectionPoints()
    {
       return Collections.emptySet();
    }

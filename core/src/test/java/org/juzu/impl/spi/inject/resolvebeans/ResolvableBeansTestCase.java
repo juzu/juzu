@@ -21,8 +21,8 @@ public class ResolvableBeansTestCase<B, I> extends AbstractInjectManagerTestCase
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Bean1.class, null, null);
-      bootstrap.declareBean(Bean2.class, null, null);
+      bootstrap.declareBean(Bean1.class, null, null, null);
+      bootstrap.declareBean(Bean2.class, null, null, null);
       boot();
 
       //

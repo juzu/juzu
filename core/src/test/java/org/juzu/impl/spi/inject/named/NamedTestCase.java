@@ -17,9 +17,9 @@ public class NamedTestCase<B, I> extends AbstractInjectManagerTestCase<B, I>
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Injected.class, null, null);
-      bootstrap.declareBean(Bean.class, null, Bean.Foo.class);
-      bootstrap.declareBean(Bean.class, null, Bean.Bar.class);
+      bootstrap.declareBean(Injected.class, null, null, null);
+      bootstrap.declareBean(Bean.class, null, null, Bean.Foo.class);
+      bootstrap.declareBean(Bean.class, null, null, Bean.Bar.class);
       boot();
 
       //

@@ -19,7 +19,9 @@
 
 package org.juzu.impl.request;
 
+import org.juzu.IdentityScoped;
 import org.juzu.Response;
+import org.juzu.Scope;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
@@ -89,7 +91,7 @@ public class Request implements ScopingContext
       this.parameters = parameters;
       this.application = application;
    }
-   
+
 
    public Response getResponse()
    {
@@ -156,7 +158,13 @@ public class Request implements ScopingContext
 
    public boolean isActive(Scope scope)
    {
-      return scope.isActive(this);
+      switch (scope)
+      {
+         case IDENTITY:
+            return false;
+         default:
+            return true;
+      }
    }
 
    /** . */

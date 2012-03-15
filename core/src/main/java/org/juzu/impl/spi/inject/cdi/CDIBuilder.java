@@ -19,9 +19,9 @@
 
 package org.juzu.impl.spi.inject.cdi;
 
+import org.juzu.Scope;
 import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.inject.ScopeController;
-import org.juzu.impl.request.Scope;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
 import org.juzu.impl.spi.inject.cdi.weld.WeldContainer;
@@ -62,17 +62,16 @@ public class CDIBuilder extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder declareBean(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
+   public <T> InjectBuilder declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
    {
-      boundBeans.add(new DeclaredBean(implementationType != null ? implementationType : type, qualifiers));
+      boundBeans.add(new DeclaredBean(implementationType != null ? implementationType : type, beanScope, qualifiers));
       return this;
    }
 
    @Override
-   public <T> InjectBuilder declareProvider(Class<T> type, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
+   public <T> InjectBuilder declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
    {
-//      declaredBeans.add(provider);
-      boundBeans.add(new DeclaredProviderBean(type, qualifiers, provider));
+      boundBeans.add(new DeclaredProviderBean(type, beanScope, qualifiers, provider));
       return this;
    }
 
@@ -112,9 +111,9 @@ public class CDIBuilder extends InjectBuilder
    }
 
    @Override
-   public <T> InjectBuilder bindProvider(Class<T> beanType, Iterable<Annotation> beanQualifiers, Provider<T> provider)
+   public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider)
    {
-      boundBeans.add(new SingletonProviderBean(beanType, beanQualifiers, provider));
+      boundBeans.add(new SingletonProviderBean(beanType, beanScope, beanQualifiers, provider));
       return this;
    }
 

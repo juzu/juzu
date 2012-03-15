@@ -19,7 +19,7 @@ public class BoundBeanBeanSuperTypeTestCase<B, I> extends AbstractInjectManagerT
       init();
       Apple apple = new Apple();
       bootstrap.bindBean(Fruit.class, null, apple);
-      bootstrap.declareBean(Injected.class, null, null);
+      bootstrap.declareBean(Injected.class, null, null, null);
       boot();
 
       //

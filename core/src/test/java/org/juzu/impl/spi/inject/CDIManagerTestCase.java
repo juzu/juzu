@@ -68,7 +68,7 @@ public class CDIManagerTestCase<B, I> extends AbstractInjectManagerTestCase<B, I
 
          //
          init(classes, classLoader);
-         bootstrap.declareBean(bean2Class, null, null);
+         bootstrap.declareBean(bean2Class, null, null, null);
          bootstrap.bindBean(bean3Class, null, bean3Class.newInstance());
          boot();
 

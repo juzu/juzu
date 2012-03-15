@@ -1,7 +1,7 @@
 package org.juzu.impl.spi.inject.lifecycle.scoped;
 
 import org.junit.Test;
-import org.juzu.impl.request.Scope;
+import org.juzu.Scope;
 import org.juzu.impl.spi.inject.AbstractInjectManagerTestCase;
 import org.juzu.impl.spi.inject.InjectImplementation;
 
@@ -18,7 +18,7 @@ public class LifeCycleScopedTestCase<B, I> extends AbstractInjectManagerTestCase
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Bean.class, null, null);
+      bootstrap.declareBean(Bean.class, null, null, null);
       boot(Scope.SESSION);
 
       //

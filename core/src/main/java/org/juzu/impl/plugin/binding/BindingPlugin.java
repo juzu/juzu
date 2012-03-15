@@ -1,5 +1,6 @@
 package org.juzu.impl.plugin.binding;
 
+import org.juzu.Scope;
 import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.impl.metadata.Descriptor;
 import org.juzu.impl.metamodel.MetaModelPlugin;
@@ -34,10 +35,12 @@ public class BindingPlugin extends Plugin
       for (JSON binding : bindings)
       {
          String value = binding.getString("value");
+         String scope = binding.getString("scope");
          String implementation = binding.getString("implementation");
          Class<?> valueType = loader.loadClass(value);
          Class<?> implementationType = implementation != null ? loader.loadClass(implementation) : null;
-         BeanDescriptor bean = new BeanDescriptor(valueType, null, implementationType);
+         Scope beanScope = scope != null ? Scope.valueOf(scope.toUpperCase()) : null;
+         BeanDescriptor bean = new BeanDescriptor(valueType, beanScope, null, implementationType);
          beans.add(bean);
       }
       return new BindingDescriptor(beans);

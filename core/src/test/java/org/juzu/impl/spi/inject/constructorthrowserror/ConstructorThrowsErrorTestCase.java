@@ -19,7 +19,7 @@ public class ConstructorThrowsErrorTestCase<B, I> extends AbstractInjectManagerT
    public void test() throws Exception
    {
       init();
-      bootstrap.declareBean(Bean.class, null, null);
+      bootstrap.declareBean(Bean.class, null, null, null);
       boot();
 
       //
