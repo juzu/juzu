@@ -23,10 +23,12 @@ import org.juzu.PropertyType;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.ApplicationRuntime;
 import org.juzu.impl.asset.Server;
+import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
 import org.juzu.impl.spi.request.portlet.PortletRenderBridge;
 import org.juzu.impl.spi.request.portlet.PortletResourceBridge;
+import org.juzu.impl.utils.DevClassLoader;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 import org.juzu.impl.utils.TrimmingException;
@@ -39,6 +41,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -177,16 +180,26 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          {
             try
             {
+               // Share the same classpath for the whole application
+               PortletContext context = config.getPortletContext();
+               ClassLoaderFileSystem classPath = (ClassLoaderFileSystem)context.getAttribute("juzu.clfs");
+               if (classPath == null)
+               {
+                  ClassLoader devCL = new DevClassLoader(Thread.currentThread().getContextClassLoader());
+                  context.setAttribute("juzu.clfs", classPath = new ClassLoaderFileSystem(devCL));
+               }
+
+               //
                runtime = new ApplicationRuntime.Dynamic<String, String, String>(log);
                if (srcPath != null)
                {
                   ReadFileSystem<File> fss = new DiskFileSystem(new File(srcPath));
-                  ((ApplicationRuntime.Dynamic<String, String, File>)runtime).init(Thread.currentThread().getContextClassLoader(), fss);
+                  ((ApplicationRuntime.Dynamic<String, String, File>)runtime).init(classPath, fss);
                }
                else
                {
                   ReadFileSystem<String> fss = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
-                  ((ApplicationRuntime.Dynamic<String, String, String>)runtime).init(Thread.currentThread().getContextClassLoader(), fss);
+                  ((ApplicationRuntime.Dynamic<String, String, String>)runtime).init(classPath, fss);
                }
             }
             catch (Exception e)

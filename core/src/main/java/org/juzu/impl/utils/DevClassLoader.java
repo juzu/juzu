@@ -146,7 +146,7 @@ public class DevClassLoader extends ClassLoader
          String path = url.getPath();
          int index = path.indexOf("!/");
          String nested = path.substring(0, index);
-         if (nested.endsWith(".jar"))
+         if (nested.endsWith(".jar") || nested.endsWith(".zip"))
          {
             return true;
          }

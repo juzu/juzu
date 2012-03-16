@@ -21,22 +21,27 @@ package org.juzu.test;
 
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
+import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.processor.MainProcessor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
-import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.protocol.mock.MockApplication;
 
 import javax.annotation.processing.Processor;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.List;
+import java.util.WeakHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class CompilerHelper<I, O>
 {
+
+   /** A cache to speed up unit tests. */
+   private static WeakHashMap<ClassLoader, ClassLoaderFileSystem> classPathCache = new WeakHashMap<ClassLoader, ClassLoaderFileSystem>();
 
    /** . */
    private ReadFileSystem<I> sourcePath;
@@ -46,6 +51,9 @@ public class CompilerHelper<I, O>
 
    /** . */
    private ReadWriteFileSystem<O> classOutput;
+
+   /** . */
+   private ClassLoader baseClassLoader;
 
    /** . */
    private ClassLoader classLoader;
@@ -61,13 +69,28 @@ public class CompilerHelper<I, O>
       this.sourcePath = sourcePath;
       this.sourceOutput = sourceOutput;
       this.classOutput = classOutput;
+      this.baseClassLoader = Thread.currentThread().getContextClassLoader();
+      
+      //
+      ClassLoaderFileSystem classPath = classPathCache.get(baseClassLoader);
+      if (classPath == null)
+      {
+         try
+         {
+            classPathCache.put(baseClassLoader, classPath = new ClassLoaderFileSystem(baseClassLoader));
+         }
+         catch (IOException e)
+         {
+            throw AbstractTestCase.failure(e);
+         }
+      }
 
       //
       Compiler.Builder builder;
       try
       {
          builder = Compiler.builder();
-         builder.addClassPath(new ClassLoaderFileSystem(Thread.currentThread().getContextClassLoader()));
+         builder.addClassPath(classPath);
          builder.sourcePath(sourcePath);
          builder.sourceOutput(sourceOutput);
          builder.classOutput(classOutput);
@@ -143,7 +166,6 @@ public class CompilerHelper<I, O>
    {
       try
       {
-         ClassLoader classLoader = new URLClassLoader(new URL[]{getClassOutput().getURL()}, Thread.currentThread().getContextClassLoader());
          return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation.bootstrap());
       }
       catch (Exception e)
@@ -159,7 +181,7 @@ public class CompilerHelper<I, O>
          Compiler compiler = builder.build();
          List<CompilationError> errors = compiler.compile();
          AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), errors);
-         classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, Thread.currentThread().getContextClassLoader());
+         classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
          return compiler;
       }
       catch (Exception e)

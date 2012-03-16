@@ -25,16 +25,18 @@ import org.jboss.shrinkwrap.api.exporter.ExplodedExporter;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
+import org.juzu.impl.spi.fs.SimpleFileSystem;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import sun.net.www.protocol.foo.Handler;
 
+import javax.portlet.Portlet;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -47,6 +49,7 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase
 
    {
       JavaArchive jar = ShrinkWrap.create(JavaArchive.class);
+      jar.setManifest(new StringAsset(""));
       jar.addAsResource(new StringAsset("bar.txt_value"), "bar.txt");
       jar.addAsResource(new StringAsset("foo/bar.txt_value"), "foo/bar.txt");
       jar.addAsResource(new StringAsset("foo/bar/juu.txt_value"), "foo/bar/juu.txt");
@@ -77,6 +80,7 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase
 
          //
          final String abc = url.toString();
+         final URL manifestURL = new URL("jar:" + abc + "!/META-INF/MANIFEST.MF");
          final URL fooURL = new URL("jar:" + abc + "!/foo/");
          final URL barTxtURL = new URL("jar:" + abc + "!/foo/bar.txt");
          final URL barURL = new URL("jar:" + abc + "!/foo/bar/");
@@ -88,7 +92,11 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase
             @Override
             protected URL findResource(String name)
             {
-               if ("foo/".equals(name))
+               if ("META-INF/MANIFEST.MF".equals(name))
+               {
+                  return manifestURL;
+               }
+               else if ("foo/".equals(name))
                {
                   return fooURL;
                }
@@ -138,6 +146,16 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase
       File dir = jar.as(ExplodedExporter.class).exportExploded(f);
       assertFS(dir.toURI().toURL());
    }
+   
+   @Test
+   public void testPortletJar() throws Exception
+   {
+      URL url = Portlet.class.getProtectionDomain().getCodeSource().getLocation();
+      ClassLoader cl = new URLClassLoader(new URL[]{url}, ClassLoader.getSystemClassLoader());
+      ClassLoaderFileSystem fs = new ClassLoaderFileSystem(cl);
+      Object s = fs.getPath("javax", "portlet");
+      assertNotNull(s);
+   }
 
    private void assertFS(URL base) throws Exception
    {
@@ -146,24 +164,27 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase
 
    private void assertFS(ClassLoader classLoader) throws Exception
    {
-      ClassLoaderFileSystem fs = new ClassLoaderFileSystem(classLoader);
+      assertFS(new ClassLoaderFileSystem(classLoader));
+   }
 
-      //
-      String foo = fs.getPath("foo");
-      assertEquals("foo/", foo);
+   private <P> void assertFS(SimpleFileSystem<P> fs) throws Exception
+   {
+      P foo = fs.getPath("foo");
       assertEquals("foo", fs.getName(foo));
       assertEquals("foo", fs.packageOf(foo, '.', new StringBuilder()).toString());
-      assertEquals(Arrays.asList("foo/bar.txt"), Tools.list(fs.getChildren(foo)));
+      ArrayList<? extends P> fooChildren = Tools.list(fs.getChildren(foo));
+      assertEquals(1, fooChildren.size());
+      P fooChild = fooChildren.get(0);
+      assertEquals("foo", fs.packageOf(fooChild, '/', new StringBuilder()).toString());
+      assertEquals("bar.txt", fs.getName(fooChild));
 
       //
-      String fooBar = fs.getPath("foo", "bar.txt");
-      assertEquals("foo/bar.txt", fooBar);
+      P fooBar = fs.getPath("foo", "bar.txt");
       assertEquals("bar.txt", fs.getName(fooBar));
       assertEquals("foo", fs.packageOf(fooBar, '.', new StringBuilder()).toString());
 
       //
-      String fooBarJuu = fs.getPath("foo", "bar", "juu.txt");
-      assertEquals("foo/bar/juu.txt", fooBarJuu);
+      P fooBarJuu = fs.getPath("foo", "bar", "juu.txt");
       assertEquals("juu.txt", fs.getName(fooBarJuu));
       assertEquals("foo.bar", fs.packageOf(fooBarJuu, '.', new StringBuilder()).toString());
 

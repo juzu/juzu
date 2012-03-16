@@ -35,6 +35,7 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -59,7 +60,6 @@ public class MockApplication<P>
    /** . */
    private final ApplicationDescriptor descriptor;
 
-
    public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectBuilder bootstrap) throws Exception
    {
       P f = classes.getPath(Arrays.asList("org", "juzu", "config.json"));
@@ -80,12 +80,14 @@ public class MockApplication<P>
       }
       String name = props.names().iterator().next();
       String fqn = props.getString(name);
-      Class<?> clazz = classLoader.loadClass(fqn);
-      Field field = clazz.getDeclaredField("DESCRIPTOR");
-      ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 
       //
       DiskFileSystem libs = new DiskFileSystem(new File(ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
+
+      //
+      Class<?> clazz = classLoader.loadClass(fqn);
+      Field field = clazz.getDeclaredField("DESCRIPTOR");
+      ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 
       //
       bootstrap.addFileSystem(classes);

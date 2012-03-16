@@ -27,16 +27,15 @@ import org.juzu.impl.compiler.*;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
 import org.juzu.impl.fs.FileSystemScanner;
+import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.processor.MainProcessor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
-import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.spi.fs.jar.JarFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.inject.spring.SpringBuilder;
-import org.juzu.impl.utils.DevClassLoader;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
@@ -220,6 +219,9 @@ public abstract class ApplicationRuntime<P, R, L>
       /** . */
       private ClassLoader classLoader;
 
+      /** . */
+      private ClassLoader baseClassLoader;
+
       public Dynamic(Logger logger)
       {
          super(logger);
@@ -231,9 +233,20 @@ public abstract class ApplicationRuntime<P, R, L>
          devScanner.scan();
          logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
 
-         // We load it once as it is an expensive resource
-         ClassLoader devCL = new DevClassLoader(baseClassLoader);
-         classLoaderFS = new ClassLoaderFileSystem(devCL);
+         //
+         this.baseClassLoader = baseClassLoader;
+         this.classLoaderFS = new ClassLoaderFileSystem(baseClassLoader);
+      }
+
+      public void init(ClassLoaderFileSystem baseClassPath, ReadFileSystem<S> fss) throws Exception
+      {
+         devScanner = new FileSystemScanner<S>(fss);
+         devScanner.scan();
+         logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
+
+         //
+         this.baseClassLoader = baseClassPath.getClassLoader();
+         this.classLoaderFS = baseClassPath;
       }
 
       @Override
@@ -268,7 +281,7 @@ public abstract class ApplicationRuntime<P, R, L>
             List<CompilationError> res = compiler.compile();
             if (res.isEmpty())
             {
-               this.classLoader = new URLClassLoader(new URL[]{classes.getURL()}, classLoaderFS.getClassLoader());
+               this.classLoader = new URLClassLoader(new URL[]{classes.getURL()}, baseClassLoader);
                this.classes = classes;
                
                //

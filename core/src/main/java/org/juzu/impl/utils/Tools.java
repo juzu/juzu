@@ -43,7 +43,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public class Tools
 {
 
    /** . */
-   private static final Iterator EMPTY = new Iterator()
+   private static final Iterator EMPTY_ITERATOR = new Iterator()
    {
       public boolean hasNext()
       {
@@ -77,6 +76,15 @@ public class Tools
       public void remove()
       {
          throw new UnsupportedOperationException();
+      }
+   };
+
+   /** . */
+   private static final Iterable EMPTY_ITERABLE = new Iterable()
+   {
+      public Iterator iterator()
+      {
+         return EMPTY_ITERATOR;
       }
    };
 
@@ -332,11 +340,33 @@ public class Tools
       return new HashSet<E>();
    }
 
+   public static <E> HashSet<E> set(E element)
+   {
+      HashSet<E> set = new HashSet<E>();
+      set.add(element);
+      return set;
+   }
+
    public static <E> HashSet<E> set(E... elements)
    {
       HashSet<E> set = new HashSet<E>(elements.length);
       Collections.addAll(set, elements);
       return set;
+   }
+
+   public static <E> HashSet<E> set(Iterable<E> elements)
+   {
+      return set(elements.iterator());
+   }
+
+   public static <E> HashSet<E> set(Iterator<E> elements)
+   {
+      HashSet<E> list = new HashSet<E>();
+      while (elements.hasNext())
+      {
+         list.add(elements.next());
+      }
+      return list;
    }
 
    public static <E> ArrayList<E> list(Iterable<E> elements)
@@ -410,8 +440,15 @@ public class Tools
    public static <E> Iterator<E> emptyIterator()
    {
       @SuppressWarnings("unchecked")
-      Iterator<E> iterator = EMPTY;
+      Iterator<E> iterator = EMPTY_ITERATOR;
       return iterator;
+   }
+
+   public static <E> Iterable<E> emptyIterable()
+   {
+      @SuppressWarnings("unchecked")
+      Iterable<E> iterable = EMPTY_ITERABLE;
+      return iterable;
    }
 
    public static <E> Iterator<E> append(final Iterator<E> iterator, final E... elements)

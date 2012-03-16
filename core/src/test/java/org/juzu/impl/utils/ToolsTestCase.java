@@ -136,4 +136,69 @@ public class ToolsTestCase extends AbstractTestCase
       assertFalse(i.hasNext());
       assertNoSuchElement(i);
    }
+   
+   @Test
+   public void testTrieEmpty()
+   {
+      Trie<String, String> trie = new Trie<String, String>();
+      assertNull(trie.getParent());
+      assertNull(trie.getKey());
+      assertEquals(Collections.emptyList(), Tools.list(trie.getPath()));
+      assertNull(trie.value());
+      assertNull(trie.value("foo"));
+      assertEquals("foo", trie.value());
+      assertEquals("foo", trie.value("bar"));
+      assertEquals("bar", trie.value());
+      assertEquals("bar", trie.value("juu"));
+   }
+
+   @Test
+   public void testTrieAddKey()
+   {
+      Trie<String, String> root = new Trie<String, String>();
+      Trie<String, String> foo = root.add("foo");
+      assertSame(foo, root.get("foo"));
+      assertSame(foo, root.add("foo"));
+      assertSame(root, foo.getParent());
+   }
+
+   @Test
+   public void testTrieAddKeys()
+   {
+      Trie<String, String> root = new Trie<String, String>();
+      Trie<String, String> bar = root.add("foo", "bar");
+      Trie<String, String> foo = bar.getParent();
+      assertSame(foo, root.get("foo"));
+      assertSame(foo, root.add("foo"));
+      assertSame(root, foo.getParent());
+      assertSame(bar, foo.get("bar"));
+      assertSame(bar, foo.add("bar"));
+   }
+
+   @Test
+   public void testTrieMerge()
+   {
+      Trie<String, String> root1 = new Trie<String, String>();
+      Trie<String, String> foo1 = root1.add("foo");
+      Trie<String, String> bar1 = foo1.add("bar");
+
+      //
+      Trie<String, String> root2 = new Trie<String, String>();
+      Trie<String, String> foo2 = root2.add("foo");
+      Trie<String, String> juu2 = foo2.add("juu");
+      Trie<String, String> daa2 = juu2.add("daa");
+
+      //
+      root1.merge(root2);
+      assertEquals(Tools.set("foo"), Tools.set(root1));
+      assertSame(foo1, root1.get("foo"));
+      assertEquals(Tools.set("bar", "juu"), Tools.set(foo1));
+      assertSame(bar1, foo1.get("bar"));
+      Trie<String, String> juu1 = foo1.get("juu");
+      assertNotSame(juu2, juu1);
+      assertEquals(Tools.set("daa"), Tools.set(juu1));
+      Trie<String, String> boo = juu1.add("boo");
+      assertEquals(Tools.set("daa", "boo"), Tools.set(juu1));
+      assertEquals(Tools.set("daa"), Tools.set(juu2));
+   }
 }
