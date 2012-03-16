@@ -32,6 +32,7 @@ import org.juzu.impl.utils.Tools;
 import org.juzu.impl.utils.TrimmingException;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.war.WarFileSystem;
 
 import javax.portlet.ActionRequest;
@@ -82,6 +83,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    /** . */
    private boolean prod;
+
+   /** . */
+   private String srcPath;
 
    /** . */
    private String appName;
@@ -146,6 +150,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       //
       this.appName = config.getInitParameter("juzu.app_name");
       this.prod = !("dev".equals(runMode));
+      this.srcPath = config.getInitParameter("juzu.src_path");
       this.injectImpl = injectImpl;
       this.libs = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/lib/");
       this.resources = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/");
@@ -173,8 +178,16 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             try
             {
                runtime = new ApplicationRuntime.Dynamic<String, String, String>(log);
-               ReadFileSystem<String> fss = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
-               ((ApplicationRuntime.Dynamic<String, String, String>)runtime).init(Thread.currentThread().getContextClassLoader(), fss);
+               if (srcPath != null)
+               {
+                  ReadFileSystem<File> fss = new DiskFileSystem(new File(srcPath));
+                  ((ApplicationRuntime.Dynamic<String, String, File>)runtime).init(Thread.currentThread().getContextClassLoader(), fss);
+               }
+               else
+               {
+                  ReadFileSystem<String> fss = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
+                  ((ApplicationRuntime.Dynamic<String, String, String>)runtime).init(Thread.currentThread().getContextClassLoader(), fss);
+               }
             }
             catch (Exception e)
             {
