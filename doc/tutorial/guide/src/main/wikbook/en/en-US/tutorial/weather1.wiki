@@ -39,8 +39,10 @@ As we can notice, there are 5 applications deployed, one for each of the topic o
 * Weather1Application: [[#quickstart]]
 * Weather2Application: [[#template_overview]]
 * Weather3Application: [[#dependency_injection]]
-* Weather3Application: [[#views]]
-* Weather3Application: [[#actions]]
+* Weather4Application: [[#views]]
+* Weather5Application: [[#actions]]
+* Weather6Application: [[#type_safe_templating]]
+* Weather7Application: [[#preferences]]
 
 = Interacting with the application =
 

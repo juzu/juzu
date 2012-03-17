@@ -113,7 +113,7 @@
   </portlet>
   <portlet>
     <portlet-name>Weather6Portlet</portlet-name>
-    <display-name xml:lang="EN">Juzu Actions</display-name>
+    <display-name xml:lang="EN">Juzu Type Safe Templating</display-name>
     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
     <init-param>
       <name>juzu.app_name</name>
