@@ -16,6 +16,15 @@ Screencast
 - [Template type safe parameters in Eclipse](http://vimeo.com/33370178)
 - [Juzu dev mode](http://vimeo.com/33519963)
 
+# WIP (current master)
+
+- 0.5
+   - plugin support
+   - asset plugin
+   - ajax plugin
+   - lifecycle support with @PostConstruct and @PreDestroy
+   - Portlet preferences injection
+
 # Status
 
 - 0.4.4
@@ -49,11 +58,6 @@ Screencast
 
 # Roadmap
 
-- 0.5
-   - initial plugin support
-   - asset plugin
-   - ajax plugin
-   - lifecycle support with @PostConstruct and @PreDestroy
 - 0.6
     - tutorial (cont)
     - portlet eventing support
@@ -73,20 +77,13 @@ Screencast
 
 Various things to do, not exhaustive that needs to go in the roadmap
 
-- integrate the Scoped destruction callback with the context (request,session,flash)
-- clarify how invocation URL are constructed and dispatched to the target (id versus resolution)
-- provide a deployment mode that get source from the file system wherever they are (in order to use the real sources)
 - parse error in template parser
 - more stack trace sanitization
 - consider resolving a template via its variable name instead of @Path
-- honour life cycle of objects (specially flash scope)
 - handle internal error correctly
 - think about doing a "debug" portlet that would cooperate with juzu portlets
-- weld declared beans and instance always have the Singleton scope and ignore the class setting
-- response : handle mime type
 - no files to compile -> javac message : see why
 - for plugins : think about an @Depends to define dependencies for ordering (?)
-- BUG with : @Application(plugins = AssetPlugin.class) when plugin does not exist
 - look at integrating mustache : https://github.com/spullara/mustache.java
 
 # Deploy on
