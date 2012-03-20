@@ -1,0 +1,62 @@
+Controllers are an essential part of a Juzu application.
+
+= Controller methods =
+
+Juzu controllers are simply annotated methods of the application, there are several kinds of controllers,
+each kind of controller having a different purpose:
+
+* View controllers annoted with the ##@org.juzu.View## annotation
+* Action controllers annotated with the ##@org.juzu.Action## annotation
+* Resource controllers annotated with the ##@org.juzu.Resource## annotation
+* Event controllers annotated with the ##@org.juzu.Event## annotation (//not yet implemented//)
+
+Controller methods can have parameters as phase parameters.
+
+== View controllers ==
+
+A view controller method produces aggregated markup for the application, it means that the invocation of the method
+should produce markup that will be aggregated in larger page, therefore it should not care about the overall HTML
+page.
+
+View parameters describe the current parameters of the view, they are often used for navigation purpose in the application.
+Juzu supports simple data types such as string and structured data types modelled by Java objects.
+
+* Simple data types can be the following types ##String##, ##List<String>## and ##String[]##. Later this will be expanded
+to more simple types such as number, etc..
+* Structured data types : todo
+
+View controller method should return a ##org.juzu.Response## object that is the content produced by the method. To be more precise
+ it should return a ##Response.Content## or ##Response.Render## object (the latter being a subclass of the former) that contains
+ everything Juzu needs to display the application.
+
+##Response.Content## is a base class for content, it defines the ##send## method. Juzu invokes this method when it needs
+to render the response produced by the view method. The invocation of the ##send## method will be performed after the view method
+is invoked.
+
+{{java}}
+{@include org.juzu.Response.Content#send(org.juzu.io.Stream)}
+{{/java}}
+
+== Action controllers ==
+
+An action controller method process an action for the application. It does not produce markup, instead it configures
+the view parameters of the next view that Juzu will display.
+
+== Resource controllers ==
+
+Resource controllers are similar to view controllers, however the resource has full control over the target page.
+It means that a resource controller must produce the entire resource and it can also chose the mime type returned. Resource
+controllers have several use cases:
+
+* Implement ajax resource serving
+* Produce an application resource, such as an image, a script, etc...
+
+== Event controllers ==
+
+//not yet implemented//
+
+= Controller object =
+
+Obviously the controller methods belongs to
+objects and the role played by controller objects are important too.
+

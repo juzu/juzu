@@ -16,7 +16,6 @@
   <description>The tutorial guide</description>
 
   <properties>
-    <wikbook.version>0.9.37</wikbook.version>
     <wikbook.source>${pom.basedir}/src/main/wikbook</wikbook.source>
     <wikbook.target>${project.build.directory}/wikbook</wikbook.target>
   </properties>
@@ -35,7 +34,6 @@
     <dependency>
       <groupId>org.wikbook</groupId>
       <artifactId>wikbook.docbkxstyle</artifactId>
-      <version>${wikbook.version}</version>
     </dependency>
   </dependencies>
 
@@ -47,7 +45,6 @@
       <plugin>
         <groupId>org.wikbook</groupId>
         <artifactId>wikbook.maven</artifactId>
-        <version>${wikbook.version}</version>
         <executions>
           <execution>
             <phase>prepare-package</phase>
@@ -203,7 +200,6 @@
      <plugin>
        <groupId>org.wikbook</groupId>
        <artifactId>wikbook.html2pdf</artifactId>
-       <version>${wikbook.version}</version>
        <executions>
          <execution>
            <phase>package</phase>

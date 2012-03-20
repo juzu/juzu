@@ -317,11 +317,16 @@ public abstract class Response
          return null;
       }
 
+      /**
+       * Send the response on the stream argument, Juzu invokes it when it needs to render the content object.
+       *
+       * @param stream the stream for sending the response
+       * @throws IOException any io exception
+       */
       public void send(S stream) throws IOException
       {
          // Do nothing
       }
-
    }
 
    public static class Render extends Content<CharStream>

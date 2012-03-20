@@ -27,6 +27,9 @@
     <!-- Encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <!-- Juzu -->
+    <wikbook.version>0.9.39</wikbook.version>
+
   </properties>
 
   <developers>
@@ -316,6 +319,12 @@
       <version>7.0.0.v20091005</version>
     </dependency>
 
+      <dependency>
+        <groupId>org.wikbook</groupId>
+        <artifactId>wikbook.docbkxstyle</artifactId>
+        <version>${wikbook.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -453,6 +462,19 @@
           <artifactId>maven-gpg-plugin</artifactId>
           <version>1.1</version>
         </plugin>
+
+        <!-- Wikbook -->
+        <plugin>
+          <groupId>org.wikbook</groupId>
+          <artifactId>wikbook.maven</artifactId>
+          <version>${wikbook.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.wikbook</groupId>
+          <artifactId>wikbook.html2pdf</artifactId>
+          <version>${wikbook.version}</version>
+        </plugin>
+
       </plugins>
     </pluginManagement>
   </build>
