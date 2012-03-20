@@ -65,51 +65,6 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
       return mimeType;
    }
 
-   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
-   {
-      if (propertyType == URLBuilder.ESCAPE_XML)
-      {
-         // OK
-         return null;
-      }
-      else if (propertyType == RequestContext.METHOD_ID)
-      {
-         // OK
-         return null;
-      }
-      else
-      {
-         return "Unsupported property " + propertyType + " = " + propertyValue;
-      }
-   }
-
-   public String renderURL(Phase phase, Map<String, String[]> parameters, Map<PropertyType<?>, ?> properties)
-   {
-      JSON props = new JSON();
-      if (properties != null)
-      {
-         for (Map.Entry<PropertyType<?>, ?> entry : properties.entrySet())
-         {
-            String valid = checkPropertyValidity(phase, (PropertyType)entry.getKey(), entry.getValue());
-            if (valid != null)
-            {
-               throw new IllegalArgumentException(valid);
-            }
-            else
-            {
-               props.set(entry.getKey().getClass().getName(), entry.getValue());
-            }
-         }
-      }
-
-      //
-      JSON url = new JSON();
-      url.set("phase", phase.name());
-      url.map("parameters", parameters);
-      url.set("properties", props);
-      return url.toString();
-   }
-
    public void setResponse(Response response) throws IllegalStateException, IOException
    {
       if (response instanceof Response.Content<?>)

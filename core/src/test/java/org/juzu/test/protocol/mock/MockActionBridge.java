@@ -22,6 +22,7 @@ package org.juzu.test.protocol.mock;
 import org.juzu.PropertyType;
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
+import org.juzu.request.Phase;
 import org.juzu.request.RequestContext;
 import org.juzu.test.AbstractTestCase;
 
@@ -39,6 +40,19 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
    public MockActionBridge(MockClient client, String methodId, Map<String, String[]> parameters)
    {
       super(client, methodId, parameters);
+   }
+   
+   public String assertUpdate()
+   {
+      if (response instanceof Response.Update)
+      {
+         Response.Update update = (Response.Update)response;
+         return renderURL(Phase.RENDER, update.getParameters(), update.getProperties());
+      }
+      else
+      {
+         throw AbstractTestCase.failure("Was expecting an update instead of " + response);
+      }
    }
 
    public void assertNoResponse()

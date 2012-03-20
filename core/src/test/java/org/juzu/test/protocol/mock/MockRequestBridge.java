@@ -20,10 +20,13 @@
 package org.juzu.test.protocol.mock;
 
 import org.juzu.PropertyType;
+import org.juzu.URLBuilder;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RequestBridge;
+import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
+import org.juzu.request.Phase;
 import org.juzu.request.RequestContext;
 
 import java.util.ArrayList;
@@ -161,5 +164,50 @@ public abstract class MockRequestBridge implements RequestBridge
    {
       attributesHistory.addAll(Tools.list(attributes));
       attributes.close();
+   }
+
+   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
+   {
+      if (propertyType == URLBuilder.ESCAPE_XML)
+      {
+         // OK
+         return null;
+      }
+      else if (propertyType == RequestContext.METHOD_ID)
+      {
+         // OK
+         return null;
+      }
+      else
+      {
+         return "Unsupported property " + propertyType + " = " + propertyValue;
+      }
+   }
+
+   public String renderURL(Phase phase, Map<String, String[]> parameters, Map<PropertyType<?>, ?> properties)
+   {
+      JSON props = new JSON();
+      if (properties != null)
+      {
+         for (Map.Entry<PropertyType<?>, ?> entry : properties.entrySet())
+         {
+            String valid = checkPropertyValidity(phase, (PropertyType)entry.getKey(), entry.getValue());
+            if (valid != null)
+            {
+               throw new IllegalArgumentException(valid);
+            }
+            else
+            {
+               props.set(entry.getKey().getClass().getName(), entry.getValue());
+            }
+         }
+      }
+
+      //
+      JSON url = new JSON();
+      url.set("phase", phase.name());
+      url.map("parameters", parameters);
+      url.set("properties", props);
+      return url.toString();
    }
 }
