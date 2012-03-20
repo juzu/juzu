@@ -160,6 +160,19 @@ public abstract class Response
        */
       public Update setParameter(String parameterName, String parameterValue) throws NullPointerException
       {
+         return setParameter(parameterName, new String[]{parameterValue});
+      }
+
+      /**
+       * Set a parameter, if the value is null, the parameter is removed.
+       *
+       * @param parameterName the parameter name
+       * @param parameterValues the parameter value
+       * @return this object
+       * @throws NullPointerException if the paraemter name is null
+       */
+      public Update setParameter(String parameterName, String[] parameterValues) throws NullPointerException
+      {
          if (parameterName == null)
          {
             throw new NullPointerException();
@@ -168,13 +181,13 @@ public abstract class Response
          {
             throw new IllegalArgumentException("Parameter name cannot start with <juzu.> prefix");
          }
-         if (parameterValue != null)
+         if (parameterValues != null)
          {
             if (parameters == EMPTY_MAP)
             {
                parameters = new HashMap<String, String[]>();
             }
-            parameters.put(parameterName, new String[]{parameterValue});
+            parameters.put(parameterName, parameterValues);
          }
          else
          {
@@ -182,6 +195,22 @@ public abstract class Response
             {
                parameters.remove(parameterName);
             }
+         }
+         return this;
+      }
+
+      /**
+       * Set all parameters, if the entry value is null, the parameter is removed.
+       *
+       * @param parameters the parameters
+       * @return this object
+       * @throws NullPointerException if the paraemter name is null
+       */
+      public Update setAllParameters(Map<String, String[]> parameters) throws NullPointerException
+      {
+         for (String key : parameters.keySet())
+         {
+            setParameter(key, parameters.get(key));
          }
          return this;
       }

@@ -27,11 +27,11 @@
         <strong>Nightly rate:</strong> ${hotel.price}
     </p>
         <p>
-            <strong>Check In Date:</strong> <input type="text" size="10" name="checkinDate" class="datepicker" value=""> *
+            <strong>Check In Date:</strong> <input type="text" size="10" name="booking.checkinDate" class="datepicker" value=""> *
             <span class="error"></span>
         </p>
         <p class="">
-            <strong>Check Out Date:</strong> <input type="text" size="10" name="checkoutDate" class="datepicker" value=""> *
+            <strong>Check Out Date:</strong> <input type="text" size="10" name="booking.checkoutDate" class="datepicker" value=""> *
             <span class="error"></span>
         </p>
     <p>
@@ -44,20 +44,20 @@
     </p>
     <p>
         <strong>Smoking preference:</strong>
-        <input type="radio" name="smoking" value="true" checked> Smoking
-        <input type="radio" name="smoking" value="false"> Non smoking
+        <input type="radio" name="booking.smoking" value="true" checked> Smoking
+        <input type="radio" name="booking.smoking" value="false"> Non smoking
     </p>
         <p>
-            <strong>Credit Card #:</strong> <input type="text" name="creditCard" size="16" value=""> *
+            <strong>Credit Card #:</strong> <input type="text" name="booking.creditCard" size="16" value=""> *
             <span class="error"></span>
         </p>
         <p>
-            <strong>Credit Card Name:</strong> <input type="text" name="creditCardName" size="16" value=""> *
+            <strong>Credit Card Name:</strong> <input type="text" name="booking.creditCardName" size="16" value=""> *
             <span class="error"></span>
         </p>
     <p>
         <strong>Credit Card Expiry:</strong>
-        <select name="creditCardExpiryMonth">
+        <select name="booking.creditCardExpiryMonth">
             <option value="1">Jan#</option>
             <option value="2">Feb#</option>
             <option value="3">Mar#</option>
@@ -71,7 +71,7 @@
             <option value="11">Nov#</option>
             <option value="112">Dec#</option>
         </select>
-        <select name="creditCardExpiryYear">
+        <select name="booking.creditCardExpiryYear">
             <option value="2011">2011#</option>
             <option value="2012">2012#</option>
             <option value="2013">2013#</option>

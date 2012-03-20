@@ -27,6 +27,7 @@ import org.juzu.request.RequestContext;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -77,9 +78,25 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
 
    private void assertResponse(Response expectedResponse)
    {
-      AbstractTestCase.assertEquals("Was expecting a response " + expectedResponse + " instead of  " + response,
-         expectedResponse,
-         response);
+      if (expectedResponse instanceof Response.Update)
+      {
+         Response.Update expected = (Response.Update) expectedResponse;
+         Response.Update resp = (Response.Update) response;
+         
+         AbstractTestCase.assertEquals(expected.getParameters().size(), expected.getParameters().size());
+         for(String key : resp.getParameters().keySet())
+         {
+            AbstractTestCase.assertEquals(
+               Arrays.asList(expected.getParameters().get(key)),
+               Arrays.asList(resp.getParameters().get(key)));
+         }
+      }
+      else
+      {
+         AbstractTestCase.assertEquals("Was expecting a response " + expectedResponse + " instead of  " + response,
+            expectedResponse,
+            response);
+      }
    }
 
    public void setResponse(Response response) throws IllegalStateException, IOException

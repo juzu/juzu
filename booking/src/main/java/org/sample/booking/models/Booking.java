@@ -19,6 +19,8 @@
 
 package org.sample.booking.models;
 
+import org.juzu.Param;
+
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 // @Entity
+@Param
 public class Booking {
 
     public String id;
@@ -66,7 +69,11 @@ public class Booking {
     public boolean smoking;
     public int beds;
 
-    public Booking(Hotel hotel, User user) {
+   public Booking()
+   {
+   }
+
+   public Booking(Hotel hotel, User user) {
         this.hotel = hotel;
         this.user = user;
     }

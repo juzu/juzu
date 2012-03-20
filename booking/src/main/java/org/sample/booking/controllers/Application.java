@@ -92,7 +92,7 @@ public class Application
    }
 
    @Action
-   public Response saveUser(String username, String name, String password, String verifyPassword)
+   public Response saveUser(User user, String verifyPassword)
    {
 /*
        validation.required(verifyPassword);
@@ -101,8 +101,6 @@ public class Application
            render("@register", user, verifyPassword);
        }
 */
-      User user = new User(name, password, verifyPassword);
-      user.username = username;
       User.create(user);
       login.setUserName(user.username);
       flash.setSuccess("Welcome, " + user.name);
@@ -111,10 +109,10 @@ public class Application
 
 
    @Action
-   public Response login(String username, String password)
+   public Response login(User u)
    {
-      System.out.println("Want login " + username + " " + password);
-      User user = User.find(username, password);
+      System.out.println("Want login " + u.username + " " + u.password);
+      User user = User.find(u.username, u.password);
       if (user != null)
       {
          login.setUserName(user.username);
@@ -124,7 +122,7 @@ public class Application
       else
       {
          // Oops
-         flash.setUsername(username);
+         flash.setUsername(u.username);
          flash.setError("Login failed");
          return null;
       }
