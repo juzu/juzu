@@ -75,7 +75,7 @@ public abstract class MimeContext extends RequestContext
             if (param.getType().isAnnotationPresent(Param.class))
             {
                Map<String, String[]> p = buildBeanParameter(param.getName(), value);
-               builder.setAllParameter(p);
+               builder.setParameters(p);
             }
             else
             {

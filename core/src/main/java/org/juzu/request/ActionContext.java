@@ -71,7 +71,7 @@ public class ActionContext extends RequestContext
          if (arg.getClass().isAnnotationPresent(Param.class))
          {
             Map<String, String[]> p = buildBeanParameter(argumentParameters.get(0).getName(), arg);
-            response.setAllParameters(p);
+            response.setParameters(p);
          }
          else
          {
@@ -93,7 +93,7 @@ public class ActionContext extends RequestContext
             if (value.getClass().isAnnotationPresent(Param.class))
             {
                Map<String, String[]> p = buildBeanParameter(argumentParameters.get(i).getName(), value);
-               response.setAllParameters(p);
+               response.setParameters(p);
             }
             else
             {

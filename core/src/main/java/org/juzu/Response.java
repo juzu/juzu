@@ -19,6 +19,8 @@
 
 package org.juzu;
 
+import org.juzu.impl.utils.ParameterHashMap;
+import org.juzu.impl.utils.ParameterMap;
 import org.juzu.impl.utils.Tools;
 import org.juzu.io.BinaryStream;
 import org.juzu.io.CharStream;
@@ -139,79 +141,44 @@ public abstract class Response
    {
 
       /** . */
-      private Map<String, String[]> parameters;
+      private ParameterMap parameterMap;
 
       /** . */
       private Map<PropertyType<?>, Object> properties;
 
       public Update()
       {
-         this.parameters = EMPTY_MAP;
+         this.parameterMap = ParameterMap.EMPTY;
          this.properties = EMPTY_MAP;
       }
 
-      /**
-       * Set a parameter, if the value is null, the parameter is removed.
-       *
-       * @param parameterName the parameter name
-       * @param parameterValue the parameter value
-       * @return this object
-       * @throws NullPointerException if the paraemter name is null
-       */
-      public Update setParameter(String parameterName, String parameterValue) throws NullPointerException
+      public Update setParameter(String name, String value) throws NullPointerException
       {
-         return setParameter(parameterName, new String[]{parameterValue});
-      }
-
-      /**
-       * Set a parameter, if the value is null, the parameter is removed.
-       *
-       * @param parameterName the parameter name
-       * @param parameterValues the parameter value
-       * @return this object
-       * @throws NullPointerException if the paraemter name is null
-       */
-      public Update setParameter(String parameterName, String[] parameterValues) throws NullPointerException
-      {
-         if (parameterName == null)
+         if (parameterMap == ParameterMap.EMPTY)
          {
-            throw new NullPointerException();
+            parameterMap = new ParameterHashMap();
          }
-         if (parameterName.startsWith("juzu."))
-         {
-            throw new IllegalArgumentException("Parameter name cannot start with <juzu.> prefix");
-         }
-         if (parameterValues != null)
-         {
-            if (parameters == EMPTY_MAP)
-            {
-               parameters = new HashMap<String, String[]>();
-            }
-            parameters.put(parameterName, parameterValues);
-         }
-         else
-         {
-            if (parameters.size() > 0)
-            {
-               parameters.remove(parameterName);
-            }
-         }
+         parameterMap.setParameter(name, value);
          return this;
       }
 
-      /**
-       * Set all parameters, if the entry value is null, the parameter is removed.
-       *
-       * @param parameters the parameters
-       * @return this object
-       * @throws NullPointerException if the paraemter name is null
-       */
-      public Update setAllParameters(Map<String, String[]> parameters) throws NullPointerException
+      public Update setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException
       {
-         for (String key : parameters.keySet())
+         if (parameterMap == ParameterMap.EMPTY)
          {
-            setParameter(key, parameters.get(key));
+            parameterMap = new ParameterHashMap();
          }
+         parameterMap.setParameter(name, value);
+         return this;
+      }
+
+      public Update setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException
+      {
+         if (parameterMap == ParameterMap.EMPTY)
+         {
+            parameterMap = new ParameterHashMap();
+         }
+         parameterMap.setParameters(parameters);
          return this;
       }
 
@@ -249,7 +216,7 @@ public abstract class Response
 
       public Map<String, String[]> getParameters()
       {
-         return parameters;
+         return parameterMap;
       }
 
       public Map<PropertyType<?>, ?> getProperties()
@@ -267,22 +234,7 @@ public abstract class Response
          if (obj instanceof Update)
          {
             Update that = (Update)obj;
-            if (parameters.keySet().equals(that.parameters.keySet()))
-            {
-               for (Map.Entry<String, String[]> entry : parameters.entrySet())
-               {
-                  String[] value = that.parameters.get(entry.getKey());
-                  if  (!Arrays.equals(entry.getValue(), value))
-                  {
-                     return false;
-                  }
-               }
-            }
-            else
-            {
-               return false;
-            }
-            return properties.equals(that.properties);
+            return parameterMap.equals(that.parameterMap) && properties.equals(that.properties);
          }
          return false;
       }
@@ -290,7 +242,7 @@ public abstract class Response
       @Override
       public String toString()
       {
-         return "Response.Update[parameters" + parameters + ",properties=" + properties + "]";
+         return "Response.Update[parameters" + parameterMap + ",properties=" + properties + "]";
       }
    }
 
