@@ -19,6 +19,7 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.Param;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.ControllerResolver;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
@@ -41,7 +42,9 @@ import org.juzu.template.TemplateRenderContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -199,11 +202,29 @@ public class ApplicationContext
    {
       // Prepare method parameters
       List<ControllerParameter> params = method.getArguments();
+      Class<?>[] paramsType = method.getMethod().getParameterTypes();
       Object[] args = new Object[params.size()];
       for (int i = 0;i < args.length;i++)
       {
          ControllerParameter param = params.get(i);
-         String[] values = parameterMap.get(param.getName());
+         Object[] values = null;
+         if (paramsType[i].isAnnotationPresent(Param.class))
+         {
+            // build bean parameter
+            Object o = null;
+            try
+            {
+               o = createMappedBean(paramsType[i], param.getName(), parameterMap);
+            }
+            catch (Exception e)
+            {
+            }
+            values = new Object[]{o};
+         }
+         else
+         {
+           values = parameterMap.get(param.getName());
+         }
          if (values != null)
          {
             switch (param.getCardinality())
@@ -215,8 +236,8 @@ public class ApplicationContext
                   args[i] = values.clone();
                   break;
                case LIST:
-                  ArrayList<String> list = new ArrayList<String>(values.length);
-                  for (String value : values)
+                  ArrayList<Object> list = new ArrayList<Object>(values.length);
+                  for (Object value : values)
                   {
                      list.add(value);
                   }
@@ -230,6 +251,76 @@ public class ApplicationContext
 
       //
       return args;
+   }
+
+   private <T> T createMappedBean(Class<T> clazz, String beanName, Map<String, String[]> parameters) throws IllegalAccessException, InstantiationException
+   {
+      // Extract parameters
+      Map<String, String[]> beanParams = new HashMap<String, String[]>();
+      String prefix = beanName + ".";
+      for (String key : parameters.keySet())
+      {
+         if (key.startsWith(prefix))
+         {
+            String paramName = key.substring(prefix.length());
+            beanParams.put(paramName, parameters.get(key));
+         }
+      }
+      
+      // Build bean
+      T bean = clazz.newInstance();
+      for (String key : beanParams.keySet())
+      {
+         String[] value = beanParams.get(key);
+         String setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
+         boolean success = callSetter(setterName, clazz, bean, value, String[].class);
+         if (!success)
+         {
+            success = callSetter(setterName, clazz, bean, value[0], String.class);
+         }
+         if (!success)
+         {
+            success = callSetter(setterName, clazz, bean, Arrays.asList(value), List.class);
+         }
+         if (!success)
+         {
+            try
+            {
+               Field f = clazz.getField(key);
+               if (String[].class.equals(f.getType()))
+               {
+                  f.set(bean, value);
+               }
+               else if (String.class.equals(f.getType()))
+               {
+                  f.set(bean, value[0]);
+               }
+               else if (List.class.equals(f.getType()))
+               {
+                  f.set(bean, Arrays.asList(value));
+               }
+
+            }
+            catch (NoSuchFieldException e)
+            {
+            }
+         }
+
+      }
+      return bean;
+   }
+
+   <T> boolean callSetter(String methodName, Class<T> clazz, T target, Object value, Class type)
+   {
+      try
+      {
+         Method m = clazz.getMethod(methodName, type);
+         m.invoke(target, value);
+         return true;
+      }
+      catch (Exception e) {
+         return false;
+      }
    }
 
    private <B, I> Object resolveBean(InjectManager<B, I> manager, String name) throws ApplicationException

@@ -19,12 +19,15 @@
 
 package org.sample.booking.models;
 
+import org.juzu.Param;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 // @Entity
 // @Table(name="Customer")
+@Param
 public class User
 {
 
@@ -42,6 +45,10 @@ public class User
    //    @Required
 //    @MaxSize(100)
    public String name;
+
+   public User()
+   {
+   }
 
    public User(String name, String password, String username)
    {

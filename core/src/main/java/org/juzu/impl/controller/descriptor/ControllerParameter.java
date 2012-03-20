@@ -39,6 +39,9 @@ public class ControllerParameter
    /** . */
    private final String value;
 
+   /** . */
+   private final Class type;
+
 //   public ControllerParameter(String name) throws NullPointerException
 //   {
 //      this(name, Cardinality.SINGLE, null);
@@ -50,6 +53,11 @@ public class ControllerParameter
    }
 
    public ControllerParameter(String name, Cardinality cardinality, String value) throws NullPointerException
+   {
+      this(name, cardinality, value, null);
+   }
+
+   public ControllerParameter(String name, Cardinality cardinality, String value, Class type) throws NullPointerException
    {
       if (name == null)
       {
@@ -64,6 +72,7 @@ public class ControllerParameter
       this.name = name;
       this.cardinality = cardinality;
       this.value = value;
+      this.type = type;
    }
 
    /**
@@ -96,7 +105,12 @@ public class ControllerParameter
       return value;
    }
 
-   @Override
+   public Class getType()
+   {
+      return type;
+   }
+
+  @Override
    public boolean equals(Object obj)
    {
       if (obj == this)

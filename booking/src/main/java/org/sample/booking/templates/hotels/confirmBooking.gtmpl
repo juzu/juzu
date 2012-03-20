@@ -27,25 +27,25 @@
     </p>
     <p>
         <strong>Beds:</strong> ${beds}
-        <input type="hidden" name="beds" value="${beds}">
+        <input type="hidden" name="booking.beds" value="${beds}">
     </p>
     <p>
         <strong>Total:</strong> ${total}
     </p>
     <p>
         <strong>Check in date:</strong> ${checkinDate}
-        <input type="hidden" name="checkinDate" value="${checkinDate}">
+        <input type="hidden" name="booking.checkinDate" value="${checkinDate}">
     </p>
     <p>
         <strong>Check out date:</strong> ${checkoutDate.format('yyyy-MM-dd')}
-        <input type="hidden" name="checkoutDate" value="${checkoutDate}">
+        <input type="hidden" name="booking.checkoutDate" value="${checkoutDate}">
     </p>
     <p>
         <strong>Credit card #:</strong> ${creditCard}
-        <input type="hidden" name="creditCard" value="${creditCard}">
-        <input type="hidden" name="creditCardName" value="${creditCardName}">
-        <input type="hidden" name="creditCardExpiryMonth" value="${creditCardExpiryMonth}">
-        <input type="hidden" name="creditCardExpiryYear" value="${creditCardExpiryYear}">
+        <input type="hidden" name="booking.creditCard" value="${creditCard}">
+        <input type="hidden" name="booking.creditCardName" value="${creditCardName}">
+        <input type="hidden" name="booking.creditCardExpiryMonth" value="${creditCardExpiryMonth}">
+        <input type="hidden" name="booking.creditCardExpiryYear" value="${creditCardExpiryYear}">
     </p>
 
     <p class="buttons">
