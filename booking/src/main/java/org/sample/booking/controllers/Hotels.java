@@ -25,16 +25,13 @@ import org.juzu.View;
 import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.plugin.ajax.Ajax;
-import org.juzu.template.Template;
 import org.sample.booking.Flash;
 import org.sample.booking.models.Booking;
 import org.sample.booking.models.Hotel;
 import org.sample.booking.models.User;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -74,6 +71,10 @@ public class Hotels // extends Application
    @Inject
    @Path("hotels/show.gtmpl")
    org.sample.booking.templates.hotels.show show;
+
+   @Inject
+   @Path("hotels/confirmBooking.gtmpl")
+   org.sample.booking.templates.hotels.confirmBooking confirmBooking;
 
    @View
    public void index()
@@ -149,26 +150,11 @@ public class Hotels // extends Application
       }
    }
 
-   @Inject
-   @Path("hotels/confirmBooking.gtmpl")
-   Template confirmBooking;
-
    @View
    public void confirmBooking(String id, Booking booking)
    {
-      Map<String, Object> context = new HashMap<String, Object>();
       Hotel hotel = Hotel.findById(id);
-      context.put("total", 0);
-      context.put("hotel", hotel);
-      context.put("checkinDate", booking.checkinDate);
-      context.put("checkoutDate", booking.checkoutDate);
-      context.put("beds", booking.beds);
-      context.put("smoking", booking.smoking);
-      context.put("creditCard", booking.creditCard);
-      context.put("creditCardName", booking.creditCardName);
-      context.put("creditCardExpiryMonth", booking.creditCardExpiryMonth);
-      context.put("creditCardExpiryYear", booking.creditCardExpiryYear);
-      confirmBooking.render(context);
+      confirmBooking.with().total(0).hotel(hotel).booking(booking).render();
    }
 
    @Action
