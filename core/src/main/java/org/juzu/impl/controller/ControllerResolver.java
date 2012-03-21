@@ -20,186 +20,244 @@
 package org.juzu.impl.controller;
 
 import org.juzu.AmbiguousResolutionException;
-import org.juzu.impl.controller.descriptor.ControllerDescriptor;
-import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.request.Phase;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Resolves controller method algorithm.
+ * Controller method resolution algorithm.
+ *
+ * Resolves a controller method for a specified set of parameter names. The algorithm attempts to resolve
+ * a single value with the following algorithm:
+ *
+ * <ul>
+ *    <li>Filter the list of controllers, this is specific to the resolve method.</li>
+ *    <li>When no method is retained, the null value is returned.</li>
+ *    <li>When several methods are retained the resulting list is sorted according <i>resolution order</i>.
+ *    If a first value is greater than all the others, this result is returned, otherwise a {@link org.juzu.AmbiguousResolutionException}
+ *    is thrown.</li>
+ * </ul>
+ *
+ * The <i>resolution order</i> uses three criteria for comparing two methods in the context of the specified parameter names.
+ *
+ * <ol>
+ *    <li>The greater number of matched specified parameters.</li>
+ *    <li>The lesser number of unmatched method arguments.</li>
+ *    <li>The lesser number of unmatched method parameters.</li>
+ *    <li>The default controller class.</li>
+ * </ol>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ControllerResolver
+public abstract class ControllerResolver<M>
 {
 
-   /** . */
-   private final ControllerMethod[] methods;
+   // todo : take in account multi valued parameters
+   // todo : what happens with type conversion, somehow we should forbid m(String a) and m(int a)
 
-   /** . */
-   private final ControllerDescriptor desc;
+   public abstract M[] getMethods();
+   
+   public abstract String getId(M method);
+   
+   public abstract Phase getPhase(M method);
+   
+   public abstract String getName(M method);
+   
+   public abstract boolean isDefault(M method);
+   
+   public abstract Collection<String> getParameterNames(M method);
 
-   public ControllerResolver(ControllerDescriptor desc) throws NullPointerException
+   private class Match implements Comparable<Match>
    {
-      if (desc == null)
+
+      /** . */
+      final M method;
+
+      /** . */
+      final int score1;
+
+      /** . */
+      final int score2;
+
+      /** . */
+      final int score3;
+
+      /** . */
+      final int score4;
+
+      Match(Set<String> parameterNames, M method)
       {
-         throw new NullPointerException("No null application descriptor accepted");
+         this.method = method;
+
+         // The number of matched parameters
+         HashSet<String> a = new HashSet<String>(parameterNames);
+         a.retainAll(getParameterNames(method));
+         this.score1 = a.size();
+
+         // The number of unmatched arguments
+         a = new HashSet<String>(getParameterNames(method));
+         a.removeAll(parameterNames);
+         this.score2 = a.size();
+
+         // The number of unmatched parameters
+         a = new HashSet<String>(parameterNames);
+         a.removeAll(getParameterNames(method));
+         this.score3 = a.size();
+
+         // The default method
+         this.score4 = isDefault(method) ? 0 : 1;
       }
 
-      //
-      List<ControllerMethod> methods = desc.getMethods();
+      public int compareTo(Match o)
+      {
+         int delta = o.score1 - score1;
+         if (delta == 0)
+         {
+            delta = score2 - o.score2;
+            if (delta == 0)
+            {
+               delta = score3 - o.score3;
+               if (delta == 0)
+               {
+                  delta = score4 - o.score4;
+               }
+            }
+         }
+         return delta;
+      }
 
-      //
-      this.desc = desc;
-      this.methods = methods.toArray(new ControllerMethod[methods.size()]);
+      @Override
+      public String toString()
+      {
+         return "Match[score1=" + score1 + ",score2=" + score2 + ",score3=" + score3 + ",score4=" + score4 + ",method=" + method + "]";
+      }
    }
 
    /**
-    * Resolves a controller for a phase, a method id and a set of parameter names. The algorithm attempts to resolve
-    * a single value with the following algorithm:
+    * A method matches the filter when it has the render phase and the name <code>index</code>.
     *
-    * <ul>
-    *    <li>Filter any controller method that doesn't match the method id.</li>
-    *    <li>When no method is retained, the null value is returned.</li>
-    *    <li>When several methods are retained the resulting list is sorted according <i>resolution order</i>.
-    *    If a first value is greater than all the others, this result is returned, otherwise a {@link AmbiguousResolutionException}
-    *    is thrown.</li>
-    * </ul>
-    *
-    * The <i>resolution order</i> uses three criteria for comparing two methods in the context of the specified parameter names.
-    *
-    * <ol>
-    *    <li>The greater number of matched specified parameters.</li>
-    *    <li>The lesser number of unmatched method arguments.</li>
-    *    <li>The lesser number of unmatched method parameers.</li>
-    * </ol>
-    *
-    * When the {@param methodId} is not specified the algorithm will be executed on a method set determined by:
-    * <ul>
-    *    <li>method with the name <i>index</i> are retained</li>
-    *    <li>if a default controller is specified by the application and at least one <i>index</i> method exist
-    *    on the default controller, any <i>index</i> method not on the default controller are discarded.</li>
-    * </ul>
-    * 
-    * @param phase the phrase
-    * @param methodId the method id
     * @param parameterNames the parameter names
     * @return the resolved controller method
     * @throws NullPointerException if the parameter names set is nul
-    * @throws IllegalArgumentException if phase is not render when the method id is null
-    * @throws AmbiguousResolutionException if more than a single result is found
+    * @throws org.juzu.AmbiguousResolutionException if more than a single result is found
     */
-   public ControllerMethod resolve(Phase phase, String methodId, final Set<String> parameterNames) throws IllegalArgumentException, AmbiguousResolutionException
+   public final M resolve(Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException
    {
-
       if (parameterNames == null)
       {
          throw new NullPointerException("No null parameter names accepted");
       }
 
-      // todo : take in account multi valued parameters
-      // todo : what happens with type conversion, somehow we should forbid m(String a) and m(int a)
-
-      class Match implements Comparable<Match>
+      //
+      List<Match> matches = new ArrayList<Match>();
+      for (M method : getMethods())
       {
-         final ControllerMethod method;
-         final int score1;
-         final int score2;
-         final int score3;
-         Match(ControllerMethod method)
+         if (getPhase(method) == Phase.RENDER && getName(method).equals("index"))
          {
-            this.method = method;
-
-            // The number of matched parameters
-            HashSet<String> a = new HashSet<String>(parameterNames);
-            a.retainAll(method.getArgumentNames());
-            this.score1 = a.size();
-
-            // The number of unmatched arguments
-            a = new HashSet<String>(method.getArgumentNames());
-            a.removeAll(parameterNames);
-            this.score2 = a.size();
-
-            // The number of unmatched parameters
-            a = new HashSet<String>(parameterNames);
-            a.removeAll(method.getArgumentNames());
-            this.score3 = a.size();
+            matches.add(new Match(parameterNames, method));
          }
-         public int compareTo(Match o)
-         {
-            int delta = o.score1 - score1;
-            if (delta == 0)
-            {
-               delta = score2 - o.score2;
-               if (delta == 0)
-               {
-                  delta = score3 - o.score3;
-               }
-            }
-            return delta;
-         }
-         @Override
-         public String toString()
-         {
-            return "Match[score1=" + score1 + ",score2=" + score2 + ",score3=" + score3 + ",method=" + method + "]";
-         }
+      }
+
+      //
+      return select(matches);
+   }
+
+   /**
+    * A method matches the filter when it matches the phase and the method id.
+    *
+    * @param phase the phrase
+    * @param methodId the method id
+    * @param parameterNames the parameter names
+    * @return the resolved controller method
+    * @throws NullPointerException if any parameter is nul
+    * @throws org.juzu.AmbiguousResolutionException if more than a single result is found
+    */
+   public final M resolve(Phase phase, String methodId, final Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException
+   {
+      if (parameterNames == null)
+      {
+         throw new NullPointerException("No null parameter names accepted");
+      }
+      if (phase == null)
+      {
+         throw new NullPointerException("Phase parameter cannot be null");
+      }
+      if (methodId == null)
+      {
+         throw new NullPointerException("Method id parameter cannot be null");
       }
 
       //
       List<Match> matches = new ArrayList<Match>();
-      if (methodId == null)
+      for (M method : getMethods())
       {
-         if (phase != Phase.RENDER)
+         if (getPhase(method) == phase && getId(method).equals(methodId))
          {
-            throw new IllegalArgumentException("Method id can only be null when the phase " + phase + " == " + Phase.RENDER);
-         }
-         else
-         {
-            for (ControllerMethod method : methods)
-            {
-               if (method.getPhase() == Phase.RENDER && method.getName().equals("index"))
-               {
-                  matches.add(new Match(method));
-               }
-            }
-            for (int i = 0;i < matches.size();i++)
-            {
-               Match match = matches.get(i);
-               if (match.method.getType() == desc.getDefault())
-               {
-                  ArrayList<Match> sub = new ArrayList<Match>();
-                  for (int j = 0;j < matches.size();j++)
-                  {
-                     Match match2 = matches.get(j);
-                     if (match2.method.getType() == desc.getDefault())
-                     {
-                        sub.add(match2);
-                     }
-                  }
-                  matches = sub;
-                  break;
-               }
-            }
+            matches.add(new Match(parameterNames, method));
          }
       }
-      else
+
+      //
+      return select(matches);
+   }
+
+   /**
+    * A method matches the filter when it matches the type name, the method name and contains all the parameters.
+    *
+    * @param typeName the optional type name
+    * @param methodName the method name
+    * @param parameterNames the parameter names
+    * @return the resolved controller method
+    * @throws NullPointerException if the methodName or parameterNames argument is null
+    * @throws org.juzu.AmbiguousResolutionException if more than a single result is found
+    */
+   public M resolve(String typeName, String methodName, Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException
+   {
+      if (parameterNames == null)
       {
-         for (ControllerMethod method : methods)
+         throw new NullPointerException("No null parameter names accepted");
+      }
+      if (methodName == null)
+      {
+         throw new NullPointerException("Phase parameter cannot be null");
+      }
+
+      //
+      List<Match> matches = new ArrayList<Match>();
+      for (M method : getMethods())
+      {
+         if (getParameterNames(method).containsAll(parameterNames))
          {
-            if (method.getPhase() == phase && method.getId().equals(methodId))
+            if (typeName == null)
             {
-               matches.add(new Match(method));
+               if (getName(method).equals(methodName))
+               {
+                  matches.add(new Match(parameterNames, method));
+               }
+            }
+            else
+            {
+               String id = typeName + "." + methodName;
+               if (getId(method).equals(id))
+               {
+                  matches.add(new Match(parameterNames, method));
+               }
             }
          }
       }
 
       //
-      ControllerMethod found = null;
+      return select(matches);
+   }
+
+   private M select(List<Match> matches) throws AmbiguousResolutionException
+   {
+      M found = null;
       if (matches.size() > 0)
       {
          Collections.sort(matches);
@@ -215,8 +273,6 @@ public class ControllerResolver
          }
          found = first.method;
       }
-
-      //
       return found;
    }
 }

@@ -20,7 +20,7 @@
 package org.juzu.impl.application;
 
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
-import org.juzu.impl.controller.ControllerResolver;
+import org.juzu.impl.controller.descriptor.ControllerMethodResolver;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.inject.Export;
@@ -62,7 +62,7 @@ public class ApplicationContext
    final InjectManager injectManager;
 
    /** . */
-   private final ControllerResolver controllerResolver;
+   private final ControllerMethodResolver controllerResolver;
 
    /** . */
    public ArrayList<RequestLifeCycle> plugins;
@@ -72,7 +72,7 @@ public class ApplicationContext
    {
       this.descriptor = descriptor;
       this.injectManager = injectManager;
-      this.controllerResolver = new ControllerResolver(descriptor.getController());
+      this.controllerResolver = new ControllerMethodResolver(descriptor.getController());
       this.plugins = getPlugins(injectManager);
    }
 
@@ -151,8 +151,17 @@ public class ApplicationContext
       }
 
       //
-      ControllerMethod method = controllerResolver.resolve(phase, methodId, parameters.keySet());
+      ControllerMethod method;
+      if (methodId == null)
+      {
+         method = controllerResolver.resolve(parameters.keySet());
+      }
+      else
+      {
+         method = controllerResolver.resolve(phase, methodId, parameters.keySet());
+      }
 
+      //
       if (method == null)
       {
          StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +

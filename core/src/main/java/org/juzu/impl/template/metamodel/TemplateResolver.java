@@ -26,7 +26,7 @@ import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ProcessingContext;
-import org.juzu.impl.controller.metamodel.MethodMetaModel;
+import org.juzu.impl.controller.metamodel.ControllerMethodMetaModel;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.spi.template.TemplateEmitter;
@@ -222,7 +222,7 @@ public class TemplateResolver implements Serializable
                      @Override
                      public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException
                      {
-                        MethodMetaModel method = application.getControllers().resolve(typeName, methodName, parameterMap.keySet());
+                        ControllerMethodMetaModel method = application.getControllers().resolve(typeName, methodName, parameterMap.keySet());
 
                         //
                         if (method == null)

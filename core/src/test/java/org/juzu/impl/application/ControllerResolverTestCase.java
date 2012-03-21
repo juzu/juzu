@@ -22,7 +22,7 @@ package org.juzu.impl.application;
 import org.junit.Test;
 import org.juzu.AmbiguousResolutionException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
-import org.juzu.impl.controller.ControllerResolver;
+import org.juzu.impl.controller.descriptor.ControllerMethodResolver;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.utils.Tools;
 import org.juzu.request.Phase;
@@ -49,8 +49,8 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc.getController());
-      ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
+      ControllerMethodResolver resolver = new ControllerMethodResolver(desc.getController());
+      ControllerMethod method = resolver.resolve(Collections.<String>emptySet());
       assertEquals("index", method.getName());
    }
 
@@ -68,10 +68,10 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc.getController());
+      ControllerMethodResolver resolver = new ControllerMethodResolver(desc.getController());
       try
       {
-         resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
+         resolver.resolve(Collections.<String>emptySet());
          fail();
       }
       catch (AmbiguousResolutionException e)
@@ -94,8 +94,8 @@ public class ControllerResolverTestCase extends AbstractTestCase
 
       //
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc.getController());
-      ControllerMethod method = resolver.resolve(Phase.RENDER, null, Collections.<String>emptySet());
+      ControllerMethodResolver resolver = new ControllerMethodResolver(desc.getController());
+      ControllerMethod method = resolver.resolve(Collections.<String>emptySet());
       assertEquals("index", method.getName());
       assertSame(aClass, method.getMethod().getDeclaringClass());
    }
@@ -114,7 +114,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       Class<?> appClass = compiler.assertClass("application.resolver.overload.OverloadApplication");
       Class<?> aClass = compiler.assertClass("application.resolver.overload.A");
       ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc.getController());
+      ControllerMethodResolver resolver = new ControllerMethodResolver(desc.getController());
 
       //
       ControllerMethod method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set());
@@ -157,7 +157,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
       Class<?> aClass = compiler.assertClass("application.resolver.method.A");
       Class<?> clazz = compiler.assertClass("application.resolver.method.MethodApplication");
       ApplicationDescriptor desc = (ApplicationDescriptor)clazz.getField("DESCRIPTOR").get(null);
-      ControllerResolver resolver = new ControllerResolver(desc.getController());
+      ControllerMethodResolver resolver = new ControllerMethodResolver(desc.getController());
       ControllerMethod cm1_ = desc.getController().getMethod(aClass, "noArg");
       ControllerMethod cm2_ = desc.getController().getMethod(aClass, "fooArg", String.class);
 
@@ -170,15 +170,61 @@ public class ControllerResolverTestCase extends AbstractTestCase
       ControllerMethod cm2 = resolver.resolve(Phase.RENDER, cm2_.getId(), cm2_.getArgumentNames());
       assertNotNull(cm2);
       assertEquals("fooArg", cm2.getName());
+   }
+   
+   @Test
+   public void testTemplate() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_controller");
+      compiler.assertCompile();
+      Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Default_controllerApplication");
+      Class<?> aClass = compiler.assertClass("application.resolver.default_controller.A");
+      Class<?> bClass = compiler.assertClass("application.resolver.default_controller.B");
+      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+      ControllerMethodResolver resolver = new ControllerMethodResolver(desc.getController());
+      
+      //
+      ControllerMethod method = resolver.resolve((String)null, "index", Collections.<String>emptySet());
+      assertEquals("index", method.getName());
+      assertSame(method.getType(), aClass);
 
       //
-//      try
-//      {
-//         resolver.resolve(Phase.RENDER, Builder.map("foo", new String[]{"foo_value"}).put("bar", new String[]{"bar_value"}).build());
-//         fail();
-//      }
-//      catch (AmbiguousResolutionException ignore)
-//      {
-//      }
+      method = resolver.resolve("A", "index", Collections.<String>emptySet());
+      assertEquals("index", method.getName());
+      assertSame(method.getType(), aClass);
+
+      //
+      method = resolver.resolve("B", "index", Collections.<String>emptySet());
+      assertEquals("index", method.getName());
+      assertSame(method.getType(), bClass);
+   }
+
+   @Test
+   public void testTemplateResolveMethod() throws Exception
+   {
+      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "method");
+      compiler.assertCompile();
+      Class<?> appClass = compiler.assertClass("application.resolver.method.MethodApplication");
+      Class<?> aClass = compiler.assertClass("application.resolver.method.A");
+      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+      ControllerMethodResolver resolver = new ControllerMethodResolver(desc.getController());
+
+      //
+      ControllerMethod method = resolver.resolve((String)null, "noArg", Collections.<String>emptySet());
+      assertEquals("noArg", method.getName());
+      assertSame(method.getType(), aClass);
+      //
+      method = resolver.resolve((String)null, "fooArg", Collections.<String>emptySet());
+      assertEquals("fooArg", method.getName());
+      assertSame(method.getType(), aClass);
+
+      //
+      method = resolver.resolve((String)null, "fooArg", Collections.<String>singleton("foo"));
+      assertEquals("fooArg", method.getName());
+      assertSame(method.getType(), aClass);
+
+      //
+      method = resolver.resolve((String)null, "fooArg", Collections.<String>singleton("bar"));
+      assertNull(method);
    }
 }

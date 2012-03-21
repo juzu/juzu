@@ -75,17 +75,17 @@ public class ControllerMetaModel extends MetaModelObject
       return handle;
    }
 
-   public Collection<MethodMetaModel> getMethods()
+   public Collection<ControllerMethodMetaModel> getMethods()
    {
-      return getChildren(MethodMetaModel.class);
+      return getChildren(ControllerMethodMetaModel.class);
    }
    
    public void remove(ElementHandle.Method handle)
    {
-      removeChild(Key.of(handle, MethodMetaModel.class));
+      removeChild(Key.of(handle, ControllerMethodMetaModel.class));
    }
 
-   public MethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters)
+   public ControllerMethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters)
    {
       ArrayList<String> parameterTypes = new ArrayList<String>();
       ArrayList<Cardinality> parameterCardinalities = new ArrayList<Cardinality>();
@@ -97,7 +97,7 @@ public class ControllerMetaModel extends MetaModelObject
          parameterNames.add(entry.getKey());
       }
       ElementHandle.Method handle = ElementHandle.Method.create(this.handle.getFQN(), name, parameterTypes);
-      MethodMetaModel method = new MethodMetaModel(
+      ControllerMethodMetaModel method = new ControllerMethodMetaModel(
          handle,
          null,
          phase,
@@ -105,7 +105,7 @@ public class ControllerMetaModel extends MetaModelObject
          parameterTypes,
          parameterCardinalities,
          parameterNames);
-      addChild(Key.of(handle, MethodMetaModel.class), method);
+      addChild(Key.of(handle, ControllerMethodMetaModel.class), method);
       return method;
    }
 
@@ -189,14 +189,14 @@ public class ControllerMetaModel extends MetaModelObject
             ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
 
             // First remove the previous method
-            Key<MethodMetaModel> key = Key.of(origin, MethodMetaModel.class);
+            Key<ControllerMethodMetaModel> key = Key.of(origin, ControllerMethodMetaModel.class);
             if (getChild(key) != null)
             {
                removeChild(key);
             }
 
             // Validate duplicate id within the same controller
-            for (MethodMetaModel existing : getChildren(MethodMetaModel.class))
+            for (ControllerMethodMetaModel existing : getChildren(ControllerMethodMetaModel.class))
             {
                if (existing.id != null && existing.id.equals(id))
                {
@@ -205,7 +205,7 @@ public class ControllerMetaModel extends MetaModelObject
             }
 
             //
-            MethodMetaModel method = new MethodMetaModel(
+            ControllerMethodMetaModel method = new ControllerMethodMetaModel(
                origin,
                id,
                phase,

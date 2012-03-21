@@ -32,7 +32,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
@@ -99,9 +98,8 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
       Map<String, Object> values = Tools.foo(annotation);
       Boolean escapeXML = (Boolean)values.get("escapeXML");
       ElementHandle.Class defaultControllerElt = (ElementHandle.Class)values.get("defaultController");
-      String defaultController = defaultControllerElt != null ? defaultControllerElt.getFQN().toString() : null;
       controllers.escapeXML = escapeXML;
-      controllers.defaultController = defaultController;
+      controllers.defaultController = defaultControllerElt != null ? defaultControllerElt.getFQN() : null;
       application.addChild(ControllersMetaModel.KEY, controllers);
    }
 
@@ -149,7 +147,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
    {
       FQN fqn = controller.getHandle().getFQN();
       Element origin = env.get(controller.getHandle());
-      Collection<MethodMetaModel> methods = controller.getMethods();
+      Collection<ControllerMethodMetaModel> methods = controller.getMethods();
       Writer writer = null;
       try
       {
@@ -181,7 +179,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
 
          //
          int index = 0;
-         for (MethodMetaModel method : methods)
+         for (ControllerMethodMetaModel method : methods)
          {
             String methodRef = "method_" + index++;
 

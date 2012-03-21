@@ -33,7 +33,7 @@ import javax.lang.model.element.ExecutableElement;
 import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MethodMetaModel extends MetaModelObject
+public class ControllerMethodMetaModel extends MetaModelObject
 {
 
    /** The controller. */
@@ -60,7 +60,7 @@ public class MethodMetaModel extends MetaModelObject
    /** . */
    final ArrayList<String> parameterNames;
 
-   MethodMetaModel(
+   ControllerMethodMetaModel(
       ElementHandle.Method handle,
       String id,
       Phase phase,
