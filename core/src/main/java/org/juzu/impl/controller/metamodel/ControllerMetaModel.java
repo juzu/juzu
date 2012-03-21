@@ -19,6 +19,7 @@
 
 package org.juzu.impl.controller.metamodel;
 
+import org.juzu.Param;
 import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.Key;
 import org.juzu.impl.metamodel.MetaModel;
@@ -177,7 +178,9 @@ public class ControllerMetaModel extends MetaModelObject
                   throw new CompilationException(parameterVariableElement, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
                }
                DeclaredType parameterSimpleType = (DeclaredType)parameterSimpleTypeMirror;
-               if (!parameterSimpleType.asElement().toString().equals("java.lang.String"))
+               if (
+                  !parameterSimpleType.asElement().toString().equals("java.lang.String") &&
+                  parameterSimpleType.asElement().getAnnotation(Param.class) == null)
                {
                   throw new CompilationException(parameterVariableElement, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
                }

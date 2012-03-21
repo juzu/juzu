@@ -214,7 +214,9 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                writer.append("new ").
                   append(CONTROLLER_PARAMETER).append('(').
                   append('"').append(parameterName).append('"').append(',').
-                  append(CARDINALITY).append('.').append(parameterCardinality.name()).
+                  append(CARDINALITY).append('.').append(parameterCardinality.name()).append(',').
+                  append("null,").
+                  append(method.getParameterTypes().get(i)).append(".class").
                   append(')');
             }
             writer.append(")");

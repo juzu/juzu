@@ -145,6 +145,25 @@ public final class URLBuilder
       return this;
    }
 
+   /**
+    * <p>Set all parameters on the URL that will be built by this builder. This method replaces the parameter with the given
+    * name . A parameter value of <code>null</code> indicates that this parameter should be removed.</p>
+    *
+    * @param parameters the parameters
+    * @return this builder
+    * @throws NullPointerException if the name parameter is null
+    * @throws IllegalArgumentException if any component of the value is null
+    */
+   public URLBuilder setAllParameter(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException
+   {
+      for (String key : parameters.keySet())
+      {
+         setParameter(key, parameters.get(key));
+      }
+
+      return this;
+   }
+
    public URLBuilder escapeXML(Boolean escapeXML)
    {
       setProperty(ESCAPE_XML, escapeXML);

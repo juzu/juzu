@@ -118,29 +118,12 @@ public class Hotels // extends Application
    }
 
    @Action
-   public Response processConfirmBooking(
-      String confirm,
-      String id,
-      String checkinDate,
-      String checkoutDate,
-      String beds,
-      String smoking,
-      String creditCard,
-      String creditCardName,
-      String creditCardExpiryMonth,
-      String creditCardExpiryYear)
+   public Response processConfirmBooking(String confirm, String id, Booking booking)
    {
       Hotel hotel = Hotel.findById(id);
       User user = User.find(login.getUserName(), null);
-      Booking booking = new Booking(hotel, user);
-      booking.checkinDate = checkinDate;
-      booking.checkoutDate = checkoutDate;
-      booking.beds = Integer.parseInt(beds);
-      booking.smoking = Boolean.valueOf(smoking);
-      booking.creditCard = creditCard;
-      booking.creditCardName = creditCardName;
-      booking.creditCardExpiryMonth = Integer.parseInt(creditCardExpiryMonth);
-      booking.creditCardExpiryYear = Integer.parseInt(creditCardExpiryYear);
+      booking.hotel = hotel;
+      booking.user = user;
 
 //      validation.valid(booking);
 
@@ -162,16 +145,7 @@ public class Hotels // extends Application
       else
       {
          // Display booking
-         return Hotels_.confirmBooking(
-            id,
-            checkinDate,
-            checkoutDate,
-            beds,
-            smoking,
-            creditCard,
-            creditCardName,
-            creditCardExpiryMonth,
-            creditCardExpiryYear);
+         return Hotels_.confirmBooking(id, booking);
       }
    }
 
@@ -180,29 +154,20 @@ public class Hotels // extends Application
    Template confirmBooking;
 
    @View
-   public void confirmBooking(
-      String id,
-      String checkinDate,
-      String checkoutDate,
-      String beds,
-      String smoking,
-      String creditCard,
-      String creditCardName,
-      String creditCardExpiryMonth,
-      String creditCardExpiryYear)
+   public void confirmBooking(String id, Booking booking)
    {
       Map<String, Object> context = new HashMap<String, Object>();
       Hotel hotel = Hotel.findById(id);
       context.put("total", 0);
       context.put("hotel", hotel);
-      context.put("checkinDate", checkinDate);
-      context.put("checkoutDate", checkoutDate);
-      context.put("beds", beds);
-      context.put("smoking", smoking);
-      context.put("creditCard", creditCard);
-      context.put("creditCardName", creditCardName);
-      context.put("creditCardExpiryMonth", creditCardExpiryMonth);
-      context.put("creditCardExpiryYear", creditCardExpiryYear);
+      context.put("checkinDate", booking.checkinDate);
+      context.put("checkoutDate", booking.checkoutDate);
+      context.put("beds", booking.beds);
+      context.put("smoking", booking.smoking);
+      context.put("creditCard", booking.creditCard);
+      context.put("creditCardName", booking.creditCardName);
+      context.put("creditCardExpiryMonth", booking.creditCardExpiryMonth);
+      context.put("creditCardExpiryYear", booking.creditCardExpiryYear);
       confirmBooking.render(context);
    }
 

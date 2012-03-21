@@ -19,6 +19,7 @@
 
 package org.juzu.request;
 
+import org.juzu.Param;
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
@@ -27,6 +28,7 @@ import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.ActionBridge;
 
 import java.util.List;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ActionContext extends RequestContext
@@ -66,7 +68,15 @@ public class ActionContext extends RequestContext
       List<ControllerParameter> argumentParameters = method.getArguments();
       if (arg != null)
       {
-         response.setParameter(argumentParameters.get(0).getName(), arg.toString());
+         if (arg.getClass().isAnnotationPresent(Param.class))
+         {
+            Map<String, String[]> p = buildBeanParameter(argumentParameters.get(0).getName(), arg);
+            response.setAllParameters(p);
+         }
+         else
+         {
+            response.setParameter(argumentParameters.get(0).getName(), arg.toString());
+         }
       }
       return response;
    }
@@ -80,8 +90,16 @@ public class ActionContext extends RequestContext
          Object value = args[i];
          if (value != null)
          {
-            ControllerParameter argParameter = argumentParameters.get(i);
-            response.setParameter(argParameter.getName(), value.toString());
+            if (value.getClass().isAnnotationPresent(Param.class))
+            {
+               Map<String, String[]> p = buildBeanParameter(argumentParameters.get(i).getName(), value);
+               response.setAllParameters(p);
+            }
+            else
+            {
+               ControllerParameter argParameter = argumentParameters.get(i);
+               response.setParameter(argParameter.getName(), value.toString());
+            }
          }
       }
       return response;

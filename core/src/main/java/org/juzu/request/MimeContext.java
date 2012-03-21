@@ -19,6 +19,7 @@
 
 package org.juzu.request;
 
+import org.juzu.Param;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.application.ApplicationContext;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MimeContext extends RequestContext
@@ -70,7 +72,15 @@ public abstract class MimeContext extends RequestContext
       {
          case SINGLE:
          {
-            builder.setParameter(param.getName(), String.valueOf(value));
+            if (param.getType().isAnnotationPresent(Param.class))
+            {
+               Map<String, String[]> p = buildBeanParameter(param.getName(), value);
+               builder.setAllParameter(p);
+            }
+            else
+            {
+               builder.setParameter(param.getName(), String.valueOf(value));
+            }
             break;
          }
          case ARRAY:
@@ -103,7 +113,7 @@ public abstract class MimeContext extends RequestContext
             throw new UnsupportedOperationException("Not yet implemented");
       }
    }
-   
+
    public URLBuilder createURLBuilder(ControllerMethod method, Object arg)
    {
       URLBuilder builder = createURLBuilder(method);

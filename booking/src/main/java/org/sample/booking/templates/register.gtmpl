@@ -5,15 +5,15 @@
 
 <form action="@{Application.saveUser()}" method="post">
         <p>
-            <strong>Username:</strong> <input type="text" name="username" size="16" value=""> *
+            <strong>Username:</strong> <input type="text" name="u.username" size="16" value=""> *
             <span class="error"></span>
         </p>
         <p>
-            <strong>Real name:</strong> <input type="text" name="name" size="16" value=""> *
+            <strong>Real name:</strong> <input type="text" name="u.name" size="16" value=""> *
             <span class="error"></span>
         </p>
         <p>
-            <strong>Password:</strong> <input type="password" name="password" size="16" value=""> *
+            <strong>Password:</strong> <input type="password" name="u.password" size="16" value=""> *
             <span class="error"></span>
         </p>
         <p>
