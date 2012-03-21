@@ -62,8 +62,7 @@ public class ControllerTestCase extends AbstractTestCase
                   set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
                   set("id", null).
                   set("name", "index").
-                  list("parameterNames").
-                  list("parameterTypes").
+                  list("parameters").
                   set("phase", "RENDER")
                )
             ).

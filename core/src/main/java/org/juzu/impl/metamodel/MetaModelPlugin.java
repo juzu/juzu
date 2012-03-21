@@ -32,6 +32,10 @@ public class MetaModelPlugin implements Serializable
    {
    }
 
+   public void preEventProcess(ApplicationMetaModel application)
+   {
+   }
+
    public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event)
    {
    }

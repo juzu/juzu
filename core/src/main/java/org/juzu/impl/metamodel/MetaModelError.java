@@ -47,7 +47,7 @@ public enum MetaModelError implements ErrorCode
 
    CONTROLLER_METHOD_DUPLICATE_ID("Duplicate method controller id %1$s"),
 
-   CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED("The method parameter type cannot be resolved"),
+   CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED("The method parameter type %1s should be a string or annotated with @org.juzu.Param"),
 
    TEMPLATE_NOT_RESOLVED("The template %1$s cannot be resolved"),
 

@@ -67,6 +67,12 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath>
       file.update(content);
    }
 
+   @Override
+   public void removePath(RAMPath path) throws IOException
+   {
+      path.del();
+   }
+
    public boolean equals(RAMPath left, RAMPath right)
    {
       return left == right;

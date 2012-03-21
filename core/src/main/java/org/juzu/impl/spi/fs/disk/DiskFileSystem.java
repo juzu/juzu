@@ -222,6 +222,12 @@ public class DiskFileSystem extends ReadWriteFileSystem<File>
    }
 
    @Override
+   public void removePath(File path) throws IOException
+   {
+      path.delete();
+   }
+
+   @Override
    public String toString()
    {
       return "DiskFileSystem[root=" + root.getAbsolutePath() + "]";

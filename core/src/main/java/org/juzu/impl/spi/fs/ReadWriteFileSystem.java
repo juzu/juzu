@@ -85,6 +85,8 @@ public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P>
    public abstract P addFile(P parent, String name) throws IOException;
 
    public abstract void setContent(P file, Content content) throws IOException;
+   
+   public abstract void removePath(P path) throws IOException;
 
 
 }

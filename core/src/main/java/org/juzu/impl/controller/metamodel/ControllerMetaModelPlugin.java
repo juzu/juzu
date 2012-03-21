@@ -1,6 +1,7 @@
 package org.juzu.impl.controller.metamodel;
 
 import org.juzu.Application;
+import org.juzu.Param;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.application.ApplicationContext;
@@ -32,12 +33,14 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -115,7 +118,8 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                break;
             case MetaModelEvent.UPDATED:
             case MetaModelEvent.AFTER_ADD:
-               emitController(applications.getContext(), (ControllerMetaModel)obj);
+               ControllerMetaModel controller = (ControllerMetaModel)obj;
+               emitController(applications.getContext(), controller);
                break;
          }
       }
@@ -141,6 +145,29 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
 
       //
       return config;
+   }
+
+   @Override
+   public void postProcess(ApplicationMetaModel application)
+   {
+      // Check everything is OK here
+      for (ControllerMetaModel controller : application.getControllers())
+      {
+         for (ControllerMethodMetaModel method : controller.getMethods())
+         {
+            ExecutableElement executableElt = application.model.env.get(method.handle);
+            Iterator<? extends VariableElement> i = executableElt.getParameters().iterator();
+            for (ParameterMetaModel parameter : method.parameters)
+            {
+               VariableElement ve = i.next();
+               TypeElement te = application.model.env.get(parameter.getType());
+               if (!te.toString().equals("java.lang.String") && te.getAnnotation(Param.class) == null)
+               {
+                  throw new CompilationException(ve, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED, ve.getSimpleName());
+               }
+            }
+         }
+      }
    }
 
    private void emitController(ProcessingContext env, ControllerMetaModel controller) throws CompilationException
@@ -197,26 +224,25 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
             writer.append(PHASE).append(".").append(method.getPhase().name()).append(",");
             writer.append(fqn.getFullName()).append(".class").append(",");
             writer.append(TOOLS).append(".safeGetMethod(").append(fqn.getFullName()).append(".class,\"").append(method.getName()).append("\"");
-            for (String parameterType : method.getParameterTypes())
+            for (ParameterMetaModel param : method.getParameters())
             {
-               writer.append(",").append(parameterType).append(".class");
+               writer.append(",").append(param.declaredType).append(".class");
             }
             writer.append(")");
             writer.append(", Arrays.<").append(CONTROLLER_PARAMETER).append(">asList(");
-            for (int i = 0;i < method.getParameterNames().size();i++)
+            for (int i = 0;i < method.getParameters().size();i++)
             {
                if (i > 0)
                {
                   writer.append(",");
                }
-               String parameterName = method.getParameterNames().get(i);
-               Cardinality parameterCardinality = method.getParameterCardinalities().get(i);
+               ParameterMetaModel param = method.getParameter(i);
                writer.append("new ").
                   append(CONTROLLER_PARAMETER).append('(').
-                  append('"').append(parameterName).append('"').append(',').
-                  append(CARDINALITY).append('.').append(parameterCardinality.name()).append(',').
+                  append('"').append(param.getName()).append('"').append(',').
+                  append(CARDINALITY).append('.').append(param.getCardinality().name()).append(',').
                   append("null,").
-                  append(method.getParameterTypes().get(i)).append(".class").
+                  append(param.declaredType).append(".class").
                   append(')');
             }
             writer.append(")");
@@ -226,31 +252,33 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
             if (method.getPhase() == Phase.RENDER)
             {
                writer.append("public static ").append(RESPONSE).append(" ").append(method.getName()).append("(");
-               for (int j = 0; j < method.getParameterTypes().size(); j++)
+               for (int j = 0; j < method.getParameters().size(); j++)
                {
                   if (j > 0)
                   {
                      writer.append(',');
                   }
-                  writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
+                  ParameterMetaModel param = method.getParameter(j);
+                  writer.append(param.declaredType).append(" ").append(param.getName());
                }
                writer.append(") { return ((ActionContext)Request.getCurrent().getContext()).createResponse(").append(methodRef);
-               switch (method.getParameterTypes().size())
+               switch (method.getParameters().size())
                {
                   case 0:
                      break;
                   case 1:
-                     writer.append(",(Object)").append(method.getParameterNames().get(0));
+                     writer.append(",(Object)").append(method.getParameter(0).getName());
                      break;
                   default:
                      writer.append(",new Object[]{");
-                     for (int j = 0; j < method.getParameterNames().size();j++)
+                     for (int j = 0; j < method.getParameters().size();j++)
                      {
                         if (j > 0)
                         {
                            writer.append(",");
                         }
-                        writer.append(method.getParameterNames().get(j));
+                        ParameterMetaModel param = method.getParameter(j);
+                        writer.append(param.getName());
                      }
                      writer.append("}");
                      break;
@@ -260,31 +288,32 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
 
             // URL builder literal
             writer.append("public static URLBuilder ").append(method.getName()).append("URL").append("(");
-            for (int j = 0; j < method.getParameterTypes().size(); j++)
+            for (int j = 0; j < method.getParameters().size(); j++)
             {
                if (j > 0)
                {
                   writer.append(',');
                }
-               writer.append(method.getParameterTypes().get(j)).append(" ").append(method.getParameterNames().get(j));
+               ParameterMetaModel param = method.getParameter(j);
+               writer.append(param.declaredType).append(" ").append(param.getName());
             }
             writer.append(") { return ((MimeContext)Request.getCurrent().getContext()).createURLBuilder(").append(methodRef);
-            switch (method.getParameterNames().size())
+            switch (method.getParameters().size())
             {
                case 0:
                   break;
                case 1:
-                  writer.append(",(Object)").append(method.getParameterNames().get(0));
+                  writer.append(",(Object)").append(method.getParameter(0).getName());
                   break;
                default:
                   writer.append(",new Object[]{");
-                  for (int j = 0;j < method.getParameterNames().size();j++)
+                  for (int j = 0;j < method.getParameters().size();j++)
                   {
                      if (j > 0)
                      {
                         writer.append(",");
                      }
-                     writer.append(method.getParameterNames().get(j));
+                     writer.append(method.getParameter(j).getName());
                   }
                   writer.append("}");
                   break;

@@ -24,13 +24,14 @@ import org.juzu.Resource;
 import org.juzu.View;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelObject;
-import org.juzu.impl.utils.Cardinality;
 import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
 
 import javax.lang.model.element.ExecutableElement;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerMethodMetaModel extends MetaModelObject
@@ -52,30 +53,20 @@ public class ControllerMethodMetaModel extends MetaModelObject
    final String name;
 
    /** . */
-   final ArrayList<String> parameterTypes;
-
-   /** . */
-   final ArrayList<Cardinality> parameterCardinalities;
-
-   /** . */
-   final ArrayList<String> parameterNames;
+   final ArrayList<ParameterMetaModel> parameters;
 
    ControllerMethodMetaModel(
       ElementHandle.Method handle,
       String id,
       Phase phase,
       String name,
-      ArrayList<String> parameterTypes,
-      ArrayList<Cardinality> parameterCardinalities,
-      ArrayList<String> parameterNames)
+      ArrayList<ParameterMetaModel> parameters)
    {
       this.handle = handle;
       this.id = id;
       this.phase = phase;
       this.name = name;
-      this.parameterTypes = parameterTypes;
-      this.parameterCardinalities = parameterCardinalities;
-      this.parameterNames = parameterNames;
+      this.parameters = parameters;
    }
 
    public JSON toJSON()
@@ -85,8 +76,7 @@ public class ControllerMethodMetaModel extends MetaModelObject
       json.set("id", id);
       json.set("phase", phase);
       json.set("name", name);
-      json.map("parameterTypes", new ArrayList<String>(parameterTypes));
-      json.map("parameterNames", new ArrayList<String>(parameterNames));
+      json.map("parameters", new ArrayList<ParameterMetaModel>(parameters));
       return json;
    }
 
@@ -115,19 +105,24 @@ public class ControllerMethodMetaModel extends MetaModelObject
       return name;
    }
 
-   public ArrayList<String> getParameterTypes()
+   public ArrayList<ParameterMetaModel> getParameters()
    {
-      return parameterTypes;
+      return parameters;
    }
-
-   public ArrayList<Cardinality> getParameterCardinalities()
+   
+   public ParameterMetaModel getParameter(int index)
    {
-      return parameterCardinalities;
+      return parameters.get(index);
    }
-
-   public ArrayList<String> getParameterNames()
+   
+   public Set<String> getParameterNames()
    {
-      return parameterNames;
+      Set<String> tmp = new HashSet<String>();
+      for (ParameterMetaModel param : parameters)
+      {
+         tmp.add(param.getName());
+      }
+      return tmp;
    }
 
    @Override
