@@ -111,17 +111,21 @@ public class MethodParametersTestCase extends AbstractInjectTestCase
       assertBean(client, "d", "v");
       assertBean(client, "e", Arrays.asList("v1", "v2").toString());
       assertBean(client, "f", Arrays.asList("v1", "v2").toString());
+      assertBean(client, "g", "s_valuev");
+      assertBean(client, "g", "s_valuev");
+      assertBean(client, "h", "s_valuev");
 
    }
 
    private void assertBean(MockClient client, String name, Object expected) throws Exception
    {
       MockRenderBridge render = client.render(name);
-      MockRenderBridge m = (MockRenderBridge)client.invoke(render.assertStringResult());
+      String url = render.assertStringResult();
+      MockRenderBridge m = (MockRenderBridge)client.invoke(url);
       assertEquals(expected, m.assertStringResult());
 
       render = client.render(name + "Action");
-      String url = render.assertStringResult();
+      url = render.assertStringResult();
       MockActionBridge action = (MockActionBridge)client.invoke(url);
       MockRenderBridge m2 = (MockRenderBridge)client.invoke(action.assertUpdate());
       assertEquals(expected, m2.assertStringResult());

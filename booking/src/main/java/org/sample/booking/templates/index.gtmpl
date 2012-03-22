@@ -8,11 +8,11 @@
     <form action="@{Application.login()}" class="formLogin" method="post">
         <p class="field">
             <label>Login Name:</label>
-            <input type="text" name="u.username" size="19" value="${flash.username}" />
+            <input type="text" name="username" size="19" value="${flash.username}" />
         </p>
         <p class="field">
             <label>Password:</label>
-            <input type="password" name="u.password" size="19"/>
+            <input type="password" name="password" size="19"/>
         </p>
         <p class="buttons">
             <input type="submit" value="Account login" />

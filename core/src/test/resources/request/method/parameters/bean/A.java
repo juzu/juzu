@@ -43,75 +43,12 @@ public class A extends Controller
       bean.f = Arrays.asList("v1","v2");
    }
 
-  @View(id = "a")
+   // ******************************************************************************************************************
+
+   @View(id = "a")
    public Response.Content a()
    {
       return Response.render(A_.mAURL(bean).toString());
-   }
-
-   @View(id = "b")
-   public Response.Content b()
-   {
-      return Response.render(A_.mBURL(bean).toString());
-   }
-
-   @View(id = "c")
-   public Response.Content c()
-   {
-      return Response.render(A_.mCURL(bean).toString());
-   }
-
-   @View(id = "d")
-   public Response.Content d()
-   {
-      return Response.render(A_.mDURL(bean).toString());
-   }
-
-   @View(id = "e")
-   public Response.Content e()
-   {
-      return Response.render(A_.mEURL(bean).toString());
-   }
-
-   @View(id = "f")
-   public Response.Content f()
-   {
-      return Response.render(A_.mFURL(bean).toString());
-   }
-
-   @View(id = "aAction")
-   public Response.Content aAction()
-   {
-      return Response.content(A_.mAActionURL(bean).toString());
-   }
-
-   @View(id = "bAction")
-   public Response.Content bAction()
-   {
-      return Response.content(A_.mBActionURL(bean).toString());
-   }
-
-   @View(id = "cAction")
-   public Response.Content cAction()
-   {
-      return Response.content(A_.mCActionURL(bean).toString());
-   }
-   @View(id = "dAction")
-   public Response.Content dAction()
-   {
-      return Response.content(A_.mDActionURL(bean).toString());
-   }
-
-   @View(id = "eAction")
-   public Response.Content eAction()
-   {
-      return Response.content(A_.mEActionURL(bean).toString());
-   }
-
-   @View(id = "fAction")
-   public Response.Content fAction()
-   {
-      return Response.content(A_.mFActionURL(bean).toString());
    }
 
    @View
@@ -120,42 +57,37 @@ public class A extends Controller
       return Response.content(foo.getA());
    }
 
+   @View(id = "aAction")
+   public Response.Content aAction()
+   {
+      return Response.content(A_.mAActionURL(bean).toString());
+   }
+
+   @Action
+   public Response.Update mAAction(B foo) throws IOException
+   {
+      Response.Update r =  A_.mA(foo);
+      return r;
+   }
+
+   // ******************************************************************************************************************
+
+   @View(id = "b")
+   public Response.Content b()
+   {
+      return Response.render(A_.mBURL(bean).toString());
+   }
+
    @View
    public Response.Content mB(B foo) throws IOException
    {
       return Response.content(Arrays.<String>asList((String[]) foo.getB()).toString());
    }
 
-   @View
-   public Response.Content mC(B foo) throws IOException
+   @View(id = "bAction")
+   public Response.Content bAction()
    {
-      return Response.content(foo.getC().toString());
-   }
-
-   @View
-   public Response.Content mD(B foo) throws IOException
-   {
-      return Response.content(foo.d);
-   }
-
-   @View
-   public Response.Content mE(B foo) throws IOException
-   {
-      return Response.content(Arrays.<String>asList((String[]) foo.e).toString());
-   }
-
-   @View
-   public Response.Content mF(B foo) throws IOException
-   {
-      return Response.content(foo.f.toString());
-   }
-
-   // Actions
-   @Action
-   public Response.Update mAAction(B foo) throws IOException
-   {
-      Response.Update r =  A_.mA(foo);
-      return r;
+      return Response.content(A_.mBActionURL(bean).toString());
    }
 
    @Action
@@ -165,11 +97,51 @@ public class A extends Controller
       return r;
    }
 
+   // ******************************************************************************************************************
+
+   @View(id = "c")
+   public Response.Content c()
+   {
+      return Response.render(A_.mCURL(bean).toString());
+   }
+
+   @View
+   public Response.Content mC(B foo) throws IOException
+   {
+      return Response.content(foo.getC().toString());
+   }
+
+   @View(id = "cAction")
+   public Response.Content cAction()
+   {
+      return Response.content(A_.mCActionURL(bean).toString());
+   }
+
    @Action
    public Response.Update mCAction(B foo) throws IOException
    {
       Response.Update r =  A_.mC(foo);
       return r;
+   }
+
+   // ******************************************************************************************************************
+
+   @View(id = "d")
+   public Response.Content d()
+   {
+      return Response.render(A_.mDURL(bean).toString());
+   }
+
+   @View
+   public Response.Content mD(B foo) throws IOException
+   {
+      return Response.content(foo.d);
+   }
+
+   @View(id = "dAction")
+   public Response.Content dAction()
+   {
+      return Response.content(A_.mDActionURL(bean).toString());
    }
 
    @Action
@@ -179,11 +151,51 @@ public class A extends Controller
       return r;
    }
 
+   // ******************************************************************************************************************
+
+   @View(id = "e")
+   public Response.Content e()
+   {
+      return Response.render(A_.mEURL(bean).toString());
+   }
+
+   @View
+   public Response.Content mE(B foo) throws IOException
+   {
+      return Response.content(Arrays.<String>asList((String[]) foo.e).toString());
+   }
+
+   @View(id = "eAction")
+   public Response.Content eAction()
+   {
+      return Response.content(A_.mEActionURL(bean).toString());
+   }
+
    @Action
    public Response.Update mEAction(B foo) throws IOException
    {
       Response.Update r =  A_.mE(foo);
       return r;
+   }
+
+   // ******************************************************************************************************************
+
+   @View(id = "f")
+   public Response.Content f()
+   {
+      return Response.render(A_.mFURL(bean).toString());
+   }
+
+   @View
+   public Response.Content mF(B foo) throws IOException
+   {
+      return Response.content(foo.f.toString());
+   }
+
+   @View(id = "fAction")
+   public Response.Content fAction()
+   {
+      return Response.content(A_.mFActionURL(bean).toString());
    }
 
    @Action
@@ -193,4 +205,84 @@ public class A extends Controller
       return r;
    }
 
+   // ******************************************************************************************************************
+
+   @View(id = "g")
+   public Response.Content g()
+   {
+      return Response.render(A_.mGURL("s_value", bean).toString());
+   }
+
+   @View
+   public Response.Content mG(String s, B foo) throws IOException
+   {
+      return Response.content(s + foo.getA());
+   }
+
+   @View(id = "gAction")
+   public Response.Content gAction()
+   {
+      return Response.content(A_.mGActionURL("s_value", bean).toString());
+   }
+
+   @Action
+   public Response.Update mGAction(String s, B foo) throws IOException
+   {
+      Response.Update r =  A_.mG(s, foo);
+      return r;
+   }
+
+   // ******************************************************************************************************************
+
+   @View(id = "h")
+   public Response.Content h()
+   {
+      return Response.render(A_.mHURL("s_value", bean).toString());
+   }
+
+   @View
+   public Response.Content mH(String a, B foo) throws IOException
+   {
+      return Response.content(a + foo.getA());
+   }
+
+   @View(id = "hAction")
+   public Response.Content hAction()
+   {
+      return Response.content(A_.mHActionURL("s_value", bean).toString());
+   }
+
+   @Action
+   public Response.Update mHAction(String a, B foo) throws IOException
+   {
+      Response.Update r =  A_.mH(a, foo);
+      return r;
+   }
+
+   // ******************************************************************************************************************
+
+   @View(id = "i")
+   public Response.Content i()
+   {
+      return Response.render(A_.mIURL("s_value", bean).toString());
+   }
+
+   @View
+   public Response.Content mI(String d, B foo) throws IOException
+   {
+      return Response.content(d + foo.d);
+   }
+
+   @View(id = "iAction")
+   public Response.Content iAction()
+   {
+      return Response.content(A_.mIActionURL("s_value", bean).toString());
+   }
+
+   @Action
+   public Response.Update mIAction(String d, B foo) throws IOException
+   {
+      Response.Update r =  A_.mI(d, foo);
+      return r;
+   }
 }

@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,6 +65,9 @@ public final class ControllerMethod
    /** . */
    private final Map<String, ControllerParameter> argumentMap;
 
+   /** . */
+   private final boolean requiresPrefix;
+
    public ControllerMethod(
       String id,
       Phase phase,
@@ -86,7 +90,50 @@ public final class ControllerMethod
       {
          argumentMap.put(argument.getName(), argument);
       }
-      
+
+      //
+      boolean requiresPrefix = false;
+      HashSet<String> set = new HashSet<String>();
+      for (ControllerParameter argument : argumentList)
+      {
+         if (argument.getType() == String.class)
+         {
+            if (!set.add(argument.getName()))
+            {
+               requiresPrefix = true;
+               break;
+            }
+         }
+         else
+         {
+            for (Field field : argument.getType().getFields())
+            {
+               if (!set.add(field.getName()))
+               {
+                  requiresPrefix = true;
+                  break;
+               }
+            }
+            for (Method beanMethod : argument.getType().getMethods())
+            {
+               String methodName = beanMethod.getName();
+               if (methodName.length() > 3 && 
+                  methodName.startsWith("get") &&
+                  beanMethod.getParameterTypes().length == 0 &&
+                  beanMethod.getReturnType() != Void.class)
+               {
+                  String foo = methodName.substring(3);
+                  String name = Character.toLowerCase(methodName.charAt(0)) + foo.substring(1);
+                  if (!set.add(name))
+                  {
+                     requiresPrefix = true;
+                     break;
+                  }
+               }
+            }
+         }
+      }
+
       //
       this.id = id;
       this.phase = phase;
@@ -94,6 +141,7 @@ public final class ControllerMethod
       this.method = method;
       this.argumentList = Tools.safeUnmodifiableList(argumentList);
       this.argumentMap = Collections.unmodifiableMap(argumentMap);
+      this.requiresPrefix = requiresPrefix;
    }
 
    public String getId()
@@ -149,7 +197,7 @@ public final class ControllerMethod
             {
                case SINGLE:
                {
-                  if (type.isAnnotationPresent(Param.class))
+                  if (parameter.getType().isAnnotationPresent(Param.class))
                   {
                      Map<String, String[]> p = buildBeanParameter(name, value);
                      parameterMap.setParameters(p);
@@ -212,12 +260,13 @@ public final class ControllerMethod
                continue;
             }
 
-            addParameter(parameters, baseName + "." + f.getName(), f.getType(), v);
+            String name = requiresPrefix ? baseName + "." + f.getName() : f.getName();
+            addParameter(parameters, name, f.getType(), v);
          }
 
          for (Method m : value.getClass().getMethods())
          {
-            if (m.getName().startsWith("get") && m.getParameterTypes().length == 0)
+            if (m.getName().startsWith("get") && m.getName().length() > 3 && m.getParameterTypes().length == 0)
             {
                Object v = m.invoke(value);
                if (v == null)
@@ -225,8 +274,9 @@ public final class ControllerMethod
                   continue;
                }
 
-               String n = m.getName().substring(3, 4).toLowerCase() + m.getName().substring(4);
-               addParameter(parameters, baseName + "." + n, m.getReturnType(), v);
+               String n = Character.toLowerCase(m.getName().charAt(3)) + m.getName().substring(4);
+               String name = requiresPrefix ? baseName + "." + n : n ;
+               addParameter(parameters, name, m.getReturnType(), v);
             }
          }
       }
@@ -268,16 +318,7 @@ public final class ControllerMethod
             Object o = null;
             try
             {
-               String name;
-               if (args.length > 1)
-               {
-                  name = parameter.getName();
-               }
-               else
-               {
-                  name = null;
-               }
-               o = createMappedBean(paramsType[i], name, parameterMap);
+               o = createMappedBean(paramsType[i], parameter.getName(), parameterMap);
             }
             catch (Exception e)
             {
@@ -317,7 +358,7 @@ public final class ControllerMethod
    {
       // Extract parameters
       Map<String, String[]> beanParams = new HashMap<String, String[]>();
-      String prefix = beanName + ".";
+      String prefix = requiresPrefix ? beanName + "." : "";
       for (String key : parameters.keySet())
       {
          if (key.startsWith(prefix))
