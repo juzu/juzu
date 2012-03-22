@@ -22,7 +22,6 @@ package org.juzu.impl.application;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.descriptor.ControllerMethodResolver;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
-import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.inject.ScopeController;
 import org.juzu.impl.request.Request;
@@ -180,7 +179,7 @@ public class ApplicationContext
       }
 
       //
-      Object[] args = getArgs(method, parameters);
+      Object[] args = method.getArgs(parameters);
       Request request = new Request(this, method, parameters, args, bridge);
 
       //
@@ -202,43 +201,6 @@ public class ApplicationContext
    public Object resolveBean(String name) throws ApplicationException
    {
       return resolveBean(injectManager, name);
-   }
-
-   private Object[] getArgs(ControllerMethod method, Map<String, String[]> parameterMap)
-   {
-      // Prepare method parameters
-      List<ControllerParameter> params = method.getArguments();
-      Object[] args = new Object[params.size()];
-      for (int i = 0;i < args.length;i++)
-      {
-         ControllerParameter param = params.get(i);
-         String[] values = parameterMap.get(param.getName());
-         if (values != null)
-         {
-            switch (param.getCardinality())
-            {
-               case SINGLE:
-                  args[i] = (values.length > 0) ? values[0] : null;
-                  break;
-               case ARRAY:
-                  args[i] = values.clone();
-                  break;
-               case LIST:
-                  ArrayList<String> list = new ArrayList<String>(values.length);
-                  for (String value : values)
-                  {
-                     list.add(value);
-                  }
-                  args[i] = list;
-                  break;
-               default:
-                  throw new UnsupportedOperationException("Handle me gracefully");
-            }
-         }
-      }
-
-      //
-      return args;
    }
 
    private <B, I> Object resolveBean(InjectManager<B, I> manager, String name) throws ApplicationException

@@ -21,6 +21,8 @@ package org.juzu;
 
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.spi.request.MimeBridge;
+import org.juzu.impl.utils.ParameterHashMap;
+import org.juzu.impl.utils.ParameterMap;
 import org.juzu.request.RequestContext;
 
 import java.util.HashMap;
@@ -72,7 +74,7 @@ public final class URLBuilder
    private final ControllerMethod method;
 
    /** . */
-   private Map<String, String[]> parameters;
+   private ParameterMap parameterMap;
 
    /** . */
    private Map<PropertyType<?>, Object> properties;
@@ -85,64 +87,31 @@ public final class URLBuilder
       //
       this.bridge = bridge;
       this.method = method;
-      this.parameters = new HashMap<String, String[]>();
+      this.parameterMap = new ParameterHashMap();
       this.properties = properties;
    }
 
-   /**
-    * <p>Set a parameter on the URL that will be built by this builder. This method replaces the parameter with the given
-    * name . A parameter value of <code>null</code> indicates that this parameter should be removed.</p>
-    *
-    * @param name the parameter name
-    * @param value the parameter value
-    * @return this builder
-    * @throws NullPointerException if the name parameter is null
-    */
    public URLBuilder setParameter(String name, String value) throws NullPointerException
    {
-      return setParameter(name, value == null ? EMPTY_STRING_ARRAY : new String[]{value});
+      parameterMap.setParameter(name, value);
+      return this;
    }
 
-   /**
-    * <p>Set a parameter on the URL that will be built by this builder. This method replaces the parameter with the given
-    * name . A parameter value of <code>null</code> indicates that this parameter should be removed.</p>
-    *
-    * @param name the parameter name
-    * @param value the parameter value
-    * @return this builder
-    * @throws NullPointerException if the name parameter is null
-    * @throws IllegalArgumentException if any component of the value is null
-    */
    public URLBuilder setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException
    {
-      if (name == null)
-      {
-         throw new NullPointerException();
-      }
-      if (value == null)
-      {
-         throw new NullPointerException();
-      }
-      if (name.startsWith("juzu."))
-      {
-         throw new IllegalArgumentException("Parameter name cannot be prefixed with juzu.");
-      }
-      if (value.length == 0)
-      {
-         parameters.remove(name);
-      }
-      else
-      {
-         for (String component : value)
-         {
-            if (component == null)
-            {
-               throw new IllegalArgumentException("Argument array cannot contain null value");
-            }
-         }
-         parameters.put(name, value.clone());
-      }
+      parameterMap.setParameter(name, value);
       return this;
+   }
+
+   public URLBuilder setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException
+   {
+      parameterMap.setParameters(parameters);
+      return this;
+   }
+
+   public ParameterMap getParameters()
+   {
+      return parameterMap;
    }
 
    public URLBuilder escapeXML(Boolean escapeXML)
@@ -192,6 +161,6 @@ public final class URLBuilder
     */
    public String toString()
    {
-      return bridge.renderURL(method.getPhase(), parameters, properties);
+      return bridge.renderURL(method.getPhase(), parameterMap, properties);
    }
 }

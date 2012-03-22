@@ -20,6 +20,7 @@
 package org.juzu.impl.controller.descriptor;
 
 import org.juzu.impl.utils.Cardinality;
+import org.juzu.impl.utils.ParameterMap;
 import org.juzu.impl.utils.Tools;
 
 /**
@@ -39,10 +40,8 @@ public class ControllerParameter
    /** . */
    private final String value;
 
-//   public ControllerParameter(String name) throws NullPointerException
-//   {
-//      this(name, Cardinality.SINGLE, null);
-//   }
+   /** . */
+   private final Class<?> type;
 
    public ControllerParameter(String name, Cardinality cardinality) throws NullPointerException
    {
@@ -50,6 +49,11 @@ public class ControllerParameter
    }
 
    public ControllerParameter(String name, Cardinality cardinality, String value) throws NullPointerException
+   {
+      this(name, cardinality, value, null);
+   }
+
+   public ControllerParameter(String name, Cardinality cardinality, String value, Class<?> type) throws NullPointerException
    {
       if (name == null)
       {
@@ -64,6 +68,7 @@ public class ControllerParameter
       this.name = name;
       this.cardinality = cardinality;
       this.value = value;
+      this.type = type;
    }
 
    /**
@@ -96,7 +101,16 @@ public class ControllerParameter
       return value;
    }
 
-   @Override
+   public Class<?> getType()
+   {
+      return type;
+   }
+
+   void setValue(ParameterMap builder, Object value)
+   {
+   }
+
+  @Override
    public boolean equals(Object obj)
    {
       if (obj == this)

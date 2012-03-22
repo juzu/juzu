@@ -27,6 +27,7 @@ import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.controller.metamodel.ControllerMethodMetaModel;
+import org.juzu.impl.controller.metamodel.ParameterMetaModel;
 import org.juzu.impl.inject.Export;
 import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.spi.template.TemplateEmitter;
@@ -232,9 +233,9 @@ public class TemplateResolver implements Serializable
 
                         //
                         List<String> args = new ArrayList<String>();
-                        for (String parameterName : method.getParameterNames())
+                        for (ParameterMetaModel param : method.getParameters())
                         {
-                           String value = parameterMap.get(parameterName);
+                           String value = parameterMap.get(param.getName());
                            args.add(value);
                         }
                         return new MethodInvocation(method.getController().getHandle().getFQN().getFullName() + "_", method.getName() + "URL", args);

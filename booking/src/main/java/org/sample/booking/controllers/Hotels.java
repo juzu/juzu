@@ -25,16 +25,13 @@ import org.juzu.View;
 import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.plugin.ajax.Ajax;
-import org.juzu.template.Template;
 import org.sample.booking.Flash;
 import org.sample.booking.models.Booking;
 import org.sample.booking.models.Hotel;
 import org.sample.booking.models.User;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -74,6 +71,10 @@ public class Hotels // extends Application
    @Inject
    @Path("hotels/show.gtmpl")
    org.sample.booking.templates.hotels.show show;
+
+   @Inject
+   @Path("hotels/confirmBooking.gtmpl")
+   org.sample.booking.templates.hotels.confirmBooking confirmBooking;
 
    @View
    public void index()
@@ -118,29 +119,12 @@ public class Hotels // extends Application
    }
 
    @Action
-   public Response processConfirmBooking(
-      String confirm,
-      String id,
-      String checkinDate,
-      String checkoutDate,
-      String beds,
-      String smoking,
-      String creditCard,
-      String creditCardName,
-      String creditCardExpiryMonth,
-      String creditCardExpiryYear)
+   public Response processConfirmBooking(String confirm, String id, Booking booking)
    {
       Hotel hotel = Hotel.findById(id);
       User user = User.find(login.getUserName(), null);
-      Booking booking = new Booking(hotel, user);
-      booking.checkinDate = checkinDate;
-      booking.checkoutDate = checkoutDate;
-      booking.beds = Integer.parseInt(beds);
-      booking.smoking = Boolean.valueOf(smoking);
-      booking.creditCard = creditCard;
-      booking.creditCardName = creditCardName;
-      booking.creditCardExpiryMonth = Integer.parseInt(creditCardExpiryMonth);
-      booking.creditCardExpiryYear = Integer.parseInt(creditCardExpiryYear);
+      booking.hotel = hotel;
+      booking.user = user;
 
 //      validation.valid(booking);
 
@@ -162,48 +146,15 @@ public class Hotels // extends Application
       else
       {
          // Display booking
-         return Hotels_.confirmBooking(
-            id,
-            checkinDate,
-            checkoutDate,
-            beds,
-            smoking,
-            creditCard,
-            creditCardName,
-            creditCardExpiryMonth,
-            creditCardExpiryYear);
+         return Hotels_.confirmBooking(id, booking);
       }
    }
 
-   @Inject
-   @Path("hotels/confirmBooking.gtmpl")
-   Template confirmBooking;
-
    @View
-   public void confirmBooking(
-      String id,
-      String checkinDate,
-      String checkoutDate,
-      String beds,
-      String smoking,
-      String creditCard,
-      String creditCardName,
-      String creditCardExpiryMonth,
-      String creditCardExpiryYear)
+   public void confirmBooking(String id, Booking booking)
    {
-      Map<String, Object> context = new HashMap<String, Object>();
       Hotel hotel = Hotel.findById(id);
-      context.put("total", 0);
-      context.put("hotel", hotel);
-      context.put("checkinDate", checkinDate);
-      context.put("checkoutDate", checkoutDate);
-      context.put("beds", beds);
-      context.put("smoking", smoking);
-      context.put("creditCard", creditCard);
-      context.put("creditCardName", creditCardName);
-      context.put("creditCardExpiryMonth", creditCardExpiryMonth);
-      context.put("creditCardExpiryYear", creditCardExpiryYear);
-      confirmBooking.render(context);
+      confirmBooking.with().total(0).hotel(hotel).booking(booking).render();
    }
 
    @Action

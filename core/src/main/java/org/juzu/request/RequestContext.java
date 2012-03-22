@@ -25,6 +25,10 @@ import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.RequestBridge;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

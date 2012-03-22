@@ -22,9 +22,9 @@ package org.juzu.request;
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
-import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.ActionBridge;
+import org.juzu.impl.utils.ParameterMap;
 
 import java.util.List;
 
@@ -63,10 +63,10 @@ public class ActionContext extends RequestContext
    public Response.Update createResponse(ControllerMethod method, Object arg) throws IllegalStateException
    {
       Response.Update response = createResponse(method);
-      List<ControllerParameter> argumentParameters = method.getArguments();
       if (arg != null)
       {
-         response.setParameter(argumentParameters.get(0).getName(), arg.toString());
+         // Yeah OK nasty cast, we'll see later
+         method.setArgs(new Object[]{arg}, (ParameterMap)response.getParameters());
       }
       return response;
    }
@@ -74,16 +74,8 @@ public class ActionContext extends RequestContext
    public Response.Update createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
    {
       Response.Update response = createResponse(method);
-      List<ControllerParameter> argumentParameters = method.getArguments();
-      for (int i = 0;i < argumentParameters.size();i++)
-      {
-         Object value = args[i];
-         if (value != null)
-         {
-            ControllerParameter argParameter = argumentParameters.get(i);
-            response.setParameter(argParameter.getName(), value.toString());
-         }
-      }
+      // Yeah OK nasty cast, we'll see later
+      method.setArgs(args, (ParameterMap)response.getParameters());
       return response;
    }
 }

@@ -22,6 +22,7 @@ package org.juzu.impl.request;
 import org.junit.Test;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
+import org.juzu.test.protocol.mock.MockActionBridge;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
 import org.juzu.test.protocol.mock.MockRenderBridge;
@@ -93,5 +94,40 @@ public class MethodParametersTestCase extends AbstractInjectTestCase
       render = client.render("2");
       mv = (MockRenderBridge)client.invoke(render.assertStringResult());
       assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
+   }
+
+   @Test
+   public void testBean() throws Exception
+   {
+      MockApplication<?> app = application("request", "method", "parameters", "bean").init();
+
+      //
+      MockClient client = app.client();
+
+      //
+      assertBean(client, "a", "v");
+      assertBean(client, "b", Arrays.asList("v1", "v2").toString());
+      assertBean(client, "c", Arrays.asList("v1", "v2").toString());
+      assertBean(client, "d", "v");
+      assertBean(client, "e", Arrays.asList("v1", "v2").toString());
+      assertBean(client, "f", Arrays.asList("v1", "v2").toString());
+      assertBean(client, "g", "s_valuev");
+      assertBean(client, "g", "s_valuev");
+      assertBean(client, "h", "s_valuev");
+
+   }
+
+   private void assertBean(MockClient client, String name, Object expected) throws Exception
+   {
+      MockRenderBridge render = client.render(name);
+      String url = render.assertStringResult();
+      MockRenderBridge m = (MockRenderBridge)client.invoke(url);
+      assertEquals(expected, m.assertStringResult());
+
+      render = client.render(name + "Action");
+      url = render.assertStringResult();
+      MockActionBridge action = (MockActionBridge)client.invoke(url);
+      MockRenderBridge m2 = (MockRenderBridge)client.invoke(action.assertUpdate());
+      assertEquals(expected, m2.assertStringResult());
    }
 }

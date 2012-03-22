@@ -24,15 +24,11 @@ import org.juzu.URLBuilder;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
-import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.io.AppendableStream;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MimeContext extends RequestContext
@@ -64,74 +60,17 @@ public abstract class MimeContext extends RequestContext
       return builder;
    }
 
-   private void setValue(URLBuilder builder, ControllerParameter param, Object value)
-   {
-      switch (param.getCardinality())
-      {
-         case SINGLE:
-         {
-            builder.setParameter(param.getName(), String.valueOf(value));
-            break;
-         }
-         case ARRAY:
-         {
-            int length = Array.getLength(value);
-            String[] array = new String[length];
-            for (int i = 0;i < length;i++)
-            {
-               Object component = Array.get(value, i);
-               array[i] = String.valueOf(component);
-            }
-            builder.setParameter(param.getName(), array);
-            break;
-         }
-         case LIST:
-         {
-            Collection<?> c = (Collection<?>)value;
-            int length = c.size();
-            String[] array = new String[length];
-            Iterator<?> iterator = c.iterator();
-            for (int i = 0;i < length;i++)
-            {
-               Object element = iterator.next();
-               array[i] = String.valueOf(element);
-            }
-            builder.setParameter(param.getName(), array);
-            break;
-         }
-         default:
-            throw new UnsupportedOperationException("Not yet implemented");
-      }
-   }
-   
    public URLBuilder createURLBuilder(ControllerMethod method, Object arg)
    {
       URLBuilder builder = createURLBuilder(method);
-
-      //
-      ControllerParameter param = method.getArguments().get(0);
-      if (arg != null)
-      {
-         setValue(builder, param, arg);
-      }
-
-      //
+      method.setArgs(new Object[]{arg}, builder.getParameters());
       return builder;
    }
 
    public URLBuilder createURLBuilder(ControllerMethod method, Object[] args)
    {
       URLBuilder builder = createURLBuilder(method);
-
-      // Fill in argument parameters
-      for (int i = 0;i < args.length;i++)
-      {
-         Object value = args[i];
-         if (value != null)
-         {
-            setValue(builder, method.getArguments().get(i), value);
-         }
-      }
+      method.setArgs(args, builder.getParameters());
       return builder;
    }
 

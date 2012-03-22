@@ -19,9 +19,14 @@
 
 package org.juzu.test;
 
+import japa.parser.JavaParser;
+import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
+import org.juzu.impl.utils.Content;
+import org.juzu.impl.utils.Tools;
 import org.juzu.processor.MainProcessor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
@@ -29,7 +34,9 @@ import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.protocol.mock.MockApplication;
 
 import javax.annotation.processing.Processor;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -44,7 +51,7 @@ public class CompilerHelper<I, O>
    private static WeakHashMap<ClassLoader, ClassLoaderFileSystem> classPathCache = new WeakHashMap<ClassLoader, ClassLoaderFileSystem>();
 
    /** . */
-   private ReadFileSystem<I> sourcePath;
+   private ReadWriteFileSystem<I> sourcePath;
 
    /** . */
    private ReadWriteFileSystem<O> sourceOutput;
@@ -62,7 +69,7 @@ public class CompilerHelper<I, O>
    private Compiler.Builder builder;
 
    public CompilerHelper(
-      ReadFileSystem<I> sourcePath,
+      ReadWriteFileSystem<I> sourcePath,
       ReadWriteFileSystem<O> sourceOutput,
       ReadWriteFileSystem<O> classOutput)
    {
@@ -105,7 +112,7 @@ public class CompilerHelper<I, O>
       this.builder = builder;
    }
 
-   public CompilerHelper(ReadFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
+   public CompilerHelper(ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
    {
       this(sourcePath, output, output);
    }
@@ -197,6 +204,52 @@ public class CompilerHelper<I, O>
          return classLoader.loadClass(className);
       }
       catch (ClassNotFoundException e)
+      {
+         throw AbstractTestCase.failure(e);
+      }
+   }
+   
+   public void assertRemove(String ... names)
+   {
+      try
+      {
+         I path = sourcePath.getPath(names);
+         if (path == null)
+         {
+            throw AbstractTestCase.failure("Cannot remove path " + Tools.join('/', names));
+         }
+         sourcePath.removePath(path);
+      }
+      catch (Exception e)
+      {
+         throw AbstractTestCase.failure(e);
+      }
+   }
+
+   public JavaFile assertJavaFile(String... names)
+   {
+      try
+      {
+         Content content = sourcePath.getContent(names);
+         InputStream in = content.getInputStream();
+         CompilationUnit cu = JavaParser.parse(in);
+         return new JavaFile(names, cu);
+      }
+      catch (Exception e)
+      {
+         throw AbstractTestCase.failure(e);
+      }
+   }
+
+   public void saveJavaFile(JavaFile file)
+   {
+      try
+      {
+         I path = sourcePath.getPath(file.names);
+         String s = file.cu.toString();
+         sourcePath.setContent(path, new Content(0, s));
+      }
+      catch (Exception e)
       {
          throw AbstractTestCase.failure(e);
       }
