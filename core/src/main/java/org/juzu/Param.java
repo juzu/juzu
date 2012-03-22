@@ -22,7 +22,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**  @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
+/**
+ * This annotation declares a java type to be a valid controller method parameter type:
+ *
+ * <code><pre>
+ *    public class Controller {
+ *       &#064;View public Response.Render display(User user) { ...}
+ *    }
+ *
+ *    &#064;Param
+ *    public class User {
+ *       ...
+ *    }
+ * </pre></code>
+ *
+ * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Param
