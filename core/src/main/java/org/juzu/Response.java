@@ -148,36 +148,24 @@ public abstract class Response
 
       public Update()
       {
-         this.parameterMap = ParameterMap.EMPTY;
+         this.parameterMap = new ParameterHashMap();
          this.properties = EMPTY_MAP;
       }
 
       public Update setParameter(String name, String value) throws NullPointerException
       {
-         if (parameterMap == ParameterMap.EMPTY)
-         {
-            parameterMap = new ParameterHashMap();
-         }
          parameterMap.setParameter(name, value);
          return this;
       }
 
       public Update setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException
       {
-         if (parameterMap == ParameterMap.EMPTY)
-         {
-            parameterMap = new ParameterHashMap();
-         }
          parameterMap.setParameter(name, value);
          return this;
       }
 
       public Update setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException
       {
-         if (parameterMap == ParameterMap.EMPTY)
-         {
-            parameterMap = new ParameterHashMap();
-         }
          parameterMap.setParameters(parameters);
          return this;
       }

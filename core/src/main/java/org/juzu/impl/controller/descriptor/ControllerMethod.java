@@ -19,11 +19,20 @@
 
 package org.juzu.impl.controller.descriptor;
 
+import org.juzu.Param;
+import org.juzu.impl.utils.ParameterMap;
 import org.juzu.request.Phase;
 import org.juzu.impl.utils.Tools;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +134,253 @@ public final class ControllerMethod
    public Set<String> getArgumentNames()
    {
       return argumentMap.keySet();
+   }
+
+   public void setArgs(Object[] args, ParameterMap parameterMap)
+   {
+      for (int j = 0;j < argumentList.size();j++)
+      {
+         Object value = args[j];
+         if (value != null)
+         {
+            ControllerParameter parameter = argumentList.get(j);
+            String name = parameter.getName();
+            switch (parameter.getCardinality())
+            {
+               case SINGLE:
+               {
+                  if (type.isAnnotationPresent(Param.class))
+                  {
+                     Map<String, String[]> p = buildBeanParameter(name, value);
+                     parameterMap.setParameters(p);
+                  }
+                  else
+                  {
+                     parameterMap.setParameter(name, String.valueOf(value));
+                  }
+                  break;
+               }
+               case ARRAY:
+               {
+                  int length = Array.getLength(value);
+                  String[] array = new String[length];
+                  for (int i = 0;i < length;i++)
+                  {
+                     Object component = Array.get(value, i);
+                     array[i] = String.valueOf(component);
+                  }
+                  parameterMap.setParameter(name, array);
+                  break;
+               }
+               case LIST:
+               {
+                  Collection<?> c = (Collection<?>)value;
+                  int length = c.size();
+                  String[] array = new String[length];
+                  Iterator<?> iterator = c.iterator();
+                  for (int i = 0;i < length;i++)
+                  {
+                     Object element = iterator.next();
+                     array[i] = String.valueOf(element);
+                  }
+                  parameterMap.setParameter(name, array);
+                  break;
+               }
+               default:
+                  throw new UnsupportedOperationException("Not yet implemented");
+            }
+
+
+
+            // Yeah OK nasty cast, we'll see later
+            parameter.setValue(parameterMap, value);
+         }
+      }
+   }
+
+   private Map<String, String[]> buildBeanParameter(String baseName, Object value)
+   {
+      Map<String, String[]> parameters = new HashMap<String, String[]>();
+
+      try
+      {
+         for (Field f : value.getClass().getFields())
+         {
+            Object v = f.get(value);
+            if (v == null)
+            {
+               continue;
+            }
+
+            addParameter(parameters, baseName + "." + f.getName(), f.getType(), v);
+         }
+
+         for (Method m : value.getClass().getMethods())
+         {
+            if (m.getName().startsWith("get") && m.getParameterTypes().length == 0)
+            {
+               Object v = m.invoke(value);
+               if (v == null)
+               {
+                  continue;
+               }
+
+               String n = m.getName().substring(3, 4).toLowerCase() + m.getName().substring(4);
+               addParameter(parameters, baseName + "." + n, m.getReturnType(), v);
+            }
+         }
+      }
+      catch (Exception e)
+      {
+      }
+
+      return parameters;
+   }
+
+   private void addParameter(Map<String, String[]> parameters, String name, Class clazz, Object value)
+   {
+      if (String.class.equals(clazz))
+      {
+         parameters.put(name, new String[]{(String) value});
+      }
+      else if (String[].class.equals((clazz)))
+      {
+         parameters.put(name, (String[]) value);
+      }
+      else if (List.class.equals((clazz)))
+      {
+         parameters.put(name, (String[]) ((List) value).toArray());
+      }
+   }
+
+   public Object[] getArgs(Map<String, String[]> parameterMap)
+   {
+      // Prepare method parameters
+      Class<?>[] paramsType = method.getParameterTypes();
+      Object[] args = new Object[argumentList.size()];
+      for (int i = 0;i < args.length;i++)
+      {
+         ControllerParameter parameter = argumentList.get(i);
+         Object[] values;
+         if (paramsType[i].isAnnotationPresent(Param.class))
+         {
+            // build bean parameter
+            Object o = null;
+            try
+            {
+               String name;
+               if (args.length > 1)
+               {
+                  name = parameter.getName();
+               }
+               else
+               {
+                  name = null;
+               }
+               o = createMappedBean(paramsType[i], name, parameterMap);
+            }
+            catch (Exception e)
+            {
+            }
+            values = new Object[]{o};
+         }
+         else
+         {
+            values = parameterMap.get(parameter.getName());
+         }
+         if (values != null)
+         {
+            switch (parameter.getCardinality())
+            {
+               case SINGLE:
+                  args[i] = (values.length > 0) ? values[0] : null;
+                  break;
+               case ARRAY:
+                  args[i] = values.clone();
+                  break;
+               case LIST:
+                  ArrayList<Object> list = new ArrayList<Object>(values.length);
+                  Collections.addAll(list, values);
+                  args[i] = list;
+                  break;
+               default:
+                  throw new UnsupportedOperationException("Handle me gracefully");
+            }
+         }
+      }
+
+      //
+      return args;
+   }
+
+   private <T> T createMappedBean(Class<T> clazz, String beanName, Map<String, String[]> parameters) throws IllegalAccessException, InstantiationException
+   {
+      // Extract parameters
+      Map<String, String[]> beanParams = new HashMap<String, String[]>();
+      String prefix = beanName + ".";
+      for (String key : parameters.keySet())
+      {
+         if (key.startsWith(prefix))
+         {
+            String paramName = key.substring(prefix.length());
+            beanParams.put(paramName, parameters.get(key));
+         }
+      }
+
+      // Build bean
+      T bean = clazz.newInstance();
+      for (String key : beanParams.keySet())
+      {
+         String[] value = beanParams.get(key);
+         String setterName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
+         boolean success = callSetter(setterName, clazz, bean, value, String[].class);
+         if (!success)
+         {
+            success = callSetter(setterName, clazz, bean, value[0], String.class);
+         }
+         if (!success)
+         {
+            success = callSetter(setterName, clazz, bean, Arrays.asList(value), List.class);
+         }
+         if (!success)
+         {
+            try
+            {
+               Field f = clazz.getField(key);
+               if (String[].class.equals(f.getType()))
+               {
+                  f.set(bean, value);
+               }
+               else if (String.class.equals(f.getType()))
+               {
+                  f.set(bean, value[0]);
+               }
+               else if (List.class.equals(f.getType()))
+               {
+                  f.set(bean, Arrays.asList(value));
+               }
+
+            }
+            catch (NoSuchFieldException e)
+            {
+            }
+         }
+
+      }
+      return bean;
+   }
+
+   <T> boolean callSetter(String methodName, Class<T> clazz, T target, Object value, Class type)
+   {
+      try
+      {
+         Method m = clazz.getMethod(methodName, type);
+         m.invoke(target, value);
+         return true;
+      }
+      catch (Exception e) {
+         return false;
+      }
    }
 
    @Override

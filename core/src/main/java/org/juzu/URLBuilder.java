@@ -109,6 +109,11 @@ public final class URLBuilder
       return this;
    }
 
+   public ParameterMap getParameters()
+   {
+      return parameterMap;
+   }
+
    public URLBuilder escapeXML(Boolean escapeXML)
    {
       setProperty(ESCAPE_XML, escapeXML);
