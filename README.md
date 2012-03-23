@@ -19,11 +19,13 @@ Screencast
 # WIP (current master)
 
 - 0.5
-   - plugin support
-   - asset plugin
-   - ajax plugin
-   - lifecycle support with @PostConstruct and @PreDestroy
+   - Reference guide
+   - Plugin support
+   - Asset plugin
+   - Ajax plugin
+   - Lifecycle support with @PostConstruct and @PreDestroy
    - Portlet preferences injection
+   - Bean mapping preview
 
 # Status
 
