@@ -1,22 +1,76 @@
-Controllers are an essential part of a Juzu application.
+Controllers play an essential role in a Juzu application: they contain the code executed when Juzu processes a
+request, this chapter provides an in depth study of Juzu controllers.
 
-= Controller methods =
+= Overview =
 
-Juzu controllers are simply annotated methods of the application, there are several kinds of controllers,
-each kind of controller having a different purpose:
+Juzu controllers are simply annotated methods of the application, here is the most basic controller declaration:
+
+{{java}}
+public class Controller {
+  @View public Response.Content index() {
+     return Response.render("hello world");
+  }
+}}
+{{/java}}
+
+The annotation ##@org.juzu.View## declares a //view// controller, the name ##index## has a special meaning as it will
+be used when no other controller is specifed in a Juzu request.
+
+Controller methods can declare parameters for receiving request parameters:
+
+{{java}}
+public class Controller {
+  @View public Response.Content index(String person) {
+     return Response.render("Hello " + person == null ? "world" : person);
+  }
+}
+{{/java}}
+
+Like previously, the ##index## controller returns the //hello world// value when it is called the first time. When
+the controller is called with the ##person## parameter it returns the hello string personalized with the corresponding
+parameter value: Juzu use the declared method parameter name to match against the request parameters, in our case
+ the ##person## request parameter.
+
+Any controller class (any class containing at least one controller method) generates a //companion// class during the
+compilation of the project. Such companion class extends the original controller class to provider companion methods
+for the controller method. The companion class has the same name than the original class appended with
+the //_// character:
+
+{{java}}
+public class Controller_ {
+  public static URLBuilder indexURL() { /* Generated code */ }
+  public static URLBuilder indexURL(String person) { /* Generated code */ }
+}
+{{/java}}
+
+Each ##index## methods generated a corresponding ##indexURL## url companion. When any ##indexURL## method is invoked
+it returns an ##URLBuilder## object that represents the URL invoking the corresponding phase. When parameters are
+provided they are already encoded in the returned URL. Calling the ##toString()## method of the URLBuilder returns
+the URL.
+
+{{java}}
+@View public Response.Content index() {
+  return Response.render("Hello word. <a href='" + Controller_.index("Juzu") + "'>Say hello to Juzu</a>";
+}
+{{/java}}
+
+URL companion methods have the name of the originating method appended with the //URL// suffix. The method parameter
+ types are the same.
+
+= Controller phases =
+
+There are several kinds of controllers bound to a request phase studied in the [[#concepts]]:
 
 * View controllers annoted with the ##@org.juzu.View## annotation
 * Action controllers annotated with the ##@org.juzu.Action## annotation
 * Resource controllers annotated with the ##@org.juzu.Resource## annotation
 * Event controllers annotated with the ##@org.juzu.Event## annotation (//not yet implemented//)
 
-Controller methods can have parameters as phase parameters.
-
 == View controllers ==
 
-A view controller method produces aggregated markup for the application, it means that the invocation of the method
+A view controller method produces aggregated markup for the application, the invocation of the method
 should produce markup that will be aggregated in larger page, therefore it should not care about the overall HTML
-page.
+structure.
 
 View parameters describe the current parameters of the view, they are often used for navigation purpose in the application.
 Juzu supports simple data types such as string and structured data types modelled by Java objects.
@@ -37,10 +91,32 @@ is invoked.
 {@include org.juzu.Response.Content#send(org.juzu.io.Stream)}
 {{/java}}
 
+During the view phase a controller can generate URLs to other phases (except the event phase) by using companion
+ url methods. Companion url methods returns a ##org.juzu.URLBuilder## object to represent the URL. The final
+ URL is returned by the ##toString()## method of the builder.
+
 == Action controllers ==
 
-An action controller method process an action for the application. It does not produce markup, instead it configures
-the view parameters of the next view that Juzu will display.
+Action controller are executed during the action phase of a Juzu application. Usually action methods perform two tasks
+
+* implement the logic of the application processing, for instance inserting an entity in the database
+* configure the next view phase: setting the next view controller to display and configuring its view parameters
+of the method when they exist
+
+In the following example, the controller method ##createUser##  creates a user and returns a ##Response.Update##
+object that will tell Juzu to use the ##showUser## view controller during the next view phase:
+
+{{java}}
+@Action
+public Response.Update addUser(String userName, String password) {
+  orgService.createUser(userName, password);
+  return Controller_.showUser(userName);
+}
+{{/java}}
+
+##showUser## is a companion //update// method that creates a ##Response.Update## object configured with the
+controller and arguments to use. Like url companion methods, update companion methods are generated during
+the compilation of the project by Juzu.
 
 == Resource controllers ==
 
@@ -55,8 +131,32 @@ controllers have several use cases:
 
 //not yet implemented//
 
-= Controller object =
+= Controller classes =
 
-Obviously the controller methods belongs to
-objects and the role played by controller objects are important too.
+Controller methods belongs to Java classes known as controller classes. Controller classes are ordinary java classes,
+any class can be turned into a controller by declaring a controller method. Controller classes are registered in
+the IOC container of the Juzu application, we will study later the benefits.
+
+== Controller life cycle ==
+
+We will study in this section the complete life cycle of a controller object. Juzu relies on the IOC container
+for managing the life cycle of controller objects, based on the ##@javax.inject.Inject## annotation. If the
+ controller desires, it can receive life cycle callbacks thanks to the ##@javax.annotation.PostConstruct##
+ and ##@javax.annotation.PreDestroy## annotations.
+
+Let's have a look at the complete life cycle of a controller object during a Juzu request:
+
+[[image:images/controllers/lifecycle.png||title="Life cycle of a controller object" align="center" html:scale="70" fo:width="70mm]]
+
+1. Juzu begins the request, it will need an controller instance for the request and asks the IOC container an instance
+1. The IOC container creates a fully operational controller instance in several stesp
+11. It gets a controller object instance either by creating a new instance by using the default constructor
+or the constructor annotated with ##@Inject##
+11. It injects the controller declared dependencies by the ##@Inject## annotation
+11. It invokes any method annotated with ##@PostConstruct##
+1. Juzu obtains a valid controller instance and simply invokes the controller method
+1. After the invocation, Juzu releases the controller instance and delegates it to the IOC container again
+11. It invokes any method annotated with ##@PreDestroy##
+11. It makes the instance available to the garbage collector
+1. Juzu ends the request and use the ##Response## objet returned by the controller method
 

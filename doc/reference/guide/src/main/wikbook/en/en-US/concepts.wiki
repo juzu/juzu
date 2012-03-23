@@ -77,7 +77,7 @@ View phases are mapped on //GET// requests:
 
 During a view phase, the application produces URL which can invoke any application phase.
 
-[[image:images/interaction1.png||title="View phase" align="center" html:scale="30" fo:width="30mm]]
+[[image:images/concepts/interaction1.png||title="View phase" align="center" html:scale="30" fo:width="30mm]]
 
 In this example the view phase produce markup parameterized by the ##color## parameter having the //red// value.
 
@@ -90,13 +90,13 @@ is mapped on //POST// requests:
 * Action parameters are identified to form parameters
 * Action phase and POST requests should not be invoked more than one time
 
-[[image:images/interaction2.png||title="Action phase" align="center" html:scale="30" fo:width="30mm]]
+[[image:images/concepts/interaction2.png||title="Action phase" align="center" html:scale="30" fo:width="30mm]]
 
 Now let's update our example and suppose that the application returns markup with a form that invokes an action phase.
 When the user submits the form it triggers the action phase, which in returns updates the ##color## view parameter of the next
  view phase to the value //blue//.
 
-[[image:images/interaction3.png||title="View phase after action phase" align="center" html:scale="30" fo:width="30mm]]
+[[image:images/concepts/interaction3.png||title="View phase after action phase" align="center" html:scale="30" fo:width="30mm]]
 
 The HTTP redirection will update the browser to show the next view phase with the expected view parameters.
 
