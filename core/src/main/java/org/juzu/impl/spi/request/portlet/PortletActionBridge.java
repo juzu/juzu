@@ -21,10 +21,15 @@ package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
+import org.juzu.portlet.JuzuPortlet;
 import org.juzu.request.RenderContext;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletModeException;
+import javax.portlet.WindowState;
+import javax.portlet.WindowStateException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -53,14 +58,46 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       {
          done = true;
          Response.Update update = (Response.Update)response;
+
+         // Parameters
          for (Map.Entry<String, String[]> entry : update.getParameters().entrySet())
          {
             super.response.setRenderParameter(entry.getKey(), entry.getValue());
          }
+
+         // Method id
          Object methodId = update.getProperties().get(RenderContext.METHOD_ID);
          if (methodId != null)
          {
             super.response.setRenderParameter("juzu.op", methodId.toString());
+         }
+
+         //
+         PortletMode portletMode = (PortletMode)update.getProperties().get(JuzuPortlet.PORTLET_MODE);
+         if (portletMode != null)
+         {
+            try
+            {
+               super.response.setPortletMode(portletMode);
+            }
+            catch (PortletModeException e)
+            {
+               throw new IllegalArgumentException(e);
+            }
+         }
+
+         //
+         WindowState windowState = (WindowState)update.getProperties().get(JuzuPortlet.WINDOW_STATE);
+         if (windowState != null)
+         {
+            try
+            {
+               super.response.setWindowState(windowState);
+            }
+            catch (WindowStateException e)
+            {
+               throw new IllegalArgumentException(e);
+            }
          }
       }
       else
