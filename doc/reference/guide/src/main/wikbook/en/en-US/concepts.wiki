@@ -56,7 +56,7 @@ is invoked, a set of resources parameters are provided in the URL producing the 
 
 Now that we have an overview of the phase, it is time to connect them and explain the interactions between the phases.
 
-[[image:images/phases.png||title="Interaction between phases" align="center" html:scale="70" fo:width="70mm]]
+[[image:images/concepts/phases.png||title="Interaction between phases" align="center" html:scale="70" fo:width="70mm]]
 
 1. An action phase is invoked by an URL produced during a view phase, this URL contains the action parameters
 1. After an action phase a view phase is executed and the view parameters are updated
