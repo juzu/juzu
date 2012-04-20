@@ -19,8 +19,6 @@
 
 package org.juzu;
 
-import org.juzu.impl.request.RequestLifeCycle;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
