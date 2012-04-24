@@ -21,7 +21,12 @@ public class JavaFile
       this.names = names;
       this.cu = cu;
    }
-   
+
+   public CompilationUnit getCompilationUnit()
+   {
+      return cu;
+   }
+
    public ClassOrInterfaceDeclaration assertDeclaration()
    {
       List<TypeDeclaration> decls = cu.getTypes();

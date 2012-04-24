@@ -19,18 +19,18 @@
 
 package org.juzu.impl.controller.metamodel;
 
-import org.juzu.Action;
-import org.juzu.Resource;
-import org.juzu.View;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.JSON;
+import org.juzu.impl.utils.Tools;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -135,9 +135,16 @@ public class ControllerMethodMetaModel extends MetaModelObject
    public boolean exist(MetaModel model)
    {
       ExecutableElement methodElt = model.env.get(handle);
-      return methodElt != null && (
-         methodElt.getAnnotation(View.class) != null ||
-         methodElt.getAnnotation(Action.class) != null ||
-         methodElt.getAnnotation(Resource.class) != null);
+      if (methodElt != null)
+      {
+         AnnotationMirror am = Tools.getAnnotation(methodElt, phase.annotation.getName());
+         if (am != null)
+         {
+            Map<String, Object> values = Tools.foo(am);
+            String id = (String)values.get("id");
+            return Tools.safeEquals(id, this.id);
+         }
+      }
+      return false;
    }
 }

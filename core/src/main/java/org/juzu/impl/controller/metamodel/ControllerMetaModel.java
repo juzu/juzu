@@ -125,93 +125,91 @@ public class ControllerMetaModel extends MetaModelObject
 
             // First remove the previous method
             Key<ControllerMethodMetaModel> key = Key.of(origin, ControllerMethodMetaModel.class);
-            if (getChild(key) != null)
+            if (getChild(key) == null)
             {
-               removeChild(key);
-            }
-
-            // Validate duplicate id within the same controller
-            for (ControllerMethodMetaModel existing : getChildren(ControllerMethodMetaModel.class))
-            {
-               if (existing.id != null && existing.id.equals(id))
+               // Validate duplicate id within the same controller
+               for (ControllerMethodMetaModel existing : getChildren(ControllerMethodMetaModel.class))
                {
-                  throw new CompilationException(methodElt, MetaModelError.CONTROLLER_METHOD_DUPLICATE_ID, id);
+                  if (existing.id != null && existing.id.equals(id))
+                  {
+                     throw new CompilationException(methodElt, MetaModelError.CONTROLLER_METHOD_DUPLICATE_ID, id);
+                  }
                }
-            }
 
-            // Parameters
-            ArrayList<ParameterMetaModel> parameters = new ArrayList<ParameterMetaModel>();
-            List<? extends TypeMirror> parameterTypeMirrors = ((ExecutableType)methodElt.asType()).getParameterTypes();
-            List<? extends VariableElement> parameterVariableElements = methodElt.getParameters();
-            for (int i = 0;i < parameterTypeMirrors.size();i++)
-            {
-               VariableElement parameterVariableElt = parameterVariableElements.get(i);
-               TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i);
-               TypeMirror erasedParameterTypeMirror = context.env.erasure(parameterTypeMirror);
-               String parameterType = erasedParameterTypeMirror.toString();
-               //
-               String parameterName = parameterVariableElt.getSimpleName().toString();
-
-               // Determine cardinality
-               TypeMirror parameterSimpleTypeMirror;
-               Cardinality parameterCardinality;
-               switch (parameterTypeMirror.getKind())
+               // Parameters
+               ArrayList<ParameterMetaModel> parameters = new ArrayList<ParameterMetaModel>();
+               List<? extends TypeMirror> parameterTypeMirrors = ((ExecutableType)methodElt.asType()).getParameterTypes();
+               List<? extends VariableElement> parameterVariableElements = methodElt.getParameters();
+               for (int i = 0;i < parameterTypeMirrors.size();i++)
                {
-                  case DECLARED:
-                     DeclaredType dt = (DeclaredType)parameterTypeMirror;
-                     TypeElement col = context.env.getTypeElement("java.util.List");
-                     TypeMirror tm = context.env.erasure(col.asType());
-                     TypeMirror err = context.env.erasure(dt);
-                     // context.env.isSubtype(err, tm)
-                     if (err.equals(tm))
-                     {
-                        if (dt.getTypeArguments().size() != 1)
+                  VariableElement parameterVariableElt = parameterVariableElements.get(i);
+                  TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i);
+                  TypeMirror erasedParameterTypeMirror = context.env.erasure(parameterTypeMirror);
+                  String parameterType = erasedParameterTypeMirror.toString();
+                  //
+                  String parameterName = parameterVariableElt.getSimpleName().toString();
+
+                  // Determine cardinality
+                  TypeMirror parameterSimpleTypeMirror;
+                  Cardinality parameterCardinality;
+                  switch (parameterTypeMirror.getKind())
+                  {
+                     case DECLARED:
+                        DeclaredType dt = (DeclaredType)parameterTypeMirror;
+                        TypeElement col = context.env.getTypeElement("java.util.List");
+                        TypeMirror tm = context.env.erasure(col.asType());
+                        TypeMirror err = context.env.erasure(dt);
+                        // context.env.isSubtype(err, tm)
+                        if (err.equals(tm))
                         {
-                           throw new CompilationException(parameterVariableElt, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                           if (dt.getTypeArguments().size() != 1)
+                           {
+                              throw new CompilationException(parameterVariableElt, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                           }
+                           else
+                           {
+                              parameterCardinality = Cardinality.LIST;
+                              parameterSimpleTypeMirror = dt.getTypeArguments().get(0);
+                           }
                         }
                         else
                         {
-                           parameterCardinality = Cardinality.LIST;
-                           parameterSimpleTypeMirror = dt.getTypeArguments().get(0);
+                           parameterCardinality = Cardinality.SINGLE;
+                           parameterSimpleTypeMirror = parameterTypeMirror;
                         }
-                     }
-                     else
-                     {
-                        parameterCardinality = Cardinality.SINGLE;
-                        parameterSimpleTypeMirror = parameterTypeMirror;
-                     }
-                     break;
-                  case ARRAY:
-                     // Unwrap array
-                     ArrayType arrayType = (ArrayType)parameterTypeMirror;
-                     parameterCardinality = Cardinality.ARRAY;
-                     parameterSimpleTypeMirror = arrayType.getComponentType();
-                     break;
-                  default:
+                        break;
+                     case ARRAY:
+                        // Unwrap array
+                        ArrayType arrayType = (ArrayType)parameterTypeMirror;
+                        parameterCardinality = Cardinality.ARRAY;
+                        parameterSimpleTypeMirror = arrayType.getComponentType();
+                        break;
+                     default:
+                        throw new CompilationException(parameterVariableElt, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                  }
+                  if (parameterSimpleTypeMirror.getKind() != TypeKind.DECLARED)
+                  {
                      throw new CompilationException(parameterVariableElt, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
+                  }
+
+                  //
+                  TypeElement te = (TypeElement)context.env.asElement(parameterSimpleTypeMirror);
+                  ElementHandle.Class a = ElementHandle.Class.create(te);
+
+                  //
+                  parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, parameterType));
                }
-               if (parameterSimpleTypeMirror.getKind() != TypeKind.DECLARED)
-               {
-                  throw new CompilationException(parameterVariableElt, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED);
-               }
-               
-               //
-               TypeElement te = (TypeElement)context.env.asElement(parameterSimpleTypeMirror);
-               ElementHandle.Class a = ElementHandle.Class.create(te);
 
                //
-               parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, parameterType));
+               ControllerMethodMetaModel method = new ControllerMethodMetaModel(
+                  origin,
+                  id,
+                  phase,
+                  methodElt.getSimpleName().toString(),
+                  parameters);
+               addChild(key, method);
+               modified = true;
             }
-
-            //
-            ControllerMethodMetaModel method = new ControllerMethodMetaModel(
-               origin,
-               id,
-               phase,
-               methodElt.getSimpleName().toString(),
-               parameters);
-            addChild(key, method);
-            modified = true;
             break;
          }
       }
