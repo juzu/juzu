@@ -71,9 +71,6 @@ public class Compiler
       /** . */
       private List<SimpleFileSystem<?>> classPaths;
 
-      /** . */
-      private Processor processor;
-
       private Builder(
          ReadFileSystem<?> sourcePath,
          ReadWriteFileSystem<?> sourceOutput,
@@ -84,7 +81,6 @@ public class Compiler
          this.sourceOutput = sourceOutput;
          this.classOutput = classOutput;
          this.classPaths = classPaths;
-         this.processor = null;
       }
 
       public Builder classOutput(ReadWriteFileSystem<?> classOutput)
@@ -117,13 +113,12 @@ public class Compiler
          return this;
       }
 
-      public Builder processor(Processor processor)
+      public Compiler build()
       {
-         this.processor = processor;
-         return this;
+         return build(null);
       }
 
-      public Compiler build()
+      public Compiler build(Processor processor)
       {
          if (sourcePath == null)
          {

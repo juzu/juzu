@@ -35,7 +35,6 @@ import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.controller.metamodel.ControllerMetaModel;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.QN;
-import org.juzu.processor.MainProcessor;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
@@ -56,7 +55,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
 
       //
@@ -90,7 +89,7 @@ public class ControllerTestCase extends AbstractTestCase
 
    @Test
    public void testRemoveApplication() throws Exception {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -103,7 +102,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "package-info.class"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
@@ -122,7 +121,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testChangeAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -138,7 +137,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
@@ -172,7 +171,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -188,7 +187,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
@@ -211,7 +210,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testAddMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
@@ -233,7 +232,7 @@ public class ControllerTestCase extends AbstractTestCase
       helper.saveJavaFile(file);
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
 
       //
       mm = Tools.unserialize(MetaModel.class, ser);
@@ -267,7 +266,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveSingleMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -282,7 +281,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
@@ -305,7 +304,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
 
       //
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
@@ -327,7 +326,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertTrue(a.getMembers().remove(show));
       helper.saveJavaFile(file);
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
@@ -359,7 +358,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveOverloadedMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration index = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "index");
@@ -382,7 +381,7 @@ public class ControllerTestCase extends AbstractTestCase
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
@@ -414,7 +413,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRefactorPackageName() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
 
       //
@@ -435,7 +434,7 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //

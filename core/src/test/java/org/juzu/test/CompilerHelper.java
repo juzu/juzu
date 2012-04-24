@@ -21,9 +21,9 @@ package org.juzu.test;
 
 import japa.parser.JavaParser;
 import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
+import org.juzu.impl.metamodel.MetaModelProcessor;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.Tools;
@@ -34,7 +34,7 @@ import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.protocol.mock.MockApplication;
 
 import javax.annotation.processing.Processor;
-import java.io.ByteArrayInputStream;
+import javax.inject.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -46,6 +46,14 @@ import java.util.WeakHashMap;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class CompilerHelper<I, O>
 {
+
+   public static final Provider<MetaModelProcessor> META_MODEL_PROCESSOR_FACTORY = new Provider<MetaModelProcessor>()
+   {
+      public MetaModelProcessor get()
+      {
+         return new MainProcessor();
+      }
+   };
 
    /** A cache to speed up unit tests. */
    private static WeakHashMap<ClassLoader, ClassLoaderFileSystem> classPathCache = new WeakHashMap<ClassLoader, ClassLoaderFileSystem>();
@@ -68,6 +76,9 @@ public class CompilerHelper<I, O>
    /** . */
    private Compiler.Builder builder;
 
+   /** . */
+   private Provider<? extends Processor> processorFactory;
+
    public CompilerHelper(
       ReadWriteFileSystem<I> sourcePath,
       ReadWriteFileSystem<O> sourceOutput,
@@ -77,7 +88,8 @@ public class CompilerHelper<I, O>
       this.sourceOutput = sourceOutput;
       this.classOutput = classOutput;
       this.baseClassLoader = Thread.currentThread().getContextClassLoader();
-      
+      this.processorFactory = META_MODEL_PROCESSOR_FACTORY;
+
       //
       ClassLoaderFileSystem classPath = classPathCache.get(baseClassLoader);
       if (classPath == null)
@@ -101,7 +113,6 @@ public class CompilerHelper<I, O>
          builder.sourcePath(sourcePath);
          builder.sourceOutput(sourceOutput);
          builder.classOutput(classOutput);
-         builder.processor(new MainProcessor());
       }
       catch (Exception e)
       {
@@ -117,9 +128,9 @@ public class CompilerHelper<I, O>
       this(sourcePath, output, output);
    }
 
-   public CompilerHelper<I, O> with(Processor annotationProcessor)
+   public CompilerHelper<I, O> with(Provider<? extends Processor> processorFactory)
    {
-      builder.processor(annotationProcessor);
+      this.processorFactory = processorFactory;
       return this;
    }
 
@@ -158,7 +169,7 @@ public class CompilerHelper<I, O>
    {
       try
       {
-         Compiler compiler = builder.build();
+         Compiler compiler = builder.build(processorFactory != null ? processorFactory.get() : null);
          List<CompilationError> errors = compiler.compile();
          AbstractTestCase.assertTrue("Was expecting compilation to fail", errors.size() > 0);
          return errors;
@@ -185,7 +196,7 @@ public class CompilerHelper<I, O>
    {
       try
       {
-         Compiler compiler = builder.build();
+         Compiler compiler = builder.build(processorFactory != null ? processorFactory.get() : null);
          List<CompilationError> errors = compiler.compile();
          AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), errors);
          classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);

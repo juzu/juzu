@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.juzu.impl.controller.metamodel.ControllerMetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import org.juzu.impl.utils.JSON;
-import org.juzu.processor.MainProcessor;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
@@ -38,7 +37,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -61,7 +60,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testChangeValue() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -74,7 +73,7 @@ public class PathTestCase extends AbstractTestCase
       assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
@@ -94,7 +93,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testRemoveAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -104,7 +103,7 @@ public class PathTestCase extends AbstractTestCase
       assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
@@ -121,7 +120,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testPathRemoveApplication() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -130,7 +129,7 @@ public class PathTestCase extends AbstractTestCase
       assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
@@ -143,7 +142,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testRefactorApplication() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -167,7 +166,7 @@ public class PathTestCase extends AbstractTestCase
       assertTrue(helper.getClassOutput().getPath("model", "meta", "path", "package-info.class").delete());
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //

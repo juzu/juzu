@@ -22,7 +22,6 @@ package org.juzu.impl.metamodel;
 import org.junit.Test;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.utils.JSON;
-import org.juzu.processor.MainProcessor;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
@@ -37,7 +36,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testAdd() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "application").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "application");
       helper.assertCompile();
 
       //
@@ -61,7 +60,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testUpdate() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "application").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "application");
       helper.assertCompile();
 
       //
@@ -74,7 +73,7 @@ public class ApplicationTestCase extends AbstractTestCase
       assertTrue(helper.getClassOutput().getPath("model", "meta", "application", "package-info.class").delete());
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
@@ -97,7 +96,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testRemove() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "application").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "application");
       helper.assertCompile();
 
       //
@@ -112,7 +111,7 @@ public class ApplicationTestCase extends AbstractTestCase
       assertTrue(helper.getClassOutput().getPath("model", "meta", "application", "B.class").delete());
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //

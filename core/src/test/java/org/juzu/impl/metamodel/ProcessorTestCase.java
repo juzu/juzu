@@ -179,6 +179,6 @@ public class ProcessorTestCase extends AbstractTestCase
       assertDelete(helper.getClassOutput().getPath("model", "processor", "simple", "B.class"));
 
       //
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).failCompile();
+      helper.addClassPath(helper.getClassOutput()).failCompile();
    }
 }

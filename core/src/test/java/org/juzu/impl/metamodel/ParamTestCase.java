@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
-import org.juzu.processor.MainProcessor;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerHelper;
 import org.juzu.test.JavaFile;
@@ -50,7 +49,7 @@ public class ParamTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "param").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "param");
       helper.assertCompile();
 
       //
@@ -61,7 +60,7 @@ public class ParamTestCase extends AbstractTestCase
    @Test
    public void testParam() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "param").with(new MainProcessor());
+      CompilerHelper<File, File> helper = compiler("model", "meta", "param");
       helper.assertCompile();
 
       // Remove @Param
@@ -74,7 +73,7 @@ public class ParamTestCase extends AbstractTestCase
 
       // Recompile 
       // we should have a way to test the error kind more precisely
-      List<CompilationError> errors = helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).failCompile();
+      List<CompilationError> errors = helper.addClassPath(helper.getClassOutput()).failCompile();
       assertEquals(1, errors.size());
 
       // Add back @Param
@@ -82,7 +81,7 @@ public class ParamTestCase extends AbstractTestCase
       helper.saveJavaFile(file);
 
       // Recompile
-      helper.with(new MainProcessor()).addClassPath(helper.getClassOutput()).assertCompile();
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
 
       // Check
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
