@@ -133,7 +133,7 @@ public class ControllerTestCase extends AbstractTestCase
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
       decl.getAnnotations().get(0).setName(ASTHelper.createNameExpr(Action.class.getName()));
-      helper.saveJavaFile(file);
+      file.assertSave();
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
@@ -183,7 +183,7 @@ public class ControllerTestCase extends AbstractTestCase
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
       decl.getAnnotations().clear();
-      helper.saveJavaFile(file);
+      file.assertSave();
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
@@ -215,7 +215,7 @@ public class ControllerTestCase extends AbstractTestCase
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
       assertTrue(a.getMembers().remove(decl));
-      helper.saveJavaFile(file);
+      file.assertSave();
       helper.assertCompile();
 
       //
@@ -229,7 +229,7 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       a.getMembers().add(decl);
-      helper.saveJavaFile(file);
+      file.assertSave();
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -277,7 +277,7 @@ public class ControllerTestCase extends AbstractTestCase
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       a.getMembers().clear();
-      helper.saveJavaFile(file);
+      file.assertSave();
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
@@ -313,7 +313,7 @@ public class ControllerTestCase extends AbstractTestCase
       show.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
       show.setBody(new BlockStmt());
       a.getMembers().add(show);
-      helper.saveJavaFile(file);
+      file.assertSave();
       helper.assertCompile();
 
       //
@@ -324,7 +324,7 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       assertTrue(a.getMembers().remove(show));
-      helper.saveJavaFile(file);
+      file.assertSave();
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
       helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
@@ -366,7 +366,7 @@ public class ControllerTestCase extends AbstractTestCase
       index.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
       index.setBody(new BlockStmt());
       a.getMembers().add(index);
-      helper.saveJavaFile(file);
+      file.assertSave();
       helper.assertCompile();
 
       //
@@ -377,7 +377,7 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       assertTrue(a.getMembers().remove(index));
-      helper.saveJavaFile(file);
+      file.assertSave();
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
 
       //
@@ -429,8 +429,8 @@ public class ControllerTestCase extends AbstractTestCase
       File tmp = new File(sub, file.getName());
       assertTrue(file.renameTo(tmp));
       JavaFile javaFile = helper.assertJavaFile("model", "meta", "controller", "sub", "A.java");
-      javaFile.getCompilationUnit().getPackage().setName(ASTHelper.createNameExpr("model.meta.controller.sub"));
-      helper.saveJavaFile(javaFile);
+      javaFile.assertCompilationUnit().getPackage().setName(ASTHelper.createNameExpr("model.meta.controller.sub"));
+      javaFile.assertSave();
 
       //
       assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));

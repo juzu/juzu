@@ -19,13 +19,10 @@
 
 package org.juzu.test;
 
-import japa.parser.JavaParser;
-import japa.parser.ast.CompilationUnit;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.metamodel.MetaModelProcessor;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
-import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.Tools;
 import org.juzu.processor.MainProcessor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
@@ -36,9 +33,9 @@ import org.juzu.test.protocol.mock.MockApplication;
 import javax.annotation.processing.Processor;
 import javax.inject.Provider;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -237,32 +234,21 @@ public class CompilerHelper<I, O>
       }
    }
 
-   public JavaFile assertJavaFile(String... names)
+   public JavaFile<I> assertJavaFile(String... names)
    {
+      I path;
       try
       {
-         Content content = sourcePath.getContent(names);
-         InputStream in = content.getInputStream();
-         CompilationUnit cu = JavaParser.parse(in);
-         return new JavaFile(names, cu);
+         path = sourcePath.getPath(names);
       }
-      catch (Exception e)
+      catch (IOException e)
       {
          throw AbstractTestCase.failure(e);
       }
-   }
-
-   public void saveJavaFile(JavaFile file)
-   {
-      try
+      if (path == null)
       {
-         I path = sourcePath.getPath(file.names);
-         String s = file.cu.toString();
-         sourcePath.setContent(path, new Content(0, s));
+         throw AbstractTestCase.failure("Was not expecting " + Arrays.asList(names) + " to be null file");
       }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
+      return new JavaFile<I>(sourcePath, path);
    }
 }

@@ -68,7 +68,7 @@ public class ParamTestCase extends AbstractTestCase
       ClassOrInterfaceDeclaration bean = file.assertDeclaration();
       AnnotationExpr annotation = bean.getAnnotations().get(0);
       bean.getAnnotations().clear();
-      helper.saveJavaFile(file);
+      file.assertSave();
       helper.assertRemove("model", "meta", "param", "A.java");
 
       // Recompile 
@@ -78,7 +78,7 @@ public class ParamTestCase extends AbstractTestCase
 
       // Add back @Param
       bean.getAnnotations().add(annotation);
-      helper.saveJavaFile(file);
+      file.assertSave();
 
       // Recompile
       helper.addClassPath(helper.getClassOutput()).assertCompile();
