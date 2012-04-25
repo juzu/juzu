@@ -31,7 +31,7 @@ import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -90,7 +90,7 @@ public class CompilationTestCase extends AbstractTestCase
    @Test
    public void testBar() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("compiler", "disk");
+      CompilerAssert<File, File> helper = compiler("compiler", "disk");
       helper.with(null);
       Compiler compiler = helper.assertCompile();
       assertEquals(1, compiler.getClassOutput().size(ReadFileSystem.FILE));
@@ -252,7 +252,7 @@ public class CompilationTestCase extends AbstractTestCase
    @Test
    public void testCompilationFailure() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("compiler", "failure");
+      CompilerAssert<?, ?> compiler = compiler("compiler", "failure");
       assertEquals(1, compiler.failCompile().size());
    }
 

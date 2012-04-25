@@ -157,8 +157,8 @@ public abstract class AbstractTestCase extends Assert
    {
       return name.getMethodName();
    }
-   
-   public CompilerHelper<File, File> compiler(String... packageName)
+
+   public CompilerAssert<File, File> compiler(String... packageName)
    {
       DiskFileSystem input = diskFS(packageName);
 
@@ -231,12 +231,12 @@ public abstract class AbstractTestCase extends Assert
       }
 
       //
-      return new CompilerHelper<File, File>(sourcePath, sourceOutput, classOutput);
+      return new CompilerAssert<File, File>(sourcePath, sourceOutput, classOutput);
    }
 
    public MockApplication<?> application(InjectImplementation injectImplementation, String... packageName)
    {
-      CompilerHelper<File, File> helper = compiler(packageName);
+      CompilerAssert<File, File> helper = compiler(packageName);
       helper.assertCompile();
       return helper.application(injectImplementation);
    }

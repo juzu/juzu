@@ -1,7 +1,5 @@
 package org.juzu.impl.metamodel;
 
-import japa.parser.ASTHelper;
-import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.expr.AnnotationExpr;
 import org.junit.Test;
@@ -9,7 +7,7 @@ import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 import org.juzu.test.JavaFile;
 
 import java.io.File;
@@ -49,7 +47,7 @@ public class ParamTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "param");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "param");
       helper.assertCompile();
 
       //
@@ -60,7 +58,7 @@ public class ParamTestCase extends AbstractTestCase
    @Test
    public void testParam() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "param");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "param");
       helper.assertCompile();
 
       // Remove @Param

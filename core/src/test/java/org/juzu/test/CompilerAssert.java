@@ -40,8 +40,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.WeakHashMap;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilerHelper<I, O>
+/**
+ * Make compile assertion.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public class CompilerAssert<I, O>
 {
 
    public static final Provider<MetaModelProcessor> META_MODEL_PROCESSOR_FACTORY = new Provider<MetaModelProcessor>()
@@ -76,7 +80,7 @@ public class CompilerHelper<I, O>
    /** . */
    private Provider<? extends Processor> processorFactory;
 
-   public CompilerHelper(
+   public CompilerAssert(
       ReadWriteFileSystem<I> sourcePath,
       ReadWriteFileSystem<O> sourceOutput,
       ReadWriteFileSystem<O> classOutput)
@@ -120,18 +124,18 @@ public class CompilerHelper<I, O>
       this.builder = builder;
    }
 
-   public CompilerHelper(ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
+   public CompilerAssert(ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
    {
       this(sourcePath, output, output);
    }
 
-   public CompilerHelper<I, O> with(Provider<? extends Processor> processorFactory)
+   public CompilerAssert<I, O> with(Provider<? extends Processor> processorFactory)
    {
       this.processorFactory = processorFactory;
       return this;
    }
 
-   public CompilerHelper<I, O> addClassPath(ReadFileSystem<?> classPath)
+   public CompilerAssert<I, O> addClassPath(ReadFileSystem<?> classPath)
    {
       builder.addClassPath(classPath);
       return this;
@@ -155,11 +159,6 @@ public class CompilerHelper<I, O>
    public ClassLoader getClassLoader()
    {
       return classLoader;
-   }
-
-   public Compiler.Builder getBuilder()
-   {
-      return builder;
    }
 
    public List<CompilationError> failCompile()

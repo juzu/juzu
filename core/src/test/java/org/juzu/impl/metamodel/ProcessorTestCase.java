@@ -27,9 +27,8 @@ import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.utils.Content;
-import org.juzu.processor.MainProcessor;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import java.io.File;
 import java.util.List;
@@ -80,7 +79,7 @@ public class ProcessorTestCase extends AbstractTestCase
       RAMFileSystem classOutput = new RAMFileSystem();
 
       //
-      CompilerHelper<RAMPath, RAMPath> helper = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
+      CompilerAssert<RAMPath, RAMPath> helper = new CompilerAssert<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
       helper.assertCompile();
       assertEquals(2, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
@@ -89,7 +88,7 @@ public class ProcessorTestCase extends AbstractTestCase
       //
       ReadFileSystem.copy(fs, sourcePath);
       sourcePath.getPath("processor", "simple", "templates", "index.gtmpl").del();
-      helper = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
+      helper = new CompilerAssert<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
 
       //
       List<CompilationError> errors = helper.failCompile();
@@ -105,7 +104,7 @@ public class ProcessorTestCase extends AbstractTestCase
       sourcePath.getPath("processor", "simple", "A.java").del();
 //      sourceOutput.getPath("processor", "simple", "A_.java").del();
       classOutput.getPath("processor", "simple", "A.class").del();
-      helper = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
+      helper = new CompilerAssert<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
 
       // This test cannot pass actually
 //      helper.assertCompile();
@@ -132,7 +131,7 @@ public class ProcessorTestCase extends AbstractTestCase
       RAMFileSystem classOutput = new RAMFileSystem();
 
       //
-      CompilerHelper<RAMPath, RAMPath> compiler = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
+      CompilerAssert<RAMPath, RAMPath> compiler = new CompilerAssert<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
 
       //
       compiler.assertCompile();
@@ -152,7 +151,7 @@ public class ProcessorTestCase extends AbstractTestCase
       classOutput.getPath("processor", "simple", "A_.class").del();
 
       //
-      compiler = new CompilerHelper<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
+      compiler = new CompilerAssert<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
       compiler.assertCompile();
       assertEquals(9, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
@@ -171,7 +170,7 @@ public class ProcessorTestCase extends AbstractTestCase
    @Test
    public void testRemoveTemplate() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "processor", "simple");
+      CompilerAssert<File, File> helper = compiler("model", "processor", "simple");
       helper.assertCompile();
 
       //

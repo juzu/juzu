@@ -22,7 +22,7 @@ package org.juzu.impl.template;
 import org.junit.Test;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import java.util.List;
 
@@ -33,14 +33,14 @@ public class URLTestCase extends AbstractTestCase
    @Test
    public void testResolution() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("template", "url", "resolution");
+      CompilerAssert<?, ?> compiler = compiler("template", "url", "resolution");
       compiler.assertCompile();
    }
 
    @Test
    public void testInvalidMethodName() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("template", "url", "invalid_method_name");
+      CompilerAssert<?, ?> compiler = compiler("template", "url", "invalid_method_name");
       List<CompilationError> errors = compiler.failCompile();
       assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
       CompilationError error = errors.get(0);
@@ -50,7 +50,7 @@ public class URLTestCase extends AbstractTestCase
    @Test
    public void testInvalidMethodArgs() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("template", "url", "invalid_method_args");
+      CompilerAssert<?, ?> compiler = compiler("template", "url", "invalid_method_args");
       List<CompilationError> errors = compiler.failCompile();
       assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
       CompilationError error = errors.get(0);
@@ -60,7 +60,7 @@ public class URLTestCase extends AbstractTestCase
    @Test
    public void testOverload() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("template", "url", "overload");
+      CompilerAssert<?, ?> compiler = compiler("template", "url", "overload");
       compiler.assertCompile();
    }
 }

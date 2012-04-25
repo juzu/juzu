@@ -24,7 +24,7 @@ import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import java.io.File;
 import java.util.List;
@@ -36,7 +36,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testAdd() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "application");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "application");
       helper.assertCompile();
 
       //
@@ -60,7 +60,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testUpdate() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "application");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "application");
       helper.assertCompile();
 
       //
@@ -96,7 +96,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testRemove() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "application");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "application");
       helper.assertCompile();
 
       //

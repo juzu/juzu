@@ -27,7 +27,7 @@ import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.utils.Tools;
 import org.juzu.request.Phase;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import java.util.Collections;
 
@@ -43,7 +43,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
    @Test
    public void testResolveIndex() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_method");
+      CompilerAssert<?, ?> compiler = compiler("application", "resolver", "default_method");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.default_method.Default_methodApplication");
 
@@ -62,7 +62,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
    @Test
    public void testResolveAmbiguousIndex() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "ambiguous_method");
+      CompilerAssert<?, ?> compiler = compiler("application", "resolver", "ambiguous_method");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.ambiguous_method.Ambiguous_methodApplication");
 
@@ -87,7 +87,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
    @Test
    public void testDefaultControllerResolveIndex() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_controller");
+      CompilerAssert<?, ?> compiler = compiler("application", "resolver", "default_controller");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Default_controllerApplication");
       Class<?> aClass = compiler.assertClass("application.resolver.default_controller.A");
@@ -109,7 +109,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
    @Test
    public void testOverload() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "overload");
+      CompilerAssert<?, ?> compiler = compiler("application", "resolver", "overload");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.overload.OverloadApplication");
       Class<?> aClass = compiler.assertClass("application.resolver.overload.A");
@@ -150,7 +150,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
    @Test
    public void testResolution() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "method");
+      CompilerAssert<?, ?> compiler = compiler("application", "resolver", "method");
       compiler.assertCompile();
 
       //
@@ -175,7 +175,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
    @Test
    public void testTemplate() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "default_controller");
+      CompilerAssert<?, ?> compiler = compiler("application", "resolver", "default_controller");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Default_controllerApplication");
       Class<?> aClass = compiler.assertClass("application.resolver.default_controller.A");
@@ -202,7 +202,7 @@ public class ControllerResolverTestCase extends AbstractTestCase
    @Test
    public void testTemplateResolveMethod() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "resolver", "method");
+      CompilerAssert<?, ?> compiler = compiler("application", "resolver", "method");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.resolver.method.MethodApplication");
       Class<?> aClass = compiler.assertClass("application.resolver.method.A");

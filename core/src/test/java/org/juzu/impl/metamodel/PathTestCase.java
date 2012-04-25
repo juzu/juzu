@@ -25,7 +25,7 @@ import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import java.io.File;
 import java.util.List;
@@ -37,7 +37,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -60,7 +60,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testChangeValue() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -93,7 +93,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testRemoveAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -120,7 +120,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testPathRemoveApplication() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -142,7 +142,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testRefactorApplication() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
       helper.assertCompile();
 
       //

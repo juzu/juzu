@@ -26,7 +26,7 @@ import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.utils.Cardinality;
 import org.juzu.request.Phase;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +38,7 @@ public class ActionMethodTestCase extends AbstractTestCase
    @Override
    public void setUp() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("request", "method", "action");
+      CompilerAssert<?, ?> compiler = compiler("request", "method", "action");
       compiler.assertCompile();
       aClass = compiler.assertClass("request.method.action.A");
       compiler.assertClass("request.method.action.A_");

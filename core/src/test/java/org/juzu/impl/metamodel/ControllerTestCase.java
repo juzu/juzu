@@ -39,7 +39,7 @@ import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 import org.juzu.test.JavaFile;
 
 import java.io.File;
@@ -55,7 +55,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
 
       //
@@ -89,7 +89,7 @@ public class ControllerTestCase extends AbstractTestCase
 
    @Test
    public void testRemoveApplication() throws Exception {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -121,7 +121,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testChangeAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -171,7 +171,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveAnnotation() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -210,7 +210,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testAddMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
@@ -266,7 +266,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveSingleMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -304,7 +304,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
 
       //
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
@@ -358,7 +358,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveOverloadedMethod() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration index = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "index");
@@ -413,7 +413,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRefactorPackageName() throws Exception
    {
-      CompilerHelper<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
       helper.assertCompile();
 
       //

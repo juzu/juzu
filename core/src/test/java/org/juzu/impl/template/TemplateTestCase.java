@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.test.AbstractInjectTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
 
@@ -38,7 +38,7 @@ public class TemplateTestCase extends AbstractInjectTestCase
 
    public void _testSimple() throws Exception
    {
-      CompilerHelper<?, ?> helper = compiler("template", "simple");
+      CompilerAssert<?, ?> helper = compiler("template", "simple");
       Compiler compiler = helper.assertCompile();
 
       //

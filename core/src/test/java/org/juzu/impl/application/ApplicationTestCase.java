@@ -24,7 +24,7 @@ import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.test.AbstractTestCase;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testDefaultController() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "default_controller");
+      CompilerAssert<?, ?> compiler = compiler("application", "default_controller");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
       Class<?> aClass = compiler.assertClass("application.default_controller.A");
@@ -47,7 +47,7 @@ public class ApplicationTestCase extends AbstractTestCase
 
    public void _testMethodId() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "method", "id");
+      CompilerAssert<?, ?> compiler = compiler("application", "method", "id");
       compiler.assertCompile();
       Class<?> appClass = compiler.assertClass("application.method.id.IdApplication");
       Class<?> aClass = compiler.assertClass("application.method.id.A");
@@ -71,7 +71,7 @@ public class ApplicationTestCase extends AbstractTestCase
 
    public void _testDuplicateMethod() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "method", "duplicate");
+      CompilerAssert<?, ?> compiler = compiler("application", "method", "duplicate");
       List<CompilationError> errors = compiler.failCompile();
       assertEquals("Was expecting a single error instead of " + errors, 1, errors.size());
       assertEquals("/application/method/duplicate/A.java", errors.get(0).getSource());
@@ -79,7 +79,7 @@ public class ApplicationTestCase extends AbstractTestCase
 
    public void _testPrefix() throws Exception
    {
-      CompilerHelper<?, ?> compiler = compiler("application", "prefix");
+      CompilerAssert<?, ?> compiler = compiler("application", "prefix");
       compiler.assertCompile();
    }
 }

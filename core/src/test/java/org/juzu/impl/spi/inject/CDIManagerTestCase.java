@@ -24,7 +24,7 @@ import org.juzu.impl.inject.Export;
 import org.juzu.impl.spi.fs.ram.RAMDir;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
-import org.juzu.test.CompilerHelper;
+import org.juzu.test.CompilerAssert;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -56,7 +56,7 @@ public class CDIManagerTestCase<B, I> extends AbstractInjectManagerTestCase<B, I
          foo.addFile("Bean4.java").update("package foo; @" + Export.class.getName() + " public class Bean4 {}");
 
          //
-         CompilerHelper<RAMPath, RAMPath> helper = new CompilerHelper<RAMPath, RAMPath>(sources, classes);
+         CompilerAssert<RAMPath, RAMPath> helper = new CompilerAssert<RAMPath, RAMPath>(sources, classes);
          helper.assertCompile();
          URLClassLoader classLoader = new URLClassLoader(new URL[]{classes.getURL()}, Thread.currentThread().getContextClassLoader());
 
