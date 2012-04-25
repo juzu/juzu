@@ -223,7 +223,7 @@ public abstract class AbstractTestCase extends Assert
       DiskFileSystem sourcePath = new DiskFileSystem(sourcePathDir);
       try
       {
-         ReadFileSystem.copy(input, sourcePath);
+         input.copy(sourcePath);
       }
       catch (IOException e)
       {

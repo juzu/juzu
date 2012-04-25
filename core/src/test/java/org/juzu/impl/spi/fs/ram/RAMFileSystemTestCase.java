@@ -62,7 +62,7 @@ public class RAMFileSystemTestCase extends AbstractTestCase
       dstRoot.addDir("baa");
 
       //
-      ReadFileSystem.copy(src, dst);
+      src.copy(dst);
 
       //
       RAMPath bar = dstRoot.getChild("bar");

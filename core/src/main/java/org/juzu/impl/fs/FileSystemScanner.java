@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FileSystemScanner<P> implements Visitor<P>
+public class FileSystemScanner<P> implements Visitor<P>, Filter<P>
 {
 
    /** . */
@@ -76,7 +76,7 @@ public class FileSystemScanner<P> implements Visitor<P>
       }
 
       // Update map
-      fs.traverse(this);
+      fs.traverse(this, this);
 
       // Cleanup map and build change map
       Map<String, Change> changes = new LinkedHashMap<String, Change>();
@@ -98,35 +98,41 @@ public class FileSystemScanner<P> implements Visitor<P>
       return changes;
    }
 
-   public boolean enterDir(P dir, String name) throws IOException
+   public boolean acceptDir(P dir, String name) throws IOException
    {
       return !name.startsWith(".");
    }
 
+   public boolean acceptFile(P file, String name) throws IOException
+   {
+      return !name.startsWith(".");
+   }
+
+   public void enterDir(P dir, String name) throws IOException
+   {
+   }
+
    public void file(P file, String name) throws IOException
    {
-      if (!name.startsWith("."))
+      long lastModified = fs.getLastModified(file);
+      fs.pathOf(file, '/', sb);
+      String id = sb.toString();
+      sb.setLength(0);
+      Data data = snapshot.get(id);
+      if (data == null)
       {
-         long lastModified = fs.getLastModified(file);
-         fs.pathOf(file, '/', sb);
-         String id = sb.toString();
-         sb.setLength(0);
-         Data data = snapshot.get(id);
-         if (data == null)
+         snapshot.put(id, new Data(lastModified));
+      }
+      else
+      {
+         if (data.lastModified < lastModified)
          {
-            snapshot.put(id, new Data(lastModified));
+            data.lastModified = lastModified;
+            data.change = Change.UPDATE;
          }
          else
          {
-            if (data.lastModified < lastModified)
-            {
-               data.lastModified = lastModified;
-               data.change = Change.UPDATE;
-            }
-            else
-            {
-               data.change = null;
-            }
+            data.change = null;
          }
       }
    }

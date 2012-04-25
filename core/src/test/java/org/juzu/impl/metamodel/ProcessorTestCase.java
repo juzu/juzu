@@ -70,7 +70,7 @@ public class ProcessorTestCase extends AbstractTestCase
 
       //
       RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
+      fs.copy(sourcePath);
       sourcePath.getPath("processor", "simple", "templates", "index.gtmpl").del();
       sourcePath.getPath("processor", "simple", "package-info.java").del();
 
@@ -86,7 +86,7 @@ public class ProcessorTestCase extends AbstractTestCase
       assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
 
       //
-      ReadFileSystem.copy(fs, sourcePath);
+      fs.copy(sourcePath);
       sourcePath.getPath("processor", "simple", "templates", "index.gtmpl").del();
       helper = new CompilerAssert<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
 
@@ -100,7 +100,7 @@ public class ProcessorTestCase extends AbstractTestCase
       assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
 
       //
-      ReadFileSystem.copy(fs, sourcePath);
+      fs.copy(sourcePath);
       sourcePath.getPath("processor", "simple", "A.java").del();
 //      sourceOutput.getPath("processor", "simple", "A_.java").del();
       classOutput.getPath("processor", "simple", "A.class").del();
@@ -124,7 +124,7 @@ public class ProcessorTestCase extends AbstractTestCase
 
       //
       RAMFileSystem sourcePath = new RAMFileSystem();
-      ReadFileSystem.copy(fs, sourcePath);
+      fs.copy(sourcePath);
 
       //
       RAMFileSystem sourceOutput = new RAMFileSystem();

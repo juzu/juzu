@@ -42,12 +42,11 @@ public class JarFileSystemTestCase extends AbstractTestCase
       filesystem.traverse(new Visitor.Default<JarPath>()
       {
          @Override
-         public boolean enterDir(JarPath dir, String name) throws IOException
+         public void enterDir(JarPath dir, String name) throws IOException
          {
             StringBuilder sb = new StringBuilder();
             filesystem.packageOf(dir, '/', sb);
             System.out.println("dir " + sb);
-            return true;
          }
       });
    }

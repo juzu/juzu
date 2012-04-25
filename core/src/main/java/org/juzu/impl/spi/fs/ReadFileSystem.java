@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.fs;
 
+import org.juzu.impl.fs.Filter;
 import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.utils.Content;
 
@@ -38,78 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
 {
    
-   public static <S, D> void copy(ReadFileSystem<S> src, ReadWriteFileSystem<D> dst) throws IOException
-   {
-      ReadFileSystem.copy(src, src.getRoot(), dst, dst.getRoot());
-   }
-
-   private static <S, D> int kind(ReadFileSystem<S> src, S srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
-   {
-      return (src.isDir(srcPath) ? 1 : 0) + (dst.isDir(dstPath) ? 2 : 0);
-   }
-
-   public static <S, D> void copy(ReadFileSystem<S> src, S srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
-   {
-      int kind = kind(src, srcPath, dst, dstPath);
-
-      //
-      switch (kind)
-      {
-         case 0:
-         {
-            dst.setContent(dstPath, src.getContent(srcPath));
-            break;
-         }
-         case 3:
-         {
-            for (Iterator<D> i =  dst.getChildren(dstPath);i.hasNext();)
-            {
-               D next = i.next();
-               String name = dst.getName(next);
-               S a = src.getChild(srcPath, name);
-               if (a == null)
-               {
-                  i.remove();
-               }
-               else
-               {
-                  switch (kind(src, a, dst, next))
-                  {
-                     case 1:
-                     case 2:
-                        i.remove();
-                        break;
-                     default:
-                        copy(src, a, dst, next);
-                        break;
-                  }
-               }
-            }
-            for (Iterator<S> i = src.getChildren(srcPath);i.hasNext();)
-            {
-               S next = i.next();
-               String name = src.getName(next);
-               D a = dst.getChild(dstPath, name);
-               if (a == null)
-               {
-                  if (src.isDir(next))
-                  {
-                     a = dst.addDir(dstPath, name);
-                  }
-                  else
-                  {
-                     a = dst.addFile(dstPath, name);
-                  }
-               }
-               copy(src, next, dst, a);
-            }
-            break;
-         }
-         default:
-            throw new UnsupportedOperationException("Todo " + kind);
-      }
-   }
-
    public final void dump(Appendable appendable) throws IOException
    {
       dump(getRoot(), appendable);
@@ -120,10 +49,9 @@ public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
       final StringBuilder prefix = new StringBuilder();
       traverse(path, new Visitor<P>()
       {
-         public boolean enterDir(P dir, String name) throws IOException
+         public void enterDir(P dir, String name) throws IOException
          {
             prefix.append(name).append('/');
-            return true;
          }
 
          public void file(P file, String name) throws IOException
@@ -221,13 +149,12 @@ public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
       traverse(new Visitor.Default<P>()
       {
          @Override
-         public boolean enterDir(P dir, String name) throws IOException
+         public void enterDir(P dir, String name) throws IOException
          {
             if (mode == PATH || mode == DIR)
             {
                size.incrementAndGet();
             }
-            return true;
          }
          @Override
          public void file(P file, String name) throws IOException
@@ -241,30 +168,119 @@ public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
       return size.get();
    }
 
-   public final void traverse(P path, Visitor<P> visitor) throws IOException
+   /** . */
+   private static final Filter NULL = new Filter.Default();
+
+   public final void traverse(Filter<P> filter, Visitor<P> visitor) throws IOException
    {
-      String name = getName(path);
-      if (isDir(path))
-      {
-         if (visitor.enterDir(path, name))
-         {
-            for (Iterator<P> i = getChildren(path);i.hasNext();)
-            {
-               P child = i.next();
-               traverse(child, visitor);
-            }
-            visitor.leaveDir(path, name);
-         }
-      }
-      else
-      {
-         visitor.file(path, name);
-      }
+      traverse(getRoot(), filter, visitor);
    }
 
    public final void traverse(Visitor<P> visitor) throws IOException
    {
       traverse(getRoot(), visitor);
+   }
+
+   public final void traverse(P path, Visitor<P> visitor) throws IOException
+   {
+      // This is OK as it always return true
+      @SuppressWarnings("unchecked")
+      Filter<P> filter = NULL;
+      traverse(path, filter, visitor);
+   }
+
+   public final void traverse(P path, Filter<P> filter, Visitor<P> visitor) throws IOException
+   {
+      String name = getName(path);
+      if (isDir(path))
+      {
+         if (filter.acceptDir(path, name))
+         {
+            visitor.enterDir(path, name);
+            for (Iterator<P> i = getChildren(path);i.hasNext();)
+            {
+               P child = i.next();
+               traverse(child, filter, visitor);
+            }
+            visitor.leaveDir(path, name);
+         }
+      }
+      else if (filter.acceptFile(path, name))
+      {
+         visitor.file(path, name);
+      }
+   }
+
+   public <D> void copy(ReadWriteFileSystem<D> dst) throws IOException
+   {
+      copy(getRoot(), dst, dst.getRoot());
+   }
+
+   public <D> void copy(P srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
+   {
+      int kind = kind(srcPath, dst, dstPath);
+
+      //
+      switch (kind)
+      {
+         case 0:
+         {
+            dst.setContent(dstPath, getContent(srcPath));
+            break;
+         }
+         case 3:
+         {
+            for (Iterator<D> i =  dst.getChildren(dstPath);i.hasNext();)
+            {
+               D next = i.next();
+               String name = dst.getName(next);
+               P a = getChild(srcPath, name);
+               if (a == null)
+               {
+                  i.remove();
+               }
+               else
+               {
+                  switch (kind(a, dst, next))
+                  {
+                     case 1:
+                     case 2:
+                        i.remove();
+                        break;
+                     default:
+                        copy(a, dst, next);
+                        break;
+                  }
+               }
+            }
+            for (Iterator<P> i = getChildren(srcPath);i.hasNext();)
+            {
+               P next = i.next();
+               String name = getName(next);
+               D a = dst.getChild(dstPath, name);
+               if (a == null)
+               {
+                  if (isDir(next))
+                  {
+                     a = dst.addDir(dstPath, name);
+                  }
+                  else
+                  {
+                     a = dst.addFile(dstPath, name);
+                  }
+               }
+               copy(next, dst, a);
+            }
+            break;
+         }
+         default:
+            throw new UnsupportedOperationException("Todo " + kind);
+      }
+   }
+
+   private <D> int kind(P srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
+   {
+      return (isDir(srcPath) ? 1 : 0) + (dst.isDir(dstPath) ? 2 : 0);
    }
 
    public final URL getURL() throws IOException
