@@ -243,7 +243,7 @@ public abstract class ApplicationRuntime<P, R, L>
 
       public void init(ClassLoader baseClassLoader, ReadFileSystem<S> fss) throws Exception
       {
-         devScanner = new FileSystemScanner<S>(fss);
+         devScanner = FileSystemScanner.createTimestamped(fss);
          devScanner.scan();
          logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
 
@@ -254,7 +254,7 @@ public abstract class ApplicationRuntime<P, R, L>
 
       public void init(ClassLoaderFileSystem baseClassPath, ReadFileSystem<S> fss) throws Exception
       {
-         devScanner = new FileSystemScanner<S>(fss);
+         devScanner = FileSystemScanner.createTimestamped(fss);
          devScanner.scan();
          logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
 
@@ -290,7 +290,7 @@ public abstract class ApplicationRuntime<P, R, L>
          {
             logger.log("Building application");
             RAMFileSystem classes = new RAMFileSystem();
-            Compiler compiler = new Compiler(devScanner.getFileSystem(), classLoaderFS, classes, classes);
+            Compiler compiler = new Compiler(devScanner.getFileSystem(), classLoaderFS, classes, classes, false);
             compiler.addAnnotationProcessor(new MainProcessor());
             List<CompilationError> res = compiler.compile();
             if (res.isEmpty())

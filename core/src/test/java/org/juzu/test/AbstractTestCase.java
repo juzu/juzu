@@ -158,7 +158,17 @@ public abstract class AbstractTestCase extends Assert
       return name.getMethodName();
    }
 
-   public CompilerAssert<File, File> compiler(String... packageName)
+   public final CompilerAssert<File, File> compiler(String... packageName)
+   {
+      return compiler(false, packageName);
+   }
+
+   public final CompilerAssert<File, File> incrementalCompiler(String... packageName)
+   {
+      return compiler(true, packageName);
+   }
+
+   private CompilerAssert<File, File> compiler(boolean incremental, String... packageName)
    {
       DiskFileSystem input = diskFS(packageName);
 
@@ -231,7 +241,7 @@ public abstract class AbstractTestCase extends Assert
       }
 
       //
-      return new CompilerAssert<File, File>(sourcePath, sourceOutput, classOutput);
+      return new CompilerAssert<File, File>(incremental, sourcePath, sourceOutput, classOutput);
    }
 
    public MockApplication<?> application(InjectImplementation injectImplementation, String... packageName)

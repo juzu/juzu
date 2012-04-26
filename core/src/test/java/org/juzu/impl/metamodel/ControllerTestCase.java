@@ -34,7 +34,6 @@ import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.controller.metamodel.ControllerMetaModel;
 import org.juzu.impl.utils.JSON;
-import org.juzu.impl.utils.QN;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
@@ -55,7 +54,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
       helper.assertCompile();
 
       //
@@ -84,12 +83,16 @@ public class ControllerTestCase extends AbstractTestCase
       List<MetaModelEvent> events = mm.getQueue().clear();
       ApplicationMetaModel application = mm.getChild(ApplicationsMetaModel.KEY).iterator().next();
       ControllerMetaModel controller = application.getControllers().iterator().next();
-      assertEquals(Arrays.asList(MetaModelEvent.createAdded(application), MetaModelEvent.createAdded(controller)), events);
+      assertEquals(Arrays.asList(
+         MetaModelEvent.createAdded(application),
+         MetaModelEvent.createAdded(controller),
+         MetaModelEvent.createUpdated(controller)
+      ), events);
    }
 
    @Test
    public void testRemoveApplication() throws Exception {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -97,17 +100,15 @@ public class ControllerTestCase extends AbstractTestCase
       Tools.serialize(mm, ser);
 
       //
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "A.java"));
       assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "package-info.class"));
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      MetaModel expected = new MetaModel();
-      assertEquals(expected.toJSON(), mm.toJSON());
+      JSON expected = new JSON().list("applications");
+      assertEquals(expected, mm.toJSON());
 
       //
       List<MetaModelEvent> events = mm.getQueue().clear();
@@ -119,9 +120,42 @@ public class ControllerTestCase extends AbstractTestCase
    }
 
    @Test
+   public void testRemoveController() throws Exception {
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+      helper.assertCompile();
+      File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
+      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+      mm.getQueue().clear();
+      Tools.serialize(mm, ser);
+
+      //
+      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "A.java"));
+
+      //
+      helper.addClassPath(helper.getClassOutput()).assertCompile();
+      mm = Tools.unserialize(MetaModel.class, ser);
+
+      //
+      JSON expected = new JSON()
+         .list("applications", new JSON().
+            list("controllers").
+            set("fqn", "model.meta.controller.ControllerApplication").
+            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+            list("templates")
+         );
+      assertEquals(expected, mm.toJSON());
+
+      //
+      List<MetaModelEvent> events = mm.getQueue().clear();
+      assertEquals(1, events.size());
+      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+      assertInstanceOf(ControllerMetaModel.class, events.get(0).getObject());
+   }
+
+   @Test
    public void testChangeAnnotation() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -134,7 +168,6 @@ public class ControllerTestCase extends AbstractTestCase
       MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
       decl.getAnnotations().get(0).setName(ASTHelper.createNameExpr(Action.class.getName()));
       file.assertSave();
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -161,17 +194,19 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(2, events.size());
+      assertEquals(3, events.size());
       assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
       assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
       assertTrue(events.get(1).getObject() instanceof ControllerMetaModel);
+      assertEquals(MetaModelEvent.UPDATED, events.get(2).getType());
+      assertTrue(events.get(2).getObject() instanceof ControllerMetaModel);
    }
 
    @Test
    public void testRemoveAnnotation() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -184,7 +219,6 @@ public class ControllerTestCase extends AbstractTestCase
       MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
       decl.getAnnotations().clear();
       file.assertSave();
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -210,7 +244,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testAddMethod() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
@@ -230,8 +264,6 @@ public class ControllerTestCase extends AbstractTestCase
       //
       a.getMembers().add(decl);
       file.assertSave();
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
       helper.addClassPath(helper.getClassOutput()).assertCompile();
 
       //
@@ -258,15 +290,17 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       events = mm.getQueue().clear();
-      assertEquals(1, events.size());
+      assertEquals(2, events.size());
       assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
       assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
+      assertEquals(MetaModelEvent.UPDATED, events.get(1).getType());
+      assertTrue(events.get(1).getObject() instanceof ControllerMetaModel);
    }
 
    @Test
    public void testRemoveSingleMethod() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
       helper.assertCompile();
       File ser = helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser");
       MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -278,7 +312,6 @@ public class ControllerTestCase extends AbstractTestCase
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       a.getMembers().clear();
       file.assertSave();
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -304,7 +337,7 @@ public class ControllerTestCase extends AbstractTestCase
    @Test
    public void testRemoveMethod() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
 
       //
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
@@ -325,7 +358,6 @@ public class ControllerTestCase extends AbstractTestCase
       //
       assertTrue(a.getMembers().remove(show));
       file.assertSave();
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
       helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
@@ -350,15 +382,13 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(1, events.size());
-      assertEquals(MetaModelEvent.UPDATED, events.get(0).getType());
-      assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
+      assertEquals(0, events.size());
    }
 
    @Test
    public void testRemoveOverloadedMethod() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
       JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
       ClassOrInterfaceDeclaration a = file.assertDeclaration();
       MethodDeclaration index = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "index");
@@ -378,7 +408,6 @@ public class ControllerTestCase extends AbstractTestCase
       //
       assertTrue(a.getMembers().remove(index));
       file.assertSave();
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -405,15 +434,13 @@ public class ControllerTestCase extends AbstractTestCase
 
       //
       List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(1, events.size());
-      assertEquals(MetaModelEvent.UPDATED, events.get(0).getType());
-      assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
+      assertEquals(0, events.size());
    }
 
    @Test
    public void testRefactorPackageName() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "controller");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
       helper.assertCompile();
 
       //
@@ -433,7 +460,6 @@ public class ControllerTestCase extends AbstractTestCase
       javaFile.assertSave();
 
       //
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "controller", "A.class"));
       helper.addClassPath(helper.getClassOutput()).assertCompile();
       mm = Tools.unserialize(MetaModel.class, ser);
 
@@ -445,6 +471,6 @@ public class ControllerTestCase extends AbstractTestCase
       assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
       assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
       assertEquals(MetaModelEvent.UPDATED, events.get(2).getType());
-      assertEquals(ElementHandle.Package.create(new QN("model.meta.controller")), ((ApplicationMetaModel)events.get(2).getObject()).getHandle());
+      assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
    }
 }

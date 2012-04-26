@@ -52,9 +52,11 @@ public final class MetaModel extends MetaModelObject
    /** . */
    private static final ThreadLocal<MetaModel> current = new ThreadLocal<MetaModel>();
 
-
    /** . */
    private final ApplicationsMetaModel applications = new ApplicationsMetaModel();
+
+   /** . */
+   private boolean queuing = false;
 
    public MetaModel()
    {
@@ -81,26 +83,53 @@ public final class MetaModel extends MetaModelObject
       current.set(this);
 
       //
-      garbage(this, this, new HashSet<MetaModelObject>());
+      queuing = true;
+      try
+      {
+         //
+         garbage(this, this, new HashSet<MetaModelObject>());
 
-      //
-      applications.postActivate(this);
+         //
+         applications.postActivate(this);
+      }
+      finally
+      {
+         queuing = false;
+      }
    }
 
    public void processAnnotation(Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
    {
-      MetaModel.log.log("Processing annotation " + element);
-      applications.processAnnotation(this, element, annotationFQN, annotationValues);
+      queuing = true;
+      try
+      {
+         MetaModel.log.log("Processing annotation " + element);
+         applications.processAnnotation(this, element, annotationFQN, annotationValues);
+      }
+      finally
+      {
+         queuing = false;
+      }
    }
 
    public void postProcess() throws CompilationException
    {
+      queuing = true;
+      try
+      {
+         applications.postProcessAnnotations(this);
+      }
+      finally
+      {
+         queuing = false;
+      }
+
       // For now we do this way lter we poll
       applications.processEvents(this, dispatch);
 
       //
       MetaModel.log.log("Post processing");
-      applications.postProcess(this);
+      applications.postProcessEvents(this);
    }
 
    public void prePassivate()
@@ -148,6 +177,10 @@ public final class MetaModel extends MetaModelObject
    @Override
    public void queue(MetaModelEvent event)
    {
+      if (!queuing)
+      {
+         throw new IllegalStateException("Not queueing");
+      }
       queue.queue(event);
       dispatch.queue(event);
    }

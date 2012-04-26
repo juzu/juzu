@@ -36,7 +36,7 @@ public class ScannerTestCase extends AbstractTestCase
    public void testFoo() throws IOException
    {
       RAMFileSystem fs = new RAMFileSystem();
-      FileSystemScanner<RAMPath> scanner = new FileSystemScanner<RAMPath>(fs);
+      FileSystemScanner<RAMPath> scanner = FileSystemScanner.createTimestamped(fs);
 
       //
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
@@ -68,7 +68,7 @@ public class ScannerTestCase extends AbstractTestCase
    public void testIgnoreHiddenFile() throws IOException
    {
       RAMFileSystem fs = new RAMFileSystem();
-      FileSystemScanner<RAMPath> scanner = new FileSystemScanner<RAMPath>(fs);
+      FileSystemScanner<RAMPath> scanner = FileSystemScanner.createTimestamped(fs);
 
       //
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
@@ -81,7 +81,7 @@ public class ScannerTestCase extends AbstractTestCase
    public void testIgnoreHiddenDir() throws IOException
    {
       RAMFileSystem fs = new RAMFileSystem();
-      FileSystemScanner<RAMPath> scanner = new FileSystemScanner<RAMPath>(fs);
+      FileSystemScanner<RAMPath> scanner = FileSystemScanner.createTimestamped(fs);
 
       //
       assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());

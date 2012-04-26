@@ -20,25 +20,103 @@
 package org.juzu.impl.fs;
 
 import org.juzu.impl.spi.fs.ReadFileSystem;
+import org.juzu.impl.utils.Content;
+import org.juzu.impl.utils.Tools;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FileSystemScanner<P> implements Visitor<P>, Filter<P>
+public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P>
 {
 
+   public static <P> FileSystemScanner<P> createTimestamped(ReadFileSystem<P> fs)
+   {
+      return new Timestamped<P>(fs);
+   }
+
+   public static <P> FileSystemScanner<P> createHashing(ReadFileSystem<P> fs)
+   {
+      return new Hash<P>(fs);
+   }
+
+   public static class Timestamped<P> extends FileSystemScanner<P>
+   {
+      public Timestamped(ReadFileSystem<P> fs)
+      {
+         super(fs);
+      }
+
+      @Override
+      protected long createValue(P file) throws IOException
+      {
+         return fs.getLastModified(file);
+      }
+
+      @Override
+      protected boolean isModified(long snapshot, long current)
+      {
+         return snapshot < current;
+      }
+   }
+
+   public static class Hash<P> extends FileSystemScanner<P>
+   {
+      public Hash(ReadFileSystem<P> fs)
+      {
+         super(fs);
+      }
+
+      @Override
+      protected long createValue(P file) throws IOException
+      {
+         try
+         {
+            Content content = fs.getContent(file);
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            InputStream in = content.getInputStream();
+            byte[] bytes = Tools.bytes(in);
+            byte[] md5 = digest.digest(bytes);
+            long value = 0;
+            for (byte b : md5)
+            {
+               value = value * 256 + Tools.unsignedByteToInt(b);
+            }
+            return value;
+         }
+         catch (NoSuchAlgorithmException e)
+         {
+            throw new AssertionError(e);
+         }
+      }
+
+      @Override
+      protected boolean isModified(long snapshot, long current)
+      {
+         return snapshot != current;
+      }
+   }
+
    /** . */
-   private ReadFileSystem<P> fs;
+   protected final ReadFileSystem<P> fs;
 
    /** . */
    private StringBuilder sb = new StringBuilder();
 
    /** . */
    private Map<String, Data> snapshot;
+
+   private FileSystemScanner(ReadFileSystem<P> fs)
+   {
+      this.snapshot = new HashMap<String, Data>();
+      this.fs = fs;
+   }
 
    private static class Data
    {
@@ -59,12 +137,6 @@ public class FileSystemScanner<P> implements Visitor<P>, Filter<P>
    public ReadFileSystem<P> getFileSystem()
    {
       return fs;
-   }
-
-   public FileSystemScanner(ReadFileSystem<P> fs)
-   {
-      this.snapshot = new HashMap<String, Data>();
-      this.fs = fs;
    }
 
    public Map<String, Change> scan() throws IOException
@@ -114,7 +186,7 @@ public class FileSystemScanner<P> implements Visitor<P>, Filter<P>
 
    public void file(P file, String name) throws IOException
    {
-      long lastModified = fs.getLastModified(file);
+      long lastModified = createValue(file);
       fs.pathOf(file, '/', sb);
       String id = sb.toString();
       sb.setLength(0);
@@ -125,7 +197,7 @@ public class FileSystemScanner<P> implements Visitor<P>, Filter<P>
       }
       else
       {
-         if (data.lastModified < lastModified)
+         if (isModified(data.lastModified, lastModified))
          {
             data.lastModified = lastModified;
             data.change = Change.UPDATE;
@@ -140,4 +212,8 @@ public class FileSystemScanner<P> implements Visitor<P>, Filter<P>
    public void leaveDir(P dir, String name) throws IOException
    {
    }
+
+   protected abstract long createValue(P file) throws IOException;
+
+   protected abstract boolean isModified(long snapshot, long current);
 }

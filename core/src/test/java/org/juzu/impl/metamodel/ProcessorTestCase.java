@@ -175,7 +175,6 @@ public class ProcessorTestCase extends AbstractTestCase
 
       //
       assertDelete(helper.getSourcePath().getPath("model", "processor", "simple", "templates", "index.gtmpl"));
-      assertDelete(helper.getClassOutput().getPath("model", "processor", "simple", "B.class"));
 
       //
       helper.addClassPath(helper.getClassOutput()).failCompile();

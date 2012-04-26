@@ -32,7 +32,7 @@ public class MetaModelPlugin implements Serializable
    {
    }
 
-   public void preEventProcess(ApplicationMetaModel application)
+   public void postProcessAnnotations(ApplicationMetaModel application)
    {
    }
 
@@ -40,7 +40,7 @@ public class MetaModelPlugin implements Serializable
    {
    }
 
-   public void postProcess(ApplicationMetaModel application)
+   public void postProcessEvents(ApplicationMetaModel application)
    {
    }
 

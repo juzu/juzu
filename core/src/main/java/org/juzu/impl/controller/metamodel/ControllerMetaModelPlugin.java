@@ -40,6 +40,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -68,6 +69,23 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
    /** . */
    public static final String CARDINALITY = Cardinality.class.getSimpleName();
 
+   /** . */
+   private HashSet<ControllerMetaModel> written = new HashSet<ControllerMetaModel>();
+
+   @Override
+   public void postConstruct(ApplicationMetaModel application)
+   {
+      ControllersMetaModel controllers = new ControllersMetaModel();
+      PackageElement pkg = application.model.env.get(application.getHandle());
+      AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
+      Map<String, Object> values = Tools.foo(annotation);
+      Boolean escapeXML = (Boolean)values.get("escapeXML");
+      ElementHandle.Class defaultControllerElt = (ElementHandle.Class)values.get("defaultController");
+      controllers.escapeXML = escapeXML;
+      controllers.defaultController = defaultControllerElt != null ? defaultControllerElt.getFQN() : null;
+      application.addChild(ControllersMetaModel.KEY, controllers);
+   }
+
    @Override
    public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values) throws CompilationException
    {
@@ -93,17 +111,16 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
    }
 
    @Override
-   public void postConstruct(ApplicationMetaModel application)
+   public void postProcessAnnotations(ApplicationMetaModel application)
    {
-      ControllersMetaModel controllers = new ControllersMetaModel();
-      PackageElement pkg = application.model.env.get(application.getHandle());
-      AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
-      Map<String, Object> values = Tools.foo(annotation);
-      Boolean escapeXML = (Boolean)values.get("escapeXML");
-      ElementHandle.Class defaultControllerElt = (ElementHandle.Class)values.get("defaultController");
-      controllers.escapeXML = escapeXML;
-      controllers.defaultController = defaultControllerElt != null ? defaultControllerElt.getFQN() : null;
-      application.addChild(ControllersMetaModel.KEY, controllers);
+      for (ControllerMetaModel controller : application.getControllers())
+      {
+         if (controller.modified)
+         {
+            controller.modified = false;
+            controller.queue(MetaModelEvent.createUpdated(controller));
+         }
+      }
    }
 
    @Override
@@ -119,11 +136,13 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
             case MetaModelEvent.UPDATED:
             case MetaModelEvent.AFTER_ADD:
                ControllerMetaModel controller = (ControllerMetaModel)obj;
-               emitController(applications.getContext(), controller);
+               written.add(controller);
                break;
          }
       }
    }
+
+
 
    @Override
    public JSON getDescriptor(ApplicationMetaModel application)
@@ -148,7 +167,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
    }
 
    @Override
-   public void postProcess(ApplicationMetaModel application)
+   public void postProcessEvents(ApplicationMetaModel application)
    {
       // Check everything is OK here
       for (ControllerMetaModel controller : application.getControllers())
@@ -167,6 +186,14 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                }
             }
          }
+      }
+
+      // Emit controllers
+      for (Iterator<ControllerMetaModel> i = written.iterator();i.hasNext();)
+      {
+         ControllerMetaModel controller = i.next();
+         i.remove();
+         emitController(application.model.env, controller);
       }
    }
 

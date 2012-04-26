@@ -37,7 +37,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -60,7 +60,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testChangeValue() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -69,8 +69,6 @@ public class PathTestCase extends AbstractTestCase
       File foo = helper.getSourcePath().getPath("model", "meta", "path", "templates", "foo.gtmpl");
       File bar = new File(foo.getParentFile(), "bar.gtmpl");
       assertTrue(foo.renameTo(bar));
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "path", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -93,14 +91,12 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testRemoveAnnotation() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
       helper.assertCompile();
 
       //
       File a = helper.getSourcePath().getPath("model", "meta", "path", "A.java");
       Tools.write(Tools.read(a).replace("@Path(\"foo.gtmpl\")", ""), a);
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "path", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -120,13 +116,11 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testPathRemoveApplication() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
       helper.assertCompile();
 
       //
       assertDelete(helper.getSourcePath().getPath("model", "meta", "path", "package-info.java"));
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "package-info.class"));
-      assertDelete(helper.getClassOutput().getPath("model", "meta", "path", "A.class"));
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -142,7 +136,7 @@ public class PathTestCase extends AbstractTestCase
    @Test
    public void testRefactorApplication() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "path");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
       helper.assertCompile();
 
       //
@@ -160,10 +154,6 @@ public class PathTestCase extends AbstractTestCase
       File newtemplates = new File(templates.getParentFile().getParentFile(), templates.getName());
       assertTrue(templates.renameTo(newtemplates));
       Tools.write(Tools.read(pkg).replace("package model.meta.path;", "package model.meta;"), pkg);
-
-      //
-      assertTrue(helper.getSourcePath().getPath("model", "meta", "path", "A.java").delete());
-      assertTrue(helper.getClassOutput().getPath("model", "meta", "path", "package-info.class").delete());
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();

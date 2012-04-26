@@ -552,6 +552,10 @@ public class Tools
       }
    }
 
+   public static int unsignedByteToInt(byte b)
+   {
+      return (int)b & 0xFF;
+   }
    /**
     * Parses a date formatted as ISO 8601.
     *

@@ -22,7 +22,6 @@ package org.juzu.impl.application.metamodel;
 import org.juzu.Application;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.controller.metamodel.ControllersMetaModel;
-import org.juzu.impl.controller.metamodel.ControllerMetaModel;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
@@ -81,13 +80,6 @@ public class ApplicationMetaModel extends MetaModelObject
    public TemplatesMetaModel getTemplates()
    {
       return getChild(TemplatesMetaModel.KEY);
-   }
-
-   public ControllerMetaModel addController(String className)
-   {
-      ControllerMetaModel controller = new ControllerMetaModel(ElementHandle.Class.create(new FQN(className)));
-      getChild(ControllersMetaModel.KEY).add(controller);
-      return controller;
    }
 
    public FQN getFQN()

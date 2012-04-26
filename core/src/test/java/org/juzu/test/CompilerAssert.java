@@ -60,36 +60,21 @@ public class CompilerAssert<I, O>
    private static WeakHashMap<ClassLoader, ClassLoaderFileSystem> classPathCache = new WeakHashMap<ClassLoader, ClassLoaderFileSystem>();
 
    /** . */
-   private ReadWriteFileSystem<I> sourcePath;
-
-   /** . */
-   private ReadWriteFileSystem<O> sourceOutput;
-
-   /** . */
-   private ReadWriteFileSystem<O> classOutput;
-
-   /** . */
    private ClassLoader baseClassLoader;
 
    /** . */
    private ClassLoader classLoader;
 
    /** . */
-   private Compiler.Builder builder;
-
-   /** . */
-   private Provider<? extends Processor> processorFactory;
+   private CompileStrategy<I, O> strategy;
 
    public CompilerAssert(
+      boolean incremental,
       ReadWriteFileSystem<I> sourcePath,
       ReadWriteFileSystem<O> sourceOutput,
       ReadWriteFileSystem<O> classOutput)
    {
-      this.sourcePath = sourcePath;
-      this.sourceOutput = sourceOutput;
-      this.classOutput = classOutput;
-      this.baseClassLoader = Thread.currentThread().getContextClassLoader();
-      this.processorFactory = META_MODEL_PROCESSOR_FACTORY;
+      ClassLoader baseClassLoader = Thread.currentThread().getContextClassLoader();
 
       //
       ClassLoaderFileSystem classPath = classPathCache.get(baseClassLoader);
@@ -106,54 +91,63 @@ public class CompilerAssert<I, O>
       }
 
       //
-      Compiler.Builder builder;
-      try
-      {
-         builder = Compiler.builder();
-         builder.addClassPath(classPath);
-         builder.sourcePath(sourcePath);
-         builder.sourceOutput(sourceOutput);
-         builder.classOutput(classOutput);
-      }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
+      this.strategy = incremental ? new CompileStrategy.Incremental<I, O>(
+         classPath,
+         sourcePath,
+         sourceOutput,
+         classOutput,
+         META_MODEL_PROCESSOR_FACTORY) : new CompileStrategy.Global<I, O>(
+         classPath,
+         sourcePath,
+         sourceOutput,
+         classOutput,
+         META_MODEL_PROCESSOR_FACTORY);
+      this.baseClassLoader = baseClassLoader;
+   }
 
-      //
-      this.builder = builder;
+   public CompilerAssert(
+      ReadWriteFileSystem<I> sourcePath,
+      ReadWriteFileSystem<O> sourceOutput,
+      ReadWriteFileSystem<O> classOutput)
+   {
+      this(false, sourcePath, sourceOutput, classOutput);
    }
 
    public CompilerAssert(ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
    {
-      this(sourcePath, output, output);
+      this(false, sourcePath, output, output);
+   }
+
+   public CompilerAssert(boolean incremental, ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
+   {
+      this(incremental, sourcePath, output, output);
    }
 
    public CompilerAssert<I, O> with(Provider<? extends Processor> processorFactory)
    {
-      this.processorFactory = processorFactory;
+      strategy.processorFactory = processorFactory;
       return this;
    }
 
    public CompilerAssert<I, O> addClassPath(ReadFileSystem<?> classPath)
    {
-      builder.addClassPath(classPath);
+      strategy.addClassPath(classPath);
       return this;
    }
 
    public ReadFileSystem<I> getSourcePath()
    {
-      return sourcePath;
+      return strategy.sourcePath;
    }
 
    public ReadWriteFileSystem<O> getClassOutput()
    {
-      return classOutput;
+      return strategy.classOutput;
    }
 
    public ReadWriteFileSystem<O> getSourceOutput()
    {
-      return sourceOutput;
+      return strategy.sourceOutput;
    }
 
    public ClassLoader getClassLoader()
@@ -165,8 +159,7 @@ public class CompilerAssert<I, O>
    {
       try
       {
-         Compiler compiler = builder.build(processorFactory != null ? processorFactory.get() : null);
-         List<CompilationError> errors = compiler.compile();
+         List<CompilationError> errors = strategy.compile();
          AbstractTestCase.assertTrue("Was expecting compilation to fail", errors.size() > 0);
          return errors;
       }
@@ -192,11 +185,10 @@ public class CompilerAssert<I, O>
    {
       try
       {
-         Compiler compiler = builder.build(processorFactory != null ? processorFactory.get() : null);
-         List<CompilationError> errors = compiler.compile();
+         List<CompilationError> errors = strategy.compile();
          AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), errors);
-         classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
-         return compiler;
+         classLoader = new URLClassLoader(new URL[]{strategy.classOutput.getURL()}, baseClassLoader);
+         return strategy.compiler;
       }
       catch (Exception e)
       {
@@ -220,12 +212,12 @@ public class CompilerAssert<I, O>
    {
       try
       {
-         I path = sourcePath.getPath(names);
+         I path = strategy.sourcePath.getPath(names);
          if (path == null)
          {
             throw AbstractTestCase.failure("Cannot remove path " + Tools.join('/', names));
          }
-         sourcePath.removePath(path);
+         strategy.sourcePath.removePath(path);
       }
       catch (Exception e)
       {
@@ -238,7 +230,7 @@ public class CompilerAssert<I, O>
       I path;
       try
       {
-         path = sourcePath.getPath(names);
+         path = strategy.sourcePath.getPath(names);
       }
       catch (IOException e)
       {
@@ -248,6 +240,6 @@ public class CompilerAssert<I, O>
       {
          throw AbstractTestCase.failure("Was not expecting " + Arrays.asList(names) + " to be null file");
       }
-      return new JavaFile<I>(sourcePath, path);
+      return new JavaFile<I>(strategy.sourcePath, path);
    }
 }

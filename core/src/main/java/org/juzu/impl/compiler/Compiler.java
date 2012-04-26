@@ -22,10 +22,12 @@ package org.juzu.impl.compiler;
 import org.juzu.impl.compiler.file.FileKey;
 import org.juzu.impl.compiler.file.SimpleFileManager;
 import org.juzu.impl.compiler.file.JavaFileObjectImpl;
+import org.juzu.impl.fs.Filter;
 import org.juzu.impl.fs.Visitor;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.SimpleFileSystem;
+import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Location;
 import org.juzu.impl.utils.Spliterator;
@@ -35,9 +37,13 @@ import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +59,7 @@ public class Compiler
 
    public static Builder builder()
    {
-      return new Builder(null, null, null, new ArrayList<SimpleFileSystem<?>>());
+      return new Builder(null, null, null, new ArrayList<SimpleFileSystem<?>>(), false);
    }
 
    public static class Builder
@@ -71,16 +77,21 @@ public class Compiler
       /** . */
       private List<SimpleFileSystem<?>> classPaths;
 
+      /** . */
+      private boolean force;
+
       private Builder(
          ReadFileSystem<?> sourcePath,
          ReadWriteFileSystem<?> sourceOutput,
          ReadWriteFileSystem<?> classOutput,
-         List<SimpleFileSystem<?>> classPaths)
+         List<SimpleFileSystem<?>> classPaths,
+         boolean force)
       {
          this.sourcePath = sourcePath;
          this.sourceOutput = sourceOutput;
          this.classOutput = classOutput;
          this.classPaths = classPaths;
+         this.force = force;
       }
 
       public Builder classOutput(ReadWriteFileSystem<?> classOutput)
@@ -113,6 +124,12 @@ public class Compiler
          return this;
       }
 
+      public Builder force(boolean force)
+      {
+         this.force = force;
+         return this;
+      }
+
       public Compiler build()
       {
          return build(null);
@@ -136,7 +153,8 @@ public class Compiler
             sourcePath,
             classPaths,
             sourceOutput,
-            classOutput
+            classOutput,
+            force
          );
          if (processor != null)
          {
@@ -153,50 +171,64 @@ public class Compiler
    private JavaCompiler compiler;
 
    /** . */
-   private VirtualFileManager fileManager;
+   private Set<Processor> processors;
 
    /** . */
-   private Set<Processor> processors;
+   private ReadFileSystem<?> sourcePath;
+
+   /** . */
+   private ReadWriteFileSystem<?> classOutput;
+
+   /** . */
+   private ReadWriteFileSystem<?> sourceOutput;
+
+   /** . */
+   private Collection<SimpleFileSystem<?>> classPaths;
+
+   /** . */
+   private boolean force;
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
-      ReadWriteFileSystem<?> output)
+      ReadWriteFileSystem<?> output,
+      boolean force)
    {
-      this(sourcePath, output, output);
+      this(sourcePath, output, output, force);
    }
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
       ReadWriteFileSystem<?> sourceOutput,
-      ReadWriteFileSystem<?> classOutput)
+      ReadWriteFileSystem<?> classOutput,
+      boolean force)
    {
-      this(sourcePath, Collections.<SimpleFileSystem<?>>emptyList(), sourceOutput, classOutput);
+      this(sourcePath, Collections.<SimpleFileSystem<?>>emptyList(), sourceOutput, classOutput, force);
    }
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
       SimpleFileSystem<?> classPath,
       ReadWriteFileSystem<?> sourceOutput,
-      ReadWriteFileSystem<?> classOutput)
+      ReadWriteFileSystem<?> classOutput,
+      boolean force)
    {
-      this(sourcePath, Collections.<SimpleFileSystem<?>>singletonList(classPath), sourceOutput, classOutput);
+      this(sourcePath, Collections.<SimpleFileSystem<?>>singletonList(classPath), sourceOutput, classOutput, force);
    }
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
-      Collection<SimpleFileSystem<?>> classPath,
+      Collection<SimpleFileSystem<?>> classPaths,
       ReadWriteFileSystem<?> sourceOutput,
-      ReadWriteFileSystem<?> classOutput)
+      ReadWriteFileSystem<?> classOutput,
+      boolean force)
    {
+      this.sourcePath = sourcePath;
+      this.classPaths = classPaths;
+      this.sourceOutput = sourceOutput;
+      this.classOutput = classOutput;
       this.compiler = ToolProvider.getSystemJavaCompiler();
-      this.fileManager = new VirtualFileManager(
-         compiler.getStandardFileManager(null, null, null),
-         sourcePath,
-         classPath,
-         sourceOutput,
-         classOutput
-      );
       this.processors = new HashSet<Processor>();
+      this.force = force;
    }
 
    public void addAnnotationProcessor(Processor annotationProcessorType)
@@ -208,32 +240,47 @@ public class Compiler
       processors.add(annotationProcessorType);
    }
 
-   public ReadWriteFileSystem<Object> getSourceOutput()
-   {
-      return (ReadWriteFileSystem<Object>)fileManager.sourceOutput.getFileSystem();
-   }
-
-   public ReadWriteFileSystem<Object> getClassOutput()
-   {
-      return (ReadWriteFileSystem<Object>)fileManager.classOutput.getFileSystem();
-   }
-
    public List<CompilationError> compile(String... compilationUnits) throws IOException
    {
-      return compile(getFromSourcePath(fileManager.sourcePath, compilationUnits));
+      // Copy anything that is not a java file
+      RAMFileSystem sourcePath1 = new RAMFileSystem();
+      sourcePath.copy(new Filter()
+      {
+         public boolean acceptDir(Object dir, String name) throws IOException
+         {
+            return true;
+         }
+
+         public boolean acceptFile(Object file, String name) throws IOException
+         {
+            return !name.endsWith(".java");
+         }
+      }, sourcePath1);
+
+      //
+      VirtualFileManager fileManager = new VirtualFileManager(
+         compiler.getStandardFileManager(null, null, null),
+         sourcePath1,
+         classPaths,
+         sourceOutput,
+         classOutput
+      );
+
+      //
+      Collection<JavaFileObject> files = getFromSourcePath(sourcePath, compilationUnits);
+
+      //
+      return compile(fileManager, files);
    }
 
-   public List<CompilationError> compile() throws IOException
+   private <P> Collection<JavaFileObject> getFromSourcePath(ReadFileSystem<P> fs, String... compilationUnits) throws IOException
    {
-      return compile(getFromSourcePath(fileManager.sourcePath));
-   }
-
-   private <P> Iterable<JavaFileObject> getFromSourcePath(SimpleFileManager<P> manager, String... compilationUnits) throws IOException
-   {
+      SimpleFileManager<P> manager = new SimpleFileManager<P>(fs);
       ArrayList<String> tmp = new ArrayList<String>();
       final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
       for (String compilationUnit : compilationUnits)
       {
+         tmp.clear();
          ArrayList<String> names = Spliterator.split(compilationUnit, '/', tmp);
          String name = tmp.get(tmp.size() - 1);
          if (!name.endsWith(".java"))
@@ -253,7 +300,19 @@ public class Compiler
       return javaFiles;
    }
 
-   private <P> Iterable<JavaFileObject> getFromSourcePath(final SimpleFileManager<P> fileManager) throws IOException
+   public List<CompilationError> compile() throws IOException
+   {
+      VirtualFileManager fileManager = new VirtualFileManager(
+         compiler.getStandardFileManager(null, null, null),
+         sourcePath,
+         classPaths,
+         sourceOutput,
+         classOutput
+      );
+      return compile(fileManager, getFromSourcePath(fileManager.sourcePath));
+   }
+
+   private <P> Collection<JavaFileObject> getFromSourcePath(final SimpleFileManager<P> fileManager) throws IOException
    {
       final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
       ((ReadFileSystem<P>)fileManager.getFileSystem()).traverse(new Visitor.Default<P>()
@@ -272,8 +331,29 @@ public class Compiler
       return javaFiles;
    }
 
-   private List<CompilationError> compile(Iterable<JavaFileObject> compilationUnits) throws IOException
+   private List<CompilationError> compile(VirtualFileManager fileManager, Collection<JavaFileObject> compilationUnits) throws IOException
    {
+      if (compilationUnits.isEmpty())
+      {
+         if (!force)
+         {
+            return Collections.emptyList();
+         }
+         else
+         {
+            URI uri = URI.create("/Dumb.java");
+            compilationUnits = Collections.<JavaFileObject>singleton(new SimpleJavaFileObject(uri, JavaFileObject.Kind.SOURCE)
+            {
+               @Override
+               public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException
+               {
+                  return "public class Dumb {}";
+               }
+            });
+         }
+      }
+
+      //
       final List<CompilationError> errors = new ArrayList<CompilationError>();
       DiagnosticListener<JavaFileObject> listener = new DiagnosticListener<JavaFileObject>()
       {

@@ -167,6 +167,20 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       }
    }
 
+   public void postProcessAnnotations(MetaModel model)
+   {
+      resolveApplications();
+
+      //
+      for (ApplicationMetaModel application : this)
+      {
+         for (MetaModelPlugin plugin : plugins.values())
+         {
+            plugin.postProcessAnnotations(application);
+         }
+      }
+   }
+
    public void processEvents(MetaModel model, EventQueue queue)
    {
       while (queue.hasEvents())
@@ -203,16 +217,13 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       }
    }
 
-   public void postProcess(MetaModel model) throws CompilationException
+   public void postProcessEvents(MetaModel model) throws CompilationException
    {
-      resolveApplications();
-
-      // Post process applications
       for (ApplicationMetaModel application : this)
       {
          for (MetaModelPlugin plugin : plugins.values())
          {
-            plugin.postProcess(application);
+            plugin.postProcessEvents(application);
          }
       }
    }

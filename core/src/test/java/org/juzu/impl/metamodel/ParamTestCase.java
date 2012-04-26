@@ -47,7 +47,7 @@ public class ParamTestCase extends AbstractTestCase
    @Test
    public void testBuild() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "param");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "param");
       helper.assertCompile();
 
       //
@@ -58,7 +58,7 @@ public class ParamTestCase extends AbstractTestCase
    @Test
    public void testParam() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "param");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "param");
       helper.assertCompile();
 
       // Remove @Param
@@ -67,7 +67,7 @@ public class ParamTestCase extends AbstractTestCase
       AnnotationExpr annotation = bean.getAnnotations().get(0);
       bean.getAnnotations().clear();
       file.assertSave();
-      helper.assertRemove("model", "meta", "param", "A.java");
+//      helper.assertRemove("model", "meta", "param", "A.java");
 
       // Recompile 
       // we should have a way to test the error kind more precisely

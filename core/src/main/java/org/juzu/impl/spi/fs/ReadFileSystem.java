@@ -213,46 +213,73 @@ public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
 
    public <D> void copy(ReadWriteFileSystem<D> dst) throws IOException
    {
-      copy(getRoot(), dst, dst.getRoot());
+      copy(new Filter.Default<P>(), dst);
    }
 
-   public <D> void copy(P srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
+   public <D> void copy(Filter<P> filter, ReadWriteFileSystem<D> dst) throws IOException
+   {
+      copy(getRoot(), filter, dst, dst.getRoot());
+   }
+
+   public <D> void copy(P srcPath, Filter<P> filter, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
    {
       int kind = kind(srcPath, dst, dstPath);
+      String srcName = getName(srcPath);
 
       //
       switch (kind)
       {
          case 0:
          {
-            dst.setContent(dstPath, getContent(srcPath));
+            if (filter.acceptFile(srcPath, srcName))
+            {
+               dst.setContent(dstPath, getContent(srcPath));
+            }
             break;
          }
          case 3:
          {
+            // Inspect destination
             for (Iterator<D> i =  dst.getChildren(dstPath);i.hasNext();)
             {
                D next = i.next();
                String name = dst.getName(next);
                P a = getChild(srcPath, name);
+
+               //
+               boolean remove;
                if (a == null)
                {
-                  i.remove();
+                  remove = true;
                }
                else
                {
                   switch (kind(a, dst, next))
                   {
-                     case 1:
-                     case 2:
-                        i.remove();
-                        break;
                      default:
-                        copy(a, dst, next);
+                        remove = true;
+                        break;
+                     case 0:
+                        remove = !filter.acceptFile(a, name);
+                        break;
+                     case 3:
+                        remove = !filter.acceptDir(a, name);
                         break;
                   }
                }
+
+               // Remove or copy
+               if (remove)
+               {
+                  i.remove();
+               }
+               else
+               {
+                  copy(a, filter, dst, next);
+               }
             }
+
+            //
             for (Iterator<P> i = getChildren(srcPath);i.hasNext();)
             {
                P next = i.next();
@@ -260,16 +287,19 @@ public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
                D a = dst.getChild(dstPath, name);
                if (a == null)
                {
-                  if (isDir(next))
+                  boolean dir = isDir(next);
+                  boolean accept = dir ? filter.acceptDir(next, name) : filter.acceptFile(next, name);
+                  if (accept)
                   {
-                     a = dst.addDir(dstPath, name);
-                  }
-                  else
-                  {
-                     a = dst.addFile(dstPath, name);
+                     a = dir ? dst.addDir(dstPath, name) : dst.addFile(dstPath, name);
+                     copy(next, filter, dst, a);
                   }
                }
-               copy(next, dst, a);
+               else
+               {
+                  // We should not go in this case as the previous loop
+                  // took care of synchronizing everthing that was existing in the destination
+               }
             }
             break;
          }

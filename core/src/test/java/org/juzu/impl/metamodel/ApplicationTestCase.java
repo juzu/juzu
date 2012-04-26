@@ -27,6 +27,7 @@ import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerAssert;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -60,7 +61,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testUpdate() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "application");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "application");
       helper.assertCompile();
 
       //
@@ -69,8 +70,11 @@ public class ApplicationTestCase extends AbstractTestCase
       mm.getQueue().clear();
       Tools.serialize(mm, ser);
 
-      //
-      assertTrue(helper.getClassOutput().getPath("model", "meta", "application", "package-info.class").delete());
+      // Just touch this file to force recompile
+      File pkg = helper.getSourcePath().getPath("model", "meta", "application", "package-info.java");
+      FileWriter writer = new FileWriter(pkg, true);
+      writer.write(" ");
+      writer.close();
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -96,7 +100,7 @@ public class ApplicationTestCase extends AbstractTestCase
    @Test
    public void testRemove() throws Exception
    {
-      CompilerAssert<File, File> helper = compiler("model", "meta", "application");
+      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "application");
       helper.assertCompile();
 
       //
@@ -107,8 +111,6 @@ public class ApplicationTestCase extends AbstractTestCase
 
       //
       assertTrue(helper.getSourcePath().getPath("model", "meta", "application", "package-info.java").delete());
-      assertTrue(helper.getClassOutput().getPath("model", "meta", "application", "package-info.class").delete());
-      assertTrue(helper.getClassOutput().getPath("model", "meta", "application", "B.class").delete());
 
       //
       helper.addClassPath(helper.getClassOutput()).assertCompile();

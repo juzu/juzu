@@ -115,7 +115,7 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
    }
 
    @Override
-   public void postProcess(ApplicationMetaModel application)
+   public void postProcessEvents(ApplicationMetaModel application)
    {
       MetaModel.log.log("Processing templates of " + application.getHandle());
       application.getTemplates().resolver.process(this, application.model.env);
