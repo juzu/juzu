@@ -22,10 +22,8 @@ package org.juzu.impl.application;
 import org.juzu.asset.AssetType;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.asset.AssetManager;
+import org.juzu.impl.asset.AssetServer;
 import org.juzu.impl.asset.ManagerQualifier;
-import org.juzu.impl.asset.Registration;
-import org.juzu.impl.asset.Router;
-import org.juzu.impl.asset.Server;
 import org.juzu.impl.compiler.*;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
@@ -90,16 +88,13 @@ public abstract class ApplicationRuntime<P, R, L>
    protected ApplicationContext context;
 
    /** . */
-   protected Server assetServer;
+   protected AssetServer assetServer;
 
    /** . */
    protected AssetManager stylesheetManager;
 
    /** . */
    protected AssetManager scriptManager;
-
-   /** . */
-   protected Registration<Router> applicationAssets;
 
    /** Additional plugins. */
    protected Map<String, Descriptor> plugins;
@@ -154,7 +149,7 @@ public abstract class ApplicationRuntime<P, R, L>
       return context;
    }
 
-   public Server getAssetServer()
+   public AssetServer getAssetServer()
    {
       return assetServer;
    }
@@ -169,7 +164,7 @@ public abstract class ApplicationRuntime<P, R, L>
       return stylesheetManager;
    }
 
-   public void setAssetServer(Server assetServer)
+   public void setAssetServer(AssetServer assetServer)
    {
       if (assetServer != null)
       {
@@ -459,30 +454,17 @@ public abstract class ApplicationRuntime<P, R, L>
          stylesheetManager);
 
       //
-      Registration<Router> applicationAssets =null;
-      if (assetServer != null)
-      {
-         applicationAssets = assetServer.getApplicationRouter().register(descriptor.getName(), Router.class);
-         injectBootstrap.bindBean(Router.class, Collections.<Annotation>singleton(Server.APPLICATION), applicationAssets.getRoute());
-         injectBootstrap.bindBean(Router.class, Collections.<Annotation>singleton(Server.PLUGIN), assetServer.getPluginRouter());
-      }
-
       //
       logger.log("Starting " + descriptor.getName());
       bootstrap.start();
 
       //
       this.context = bootstrap.getContext();
-      this.applicationAssets = applicationAssets;
       this.scriptManager = scriptManager;
       this.stylesheetManager = stylesheetManager;
    }
 
    public void shutdown()
    {
-      if (applicationAssets != null)
-      {
-         applicationAssets.cancel();
-      }
    }
 }

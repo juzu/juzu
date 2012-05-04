@@ -51,8 +51,6 @@ public class AjaxTestCase extends AbstractHttpTestCase
       trigger2.click();
 
       List<String> alerts = ua.getAlerts(page);
-      assertEquals(2, alerts.size());
-      assertEquals("OK MEN", alerts.get(0));
-      assertEquals("OK MEN 2", alerts.get(1));
+      assertEquals(Arrays.asList("OK MEN", "OK MEN 2"), alerts);
    }
 }

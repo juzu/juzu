@@ -2,25 +2,29 @@ $(function() {
 
   // Search function
   var search = function(elt) {
-    var listAction = elt.BookingApplication().list();
-    elt.$find(".result").load(listAction, {search : elt.$find(".search").val(), size : elt.$find(".size").val(), page : elt.$find(".page").val()}, function() {
+    var root = $(elt).jz();
+    root.find(".result").jzLoad("Hotels.list()", {
+      search : $(elt).jzFind(".search").val(),
+      size : $(elt).jzFind(".size").val(),
+      page : $(elt).jzFind(".page").val()
+    }, function() {
       // does not seem used
       // $('#content').css('visibility', 'visible');
-    })
+    });
   };
 
   // Events handler
-  $('.jz').on("click", ".submit", function() {
-    this.$find('.page').val(0);
+  $("body").on("click", ".jz .submit", function() {
+    $(this).jzFind('.page').val(0);
     search(this);
   });
-  $(".jz").on("keyup", ".search", function() {
-    this.$find('.page').val(0);
+  $("body").on("keyup", ".jz .search", function() {
+    $(this).jzFind('.page').val(0);
     search(this);
   });
-  $('.jz').on("click", ".nextPage", function(e) {
+  $("body").on("click", ".jz .nextPage", function(e) {
     var p = $(this).attr('href');
-    this.$find('.page').val(p);
+    $(this).jzFind('.page').val(p);
     e.preventDefault();
     search(this);
   });

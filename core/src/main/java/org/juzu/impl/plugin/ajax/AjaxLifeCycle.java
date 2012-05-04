@@ -27,21 +27,19 @@ import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.asset.AssetMetaData;
 import org.juzu.impl.asset.Manager;
-import org.juzu.impl.asset.Registration;
-import org.juzu.impl.asset.Router;
 import org.juzu.impl.asset.AssetManager;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
 import org.juzu.io.Stream;
 import org.juzu.io.Streamable;
+import org.juzu.plugin.ajax.Ajax;
 import org.juzu.request.RenderContext;
 
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -50,31 +48,32 @@ public class AjaxLifeCycle extends RequestLifeCycle
 {
 
    /** . */
-   private Registration<PluginAsset> pluginRegistration;
+   final ApplicationDescriptor desc;
 
    /** . */
-   private Registration<ApplicationAsset> applicationRegistration;
+   final Map<String, ControllerMethod> table;
 
    @Inject
    public AjaxLifeCycle(
       ApplicationDescriptor desc,
-      @Named("plugin") Router plugin,
-      @Named("application") Router application,
       @Manager(AssetType.SCRIPT) AssetManager manager)
    {
       manager.addAsset(new AssetMetaData("ajax.plugin", AssetLocation.CLASSPATH, "/org/juzu/impl/plugin/ajax/script.js", "jquery"));
-      manager.addAsset(new AssetMetaData("ajax.app", AssetLocation.SERVER, "/assets/application/AjaxApplication/ajax.js", "ajax.plugin"));
 
       //
-      this.pluginRegistration = plugin.register("ajax.js", PluginAsset.class);
-      this.applicationRegistration = application.register("ajax.js", new ApplicationAsset(desc));
-   }
+      Map<String, ControllerMethod> table = new HashMap<String, ControllerMethod>();
+      for (ControllerMethod cm : desc.getController().getMethods())
+      {
+         Ajax ajax = cm.getMethod().getAnnotation(Ajax.class);
+         if (ajax != null)
+         {
+            table.put(cm.getName(), cm);
+         }
+      }
 
-   @PreDestroy
-   public void destroy()
-   {
-      pluginRegistration.cancel();
-      applicationRegistration.cancel();
+      //
+      this.desc = desc;
+      this.table = table;
    }
 
    @Override
@@ -95,7 +94,6 @@ public class AjaxLifeCycle extends RequestLifeCycle
 
             //
             properties.addValues(Response.Render.SCRIPT, "ajax.plugin");
-            properties.addValues(Response.Render.SCRIPT, "ajax.app");
 
             //
             final Streamable<Stream.Char> decorated = render.getStreamable();
@@ -110,7 +108,7 @@ public class AjaxLifeCycle extends RequestLifeCycle
                   stream.append("<div class=\"jz\">\n");
 
                   //
-                  for (Map.Entry<String, ControllerMethod> entry : applicationRegistration.getRoute().table.entrySet())
+                  for (Map.Entry<String, ControllerMethod> entry : table.entrySet())
                   {
                      String baseURL = ((RenderContext)request.getContext()).createURLBuilder(entry.getValue()).toString();
                      stream.append("<div data-method-id=\"");

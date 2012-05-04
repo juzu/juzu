@@ -22,7 +22,7 @@ package org.juzu.portlet;
 import org.juzu.PropertyType;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.ApplicationRuntime;
-import org.juzu.impl.asset.Server;
+import org.juzu.impl.asset.AssetServer;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.plugin.portlet.PortletDescriptor;
 import org.juzu.impl.spi.inject.InjectImplementation;
@@ -214,7 +214,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          }
 
          //
-         Server server = (Server)config.getPortletContext().getAttribute("asset.server");
+         AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
 
          // Configure the runtime
          runtime.setLibs(libs);

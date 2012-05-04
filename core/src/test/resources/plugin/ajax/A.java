@@ -35,26 +35,49 @@ public class A extends Controller
          "<script>\n" +
          "$(function() {\n" +
          "  $('#trigger').click(function() {\n" +
-         "    doRequest(this.AjaxApplication().resource());\n" +
-         "  });\n" +
-         "  $('#trigger2').click(function() {\n" +
-         "    doRequest(this.AjaxApplication().resource2());\n" +
+         "    $(this).jzAjax({\n" +
+         "      url:'A.resource()',\n" +
+         "      success:function(content) {\n" +
+         "        alert(content);\n" +
+         "      }\n" +
+         "    });\n" +
          "  });\n" +
          "});\n" +
+         "</script>\n" +
 
-         "doRequest = function(url) {\n" +
-         "  $.ajax({\n" +
-         "    url:url,\n" +
-         "    async:false,\n" +
+         //
+         "<a id='trigger' href='#'>click</a>\n" +
+         "<div id='target' href='#'>OK MEN 2</div>\n" +
+         "<script>\n" +
+         "$(function() {\n" +
+         "  $('#trigger2').click(function() {\n" +
+         "    var a = $('#target').jzLoad('A.resource2()', function(data) { alert(data); });\n" +
+         "  });\n" +
+         "});\n" +
+         "</script>\n" +
+         "<a id='trigger2' href='#'>click</a>" +
+
+         //
+         "<script>\n" +
+
+         // Configure ajax default for unit test
+         "$(function() {\n" +
+         "$.ajaxSetup({\n" +
+         "async:false\n" +
+         "});\n" +
+         "});\n" +
+
+         // Do request method
+         "doRequest = function(elt, mid) {\n" +
+         "  elt.ajax({\n" +
+         "    url:mid,\n" +
          "    success:function(content) {\n" +
          "      alert(content);\n" +
          "    }\n" +
          "  });\n" +
          "}\n" +
-         "</script>\n" +
+         "</script>\n";
 
-         "<a id='trigger' href='#'>click</a>\n" +
-         "<a id='trigger2' href='#'>click</a>";
       return Response.render(content);
    }
 

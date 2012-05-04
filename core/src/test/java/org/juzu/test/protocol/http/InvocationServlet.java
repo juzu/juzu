@@ -21,10 +21,8 @@ package org.juzu.test.protocol.http;
 
 import org.juzu.asset.AssetType;
 import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.asset.AssetServer;
 import org.juzu.impl.asset.ManagerQualifier;
-import org.juzu.impl.asset.Registration;
-import org.juzu.impl.asset.Router;
-import org.juzu.impl.asset.Server;
 import org.juzu.impl.asset.AssetManager;
 import org.juzu.impl.spi.request.servlet.ServletBridgeContext;
 import org.juzu.impl.spi.request.servlet.ServletRequestBridge;
@@ -56,7 +54,7 @@ public class InvocationServlet extends HttpServlet
     * @return the related server
     * @throws NullPointerException if the context argument is null
     */
-   public static Server getServer(ServletContext context) throws NullPointerException
+   public static AssetServer getServer(ServletContext context) throws NullPointerException
    {
       if (context == null)
       {
@@ -66,7 +64,7 @@ public class InvocationServlet extends HttpServlet
    }
 
    /** . */
-   private static final ConcurrentHashMap<String, Server> registry = new ConcurrentHashMap<String, Server>();
+   private static final ConcurrentHashMap<String, AssetServer> registry = new ConcurrentHashMap<String, AssetServer>();
 
    /** . */
    private final Logger log = new Logger()
@@ -95,14 +93,6 @@ public class InvocationServlet extends HttpServlet
       try
       {
          MockApplication<?> application = AbstractHttpTestCase.getApplication();
-
-         //
-         Server server = (Server)getServletContext().getAttribute("asset.server");
-         Registration<Router> app = server.getApplicationRouter().register(application.getDescriptor().getName(), Router.class);
-
-         //
-         application.bindBean(Router.class, Collections.<Annotation>singleton(Server.APPLICATION), app.getRoute());
-         application.bindBean(Router.class, Collections.<Annotation>singleton(Server.PLUGIN), server.getPluginRouter());
 
          // Bind the asset manager
          AssetManager scriptManager = new AssetManager(AssetType.SCRIPT);

@@ -19,8 +19,6 @@
 
 package org.juzu.impl.asset;
 
-import org.juzu.impl.application.ApplicationRuntime;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +32,7 @@ public class AssetServlet extends HttpServlet
    @Override
    public void init() throws ServletException
    {
-      getServletContext().setAttribute("asset.server", new Server());
+      getServletContext().setAttribute("asset.server", new AssetServer());
    }
 
    @Override
@@ -46,7 +44,7 @@ public class AssetServlet extends HttpServlet
    @Override
    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
-      Server server = (Server)getServletContext().getAttribute("asset.server");
+      AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
       if (server != null)
       {
          server.doGet(req, resp);

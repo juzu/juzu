@@ -1,27 +1,43 @@
-var p=HTMLElement.prototype;
-p.jz=function(){
-  var e=this;
-  while(e!=null&&(" "+e.className+" ").indexOf(" jz ")<0){
-    e=e.parentNode;
-  }
-  return e;
-};
-p.foo=function(k){
-  var e=this.jz();
-  if(e!=null){
-    var n=e.getElementsByTagName("div");
-    for(var i=0;i<n.length;i++){
-      var c=n[i];
-      var d=c.getAttribute("data-method-id");
-      if(d==k){
-        return c.getAttribute("data-url");
+(function($) {
+  $.fn.jz = function() {
+    return this.closest(".jz");
+  };
+  $.fn.jzURL = function(mid) {
+    return this.
+      jz().
+      children().
+      filter(function() { return $(this).data("method-id") == mid; }).
+      map(function() { return $(this).data("url"); })[0];
+  };
+  var re = /^(.*)\(\)$/;
+  $.fn.jzAjax = function(url, options) {
+    if (typeof url === "object") {
+      options = url;
+      url = options.url;
+    }
+    var match = re.exec(url);
+    if (match != null) {
+      url = this.jzURL(match[1]);
+      if (url != null) {
+        options = $.extend({}, options || {});
+        options.url = url;
+        return $.ajax(options);
       }
     }
+  };
+  $.fn.jzLoad = function(url, data, complete) {
+    var match = re.exec(url);
+    if (match != null) {
+      var repl = this.jzURL(match[1]);
+      url = repl || url;
+    }
+    if (typeof data === "function") {
+      complete = data;
+      data = null;
+    }
+    return this.load(url, data, complete);
+  };
+  $.fn.jzFind = function(arg) {
+    return this.jz().find(arg);
   }
-  return k;
-};
-p.$=function(){return $(this.jz());};
-p.$find=function(){
-  var elt=this.$();
-  return elt.find.apply(elt, arguments);
-};
+})(jQuery);
