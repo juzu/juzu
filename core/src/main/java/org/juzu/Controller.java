@@ -23,6 +23,7 @@ import org.juzu.request.ActionContext;
 import org.juzu.request.HttpContext;
 import org.juzu.request.RenderContext;
 import org.juzu.request.RequestContext;
+import org.juzu.request.RequestLifeCycle;
 import org.juzu.request.ResourceContext;
 import org.juzu.request.SecurityContext;
 

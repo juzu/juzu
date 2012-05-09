@@ -273,9 +273,9 @@ public class Request implements ScopingContext
             }
 
             // Begin request callback
-            if (o instanceof org.juzu.RequestLifeCycle)
+            if (o instanceof org.juzu.request.RequestLifeCycle)
             {
-               ((org.juzu.RequestLifeCycle)o).beginRequest(context);
+               ((org.juzu.request.RequestLifeCycle)o).beginRequest(context);
             }
 
             // Invoke method on controller
@@ -293,11 +293,11 @@ public class Request implements ScopingContext
             }
             finally
             {
-               if (o instanceof org.juzu.RequestLifeCycle)
+               if (o instanceof org.juzu.request.RequestLifeCycle)
                {
                   try
                   {
-                     ((org.juzu.RequestLifeCycle)o).endRequest(context);
+                     ((org.juzu.request.RequestLifeCycle)o).endRequest(context);
                   }
                   catch (Exception e)
                   {
