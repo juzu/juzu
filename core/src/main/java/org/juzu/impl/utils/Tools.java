@@ -391,12 +391,21 @@ public class Tools
       return set;
    }
 
-   public static <E> Iterator<E> iterator(final E... elements) throws NullPointerException
+   public static <E> Iterator<E> iterator(E... elements) throws NullPointerException
    {
       return iterator(0, elements);
    }
 
-   public static <E> Iterator<E> iterator(final int from, final E... elements) throws NullPointerException, IndexOutOfBoundsException
+   public static <E> Iterator<E> iterator(int from, final E... elements) throws NullPointerException, IndexOutOfBoundsException
+   {
+      if (elements == null)
+      {
+         throw new NullPointerException("No null element array accepted");
+      }
+      return iterator(from, elements.length, elements);
+   }
+
+   public static <E> Iterator<E> iterator(final int from, final int to, final E... elements) throws NullPointerException, IndexOutOfBoundsException
    {
       if (elements == null)
       {
@@ -406,11 +415,15 @@ public class Tools
       {
          throw new IndexOutOfBoundsException("From value " + from + " cannot be negative");
       }
-      if (from > elements.length)
+      if (to > elements.length)
       {
-         throw new IndexOutOfBoundsException("From value " + from + " cannot be greater than the array length " + elements.length);
+         throw new IndexOutOfBoundsException("To value " + from + " cannot be greater than the array length " + elements.length);
       }
-      if (elements.length == 0)
+      if (from > to)
+      {
+         throw new IndexOutOfBoundsException("From value " + from + " cannot be greater than the from value " + elements.length);
+      }
+      if (from == to)
       {
          return Collections.<E>emptyList().iterator();
       }
@@ -424,7 +437,7 @@ public class Tools
 
             public boolean hasNext()
             {
-               return index < elements.length;
+               return index < to;
             }
 
             public E next()

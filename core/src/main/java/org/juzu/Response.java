@@ -28,12 +28,7 @@ import org.juzu.io.Stream;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -132,8 +127,25 @@ public abstract class Response
 {
 
    /** . */
-   private static final Map EMPTY_MAP = Collections.emptyMap();
-   
+   protected final PropertyMap properties = new PropertyMap();
+
+   /**
+    * Set a property, if the value is null, the property is removed.
+    *
+    * @param propertyType the property type
+    * @param propertyValue the property value
+    * @throws NullPointerException if the property type is null
+    */
+   public <T> Response setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException
+   {
+      if (propertyType == null)
+      {
+         throw new NullPointerException("No null property type allowed");
+      }
+      properties.setValue(propertyType, propertyValue);
+      return this;
+   }
+
    /**
     * A response instructing to execute a render phase of a controller method after the current interaction.
     */
@@ -143,13 +155,9 @@ public abstract class Response
       /** . */
       private ParameterMap parameterMap;
 
-      /** . */
-      private Map<PropertyType<?>, Object> properties;
-
       public Update()
       {
          this.parameterMap = new ParameterHashMap();
-         this.properties = EMPTY_MAP;
       }
 
       public Update setParameter(String name, String value) throws NullPointerException
@@ -170,46 +178,20 @@ public abstract class Response
          return this;
       }
 
-      /**
-       * Set a property, if the value is null, the property is removed.
-       *
-       * @param propertyType the property type
-       * @param propertyValue the property value
-       * @return this object
-       * @throws NullPointerException if the property type is null
-       */
-      public <T> Update setProperty(PropertyType<T> propertyType, T propertyValue)
-      {
-         if (propertyType == null)
-         {
-            throw new NullPointerException("No null property type allowed");
-         }
-         if (propertyValue != null)
-         {
-            if (properties == EMPTY_MAP)
-            {
-               properties = new HashMap<PropertyType<?>, Object>();
-            }
-            properties.put(propertyType, propertyValue);
-         }
-         else
-         {
-            if (properties.size() > 0)
-            {
-               properties.remove(propertyType);
-            }
-         }
-         return this;
-      }
-
       public Map<String, String[]> getParameters()
       {
          return parameterMap;
       }
 
-      public Map<PropertyType<?>, ?> getProperties()
+      public PropertyMap getProperties()
       {
          return properties;
+      }
+
+      @Override
+      public <T> Update setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException
+      {
+         return (Update)super.setProperty(propertyType, propertyValue);
       }
 
       @Override
@@ -254,6 +236,12 @@ public abstract class Response
       }
 
       @Override
+      public <T> Redirect setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException
+      {
+         return (Redirect)super.setProperty(propertyType, propertyValue);
+      }
+
+      @Override
       public boolean equals(Object obj)
       {
          if (obj == this)
@@ -286,6 +274,12 @@ public abstract class Response
          return null;
       }
 
+      @Override
+      public <T> Content setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException
+      {
+         return (Content)super.setProperty(propertyType, propertyValue);
+      }
+
       /**
        * Send the response on the stream argument, Juzu invokes it when it needs to render the content object.
        *
@@ -300,6 +294,24 @@ public abstract class Response
 
    public static class Render extends Content<CharStream>
    {
+
+      /** Script type literal. */
+      public static class SCRIPT extends PropertyType<String> {}
+
+      /** Script type literal instance. */
+      public static SCRIPT SCRIPT = new SCRIPT();
+
+      /** Stylesheet type literal. */
+      public static class STYLESHEET extends PropertyType<String> {}
+
+      /** Stylesheet literal instance. */
+      public static STYLESHEET STYLESHEET = new STYLESHEET();
+
+      @Override
+      public <T> Render setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException
+      {
+         return (Render)super.setProperty(propertyType, propertyValue);
+      }
 
       public Iterator<String> getScripts()
       {
@@ -339,12 +351,6 @@ public abstract class Response
 
          /** . */
          private String title;
-         
-         /** . */
-         private Collection<String> scripts = Collections.emptyList();
-
-         /** . */
-         private Collection<String> stylesheets = Collections.emptyList();
 
          public Base(String title)
          {
@@ -369,13 +375,15 @@ public abstract class Response
          @Override
          public Iterator<String> getScripts()
          {
-            return scripts.iterator();
+            Iterable<String> scripts = properties.getValues(SCRIPT);
+            return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
          }
 
          @Override
          public Iterator<String> getStylesheets()
          {
-            return stylesheets.iterator();
+            Iterable<String> scripts = properties.getValues(STYLESHEET);
+            return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
          }
 
          public Base addScript(String script) throws NullPointerException
@@ -384,11 +392,7 @@ public abstract class Response
             {
                throw new NullPointerException("No null script accepted");
             }
-            if (scripts.isEmpty())
-            {
-               scripts = new LinkedHashSet<String>();
-            }
-            scripts.add(script);
+            properties.addValue(SCRIPT, script);
             return this;
          }
 
@@ -398,11 +402,7 @@ public abstract class Response
             {
                throw new NullPointerException("No null stylesheet accepted");
             }
-            if (stylesheets.isEmpty())
-            {
-               stylesheets = new LinkedHashSet<String>();
-            }
-            stylesheets.add(stylesheet);
+            properties.addValue(SCRIPT, stylesheet);
             return this;
          }
       }
@@ -412,6 +412,12 @@ public abstract class Response
    {
 
       public abstract int getStatus();
+
+      @Override
+      public <T> Resource<S> setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException
+      {
+         return (Resource<S>)super.setProperty(propertyType, propertyValue);
+      }
 
       @Override
       public String toString()

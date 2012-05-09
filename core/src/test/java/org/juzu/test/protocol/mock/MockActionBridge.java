@@ -19,7 +19,6 @@
 
 package org.juzu.test.protocol.mock;
 
-import org.juzu.PropertyType;
 import org.juzu.Response;
 import org.juzu.impl.spi.request.ActionBridge;
 import org.juzu.request.Phase;
@@ -28,7 +27,6 @@ import org.juzu.test.AbstractTestCase;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -68,7 +66,8 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
 
    public void assertRender(String expectedMethodId, Map<String, String> expectedArguments)
    {
-      Response.Update resp = new Response.Update().setProperty(RequestContext.METHOD_ID, expectedMethodId);
+      Response.Update resp = new Response.Update();
+      resp.setProperty(RequestContext.METHOD_ID, expectedMethodId);
       for (Map.Entry<String, String> entry : expectedArguments.entrySet())
       {
          resp.setParameter(entry.getKey(), entry.getValue());

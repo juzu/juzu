@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.utils.JSON;
@@ -35,6 +34,7 @@ import org.juzu.test.protocol.mock.MockApplication;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -295,6 +295,47 @@ public abstract class AbstractTestCase extends Assert
       }
       catch (NoSuchElementException expected)
       {
+      }
+   }
+
+   public static <E> void assertEquals(List<? extends E> expected, Iterable<? extends E> test)
+   {
+      int index = 0;
+      Iterator<? extends E> expectedIterator = expected.iterator();
+      Iterator<? extends E> testIterator = test.iterator();
+      while (true)
+      {
+         if (expectedIterator.hasNext())
+         {
+            if (testIterator.hasNext())
+            {
+               E expectedNext = expectedIterator.next();
+               E testNext = testIterator.next();
+               if (!Tools.safeEquals(expectedNext, testNext))
+               {
+                  throw failure("Elements at index " + index + " are not equals: " + expectedNext + "!=" + testNext);
+               }
+               else
+               {
+                  index++;
+               }
+            }
+            else
+            {
+               throw failure("Tested iterable has more elements than the expected iterable at index " + index);
+            }
+         }
+         else
+         {
+            if (testIterator.hasNext())
+            {
+               throw failure("Expected iterable has more elements than the tested iterable at index " + index);
+            }
+            else
+            {
+               break;
+            }
+         }
       }
    }
 }

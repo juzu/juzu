@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request.servlet;
 
+import org.juzu.PropertyMap;
 import org.juzu.PropertyType;
 import org.juzu.Response;
 import org.juzu.impl.inject.Scoped;
@@ -260,7 +261,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       return null;
    }
 
-   public final String renderURL(Phase phase, Map<String, String[]> parameters, Map<PropertyType<?>, ?> properties)
+   public final String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties)
    {
       StringBuilder buffer = new StringBuilder();
       buffer.append(req.getScheme());
@@ -276,7 +277,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       buffer.append("?juzu.phase=").append(phase);
       
       //
-      Object methodId = properties != null ? properties.get(RequestContext.METHOD_ID) : null;
+      String methodId = properties != null ? properties.getValue(RequestContext.METHOD_ID) : null;
       if (methodId != null)
       {
          buffer.append("&juzu.op=").append(methodId);

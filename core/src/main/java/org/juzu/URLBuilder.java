@@ -25,7 +25,6 @@ import org.juzu.impl.utils.ParameterHashMap;
 import org.juzu.impl.utils.ParameterMap;
 import org.juzu.request.RequestContext;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -77,12 +76,12 @@ public final class URLBuilder
    private ParameterMap parameterMap;
 
    /** . */
-   private Map<PropertyType<?>, Object> properties;
+   private PropertyMap properties;
 
    public URLBuilder(MimeBridge bridge, ControllerMethod method)
    {
-      HashMap<PropertyType<?>, Object> properties = new HashMap<PropertyType<?>, Object>();
-      properties.put(RequestContext.METHOD_ID, method.getId());
+      PropertyMap properties = new PropertyMap();
+      properties.setValue(RequestContext.METHOD_ID, method.getId());
       
       //
       this.bridge = bridge;
@@ -131,26 +130,12 @@ public final class URLBuilder
     */
    public <T> URLBuilder setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException
    {
-      if (propertyValue == null)
+      String invalid = bridge.checkPropertyValidity(method.getPhase(), propertyType, propertyValue);
+      if (invalid != null)
       {
-         if (properties != null)
-         {
-            properties.remove(propertyType);
-         }
+         throw new IllegalArgumentException(invalid);
       }
-      else
-      {
-         String invalid = bridge.checkPropertyValidity(method.getPhase(), propertyType, propertyValue);
-         if (invalid != null)
-         {
-            throw new IllegalArgumentException(invalid);
-         }
-         if (properties == null)
-         {
-            properties = new HashMap<PropertyType<?>, Object>();
-         }
-         properties.put(propertyType, propertyValue);
-      }
+      properties.setValue(propertyType, propertyValue);
       return this;
    }
 

@@ -19,6 +19,7 @@
 
 package org.juzu.impl.spi.request.portlet;
 
+import org.juzu.PropertyMap;
 import org.juzu.PropertyType;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
@@ -128,7 +129,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       }
    }
 
-   public String renderURL(Phase phase, Map<String, String[]> parameters, Map<PropertyType<?>, ?> properties)
+   public String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties)
    {
       BaseURL url;
       switch (phase)
@@ -153,21 +154,21 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       boolean escapeXML = false;
       if (properties != null)
       {
-         Object escapeXMLProperty = properties.get(URLBuilder.ESCAPE_XML);
+         Boolean escapeXMLProperty = properties.getValue(URLBuilder.ESCAPE_XML);
          if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty))
          {
             escapeXML = true;
          }
          
          // Handle portlet mode
-         Object portletModeProperty = properties.get(JuzuPortlet.PORTLET_MODE);
+         PortletMode portletModeProperty = properties.getValue(JuzuPortlet.PORTLET_MODE);
          if (portletModeProperty != null)
          {
             if (url instanceof PortletURL)
             {
                try
                {
-                  ((PortletURL)url).setPortletMode((PortletMode)portletModeProperty);
+                  ((PortletURL)url).setPortletMode(portletModeProperty);
                }
                catch (PortletModeException e)
                {
@@ -181,14 +182,14 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
          }
          
          // Handle window state
-         Object windowStateProperty = properties.get(JuzuPortlet.WINDOW_STATE);
+         WindowState windowStateProperty = properties.getValue(JuzuPortlet.WINDOW_STATE);
          if (windowStateProperty != null)
          {
             if (url instanceof PortletURL)
             {
                try
                {
-                  ((PortletURL)url).setWindowState((WindowState)windowStateProperty);
+                  ((PortletURL)url).setWindowState(windowStateProperty);
                }
                catch (WindowStateException e)
                {
@@ -202,10 +203,10 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
          }
 
          // Set method id
-         Object methodId = properties.get(RequestContext.METHOD_ID);
+         String methodId = properties.getValue(RequestContext.METHOD_ID);
          if (methodId != null)
          {
-            url.setParameter("juzu.op", methodId.toString());
+            url.setParameter("juzu.op", methodId);
          }
       }
 

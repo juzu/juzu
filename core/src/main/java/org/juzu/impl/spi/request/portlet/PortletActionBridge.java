@@ -66,14 +66,14 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
          }
 
          // Method id
-         Object methodId = update.getProperties().get(RenderContext.METHOD_ID);
+         String methodId = update.getProperties().getValue(RenderContext.METHOD_ID);
          if (methodId != null)
          {
-            super.response.setRenderParameter("juzu.op", methodId.toString());
+            super.response.setRenderParameter("juzu.op", methodId);
          }
 
          //
-         PortletMode portletMode = (PortletMode)update.getProperties().get(JuzuPortlet.PORTLET_MODE);
+         PortletMode portletMode = update.getProperties().getValue(JuzuPortlet.PORTLET_MODE);
          if (portletMode != null)
          {
             try
@@ -87,7 +87,7 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
          }
 
          //
-         WindowState windowState = (WindowState)update.getProperties().get(JuzuPortlet.WINDOW_STATE);
+         WindowState windowState = update.getProperties().getValue(JuzuPortlet.WINDOW_STATE);
          if (windowState != null)
          {
             try

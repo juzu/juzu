@@ -19,6 +19,7 @@
 
 package org.juzu.test.protocol.mock;
 
+import org.juzu.PropertyMap;
 import org.juzu.PropertyType;
 import org.juzu.URLBuilder;
 import org.juzu.impl.inject.Scoped;
@@ -168,6 +169,11 @@ public abstract class MockRequestBridge implements RequestBridge
 
    public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
    {
+      return _checkPropertyValidity(phase, propertyType, propertyValue);
+   }
+
+   public String _checkPropertyValidity(Phase phase, PropertyType<?> propertyType, Object propertyValue)
+   {
       if (propertyType == URLBuilder.ESCAPE_XML)
       {
          // OK
@@ -184,21 +190,22 @@ public abstract class MockRequestBridge implements RequestBridge
       }
    }
 
-   public String renderURL(Phase phase, Map<String, String[]> parameters, Map<PropertyType<?>, ?> properties)
+   public String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties)
    {
       JSON props = new JSON();
       if (properties != null)
       {
-         for (Map.Entry<PropertyType<?>, ?> entry : properties.entrySet())
+         for (PropertyType<?> property : properties)
          {
-            String valid = checkPropertyValidity(phase, (PropertyType)entry.getKey(), entry.getValue());
+            Object value = properties.getValue(property);
+            String valid = _checkPropertyValidity(phase, property, value);
             if (valid != null)
             {
                throw new IllegalArgumentException(valid);
             }
             else
             {
-               props.set(entry.getKey().getClass().getName(), entry.getValue());
+               props.set(property.getClass().getName(), value);
             }
          }
       }
