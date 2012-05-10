@@ -22,8 +22,6 @@ package org.juzu;
 import org.juzu.impl.utils.ParameterHashMap;
 import org.juzu.impl.utils.ParameterMap;
 import org.juzu.impl.utils.Tools;
-import org.juzu.io.BinaryStream;
-import org.juzu.io.CharStream;
 import org.juzu.io.Stream;
 
 import java.io.IOException;
@@ -292,7 +290,7 @@ public abstract class Response
       }
    }
 
-   public static class Render extends Content<CharStream>
+   public static class Render extends Content<Stream.Char>
    {
 
       /** Script type literal. */
@@ -335,9 +333,9 @@ public abstract class Response
       }
 
       @Override
-      public Class<CharStream> getKind()
+      public Class<Stream.Char> getKind()
       {
-         return CharStream.class;
+         return Stream.Char.class;
       }
 
       @Override
@@ -431,17 +429,17 @@ public abstract class Response
       return new Response.Redirect(location);
    }
 
-   public static Content<CharStream> content(final String content)
+   public static Content<Stream.Char> content(final String content)
    {
-      return new Content<CharStream>()
+      return new Content<Stream.Char>()
       {
          @Override
-         public Class<CharStream> getKind()
+         public Class<Stream.Char> getKind()
          {
-            return CharStream.class;
+            return Stream.Char.class;
          }
 
-         public void send(CharStream stream) throws IOException
+         public void send(Stream.Char stream) throws IOException
          {
             stream.append(content);
          }
@@ -457,7 +455,7 @@ public abstract class Response
    {
       return new Render.Base(title)
       {
-         public void send(CharStream stream) throws IOException
+         public void send(Stream.Char stream) throws IOException
          {
             if (content != null)
             {
@@ -472,17 +470,17 @@ public abstract class Response
       return ok((String)null);
    }
 
-   public static Resource<CharStream> ok(String content)
+   public static Resource<Stream.Char> ok(String content)
    {
       return status(200, content);
    }
 
-   public static Resource<BinaryStream> ok(String mimeType, InputStream content)
+   public static Resource<Stream.Binary> ok(String mimeType, InputStream content)
    {
       return status(200, mimeType, content);
    }
 
-   public static Resource<BinaryStream> ok(InputStream content)
+   public static Resource<Stream.Binary> ok(InputStream content)
    {
       return ok(null, content);
    }
@@ -492,7 +490,7 @@ public abstract class Response
       return notFound(null);
    }
 
-   public static Resource<CharStream> notFound(String content)
+   public static Resource<Stream.Char> notFound(String content)
    {
       return status(404, content);
    }
@@ -502,9 +500,9 @@ public abstract class Response
       return status(code, (String)null);
    }
 
-   public static Resource<CharStream> status(final int code, final String content)
+   public static Resource<Stream.Char> status(final int code, final String content)
    {
-      return new Resource<CharStream>()
+      return new Resource<Stream.Char>()
       {
          @Override
          public String getMimeType()
@@ -513,9 +511,9 @@ public abstract class Response
          }
 
          @Override
-         public Class<CharStream> getKind()
+         public Class<Stream.Char> getKind()
          {
-            return CharStream.class;
+            return Stream.Char.class;
          }
 
          @Override
@@ -524,7 +522,7 @@ public abstract class Response
             return code;
          }
 
-         public void send(CharStream stream) throws IOException
+         public void send(Stream.Char stream) throws IOException
          {
             if (content != null)
             {
@@ -534,19 +532,19 @@ public abstract class Response
       };
    }
 
-   public static Resource<BinaryStream> status(int code, InputStream content)
+   public static Resource<Stream.Binary> status(int code, InputStream content)
    {
       return status(code, null, content);
    }
 
-   public static Resource<BinaryStream> status(final int code, final String mimeType, final InputStream content)
+   public static Resource<Stream.Binary> status(final int code, final String mimeType, final InputStream content)
    {
-      return new Resource<BinaryStream>()
+      return new Resource<Stream.Binary>()
       {
          @Override
-         public Class<BinaryStream> getKind()
+         public Class<Stream.Binary> getKind()
          {
-            return BinaryStream.class;
+            return Stream.Binary.class;
          }
 
          @Override
@@ -562,7 +560,7 @@ public abstract class Response
          }
 
          @Override
-         public void send(BinaryStream stream) throws IOException
+         public void send(Stream.Binary stream) throws IOException
          {
             if (content != null)
             {

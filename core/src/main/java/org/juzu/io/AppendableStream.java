@@ -25,11 +25,11 @@ import java.io.IOException;
 
 
 /**
- * Implementation of the {@link CharStream} interface that uses an appendable delegate.
+ * Implementation of the {@link org.juzu.io.Stream.Char} interface that uses an appendable delegate.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> 
  */
-public class AppendableStream implements CharStream
+public class AppendableStream implements Stream.Char
 {
 
    /** . */
@@ -46,25 +46,25 @@ public class AppendableStream implements CharStream
       this.delegate = delegate;
    }
 
-   public CharStream append(char c) throws IOException
+   public Stream.Char append(char c) throws IOException
    {
       delegate.append(c);
       return this;
    }
 
-   public CharStream append(CharSequence s) throws IOException
+   public Stream.Char append(CharSequence s) throws IOException
    {
       delegate.append(s);
       return this;
    }
 
-   public CharStream append(CharSequence csq, int start, int end) throws IOException
+   public Stream.Char append(CharSequence csq, int start, int end) throws IOException
    {
       delegate.append(csq, start, end);
       return this;
    }
 
-   public CharStream append(CharArray chars) throws IOException
+   public Stream.Char append(CharArray chars) throws IOException
    {
       chars.write(delegate);
       return this;

@@ -21,7 +21,7 @@ package template.tag.simple;
 
 import org.juzu.Path;
 import org.juzu.View;
-import org.juzu.io.CharStream;
+import org.juzu.io.Stream;
 import org.juzu.template.Template;
 
 import javax.inject.Inject;
@@ -35,7 +35,7 @@ public class A
    Template index;
 
    @Inject
-   CharStream printer;
+   Stream.Char printer;
 
    @View
    public void index()

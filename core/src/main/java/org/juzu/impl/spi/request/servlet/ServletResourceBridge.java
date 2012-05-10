@@ -24,7 +24,7 @@ import org.juzu.impl.spi.request.ResourceBridge;
 import org.juzu.impl.utils.Tools;
 import org.juzu.io.AppendableStream;
 import org.juzu.io.BinaryOutputStream;
-import org.juzu.io.CharStream;
+import org.juzu.io.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,7 +64,7 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
       }
 
       // Send response
-      if (content.getKind() == CharStream.class)
+      if (content.getKind() == Stream.Char.class)
       {
          PrintWriter writer = resp.getWriter();
          try

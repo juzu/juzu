@@ -6,11 +6,11 @@ import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.utils.Tools;
+import org.juzu.io.Stream;
 import org.juzu.plugin.asset.Assets;
 import org.juzu.plugin.asset.Script;
 import org.juzu.plugin.asset.Stylesheet;
 import org.juzu.request.Phase;
-import org.juzu.io.CharStream;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -112,7 +112,7 @@ public class AssetLifeCycle extends RequestLifeCycle
                }
 
                @Override
-               public void send(CharStream stream) throws IOException
+               public void send(Stream.Char stream) throws IOException
                {
                   render.send(stream);
                }

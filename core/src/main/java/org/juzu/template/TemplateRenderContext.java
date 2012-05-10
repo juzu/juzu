@@ -21,7 +21,7 @@ package org.juzu.template;
 
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.spi.template.TemplateStub;
-import org.juzu.io.CharStream;
+import org.juzu.io.Stream;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class TemplateRenderContext
    private String title;
 
    /** . */
-   protected CharStream printer;
+   protected Stream.Char printer;
 
    /** . */
    private final TemplateStub stub;
@@ -79,7 +79,7 @@ public class TemplateRenderContext
       return locale;
    }
 
-   public CharStream getPrinter()
+   public Stream.Char getPrinter()
    {
       return printer;
    }
@@ -104,7 +104,7 @@ public class TemplateRenderContext
       return null;
    }
 
-   public void render(CharStream printer) throws IOException
+   public void render(Stream.Char printer) throws IOException
    {
       if (this.printer != null)
       {

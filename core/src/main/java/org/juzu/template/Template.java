@@ -23,9 +23,9 @@ import org.juzu.Response;
 import org.juzu.UndeclaredIOException;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.request.Request;
+import org.juzu.io.Stream;
 import org.juzu.request.MimeContext;
 import org.juzu.request.RequestContext;
-import org.juzu.io.CharStream;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -85,7 +85,7 @@ public abstract class Template
                {
                   return renderContext.getTitle();
                }
-               public void send(CharStream stream) throws IOException
+               public void send(Stream.Char stream) throws IOException
                {
                   renderContext.render(stream);
                }
@@ -119,15 +119,15 @@ public abstract class Template
       return notFound(parameters, null);
    }
 
-   public final Response.Content.Resource<CharStream> notFound(Map<String, ?> parameters, Locale locale)
+   public final Response.Content.Resource<Stream.Char> notFound(Map<String, ?> parameters, Locale locale)
    {
       final TemplateRenderContext trc = applicationContext.render(this, parameters, locale);
-      return new Response.Content.Resource<CharStream>()
+      return new Response.Content.Resource<Stream.Char>()
       {
          @Override
-         public Class<CharStream> getKind()
+         public Class<Stream.Char> getKind()
          {
-            return CharStream.class;
+            return Stream.Char.class;
          }
          @Override
          public int getStatus()
@@ -135,7 +135,7 @@ public abstract class Template
             return 404;
          }
          @Override
-         public void send(CharStream stream) throws IOException
+         public void send(Stream.Char stream) throws IOException
          {
             trc.render(stream);
          }
@@ -151,17 +151,17 @@ public abstract class Template
       return builder;
    }
 
-   public void renderTo(CharStream printer) throws TemplateExecutionException, UndeclaredIOException
+   public void renderTo(Stream.Char printer) throws TemplateExecutionException, UndeclaredIOException
    {
       renderTo(printer, Collections.<String, Object>emptyMap(), null);
    }
 
-   public void renderTo(CharStream printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException
+   public void renderTo(Stream.Char printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
       renderTo(printer, Collections.<String, Object>emptyMap(), locale);
    }
 
-   public void renderTo(CharStream printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException
+   public void renderTo(Stream.Char printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException
    {
       renderTo(printer, parameters, null);
    }
@@ -176,7 +176,7 @@ public abstract class Template
     * @throws UndeclaredIOException any io exception
     */
    public void renderTo(
-      CharStream printer,
+      Stream.Char printer,
       Map<String, ?> attributes,
       Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {

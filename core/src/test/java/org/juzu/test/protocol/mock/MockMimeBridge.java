@@ -19,16 +19,11 @@
 
 package org.juzu.test.protocol.mock;
 
-import org.juzu.PropertyType;
 import org.juzu.Response;
-import org.juzu.URLBuilder;
 import org.juzu.impl.spi.request.MimeBridge;
-import org.juzu.impl.utils.JSON;
-import org.juzu.request.Phase;
+import org.juzu.io.Stream;
 import org.juzu.io.BinaryOutputStream;
-import org.juzu.io.BinaryStream;
 import org.juzu.io.AppendableStream;
-import org.juzu.request.RequestContext;
 import org.juzu.test.AbstractTestCase;
 
 import java.io.ByteArrayOutputStream;
@@ -70,7 +65,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
       if (response instanceof Response.Content<?>)
       {
          Response.Content content = (Response.Content)response;
-         if (content.getKind() == BinaryStream.class)
+         if (content.getKind() == Stream.Binary.class)
          {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BinaryOutputStream bos = new BinaryOutputStream(baos);

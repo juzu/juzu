@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BinaryOutputStream implements BinaryStream
+public class BinaryOutputStream implements Stream.Binary
 {
 
    /** . */
@@ -15,13 +15,13 @@ public class BinaryOutputStream implements BinaryStream
       this.delegate = delegate;
    }
 
-   public BinaryStream append(byte[] data) throws IOException
+   public Stream.Binary append(byte[] data) throws IOException
    {
       delegate.write(data);
       return this;
    }
 
-   public BinaryStream append(byte[] data, int off, int len) throws IOException
+   public Stream.Binary append(byte[] data, int off, int len) throws IOException
    {
       delegate.write(data, off, len);
       return this;

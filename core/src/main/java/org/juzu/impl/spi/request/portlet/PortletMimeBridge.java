@@ -23,12 +23,11 @@ import org.juzu.PropertyMap;
 import org.juzu.PropertyType;
 import org.juzu.Response;
 import org.juzu.URLBuilder;
+import org.juzu.io.Stream;
 import org.juzu.portlet.JuzuPortlet;
 import org.juzu.request.Phase;
 import org.juzu.impl.spi.request.MimeBridge;
 import org.juzu.io.BinaryOutputStream;
-import org.juzu.io.BinaryStream;
-import org.juzu.io.CharStream;
 import org.juzu.io.AppendableStream;
 import org.juzu.request.RequestContext;
 
@@ -250,34 +249,34 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       }
       
       // Send content
-      if (content.getKind() == CharStream.class)
+      if (content.getKind() == Stream.Char.class)
       {
-         CharStream stream;
+         Stream.Char stream;
          if (buffer)
          {
             StringBuilder sb = new StringBuilder();
             stream = new AppendableStream(sb);
-            ((Response.Content<CharStream>)response).send(stream);
+            ((Response.Content<Stream.Char>)response).send(stream);
             result = sb.toString();
          }
          else
          {
-            ((Response.Content<CharStream>)response).send(new AppendableStream(this.response.getWriter()));
+            ((Response.Content<Stream.Char>)response).send(new AppendableStream(this.response.getWriter()));
          }
       }
       else
       {
-         BinaryStream stream;
+         Stream.Binary stream;
          if (buffer)
          {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             stream = new BinaryOutputStream(baos);
-            ((Response.Content<BinaryStream>)response).send(stream);
+            ((Response.Content<Stream.Binary>)response).send(stream);
             result = baos.toByteArray();
          }
          else
          {
-            ((Response.Content<BinaryStream>)response).send(new BinaryOutputStream(this.response.getPortletOutputStream()));
+            ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.response.getPortletOutputStream()));
          }
       }
    }

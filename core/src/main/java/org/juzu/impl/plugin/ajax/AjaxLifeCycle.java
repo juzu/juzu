@@ -28,8 +28,8 @@ import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.utils.Tools;
+import org.juzu.io.Stream;
 import org.juzu.request.RenderContext;
-import org.juzu.io.CharStream;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -110,7 +110,7 @@ public class AjaxLifeCycle extends RequestLifeCycle
                   return foo.getStylesheets();
                }
 
-               public void send(CharStream stream) throws IOException
+               public void send(Stream.Char stream) throws IOException
                {
 
                   // FOR NOW WE DO WITH THE METHOD NAME
