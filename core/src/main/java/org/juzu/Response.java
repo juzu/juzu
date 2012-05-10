@@ -311,19 +311,27 @@ public abstract class Response
          return (Render)super.setProperty(propertyType, propertyValue);
       }
 
+      /** Stylesheet type literal. */
+      public static class TITLE extends PropertyType<String> {}
+
+      /** Stylesheet literal instance. */
+      public static TITLE TITLE = new TITLE();
+
       public Iterator<String> getScripts()
       {
-         return Tools.emptyIterator();
+         Iterable<String> scripts = properties.getValues(SCRIPT);
+         return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
       }
 
       public Iterator<String> getStylesheets()
       {
-         return Tools.emptyIterator();
+         Iterable<String> scripts = properties.getValues(STYLESHEET);
+         return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
       }
 
       public String getTitle()
       {
-         return null;
+         return properties.getValue(TITLE);
       }
 
       @Override
@@ -347,41 +355,14 @@ public abstract class Response
       public static class Base extends Render
       {
 
-         /** . */
-         private String title;
-
-         public Base(String title)
-         {
-            this.title = title;
-         }
-
          public Base()
          {
          }
 
-         @Override
-         public String getTitle()
+         public Base title(String title)
          {
-            return title;
-         }
-
-         public void setTitle(String title)
-         {
-            this.title = title;
-         }
-
-         @Override
-         public Iterator<String> getScripts()
-         {
-            Iterable<String> scripts = properties.getValues(SCRIPT);
-            return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
-         }
-
-         @Override
-         public Iterator<String> getStylesheets()
-         {
-            Iterable<String> scripts = properties.getValues(STYLESHEET);
-            return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
+            properties.setValue(TITLE, title);
+            return this;
          }
 
          public Base addScript(String script) throws NullPointerException
@@ -453,7 +434,7 @@ public abstract class Response
 
    public static Render.Base render(final String title, final String content)
    {
-      return new Render.Base(title)
+      return new Render.Base()
       {
          public void send(Stream.Char stream) throws IOException
          {
@@ -462,7 +443,7 @@ public abstract class Response
                stream.append(content);
             }
          }
-      };
+      }.title(title);
    }
 
    public static Resource<?> ok()
