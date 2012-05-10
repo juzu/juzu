@@ -23,7 +23,9 @@ public interface Stream extends Flushable, Closeable
 
    }
 
-   /** A binary stream. */
+   /**
+    * A binary stream.
+    */
    interface Binary extends Stream
    {
 

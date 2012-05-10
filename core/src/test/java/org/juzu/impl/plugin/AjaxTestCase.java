@@ -42,6 +42,8 @@ public class AjaxTestCase extends AbstractHttpTestCase
       UserAgent ua = assertInitialPage();
       HtmlPage page = ua.getHomePage();
 
+      System.out.println("page.asText() = " + page.asText());
+
       HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
       trigger.click();
 

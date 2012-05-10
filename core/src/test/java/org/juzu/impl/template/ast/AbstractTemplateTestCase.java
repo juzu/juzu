@@ -102,7 +102,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase
    public void render(String text, Map<String, ?> attributes, Locale locale, Appendable appendable) throws IOException, TemplateExecutionException
    {
       GroovyTemplateStub template = template(text);
-      TemplateRenderContext renderContext = new TemplateRenderContext(template, attributes, locale);
+      TemplateRenderContext renderContext = new TemplateRenderContext(template, null, attributes, locale);
       renderContext.render(new AppendableStream(appendable));
    }
 }

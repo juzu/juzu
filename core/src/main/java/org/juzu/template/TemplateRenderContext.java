@@ -19,8 +19,11 @@
 
 package org.juzu.template;
 
+import org.juzu.PropertyMap;
+import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.spi.template.TemplateStub;
+import org.juzu.io.AppendableStream;
 import org.juzu.io.Stream;
 
 import java.io.IOException;
@@ -39,7 +42,7 @@ public class TemplateRenderContext
    private final Locale locale;
 
    /** . */
-   private String title;
+   private PropertyMap properties;
 
    /** . */
    protected Stream.Char printer;
@@ -54,19 +57,20 @@ public class TemplateRenderContext
 
    public TemplateRenderContext(TemplateStub stub, Map<String, ?> attributes)
    {
-      this(stub, attributes, null);
+      this(stub, null, attributes, null);
    }
 
    public TemplateRenderContext(TemplateStub stub, Locale locale)
    {
-      this(stub, Collections.<String, Object>emptyMap(), locale);
+      this(stub, null, Collections.<String, Object>emptyMap(), locale);
    }
 
-   public TemplateRenderContext(TemplateStub stub, Map<String, ?> attributes, Locale locale)
+   public TemplateRenderContext(TemplateStub stub, PropertyMap properties, Map<String, ?> attributes, Locale locale)
    {
       this.locale = locale;
       this.attributes = attributes;
       this.stub = stub;
+      this.properties = properties;
    }
 
    public Map<String, ?> getAttributes()
@@ -84,14 +88,12 @@ public class TemplateRenderContext
       return printer;
    }
 
-   public String getTitle()
-   {
-      return title;
-   }
-
    public void setTitle(String title)
    {
-      this.title = title;
+      if (properties != null)
+      {
+         properties.setValue(Response.Render.TITLE, title);
+      }
    }
 
    public TemplateStub resolveTemplate(String path)
@@ -102,6 +104,13 @@ public class TemplateRenderContext
    public Object resolveBean(String expression) throws ApplicationException
    {
       return null;
+   }
+
+   public StringBuilder render() throws IOException
+   {
+      StringBuilder buffer = new StringBuilder();
+      render(new AppendableStream(buffer));
+      return buffer;
    }
 
    public void render(Stream.Char printer) throws IOException

@@ -19,11 +19,14 @@
 
 package org.juzu.template;
 
+import org.juzu.PropertyMap;
 import org.juzu.Response;
 import org.juzu.UndeclaredIOException;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.request.Request;
+import org.juzu.io.AppendableStream;
 import org.juzu.io.Stream;
+import org.juzu.io.Streamable;
 import org.juzu.request.MimeContext;
 import org.juzu.request.RequestContext;
 
@@ -69,7 +72,7 @@ public abstract class Template
       return render(parameters, null);
    }
 
-   public Response.Render render(Map<String, ?> parameters, Locale locale) throws TemplateExecutionException, UndeclaredIOException
+   public Response.Render render(final Map<String, ?> parameters, final Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
       try
       {
@@ -77,19 +80,11 @@ public abstract class Template
          if (context instanceof MimeContext)
          {
             MimeContext mime = (MimeContext)context;
-            final TemplateRenderContext renderContext = applicationContext.render(this, parameters, locale);
-            Response.Render render = new Response.Content.Render()
-            {
-               @Override
-               public String getTitle()
-               {
-                  return renderContext.getTitle();
-               }
-               public void send(Stream.Char stream) throws IOException
-               {
-                  renderContext.render(stream);
-               }
-            };
+            PropertyMap properties = new PropertyMap();
+            TemplateRenderContext streamable = applicationContext.render(Template.this, properties, parameters, locale);
+            StringBuilder sb = new StringBuilder();
+            streamable.render(new AppendableStream(sb));
+            Response.Render render = new Response.Content.Render(properties, new Streamable.CharSequence(sb));
             mime.setResponse(render);
             return render;
          }
@@ -121,25 +116,9 @@ public abstract class Template
 
    public final Response.Content.Resource<Stream.Char> notFound(Map<String, ?> parameters, Locale locale)
    {
-      final TemplateRenderContext trc = applicationContext.render(this, parameters, locale);
-      return new Response.Content.Resource<Stream.Char>()
-      {
-         @Override
-         public Class<Stream.Char> getKind()
-         {
-            return Stream.Char.class;
-         }
-         @Override
-         public int getStatus()
-         {
-            return 404;
-         }
-         @Override
-         public void send(Stream.Char stream) throws IOException
-         {
-            trc.render(stream);
-         }
-      };
+      StringBuilder sb = new StringBuilder();
+      renderTo(new AppendableStream(sb), parameters, locale);
+      return Response.status(404, sb.toString());
    }
 
    public abstract Builder with();
@@ -170,14 +149,14 @@ public abstract class Template
     * Renders the template.
     *
     * @param printer the printer
-    * @param attributes the attributes
+    * @param parameters the attributes
     * @param locale the locale
     * @throws TemplateExecutionException any execution exception
     * @throws UndeclaredIOException any io exception
     */
    public void renderTo(
       Stream.Char printer,
-      Map<String, ?> attributes,
+      Map<String, ?> parameters,
       Locale locale) throws TemplateExecutionException, UndeclaredIOException
    {
       if (printer == null)
@@ -186,7 +165,7 @@ public abstract class Template
       }
       try
       {
-         TemplateRenderContext trc = applicationContext.render(this, attributes, locale);
+         TemplateRenderContext trc = applicationContext.render(this, null, parameters, locale);
          trc.render(printer);
       }
       catch (IOException e)

@@ -19,6 +19,7 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.PropertyMap;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.descriptor.ControllerMethodResolver;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
@@ -249,19 +250,17 @@ public class ApplicationContext
       }
    }
 
-   public TemplateRenderContext render(final Template template, final Map<String, ?> parameters, final Locale locale)
+   public TemplateRenderContext render(Template template, PropertyMap properties, Map<String, ?> parameters, Locale locale)
    {
       //
       TemplateStub stub = resolveTemplateStub(template.getPath());
 
       //
-      ApplicationTemplateRenderContext context = new ApplicationTemplateRenderContext(
+      return new ApplicationTemplateRenderContext(
          ApplicationContext.this,
+         properties,
          stub,
          parameters,
          locale);
-
-      //
-      return context;
    }
 }

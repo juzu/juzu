@@ -23,6 +23,7 @@ import org.juzu.impl.utils.ParameterHashMap;
 import org.juzu.impl.utils.ParameterMap;
 import org.juzu.impl.utils.Tools;
 import org.juzu.io.Stream;
+import org.juzu.io.Streamable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -125,7 +126,17 @@ public abstract class Response
 {
 
    /** . */
-   protected final PropertyMap properties = new PropertyMap();
+   protected final PropertyMap properties;
+
+   protected Response()
+   {
+      this.properties = new PropertyMap();
+   }
+
+   protected Response(PropertyMap properties)
+   {
+      this.properties = properties;
+   }
 
    /**
     * Set a property, if the value is null, the property is removed.
@@ -142,6 +153,11 @@ public abstract class Response
       }
       properties.setValue(propertyType, propertyValue);
       return this;
+   }
+
+   public final PropertyMap getProperties()
+   {
+      return properties;
    }
 
    /**
@@ -179,11 +195,6 @@ public abstract class Response
       public Map<String, String[]> getParameters()
       {
          return parameterMap;
-      }
-
-      public PropertyMap getProperties()
-      {
-         return properties;
       }
 
       @Override
@@ -261,15 +272,70 @@ public abstract class Response
       }
    }
 
-   public static abstract class Content<S extends Stream> extends Response
+   public static class Content<S extends Stream> extends Response
    {
-      
-      public abstract Class<S> getKind();
-      
+
+      /** Mime type type literal. */
+      public static class MIME_TYPE extends PropertyType<String> {}
+
+      /** Mime type literal instance. */
+      public static MIME_TYPE MIME_TYPE = new MIME_TYPE();
+
+      /** . */
+      private final Class<S> kind;
+
+      /** . */
+      private Streamable<S> streamable;
+
+      protected Content(Class<S> kind)
+      {
+         this.kind = kind;
+         this.streamable = null;
+      }
+
+      protected Content(Class<S> kind, PropertyMap properties)
+      {
+         super(properties);
+
+         //
+         this.kind = kind;
+         this.streamable = null;
+      }
+
+      protected Content(Class<S> kind, Streamable<S> streamable)
+      {
+         this.kind = kind;
+         this.streamable = streamable;
+      }
+
+      protected Content(Class<S> kind, PropertyMap properties, Streamable<S> streamable)
+      {
+         super(properties);
+
+         //
+         this.kind = kind;
+         this.streamable = streamable;
+      }
+
+      public Class<S> getKind()
+      {
+         return kind;
+      }
+
+      public Streamable<S> getStreamable()
+      {
+         return streamable;
+      }
+
       public String getMimeType()
       {
-         // No specific mime type yet
-         return null;
+         return properties.getValue(MIME_TYPE);
+      }
+
+      public Content<S> withMimeType(String mimeType)
+      {
+         properties.setValue(MIME_TYPE, mimeType);
+         return this;
       }
 
       @Override
@@ -286,7 +352,7 @@ public abstract class Response
        */
       public void send(S stream) throws IOException
       {
-         // Do nothing
+         streamable.send(stream);
       }
    }
 
@@ -317,10 +383,46 @@ public abstract class Response
       /** Stylesheet literal instance. */
       public static TITLE TITLE = new TITLE();
 
+      public Render()
+      {
+         super(Stream.Char.class);
+      }
+
+      public Render(PropertyMap properties, Streamable<Stream.Char> streamable)
+      {
+         super(Stream.Char.class, properties, streamable);
+      }
+
+      public Render(Streamable<Stream.Char> streamable)
+      {
+         super(Stream.Char.class, streamable);
+      }
+
+      public String getTitle()
+      {
+         return properties.getValue(TITLE);
+      }
+
+      public Render withTitle(String title)
+      {
+         properties.setValue(TITLE, title);
+         return this;
+      }
+
       public Iterator<String> getScripts()
       {
          Iterable<String> scripts = properties.getValues(SCRIPT);
          return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
+      }
+
+      public Render addScript(String script) throws NullPointerException
+      {
+         if (script == null)
+         {
+            throw new NullPointerException("No null script accepted");
+         }
+         properties.addValue(SCRIPT, script);
+         return this;
       }
 
       public Iterator<String> getStylesheets()
@@ -329,21 +431,14 @@ public abstract class Response
          return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
       }
 
-      public String getTitle()
+      public Render addStylesheet(String stylesheet) throws NullPointerException
       {
-         return properties.getValue(TITLE);
-      }
-
-      @Override
-      public String getMimeType()
-      {
-         return "text/html";
-      }
-
-      @Override
-      public Class<Stream.Char> getKind()
-      {
-         return Stream.Char.class;
+         if (stylesheet == null)
+         {
+            throw new NullPointerException("No null stylesheet accepted");
+         }
+         properties.addValue(SCRIPT, stylesheet);
+         return this;
       }
 
       @Override
@@ -351,46 +446,43 @@ public abstract class Response
       {
          return "Response.Render[]";
       }
-
-      public static class Base extends Render
-      {
-
-         public Base()
-         {
-         }
-
-         public Base title(String title)
-         {
-            properties.setValue(TITLE, title);
-            return this;
-         }
-
-         public Base addScript(String script) throws NullPointerException
-         {
-            if (script == null)
-            {
-               throw new NullPointerException("No null script accepted");
-            }
-            properties.addValue(SCRIPT, script);
-            return this;
-         }
-
-         public Base addStylesheet(String stylesheet) throws NullPointerException
-         {
-            if (stylesheet == null)
-            {
-               throw new NullPointerException("No null stylesheet accepted");
-            }
-            properties.addValue(SCRIPT, stylesheet);
-            return this;
-         }
-      }
    }
 
-   public static abstract class Resource<S extends Stream> extends Content<S>
+   public static class Resource<S extends Stream> extends Content<S>
    {
 
-      public abstract int getStatus();
+      /** Mime type type literal. */
+      public static class STATUS extends PropertyType<Integer> {}
+
+      /** Mime type literal instance. */
+      public static STATUS STATUS = new STATUS();
+
+      public Resource(Class<S> kind)
+      {
+         super(kind);
+      }
+
+      public Resource(Class<S> kind, Streamable<S> streamable)
+      {
+         super(kind, streamable);
+      }
+
+      public Integer getStatus()
+      {
+         return properties.getValue(STATUS);
+      }
+
+      public Resource<S> withStatus(int status)
+      {
+         properties.setValue(STATUS, status);
+         return this;
+      }
+
+      @Override
+      public Resource<S> withMimeType(String mimeType)
+      {
+         return (Resource<S>)super.withMimeType(mimeType);
+      }
 
       @Override
       public <T> Resource<S> setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException
@@ -410,40 +502,19 @@ public abstract class Response
       return new Response.Redirect(location);
    }
 
-   public static Content<Stream.Char> content(final String content)
+   public static Content<Stream.Char> content(CharSequence content)
    {
-      return new Content<Stream.Char>()
-      {
-         @Override
-         public Class<Stream.Char> getKind()
-         {
-            return Stream.Char.class;
-         }
-
-         public void send(Stream.Char stream) throws IOException
-         {
-            stream.append(content);
-         }
-      };
+      return new Content<Stream.Char>(Stream.Char.class, new Streamable.CharSequence(content));
    }
 
-   public static Render.Base render(String content)
+   public static Render render(CharSequence content)
    {
       return render(null, content);
    }
 
-   public static Render.Base render(final String title, final String content)
+   public static Render render(String title, CharSequence content)
    {
-      return new Render.Base()
-      {
-         public void send(Stream.Char stream) throws IOException
-         {
-            if (content != null)
-            {
-               stream.append(content);
-            }
-         }
-      }.title(title);
+      return new Render(new Streamable.CharSequence(content)).withTitle(title);
    }
 
    public static Resource<?> ok()
@@ -451,7 +522,7 @@ public abstract class Response
       return ok((String)null);
    }
 
-   public static Resource<Stream.Char> ok(String content)
+   public static Resource<Stream.Char> ok(CharSequence content)
    {
       return status(200, content);
    }
@@ -471,7 +542,7 @@ public abstract class Response
       return notFound(null);
    }
 
-   public static Resource<Stream.Char> notFound(String content)
+   public static Resource<Stream.Char> notFound(CharSequence content)
    {
       return status(404, content);
    }
@@ -481,36 +552,14 @@ public abstract class Response
       return status(code, (String)null);
    }
 
-   public static Resource<Stream.Char> status(final int code, final String content)
+   public static Resource<Stream.Char> status(int code, CharSequence content)
    {
-      return new Resource<Stream.Char>()
-      {
-         @Override
-         public String getMimeType()
-         {
-            return "text/html";
-         }
+      return status(code, new Streamable.CharSequence(content));
+   }
 
-         @Override
-         public Class<Stream.Char> getKind()
-         {
-            return Stream.Char.class;
-         }
-
-         @Override
-         public int getStatus()
-         {
-            return code;
-         }
-
-         public void send(Stream.Char stream) throws IOException
-         {
-            if (content != null)
-            {
-               stream.append(content);
-            }
-         }
-      };
+   public static Resource<Stream.Char> status(int code, Streamable<Stream.Char> content)
+   {
+      return new Resource<Stream.Char>(Stream.Char.class, content).withStatus(code).withMimeType("text/html");
    }
 
    public static Resource<Stream.Binary> status(int code, InputStream content)
@@ -518,40 +567,8 @@ public abstract class Response
       return status(code, null, content);
    }
 
-   public static Resource<Stream.Binary> status(final int code, final String mimeType, final InputStream content)
+   public static Resource<Stream.Binary> status(int code, String mimeType, InputStream content)
    {
-      return new Resource<Stream.Binary>()
-      {
-         @Override
-         public Class<Stream.Binary> getKind()
-         {
-            return Stream.Binary.class;
-         }
-
-         @Override
-         public String getMimeType()
-         {
-            return mimeType;
-         }
-
-         @Override
-         public int getStatus()
-         {
-            return code;
-         }
-
-         @Override
-         public void send(Stream.Binary stream) throws IOException
-         {
-            if (content != null)
-            {
-               byte[] buffer = new byte[256];
-               for (int l;(l = content.read(buffer)) != -1;)
-               {
-                  stream.append(buffer, 0, l);
-               }
-            }
-         }
-      };
+      return new Resource<Stream.Binary>(Stream.Binary.class, new Streamable.InputStream(content)).withStatus(code).withMimeType(mimeType);
    }
 }

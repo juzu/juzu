@@ -1,20 +1,17 @@
 package org.juzu.impl.plugin.asset;
 
+import org.juzu.PropertyMap;
 import org.juzu.Response;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
-import org.juzu.impl.utils.Tools;
-import org.juzu.io.Stream;
 import org.juzu.plugin.asset.Assets;
 import org.juzu.plugin.asset.Script;
 import org.juzu.plugin.asset.Stylesheet;
 import org.juzu.request.Phase;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetLifeCycle extends RequestLifeCycle
@@ -87,39 +84,15 @@ public class AssetLifeCycle extends RequestLifeCycle
          Response response = request.getResponse();
          if (response instanceof Response.Render && (scripts.length > 0 || stylesheets.length > 0))
          {
-            final Response.Render render = (Response.Render)response;
+            Response.Render render = (Response.Render)response;
 
-            //
-            Response.Render assetRender = new Response.Render()
-            {
+            // Add assets
+            PropertyMap properties = new PropertyMap(render.getProperties());
+            properties.addValues(Response.Render.SCRIPT, scripts);
+            properties.addValues(Response.Render.STYLESHEET, stylesheets);
 
-               @Override
-               public Iterator<String> getScripts()
-               {
-                  return Tools.append(render.getScripts(), scripts);
-               }
-
-               @Override
-               public Iterator<String> getStylesheets()
-               {
-                  return Tools.append(render.getStylesheets(), stylesheets);
-               }
-
-               @Override
-               public String getTitle()
-               {
-                  return render.getTitle();
-               }
-
-               @Override
-               public void send(Stream.Char stream) throws IOException
-               {
-                  render.send(stream);
-               }
-            };
-
-            // Use our response
-            request.setResponse(assetRender);
+            // Use a new response
+            request.setResponse(new Response.Render(properties, render.getStreamable()));
          }
       }
    }

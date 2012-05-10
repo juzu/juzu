@@ -19,6 +19,7 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.PropertyMap;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.template.TemplateRenderContext;
 
@@ -32,9 +33,9 @@ public class ApplicationTemplateRenderContext extends TemplateRenderContext
    /** . */
    private final ApplicationContext applicationContext;
 
-   public ApplicationTemplateRenderContext(ApplicationContext applicationContext, TemplateStub stub, Map<String, ?> attributes, Locale locale)
+   public ApplicationTemplateRenderContext(ApplicationContext applicationContext, PropertyMap properties, TemplateStub stub, Map<String, ?> attributes, Locale locale)
    {
-      super(stub, attributes, locale);
+      super(stub, properties, attributes, locale);
 
       //
       this.applicationContext = applicationContext;
