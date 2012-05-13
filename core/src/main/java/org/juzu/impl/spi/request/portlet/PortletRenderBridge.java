@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
+import org.juzu.impl.asset.Asset;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.w3c.dom.Element;
@@ -28,15 +29,14 @@ import javax.portlet.MimeResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
-import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
 {
 
-   public PortletRenderBridge(RenderRequest request, RenderResponse response, boolean buffer) throws IOException
+   public PortletRenderBridge(PortletBridgeContext context, RenderRequest request, RenderResponse response, boolean buffer)
    {
-      super(request, response, buffer);
+      super(context, request, response, buffer);
    }
 
    public void setTitle(String title)
@@ -45,10 +45,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
    }
 
    @Override
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
-      super.setResponse(response);
-
       // Improve that because it will not work on streaming portals...
       // for now it's OK
       if (response instanceof Response.Content.Render)
@@ -58,12 +56,14 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
          // For now only in gatein since liferay won't support it very well
          if (request.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container"))
          {
-            Iterator<String> stylesheets = render.getStylesheets();
-            while (stylesheets.hasNext())
+            Iterable<Asset> scripts = context.assetManager.resolveAssets(render.getScripts());
+            Iterable<Asset> stylesheets = context.assetManager.resolveAssets(render.getStylesheets());
+
+            //
+            for (Asset stylesheet : stylesheets)
             {
-               String stylesheet = stylesheets.next();
-               int pos = stylesheet.lastIndexOf('.');
-               String ext = pos == -1 ? "css" : stylesheet.substring(pos + 1);
+               int pos = stylesheet.getValue().lastIndexOf('.');
+               String ext = pos == -1 ? "css" : stylesheet.getValue().substring(pos + 1);
                Element elt = this.response.createElement("link");
                elt.setAttribute("media", "screen");
                elt.setAttribute("rel", "stylesheet");
@@ -72,13 +72,13 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
                this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
             }
 
-            Iterator<String> scripts = render.getScripts();
-            while (scripts.hasNext())
+            //
+            for (Asset script : scripts)
             {
-               String script = scripts.next();
+               String url = getAssetURL(script);
                Element elt = this.response.createElement("script");
                elt.setAttribute("type", "text/javascript");
-               elt.setAttribute("src", getAssetURL(script));
+               elt.setAttribute("src", url);
                this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
             }
          }
@@ -89,6 +89,24 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
          {
             setTitle(title);
          }
+      }
+
+      //
+      super.end(response);
+   }
+
+   private String getAssetURL(Asset asset)
+   {
+      switch (asset.getLocation())
+      {
+         case CLASSPATH:
+            return request.getContextPath() + "/assets" + asset.getValue();
+         case SERVER:
+            return request.getContextPath() + asset.getValue();
+         case EXTERNAL:
+            return asset.getValue();
+         default:
+            throw new AssertionError();
       }
    }
    

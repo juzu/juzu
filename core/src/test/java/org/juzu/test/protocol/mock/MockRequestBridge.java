@@ -24,6 +24,7 @@ import org.juzu.PropertyType;
 import org.juzu.URLBuilder;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopedContext;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Tools;
@@ -216,5 +217,9 @@ public abstract class MockRequestBridge implements RequestBridge
       url.map("parameters", parameters);
       url.set("properties", props);
       return url.toString();
+   }
+
+   public void begin(Request request)
+   {
    }
 }

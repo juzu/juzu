@@ -55,7 +55,7 @@ public class A extends Controller
 
          "<a id='trigger' href='#'>click</a>\n" +
          "<a id='trigger2' href='#'>click</a>";
-      return Response.render(content).addScript(renderContext.getHttpContext().getContextPath() + "/jquery.js");
+      return Response.render(content);
    }
 
    @Ajax

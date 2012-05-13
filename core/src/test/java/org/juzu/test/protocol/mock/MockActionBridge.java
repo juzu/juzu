@@ -98,7 +98,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge
       }
    }
 
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
       if (this.response != null)
       {

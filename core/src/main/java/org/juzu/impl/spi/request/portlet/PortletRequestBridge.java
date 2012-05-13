@@ -22,6 +22,7 @@ package org.juzu.impl.spi.request.portlet;
 import org.juzu.PropertyType;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.inject.Scoped;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.portlet.JuzuPortlet;
 import org.juzu.request.HttpContext;
@@ -29,7 +30,6 @@ import org.juzu.request.RequestContext;
 import org.juzu.request.SecurityContext;
 import org.juzu.request.WindowContext;
 
-import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
@@ -40,6 +40,9 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge
 {
+
+   /** . */
+   protected final PortletBridgeContext context;
 
    /** . */
    protected final Rq request;
@@ -62,7 +65,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
    /** . */
    protected final PortletWindowContext windowContext;
 
-   PortletRequestBridge(Rq request, Rs response)
+   PortletRequestBridge(PortletBridgeContext context, Rq request, Rs response)
    {
       String methodId = null;
       Map<String, String[]> parameters = new HashMap<String, String[]>(request.getParameterMap());
@@ -81,6 +84,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       }
 
       //
+      this.context = context;
       this.request = request;
       this.response = response;
       this.methodId = methodId;
@@ -250,5 +254,9 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
          }
       }
       return context;
+   }
+
+   public void begin(Request request)
+   {
    }
 }

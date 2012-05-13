@@ -22,6 +22,7 @@ package org.juzu.impl.spi.request;
 import org.juzu.PropertyType;
 import org.juzu.Response;
 import org.juzu.impl.inject.Scoped;
+import org.juzu.impl.request.Request;
 import org.juzu.request.HttpContext;
 import org.juzu.request.SecurityContext;
 import org.juzu.request.WindowContext;
@@ -64,5 +65,17 @@ public interface RequestBridge
    
    WindowContext getWindowContext();
 
-   void setResponse(Response response) throws IllegalStateException, IOException;
+   /**
+    * End the request with the specified response. The response argument may be null if no response
+    * was explictly provided by the application.
+    *
+    * @param response the response
+    * @throws IllegalArgumentException if the response cannot be honoured
+    * @throws IllegalStateException if the request bridge is already associated with a response
+    * @throws IOException any io exception
+    */
+   void end(Response response) throws IllegalArgumentException, IllegalStateException, IOException;
+
+   void begin(Request request);
+
 }

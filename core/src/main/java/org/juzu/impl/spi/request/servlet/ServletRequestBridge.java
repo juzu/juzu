@@ -21,9 +21,9 @@ package org.juzu.impl.spi.request.servlet;
 
 import org.juzu.PropertyMap;
 import org.juzu.PropertyType;
-import org.juzu.Response;
 import org.juzu.impl.inject.Scoped;
 import org.juzu.impl.inject.ScopedContext;
+import org.juzu.impl.request.Request;
 import org.juzu.impl.spi.request.RequestBridge;
 import org.juzu.request.HttpContext;
 import org.juzu.request.Phase;
@@ -35,52 +35,16 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext
 {
-   
-   public static ServletRequestBridge create(HttpServletRequest req, HttpServletResponse resp)
-   {
-      Phase phase = Phase.RENDER;
-      Map<String, String[]> parameters = new HashMap<String, String[]>();
-      String methodId = null;
-      for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet())
-      {
-         String name = entry.getKey();
-         String[] value = entry.getValue();
-         if (name.equals("juzu.phase"))
-         {
-            phase = Phase.valueOf(value[0]);
-         }
-         else if (name.equals("juzu.op"))
-         {
-            methodId = value[0];
-         }
-         else
-         {
-            parameters.put(name, value);
-         }
-      }
-      
-      //
-      switch (phase)
-      {
-         case RENDER:
-            return new ServletRenderBridge(req, resp, methodId, parameters);
-         case ACTION:
-            return new ServletActionBridge(req, resp, methodId, parameters);
-         case RESOURCE:
-            return new ServletResourceBridge(req, resp, methodId, parameters);
-         default:
-            throw new UnsupportedOperationException("todo");
-      }
-   }
+
+   /** . */
+   final ServletBridgeContext context;
 
    /** . */
    final HttpServletRequest req;
@@ -94,16 +58,22 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
    /** . */
    final String methodId;
 
+   /** . */
+   private Request request;
+
    ServletRequestBridge(
+      ServletBridgeContext context,
       HttpServletRequest req, 
       HttpServletResponse resp, 
       String methodId,
       Map<String, String[]> parameters)
    {
+      this.context = context;
       this.req = req;
       this.resp = resp;
       this.methodId = methodId;
       this.parameters = parameters;
+      this.request = null;
    }
    
    //
@@ -250,11 +220,6 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
    {
    }
 
-   public void setResponse(Response response) throws IllegalStateException, IOException
-   {
-      throw new UnsupportedOperationException("todo");
-   }
-
    public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
    {
       // For now we don't validate anything
@@ -352,5 +317,15 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
          }
       }
       return context;
+   }
+
+   protected final Request getRequest()
+   {
+      return request;
+   }
+
+   public final void begin(Request request)
+   {
+      this.request = request;
    }
 }

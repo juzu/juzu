@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.juzu.impl.plugin;
+package org.juzu.impl.plugin.asset;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -32,19 +32,19 @@ import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetTestCase extends AbstractHttpTestCase
+public class ServerLocationTestCase extends AbstractHttpTestCase
 {
 
    @Test
-   public void testAjaxResource() throws Exception
+   public void testSatisfied() throws Exception
    {
-      MockApplication<?> app = assertDeploy("plugin", "asset");
+      MockApplication<?> app = assertDeploy("plugin", "asset", "location", "server");
 
       //
       UserAgent ua = assertInitialPage();
       HtmlPage page = ua.getHomePage();
 
-      // Ajax
+      // Script
       HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
       trigger.click();
       List<String> alerts = ua.getAlerts(page);

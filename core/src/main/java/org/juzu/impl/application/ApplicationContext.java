@@ -20,6 +20,7 @@
 package org.juzu.impl.application;
 
 import org.juzu.PropertyMap;
+import org.juzu.UndeclaredIOException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.controller.descriptor.ControllerMethodResolver;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
@@ -41,6 +42,7 @@ import org.juzu.template.TemplateRenderContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +88,11 @@ public class ApplicationContext
          plugins.add(plugin);
       }
       return plugins;
+   }
+
+   public String getName()
+   {
+      return descriptor.getName();
    }
 
    public List<RequestLifeCycle> getPlugins()
@@ -190,7 +197,16 @@ public class ApplicationContext
          ClassLoader classLoader = injectManager.getClassLoader();
          Thread.currentThread().setContextClassLoader(classLoader);
          ScopeController.begin(request);
+         bridge.begin(request);
          request.invoke();
+         try
+         {
+            bridge.end(request.getResponse());
+         }
+         catch (IOException e)
+         {
+            throw new UndeclaredIOException(e);
+         }
       }
       finally
       {

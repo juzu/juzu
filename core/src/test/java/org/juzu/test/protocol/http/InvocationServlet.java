@@ -19,10 +19,14 @@
 
 package org.juzu.test.protocol.http;
 
+import org.juzu.asset.AssetType;
 import org.juzu.impl.application.ApplicationContext;
+import org.juzu.impl.asset.ManagerQualifier;
 import org.juzu.impl.asset.Registration;
 import org.juzu.impl.asset.Router;
 import org.juzu.impl.asset.Server;
+import org.juzu.impl.asset.AssetManager;
+import org.juzu.impl.spi.request.servlet.ServletBridgeContext;
 import org.juzu.impl.spi.request.servlet.ServletRequestBridge;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
@@ -82,6 +86,9 @@ public class InvocationServlet extends HttpServlet
    /** . */
    private MockApplication<?> application;
 
+   /** . */
+   private ServletBridgeContext bridge;
+
    @Override
    public void init() throws ServletException
    {
@@ -97,11 +104,24 @@ public class InvocationServlet extends HttpServlet
          application.bindBean(Router.class, Collections.<Annotation>singleton(Server.APPLICATION), app.getRoute());
          application.bindBean(Router.class, Collections.<Annotation>singleton(Server.PLUGIN), server.getPluginRouter());
 
+         // Bind the asset manager
+         AssetManager scriptManager = new AssetManager(AssetType.SCRIPT);
+         application.bindBean(
+            AssetManager.class,
+            Collections.<Annotation>singleton(new ManagerQualifier(AssetType.SCRIPT)),
+            scriptManager);
+         AssetManager stylesheetManager = new AssetManager(AssetType.STYLESHEET);
+         application.bindBean(
+            AssetManager.class,
+            Collections.<Annotation>singleton(new ManagerQualifier(AssetType.STYLESHEET)),
+            stylesheetManager);
+
          //
          application.init();
 
          //
          this.application = application;
+         this.bridge = new ServletBridgeContext(application.getContext(), scriptManager, stylesheetManager, log);
       }
       catch (Exception e)
       {
@@ -118,26 +138,47 @@ public class InvocationServlet extends HttpServlet
    @Override
    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
-      String s = req.getRequestURI().substring(req.getContextPath().length());
-      if (s.endsWith(".js"))
+      String path = req.getRequestURI().substring(req.getContextPath().length());
+      String contentType;
+      if (path.endsWith(".js"))
       {
-         resp.setContentType("text/javascript");
-         OutputStream out = resp.getOutputStream();
-         InputStream in = getServletContext().getResourceAsStream(s);
-         Tools.copy(in, out);
+         contentType = "text/javascript";
       }
-      else if (s.endsWith(".css"))
+      else if (path.endsWith(".css"))
       {
-         resp.setContentType("text/css");
-         OutputStream out = resp.getOutputStream();
-         InputStream in = getServletContext().getResourceAsStream(s);
-         Tools.copy(in, out);
+         contentType = "text/css";
       }
       else
       {
-         ServletRequestBridge bridge = ServletRequestBridge.create(req, resp);
+         contentType = null;
+      }
+      if (contentType != null)
+      {
+         InputStream in;
+         if (bridge.getScriptManager().isClassPath(path))
+         {
+            in = application.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+         }
+         else
+         {
+            in = getServletContext().getResourceAsStream(path);
+         }
+         if (in != null)
+         {
+            resp.setContentType(contentType);
+            OutputStream out = resp.getOutputStream();
+            Tools.copy(in, out);
+         }
+         else
+         {
+            resp.sendError(404, "Path " + path + " could not be resolved");
+         }
+      }
+      else
+      {
+         ServletRequestBridge requestBridge = bridge.create(req, resp);
          ApplicationContext context = application.getContext();
-         context.invoke(bridge);
+         context.invoke(requestBridge);
       }
    }
 }

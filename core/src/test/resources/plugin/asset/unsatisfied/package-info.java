@@ -17,21 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package http.resource;
+@Application()
+@Assets(scripts = @Script(id="jquery",src = "/jquery.js", depends = "foo"))
+package plugin.asset.unsatisfied;
 
-import org.juzu.Response;
-import org.juzu.View;
-
-/** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
-public class A
-{
-   
-   @View
-   public Response.Content index(String p)
-   {
-      return Response.render("foo")
-          .addScript("/assets/jquery-1.7.1.js")
-          .addStylesheet("/assets/main.css")
-          .addStylesheet("/assets/main.less");
-   }
-}
+import org.juzu.Application;
+import org.juzu.plugin.asset.Assets;
+import org.juzu.plugin.asset.Script;

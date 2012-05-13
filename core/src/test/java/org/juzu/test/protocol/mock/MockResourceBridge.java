@@ -54,9 +54,9 @@ public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
    }
 
    @Override
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
-      super.setResponse(response);
+      super.end(response);
       
       //
       if (response instanceof Response.Content.Resource)

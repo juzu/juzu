@@ -48,9 +48,9 @@ public class MockRenderBridge extends MockMimeBridge implements RenderBridge
    }
 
    @Override
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
-      super.setResponse(response);
+      super.end(response);
       
       //
       if (response instanceof Response.Content.Render)

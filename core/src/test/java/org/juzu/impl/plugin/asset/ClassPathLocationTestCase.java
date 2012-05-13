@@ -17,42 +17,35 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package http.ajax;
+package org.juzu.impl.plugin.asset;
 
-import org.juzu.Controller;
-import org.juzu.Resource;
-import org.juzu.Response;
-import org.juzu.View;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.junit.Test;
+import org.juzu.test.AbstractHttpTestCase;
+import org.juzu.test.UserAgent;
+import org.juzu.test.protocol.mock.MockApplication;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
+public class ClassPathLocationTestCase extends AbstractHttpTestCase
 {
-   
-   @View
-   public Response.Content index(String p)
+
+   @Test
+   public void testSatisfied() throws Exception
    {
-      String content =
-         "<script>\n" +
-         "$(function() {\n" +
-         "  $('#trigger').click(function() {\n" +
-         "    $.ajax({\n" +
-         "      url:'" + A_.resourceURL() + "',\n" +
-         "      async: false,\n" +
-         "      success: function(html) {\n" +
-         "        $('#foo').html(html);\n" +
-         "      }\n" +
-         "    });\n" +
-         "  });\n" +
-         "});\n" +
-         "</script>\n" +
-         "<a id='trigger' href='#'>click</a>\n" +
-         "<div id='foo'>foo</div>";
-      return Response.render(content).addScript("/jquery.js");
-   }
-   
-   @Resource 
-   public Response.Content.Resource resource()
-   {
-      return Response.ok("bar");
+      MockApplication<?> app = assertDeploy("plugin", "asset", "location", "classpath");
+
+      //
+      UserAgent ua = assertInitialPage();
+      HtmlPage page = ua.getHomePage();
+
+      // Script
+      HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
+      trigger.click();
+      List<String> alerts = ua.getAlerts(page);
+      assertEquals(Arrays.asList("OK MEN"), alerts);
    }
 }

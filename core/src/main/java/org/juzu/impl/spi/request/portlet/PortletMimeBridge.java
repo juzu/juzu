@@ -58,9 +58,9 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
    /** . */
    private final boolean buffer;
 
-   PortletMimeBridge(Rq request, Rs response, boolean buffer) throws IOException
+   PortletMimeBridge(PortletBridgeContext context, Rq request, Rs response, boolean buffer)
    {
-      super(request, response);
+      super(context, request, response);
 
       //
       this.buffer = buffer;
@@ -230,53 +230,56 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       }
    }
 
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
-      Response.Content content = (Response.Content)response;
-      
-      //
-      String mimeType = content.getMimeType();
-      if (mimeType != null)
+      if (response instanceof Response.Content<?>)
       {
-         if (buffer)
+         Response.Content<?> content = (Response.Content<?>)response;
+
+         //
+         String mimeType = content.getMimeType();
+         if (mimeType != null)
          {
-            this.mimeType = mimeType;
+            if (buffer)
+            {
+               this.mimeType = mimeType;
+            }
+            else
+            {
+               this.response.setContentType(mimeType);
+            }
+         }
+
+         // Send content
+         if (content.getKind() == Stream.Char.class)
+         {
+            Stream.Char stream;
+            if (buffer)
+            {
+               StringBuilder sb = new StringBuilder();
+               stream = new AppendableStream(sb);
+               ((Response.Content<Stream.Char>)response).send(stream);
+               result = sb.toString();
+            }
+            else
+            {
+               ((Response.Content<Stream.Char>)response).send(new AppendableStream(this.response.getWriter()));
+            }
          }
          else
          {
-            this.response.setContentType(mimeType);
-         }
-      }
-      
-      // Send content
-      if (content.getKind() == Stream.Char.class)
-      {
-         Stream.Char stream;
-         if (buffer)
-         {
-            StringBuilder sb = new StringBuilder();
-            stream = new AppendableStream(sb);
-            ((Response.Content<Stream.Char>)response).send(stream);
-            result = sb.toString();
-         }
-         else
-         {
-            ((Response.Content<Stream.Char>)response).send(new AppendableStream(this.response.getWriter()));
-         }
-      }
-      else
-      {
-         Stream.Binary stream;
-         if (buffer)
-         {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            stream = new BinaryOutputStream(baos);
-            ((Response.Content<Stream.Binary>)response).send(stream);
-            result = baos.toByteArray();
-         }
-         else
-         {
-            ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.response.getPortletOutputStream()));
+            Stream.Binary stream;
+            if (buffer)
+            {
+               ByteArrayOutputStream baos = new ByteArrayOutputStream();
+               stream = new BinaryOutputStream(baos);
+               ((Response.Content<Stream.Binary>)response).send(stream);
+               result = baos.toByteArray();
+            }
+            else
+            {
+               ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.response.getPortletOutputStream()));
+            }
          }
       }
    }

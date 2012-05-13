@@ -40,15 +40,15 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
    /** . */
    private boolean done;
 
-   public PortletActionBridge(ActionRequest actionRequest, ActionResponse actionResponse)
+   public PortletActionBridge(PortletBridgeContext context, ActionRequest actionRequest, ActionResponse actionResponse)
    {
-      super(actionRequest, actionResponse);
+      super(context, actionRequest, actionResponse);
 
       //
       this.done = false;
    }
 
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
       if (done)
       {

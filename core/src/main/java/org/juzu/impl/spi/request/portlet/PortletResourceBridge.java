@@ -30,13 +30,13 @@ import java.io.IOException;
 public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge
 {
 
-   public PortletResourceBridge(ResourceRequest request, ResourceResponse response, boolean buffer) throws IOException
+   public PortletResourceBridge(PortletBridgeContext context, ResourceRequest request, ResourceResponse response, boolean buffer)
    {
-      super(request, response, buffer);
+      super(context, request, response, buffer);
    }
 
    @Override
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
       if (response instanceof Response.Content.Resource)
       {
@@ -49,6 +49,6 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
       }
       
       //
-      super.setResponse(response);
+      super.end(response);
    }
 }

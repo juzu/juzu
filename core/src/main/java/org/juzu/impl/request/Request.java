@@ -99,6 +99,11 @@ public class Request implements ScopingContext
       this.application = application;
    }
 
+   public ApplicationContext getApplication()
+   {
+      return application;
+   }
+
    public RequestBridge getBridge()
    {
       return bridge;
@@ -223,19 +228,6 @@ public class Request implements ScopingContext
          else
          {
             throw new AssertionError();
-         }
-
-         //
-         if (index == 0 && response != null)
-         {
-            try
-            {
-               bridge.setResponse(response);
-            }
-            catch (IOException e)
-            {
-               throw new UnsupportedOperationException("handle me gracefully");
-            }
          }
       }
       finally

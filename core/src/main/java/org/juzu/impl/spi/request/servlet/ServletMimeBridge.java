@@ -29,8 +29,13 @@ import java.util.Map;
 public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge
 {
 
-   ServletMimeBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
+   ServletMimeBridge(
+      ServletBridgeContext context,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String methodId,
+      Map<String, String[]> parameters)
    {
-      super(req, resp, methodId, parameters);
+      super(context, req, resp, methodId, parameters);
    }
 }

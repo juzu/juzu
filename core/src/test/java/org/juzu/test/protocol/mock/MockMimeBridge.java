@@ -60,7 +60,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
       return mimeType;
    }
 
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
       if (response instanceof Response.Content<?>)
       {
@@ -79,10 +79,6 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
             result = builder.toString();
          }
          mimeType = content.getMimeType();
-      }
-      else
-      {
-         throw new UnsupportedOperationException("Cannot handle response " + response);
       }
    }
 }

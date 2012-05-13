@@ -20,6 +20,7 @@
 package org.juzu.impl.spi.request.servlet;
 
 import org.juzu.Response;
+import org.juzu.impl.asset.Asset;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.io.AppendableStream;
@@ -28,66 +29,101 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletRenderBridge extends ServletMimeBridge implements RenderBridge
 {
-   ServletRenderBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
+
+   ServletRenderBridge(
+      ServletBridgeContext context,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String methodId,
+      Map<String, String[]> parameters)
    {
-      super(req, resp, methodId, parameters);
+      super(context, req, resp, methodId, parameters);
    }
 
    public void setTitle(String title)
    {
    }
 
-   @Override
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
-      Response.Content.Render render = (Response.Render)response;
-      resp.setContentType(render.getMimeType());
-
-      //
-      PrintWriter writer = resp.getWriter();
-
-      //
-      writer.println("<!DOCTYPE html>");
-      writer.println("<html>");
-      
-      writer.println("<head>");
-      Iterator<String> stylesheets = render.getStylesheets();
-      while (stylesheets.hasNext())
+      if (response instanceof Response.Render)
       {
-         String stylesheet = stylesheets.next();
-         int pos = stylesheet.lastIndexOf('.');
-         String ext = pos == -1 ? "css" : stylesheet.substring(pos + 1);
-         writer.print("<link rel=\"stylesheet\" type=\"text/");
-         writer.print(ext);
-         writer.print("\" href=\"");
-         writer.print(getAssetURL(stylesheet));
-         writer.println("\"></link>");
+         Response.Content.Render render = (Response.Render)response;
+         Iterable<Asset> scripts;
+         Iterable<Asset> stylesheets;
+         try
+         {
+            scripts = context.scriptManager.resolveAssets(render.getScripts());
+            stylesheets = context.scriptManager.resolveAssets(render.getStylesheets());
+         }
+         catch (IllegalArgumentException e)
+         {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
+         }
+
+         //
+         resp.setContentType(render.getMimeType());
+
+         //
+         PrintWriter writer = resp.getWriter();
+
+         //
+         writer.println("<!DOCTYPE html>");
+         writer.println("<html>");
+
+         writer.println("<head>");
+         for (Asset stylesheet : stylesheets)
+         {
+            String path = stylesheet.getValue();
+            int pos = path.lastIndexOf('.');
+            String ext = pos == -1 ? "css" : path.substring(pos + 1);
+            writer.print("<link rel=\"stylesheet\" type=\"text/");
+            writer.print(ext);
+            writer.print("\" href=\"");
+            renderAssetURL(stylesheet, writer);
+            writer.println("\"></link>");
+         }
+
+         //
+         for (Asset script : scripts)
+         {
+            writer.print("<script type=\"text/javascript\" src=\"");
+            renderAssetURL(script, writer);
+            writer.println("\"></script>");
+         }
+
+         //
+         writer.println("</head>");
+         writer.println("<body>");
+
+         // Send response
+         render.send(new AppendableStream(writer));
+
+         //
+         writer.println("</body>");
+         writer.println("</html>");
       }
-      Iterator<String> scripts = render.getScripts();
-      while (scripts.hasNext())
+   }
+
+   private void renderAssetURL(Asset asset, Appendable appendable) throws IOException
+   {
+      switch (asset.getLocation())
       {
-         String script = scripts.next();
-         writer.print("<script type=\"text/javascript\" src=\"");
-         writer.print(getAssetURL(script));
-         writer.println("\"></script>");
+         case SERVER:
+         case CLASSPATH:
+            appendable.append(req.getContextPath());
+            appendable.append(asset.getValue());
+            break;
+         case EXTERNAL:
+            appendable.append(asset.getValue());
+            break;
       }
-      writer.println("</head>");
-      
-      //
-      writer.println("<body>");
-
-      // Send response
-      render.send(new AppendableStream(writer));
-
-      //
-      writer.println("</body>");
-      writer.println("</html>");
    }
 
    private String getAssetURL(String url)

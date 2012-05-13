@@ -1,8 +1,10 @@
 package org.juzu.impl.asset;
 
+import org.juzu.impl.application.ApplicationRuntime;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.utils.NameLiteral;
 import org.juzu.impl.utils.Path;
+import org.juzu.impl.utils.Tools;
 import org.juzu.request.HttpContext;
 import org.juzu.request.RequestContext;
 
@@ -11,6 +13,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Server
@@ -21,6 +25,9 @@ public class Server
 
    /** . */
    public static final Named APPLICATION = new NameLiteral("application");
+
+   /** . */
+   HashSet<ApplicationRuntime<?, ?, ?>> runtimes = new HashSet<ApplicationRuntime<?, ?, ?>>();
 
    /** . */
    final Multiplexer<String> mux = new Multiplexer<String>()
@@ -85,15 +92,39 @@ public class Server
       return pluginRouter;
    }
 
+   public void register(ApplicationRuntime<?, ?, ?> assetManager)
+   {
+      runtimes.add(assetManager);
+   }
+
+   public void unregister(ApplicationRuntime<?, ?, ?> assetManager)
+   {
+      runtimes.remove(assetManager);
+   }
+
    void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
-      String uri = req.getPathInfo();
-      if (uri != null && uri.length() > 0)
+      String path = req.getPathInfo();
+      if (path != null && path.length() > 0)
       {
-         Path path = Path.parse(uri, '/');
-         if (path.size() > 0)
+         for (ApplicationRuntime<?, ?, ?> runtime : runtimes)
          {
-            mux.serve(path.get(0), path.next(), req, resp);
+            if (runtime.getScriptManager().isClassPath(path) || runtime.getStylesheetManager().isClassPath(path))
+            {
+               InputStream in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+               if (in != null)
+               {
+                  Tools.copy(in, resp.getOutputStream());
+                  return;
+               }
+            }
+         }
+
+         //
+         Path p = Path.parse(path, '/');
+         if (p.size() > 0)
+         {
+            mux.serve(p.get(0), p.next(), req, resp);
          }
       }
    }

@@ -114,6 +114,30 @@ public final class JSON implements Serializable
       return (List<E>)entry;
    }
 
+   public <E> E[] getArray(String name, Class<E> elementType)
+   {
+      List<?> entry = (List<?>)entries.get(name);
+      if (entry == null)
+      {
+         return (E[])Array.newInstance(elementType, 0);
+      }
+      else
+      {
+         int len = entry.size();
+         Object array = Array.newInstance(elementType, len);
+         for (int i = 0;i < len;i++)
+         {
+            Object obj = entry.get(i);
+            if (!elementType.isInstance(obj))
+            {
+               throw new ClassCastException("Cannot cast " + obj + "with class " + obj.getClass().getName() + " to class " + elementType.getName());
+            }
+            Array.set(array, i, obj);
+         }
+         return (E[])array;
+      }
+   }
+
    public Boolean getBoolean(String name)
    {
       return (Boolean)entries.get(name);
@@ -183,7 +207,7 @@ public final class JSON implements Serializable
    {
       return set(name, elements);
    }
-   
+
    public JSON set(String name, Object o)
    {
       entries.put(name, unwrap(o));

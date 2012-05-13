@@ -51,7 +51,7 @@ abstract class AbstractBean implements Bean
    protected final Class<?> type;
 
    /** . */
-   private final Set<Annotation> qualifiers;
+   protected final Set<Annotation> qualifiers;
 
    /** . */
    private Class<? extends Annotation> scope;

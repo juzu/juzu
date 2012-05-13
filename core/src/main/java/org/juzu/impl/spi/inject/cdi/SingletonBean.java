@@ -42,4 +42,10 @@ class SingletonBean extends AbstractSingletonBean
    {
       return instance;
    }
+
+   @Override
+   public String toString()
+   {
+      return "SingletonBean[type=" + type + ",qualifiers=" + qualifiers + "]";
+   }
 }

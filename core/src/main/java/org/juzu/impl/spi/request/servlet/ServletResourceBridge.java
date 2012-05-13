@@ -36,56 +36,64 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletResourceBridge extends ServletMimeBridge implements ResourceBridge
 {
-   ServletResourceBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
+   ServletResourceBridge(
+      ServletBridgeContext context,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String methodId,
+      Map<String, String[]> parameters)
    {
-      super(req, resp, methodId, parameters);
+      super(context, req, resp, methodId, parameters);
    }
 
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
-      Response.Content content = (Response.Content)response;
-      
-      //
-      if (content instanceof Response.Content.Resource)
+      if (response instanceof Response.Content)
       {
-         Response.Content.Resource resource = (Response.Content.Resource)content;
-         int status = resource.getStatus();
-         if (status != 200)
-         {
-            resp.setStatus(status);
-         }
-      }
+         Response.Content content = (Response.Content)response;
 
-      // Set mime type
-      String mimeType = content.getMimeType();
-      if (mimeType != null)
-      {
-         resp.setContentType(mimeType);
-      }
+         //
+         if (content instanceof Response.Content.Resource)
+         {
+            Response.Content.Resource resource = (Response.Content.Resource)content;
+            int status = resource.getStatus();
+            if (status != 200)
+            {
+               resp.setStatus(status);
+            }
+         }
 
-      // Send response
-      if (content.getKind() == Stream.Char.class)
-      {
-         PrintWriter writer = resp.getWriter();
-         try
+         // Set mime type
+         String mimeType = content.getMimeType();
+         if (mimeType != null)
          {
-            ((Response.Resource)response).send(new AppendableStream(writer));
+            resp.setContentType(mimeType);
          }
-         finally
+
+         // Send response
+         if (content.getKind() == Stream.Char.class)
          {
-            Tools.safeClose(writer);
+            PrintWriter writer = resp.getWriter();
+            try
+            {
+               ((Response.Resource)response).send(new AppendableStream(writer));
+            }
+            finally
+            {
+               Tools.safeClose(writer);
+            }
          }
-      }
-      else
-      {
-         OutputStream out = resp.getOutputStream();
-         try
+         else
          {
-            ((Response.Resource)response).send(new BinaryOutputStream(out));
-         }
-         finally
-         {
-            Tools.safeClose(out);
+            OutputStream out = resp.getOutputStream();
+            try
+            {
+               ((Response.Resource)response).send(new BinaryOutputStream(out));
+            }
+            finally
+            {
+               Tools.safeClose(out);
+            }
          }
       }
    }

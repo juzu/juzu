@@ -56,6 +56,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -335,6 +336,68 @@ public class Tools
       }
    }
 
+   /**
+    * <p>Add the specified to the specified set and returns the result. When the <code>set</code> argument
+    * is an instance of {@link HashSet} the element is directly added, otherwise a new <code>HashSet</code>
+    * is created by cloning the <code>set</code> argument and the <code>e</code> argument is added.</p>
+    *
+    * <p>Usage pattern : adding a set to a non modifiable set</p>
+    * <pre><code>
+    *    Set&lt;String&gt; set = Collections.emptySet();
+    *    set = addToHashSet(set, "foo");
+    * </code></pre>
+    *
+    * @param set the set
+    * @param e the element
+    * @param <E> the set generic type
+    * @return an <code>HashSet</code> containing the element
+    */
+   public static <E> HashSet<E> addToHashSet(Set<E> set, E e)
+   {
+      HashSet<E> hashSet;
+      if (set instanceof HashSet)
+      {
+         hashSet = (HashSet<E>)set;
+      }
+      else
+      {
+         hashSet = new HashSet<E>(set);
+      }
+      hashSet.add(e);
+      return hashSet;
+   }
+
+   /**
+    * <p>Add the specified to the specified list and returns the result. When the <code>list</code> argument
+    * is an instance of {@link ArrayList} the element is directly added, otherwise a new <code>ArrayList</code>
+    * is created by cloning the <code>list</code> argument and the <code>e</code> argument is added.</p>
+    *
+    * <p>Usage pattern : adding a list to a non modifiable list</p>
+    * <pre><code>
+    *    List&lt;String&gt; list = Collections.emptyList();
+    *    list = addToArrayList(list, "foo");
+    * </code></pre>
+    *
+    * @param list the list
+    * @param e the element
+    * @param <E> the set generic type
+    * @return an <code>ArrayList</code> containing the element
+    */
+   public static <E> ArrayList<E> addToArrayList(List<E> list, E e)
+   {
+      ArrayList<E> arrayList;
+      if (list instanceof ArrayList)
+      {
+         arrayList = (ArrayList<E>)list;
+      }
+      else
+      {
+         arrayList = new ArrayList<E>(list);
+      }
+      arrayList.add(e);
+      return arrayList;
+   }
+
    public static <E> HashSet<E> set()
    {
       return new HashSet<E>();
@@ -389,6 +452,17 @@ public class Tools
       ArrayList<E> set = new ArrayList<E>(elements.length);
       Collections.addAll(set, elements);
       return set;
+   }
+
+   public static <E> Iterable<E> iterable(final E... elements) throws NullPointerException
+   {
+      return new Iterable<E>()
+      {
+         public Iterator<E> iterator()
+         {
+            return Tools.iterator(0, elements);
+         }
+      };
    }
 
    public static <E> Iterator<E> iterator(E... elements) throws NullPointerException
@@ -523,8 +597,6 @@ public class Tools
             throw new UnsupportedOperationException();
          }
       };
-
-
    }
 
    public static <S extends Serializable> S unserialize(Class<S> expectedType, File f) throws IOException, ClassNotFoundException

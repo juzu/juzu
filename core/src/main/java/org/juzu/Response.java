@@ -409,10 +409,10 @@ public abstract class Response
          return this;
       }
 
-      public Iterator<String> getScripts()
+      public Iterable<String> getScripts()
       {
          Iterable<String> scripts = properties.getValues(SCRIPT);
-         return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
+         return scripts != null ? scripts : Tools.<String>emptyIterable();
       }
 
       public Render addScript(String script) throws NullPointerException
@@ -425,10 +425,10 @@ public abstract class Response
          return this;
       }
 
-      public Iterator<String> getStylesheets()
+      public Iterable<String> getStylesheets()
       {
-         Iterable<String> scripts = properties.getValues(STYLESHEET);
-         return scripts != null ? scripts.iterator() : Tools.<String>emptyIterator();
+         Iterable<String> stylesheets = properties.getValues(STYLESHEET);
+         return stylesheets != null ? stylesheets : Tools.<String>emptyIterable();
       }
 
       public Render addStylesheet(String stylesheet) throws NullPointerException

@@ -161,6 +161,11 @@ public class ApplicationDescriptor extends Descriptor
       return new ApplicationDescriptor(this, tmp);
    }
 
+   public Descriptor getPlugin(String name)
+   {
+      return plugins.get(name);
+   }
+
    public Class<?> getPackageClass()
    {
       return packageClass;

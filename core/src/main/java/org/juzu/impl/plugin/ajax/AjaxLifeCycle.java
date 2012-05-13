@@ -21,10 +21,15 @@ package org.juzu.impl.plugin.ajax;
 
 import org.juzu.PropertyMap;
 import org.juzu.Response;
+import org.juzu.asset.AssetLocation;
+import org.juzu.asset.AssetType;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.asset.AssetMetaData;
+import org.juzu.impl.asset.Manager;
 import org.juzu.impl.asset.Registration;
 import org.juzu.impl.asset.Router;
+import org.juzu.impl.asset.AssetManager;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
@@ -54,8 +59,13 @@ public class AjaxLifeCycle extends RequestLifeCycle
    public AjaxLifeCycle(
       ApplicationDescriptor desc,
       @Named("plugin") Router plugin,
-      @Named("application") Router application)
+      @Named("application") Router application,
+      @Manager(AssetType.SCRIPT) AssetManager manager)
    {
+      manager.addAsset(new AssetMetaData("ajax.plugin", AssetLocation.CLASSPATH, "/org/juzu/impl/plugin/ajax/script.js", "jquery"));
+      manager.addAsset(new AssetMetaData("ajax.app", AssetLocation.SERVER, "/assets/application/AjaxApplication/ajax.js", "ajax.plugin"));
+
+      //
       this.pluginRegistration = plugin.register("ajax.js", PluginAsset.class);
       this.applicationRegistration = application.register("ajax.js", new ApplicationAsset(desc));
    }
@@ -82,19 +92,10 @@ public class AjaxLifeCycle extends RequestLifeCycle
 
             //
             PropertyMap properties = new PropertyMap(response.getProperties());
-            try
-            {
-               StringBuilder sb1 = new StringBuilder();
-               pluginRegistration.getRoute().getContext().renderURL(sb1);
-               StringBuilder sb2 = new StringBuilder();
-               applicationRegistration.getRoute().getContext().renderURL(sb2);
-               properties.addValue(Response.Render.SCRIPT, sb1.toString());
-               properties.addValue(Response.Render.SCRIPT, sb2.toString());
-            }
-            catch (IOException e)
-            {
-               throw new UnsupportedOperationException("todo");
-            }
+
+            //
+            properties.addValues(Response.Render.SCRIPT, "ajax.plugin");
+            properties.addValues(Response.Render.SCRIPT, "ajax.app");
 
             //
             final Streamable<Stream.Char> decorated = render.getStreamable();

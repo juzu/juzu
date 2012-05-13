@@ -19,6 +19,8 @@
 
 package org.juzu.impl.asset;
 
+import org.juzu.impl.application.ApplicationRuntime;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

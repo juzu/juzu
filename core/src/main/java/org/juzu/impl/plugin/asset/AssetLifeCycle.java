@@ -2,23 +2,22 @@ package org.juzu.impl.plugin.asset;
 
 import org.juzu.PropertyMap;
 import org.juzu.Response;
+import org.juzu.asset.AssetType;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.asset.AssetManager;
+import org.juzu.impl.asset.AssetMetaData;
+import org.juzu.impl.asset.Manager;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.request.Request;
-import org.juzu.plugin.asset.Assets;
-import org.juzu.plugin.asset.Script;
-import org.juzu.plugin.asset.Stylesheet;
 import org.juzu.request.Phase;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetLifeCycle extends RequestLifeCycle
 {
-
-   /** . */
-   private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
    /** . */
    private final String[] scripts;
@@ -27,50 +26,47 @@ public class AssetLifeCycle extends RequestLifeCycle
    private final String[] stylesheets;
 
    @Inject
-   public AssetLifeCycle(ApplicationDescriptor desc)
+   public AssetLifeCycle(ApplicationDescriptor desc,
+                         @Manager(AssetType.SCRIPT) AssetManager scriptManager,
+                         @Manager(AssetType.STYLESHEET) AssetManager stylesheetManager)
    {
-      String[] scripts;
-      String[] stylesheets;
-      Class<?> packageClass = desc.getPackageClass();
-      Assets assets = packageClass.getAnnotation(Assets.class);
-      if (assets != null)
+      AssetDescriptor descriptor = (AssetDescriptor)desc.getPlugin("asset");
+
+      //
+      ArrayList<String> scripts = new ArrayList<String>();
+      for (AssetMetaData script : descriptor.getScripts())
       {
-         Script[] scriptDecls = assets.scripts();
-         if (scriptDecls.length > 0)
+         String id = script.getId();
+         if (id != null)
          {
-            scripts = new String[scriptDecls.length];
-            for (int i = 0;i < scriptDecls.length;i++)
-            {
-               scripts[i] = scriptDecls[i].src();
-            }
+            scripts.add(script.getId());
          }
          else
          {
-            scripts = EMPTY_STRING_ARRAY;
+            scripts.add(script.getValue());
          }
-         Stylesheet[] stylesheetDecls = assets.stylesheets();
-         if (stylesheetDecls.length > 0)
-         {
-            stylesheets = new String[stylesheetDecls.length];
-            for (int i = 0;i < stylesheetDecls.length;i++)
-            {
-               stylesheets[i] = stylesheetDecls[i].src();
-            }
-         }
-         else
-         {
-            stylesheets = EMPTY_STRING_ARRAY;
-         }
-      }
-      else
-      {
-         scripts = EMPTY_STRING_ARRAY;
-         stylesheets = EMPTY_STRING_ARRAY;
+         scriptManager.addAsset(script);
       }
 
       //
-      this.stylesheets = stylesheets;
-      this.scripts = scripts;
+      ArrayList<String> stylesheets = new ArrayList<String>();
+      for (AssetMetaData stylesheet : descriptor.getStylesheets())
+      {
+         String id = stylesheet.getId();
+         if (id != null)
+         {
+            stylesheets.add(stylesheet.getId());
+         }
+         else
+         {
+            stylesheets.add(stylesheet.getValue());
+         }
+         stylesheetManager.addAsset(stylesheet);
+      }
+
+      //
+      this.scripts = scripts.toArray(new String[scripts.size()]);
+      this.stylesheets = stylesheets.toArray(new String[stylesheets.size()]);
    }
 
    @Override
@@ -88,8 +84,8 @@ public class AssetLifeCycle extends RequestLifeCycle
 
             // Add assets
             PropertyMap properties = new PropertyMap(render.getProperties());
-            properties.addValues(Response.Render.SCRIPT, scripts);
             properties.addValues(Response.Render.STYLESHEET, stylesheets);
+            properties.addValues(Response.Render.SCRIPT, scripts);
 
             // Use a new response
             request.setResponse(new Response.Render(properties, render.getStreamable()));

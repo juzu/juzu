@@ -27,6 +27,7 @@ import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.impl.plugin.portlet.PortletDescriptor;
 import org.juzu.impl.spi.inject.InjectImplementation;
 import org.juzu.impl.spi.request.portlet.PortletActionBridge;
+import org.juzu.impl.spi.request.portlet.PortletBridgeContext;
 import org.juzu.impl.spi.request.portlet.PortletRenderBridge;
 import org.juzu.impl.spi.request.portlet.PortletResourceBridge;
 import org.juzu.impl.utils.DevClassLoader;
@@ -105,6 +106,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    /** . */
    private Logger log;
+
+   /** . */
+   private PortletBridgeContext bridge;
    
    public void init(final PortletConfig config) throws PortletException
    {
@@ -224,7 +228,12 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       //
       try
       {
-         return runtime.boot();
+         Collection<CompilationError> boot = runtime.boot();
+         if (boot == null || boot.isEmpty())
+         {
+            bridge = new PortletBridgeContext(runtime, runtime.getScriptManager(), log);
+         }
+         return boot;
       }
       catch (Exception e)
       {
@@ -234,7 +243,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
    public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
    {
-      PortletActionBridge bridge = new PortletActionBridge(request, response);
+      PortletActionBridge bridge = this.bridge.create(request, response);
       try
       {
          runtime.getContext().invoke(bridge);
@@ -283,7 +292,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             {
                public void call() throws Throwable
                {
-                  PortletRenderBridge bridge = new PortletRenderBridge(request, response, !prod);
+                  PortletRenderBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
                   try
                   {
                      runtime.getContext().invoke(bridge);
@@ -337,7 +346,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             {
                public void call() throws Throwable
                {
-                  PortletResourceBridge bridge = new PortletResourceBridge(request, response, !prod);
+                  PortletResourceBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
                   try
                   {
                      runtime.getContext().invoke(bridge);

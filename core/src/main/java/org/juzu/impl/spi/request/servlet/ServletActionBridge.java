@@ -26,19 +26,23 @@ import org.juzu.request.Phase;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletActionBridge extends ServletRequestBridge implements ActionBridge
 {
-   ServletActionBridge(HttpServletRequest req, HttpServletResponse resp, String methodId, Map<String, String[]> parameters)
+   ServletActionBridge(
+      ServletBridgeContext context,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String methodId,
+      Map<String, String[]> parameters)
    {
-      super(req, resp, methodId, parameters);
+      super(context, req, resp, methodId, parameters);
    }
 
    @Override
-   public void setResponse(Response response) throws IllegalStateException, IOException
+   public void end(Response response) throws IllegalStateException, IOException
    {
       if (response instanceof Response.Update)
       {
@@ -51,10 +55,6 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
          Response.Redirect redirect = (Response.Redirect)response;
          String url = redirect.getLocation();
          resp.sendRedirect(url);
-      }
-      else
-      {
-         throw new UnsupportedOperationException("todo");
       }
    }
 }

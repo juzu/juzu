@@ -19,7 +19,10 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.asset.AssetType;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.asset.AssetManager;
+import org.juzu.impl.asset.ManagerQualifier;
 import org.juzu.impl.asset.Registration;
 import org.juzu.impl.asset.Router;
 import org.juzu.impl.asset.Server;
@@ -90,6 +93,12 @@ public abstract class ApplicationRuntime<P, R, L>
    protected Server assetServer;
 
    /** . */
+   protected AssetManager stylesheetManager;
+
+   /** . */
+   protected AssetManager scriptManager;
+
+   /** . */
    protected Registration<Router> applicationAssets;
 
    /** Additional plugins. */
@@ -150,11 +159,29 @@ public abstract class ApplicationRuntime<P, R, L>
       return assetServer;
    }
 
+   public AssetManager getScriptManager()
+   {
+      return scriptManager;
+   }
+
+   public AssetManager getStylesheetManager()
+   {
+      return stylesheetManager;
+   }
+
    public void setAssetServer(Server assetServer)
    {
+      if (assetServer != null)
+      {
+         assetServer.register(this);
+      }
+      if (this.assetServer != null)
+      {
+         this.assetServer.unregister(this);
+      }
       this.assetServer = assetServer;
    }
-   
+
    public void addPlugin(String name, Descriptor plugin)
    {
       if (plugins == null)
@@ -284,7 +311,7 @@ public abstract class ApplicationRuntime<P, R, L>
                logger.log("No changes detected");
             }
          }
-         
+
          //
          if (context == null)
          {
@@ -297,7 +324,7 @@ public abstract class ApplicationRuntime<P, R, L>
             {
                this.classLoader = new URLClassLoader(new URL[]{classes.getURL()}, baseClassLoader);
                this.classes = classes;
-               
+
                //
                doBoot();
 
@@ -368,13 +395,13 @@ public abstract class ApplicationRuntime<P, R, L>
       Class<?> clazz = getClassLoader().loadClass(fqn);
       Field field = clazz.getDeclaredField("DESCRIPTOR");
       ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
-      
+
       // Add additional plugins when available
       if (plugins != null)
       {
          descriptor = descriptor.addPlugins(plugins);
       }
-      
+
       // Find the juzu jar
       URL mainURL = null;
       for (URL jarURL : jarURLs)
@@ -420,6 +447,18 @@ public abstract class ApplicationRuntime<P, R, L>
       );
 
       //
+      AssetManager scriptManager = new AssetManager(AssetType.SCRIPT);
+      AssetManager stylesheetManager = new AssetManager(AssetType.STYLESHEET);
+      injectBootstrap.bindBean(
+         AssetManager.class,
+         Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.SCRIPT)),
+         scriptManager);
+      injectBootstrap.bindBean(
+         AssetManager.class,
+         Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.STYLESHEET)),
+         stylesheetManager);
+
+      //
       Registration<Router> applicationAssets =null;
       if (assetServer != null)
       {
@@ -435,6 +474,8 @@ public abstract class ApplicationRuntime<P, R, L>
       //
       this.context = bootstrap.getContext();
       this.applicationAssets = applicationAssets;
+      this.scriptManager = scriptManager;
+      this.stylesheetManager = stylesheetManager;
    }
 
    public void shutdown()

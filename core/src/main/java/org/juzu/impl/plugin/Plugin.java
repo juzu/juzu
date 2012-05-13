@@ -71,7 +71,7 @@ public abstract class Plugin
             }
             else
             {
-               return null;
+               return Collections.emptyList();
             }
          }
       };

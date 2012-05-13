@@ -17,29 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.asset;
+@Application()
+@Assets(scripts = @Script(src = "/plugin/asset/location/classpath/test.js", location = AssetLocation.CLASSPATH))
+package plugin.asset.location.classpath;
 
-import org.juzu.Controller;
-import org.juzu.Resource;
-import org.juzu.Response;
-import org.juzu.View;
-import org.juzu.plugin.ajax.Ajax;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
-   @View
-   public Response.Render index()
-   {
-      String content = "" +
-         "<script>\n" +
-         "$(function() {\n" +
-         "  $('#trigger').click(function() {\n" +
-         "    alert(\"OK MEN\");\n" +
-         "  });\n" +
-         "});\n" +
-         "</script>\n" +
-         "<a id='trigger' href='#'>click</a>";
-      return Response.render(content);
-   }
-}
+import org.juzu.Application;
+import org.juzu.asset.AssetLocation;
+import org.juzu.plugin.asset.Assets;
+import org.juzu.plugin.asset.Script;

@@ -17,42 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package http.ajax;
+package plugin.asset.location.classpath;
 
-import org.juzu.Controller;
-import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
+public class A
 {
-   
    @View
-   public Response.Content index(String p)
+   public Response.Render index()
    {
-      String content =
-         "<script>\n" +
-         "$(function() {\n" +
-         "  $('#trigger').click(function() {\n" +
-         "    $.ajax({\n" +
-         "      url:'" + A_.resourceURL() + "',\n" +
-         "      async: false,\n" +
-         "      success: function(html) {\n" +
-         "        $('#foo').html(html);\n" +
-         "      }\n" +
-         "    });\n" +
-         "  });\n" +
-         "});\n" +
-         "</script>\n" +
-         "<a id='trigger' href='#'>click</a>\n" +
-         "<div id='foo'>foo</div>";
-      return Response.render(content).addScript("/jquery.js");
-   }
-   
-   @Resource 
-   public Response.Content.Resource resource()
-   {
-      return Response.ok("bar");
+      String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
+      return Response.render(content);
    }
 }
