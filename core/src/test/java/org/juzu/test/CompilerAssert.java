@@ -186,7 +186,7 @@ public class CompilerAssert<I, O>
       try
       {
          List<CompilationError> errors = strategy.compile();
-         AbstractTestCase.assertEquals(Collections.<CompilationError>emptyList(), errors);
+         AbstractTestCase.assertEquals("Compilation failed : " + errors, Collections.<CompilationError>emptyList(), errors);
          classLoader = new URLClassLoader(new URL[]{strategy.classOutput.getURL()}, baseClassLoader);
          return strategy.compiler;
       }

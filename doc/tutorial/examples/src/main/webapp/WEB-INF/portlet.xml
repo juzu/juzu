@@ -7,11 +7,7 @@
    <portlet>
      <portlet-name>Weather1Portlet</portlet-name>
      <display-name xml:lang="EN">Juzu Kickstart</display-name>
-     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-     <init-param>
-       <name>juzu.app_name</name>
-       <value>Weather1Application</value>
-     </init-param>
+     <portlet-class>examples.tutorial.weather1.Weather1Portlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
        <value>dev</value>
@@ -27,11 +23,7 @@
    <portlet>
      <portlet-name>Weather2Portlet</portlet-name>
      <display-name xml:lang="EN">Juzu Template Overview</display-name>
-     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-     <init-param>
-       <name>juzu.app_name</name>
-       <value>Weather2Application</value>
-     </init-param>
+     <portlet-class>examples.tutorial.weather2.Weather2Portlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
        <value>dev</value>
@@ -47,11 +39,7 @@
   <portlet>
     <portlet-name>Weather3Portlet</portlet-name>
     <display-name xml:lang="EN">Juzu Dependency Injection</display-name>
-    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-    <init-param>
-      <name>juzu.app_name</name>
-      <value>Weather3Application</value>
-    </init-param>
+    <portlet-class>examples.tutorial.weather3.Weather3Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
       <value>dev</value>
@@ -74,11 +62,7 @@
   <portlet>
     <portlet-name>Weather4Portlet</portlet-name>
     <display-name xml:lang="EN">Juzu Views</display-name>
-    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-    <init-param>
-      <name>juzu.app_name</name>
-      <value>Weather4Application</value>
-    </init-param>
+    <portlet-class>examples.tutorial.weather4.Weather4Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
       <value>dev</value>
@@ -94,11 +78,7 @@
   <portlet>
     <portlet-name>Weather5Portlet</portlet-name>
     <display-name xml:lang="EN">Juzu Actions</display-name>
-    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-    <init-param>
-      <name>juzu.app_name</name>
-      <value>Weather5Application</value>
-    </init-param>
+    <portlet-class>examples.tutorial.weather5.Weather5Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
       <value>dev</value>
@@ -114,11 +94,7 @@
   <portlet>
     <portlet-name>Weather6Portlet</portlet-name>
     <display-name xml:lang="EN">Juzu Type Safe Templating</display-name>
-    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-    <init-param>
-      <name>juzu.app_name</name>
-      <value>Weather6Application</value>
-    </init-param>
+    <portlet-class>examples.tutorial.weather6.Weather6Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
       <value>dev</value>
@@ -134,11 +110,7 @@
   <portlet>
     <portlet-name>Weather7Portlet</portlet-name>
     <display-name xml:lang="EN">Juzu Preferences</display-name>
-    <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
-    <init-param>
-      <name>juzu.app_name</name>
-      <value>Weather7Application</value>
-    </init-param>
+    <portlet-class>examples.tutorial.weather7.Weather7Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
       <value>dev</value>

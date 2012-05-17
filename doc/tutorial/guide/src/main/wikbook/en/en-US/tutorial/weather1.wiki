@@ -65,6 +65,36 @@ version of the application shows the most basic Juzu application. Our applicatio
 a Juzu application and does not require any mandatory value. Like classes, methods or fields, Java packages can be
 annotated, such packages declaration are represented by a special file named ##package-info.java##.
 
+The first think to do when developping a Juzu application is to declare the application. The package of the application
+must be annotated with the ##@org.juzu.Application## annotation to declare the application. The Java file
+//examples/tutorial/weather1/package-info.java// contains the package declaration along with the annotation:
+
+{{java}}
+@org.juzu.Application
+package examples.tutorial.weather1;
+{{/java}}
+
+We can even go further and also annotate the package with the ##org.juzu.plugin.portlet.Portlet## annotation, this annotation
+has the very simple purpose to generate a Java Portlet that will be used in the //portlet.xml// deployment descriptor:
+
+{{java}}
+@org.juzu.Application
+@org.juzu.plugin.portlet.Portlet
+package examples.tutorial.weather1;
+{{/java}}
+
+The ##@Portlet## annotation generates a Java class ##examples.tutorial.weather1.Weather1Portlet## that we specifies in the
+//WEB-INF/portlet.xml// deployment descriptor of the web application:
+
+{{xml}}
+<portlet>
+  <portlet-name>Weather1Portlet</portlet-name>
+  <portlet-class>examples.tutorial.weather1.Weather1Portlet</portlet-class>
+</portlet>
+{{/xml}}
+
+This is enough to create an empty Juzu application, now let's see the application itself!
+
 Usually an application is made of controllers and templates, in this example, the ##Weather## Java class contains a method
 annotated with the ##@View## annotation, which turns the ##Weather## class into a Juzu controller. The controller method
 ##index()## is the name of the default method that Juzu will call.

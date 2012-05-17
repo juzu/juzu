@@ -18,6 +18,8 @@
  */
 
 @Application
+@Portlet
 package examples.tutorial.weather1;
 
 import org.juzu.Application;
+import org.juzu.plugin.portlet.Portlet;

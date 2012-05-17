@@ -57,7 +57,9 @@ public enum MetaModelError implements ErrorCode
 
    ANNOTATION_UNSUPPORTED("The annotation of this element cannot be supported"),
 
-   UNEXPECTED_ERROR("Unexpected error: %1$s");
+   UNEXPECTED_ERROR("Unexpected error: %1$s"),
+
+   CANNOT_WRITE_PORTLET_CLASS("The portlet class %1$s cannot be written");
 
    /** . */
    private final String message;

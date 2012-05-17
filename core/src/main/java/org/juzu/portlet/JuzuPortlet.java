@@ -156,7 +156,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       log.log("Using injection " + injectImpl.name());
 
       //
-      this.appName = config.getInitParameter("juzu.app_name");
+      this.appName = getApplicationName(config);
       this.prod = !("dev".equals(runMode));
       this.srcPath = config.getInitParameter("juzu.src_path");
       this.injectImpl = injectImpl;
@@ -169,6 +169,18 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
       {
          log.log("Error when compiling application " + errors);
       }
+   }
+
+   /**
+    * Returns the application name to use using the <code>juzu.app_name</code> init parameter of the portlet
+    * deployment descriptor. Subclass can override it to provide a custom application name.
+    *
+    * @param config the portlet config
+    * @return the application name
+    */
+   protected String getApplicationName(PortletConfig config)
+   {
+      return config.getInitParameter("juzu.app_name");
    }
 
    private Collection<CompilationError> boot() throws PortletException
