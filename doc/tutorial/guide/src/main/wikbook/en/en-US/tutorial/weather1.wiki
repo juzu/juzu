@@ -12,29 +12,37 @@ console, similar to:
 
 {{screen}}
 INFO: Deploying web application archive juzu-tutorial-gatein.war
-[Weather4Portlet] Building application
-[Weather4Portlet] Using injection org.juzu.impl.spi.inject.cdi.CDIBootstrap
-[Weather4Portlet] Starting Weather4Application
-[Weather4Portlet] Dev mode scanner monitoring /java/gatein/webapps/juzu-tutorial-gatein/WEB-INF/src
-[Weather3Portlet] Building application
-[Weather3Portlet] Using injection org.juzu.impl.spi.inject.spring.SpringBootstrap
-[Weather3Portlet] Starting Weather3Application
-[Weather3Portlet] Dev mode scanner monitoring /java/gatein/webapps/juzu-tutorial-gatein/WEB-INF/src
+[Weather5Portlet] Using injection CDI_WELD
+[Weather5Portlet] Dev mode scanner monitoring /Users/julien/java/gatein-server/webapps/juzu-tutorial-gatein/WEB-INF/src
 [Weather5Portlet] Building application
-[Weather5Portlet] Using injection org.juzu.impl.spi.inject.cdi.CDIBootstrap
 [Weather5Portlet] Starting Weather5Application
-[Weather5Portlet] Dev mode scanner monitoring /java/gatein/webapps/juzu-tutorial-gatein/WEB-INF/src
+[Weather4Portlet] Using injection CDI_WELD
+[Weather4Portlet] Dev mode scanner monitoring /Users/julien/java/gatein-server/webapps/juzu-tutorial-gatein/WEB-INF/src
+[Weather4Portlet] Building application
+[Weather4Portlet] Starting Weather4Application
+[Weather6Portlet] Using injection CDI_WELD
+[Weather6Portlet] Dev mode scanner monitoring /Users/julien/java/gatein-server/webapps/juzu-tutorial-gatein/WEB-INF/src
+[Weather6Portlet] Building application
+[Weather6Portlet] Starting Weather6Application
+[Weather2Portlet] Using injection CDI_WELD
+[Weather2Portlet] Dev mode scanner monitoring /Users/julien/java/gatein-server/webapps/juzu-tutorial-gatein/WEB-INF/src
 [Weather2Portlet] Building application
-[Weather2Portlet] Using injection org.juzu.impl.spi.inject.cdi.CDIBootstrap
 [Weather2Portlet] Starting Weather2Application
-[Weather2Portlet] Dev mode scanner monitoring /java/gatein/webapps/juzu-tutorial-gatein/WEB-INF/src
+[Weather1Portlet] Using injection CDI_WELD
+[Weather1Portlet] Dev mode scanner monitoring /Users/julien/java/gatein-server/webapps/juzu-tutorial-gatein/WEB-INF/src
 [Weather1Portlet] Building application
-[Weather1Portlet] Using injection org.juzu.impl.spi.inject.cdi.CDIBootstrap
 [Weather1Portlet] Starting Weather1Application
-[Weather1Portlet] Dev mode scanner monitoring /java/gatein/webapps/juzu-tutorial-gatein/WEB-INF/src
+[Weather3Portlet] Using injection INJECT_SPRING
+[Weather3Portlet] Dev mode scanner monitoring /Users/julien/java/gatein-server/webapps/juzu-tutorial-gatein/WEB-INF/src
+[Weather3Portlet] Building application
+[Weather3Portlet] Starting Weather3Application
+[Weather7Portlet] Using injection CDI_WELD
+[Weather7Portlet] Dev mode scanner monitoring /Users/julien/java/gatein-server/webapps/juzu-tutorial-gatein/WEB-INF/src
+[Weather7Portlet] Building application
+[Weather7Portlet] Starting Weather7Application
 {{/screen}}
 
-As we can notice, there are 5 applications deployed, one for each of the topic of this tutorial
+As we can notice, there are 7 applications deployed, one for each of the topic of this tutorial
 
 * Weather1Application: [[#quickstart]]
 * Weather2Application: [[#template_overview]]
