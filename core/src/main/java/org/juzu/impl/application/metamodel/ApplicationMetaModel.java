@@ -58,16 +58,30 @@ public class ApplicationMetaModel extends MetaModelObject
    /** . */
    final Map<BufKey, Map<String, Object>> processed;
 
+   /** . */
+   final String baseName;
+
    ApplicationMetaModel(
       ElementHandle.Package handle,
-      String applicationName)
+      String baseName)
    {
-      FQN fqn = new FQN(handle.getQN(), applicationName);
+      //
+      if (baseName == null)
+      {
+         String s = handle.getQN().getValue();
+         int index = s.lastIndexOf('.');
+         baseName = Character.toUpperCase(s.charAt(index + 1)) + s.substring(index +2);
+      }
 
-      //                    
+      //
+      String name = baseName + "Application";
+      FQN fqn = new FQN(handle.getQN(), name);
+
+      //
       this.handle = handle;
       this.fqn = fqn;
       this.modified = false;
+      this.baseName = baseName;
       this.toProcess = new HashMap<BufKey, Map<String, Object>>();
       this.processed = new HashMap<BufKey, Map<String, Object>>();
    }
@@ -85,6 +99,11 @@ public class ApplicationMetaModel extends MetaModelObject
    public FQN getFQN()
    {
       return fqn;
+   }
+
+   public String getBaseName()
+   {
+      return baseName;
    }
 
    public ElementHandle.Package getHandle()

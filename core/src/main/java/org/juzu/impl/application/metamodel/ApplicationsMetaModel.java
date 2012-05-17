@@ -254,13 +254,6 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
    private ApplicationMetaModel processApplication(PackageElement packageElt, Map<String, Object> annotationValues) throws CompilationException
    {
       String name = (String)annotationValues.get("name");
-      if (name == null)
-      {
-         String s = packageElt.getSimpleName().toString();
-         name = Character.toUpperCase(s.charAt(0)) + s.substring(1) + "Application";
-      }
-
-      //
       ElementHandle.Package handle = ElementHandle.Package.create(packageElt);
       ApplicationMetaModel application = get(handle);
 
