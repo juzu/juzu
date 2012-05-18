@@ -32,7 +32,12 @@ public class AssetServlet extends HttpServlet
    @Override
    public void init() throws ServletException
    {
-      getServletContext().setAttribute("asset.server", new AssetServer());
+      AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
+      if (server == null)
+      {
+         server = new AssetServer();
+         getServletContext().setAttribute("asset.server", server);
+      }
    }
 
    @Override

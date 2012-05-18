@@ -227,6 +227,11 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
 
          //
          AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
+         if (server == null)
+         {
+            server = new AssetServer();
+            config.getPortletContext().setAttribute("asset.server", server);
+         }
 
          // Configure the runtime
          runtime.setLibs(libs);
