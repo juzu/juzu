@@ -45,10 +45,10 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
    protected final PortletBridgeContext context;
 
    /** . */
-   protected final Rq request;
+   protected final Rq req;
    
    /** . */
-   protected final Rs response;
+   protected final Rs resp;
 
    /** . */
    protected final String methodId;
@@ -65,10 +65,13 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
    /** . */
    protected final PortletWindowContext windowContext;
 
-   PortletRequestBridge(PortletBridgeContext context, Rq request, Rs response)
+   /** . */
+   protected Request request;
+
+   PortletRequestBridge(PortletBridgeContext context, Rq req, Rs resp)
    {
       String methodId = null;
-      Map<String, String[]> parameters = new HashMap<String, String[]>(request.getParameterMap());
+      Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
       for (Iterator<Map.Entry<String, String[]>> i = parameters.entrySet().iterator();i.hasNext();)
       {
          Map.Entry<String, String[]> parameter = i.next();
@@ -85,12 +88,12 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
 
       //
       this.context = context;
-      this.request = request;
-      this.response = response;
+      this.req = req;
+      this.resp = resp;
       this.methodId = methodId;
       this.parameters = parameters;
-      this.httpContext = new PortletHttpContext(request);
-      this.securityContext = new PortletSecurityContext(request);
+      this.httpContext = new PortletHttpContext(req);
+      this.securityContext = new PortletSecurityContext(req);
       this.windowContext = new PortletWindowContext(this);
    }
    
@@ -99,11 +102,11 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       Object propertyValue = null;
       if (JuzuPortlet.PORTLET_MODE.equals(propertyType))
       {
-         propertyValue = request.getPortletMode();
+         propertyValue = req.getPortletMode();
       }
       else if (JuzuPortlet.WINDOW_STATE.equals(propertyType))
       {
-         propertyValue = request.getWindowState();
+         propertyValue = req.getWindowState();
       }
       else if (RequestContext.METHOD_ID.equals(propertyType))
       {
@@ -218,10 +221,10 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
 
    protected final ScopedContext getRequestContext(boolean create)
    {
-      ScopedContext context = (ScopedContext)request.getAttribute("org.juzu.request_scope");
+      ScopedContext context = (ScopedContext)req.getAttribute("org.juzu.request_scope");
       if (context == null && create)
       {
-         request.setAttribute("org.juzu.request_scope", context = new ScopedContext());
+         req.setAttribute("org.juzu.request_scope", context = new ScopedContext());
       }
       return context;
    }
@@ -229,7 +232,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
    protected final ScopedContext getFlashContext(boolean create)
    {
       ScopedContext context = null;
-      PortletSession session = request.getPortletSession(create);
+      PortletSession session = req.getPortletSession(create);
       if (session != null)
       {
          context = (ScopedContext)session.getAttribute("org.juzu.flash_scope");
@@ -244,7 +247,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
    protected final ScopedContext getSessionContext(boolean create)
    {
       ScopedContext context = null;
-      PortletSession session = request.getPortletSession(create);
+      PortletSession session = req.getPortletSession(create);
       if (session != null)
       {
          context = (ScopedContext)session.getAttribute("org.juzu.session_scope");
@@ -258,5 +261,6 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
 
    public void begin(Request request)
    {
+      this.request = request;
    }
 }

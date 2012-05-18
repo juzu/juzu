@@ -44,7 +44,7 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
          int status = resource.getStatus();
          if (status != 200)
          {
-            this.response.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
+            this.resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
          }
       }
       

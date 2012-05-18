@@ -35,11 +35,11 @@ class PortletWindowContext implements WindowContext
 
    public String getId()
    {
-      return request.request.getWindowID();
+      return request.req.getWindowID();
    }
 
    public String getNamespace()
    {
-      return request.response.getNamespace();
+      return request.resp.getNamespace();
    }
 }

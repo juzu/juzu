@@ -72,15 +72,15 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       {
          if (mimeType != null)
          {
-            response.setContentType(mimeType);
+            resp.setContentType(mimeType);
          }
          if (result instanceof String)
          {
-            response.getWriter().write((String)result);
+            resp.getWriter().write((String)result);
          }
          else 
          {
-            response.getPortletOutputStream().write((byte[])result);
+            resp.getPortletOutputStream().write((byte[])result);
          }
       }
    }
@@ -94,7 +94,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
             return "Resource URL don't have portlet modes";
          }
          PortletMode portletMode = (PortletMode)propertyValue;
-         for (Enumeration<PortletMode> e = request.getPortalContext().getSupportedPortletModes();e.hasMoreElements();)
+         for (Enumeration<PortletMode> e = req.getPortalContext().getSupportedPortletModes();e.hasMoreElements();)
          {
             PortletMode next = e.nextElement();
             if (next.equals(portletMode))
@@ -111,7 +111,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
             return "Resource URL don't have windwo state";
          }
          WindowState windowState = (WindowState)propertyValue;
-         for (Enumeration<WindowState> e = request.getPortalContext().getSupportedWindowStates();e.hasMoreElements();)
+         for (Enumeration<WindowState> e = req.getPortalContext().getSupportedWindowStates();e.hasMoreElements();)
          {
             WindowState next = e.nextElement();
             if (next.equals(windowState))
@@ -134,13 +134,13 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       switch (phase)
       {
          case ACTION:
-            url = response.createActionURL();
+            url = resp.createActionURL();
             break;
          case RENDER:
-            url = response.createRenderURL();
+            url = resp.createRenderURL();
             break;
          case RESOURCE:
-            url = response.createResourceURL();
+            url = resp.createResourceURL();
             break;
          default:
             throw new AssertionError("Unexpected phase " + phase);
@@ -246,7 +246,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
             }
             else
             {
-               this.response.setContentType(mimeType);
+               this.resp.setContentType(mimeType);
             }
          }
 
@@ -263,7 +263,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
             }
             else
             {
-               ((Response.Content<Stream.Char>)response).send(new AppendableStream(this.response.getWriter()));
+               ((Response.Content<Stream.Char>)response).send(new AppendableStream(this.resp.getWriter()));
             }
          }
          else
@@ -278,7 +278,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
             }
             else
             {
-               ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.response.getPortletOutputStream()));
+               ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
             }
          }
       }

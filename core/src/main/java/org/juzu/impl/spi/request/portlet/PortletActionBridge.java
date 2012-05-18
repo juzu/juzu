@@ -62,14 +62,14 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
          // Parameters
          for (Map.Entry<String, String[]> entry : update.getParameters().entrySet())
          {
-            super.response.setRenderParameter(entry.getKey(), entry.getValue());
+            super.resp.setRenderParameter(entry.getKey(), entry.getValue());
          }
 
          // Method id
          String methodId = update.getProperties().getValue(RenderContext.METHOD_ID);
          if (methodId != null)
          {
-            super.response.setRenderParameter("juzu.op", methodId);
+            super.resp.setRenderParameter("juzu.op", methodId);
          }
 
          //
@@ -78,7 +78,7 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
          {
             try
             {
-               super.response.setPortletMode(portletMode);
+               super.resp.setPortletMode(portletMode);
             }
             catch (PortletModeException e)
             {
@@ -92,7 +92,7 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
          {
             try
             {
-               super.response.setWindowState(windowState);
+               super.resp.setWindowState(windowState);
             }
             catch (WindowStateException e)
             {
@@ -104,7 +104,7 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       {
          done = true;
          Response.Redirect redirect = (Response.Redirect)response;
-         super.response.sendRedirect(redirect.getLocation());
+         super.resp.sendRedirect(redirect.getLocation());
       }
    }
 }

@@ -23,6 +23,7 @@ import org.juzu.Response;
 import org.juzu.impl.asset.Asset;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RenderBridge;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 
 import javax.portlet.MimeResponse;
@@ -41,7 +42,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
    public void setTitle(String title)
    {
-      response.setTitle(title);
+      resp.setTitle(title);
    }
 
    @Override
@@ -54,7 +55,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
          Response.Content.Render render = (Response.Content.Render)response;
 
          // For now only in gatein since liferay won't support it very well
-         if (request.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container"))
+         if (req.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container") || true)
          {
             Iterable<Asset> scripts = context.assetManager.resolveAssets(render.getScripts());
             Iterable<Asset> stylesheets = context.assetManager.resolveAssets(render.getStylesheets());
@@ -64,22 +65,26 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
             {
                int pos = stylesheet.getValue().lastIndexOf('.');
                String ext = pos == -1 ? "css" : stylesheet.getValue().substring(pos + 1);
-               Element elt = this.response.createElement("link");
+               Element elt = this.resp.createElement("link");
                elt.setAttribute("media", "screen");
                elt.setAttribute("rel", "stylesheet");
                elt.setAttribute("type", "text/" + ext);
                elt.setAttribute("href", getAssetURL(stylesheet));
-               this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+               this.resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
             }
 
             //
             for (Asset script : scripts)
             {
                String url = getAssetURL(script);
-               Element elt = this.response.createElement("script");
+               Element elt = this.resp.createElement("script");
                elt.setAttribute("type", "text/javascript");
                elt.setAttribute("src", url);
-               this.response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+               // This comment is needed for liferay to make the script pass the minifier
+               // it forces to have a <script></script> tag
+               Comment comment = elt.getOwnerDocument().createComment(request.getApplication().getName() + " script ");
+               elt.appendChild(comment);
+               this.resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
             }
          }
 
@@ -100,9 +105,9 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       switch (asset.getLocation())
       {
          case CLASSPATH:
-            return request.getContextPath() + "/assets" + asset.getValue();
+            return req.getContextPath() + "/assets" + asset.getValue();
          case SERVER:
-            return request.getContextPath() + asset.getValue();
+            return req.getContextPath() + asset.getValue();
          case EXTERNAL:
             return asset.getValue();
          default:
@@ -118,7 +123,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       }
       else
       {
-         return request.getContextPath() + "/" + url;
+         return req.getContextPath() + "/" + url;
       }
    }
 

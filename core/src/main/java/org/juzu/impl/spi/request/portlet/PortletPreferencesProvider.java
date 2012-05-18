@@ -12,6 +12,6 @@ public class PortletPreferencesProvider implements Provider<PortletPreferences>
    {
       Request request = Request.getCurrent();
       PortletRequestBridge bridge = (PortletRequestBridge)request.getBridge();
-      return bridge.request.getPreferences();
+      return bridge.req.getPreferences();
    }
 }
