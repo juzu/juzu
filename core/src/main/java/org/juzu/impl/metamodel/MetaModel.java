@@ -149,7 +149,7 @@ public final class MetaModel extends MetaModelObject
 
    public ApplicationMetaModel addApplication(String packageName, String applicationName)
    {
-      return applications.add(ElementHandle.Package.create(new QN(packageName)), applicationName);
+      return applications.add(ElementHandle.Package.create(QN.parse(packageName)), applicationName);
    }
 
    //

@@ -24,6 +24,7 @@ import org.juzu.Response;
 import org.juzu.UndeclaredIOException;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.request.Request;
+import org.juzu.impl.utils.Path;
 import org.juzu.io.AppendableStream;
 import org.juzu.io.Stream;
 import org.juzu.io.Streamable;
@@ -41,18 +42,23 @@ public abstract class Template
 {
 
    /** . */
-   private final String path;
+   private final Path path;
 
    /** . */
    private final ApplicationContext applicationContext;
 
    public Template(ApplicationContext applicationContext, String path)
    {
+      this(applicationContext, Path.parse(path));
+   }
+
+   public Template(ApplicationContext applicationContext, Path path)
+   {
       this.applicationContext = applicationContext;
       this.path = path;
    }
 
-   public String getPath()
+   public Path getPath()
    {
       return path;
    }

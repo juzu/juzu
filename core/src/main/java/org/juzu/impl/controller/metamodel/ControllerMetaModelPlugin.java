@@ -153,12 +153,12 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
       ArrayList<String> controllers = new ArrayList<String>();
       for (ControllerMetaModel controller : ac)
       {
-         controllers.add(controller.getHandle().getFQN().getFullName() + "_");
+         controllers.add(controller.getHandle().getFQN().getName() + "_");
       }
       
       //
       JSON config = new JSON();
-      config.set("default", ac.defaultController);
+      config.set("default", ac.defaultController != null ? ac.defaultController.getName() : null);
       config.set("escapeXML", ac.escapeXML);
       config.map("controllers", controllers);
 
@@ -205,7 +205,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
       Writer writer = null;
       try
       {
-         JavaFileObject file = env.createSourceFile(fqn.getFullName() + "_", origin);
+         JavaFileObject file = env.createSourceFile(fqn.getName() + "_", origin);
          writer = file.openWriter();
 
          //
@@ -249,8 +249,8 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                writer.append("null,");
             }
             writer.append(PHASE).append(".").append(method.getPhase().name()).append(",");
-            writer.append(fqn.getFullName()).append(".class").append(",");
-            writer.append(TOOLS).append(".safeGetMethod(").append(fqn.getFullName()).append(".class,\"").append(method.getName()).append("\"");
+            writer.append(fqn.getName()).append(".class").append(",");
+            writer.append(TOOLS).append(".safeGetMethod(").append(fqn.getName()).append(".class,\"").append(method.getName()).append("\"");
             for (ParameterMetaModel param : method.getParameters())
             {
                writer.append(",").append(param.declaredType).append(".class");
@@ -366,7 +366,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
          writer.append("}\n");
 
          //
-         MetaModel.log.log("Generated controller companion " + fqn.getFullName() + "_" + " as " + file.toUri());
+         MetaModel.log.log("Generated controller companion " + fqn.getName() + "_" + " as " + file.toUri());
       }
       catch (IOException e)
       {

@@ -22,7 +22,7 @@ class BufKey implements Serializable
 
    BufKey(ProcessingContext env, Element element, String annotationFQN)
    {
-      this.pkg = new QN(env.getPackageOf(element).getQualifiedName());
+      this.pkg = QN.parse(env.getPackageOf(element).getQualifiedName());
       this.element = ElementHandle.create(element);
       this.annotationFQN = annotationFQN;
    }

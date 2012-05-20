@@ -29,7 +29,7 @@ import org.juzu.impl.template.compiler.ProcessContext;
 import org.juzu.impl.template.compiler.ProcessPhase;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.template.metadata.TemplateDescriptor;
-import org.juzu.impl.utils.FQN;
+import org.juzu.impl.utils.Path;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.protocol.mock.MockApplication;
 import org.juzu.test.protocol.mock.MockClient;
@@ -121,26 +121,28 @@ public class TagTestCase extends AbstractInjectTestCase
       // but for now it will be enough
       TemplateDescriptor desc = app.getContext().getDescriptor().getTemplates().getTemplate("foo.gtmpl");
       assertNotNull(desc);
-      Template foo = new Template("index.gtmpl", new ASTNode.Template(), new FQN(desc.getType()), "groovy", "foo.gtmpl", System.currentTimeMillis());
+      Template foo = new Template(
+         Path.parse("index.gtmpl"),
+         new ASTNode.Template(),
+         Path.parse(desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
+         System.currentTimeMillis());
 
       //
-      HashMap<String, Template> templates = new HashMap<String, Template>();
-      templates.put("foo.gtmpl", foo);
+      HashMap<Path, Template> templates = new HashMap<Path, Template>();
+      templates.put(Path.parse("foo.gtmpl"), foo);
       ProcessPhase process = new ProcessPhase(new ProcessContext()
       {
          @Override
-         protected Template resolveTemplate(String originPath, String path)
+         protected Template resolveTemplate(Path originPath, Path path)
          {
-            if (path.equals("index.gtmpl"))
+            if (path.equals(Path.parse("index.gtmpl")))
             {
                try
                {
                   return new Template(
-                     "index.gtmpl",
+                     Path.parse("index.gtmpl"),
                      ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
-                     new FQN("template.tag.decorate.templates.index"),
-                     "gtmpl",
-                     "index.gtmpl",
+                     Path.parse("template/tag/decorate/templates/index.gtmpl"),
                      System.currentTimeMillis()
                   );
                }
@@ -155,7 +157,7 @@ public class TagTestCase extends AbstractInjectTestCase
             }
          }
       }, templates);
-      Template template = process.resolveTemplate("index.gtmpl");
+      Template template = process.resolveTemplate(Path.parse("index.gtmpl"));
       assertNotNull(template);
       
       // Now emit the template

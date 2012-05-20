@@ -22,8 +22,12 @@ package org.juzu.impl.utils;
 import org.junit.Test;
 import org.juzu.test.AbstractTestCase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class QNTestCase extends AbstractTestCase
+public class QN2TestCase extends AbstractTestCase
 {
 
    @Test
@@ -40,7 +44,7 @@ public class QNTestCase extends AbstractTestCase
    {
       try
       {
-         new QN(value);
+         QN.parse(value);
          fail("Was expecting " + value + " to fail");
       }
       catch (IllegalArgumentException ignore)
@@ -51,27 +55,49 @@ public class QNTestCase extends AbstractTestCase
    @Test
    public void testValues()
    {
-      assertQN("");
-      assertQN("a");
-      assertQN("a");
-      assertQN("a.b");
-      assertQN("a.b.c");
+      assertQN("a.b", "a", "b");
+      assertQN("a.b.c", "a", "b", "c");
    }
 
-   private void assertQN(String value)
+   private void assertQN(String value, String... names)
    {
-      QN qn = new QN(value);
+      QN qn = QN.parse(value);
+      ArrayList<String> testNames = Tools.list(qn);
+      assertEquals(Arrays.asList(names), testNames);
       assertEquals(value, qn.getValue());
+   }
+
+   @Test
+   public void testEmpty()
+   {
+      QN empty = QN.parse("");
+      assertEquals(0, empty.size());
+      assertEquals(0, empty.length());
+      assertEquals(Collections.emptyList(), Tools.list(empty));
+      assertNull(empty.getParent());
+      assertEquals("", empty.getValue());
+   }
+
+   @Test
+   public void testSimple()
+   {
+      QN simple = QN.parse("a");
+      assertEquals(1, simple.size());
+      assertEquals(1, simple.length());
+      assertEquals(Collections.singletonList("a"), Tools.list(simple));
+      QN parent = simple.getParent();
+      assertEquals(0, parent.size());
+      assertEquals(0, parent.length());
+      assertEquals("a", simple.getValue());
    }
 
    @Test
    public void testAppend()
    {
-      assertAppend("a", "", "a");
       assertAppend("a.b", "a", "b");
       try
       {
-         new QN("a").append("");
+         QN.parse("a").append("");
          fail();
       }
       catch (IllegalArgumentException e)
@@ -79,7 +105,7 @@ public class QNTestCase extends AbstractTestCase
       }
       try
       {
-         new QN("a").append("a.b");
+         QN.parse("a").append("a.b");
          fail();
       }
       catch (IllegalArgumentException e)
@@ -87,7 +113,15 @@ public class QNTestCase extends AbstractTestCase
       }
       try
       {
-         new QN("a").append(null);
+         QN.parse("a").append((String)null);
+         fail();
+      }
+      catch (IllegalArgumentException e)
+      {
+      }
+      try
+      {
+         QN.parse("a").append((String[])null);
          fail();
       }
       catch (NullPointerException e)
@@ -97,7 +131,7 @@ public class QNTestCase extends AbstractTestCase
 
    private void assertAppend(String expected, String qn, String simpleName)
    {
-      assertEquals(expected, new QN(qn).append(simpleName).getValue());
+      assertEquals(expected, QN.parse(qn).append(simpleName).getValue());
    }
 
    @Test
@@ -123,23 +157,25 @@ public class QNTestCase extends AbstractTestCase
 
    private void assertPrefix(String prefix, String s)
    {
-      assertTrue(new QN(prefix).isPrefix(new QN(s)));
+      assertTrue(QN.parse(prefix).isPrefix(QN.parse(s)));
    }
 
    private void assertNotPrefix(String prefix, String s)
    {
-      assertFalse(new QN(prefix).isPrefix(new QN(s)));
+      assertFalse(QN.parse(prefix).isPrefix(QN.parse(s)));
    }
 
    @Test
    public void testParent()
    {
-      QN abc = new QN("a.b.c");
+      QN abc = QN.parse("a.b.c");
       QN ab = abc.getParent();
       assertNotNull(ab);
-      assertEquals(new QN("a.b"), ab);
+      assertEquals(QN.parse("a.b"), ab);
       QN a = ab.getParent();
-      assertEquals(new QN("a"), a);
-      assertNull(a.getParent());
+      assertEquals(QN.parse("a"), a);
+      QN empty = a.getParent();
+      assertEquals(0, empty.size());
+      assertEquals(0, empty.length());
    }
 }

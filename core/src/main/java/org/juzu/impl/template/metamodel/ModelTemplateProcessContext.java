@@ -28,8 +28,7 @@ import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.template.compiler.ProcessContext;
 import org.juzu.impl.template.compiler.ProcessPhase;
 import org.juzu.impl.utils.Content;
-import org.juzu.impl.utils.FQN;
-import org.juzu.impl.utils.Spliterator;
+import org.juzu.impl.utils.Path;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,7 +36,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class ModelTemplateProcessContext extends ProcessContext
@@ -50,11 +48,11 @@ class ModelTemplateProcessContext extends ProcessContext
    private final ProcessingContext env;
 
    /** . */
-   private final Map<String, Template> templates; 
+   private final Map<Path, Template> templates;
 
    ModelTemplateProcessContext(
       TemplateMetaModel templateMetaModel,
-      Map<String, Template> templates,
+      Map<Path, Template> templates,
       ProcessingContext env)
    {
       this.templateMetaModel = templateMetaModel;
@@ -70,53 +68,33 @@ class ModelTemplateProcessContext extends ProcessContext
       {
          public Collection<Template> call() throws Exception
          {
-            Set<String> keys = new HashSet<String>(templates.keySet());
+            Set<Path> keys = new HashSet<Path>(templates.keySet());
             ProcessPhase phase = new ProcessPhase(ModelTemplateProcessContext.this, templates);
             phase.resolveTemplate(metaModel.getPath());
-            Map<String, Template> copy = new HashMap<String, Template>(templates);
+            Map<Path, Template> copy = new HashMap<Path, Template>(templates);
             copy.keySet().removeAll(keys);
             return copy.values();
          }
       });
    }
 
-   protected Content resolveResource(FQN fqn, String extension)
+   protected Content resolveResource(Path path)
    {
-      ElementHandle.Package context = templateMetaModel.getTemplates().getApplication().getHandle();
-      return env.resolveResource(context, fqn, extension);
+      TemplatesMetaModel tmm = templateMetaModel.getTemplates();
+      ElementHandle.Package context = tmm.getApplication().getHandle();
+      return env.resolveResource(context, tmm.resolve(path));
    }
 
    @Override
-   protected Template resolveTemplate(String originPath, String path)
+   protected Template resolveTemplate(Path originPath, Path path)
    {
-      Matcher matcher = TemplateMetaModelPlugin.TEMPLATE_PATH_PATTERN.matcher(path);
-
-      //
-      if (!matcher.matches())
-      {
-         throw new CompilationException(MetaModelError.TEMPLATE_ILLEGAL_PATH, path);
-      }
-      String folder = matcher.group(1);
-      String rawName = matcher.group(2);
-      String extension = matcher.group(3);
+//      throw new CompilationException(MetaModelError.TEMPLATE_ILLEGAL_PATH, path);
 
       // Resolve the template fqn and the template name
       String fqn = templateMetaModel.getTemplates().getQN().getValue();
-      for (String name: Spliterator.split(folder + rawName, '/'))
-      {
-         if (fqn.length() == 0)
-         {
-            fqn = name;
-         }
-         else
-         {
-            fqn += "." +  name;
-         }
-      }
-      FQN stubFQN = new FQN(fqn);
 
       // Get source
-      Content content = resolveResource(stubFQN, extension);
+      Content content = resolveResource(path);
       if (content == null)
       {
          throw new CompilationException(MetaModelError.TEMPLATE_NOT_RESOLVED, fqn);
@@ -137,8 +115,6 @@ class ModelTemplateProcessContext extends ProcessContext
       return new Template(
          originPath,
          templateAST,
-         stubFQN,
-         extension,
          path,
          content.getLastModified());
    }

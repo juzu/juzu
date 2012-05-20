@@ -77,6 +77,12 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
+        <type>test-jar</type>
+        <version>0.4.5-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-core</artifactId>
         <classifier>javadoc</classifier>
         <version>0.4.5-SNAPSHOT</version>
       </dependency>
@@ -123,6 +129,18 @@
         <artifactId>juzu-booking</artifactId>
         <type>war</type>
         <classifier>liferay</classifier>
+        <version>0.4.5-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-less</artifactId>
+        <version>0.4.5-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-less</artifactId>
+        <classifier>source</classifier>
         <version>0.4.5-SNAPSHOT</version>
       </dependency>
 
@@ -481,6 +499,7 @@
   
   <modules>
     <module>core</module>
+    <module>plugins</module>
     <module>archetype</module>
     <module>overlay</module>
     <module>booking</module>

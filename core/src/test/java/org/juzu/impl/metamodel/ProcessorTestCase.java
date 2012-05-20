@@ -51,7 +51,7 @@ public class ProcessorTestCase extends AbstractTestCase
 
    private void assertMatch(String test, String expectedFolder, String expectedRawName, String expectedExtension)
    {
-      Matcher matcher = TemplateMetaModelPlugin.TEMPLATE_PATH_PATTERN.matcher(test);
+      Matcher matcher = TemplateMetaModelPlugin.PATH_PATTERN.matcher(test);
       assertTrue("Was expecting " + test + " to match", matcher.matches());
       assertEquals(expectedFolder, matcher.group(1));
       assertEquals(expectedRawName, matcher.group(2));
@@ -60,7 +60,7 @@ public class ProcessorTestCase extends AbstractTestCase
 
    private void assertNotMatch(String test)
    {
-      Matcher matcher = TemplateMetaModelPlugin.TEMPLATE_PATH_PATTERN.matcher(test);
+      Matcher matcher = TemplateMetaModelPlugin.PATH_PATTERN.matcher(test);
       assertFalse("Was not expecting " + test + " to match", matcher.matches());
    }
 

@@ -5,6 +5,7 @@ import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.Key;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.JSON;
+import org.juzu.impl.utils.Path;
 import org.juzu.impl.utils.QN;
 
 import java.util.Iterator;
@@ -34,6 +35,18 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
       return json;
    }
 
+   public Path.Absolute resolve(Path path)
+   {
+      if (path instanceof Path.Absolute)
+      {
+         return (Path.Absolute)path;
+      }
+      else
+      {
+         return Path.Absolute.create(qn.append(path.getQN()), path.getRawName(), path.getExt());
+      }
+   }
+
    public ApplicationMetaModel getApplication()
    {
       return application;
@@ -44,7 +57,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
       return qn;
    }
 
-   public TemplateMetaModel get(String path)
+   public TemplateMetaModel get(Path path)
    {
       return getChild(Key.of(path, TemplateMetaModel.class));
    }
@@ -54,7 +67,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
       return getChildren(TemplateMetaModel.class).iterator();
    }
 
-   public TemplateRefMetaModel add(ElementHandle.Field handle, String path)
+   public TemplateRefMetaModel add(ElementHandle.Field handle, Path path)
    {
       TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new TemplateRefMetaModel(handle, path));
 

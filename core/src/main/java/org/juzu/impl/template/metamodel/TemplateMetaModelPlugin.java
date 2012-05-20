@@ -10,6 +10,7 @@ import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.utils.JSON;
+import org.juzu.impl.utils.Path;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -26,7 +27,7 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
-   public static final Pattern TEMPLATE_PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
+   public static final Pattern PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
 
    /** . */
    private static final Pattern PROVIDER_PKG_PATTERN = Pattern.compile(
@@ -85,7 +86,7 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
             TemplatesMetaModel at = application.getChild(TemplatesMetaModel.KEY);
 
             //
-            String path = (String)values.get("value");
+            Path path = Path.parse((String)values.get("value"));
             ElementHandle.Field handle = ElementHandle.Field.create(variableElt);
             at.add(handle, path);
          }
@@ -126,12 +127,14 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
    {
       JSON config = new JSON();
       ArrayList<String> templates = new ArrayList<String>();
-      for (Template template : application.getTemplates().resolver.getTemplates())
+      TemplatesMetaModel a = application.getTemplates();
+      for (Template template : a.resolver.getTemplates())
       {
-         templates.add(template.getFQN().getFullName());
+         Path resolved = a.resolve(template.getPath());
+         templates.add(resolved.getFQN().getName());
       }
       config.map("templates", templates);
-      config.set("package", application.getTemplates().getQN().toString());
+      config.set("package", a.getQN().toString());
       return config;
    }
 }

@@ -19,7 +19,6 @@
 
 package org.juzu.impl.template.metamodel;
 
-import org.juzu.Path;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.BaseProcessor;
@@ -41,6 +40,7 @@ import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.MethodInvocation;
+import org.juzu.impl.utils.Path;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.Generated;
@@ -77,10 +77,10 @@ public class TemplateResolver implements Serializable
    private final ApplicationMetaModel application;
 
    /** . */
-   private Map<String, Template> templates;
+   private Map<Path, Template> templates;
 
    /** . */
-   private Map<String, FileObject> resourceCache;
+   private Map<Path, FileObject> resourceCache;
    
    /** . */
    private Map<FQN, FileObject> stubCache;
@@ -97,8 +97,8 @@ public class TemplateResolver implements Serializable
 
       //
       this.application = application;
-      this.templates = new HashMap<String, Template>();
-      this.resourceCache = new HashMap<String, FileObject>();
+      this.templates = new HashMap<Path, Template>();
+      this.resourceCache = new HashMap<Path, FileObject>();
       this.stubCache = new HashMap<FQN, FileObject>();
       this.classCache = new HashMap<FQN, FileObject>();
    }
@@ -108,7 +108,7 @@ public class TemplateResolver implements Serializable
       return templates.values();
    }
    
-   public void removeTemplate(String path)
+   public void removeTemplate(Path path)
    {
       // Shall we do something else ?
       templates.remove(path);
@@ -129,35 +129,36 @@ public class TemplateResolver implements Serializable
       for (Iterator<Template> i = templates.values().iterator();i.hasNext();)
       {
          Template template = i.next();
-         Content content = context.resolveResource(application.getHandle(), template.getFQN(), template.getExtension());
+         Path.Absolute absolute = application.getTemplates().resolve(template.getPath());
+         Content content = context.resolveResource(application.getHandle(), absolute);
          if (content == null)
          {
             // That will generate a template not found error
             i.remove();
-            log.log("Detected template removal " + template.getFQN());
+            log.log("Detected template removal " + template.getPath());
          }
          else if (content.getLastModified() > template.getLastModified())
          {
             // That will force the regeneration of the template
             i.remove();
-            log.log("Detected stale template " + template.getFQN());
+            log.log("Detected stale template " + template.getPath());
          }
          else
          {
-            log.log("Template " + template.getFQN() + " is valid");
+            log.log("Template " + template.getPath() + " is valid");
          }
       }
 
       // Build missing templates
       log.log("Building missing templates");
-      Map<String, Template> copy = new HashMap<String, Template>(templates);
+      Map<Path, Template> copy = new HashMap<Path, Template>(templates);
       for (TemplateMetaModel templateMeta : application.getTemplates())
       {
          Template template = copy.get(templateMeta.getPath());
          if (template == null)
          {
             log.log("Compiling template " + templateMeta.getPath());
-            ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<String, Template>(copy), context);
+            ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<Path, Template>(copy), context);
             Collection<Template> resolved = compiler.resolve(templateMeta);
             for (Template added : resolved)
             {
@@ -171,7 +172,7 @@ public class TemplateResolver implements Serializable
       for (Template template : templates.values())
       {
          //
-         String originPath = template.getOriginPath();
+         Path originPath = template.getOriginPath();
          TemplateMetaModel templateMeta = application.getTemplates().get(originPath);
 
          //
@@ -186,7 +187,7 @@ public class TemplateResolver implements Serializable
          int index = 0;
          for (FQN type : types)
          {
-            elements[index++] = context.getTypeElement(type.getFullName());
+            elements[index++] = context.getTypeElement(type.getName());
          }
 
          // Resolve the stub
@@ -206,11 +207,10 @@ public class TemplateResolver implements Serializable
       {
          public Void call() throws Exception
          {
-            TemplateProvider provider = plugin.providers.get(template.getExtension());
+            TemplateProvider provider = plugin.providers.get(template.getPath().getExt());
 
             // If it's the cache we do nothing
-            String key = template.getFQN().getFullName() + ".groovy";
-            if (!resourceCache.containsKey(key))
+            if (!resourceCache.containsKey(template.getPath()))
             {
                //
                Writer writer = null;
@@ -238,7 +238,7 @@ public class TemplateResolver implements Serializable
                            String value = parameterMap.get(param.getName());
                            args.add(value);
                         }
-                        return new MethodInvocation(method.getController().getHandle().getFQN().getFullName() + "_", method.getName() + "URL", args);
+                        return new MethodInvocation(method.getController().getHandle().getFQN().getName() + "_", method.getName() + "URL", args);
                      }
                   });
 
@@ -246,15 +246,16 @@ public class TemplateResolver implements Serializable
                   tcc.emit(generator, ast);
 
                   //
-                  FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, template.getFQN().getPackageName(), template.getFQN().getSimpleName() + "." + provider.getTargetExtension(), elements);
+                  Path.Absolute absolute = application.getTemplates().resolve(template.getPath());
+                  FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, absolute.as(provider.getTargetExtension()), elements);
                   writer = scriptFile.openWriter();
                   writer.write(generator.toString());
 
                   // Put it in cache
-                  resourceCache.put(key, scriptFile);
+                  resourceCache.put(template.getPath(), scriptFile);
 
                   //
-                  log.log("Generated template script " + template.getFQN().getFullName() + " as " + scriptFile.toUri() +
+                  log.log("Generated template script " + template.getPath() + " as " + scriptFile.toUri() +
                      " with originating elements " + Arrays.asList(elements));
                }
                catch (IOException e)
@@ -268,7 +269,7 @@ public class TemplateResolver implements Serializable
             }
             else
             {
-               log.log("Template " + key + " was found in cache");
+               log.log("Template " + template.getPath() + " was found in cache");
             }
 
             //
@@ -279,9 +280,11 @@ public class TemplateResolver implements Serializable
 
    private void resolvedQualified(Template template, ProcessingContext context, Element[] elements)
    {
-      if (classCache.containsKey(template.getFQN()))
+      Path path = template.getPath();
+      Path.Absolute absolute = application.getTemplates().resolve(path);
+      if (classCache.containsKey(path.getFQN()))
       {
-         log.log("Template class " + template.getFQN() + " was found in cache");
+         log.log("Template class " + path + " was found in cache");
          return;
       }
 
@@ -290,10 +293,10 @@ public class TemplateResolver implements Serializable
       try
       {
          // Template qualified class
-         FileObject classFile = context.createSourceFile(template.getFQN().getFullName(), elements);
+         FileObject classFile = context.createSourceFile(absolute.getFQN(), elements);
          writer = classFile.openWriter();
-         writer.append("package ").append(template.getFQN().getPackageName()).append(";\n");
-         writer.append("import ").append(Tools.getImport(Path.class)).append(";\n");
+         writer.append("package ").append(absolute.getQN()).append(";\n");
+         writer.append("import ").append(Tools.getImport(org.juzu.Path.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Export.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
          writer.append("import ").append(Tools.getImport(TemplateDescriptor.class)).append(";\n");
@@ -301,19 +304,19 @@ public class TemplateResolver implements Serializable
          writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
          writer.append("@Generated({})\n");
          writer.append("@Export\n");
-         writer.append("@Path(\"").append(template.getPath()).append("\")\n");
-         writer.append("public class ").append(template.getFQN().getSimpleName()).append(" extends ").append(org.juzu.template.Template.class.getName()).append("\n");
+         writer.append("@Path(\"").append(path.getValue()).append("\")\n");
+         writer.append("public class ").append(path.getRawName()).append(" extends ").append(org.juzu.template.Template.class.getName()).append("\n");
          writer.append("{\n");
          writer.append("@Inject\n");
-         writer.append("public ").append(template.getFQN().getSimpleName()).append("(").
+         writer.append("public ").append(path.getRawName()).append("(").
             append(ApplicationContext.class.getSimpleName()).append(" applicationContext").
             append(")\n");
          writer.append("{\n");
-         writer.append("super(applicationContext, \"").append(template.getPath()).append("\");\n");
+         writer.append("super(applicationContext, \"").append(path.getValue()).append("\");\n");
          writer.append("}\n");
 
          //
-         writer.append("public static final TemplateDescriptor DESCRIPTOR = new TemplateDescriptor(").append(template.getFQN().getFullName()).append(".class);\n");
+         writer.append("public static final TemplateDescriptor DESCRIPTOR = new TemplateDescriptor(").append(absolute.getFQN().getName()).append(".class);\n");
 
          //
          String baseBuilderName = Tools.getImport(org.juzu.template.Template.Builder.class);
@@ -348,15 +351,15 @@ public class TemplateResolver implements Serializable
          writer.append("}\n");
 
          //
-         classCache.put(template.getFQN(), classFile);
+         classCache.put(path.getFQN(), classFile);
 
          //
-         log.log("Generated template class " + template.getFQN().getFullName() + " as " + classFile.toUri() +
+         log.log("Generated template class " + path + " as " + classFile.toUri() +
             " with originating elements " + Arrays.asList(elements));
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elements[0], MetaModelError.CANNOT_WRITE_TEMPLATE_CLASS, template.getPath());
+         throw new CompilationException(e, elements[0], MetaModelError.CANNOT_WRITE_TEMPLATE_CLASS, path);
       }
       finally
       {
@@ -366,32 +369,35 @@ public class TemplateResolver implements Serializable
 
    private void resolveStub(Template template, TemplateMetaModelPlugin plugin, ProcessingContext context, Element[] elements)
    {
-      if (stubCache.containsKey(template.getFQN()))
+      if (stubCache.containsKey(template.getPath().getFQN()))
       {
-         log.log("Template strub " + template.getFQN() + " was found in cache");
+         log.log("Template strub " + template.getPath().getFQN() + " was found in cache");
          return;
       }
 
       //
-      FQN stubFQN = new FQN(template.getFQN().getFullName() + "_");
-      TemplateProvider provider = plugin.providers.get(template.getExtension());
+      Path absolute = application.getTemplates().resolve(template.getPath());
+
+      //
+      FQN stubFQN = new FQN(absolute.getFQN().getName() + "_");
+      TemplateProvider provider = plugin.providers.get(template.getPath().getExt());
       Writer writer = null;
       try
       {
          // Template stub
-         JavaFileObject stubFile = context.createSourceFile(stubFQN.getFullName(), elements);
+         JavaFileObject stubFile = context.createSourceFile(stubFQN, elements);
          writer = stubFile.openWriter();
          writer.append("package ").append(stubFQN.getPackageName()).append(";\n");
          writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-         writer.append("@Generated({\"").append(stubFQN.getFullName()).append("\"})\n");
+         writer.append("@Generated({\"").append(stubFQN.getName()).append("\"})\n");
          writer.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
          writer.append("}");
 
          //
-         stubCache.put(template.getFQN(), stubFile);
+         stubCache.put(template.getPath().getFQN(), stubFile);
 
          //
-         log.log("Generating template stub " + stubFQN.getFullName() + " as " + stubFile.toUri() +
+         log.log("Generating template stub " + stubFQN.getName() + " as " + stubFile.toUri() +
             " with originating elements " + Arrays.asList(elements));
       }
       catch (IOException e)

@@ -115,7 +115,7 @@ public class ApplicationMetaModel extends MetaModelObject
    {
       JSON json = new JSON();
       json.set("handle", handle);
-      json.set("fqn", fqn);
+      json.set("fqn", fqn.getName());
       json.map("templates", getTemplates());
       json.map("controllers", getControllers());
       return json;

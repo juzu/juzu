@@ -20,13 +20,15 @@
 package org.juzu.impl.utils;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FQN implements Serializable
+public class FQN implements Serializable, Iterable<String>
 {
 
    /** . */
-   private final String fullName;
+   private final String name;
 
    /** . */
    private final QN packageName;
@@ -39,43 +41,48 @@ public class FQN implements Serializable
       this(type.getName());
    }
 
-   public FQN(String fullName)
+   public FQN(String name)
    {
       QN packageName;
       String simpleName;
-      int pos = fullName.lastIndexOf('.');
+      int pos = name.lastIndexOf('.');
       if (pos == - 1)
       {
-         packageName = new QN("");
-         simpleName = fullName;
+         packageName = QN.EMPTY;
+         simpleName = name;
       }
       else
       {
-         packageName = new QN(fullName.substring(0, pos));
-         simpleName = fullName.substring(pos + 1);
+         packageName = QN.parse(name.substring(0, pos));
+         simpleName = name.substring(pos + 1);
       }
 
       //
-      this.fullName = fullName;
+      this.name = name;
       this.packageName = packageName;
       this.simpleName = simpleName;
    }
 
-   public FQN(CharSequence packageName, String simpleName)
+   public FQN(CharSequence packageName, CharSequence simpleName)
    {
-      this(new QN(packageName), simpleName);
+      this(packageName.toString(), simpleName.toString());
+   }
+
+   public FQN(String packageName, String simpleName)
+   {
+      this(QN.parse(packageName), simpleName);
    }
 
    public FQN(QN packageName, String simpleName)
    {
       this.packageName = packageName;
       this.simpleName = simpleName;
-      this.fullName = packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
+      this.name = packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
    }
 
-   public String getFullName()
+   public String getName()
    {
-      return fullName;
+      return name;
    }
 
    public QN getPackageName()
@@ -88,10 +95,72 @@ public class FQN implements Serializable
       return simpleName;
    }
 
+   public Iterator<String> iterator()
+   {
+      return new Iterator<String>()
+      {
+
+         /** . */
+         private int index = 0;
+
+         public boolean hasNext()
+         {
+            return index < packageName.size() + 1;
+         }
+
+         public String next()
+         {
+            if (index < packageName.size())
+            {
+               return packageName.get(index++);
+            }
+            else if (index == packageName.size())
+            {
+               index++;
+               return simpleName;
+            }
+            else
+            {
+               throw new NoSuchElementException();
+            }
+         }
+
+         public void remove()
+         {
+            throw new UnsupportedOperationException();
+         }
+      };
+   }
+
+   public int size()
+   {
+      return packageName.size() + 1;
+   }
+
+   public String get(int index)
+   {
+      if (index < 0)
+      {
+         throw new IndexOutOfBoundsException("Index " + index + " cannot be negative");
+      }
+      else if (index < packageName.size())
+      {
+         return packageName.get(index);
+      }
+      else if (index == packageName.size())
+      {
+         return simpleName;
+      }
+      else
+      {
+         throw new IndexOutOfBoundsException("Index " + index + " cannot be greater than bound " + packageName.size() + 1);
+      }
+   }
+
    @Override
    public int hashCode()
    {
-      return fullName.hashCode();
+      return name.hashCode();
    }
 
    @Override
@@ -112,6 +181,6 @@ public class FQN implements Serializable
    @Override
    public String toString()
    {
-      return fullName;
+      return name;
    }
 }

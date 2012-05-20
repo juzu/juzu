@@ -19,11 +19,13 @@
 
 package org.juzu.impl.template.compiler;
 
+import org.juzu.impl.utils.Path;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ProcessContext
 {
 
-   protected Template resolveTemplate(String originPath, String path)
+   protected Template resolveTemplate(Path originPath, Path path)
    {
       return null;
    }

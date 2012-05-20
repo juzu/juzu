@@ -1,107 +1,78 @@
-/*
- * Copyright (C) 2011 eXo Platform SAS.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
 package org.juzu.impl.utils;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
-/**
- * A qualified name.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public class QN implements CharSequence, Serializable
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class QN implements CharSequence, Serializable, Iterable<String>
 {
 
    /** . */
-   private final String value;
+   public static QN EMPTY = new QN("", new String[0]);
 
-   public QN(CharSequence value) throws NullPointerException, IllegalArgumentException
+   public static QN parse(CharSequence value)
    {
-      if (value == null)
-      {
-         throw new NullPointerException();
-      }
-      if (value.length() > 0)
-      {
-         if (value.charAt(0) == '.')
-         {
-            throw new IllegalArgumentException("A qualified name cannot begin with '.' : " + value);
-         }
-         if (value.length() > 1)
-         {
-            if (value.charAt(value.length() - 1) == '.')
-            {
-               throw new IllegalArgumentException("A qualified name cannot end with '.' : " + value);
-            }
-            if (value.length() > 3)
-            {
-               char prev = value.charAt(1);
-               for (int i = 2;i < value.length() - 1;i++)
-               {
-                  char next = value.charAt(i);
-                  if (prev == '.' && next == '.')
-                  {
-                     throw new IllegalArgumentException("A qualified name cannot have two following '.' : " + value);
-                  }
-                  prev = next;
-               }
-            }
-         }
-      }
-
-      //
-      this.value = value.toString();
+      return parse(value, 0, 0);
    }
 
-   public String getValue()
+   private static QN parse(CharSequence value, int from, int size)
    {
-      return value;
-   }
-
-   public QN append(String simpleName) throws NullPointerException, IllegalArgumentException
-   {
-      if (simpleName == null)
+      int len = value.length();
+      if (from < len)
       {
-         throw new NullPointerException("No null simple name accepted");
-      }
-      if (simpleName.isEmpty())
-      {
-         throw new IllegalArgumentException("No empty simple name can be appended");
-      }
-      if (simpleName.indexOf('.') != -1)
-      {
-         throw new IllegalArgumentException("A simple name cannot contain a '.'");
-      }
-      if (value.isEmpty())
-      {
-         return new QN(simpleName);
+         int to = -1;
+         for (int current = from;current < len;current++)
+         {
+            if (value.charAt(current) == '.')
+            {
+               to = current;
+               break;
+            }
+         }
+         if (to == -1)
+         {
+            String[] names = new String[size + 1];
+            names[size] = value.subSequence(from, len).toString();
+            return new QN(value.toString(), names);
+         }
+         else if (to - from < 1 || len - to < 2)
+         {
+            throw new IllegalArgumentException(" " + (to - from) + " " + (len - to));
+         }
+         else
+         {
+            QN that = parse(value, to + 1, size + 1);
+            that.names[size] = value.subSequence(from, to).toString();
+            return that;
+         }
       }
       else
       {
-         return new QN(value + "." + simpleName);
+         return new QN(value.toString(), new String[size], size);
       }
    }
 
-   public boolean isEmpty()
+   /** The original value. */
+   private final String value;
+
+   /** The names. */
+   private final String[] names;
+
+   /** . */
+   private final int size;
+
+   QN(String value, String[] names)
    {
-      return value.isEmpty();
+      this.value = value;
+      this.names = names;
+      this.size = names.length;
+   }
+
+   QN(String value, String[] names, int size)
+   {
+      this.value = value;
+      this.names = names;
+      this.size = size;
    }
 
    public int length()
@@ -119,6 +90,35 @@ public class QN implements CharSequence, Serializable
       return value.subSequence(start, end);
    }
 
+   public String get(int index)
+   {
+      if (index < 0)
+      {
+         throw new IndexOutOfBoundsException("Index " + index + " cannot be negative");
+      }
+      else if (index < size)
+      {
+         return names[index];
+      }
+      else
+      {
+         throw new IndexOutOfBoundsException("Index " + index + " cannot be greater than bound " + size);
+      }
+   }
+
+   public int size()
+   {
+      return size;
+   }
+
+   /** The cached parent. */
+   private QN parent;
+
+   public Iterator<String> iterator()
+   {
+      return Tools.iterator(0, size, names);
+   }
+
    /**
     * Returns the parent qn or null if it does not exist.
     *
@@ -126,14 +126,102 @@ public class QN implements CharSequence, Serializable
     */
    public QN getParent()
    {
-      int pos = value.lastIndexOf('.');
-      if (pos == -1)
+      if (parent == null)
       {
-         return null;
+         switch (size)
+         {
+            case 0:
+               break;
+            case 1:
+               parent = EMPTY;
+               break;
+            default:
+               parent = new QN(value.substring(0, value.length() - names[size - 1].length() - 1), names, size - 1);
+               break;
+         }
+      }
+      return parent;
+   }
+
+   public String getValue()
+   {
+      return value;
+   }
+
+   public QN append(QN suffix) throws NullPointerException
+   {
+      return append(suffix.names, suffix.size);
+   }
+
+   public QN append(String... suffix) throws NullPointerException, IllegalArgumentException
+   {
+      return append(suffix, suffix.length);
+   }
+
+   private QN append(String[] suffix, int size) throws NullPointerException, IllegalArgumentException
+   {
+      if (suffix == null)
+      {
+         throw new NullPointerException("No null names accepted");
+      }
+      if (size == 0)
+      {
+         return this;
       }
       else
       {
-         return new QN(value.substring(0, pos));
+         StringBuilder sb = new StringBuilder(value);
+         for (int i = 0;i < size;i++)
+         {
+            String s = suffix[i];
+            if (s == null)
+            {
+               throw new IllegalArgumentException("No null name accepted");
+            }
+            if (s.isEmpty())
+            {
+               throw new IllegalArgumentException("No empty name accepted");
+            }
+            if (s.indexOf('.') != -1)
+            {
+               throw new IllegalArgumentException("A name cannot contain a '.'");
+            }
+            sb.append('.');
+            sb.append(s);
+         }
+         String[] foo = new String[size + suffix.length];
+         System.arraycopy(names, 0, foo, 0, size);
+         System.arraycopy(suffix, 0, foo, size, suffix.length);
+         return new QN(sb.toString(), foo, foo.length);
+      }
+   }
+
+   public boolean isEmpty()
+   {
+      return value.isEmpty();
+   }
+
+   public boolean isPrefix(QN qn)
+   {
+      if (qn.parent == this)
+      {
+         // The fast way
+         return true;
+      }
+      else if (size <= qn.size)
+      {
+         for (int i = 0;i < size;i++)
+         {
+            if (!names[i].equals(qn.names[i]))
+            {
+               return false;
+            }
+         }
+         return true;
+      }
+      else
+      {
+         return false;
       }
    }
 
@@ -141,11 +229,6 @@ public class QN implements CharSequence, Serializable
    public String toString()
    {
       return value;
-   }
-
-   public boolean isPrefix(QN qn)
-   {
-      return value.length() == 0 || qn.value.startsWith(value) && (qn.value.length() == value.length() || qn.value.charAt(value.length()) == '.');
    }
 
    @Override
@@ -158,7 +241,7 @@ public class QN implements CharSequence, Serializable
       if (obj instanceof QN)
       {
          QN that = (QN)obj;
-         return value.equals(that.value);
+         return size == that.size && value.equals(that.value);
       }
       return false;
    }

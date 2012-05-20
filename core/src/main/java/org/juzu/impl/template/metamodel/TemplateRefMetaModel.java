@@ -39,11 +39,11 @@ public class TemplateRefMetaModel extends MetaModelObject
    final ElementHandle.Field handle;
 
    /** . */
-   String path;
+   org.juzu.impl.utils.Path path;
 
    TemplateRefMetaModel(
       ElementHandle.Field handle,
-      String path)
+      org.juzu.impl.utils.Path path)
    {
       this.handle = handle;
       this.path = path;
@@ -54,7 +54,7 @@ public class TemplateRefMetaModel extends MetaModelObject
       return handle;
    }
 
-   public String getPath()
+   public org.juzu.impl.utils.Path getPath()
    {
       return path;
    }

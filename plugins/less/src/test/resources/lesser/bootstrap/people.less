@@ -1,0 +1,188 @@
+@import "variables.less";
+@import "mixins.less";
+@import "grid.less";
+@import "reset.less";
+@import "type.less";
+@import "forms.less";
+@import "tables.less";
+@import "labels.less";
+@import "sprites.less";
+@import "layouts.less";
+@import "modals.less";
+@import "utilities.less";
+@import "close.less";
+@import "buttons.less";
+
+//
+@grayUltraLight: #f5f5f5;
+
+#people {
+
+  padding: 10px 0px;
+
+  // Remove dots line in FF
+  a:active, a:focus {
+    outline: 0;
+  }
+
+  // Reusable down arrow
+  .down-arrow(@color) {
+    width: 0;
+    height: 0;
+    display: inline-block;
+    content: "&darr;";
+    text-indent: -99999px;
+    vertical-align: top;
+    margin-top: 8px;
+    margin-left: 4px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid @color;
+    .opacity(50);
+  }
+
+  // Empty icon
+  .icon-empty {
+    background-image: none;
+  }
+
+  // Define the app width and center it
+  #foo {
+    width : 640px;
+    margin-left: auto;
+    margin-right: auto;
+
+    padding: 15px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    background-color: #fAfAfA;
+    .border-radius(6px);
+    .box-shadow();
+  }
+
+  // Center search blocks
+  #users-search, #groups-search {
+    input[type=text] {
+      .center-block;
+    }
+  }
+
+  .user, .group {
+    padding: 8px;
+    line-height: @baseLineHeight;
+    text-align: left;
+    border-top: 1px solid #ddd;
+  }
+
+  .display-name {
+    line-height: @baseLineHeight * 1.5;
+    font-size: 18px;
+  }
+
+  // magned : selected
+  // plane : grey
+  .user {
+    i.icon-plane, i.icon-magnet {
+      display: none;
+    }
+    .checkable.checked {
+      i.icon-empty {
+        display: none;
+      }
+      i.icon-magnet {
+        display: inline-block;
+      }
+    }
+    .editable {
+      float:right;
+      display: none;
+    }
+    .display-name {
+      display: inline;
+    }
+  }
+
+  .user.selected {
+    background-color: @grayLighter;
+  }
+
+  .user:hover {
+    background-color: @grayUltraLight;
+    i.icon-empty, i.icon-magnet {
+      display: none;
+    }
+    i.icon-plane {
+      display: inline-block;
+    }
+    .editable {
+      display: inline-block;
+    }
+    .checkable.checked {
+      i.icon-empty, i.icon-plane {
+        display: none;
+      }
+      i.icon-magnet {
+        display: inline-block;
+      }
+    }
+  }
+
+  .scrollbox {
+    height:450px;
+    overflow:auto; overflow-x:hidden;
+  }
+  
+  #groups {
+    .group:hover {
+      background-color: @grayUltraLight;
+    }
+    .group.selected {
+      background-color: @grayLighter;
+    }
+  }
+
+  .remove-memberships {
+    li {
+      float: left;
+      margin: 0px 1px
+    }
+  }
+
+  .add-memberships {
+    display: none;
+    float: right;
+    > li:first-child:after {
+      .down-arrow(@black);
+    }
+    ul {
+      display: none;
+      position: absolute;
+      padding: 0 1px 1px;
+      border-color: #999;
+      border-color: rgba(0,0,0,.2);
+      border-style: solid;
+      border-width: 0 1px 1px;
+      .box-shadow(0 2px 4px rgba(0,0,0,.2));
+    }
+  }
+
+  .group:hover .add-memberships {
+    display: block;
+  }
+
+  .add-memberships:hover {
+    ul {
+      display: block;
+      background-color: white;
+      a {
+        color: white;
+      }
+    }
+  }
+
+  .group {
+    .display-name:nth-last-child(2) {
+      color: @grayLight;
+    }
+  }
+}

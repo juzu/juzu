@@ -25,6 +25,7 @@ import org.juzu.impl.utils.Content;
 import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
+import org.juzu.impl.utils.Path;
 import org.juzu.impl.utils.Spliterator;
 import org.juzu.impl.utils.Tools;
 
@@ -250,50 +251,47 @@ public class ProcessingContext implements Filer, Elements
       }
    }
 
-   public Content resolveResource(ElementHandle.Package context, FQN fqn, String extension)
+   public Content resolveResource(ElementHandle.Package context, Path.Absolute p)
    {
       ReadFileSystem<File> sourcePath = getSourcePath(context);
-      String path = "/" + fqn.getFullName().replace('.', '/') + "." + extension;
       if (sourcePath != null)
       {
-         log.log("Attempt to resolve " + path + " from source path");
+         log.log("Attempt to resolve " + p.getCanonical() + " from source path");
          try
          {
             List<String> list = new ArrayList<String>();
-            Spliterator.split(fqn.getPackageName().getValue(), '.', list);
-            list.add(fqn.getSimpleName() + "." + extension);
+            Spliterator.split(p.getQN().getValue(), '.', list);
+            list.add(p.getName());
             File f = sourcePath.getPath(list);
             if (f != null)
             {
-               log.log("Resolved " + fqn + "." + extension + " to " + f.getAbsolutePath());
+               log.log("Resolved " + p + " to " + f.getAbsolutePath());
                return sourcePath.getContent(f);
             }
             else
             {
-               log.log("Resolving " + path + " from source path gave no result");
+               log.log("Resolving " + p.getCanonical() + " from source path gave no result");
             }
          }
          catch (IOException e)
          {
-            log.log("Could not resolve " + path + " from source path", e);
+            log.log("Could not resolve " + p.getCanonical() + " from source path", e);
          }
       }
       else
       {
          for (StandardLocation location : RESOURCE_LOCATIONS)
          {
-            String pkg = fqn.getPackageName().getValue();
-            String relativeName = fqn.getSimpleName() + "." + extension;
             try
             {
-               log.log("Attempt to resolve " + path + " from " + location.getName());
-               FileObject resource = getResource(location, pkg, relativeName);
+               log.log("Attempt to resolve " + p.getCanonical() + " from " + location.getName());
+               FileObject resource = getResource(location, p);
                byte[] bytes = Tools.bytes(resource.openInputStream());
                return new Content(resource.getLastModified(), bytes, Charset.defaultCharset());
             }
             catch (Exception e)
             {
-               log.log("Could not resolve resource " + path + " from " + location.getName(), e);
+               log.log("Could not resolve resource " + p.getCanonical() + " from " + location.getName(), e);
             }
          }
       }
@@ -473,6 +471,11 @@ public class ProcessingContext implements Filer, Elements
 
    // Filer implementation *********************************************************************************************
 
+   public JavaFileObject createSourceFile(FQN name, Element... originatingElements) throws IOException
+   {
+      return createSourceFile(name.getName(), originatingElements);
+   }
+
    public JavaFileObject createSourceFile(CharSequence name, Element... originatingElements) throws IOException
    {
       log.log("Creating source file for name=" + name + " elements=" + Arrays.asList(originatingElements));
@@ -485,10 +488,20 @@ public class ProcessingContext implements Filer, Elements
       return env.getFiler().createClassFile(name, originatingElements);
    }
 
+   public FileObject createResource(JavaFileManager.Location location, Path.Absolute path, Element... originatingElements) throws IOException
+   {
+      return createResource(location, path.getQN().getValue(), path.getName(), originatingElements);
+   }
+
    public FileObject createResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName, Element... originatingElements) throws IOException
    {
       log.log("Creating resource file for location=" + location + " pkg=" + pkg + " relativeName=" + relativeName + " elements=" + Arrays.asList(originatingElements));
       return env.getFiler().createResource(location, pkg, relativeName, originatingElements);
+   }
+
+   public FileObject getResource(JavaFileManager.Location location, Path path) throws IOException
+   {
+      return getResource(location, path.getQN().getValue(), path.getName());
    }
 
    public FileObject getResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName) throws IOException

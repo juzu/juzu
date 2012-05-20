@@ -20,7 +20,7 @@
 package org.juzu.impl.template.compiler;
 
 import org.juzu.impl.template.ast.ASTNode;
-import org.juzu.impl.utils.FQN;
+import org.juzu.impl.utils.Path;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -30,19 +30,13 @@ public class Template implements Serializable
 {
 
    /** The origin path. */
-   private final String originPath;
+   private final Path originPath;
 
    /** . */
    private final ASTNode.Template ast;
 
    /** . */
-   private final FQN fqn;
-
-   /** . */
-   private final String extension;
-
-   /** . */
-   private final String path;
+   private final Path path;
 
    /** . */
    private final LinkedHashSet<String> parameters;
@@ -51,45 +45,31 @@ public class Template implements Serializable
    private long lastModified;
 
    public Template(
-      String originPath,
+      Path originPath,
       ASTNode.Template ast,
-      FQN fqn,
-      String extension,
-      String path,
+      Path path,
       long lastModified)
    {
       this.originPath = originPath;
       this.ast = ast;
-      this.fqn = fqn;
-      this.extension = extension;
       this.path = path;
       this.parameters = new LinkedHashSet<String>();
       this.lastModified = lastModified;
    }
 
-   public String getOriginPath()
+   public Path getOriginPath()
    {
       return originPath;
    }
 
-   public String getPath()
+   public Path getPath()
    {
       return path;
-   }
-
-   public String getExtension()
-   {
-      return extension;
    }
 
    public ASTNode.Template getAST()
    {
       return ast;
-   }
-
-   public FQN getFQN()
-   {
-      return fqn;
    }
 
    public long getLastModified()

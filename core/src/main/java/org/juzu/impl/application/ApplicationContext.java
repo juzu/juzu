@@ -19,6 +19,7 @@
 
 package org.juzu.impl.application;
 
+import org.juzu.Path;
 import org.juzu.PropertyMap;
 import org.juzu.UndeclaredIOException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
@@ -243,11 +244,15 @@ public class ApplicationContext
 
    public TemplateStub resolveTemplateStub(String path)
    {
+      return resolveTemplateStub(org.juzu.impl.utils.Path.parse(path));
+   }
+
+   public TemplateStub resolveTemplateStub(org.juzu.impl.utils.Path path)
+   {
       try
       {
          StringBuilder id = new StringBuilder(descriptor.getTemplates().getPackageName());
-         String relativePath = path.substring(0, path.indexOf('.'));
-         for (String name : Spliterator.split(relativePath, '/'))
+         for (String name : path)
          {
             if (id.length() > 0)
             {

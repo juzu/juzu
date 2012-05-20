@@ -110,7 +110,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable
 
       public static Package create(PackageElement elt)
       {
-         return new Package(new QN(elt.getQualifiedName().toString()));
+         return new Package(QN.parse(elt.getQualifiedName()));
       }
 
       /** . */
@@ -189,7 +189,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       @Override
       protected TypeElement doGet(ProcessingEnvironment env)
       {
-         return env.getElementUtils().getTypeElement(fqn.getFullName());
+         return env.getElementUtils().getTypeElement(fqn.getName());
       }
 
       @Override
@@ -276,7 +276,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       @Override
       protected ExecutableElement doGet(ProcessingEnvironment env)
       {
-         TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getFullName());
+         TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
          if (typeElt != null)
          {
             next:
@@ -382,7 +382,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable
       @Override
       protected VariableElement doGet(ProcessingEnvironment env)
       {
-         TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getFullName());
+         TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
          if (typeElt != null)
          {
             for (VariableElement variableElt : ElementFilter.fieldsIn(typeElt.getEnclosedElements()))

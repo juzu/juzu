@@ -1,142 +1,286 @@
-/*
- * Copyright (C) 2011 eXo Platform SAS.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
 package org.juzu.impl.utils;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Path implements Iterable<String>
+public abstract class Path implements Serializable, Iterable<String>
 {
-   
-   public static Path parse(String s, char separator)
+
+   public static Path create(boolean absolute, QN qn, String name, String extension)
    {
-      int index = 0;
-      int from = 0;
-      while (true)
+      return absolute ? new Absolute(null, new FQN(qn, name), extension) : new Relative(null, new FQN(qn, name), extension);
+   }
+
+   public static Path parse(String path) throws NullPointerException, IllegalArgumentException
+   {
+      boolean absolute = path.length() > 0 && path.charAt(0) == '/';
+      String[] dirs = parse(path, 0, 0);
+      int len = dirs.length - 2;
+      QN qn;
+      if (len == 0)
       {
-         int pos = s.indexOf(separator, from);
+         qn = QN.EMPTY;
+      }
+      else if (len == 1)
+      {
+         qn = new QN(dirs[0], dirs, 1);
+      }
+      else
+      {
+         StringBuilder sb = new StringBuilder();
+         for (int i = 0;i < len;i++)
+         {
+            if (i > 0)
+            {
+               sb.append('.');
+            }
+            sb.append(dirs[i]);
+         }
+         qn = new QN(sb.toString(), dirs, len);
+      }
+      FQN fqn = new FQN(qn, dirs[len]);
+      return absolute ? new Absolute(path, fqn, dirs[dirs.length - 1]) : new Relative(path, fqn, dirs[dirs.length - 1]);
+   }
+
+   private static String[] parse(String path, int from, int size)
+   {
+      int len = path.length();
+      if (from < len)
+      {
+         int pos = path.indexOf('/', from);
          if (pos == -1)
          {
-            if (from < s.length())
+            int cur = len - 1;
+            while (cur >= from)
             {
-               index++;
+               char c = path.charAt(cur);
+               if (c == '.')
+               {
+                  if (cur - from < 1)
+                  {
+                     throw new IllegalArgumentException();
+                  }
+                  if (len - cur < 2)
+                  {
+                     throw new IllegalArgumentException();
+                  }
+                  String[] ret = new String[size + 2];
+                  ret[size] = path.substring(from, cur);
+                  ret[size + 1] = path.substring(cur + 1);
+                  return ret;
+               }
+               else
+               {
+                  cur--;
+               }
             }
-            break;
+            String[] ret = new String[size + 2];
+            ret[size] = path.substring(from);
+            return ret;
+         }
+         else if (from == pos)
+         {
+            return parse(path, from + 1, size);
          }
          else
          {
-            if (from < pos)
-            {
-               index++;
-            }
-            from = pos + 1;
+            String[] ret = parse(path, pos + 1, size + 1);
+            ret[size] = path.substring(from, pos);
+            return ret;
          }
       }
-      
-      //
-      String[] name = new String[index];
-
-      //
-      from = 0;
-      index = 0;
-      while (true)
+      else
       {
-         int pos = s.indexOf(separator, from);
-         if (pos == -1)
-         {
-            if (from < s.length())
-            {
-               name[index++] = s.substring(from);
-            }
-            break;
-         }
-         else
-         {
-            if (from < pos)
-            {
-               name[index++] = s.substring(from, pos);
-            }
-            from = pos + 1;
-         }
+         String[] ret = new String[size + 2];
+         ret[size] = "";
+         return ret;
       }
-
-      //
-      return new Path(name, 0);
    }
-   
-   /** . */
-   private final String[] names;
 
    /** . */
-   private final int from;
+   protected final FQN fqn;
 
    /** . */
-   private Path next;
+   private String canonical;
 
-   private Path(String names[], int from)
+   /** . */
+   private String value;
+
+   /** . */
+   private final String ext;
+
+   /** . */
+   private String name;
+
+   private Path(String value, FQN fqn, String ext)
    {
-      this.names = names;
-      this.from = from;
-      this.next = null;
-   }
-   
-   public Path next()
-   {
-      if (from < names.length)
-      {
-         if (next == null)
-         {
-            next = new Path(names, from + 1);
-         }
-      }
-      return next;
-   }
-   
-   public int size()
-   {
-      return names.length - from;
-   }
-   
-   public String get(int index) throws IndexOutOfBoundsException
-   {
-      return names[from + index];
+      this.fqn = fqn;
+      this.canonical = null;
+      this.value = value;
+      this.ext = ext;
+      this.name = null;
    }
 
    public Iterator<String> iterator()
    {
-      return Tools.iterator(from, names);
+      return fqn.iterator();
+   }
+
+   public String getValue()
+   {
+      if (value == null)
+      {
+         return getCanonical();
+      }
+      else
+      {
+         return value;
+      }
+   }
+
+   public abstract boolean isAbsolute();
+
+   public QN getQN()
+   {
+      return fqn.getPackageName();
+   }
+
+   public FQN getFQN()
+   {
+      return fqn;
+   }
+
+   public String getRawName()
+   {
+      return fqn.getSimpleName();
+   }
+
+   public String getExt()
+   {
+      return ext;
+   }
+
+   public String getName()
+   {
+      if (name == null)
+      {
+         if (ext != null)
+         {
+            name = fqn.getSimpleName() + "." + ext;
+         }
+         else
+         {
+            name = fqn.getSimpleName();
+         }
+      }
+      return name;
+   }
+
+   public abstract Path as(String ext);
+
+   public String getCanonical()
+   {
+      if (canonical == null)
+      {
+         StringBuilder sb = new StringBuilder();
+         if (isAbsolute())
+         {
+            sb.append('/');
+         }
+         for (int i = 0;i < fqn.size();i++)
+         {
+            if (i > 0)
+            {
+               sb.append('/');
+            }
+            sb.append(fqn.get(i));
+         }
+         if (ext != null)
+         {
+            sb.append('.').append(ext);
+         }
+         canonical = sb.toString();
+      }
+      return canonical;
+   }
+
+   @Override
+   public int hashCode()
+   {
+      return fqn.hashCode() ^ (ext != null ? ext.hashCode() : 0);
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (obj == this)
+      {
+         return true;
+      }
+      if (obj.getClass()== getClass())
+      {
+         Path that = (Path)obj;
+         return fqn.equals(that.fqn) && Tools.safeEquals(ext, that.ext);
+      }
+      return false;
    }
 
    @Override
    public String toString()
    {
-      StringBuilder sb = new StringBuilder("Path[");
-      for (int i = from;i < names.length;i++)
+      return "Path[absolute=" + isAbsolute() + ",fqn=" + fqn + ",extension" + ext +  "]";
+   }
+
+   public static class Absolute extends Path
+   {
+
+      public static Absolute create(QN qn, String rawName, String ext)
       {
-         if (i > from)
-         {
-            sb.append('.');
-         }
-         sb.append(names[i]);
+         return new Absolute(null, new FQN(qn, rawName), ext);
       }
-      sb.append(']');
-      return sb.toString();
+
+      private Absolute(String value, FQN fqn, String extension)
+      {
+         super(value, fqn, extension);
+      }
+
+      @Override
+      public Absolute as(String ext)
+      {
+         return new Absolute(null, fqn, ext);
+      }
+
+      @Override
+      public boolean isAbsolute()
+      {
+         return true;
+      }
+   }
+
+   public static class Relative extends Path
+   {
+
+      public static Relative create(QN qn, String name, String extension)
+      {
+         return new Relative(null, new FQN(qn, name), extension);
+      }
+
+      private Relative(String value, FQN fqn, String extension)
+      {
+         super(value, fqn, extension);
+      }
+
+      @Override
+      public Relative as(String ext)
+      {
+         return new Relative(null, fqn, ext);
+      }
+
+      @Override
+      public boolean isAbsolute()
+      {
+         return false;
+      }
    }
 }

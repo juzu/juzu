@@ -107,7 +107,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
    public void processAnnotation(MetaModel model, Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
    {
       PackageElement pkg = model.env.getPackageOf(element);
-      QN pkgQN = new QN(pkg.getQualifiedName());
+      QN pkgQN = QN.parse(pkg.getQualifiedName());
 
       //
       ApplicationMetaModel found = null;
@@ -207,7 +207,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
          ApplicationMetaModel application = (ApplicationMetaModel)obj;
          if (event.getType() == MetaModelEvent.AFTER_ADD)
          {
-            moduleConfig.put(application.getFQN().getSimpleName(), application.getFQN().getFullName());
+            moduleConfig.put(application.getFQN().getSimpleName(), application.getFQN().getName());
             emitApplication(model.env, application);
          }
          else if (event.getType() == MetaModelEvent.BEFORE_REMOVE)
@@ -317,7 +317,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       Writer writer = null;
       try
       {
-         JavaFileObject applicationFile = env.createSourceFile(fqn.getFullName(), elt);
+         JavaFileObject applicationFile = env.createSourceFile(fqn, elt);
          writer = applicationFile.openWriter();
 
          writer.append("package ").append(fqn.getPackageName()).append(";\n");
@@ -337,7 +337,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
          writer.append("}\n");
 
          //
-         MetaModel.log.log("Generated application " + fqn.getFullName() + " as " + applicationFile.toUri());
+         MetaModel.log.log("Generated application " + fqn.getName() + " as " + applicationFile.toUri());
       }
       catch (IOException e)
       {

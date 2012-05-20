@@ -24,6 +24,7 @@ import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.JSON;
+import org.juzu.impl.utils.Path;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,9 +44,9 @@ public class TemplateMetaModel extends MetaModelObject
    TemplatesMetaModel templates;
 
    /** . */
-   final String path;
+   final Path path;
 
-   public TemplateMetaModel(String path)
+   public TemplateMetaModel(Path path)
    {
       this.path = path;
    }
@@ -55,7 +56,7 @@ public class TemplateMetaModel extends MetaModelObject
       return templates;
    }
 
-   public String getPath()
+   public Path getPath()
    {
       return path;
    }
@@ -63,7 +64,7 @@ public class TemplateMetaModel extends MetaModelObject
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.set("path", path);
+      json.set("path", path.getCanonical());
       json.map("refs", getKeys(TemplateRefMetaModel.class));
       return json;
    }

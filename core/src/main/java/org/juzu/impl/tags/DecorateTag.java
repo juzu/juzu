@@ -26,6 +26,7 @@ import org.juzu.impl.template.compiler.ExtendedTagHandler;
 import org.juzu.impl.spi.template.TemplateStub;
 import org.juzu.impl.template.compiler.ProcessPhase;
 import org.juzu.impl.template.compiler.Template;
+import org.juzu.impl.utils.Path;
 import org.juzu.template.Renderable;
 import org.juzu.template.TemplateRenderContext;
 
@@ -77,7 +78,7 @@ public class DecorateTag extends ExtendedTagHandler
    public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t)
    {
       String path = tag.getArgs().get("path");
-      Template resolved = phase.resolveTemplate(path);
+      Template resolved = phase.resolveTemplate(Path.parse(path));
       if (resolved == null)
       {
          throw new CompilationException(MetaModelError.TEMPLATE_NOT_RESOLVED, path);

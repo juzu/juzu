@@ -21,6 +21,7 @@ package org.juzu.impl.template.compiler;
 
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.template.ast.ASTNode;
+import org.juzu.impl.utils.Path;
 import org.juzu.template.TagHandler;
 
 import java.util.Map;
@@ -30,26 +31,26 @@ public class ProcessPhase extends CompilationPhase
 {
 
    /** . */
-   private final Map<String, Template> templates;
+   private final Map<Path, Template> templates;
 
    /** . */
    private final ProcessContext context;
 
-   public ProcessPhase(ProcessContext context, Map<String, Template> templates)
+   public ProcessPhase(ProcessContext context, Map<Path, Template> templates)
    {
       this.templates = templates;
       this.context = context;
    }
 
-   public Map<String, Template> getTemplates()
+   public Map<Path, Template> getTemplates()
    {
       return templates;
    }
 
    /** . */
-   private String originPath;
+   private Path originPath;
 
-   public Template resolveTemplate(String path) throws CompilationException
+   public Template resolveTemplate(Path path) throws CompilationException
    {
       boolean initial;
       if (originPath == null)

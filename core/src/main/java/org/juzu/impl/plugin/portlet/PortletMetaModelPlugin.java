@@ -6,6 +6,7 @@ import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.portlet.Portlet;
 import org.juzu.portlet.JuzuPortlet;
@@ -84,7 +85,7 @@ public class PortletMetaModelPlugin extends MetaModelPlugin
       String baseName) throws CompilationException
    {
       Writer writer = null;
-      String fqn = pkgElt.getQualifiedName() + "." + baseName + "Portlet";
+      FQN fqn = new FQN(pkgElt.getQualifiedName(), baseName + "Portlet");
       try
       {
          JavaFileObject file = env.createSourceFile(fqn, pkgElt);
