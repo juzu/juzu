@@ -12,13 +12,17 @@ public class AssetDescriptor extends Descriptor
 {
 
    /** . */
+   private final String packageName;
+
+   /** . */
    private List<AssetMetaData> scripts;
 
    /** . */
    private List<AssetMetaData> stylesheets;
 
-   public AssetDescriptor(List<AssetMetaData> scripts, List<AssetMetaData> stylesheets)
+   public AssetDescriptor(String packageName, List<AssetMetaData> scripts, List<AssetMetaData> stylesheets)
    {
+      this.packageName = packageName;
       this.scripts = scripts;
       this.stylesheets = stylesheets;
    }
@@ -27,6 +31,11 @@ public class AssetDescriptor extends Descriptor
    public Iterable<BeanDescriptor> getBeans()
    {
       return Collections.singletonList(new BeanDescriptor(AssetLifeCycle.class, null, null, null));
+   }
+
+   public String getPackageName()
+   {
+      return packageName;
    }
 
    public List<AssetMetaData> getScripts()

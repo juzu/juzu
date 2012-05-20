@@ -31,12 +31,13 @@ public class AssetPlugin extends Plugin
    @Override
    public AssetDescriptor loadDescriptor(ClassLoader loader, JSON config) throws Exception
    {
-      List<AssetMetaData> scripts = load(config.getList("scripts", JSON.class));
-      List<AssetMetaData> stylesheets = load(config.getList("stylesheets", JSON.class));
-      return new AssetDescriptor(scripts, stylesheets);
+      String packageName = config.getString("package");
+      List<AssetMetaData> scripts = load(packageName, config.getList("scripts", JSON.class));
+      List<AssetMetaData> stylesheets = load(packageName, config.getList("stylesheets", JSON.class));
+      return new AssetDescriptor(packageName, scripts, stylesheets);
    }
 
-   private List<AssetMetaData> load(List<? extends JSON> scripts)
+   private List<AssetMetaData> load(String packageName, List<? extends JSON> scripts)
    {
       List<AssetMetaData> abc = Collections.emptyList();
       if (scripts != null && scripts.size() > 0)
@@ -46,10 +47,26 @@ public class AssetPlugin extends Plugin
          {
             String id = script.getString("id");
             AssetLocation location = AssetLocation.safeValueOf(script.getString("location"));
+
+            //
+            String value = script.getString("src");
+            if (!value.startsWith("/"))
+            {
+               switch (location)
+               {
+                  case CLASSPATH:
+                     value = "/" + packageName.replace('.', '/') + "/" + value;
+                     break;
+                  default:
+                     throw new UnsupportedOperationException("handle me gracefully");
+               }
+            }
+
+            //
             AssetMetaData descriptor = new AssetMetaData(
                id,
                location,
-               script.getString("src"),
+               value,
                script.getArray("depends", String.class)
             );
             abc.add(descriptor);
