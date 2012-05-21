@@ -17,23 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package http.resource;
+package plugin.asset.location.absoluteclasspath;
 
 import org.juzu.Response;
 import org.juzu.View;
-import org.juzu.asset.Asset;
-import org.juzu.asset.AssetLocation;
 
-/** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A
 {
-   
    @View
-   public Response.Content index(String p)
+   public Response.Render index()
    {
-      return Response.render("foo")
-          .addScript(Asset.uri(AssetLocation.SERVER, "/assets/jquery-1.7.1.js"))
-          .addStylesheet(Asset.uri(AssetLocation.SERVER, "/assets/main.css"))
-          .addStylesheet(Asset.uri(AssetLocation.SERVER, "/assets/main.less"));
+      String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
+      return Response.render(content);
    }
 }

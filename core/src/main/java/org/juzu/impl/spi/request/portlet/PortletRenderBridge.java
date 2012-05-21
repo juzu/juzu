@@ -20,7 +20,7 @@
 package org.juzu.impl.spi.request.portlet;
 
 import org.juzu.Response;
-import org.juzu.impl.asset.Asset;
+import org.juzu.asset.Asset;
 import org.juzu.impl.inject.ScopedContext;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.w3c.dom.Comment;
@@ -57,14 +57,14 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
          // For now only in gatein since liferay won't support it very well
          if (req.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container") || true)
          {
-            Iterable<Asset> scripts = context.assetManager.resolveAssets(render.getScripts());
-            Iterable<Asset> stylesheets = context.assetManager.resolveAssets(render.getStylesheets());
+            Iterable<Asset.Literal> scripts = context.assetManager.resolveAssets(render.getScripts());
+            Iterable<Asset.Literal> stylesheets = context.assetManager.resolveAssets(render.getStylesheets());
 
             //
-            for (Asset stylesheet : stylesheets)
+            for (Asset.Literal stylesheet : stylesheets)
             {
-               int pos = stylesheet.getValue().lastIndexOf('.');
-               String ext = pos == -1 ? "css" : stylesheet.getValue().substring(pos + 1);
+               int pos = stylesheet.getURI().lastIndexOf('.');
+               String ext = pos == -1 ? "css" : stylesheet.getURI().substring(pos + 1);
                Element elt = this.resp.createElement("link");
                elt.setAttribute("media", "screen");
                elt.setAttribute("rel", "stylesheet");
@@ -74,7 +74,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
             }
 
             //
-            for (Asset script : scripts)
+            for (Asset.Literal script : scripts)
             {
                String url = getAssetURL(script);
                Element elt = this.resp.createElement("script");
@@ -100,19 +100,33 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       super.end(response);
    }
 
-   private String getAssetURL(Asset asset)
+   private String getAssetURL(Asset.Literal asset)
    {
+      StringBuilder sb = new StringBuilder();
+      String uri = asset.getURI();
       switch (asset.getLocation())
       {
-         case CLASSPATH:
-            return req.getContextPath() + "/assets" + asset.getValue();
          case SERVER:
-            return req.getContextPath() + asset.getValue();
+            sb.append(req.getContextPath());
+            if (!uri.startsWith("/"))
+            {
+               sb.append('/');
+            }
+            sb.append(uri);
+            break;
+         case CLASSPATH:
+            sb.append(req.getContextPath());
+            if (!uri.startsWith("/"))
+            {
+               sb.append('/');
+            }
+            sb.append(uri);
+            break;
          case EXTERNAL:
-            return asset.getValue();
-         default:
-            throw new AssertionError();
+            sb.append(uri);
+            break;
       }
+      return sb.toString();
    }
    
    private String getAssetURL(String url)

@@ -2,6 +2,7 @@ package org.juzu.impl.plugin.asset;
 
 import org.juzu.PropertyMap;
 import org.juzu.Response;
+import org.juzu.asset.Asset;
 import org.juzu.asset.AssetType;
 import org.juzu.impl.application.ApplicationException;
 import org.juzu.impl.application.metadata.ApplicationDescriptor;
@@ -20,10 +21,10 @@ public class AssetLifeCycle extends RequestLifeCycle
 {
 
    /** . */
-   private final String[] scripts;
+   private final Asset[] scripts;
 
    /** . */
-   private final String[] stylesheets;
+   private final Asset[] stylesheets;
 
    @Inject
    public AssetLifeCycle(ApplicationDescriptor desc,
@@ -33,40 +34,40 @@ public class AssetLifeCycle extends RequestLifeCycle
       AssetDescriptor descriptor = (AssetDescriptor)desc.getPlugin("asset");
 
       //
-      ArrayList<String> scripts = new ArrayList<String>();
+      ArrayList<Asset> scripts = new ArrayList<Asset>();
       for (AssetMetaData script : descriptor.getScripts())
       {
          String id = script.getId();
          if (id != null)
          {
-            scripts.add(script.getId());
+            scripts.add(Asset.ref(id));
          }
          else
          {
-            scripts.add(script.getValue());
+            scripts.add(Asset.uri(script.getLocation(), script.getValue()));
          }
          scriptManager.addAsset(script);
       }
 
       //
-      ArrayList<String> stylesheets = new ArrayList<String>();
+      ArrayList<Asset> stylesheets = new ArrayList<Asset>();
       for (AssetMetaData stylesheet : descriptor.getStylesheets())
       {
          String id = stylesheet.getId();
          if (id != null)
          {
-            stylesheets.add(stylesheet.getId());
+            stylesheets.add(Asset.ref(stylesheet.getId()));
          }
          else
          {
-            stylesheets.add(stylesheet.getValue());
+            stylesheets.add(Asset.uri(stylesheet.getLocation(), stylesheet.getValue()));
          }
          stylesheetManager.addAsset(stylesheet);
       }
 
       //
-      this.scripts = scripts.toArray(new String[scripts.size()]);
-      this.stylesheets = stylesheets.toArray(new String[stylesheets.size()]);
+      this.scripts = scripts.toArray(new Asset[scripts.size()]);
+      this.stylesheets = stylesheets.toArray(new Asset[stylesheets.size()]);
    }
 
    @Override

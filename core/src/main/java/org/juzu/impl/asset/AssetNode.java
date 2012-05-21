@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Asset
+public class AssetNode
 {
 
    /** . */
@@ -28,7 +28,7 @@ public class Asset
    /** . */
    Set<String> iDependOn;
 
-   Asset(String id, AssetLocation location, String value, Set<String> iDependOn)
+   AssetNode(String id, AssetLocation location, String value, Set<String> iDependOn)
    {
       this.id = id;
       this.location = location;

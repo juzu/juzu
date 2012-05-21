@@ -1,10 +1,9 @@
 package org.juzu.impl.asset;
 
-import org.juzu.asset.AssetLocation;
+import org.juzu.asset.Asset;
 import org.juzu.asset.AssetType;
 import org.juzu.impl.utils.Tools;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -19,7 +18,7 @@ public class AssetManager
    private final AssetType type;
 
    /** . */
-   private final LinkedHashMap<String, Asset> assets = new LinkedHashMap<String, Asset>();
+   private final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
 
    /** . */
    private final HashSet<String> classPathAssets = new HashSet<String>();
@@ -43,8 +42,8 @@ public class AssetManager
       {
          if (!assets.keySet().contains(id))
          {
-            Asset asset = new Asset(id, metaData.location, metaData.value, metaData.dependencies);
-            for (Asset deployed : assets.values())
+            AssetNode asset = new AssetNode(id, metaData.location, metaData.value, metaData.dependencies);
+            for (AssetNode deployed : assets.values())
             {
                if (deployed.iDependOn.contains(id))
                {
@@ -89,20 +88,20 @@ public class AssetManager
     * @throws NullPointerException if the asset id argument is null
     * @throws IllegalArgumentException when script dependencies cannot be resolved
     */
-   public Iterable<Asset> resolveAssets(Iterable<String> scripts) throws
+   public Iterable<Asset.Literal> resolveAssets(Iterable<org.juzu.asset.Asset> scripts) throws
       NullPointerException,
       IllegalArgumentException
    {
       LinkedHashMap<String, HashSet<String>> sub = new LinkedHashMap<String, HashSet<String>>();
-      for (String script : scripts)
+      for (org.juzu.asset.Asset script : scripts)
       {
-         if (script.startsWith("http:") || script.startsWith("https:") | script.startsWith("/"))
+         if (script instanceof org.juzu.asset.Asset.Literal)
          {
             // resolved.addLast(script);
          }
          else
          {
-            Asset asset = assets.get(script);
+            AssetNode asset = assets.get(((org.juzu.asset.Asset.Ref)script).getId());
             if (asset != null)
             {
                sub.put(asset.id, new HashSet<String>(asset.iDependOn));
@@ -115,7 +114,7 @@ public class AssetManager
       }
 
       //
-      LinkedList<Asset> resolved = new LinkedList<Asset>();
+      LinkedList<Asset.Literal> resolved = new LinkedList<org.juzu.asset.Asset.Literal>();
       while (sub.size() > 0)
       {
          boolean found = false;
@@ -125,8 +124,8 @@ public class AssetManager
             if (entry.getValue().isEmpty())
             {
                i.remove();
-               Asset asset = assets.get(entry.getKey());
-               resolved.addLast(asset);
+               AssetNode asset = assets.get(entry.getKey());
+               resolved.addLast(Asset.uri(asset.getLocation(), asset.getValue()));
                for (String dependency : asset.dependsOnMe)
                {
                   HashSet<String> foo = sub.get(dependency);
@@ -151,15 +150,13 @@ public class AssetManager
       }
 
       //
-      for (String script : scripts)
+      for (org.juzu.asset.Asset script : scripts)
       {
-         if (script.startsWith("http:") || script.startsWith("https:"))
+         if (script instanceof org.juzu.asset.Asset.Literal)
          {
-            resolved.addLast(new Asset(null, AssetLocation.EXTERNAL, script, Collections.<String>emptySet()));
-         }
-         else if (script.startsWith("/"))
-         {
-            resolved.addLast(new Asset(null, AssetLocation.SERVER, script, Collections.<String>emptySet()));
+            org.juzu.asset.Asset.Literal script1 = (org.juzu.asset.Asset.Literal)script;
+            String uri = script1.getURI();
+            resolved.addLast(Asset.uri(script1.getLocation(), uri));
          }
       }
 

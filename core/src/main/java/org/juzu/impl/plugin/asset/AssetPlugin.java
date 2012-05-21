@@ -50,16 +50,9 @@ public class AssetPlugin extends Plugin
 
             //
             String value = script.getString("src");
-            if (!value.startsWith("/"))
+            if (!value.startsWith("/") && location == AssetLocation.CLASSPATH)
             {
-               switch (location)
-               {
-                  case CLASSPATH:
-                     value = "/" + packageName.replace('.', '/') + "/" + value;
-                     break;
-                  default:
-                     throw new UnsupportedOperationException("handle me gracefully");
-               }
+               value = "/" + packageName.replace('.', '/') + "/" + value;
             }
 
             //

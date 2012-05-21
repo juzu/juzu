@@ -59,7 +59,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
    final String methodId;
 
    /** . */
-   private Request request;
+   protected Request request;
 
    ServletRequestBridge(
       ServletBridgeContext context,
@@ -317,11 +317,6 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
          }
       }
       return context;
-   }
-
-   protected final Request getRequest()
-   {
-      return request;
    }
 
    public final void begin(Request request)

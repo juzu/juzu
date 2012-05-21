@@ -20,8 +20,11 @@
 package org.juzu.impl.spi.request.servlet;
 
 import org.juzu.Response;
-import org.juzu.impl.asset.Asset;
+import org.juzu.asset.Asset;
+import org.juzu.impl.application.metadata.ApplicationDescriptor;
+import org.juzu.impl.asset.AssetNode;
 import org.juzu.impl.inject.ScopedContext;
+import org.juzu.impl.plugin.asset.AssetDescriptor;
 import org.juzu.impl.spi.request.RenderBridge;
 import org.juzu.io.AppendableStream;
 
@@ -54,8 +57,8 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       if (response instanceof Response.Render)
       {
          Response.Content.Render render = (Response.Render)response;
-         Iterable<Asset> scripts;
-         Iterable<Asset> stylesheets;
+         Iterable<Asset.Literal> scripts;
+         Iterable<Asset.Literal> stylesheets;
          try
          {
             scripts = context.scriptManager.resolveAssets(render.getScripts());
@@ -78,9 +81,9 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
          writer.println("<html>");
 
          writer.println("<head>");
-         for (Asset stylesheet : stylesheets)
+         for (Asset.Literal stylesheet : stylesheets)
          {
-            String path = stylesheet.getValue();
+            String path = stylesheet.getURI();
             int pos = path.lastIndexOf('.');
             String ext = pos == -1 ? "css" : path.substring(pos + 1);
             writer.print("<link rel=\"stylesheet\" type=\"text/");
@@ -91,7 +94,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
          }
 
          //
-         for (Asset script : scripts)
+         for (Asset.Literal script : scripts)
          {
             writer.print("<script type=\"text/javascript\" src=\"");
             renderAssetURL(script, writer);
@@ -111,30 +114,30 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       }
    }
 
-   private void renderAssetURL(Asset asset, Appendable appendable) throws IOException
+   private void renderAssetURL(Asset.Literal asset, Appendable appendable) throws IOException
    {
+      String uri = asset.getURI();
       switch (asset.getLocation())
       {
          case SERVER:
+            appendable.append(req.getContextPath());
+            if (!uri.startsWith("/"))
+            {
+               appendable.append('/');
+            }
+            appendable.append(uri);
+            break;
          case CLASSPATH:
             appendable.append(req.getContextPath());
-            appendable.append(asset.getValue());
+            if (!uri.startsWith("/"))
+            {
+               appendable.append('/');
+            }
+            appendable.append(uri);
             break;
          case EXTERNAL:
-            appendable.append(asset.getValue());
+            appendable.append(uri);
             break;
-      }
-   }
-
-   private String getAssetURL(String url)
-   {
-      if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"))
-      {
-         return url;
-      }
-      else
-      {
-         return req.getContextPath() + "/" + url;
       }
    }
 

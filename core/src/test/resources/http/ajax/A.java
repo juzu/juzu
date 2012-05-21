@@ -23,6 +23,8 @@ import org.juzu.Controller;
 import org.juzu.Resource;
 import org.juzu.Response;
 import org.juzu.View;
+import org.juzu.asset.Asset;
+import org.juzu.asset.AssetLocation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller
@@ -47,7 +49,7 @@ public class A extends Controller
          "</script>\n" +
          "<a id='trigger' href='#'>click</a>\n" +
          "<div id='foo'>foo</div>";
-      return Response.render(content).addScript("/jquery.js");
+      return Response.render(content).addScript(Asset.uri(AssetLocation.SERVER, "/jquery.js"));
    }
    
    @Resource 

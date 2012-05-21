@@ -19,6 +19,7 @@
 
 package org.juzu;
 
+import org.juzu.asset.Asset;
 import org.juzu.impl.utils.ParameterHashMap;
 import org.juzu.impl.utils.ParameterMap;
 import org.juzu.impl.utils.Tools;
@@ -360,13 +361,13 @@ public abstract class Response
    {
 
       /** Script type literal. */
-      public static class SCRIPT extends PropertyType<String> {}
+      public static class SCRIPT extends PropertyType<Asset> {}
 
       /** Script type literal instance. */
       public static SCRIPT SCRIPT = new SCRIPT();
 
       /** Stylesheet type literal. */
-      public static class STYLESHEET extends PropertyType<String> {}
+      public static class STYLESHEET extends PropertyType<Asset> {}
 
       /** Stylesheet literal instance. */
       public static STYLESHEET STYLESHEET = new STYLESHEET();
@@ -409,13 +410,13 @@ public abstract class Response
          return this;
       }
 
-      public Iterable<String> getScripts()
+      public Iterable<Asset> getScripts()
       {
-         Iterable<String> scripts = properties.getValues(SCRIPT);
-         return scripts != null ? scripts : Tools.<String>emptyIterable();
+         Iterable<Asset> scripts = properties.getValues(SCRIPT);
+         return scripts != null ? scripts : Tools.<Asset>emptyIterable();
       }
 
-      public Render addScript(String script) throws NullPointerException
+      public Render addScript(Asset script) throws NullPointerException
       {
          if (script == null)
          {
@@ -425,13 +426,13 @@ public abstract class Response
          return this;
       }
 
-      public Iterable<String> getStylesheets()
+      public Iterable<Asset> getStylesheets()
       {
-         Iterable<String> stylesheets = properties.getValues(STYLESHEET);
-         return stylesheets != null ? stylesheets : Tools.<String>emptyIterable();
+         Iterable<Asset> stylesheets = properties.getValues(STYLESHEET);
+         return stylesheets != null ? stylesheets : Tools.<Asset>emptyIterable();
       }
 
-      public Render addStylesheet(String stylesheet) throws NullPointerException
+      public Render addStylesheet(Asset stylesheet) throws NullPointerException
       {
          if (stylesheet == null)
          {

@@ -21,6 +21,7 @@ package org.juzu.impl.plugin.ajax;
 
 import org.juzu.PropertyMap;
 import org.juzu.Response;
+import org.juzu.asset.Asset;
 import org.juzu.asset.AssetLocation;
 import org.juzu.asset.AssetType;
 import org.juzu.impl.application.ApplicationException;
@@ -93,7 +94,7 @@ public class AjaxLifeCycle extends RequestLifeCycle
             PropertyMap properties = new PropertyMap(response.getProperties());
 
             //
-            properties.addValues(Response.Render.SCRIPT, "ajax.plugin");
+            properties.addValues(Response.Render.SCRIPT, Asset.ref("ajax.plugin"));
 
             //
             final Streamable<Stream.Char> decorated = render.getStreamable();
