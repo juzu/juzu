@@ -13,4 +13,6 @@ public @interface Less
 
    String[] value();
 
+   boolean minify() default false;
+
 }

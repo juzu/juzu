@@ -3,6 +3,7 @@ package org.juzu.plugin.less;
 import org.junit.Test;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.spi.inject.InjectImplementation;
+import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.less.impl.LessMetaModelPlugin;
 import org.juzu.test.AbstractInjectTestCase;
 import org.juzu.test.CompilerAssert;
@@ -49,5 +50,17 @@ public class LessPluginTestCase extends AbstractInjectTestCase
       assertEquals(LessMetaModelPlugin.LESS_COMPILATION_ERROR, errors.get(0).getCode());
       File f = ca.getClassOutput().getPath("plugin", "less", "notfound", "assets", "stylesheet.css");
       assertNull(f);
+   }
+
+   @Test
+   public void testMinify()  throws Exception
+   {
+      CompilerAssert<File,File> ca = compiler("plugin", "less", "minify");
+      ca.assertCompile();
+      File f = ca.getClassOutput().getPath("plugin", "less", "minify", "assets", "stylesheet.css");
+      assertNotNull(f);
+      assertTrue(f.exists());
+      String s = Tools.read(f);
+      assertFalse(s.contains(" "));
    }
 }

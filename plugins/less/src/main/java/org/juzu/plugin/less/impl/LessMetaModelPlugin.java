@@ -32,16 +32,14 @@ public class LessMetaModelPlugin extends MetaModelPlugin
    public static final ErrorCode LESS_COMPILATION_ERROR = new ErrorCode("LESS_COMPILATION_ERROR", "There is an error in your .less file in %1$s");
 
    /** . */
-   private final HashMap<ElementHandle.Package, String[]> enabledMap = new HashMap<ElementHandle.Package, String[]>();
+   private final HashMap<ElementHandle.Package, AnnotationData> enabledMap = new HashMap<ElementHandle.Package, AnnotationData>();
 
    @Override
    public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data)
    {
       if (fqn.equals(Less.class.getName()))
       {
-         ElementHandle.Package handle = application.getHandle();
-         List<String> resources = (List<String>)data.get("value");
-         enabledMap.put(handle, resources.toArray(new String[resources.size()]));
+         enabledMap.put(application.getHandle(), data);
       }
    }
 
@@ -54,8 +52,10 @@ public class LessMetaModelPlugin extends MetaModelPlugin
    @Override
    public void prePassivate(ApplicationMetaModel model)
    {
-      String[] resources = enabledMap.remove(model.getHandle());
-      if (resources != null && resources.length > 0)
+      AnnotationData annotation = enabledMap.remove(model.getHandle());
+      Boolean minify = (Boolean)annotation.get("minify");
+      List<String> resources = (List<String>)annotation.get("value");
+      if (resources != null && resources.size() > 0)
       {
          ProcessingContext env = model.model.env;
 
@@ -79,7 +79,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin
             try
             {
                lesser = new Lesser(new JSR223Context());
-               result = lesser.parse(clc, resource);
+               result = lesser.parse(clc, resource, Boolean.TRUE.equals(minify));
             }
             catch (Exception e)
             {
