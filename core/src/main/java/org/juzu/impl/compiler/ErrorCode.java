@@ -19,6 +19,7 @@
 
 package org.juzu.impl.compiler;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -84,5 +85,10 @@ public class ErrorCode
    public CompilationException failure(Element element, Object... args)
    {
       return new CompilationException(element, this, args);
+   }
+
+   public CompilationException failure(Element element, AnnotationMirror annotation, Object... args)
+   {
+      return new CompilationException(element, annotation, this, args);
    }
 }

@@ -19,6 +19,7 @@
 
 package org.juzu.impl.compiler;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -34,16 +35,25 @@ public class CompilationException extends RuntimeException
    /** . */
    private final Element element;
 
-   public CompilationException(Element element, ErrorCode code, Object... arguments)
-   {
-      this.code = code;
-      this.element = element;
-      this.arguments = arguments;
-   }
+   /** . */
+   private final AnnotationMirror annotation;
 
    public CompilationException(ErrorCode code, Object... arguments)
    {
       this(null, code, arguments);
+   }
+
+   public CompilationException(Element element, ErrorCode code, Object... arguments)
+   {
+      this(element, null, code, arguments);
+   }
+
+   public CompilationException(Element element, AnnotationMirror annotation, ErrorCode code, Object... arguments)
+   {
+      this.code = code;
+      this.element = element;
+      this.arguments = arguments;
+      this.annotation = annotation;
    }
 
    @Override
@@ -55,6 +65,11 @@ public class CompilationException extends RuntimeException
    public Element getElement()
    {
       return element;
+   }
+
+   public AnnotationMirror getAnnotation()
+   {
+      return annotation;
    }
 
    public ErrorCode getCode()

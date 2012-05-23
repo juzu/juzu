@@ -23,9 +23,11 @@ import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
@@ -186,6 +188,7 @@ public abstract class BaseProcessor extends AbstractProcessor
       {
          StringBuilder msg;
          Element element;
+         AnnotationMirror annotation;
          if (e instanceof CompilationException)
          {
             CompilationException ce = (CompilationException)e;
@@ -209,6 +212,7 @@ public abstract class BaseProcessor extends AbstractProcessor
                new Formatter(msg).format(Locale.getDefault(), ce.getCode().getMessage(), ce.getArguments()).flush();
             }
             element = ce.getElement();
+            annotation = ce.getAnnotation();
          }
          else
          {
@@ -221,24 +225,48 @@ public abstract class BaseProcessor extends AbstractProcessor
                msg = new StringBuilder(e.getMessage());
             }
             element = null;
+            annotation = null;
          }
 
          // Log error
          StringWriter writer = new StringWriter();
-         if (element != null)
+         if (element == null)
          {
-            writer.append("Compilation error for element ").append(element.toString()).append(": ");
+            writer.
+               append("Compilation error: ");
+         }
+         else if (annotation == null)
+         {
+            writer.
+               append("Compilation error for element ").
+               append(element.toString()).append(": ");
          }
          else
          {
-            writer.append("Compilation error: ");
+            writer.
+               append("Compilation error for element ").
+               append(element.toString()).
+               append(" at annotation ").
+               append(annotation.toString()).append(": ");
          }
          writer.append(msg).append("\n");
          e.printStackTrace(new PrintWriter(writer));
          logger.log(writer.getBuffer());
 
          // Report to javac
-         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, msg, element);
+         Messager messager = processingEnv.getMessager();
+         if (element == null)
+         {
+            messager.printMessage(Diagnostic.Kind.ERROR, msg);
+         }
+         else if (annotation == null)
+         {
+            messager.printMessage(Diagnostic.Kind.ERROR, msg, element);
+         }
+         else
+         {
+            messager.printMessage(Diagnostic.Kind.ERROR, msg, element, annotation);
+         }
       }
       finally
       {

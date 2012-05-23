@@ -18,6 +18,7 @@ import org.juzu.plugin.less.impl.lesser.JSR223Context;
 import org.juzu.plugin.less.impl.lesser.Lesser;
 import org.juzu.plugin.less.impl.lesser.Result;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.tools.FileObject;
@@ -75,6 +76,9 @@ public class LessMetaModelPlugin extends MetaModelPlugin
          Boolean minify = (Boolean)annotation.get("minify");
          List<String> resources = (List<String>)annotation.get("value");
 
+         // WARNING THIS IS NOT CORRECT BUT WORK FOR NOW
+         AnnotationMirror annotationMirror = Tools.getAnnotation(pkgElt, Less.class.getName());
+
          //
          log.log("Handling less annotation for package " + pkg.getQN() + ": minify=" + minify + " resources=" + resources);
 
@@ -101,7 +105,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                }
                catch (IllegalArgumentException e)
                {
-                  throw MALFORMED_PATH.failure(pkgElt, resource).initCause(e);
+                  throw MALFORMED_PATH.failure(pkgElt, annotationMirror, resource).initCause(e);
                }
 
                //
@@ -149,7 +153,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                {
                   Failure failure = (Failure)result;
                   log.log("Resource " + resource + " for package " + pkgElt + " could not be compiled: " + failure);
-                  throw COMPILATION_ERROR.failure(pkgElt, resource);
+                  throw COMPILATION_ERROR.failure(pkgElt, annotationMirror, resource);
                }
             }
          }
