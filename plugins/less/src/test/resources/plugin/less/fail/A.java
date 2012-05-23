@@ -1,4 +1,4 @@
-package plugin.less;
+package plugin.less.fail;
 
 import org.juzu.View;
 

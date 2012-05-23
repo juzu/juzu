@@ -2,12 +2,14 @@ package org.juzu.plugin.less.impl;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.Path;
 import org.juzu.impl.utils.QN;
 import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.less.Less;
 import org.juzu.plugin.less.impl.lesser.Compilation;
+import org.juzu.plugin.less.impl.lesser.Failure;
 import org.juzu.plugin.less.impl.lesser.JSR223Context;
 import org.juzu.plugin.less.impl.lesser.Lesser;
 import org.juzu.plugin.less.impl.lesser.Result;
@@ -24,6 +26,9 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LessMetaModelPlugin extends MetaModelPlugin
 {
+
+   /** . */
+   public static final ErrorCode LESS_COMPILATION_ERROR = new ErrorCode("LESS_COMPILATION_ERROR", "There is an error in your .less file in %1$s");
 
    /** . */
    private final HashMap<ElementHandle.Package, String[]> enabledMap = new HashMap<ElementHandle.Package, String[]>();
@@ -99,6 +104,11 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                {
                   throw new UnsupportedOperationException(e);
                }
+            }
+            else
+            {
+               Failure failure = (Failure)result;
+               throw LESS_COMPILATION_ERROR.failure(resource);
             }
          }
       }
