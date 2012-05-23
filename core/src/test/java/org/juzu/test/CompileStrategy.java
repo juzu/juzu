@@ -39,6 +39,9 @@ public abstract class CompileStrategy<I, O>
    /** . */
    Provider<? extends Processor> processorFactory;
 
+   /** . */
+   private boolean formalErrorReporting;
+
    public CompileStrategy(
       SimpleFileSystem<?> classPath,
       ReadWriteFileSystem<I> sourcePath,
@@ -51,6 +54,7 @@ public abstract class CompileStrategy<I, O>
       this.sourceOutput = sourceOutput;
       this.classOutput = classOutput;
       this.processorFactory = processorFactory;
+      this.formalErrorReporting = false;
    }
 
    final Compiler.Builder compiler()
@@ -60,6 +64,7 @@ public abstract class CompileStrategy<I, O>
       builder.sourcePath(sourcePath);
       builder.sourceOutput(sourceOutput);
       builder.classOutput(classOutput);
+      builder.formalErrorReporting(formalErrorReporting);
       return builder;
    }
 
@@ -68,6 +73,16 @@ public abstract class CompileStrategy<I, O>
    abstract List<CompilationError> compile() throws IOException;
 
    abstract void addClassPath(ReadFileSystem<?> classPath);
+
+   public boolean getFormalErrorReporting()
+   {
+      return formalErrorReporting;
+   }
+
+   public void setFormalErrorReporting(boolean formalErrorReporting)
+   {
+      this.formalErrorReporting = formalErrorReporting;
+   }
 
    /** . */
    private static final Pattern javaFilePattern = Pattern.compile("(.+)\\.java");

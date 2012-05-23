@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -129,9 +130,13 @@ public abstract class BaseProcessor extends AbstractProcessor
       return formalErrorReporting;
    }
 
-   public void setFormalErrorReporting(boolean formalErrorReporting)
+   @Override
+   public Set<String> getSupportedOptions()
    {
-      this.formalErrorReporting = formalErrorReporting;
+      Set<String> options = super.getSupportedOptions();
+      HashSet<String> our = new HashSet<String>(options);
+      our.add("juzu.error_reporting");
+      return our;
    }
 
    @Override
@@ -141,6 +146,9 @@ public abstract class BaseProcessor extends AbstractProcessor
 
       //
       this.currentLog.set(new StringBuilder());
+
+      //
+      this.formalErrorReporting = "formal".equalsIgnoreCase(processingEnv.getOptions().get("juzu.error_reporting"));
 
       //
       doInit(processingEnv);

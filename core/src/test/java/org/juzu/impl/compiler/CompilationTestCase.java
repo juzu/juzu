@@ -342,9 +342,8 @@ public class CompilationTestCase extends AbstractTestCase
       }
 
       DiskFileSystem fs = diskFS("compiler", "errorcode");
-      Compiler compiler = Compiler.builder().sourcePath(fs).output(new RAMFileSystem()).build();
+      Compiler compiler = Compiler.builder().formalErrorReporting(true).sourcePath(fs).output(new RAMFileSystem()).build();
       P processor = new P();
-      processor.setFormalErrorReporting(true);
       compiler.addAnnotationProcessor(processor);
       List<CompilationError> errors = compiler.compile();
       assertEquals(1, errors.size());

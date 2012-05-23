@@ -77,6 +77,9 @@ public class Compiler
       /** . */
       private boolean force;
 
+      /** . */
+      private boolean formalErrorReporting;
+
       private Builder(
          ReadFileSystem<?> sourcePath,
          ReadWriteFileSystem<?> sourceOutput,
@@ -89,6 +92,7 @@ public class Compiler
          this.classOutput = classOutput;
          this.classPaths = classPaths;
          this.force = force;
+         this.formalErrorReporting = false;
       }
 
       public Builder classOutput(ReadWriteFileSystem<?> classOutput)
@@ -127,6 +131,12 @@ public class Compiler
          return this;
       }
 
+      public Builder formalErrorReporting(boolean reporting)
+      {
+         this.formalErrorReporting = reporting;
+         return this;
+      }
+
       public Compiler build()
       {
          return build(null);
@@ -151,7 +161,8 @@ public class Compiler
             classPaths,
             sourceOutput,
             classOutput,
-            force
+            force,
+            formalErrorReporting
          );
          if (processor != null)
          {
@@ -185,21 +196,26 @@ public class Compiler
    /** . */
    private boolean force;
 
+   /** . */
+   private boolean formalErrorReporting;
+
    public Compiler(
       ReadFileSystem<?> sourcePath,
       ReadWriteFileSystem<?> output,
-      boolean force)
+      boolean force,
+      boolean formalErrorReporting)
    {
-      this(sourcePath, output, output, force);
+      this(sourcePath, output, output, force, formalErrorReporting);
    }
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput,
-      boolean force)
+      boolean force,
+      boolean formalErrorReporting)
    {
-      this(sourcePath, Collections.<SimpleFileSystem<?>>emptyList(), sourceOutput, classOutput, force);
+      this(sourcePath, Collections.<SimpleFileSystem<?>>emptyList(), sourceOutput, classOutput, force, formalErrorReporting);
    }
 
    public Compiler(
@@ -207,9 +223,10 @@ public class Compiler
       SimpleFileSystem<?> classPath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput,
-      boolean force)
+      boolean force,
+      boolean formalErrorReporting)
    {
-      this(sourcePath, Collections.<SimpleFileSystem<?>>singletonList(classPath), sourceOutput, classOutput, force);
+      this(sourcePath, Collections.<SimpleFileSystem<?>>singletonList(classPath), sourceOutput, classOutput, force, formalErrorReporting);
    }
 
    public Compiler(
@@ -217,7 +234,8 @@ public class Compiler
       Collection<SimpleFileSystem<?>> classPaths,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput,
-      boolean force)
+      boolean force,
+      boolean formalErrorReporting)
    {
       this.sourcePath = sourcePath;
       this.classPaths = classPaths;
@@ -226,6 +244,7 @@ public class Compiler
       this.compiler = ToolProvider.getSystemJavaCompiler();
       this.processors = new HashSet<Processor>();
       this.force = force;
+      this.formalErrorReporting = formalErrorReporting;
    }
 
    public void addAnnotationProcessor(Processor annotationProcessorType)
@@ -413,7 +432,14 @@ public class Compiler
       };
 
       //
-      JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, Collections.<String>emptyList(), null, compilationUnits);
+      List<String> options = null;
+      if (formalErrorReporting)
+      {
+         options = Collections.singletonList("-Ajuzu.error_reporting=formal");
+      }
+
+      //
+      JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, options, null, compilationUnits);
       task.setProcessors(processors);
 
       // We don't use the return value because sometime it says it is failed although

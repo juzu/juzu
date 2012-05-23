@@ -102,6 +102,8 @@ public class CompilerAssert<I, O>
          sourceOutput,
          classOutput,
          META_MODEL_PROCESSOR_FACTORY);
+
+      //
       this.baseClassLoader = baseClassLoader;
    }
 
@@ -148,6 +150,12 @@ public class CompilerAssert<I, O>
    public ReadWriteFileSystem<O> getSourceOutput()
    {
       return strategy.sourceOutput;
+   }
+
+   public CompilerAssert<I, O> formalErrorReporting(boolean formalErrorReporting)
+   {
+      strategy.setFormalErrorReporting(true);
+      return this;
    }
 
    public ClassLoader getClassLoader()
