@@ -225,6 +225,14 @@ public abstract class BaseProcessor extends AbstractProcessor
 
          // Log error
          StringWriter writer = new StringWriter();
+         if (element != null)
+         {
+            writer.append("Compilation error for element ").append(element.toString()).append(": ");
+         }
+         else
+         {
+            writer.append("Compilation error: ");
+         }
          writer.append(msg).append("\n");
          e.printStackTrace(new PrintWriter(writer));
          logger.log(writer.getBuffer());
