@@ -63,4 +63,14 @@ public class LessPluginTestCase extends AbstractInjectTestCase
       String s = Tools.read(f);
       assertFalse(s.contains(" "));
    }
+
+   @Test
+   public void testResolve()  throws Exception
+   {
+      CompilerAssert<File,File> ca = compiler("plugin", "less", "resolve");
+      ca.assertCompile();
+      File f = ca.getClassOutput().getPath("plugin", "less", "resolve", "assets", "stylesheet.css");
+      assertNotNull(f);
+      assertTrue(f.exists());
+   }
 }
