@@ -32,7 +32,10 @@ public class LessMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
-   public static final ErrorCode LESS_COMPILATION_ERROR = new ErrorCode("LESS_COMPILATION_ERROR", "There is an error in your .less file in %1$s");
+   public static final ErrorCode COMPILATION_ERROR = new ErrorCode("LESS_COMPILATION_ERROR", "There is an error in your .less file in %1$s");
+
+   /** . */
+   public static final ErrorCode MALFORMED_PATH = new ErrorCode("LESS_MALFORMED_PATH", "The resource path %1$s is malformed");
 
    /** . */
    static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);
@@ -67,6 +70,8 @@ public class LessMetaModelPlugin extends MetaModelPlugin
       if (annotation != null)
       {
          ElementHandle.Package pkg = model.getHandle();
+         ProcessingContext env = model.model.env;
+         PackageElement pkgElt = env.get(model.getHandle());
          Boolean minify = (Boolean)annotation.get("minify");
          List<String> resources = (List<String>)annotation.get("value");
 
@@ -76,7 +81,6 @@ public class LessMetaModelPlugin extends MetaModelPlugin
          //
          if (resources != null && resources.size() > 0)
          {
-            ProcessingContext env = model.model.env;
 
             // For now we use the hardcoded assets package
             QN assetPkg = model.getFQN().getPackageName().append("assets");
@@ -90,7 +94,15 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                log.log("Processing declared resource " + resource);
 
                //
-               Path path = Path.parse(resource);
+               Path path;
+               try
+               {
+                  path = Path.parse(resource);
+               }
+               catch (IllegalArgumentException e)
+               {
+                  throw MALFORMED_PATH.failure(pkgElt, resource);
+               }
 
                //
                Path.Absolute to = Path.Absolute.create(assetPkg.append(path.getQN()), path.getRawName(), "css");
@@ -136,9 +148,8 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                else
                {
                   Failure failure = (Failure)result;
-                  PackageElement pkgElt = env.get(model.getHandle());
                   log.log("Resource " + resource + " for package " + pkgElt + " could not be compiled: " + failure);
-                  throw LESS_COMPILATION_ERROR.failure(resource, assetPkg);
+                  throw COMPILATION_ERROR.failure(pkgElt, resource);
                }
             }
          }

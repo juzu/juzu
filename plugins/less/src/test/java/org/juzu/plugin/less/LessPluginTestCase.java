@@ -36,7 +36,8 @@ public class LessPluginTestCase extends AbstractInjectTestCase
       CompilerAssert<File,File> ca = compiler("plugin", "less", "fail");
       List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
       assertEquals(1, errors.size());
-      assertEquals(LessMetaModelPlugin.LESS_COMPILATION_ERROR, errors.get(0).getCode());
+      assertEquals(LessMetaModelPlugin.COMPILATION_ERROR, errors.get(0).getCode());
+      assertEquals("/plugin/less/fail/package-info.java", errors.get(0).getSource());
       File f = ca.getClassOutput().getPath("plugin", "less", "fail", "assets", "stylesheet.css");
       assertNull(f);
    }
@@ -47,7 +48,8 @@ public class LessPluginTestCase extends AbstractInjectTestCase
       CompilerAssert<File,File> ca = compiler("plugin", "less", "notfound");
       List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
       assertEquals(1, errors.size());
-      assertEquals(LessMetaModelPlugin.LESS_COMPILATION_ERROR, errors.get(0).getCode());
+      assertEquals(LessMetaModelPlugin.COMPILATION_ERROR, errors.get(0).getCode());
+      assertEquals("/plugin/less/notfound/package-info.java", errors.get(0).getSource());
       File f = ca.getClassOutput().getPath("plugin", "less", "notfound", "assets", "stylesheet.css");
       assertNull(f);
    }
@@ -80,8 +82,21 @@ public class LessPluginTestCase extends AbstractInjectTestCase
       CompilerAssert<File,File> ca = compiler("plugin", "less", "cannotresolve");
       List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
       assertEquals(1, errors.size());
-      assertEquals(LessMetaModelPlugin.LESS_COMPILATION_ERROR, errors.get(0).getCode());
+      assertEquals(LessMetaModelPlugin.COMPILATION_ERROR, errors.get(0).getCode());
+      assertEquals("/plugin/less/cannotresolve/package-info.java", errors.get(0).getSource());
       File f = ca.getClassOutput().getPath("plugin", "less", "cannotresolve", "assets", "stylesheet.css");
+      assertNull(f);
+   }
+
+   @Test
+   public void testMalformedPath()  throws Exception
+   {
+      CompilerAssert<File,File> ca = compiler("plugin", "less", "malformedpath");
+      List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
+      assertEquals(1, errors.size());
+      assertEquals(LessMetaModelPlugin.MALFORMED_PATH, errors.get(0).getCode());
+      assertEquals("/plugin/less/malformedpath/package-info.java", errors.get(0).getSource());
+      File f = ca.getClassOutput().getPath("plugin", "less", "malformedpath", "assets", "stylesheet.css");
       assertNull(f);
    }
 }
