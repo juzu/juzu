@@ -13,7 +13,6 @@ import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.controller.descriptor.ControllerBean;
 import org.juzu.impl.controller.descriptor.ControllerMethod;
 import org.juzu.impl.controller.descriptor.ControllerParameter;
-import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
@@ -182,7 +181,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
                TypeElement te = application.model.env.get(parameter.getType());
                if (!te.toString().equals("java.lang.String") && te.getAnnotation(Param.class) == null)
                {
-                  throw new CompilationException(ve, MetaModelError.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED, ve.getSimpleName());
+                  throw ControllerMetaModel.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(ve, ve.getSimpleName());
                }
             }
          }
@@ -370,7 +369,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, origin, MetaModelError.CANNOT_WRITE_CONTROLLER_COMPANION, controller.getHandle().getFQN());
+         throw ControllerMetaModel.CANNOT_WRITE_CONTROLLER_COMPANION.failure(e, origin, controller.getHandle().getFQN());
       }
       finally
       {

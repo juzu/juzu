@@ -4,8 +4,8 @@ import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ProcessingContext;
-import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.portlet.Portlet;
@@ -25,6 +25,9 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletMetaModelPlugin extends MetaModelPlugin
 {
+
+   /** . */
+   public static final ErrorCode CANNOT_WRITE_PORTLET_CLASS = new ErrorCode("CANNOT_WRITE_PORTLET_CLASS", "The portlet class %1$s cannot be written");
 
    /** . */
    private final HashMap<ElementHandle.Package, String> enabledMap = new HashMap<ElementHandle.Package, String>();
@@ -104,7 +107,7 @@ public class PortletMetaModelPlugin extends MetaModelPlugin
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, pkgElt, MetaModelError.CANNOT_WRITE_PORTLET_CLASS, fqn);
+         throw CANNOT_WRITE_PORTLET_CLASS.failure(e, pkgElt, fqn);
       }
       finally
       {

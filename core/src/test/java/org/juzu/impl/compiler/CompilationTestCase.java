@@ -28,7 +28,6 @@ import org.juzu.impl.spi.fs.ram.RAMFile;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMPath;
 import org.juzu.impl.utils.Content;
-import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerAssert;
@@ -329,20 +328,7 @@ public class CompilationTestCase extends AbstractTestCase
    @Test
    public void testErrorCode() throws IOException
    {
-      final ErrorCode code = new ErrorCode()
-      {
-         public String getKey()
-         {
-            return "ERROR_01";
-         }
-
-         public String getMessage()
-         {
-            return "The error";
-         }
-      };
-
-      //
+      final ErrorCode code = new ErrorCode("ERROR_01", "The error");
       class P extends BaseProcessor
       {
          @Override
@@ -352,12 +338,6 @@ public class CompilationTestCase extends AbstractTestCase
             {
                throw new CompilationException(code, 5, "foobar");
             }
-         }
-
-         @Override
-         protected ErrorCode decode(String key)
-         {
-            return "ERROR_01".equals(key) ? code : null;
          }
       }
 

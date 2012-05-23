@@ -21,6 +21,7 @@ package org.juzu.impl.metamodel;
 
 import org.junit.Test;
 import org.juzu.impl.compiler.CompilationError;
+import org.juzu.impl.template.metamodel.TemplateMetaModel;
 import org.juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
@@ -94,7 +95,7 @@ public class ProcessorTestCase extends AbstractTestCase
       List<CompilationError> errors = helper.failCompile();
       assertEquals(1, errors.size());
       CompilationError error = errors.get(0);
-      assertEquals(MetaModelError.TEMPLATE_NOT_RESOLVED.toString(), error.getCode());
+      assertEquals(TemplateMetaModel.TEMPLATE_NOT_RESOLVED.toString(), error.getCode());
       assertEquals(2, classOutput.size(ReadFileSystem.FILE));
       assertNotNull(classOutput.getPath("org", "juzu", "config.properties"));
       assertNotNull(classOutput.getPath("processor", "simple", "A.class"));

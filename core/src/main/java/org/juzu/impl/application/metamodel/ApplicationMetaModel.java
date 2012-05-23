@@ -27,6 +27,7 @@ import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplatesMetaModel;
+import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 
@@ -39,6 +40,12 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModelObject
 {
+
+   /** . */
+   public static final ErrorCode CANNOT_WRITE_APPLICATION_CONFIG = new ErrorCode("CANNOT_WRITE_APPLICATION_CONFIG", "The application %1$s configuration cannot be written");
+
+   /** . */
+   public static final ErrorCode CANNOT_WRITE_CONFIG = new ErrorCode("CANNOT_WRITE_CONFIG", "The configuration cannot be written");
 
    /** . */
    final ElementHandle.Package handle;

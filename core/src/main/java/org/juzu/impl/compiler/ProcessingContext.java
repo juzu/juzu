@@ -22,7 +22,6 @@ package org.juzu.impl.compiler;
 import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.disk.DiskFileSystem;
 import org.juzu.impl.utils.Content;
-import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Path;
@@ -70,6 +69,9 @@ import java.util.concurrent.Callable;
  */
 public class ProcessingContext implements Filer, Elements
 {
+
+   /** . */
+   private static final ErrorCode UNEXPECTED_ERROR = new ErrorCode("UNEXPECTED_ERROR", "Unexpected error: %1$s");
 
    /**
     * We need two locations as the {@link javax.tools.StandardLocation#SOURCE_PATH} is not supported in eclipse ide
@@ -168,18 +170,7 @@ public class ProcessingContext implements Filer, Elements
       }
       catch (Exception e)
       {
-         throw new CompilationException(e, element, new ErrorCode()
-         {
-            public String getKey()
-            {
-               return "UNEXPECTED_ERROR";
-            }
-
-            public String getMessage()
-            {
-               return "Unexpected error: %1$s";
-            }
-         }, e.getMessage());
+         throw new CompilationException(e, element, UNEXPECTED_ERROR, e.getMessage());
       }
    }
 

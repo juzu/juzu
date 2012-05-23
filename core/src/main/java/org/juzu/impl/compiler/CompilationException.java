@@ -19,8 +19,6 @@
 
 package org.juzu.impl.compiler;
 
-import org.juzu.impl.utils.ErrorCode;
-
 import javax.lang.model.element.Element;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

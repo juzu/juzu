@@ -8,10 +8,10 @@ import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.metamodel.EventQueue;
 import org.juzu.impl.metamodel.Key;
 import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.template.metamodel.TemplateMetaModel;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.QN;
@@ -341,7 +341,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, elt, MetaModelError.CANNOT_WRITE_APPLICATION, application.getFQN());
+         throw TemplateMetaModel.CANNOT_WRITE_APPLICATION.failure(e, elt, application.getFQN());
       }
       finally
       {
@@ -364,7 +364,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       }
       catch (IOException e)
       {
-         throw new CompilationException(e, MetaModelError.CANNOT_WRITE_CONFIG);
+         throw ApplicationMetaModel.CANNOT_WRITE_CONFIG.failure(e);
       }
       finally
       {
@@ -396,7 +396,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
          }
          catch (IOException e)
          {
-            throw new CompilationException(e, model.env.get(application.getHandle()), MetaModelError.CANNOT_WRITE_APPLICATION_CONFIG, application.getFQN());
+            throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, model.env.get(application.getHandle()), application.getFQN());
          }
          finally
          {

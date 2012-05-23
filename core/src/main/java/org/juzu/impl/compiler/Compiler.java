@@ -28,7 +28,6 @@ import org.juzu.impl.spi.fs.ReadFileSystem;
 import org.juzu.impl.spi.fs.ReadWriteFileSystem;
 import org.juzu.impl.spi.fs.SimpleFileSystem;
 import org.juzu.impl.spi.fs.ram.RAMFileSystem;
-import org.juzu.impl.utils.ErrorCode;
 import org.juzu.impl.utils.Location;
 import org.juzu.impl.utils.Spliterator;
 
@@ -41,8 +40,6 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -375,18 +372,7 @@ public class Compiler
                if (matcher.find())
                {
                   String codeKey = matcher.group(1);
-                  for (Processor processor : processors)
-                  {
-                     if (processor instanceof BaseProcessor)
-                     {
-                        BaseProcessor baseProcessor = (BaseProcessor)processor;
-                        code = baseProcessor.decode(codeKey);
-                        if (code != null)
-                        {
-                           break;
-                        }
-                     }
-                  }
+                  code = ErrorCode.decode(codeKey);
 
                   //
                   if (matcher.group(2).length() > 0)

@@ -23,7 +23,7 @@ import org.juzu.Application;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.plugin.Plugin;
-import org.juzu.impl.utils.ErrorCode;
+import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -50,6 +50,9 @@ import java.util.Set;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MetaModelProcessor extends BaseProcessor
 {
+
+   /** . */
+   public static final ErrorCode ANNOTATION_UNSUPPORTED = new ErrorCode("ANNOTATION_UNSUPPORTED", "The annotation of this element cannot be supported");
 
    /** . */
    private MetaModel metaModel;
@@ -104,19 +107,6 @@ public abstract class MetaModelProcessor extends BaseProcessor
       this.index = 0;
       this.context = new ProcessingContext(processingEnv);
       this.plugins = plugins;
-   }
-
-   @Override
-   protected ErrorCode decode(String key)
-   {
-      for (MetaModelError c : MetaModelError.values())
-      {
-         if (c.getKey().equals(key))
-         {
-            return c;
-         }
-      }
-      return null;
    }
 
    @Override

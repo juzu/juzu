@@ -23,6 +23,7 @@ import org.juzu.impl.metamodel.Key;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
+import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Path;
 
@@ -36,6 +37,27 @@ import java.util.Collection;
  */
 public class TemplateMetaModel extends MetaModelObject
 {
+
+   /** . */
+   public static final ErrorCode CANNOT_WRITE_TEMPLATE_STUB = new ErrorCode("CANNOT_WRITE_TEMPLATE_STUB", "The template stub %1$s cannot be written");
+
+   /** . */
+   public static final ErrorCode CANNOT_WRITE_TEMPLATE_CLASS = new ErrorCode("CANNOT_WRITE_TEMPLATE_CLASS", "The template class %1$s cannot be written");
+
+   /** . */
+   public static final ErrorCode CANNOT_WRITE_APPLICATION = new ErrorCode("CANNOT_WRITE_APPLICATION", "The application %1$s cannot be written");
+
+   /** . */
+   public static final ErrorCode TEMPLATE_NOT_RESOLVED = new ErrorCode("TEMPLATE_NOT_RESOLVED", "The template %1$s cannot be resolved");
+
+   /** . */
+   public static final ErrorCode TEMPLATE_SYNTAX_ERROR = new ErrorCode("TEMPLATE_SYNTAX_ERROR", "Template syntax error");
+
+   /** . */
+   public static final ErrorCode TEMPLATE_ILLEGAL_PATH = new ErrorCode("TEMPLATE_ILLEGAL_PATH", "The reference to the template %1$s is malformed");
+
+   /** . */
+   public static final ErrorCode CANNOT_WRITE_TEMPLATE_SCRIPT = new ErrorCode("CANNOT_WRITE_TEMPLATE_SCRIPT", "The template script %1$s cannot be written");
 
    /** . */
    public final static Key<TemplateMetaModel> KEY = Key.of(TemplateMetaModel.class);

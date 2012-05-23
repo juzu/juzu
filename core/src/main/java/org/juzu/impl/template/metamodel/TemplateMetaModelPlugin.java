@@ -4,9 +4,9 @@ import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.metamodel.MetaModelError;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.metamodel.MetaModelProcessor;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.compiler.Template;
 import org.juzu.impl.utils.JSON;
@@ -96,7 +96,7 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
          }
          else
          {
-            throw new CompilationException(element, MetaModelError.ANNOTATION_UNSUPPORTED);
+            throw MetaModelProcessor.ANNOTATION_UNSUPPORTED.failure(element);
          }
       }
    }
