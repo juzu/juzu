@@ -3,6 +3,7 @@ package org.juzu.plugin.less.impl;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ErrorCode;
+import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.Path;
 import org.juzu.impl.utils.QN;
@@ -56,11 +57,13 @@ public class LessMetaModelPlugin extends MetaModelPlugin
       String[] resources = enabledMap.remove(model.getHandle());
       if (resources != null && resources.length > 0)
       {
+         ProcessingContext env = model.model.env;
+
          // For now we use the hardcoded assets package
          QN pkg = model.getFQN().getPackageName().append("assets");
 
          //
-         CompilerLessContext clc = new CompilerLessContext(model.model.env, pkg);
+         CompilerLessContext clc = new CompilerLessContext(env, pkg);
 
          //
          for (String resource : resources)
@@ -89,7 +92,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                try
                {
                   Compilation compilation = (Compilation)result;
-                  FileObject fo = model.model.env.createResource(StandardLocation.CLASS_OUTPUT, to);
+                  FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, to);
                   Writer writer = fo.openWriter();
                   try
                   {
@@ -108,7 +111,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin
             else
             {
                Failure failure = (Failure)result;
-               throw LESS_COMPILATION_ERROR.failure(resource);
+               throw LESS_COMPILATION_ERROR.failure(resource, env.get(model.getHandle()));
             }
          }
       }
