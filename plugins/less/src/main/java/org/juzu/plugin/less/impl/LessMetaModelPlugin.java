@@ -101,7 +101,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                }
                catch (IllegalArgumentException e)
                {
-                  throw MALFORMED_PATH.failure(pkgElt, resource);
+                  throw MALFORMED_PATH.failure(pkgElt, resource).initCause(e);
                }
 
                //

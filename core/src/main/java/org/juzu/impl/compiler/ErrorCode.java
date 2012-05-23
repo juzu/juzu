@@ -81,11 +81,6 @@ public class ErrorCode
       return new CompilationException(this, args);
    }
 
-   public CompilationException failure(Throwable cause, Element element, Object... args)
-   {
-      return new CompilationException(cause, element, this, args);
-   }
-
    public CompilationException failure(Element element, Object... args)
    {
       return new CompilationException(element, this, args);

@@ -43,29 +43,13 @@ public class CompilationException extends RuntimeException
 
    public CompilationException(ErrorCode code, Object... arguments)
    {
-      this.code = code;
-      this.arguments = arguments;
-      this.element = null;
+      this(null, code, arguments);
    }
 
-   public CompilationException(Throwable cause, ErrorCode code, Object... arguments)
+   @Override
+   public synchronized CompilationException initCause(Throwable cause)
    {
-      super(cause);
-
-      //
-      this.code = code;
-      this.element = null;
-      this.arguments = arguments;
-   }
-
-   public CompilationException(Throwable cause, Element element, ErrorCode code, Object... arguments)
-   {
-      super(cause);
-
-      //
-      this.code = code;
-      this.element = element;
-      this.arguments = arguments;
+      return (CompilationException)super.initCause(cause);
    }
 
    public Element getElement()
