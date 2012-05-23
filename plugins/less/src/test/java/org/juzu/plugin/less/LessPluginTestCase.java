@@ -73,4 +73,15 @@ public class LessPluginTestCase extends AbstractInjectTestCase
       assertNotNull(f);
       assertTrue(f.exists());
    }
+
+   @Test
+   public void testCannotResolve()  throws Exception
+   {
+      CompilerAssert<File,File> ca = compiler("plugin", "less", "cannotresolve");
+      List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
+      assertEquals(1, errors.size());
+      assertEquals(LessMetaModelPlugin.LESS_COMPILATION_ERROR, errors.get(0).getCode());
+      File f = ca.getClassOutput().getPath("plugin", "less", "cannotresolve", "assets", "stylesheet.css");
+      assertNull(f);
+   }
 }

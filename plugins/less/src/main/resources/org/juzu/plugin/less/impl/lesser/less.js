@@ -3101,9 +3101,14 @@ parse = (function (window, undefined) {
     function loadStyleSheet(stylesheet, callback) {
         var data = load(stylesheet.href);
         var parser = new(less.Parser);
-        parser.parse(data, function(err, tree) {
-            callback(err, tree, data, stylesheet);
-        });
+        try {
+            parser.parse(data, function(err, tree) {
+                callback(err, tree, data, stylesheet);
+            });
+        }
+        catch (err) {
+            callback(err);
+        }
     }
 
     //

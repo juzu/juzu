@@ -57,6 +57,16 @@ public class CompilerTestCase
    }
 
    @Test
+   public void testCannotResolveImport() throws Exception
+   {
+      URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
+      Failure failure = (Failure)lesser.compile(context, "cannotresolveimport.less");
+      Assert.assertEquals(1, failure.line);
+      Assert.assertEquals(0, failure.column);
+      Assert.assertEquals(0, failure.index);
+   }
+
+   @Test
    public void testBootstrap() throws Exception
    {
       URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/bootstrap/"));
