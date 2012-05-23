@@ -2,10 +2,12 @@ package org.juzu.plugin.less.impl;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
+import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Path;
 import org.juzu.impl.utils.QN;
 import org.juzu.impl.utils.Tools;
@@ -17,6 +19,7 @@ import org.juzu.plugin.less.impl.lesser.Lesser;
 import org.juzu.plugin.less.impl.lesser.Result;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.PackageElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
@@ -32,6 +35,9 @@ public class LessMetaModelPlugin extends MetaModelPlugin
    public static final ErrorCode LESS_COMPILATION_ERROR = new ErrorCode("LESS_COMPILATION_ERROR", "There is an error in your .less file in %1$s");
 
    /** . */
+   static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);
+
+   /** . */
    private final HashMap<ElementHandle.Package, AnnotationData> enabledMap = new HashMap<ElementHandle.Package, AnnotationData>();
 
    @Override
@@ -39,79 +45,101 @@ public class LessMetaModelPlugin extends MetaModelPlugin
    {
       if (fqn.equals(Less.class.getName()))
       {
-         enabledMap.put(application.getHandle(), data);
+         ElementHandle.Package pkg = application.getHandle();
+         log.log("Recording less annotation for package " + pkg.getQN());
+         enabledMap.put(pkg, data);
       }
    }
 
    @Override
    public void preDestroy(ApplicationMetaModel application)
    {
-      enabledMap.remove(application.getHandle());
+      ElementHandle.Package pkg = application.getHandle();
+      log.log("Removing less annotation for package " + pkg.getQN());
+      AnnotationData data = enabledMap.remove(application.getHandle());
+      log.log("Removed less annotation for package " + pkg.getQN() + ": " + data);
    }
 
    @Override
    public void prePassivate(ApplicationMetaModel model)
    {
       AnnotationData annotation = enabledMap.remove(model.getHandle());
-      Boolean minify = (Boolean)annotation.get("minify");
-      List<String> resources = (List<String>)annotation.get("value");
-      if (resources != null && resources.size() > 0)
+      if (annotation != null)
       {
-         ProcessingContext env = model.model.env;
-
-         // For now we use the hardcoded assets package
-         QN pkg = model.getFQN().getPackageName().append("assets");
-
-         //
-         CompilerLessContext clc = new CompilerLessContext(env, pkg);
+         ElementHandle.Package pkg = model.getHandle();
+         Boolean minify = (Boolean)annotation.get("minify");
+         List<String> resources = (List<String>)annotation.get("value");
 
          //
-         for (String resource : resources)
+         log.log("Handling less annotation for package " + pkg.getQN() + ": minify=" + minify + " resources=" + resources);
+
+         //
+         if (resources != null && resources.size() > 0)
          {
-            Path path = Path.parse(resource);
+            ProcessingContext env = model.model.env;
+
+            // For now we use the hardcoded assets package
+            QN assetPkg = model.getFQN().getPackageName().append("assets");
 
             //
-            Path.Absolute to = Path.Absolute.create(pkg.append(path.getQN()), path.getRawName(), "css");
+            CompilerLessContext clc = new CompilerLessContext(env, assetPkg);
 
             //
-            Lesser lesser;
-            Result result;
-            try
+            for (String resource : resources)
             {
-               lesser = new Lesser(new JSR223Context());
-               result = lesser.compile(clc, resource, Boolean.TRUE.equals(minify));
-            }
-            catch (Exception e)
-            {
-               throw new UnsupportedOperationException(e);
-            }
+               log.log("Processing declared resource " + resource);
 
-            //
-            if (result instanceof Compilation)
-            {
+               //
+               Path path = Path.parse(resource);
+
+               //
+               Path.Absolute to = Path.Absolute.create(assetPkg.append(path.getQN()), path.getRawName(), "css");
+               log.log("Resource " + resource + " destination resolved to " + to);
+
+               //
+               Lesser lesser;
+               Result result;
                try
                {
-                  Compilation compilation = (Compilation)result;
-                  FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, to);
-                  Writer writer = fo.openWriter();
-                  try
-                  {
-                     writer.write(compilation.getValue());
-                  }
-                  finally
-                  {
-                     Tools.safeClose(writer);
-                  }
+                  lesser = new Lesser(new JSR223Context());
+                  result = lesser.compile(clc, resource, Boolean.TRUE.equals(minify));
                }
-               catch (IOException e)
+               catch (Exception e)
                {
+                  log.log("Unexpected exception", e);
                   throw new UnsupportedOperationException(e);
                }
-            }
-            else
-            {
-               Failure failure = (Failure)result;
-               throw LESS_COMPILATION_ERROR.failure(resource, env.get(model.getHandle()));
+
+               //
+               if (result instanceof Compilation)
+               {
+                  try
+                  {
+                     log.log("Resource " + resource + " compiled about to write on disk as " + to);
+                     Compilation compilation = (Compilation)result;
+                     FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, to);
+                     Writer writer = fo.openWriter();
+                     try
+                     {
+                        writer.write(compilation.getValue());
+                     }
+                     finally
+                     {
+                        Tools.safeClose(writer);
+                     }
+                  }
+                  catch (IOException e)
+                  {
+                     log.log("Resource " + to + " could not be written on disk", e);
+                  }
+               }
+               else
+               {
+                  Failure failure = (Failure)result;
+                  PackageElement pkgElt = env.get(model.getHandle());
+                  log.log("Resource " + resource + " for package " + pkgElt + " could not be compiled: " + failure);
+                  throw LESS_COMPILATION_ERROR.failure(resource, assetPkg);
+               }
             }
          }
       }
