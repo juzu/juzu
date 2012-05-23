@@ -44,12 +44,12 @@ public class Lesser
       this.engine = jsContext;
    }
 
-   public Result parse(LessContext context, String name) throws Exception
+   public Result compile(LessContext context, String name) throws Exception
    {
-      return parse(context, name, false);
+      return compile(context, name, false);
    }
 
-   public Result parse(LessContext context, String name, boolean compress) throws Exception
+   public Result compile(LessContext context, String name, boolean compress) throws Exception
    {
       current.set(context);
       try

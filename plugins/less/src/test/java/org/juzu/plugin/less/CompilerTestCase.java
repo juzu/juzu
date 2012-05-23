@@ -36,13 +36,13 @@ public class CompilerTestCase
    public void testSimple() throws Exception
    {
       URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
-      Compilation ret = (Compilation)lesser.parse(context, "simple.less");
+      Compilation ret = (Compilation)lesser.compile(context, "simple.less");
       Assert.assertEquals(".class {\n" +
          "  width: 2;\n" +
          "}\n", ret.getValue());
 
       //
-      ret = (Compilation)lesser.parse(context, "simple.less", true);
+      ret = (Compilation)lesser.compile(context, "simple.less", true);
       Assert.assertEquals(".class{width:2;}\n", ret.getValue());
    }
 
@@ -50,7 +50,7 @@ public class CompilerTestCase
    public void testFail() throws Exception
    {
       URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
-      Failure failure = (Failure)lesser.parse(context, "fail.less");
+      Failure failure = (Failure)lesser.compile(context, "fail.less");
       Assert.assertEquals(1, failure.line);
       Assert.assertEquals(8, failure.column);
       Assert.assertEquals(8, failure.index);
@@ -61,7 +61,7 @@ public class CompilerTestCase
    {
       URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/bootstrap/"));
       long time = - System.currentTimeMillis();
-      Object ret = lesser.parse(context, "bootstrap.less");
+      Object ret = lesser.compile(context, "bootstrap.less");
       time += System.currentTimeMillis();
       Assert.assertNotNull(ret);
       System.out.println("parsed in " + time + "ms");

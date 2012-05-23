@@ -79,7 +79,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin
             try
             {
                lesser = new Lesser(new JSR223Context());
-               result = lesser.parse(clc, resource, Boolean.TRUE.equals(minify));
+               result = lesser.compile(clc, resource, Boolean.TRUE.equals(minify));
             }
             catch (Exception e)
             {
