@@ -21,6 +21,7 @@ package org.juzu.impl.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
@@ -31,7 +32,6 @@ import org.juzu.impl.utils.QN;
 
 import javax.lang.model.element.Element;
 import java.util.HashSet;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public final class MetaModel extends MetaModelObject
@@ -98,13 +98,13 @@ public final class MetaModel extends MetaModelObject
       }
    }
 
-   public void processAnnotation(Element element, String annotationFQN, Map<String, Object> annotationValues) throws CompilationException
+   public void processAnnotation(Element element, String annotationType, AnnotationData annotationData) throws CompilationException
    {
       queuing = true;
       try
       {
          MetaModel.log.log("Processing annotation " + element);
-         applications.processAnnotation(this, element, annotationFQN, annotationValues);
+         applications.processAnnotation(this, element, annotationType, annotationData);
       }
       finally
       {

@@ -19,17 +19,8 @@
 
 package org.juzu.impl.utils;
 
-import org.juzu.impl.compiler.ElementHandle;
-
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,11 +41,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -733,75 +722,5 @@ public class Tools
          }
       }
       return null;
-   }
-   
-   public static Map<String, Object> foo(AnnotationMirror annotation) throws NullPointerException
-   {
-      if (annotation == null)
-      {
-         throw new NullPointerException("No null annotation allowed");
-      }
-
-      //
-      Map<String, Object> values = new HashMap<String, Object>();
-      for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation.getElementValues().entrySet())
-      {
-         String m = entry.getKey().getSimpleName().toString();
-         Object value = unwrap(entry.getValue(), entry.getKey().getReturnType());
-         if (value instanceof Serializable)
-         {
-            values.put(m, value);
-         }
-         else 
-         {
-            throw new UnsupportedOperationException("Need to unwrap not serializable type " + value + " " +
-               value.getClass().getName() + entry.getKey().getReturnType());
-         }
-      }
-      return values;
-   }
-   
-   private static Object unwrap(Object value, TypeMirror type)
-   {
-      if (value instanceof AnnotationValue)
-      {
-         value = ((AnnotationValue)value).getValue();
-      }
-
-      //
-      if (type instanceof ArrayType)
-      {
-         TypeMirror componentType = ((ArrayType)type).getComponentType(); 
-         if (value instanceof List)
-         {
-            List<?> array = (List<?>)value;
-            ArrayList<Object> list = new ArrayList<Object>(array.size());
-            for (Object element : array)
-            {
-               list.add(unwrap(element, componentType));
-            }
-            return list;
-         }
-         else
-         {
-            throw new UnsupportedOperationException("Impossible ? " + value + " " + value.getClass().getName());
-         }
-      }
-      else if (value instanceof VariableElement)
-      {
-         return ((VariableElement)value).getSimpleName().toString();
-      }
-      else if (value instanceof DeclaredType)
-      {
-         return ElementHandle.Class.create((TypeElement)((DeclaredType)value).asElement());
-      }
-      else if (value instanceof AnnotationMirror)
-      {
-         return foo((AnnotationMirror)value);
-      }
-      else
-      {
-         return value;
-      }
    }
 }

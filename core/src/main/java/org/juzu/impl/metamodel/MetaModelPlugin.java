@@ -2,6 +2,7 @@ package org.juzu.impl.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.utils.JSON;
 
 import javax.lang.model.element.Element;
@@ -28,7 +29,7 @@ public class MetaModelPlugin implements Serializable
    {
    }
 
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values)
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data)
    {
    }
 

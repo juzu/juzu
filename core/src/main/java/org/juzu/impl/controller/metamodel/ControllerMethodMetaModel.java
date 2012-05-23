@@ -19,6 +19,7 @@
 
 package org.juzu.impl.controller.metamodel;
 
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.JSON;
@@ -28,6 +29,7 @@ import org.juzu.impl.compiler.ElementHandle;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
@@ -140,7 +142,7 @@ public class ControllerMethodMetaModel extends MetaModelObject
          AnnotationMirror am = Tools.getAnnotation(methodElt, phase.annotation.getName());
          if (am != null)
          {
-            Map<String, Object> values = Tools.foo(am);
+            AnnotationData values = AnnotationData.create(am);
             String id = (String)values.get("id");
             return Tools.safeEquals(id, this.id);
          }

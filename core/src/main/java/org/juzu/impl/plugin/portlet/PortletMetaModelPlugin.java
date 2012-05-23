@@ -1,6 +1,7 @@
 package org.juzu.impl.plugin.portlet;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ProcessingContext;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletMetaModelPlugin extends MetaModelPlugin
@@ -36,7 +36,7 @@ public class PortletMetaModelPlugin extends MetaModelPlugin
    private HashSet<ElementHandle.Package> toEmit = new HashSet<ElementHandle.Package>();
 
    @Override
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values)
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data)
    {
       ElementHandle.Package pkg = application.getHandle();
       if (fqn.equals(Portlet.class.getName()) && ElementHandle.create(element).equals(pkg))

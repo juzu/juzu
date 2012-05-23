@@ -1,6 +1,7 @@
 package org.juzu.impl.plugin.binding;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.JSON;
@@ -20,11 +21,11 @@ public class BindingMetaModelPlugin extends MetaModelPlugin
    private Map<ElementHandle.Package, JSON> state = new HashMap<ElementHandle.Package, JSON>();
 
    @Override
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values)
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data)
    {
       if (fqn.equals(Bindings.class.getName()))
       {
-         List<Map<String, Object>> bindings = (List<Map<String, Object>>)values.get("value");
+         List<Map<String, Object>> bindings = (List<Map<String, Object>>)data.get("value");
          ArrayList<JSON> list = new ArrayList<JSON>();
          if (bindings != null)
          {

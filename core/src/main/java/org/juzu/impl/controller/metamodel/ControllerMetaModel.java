@@ -37,6 +37,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -123,7 +124,7 @@ public class ControllerMetaModel extends MetaModelObject
       MetaModel context,
       ExecutableElement methodElt,
       String annotationFQN,
-      Map<String, Object> annotationValues)
+      Map<String,Serializable> annotationValues)
    {
       String id = (String)annotationValues.get("id");
 

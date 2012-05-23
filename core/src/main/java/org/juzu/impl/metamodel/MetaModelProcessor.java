@@ -20,6 +20,7 @@
 package org.juzu.impl.metamodel;
 
 import org.juzu.Application;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.plugin.Plugin;
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -191,9 +193,9 @@ public abstract class MetaModelProcessor extends BaseProcessor
                      {
                         if (annotationMirror.getAnnotationType().asElement().equals(annotationElt))
                         {
-                           Map<String, Object> annotationValues = Tools.foo(annotationMirror);
+                           AnnotationData annotationData = AnnotationData.create(annotationMirror);
                            String annotationFQN = annotationElt.getQualifiedName().toString();
-                           metaModel.processAnnotation(annotatedElt, annotationFQN, annotationValues);
+                           metaModel.processAnnotation(annotatedElt, annotationFQN, annotationData);
                         }
                      }
                   }

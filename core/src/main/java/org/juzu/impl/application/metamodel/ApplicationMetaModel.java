@@ -20,6 +20,7 @@
 package org.juzu.impl.application.metamodel;
 
 import org.juzu.Application;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.controller.metamodel.ControllersMetaModel;
 import org.juzu.impl.metamodel.MetaModel;
@@ -60,10 +61,10 @@ public class ApplicationMetaModel extends MetaModelObject
    boolean modified;
 
    /** . */
-   final Map<BufKey, Map<String, Object>> toProcess;
+   final Map<BufKey, AnnotationData> toProcess;
 
    /** . */
-   final Map<BufKey, Map<String, Object>> processed;
+   final Map<BufKey, AnnotationData> processed;
 
    /** . */
    final String baseName;
@@ -89,8 +90,8 @@ public class ApplicationMetaModel extends MetaModelObject
       this.fqn = fqn;
       this.modified = false;
       this.baseName = baseName;
-      this.toProcess = new HashMap<BufKey, Map<String, Object>>();
-      this.processed = new HashMap<BufKey, Map<String, Object>>();
+      this.toProcess = new HashMap<BufKey, AnnotationData>();
+      this.processed = new HashMap<BufKey, AnnotationData>();
    }
 
    public ControllersMetaModel getControllers()

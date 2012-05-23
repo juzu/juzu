@@ -7,6 +7,7 @@ import org.juzu.URLBuilder;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ProcessingContext;
@@ -41,7 +42,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerMetaModelPlugin extends MetaModelPlugin
@@ -77,7 +77,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
       ControllersMetaModel controllers = new ControllersMetaModel();
       PackageElement pkg = application.model.env.get(application.getHandle());
       AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
-      Map<String, Object> values = Tools.foo(annotation);
+      AnnotationData values = AnnotationData.create(annotation);
       Boolean escapeXML = (Boolean)values.get("escapeXML");
       ElementHandle.Class defaultControllerElt = (ElementHandle.Class)values.get("defaultController");
       controllers.escapeXML = escapeXML;
@@ -86,7 +86,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
    }
 
    @Override
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values) throws CompilationException
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) throws CompilationException
    {
       ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
       if (fqn.equals("org.juzu.View") || fqn.equals("org.juzu.Action") || fqn.equals("org.juzu.Resource"))
@@ -104,7 +104,7 @@ public class ControllerMetaModelPlugin extends MetaModelPlugin
             application.model,
             methodElt,
             fqn,
-            values
+            data
          );
       }
    }

@@ -1,6 +1,7 @@
 package org.juzu.plugin.less.impl;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.compiler.ProcessingContext;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LessMetaModelPlugin extends MetaModelPlugin
@@ -35,12 +35,12 @@ public class LessMetaModelPlugin extends MetaModelPlugin
    private final HashMap<ElementHandle.Package, String[]> enabledMap = new HashMap<ElementHandle.Package, String[]>();
 
    @Override
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values)
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data)
    {
       if (fqn.equals(Less.class.getName()))
       {
          ElementHandle.Package handle = application.getHandle();
-         List<String> resources = (List<String>)values.get("value");
+         List<String> resources = (List<String>)data.get("value");
          enabledMap.put(handle, resources.toArray(new String[resources.size()]));
       }
    }

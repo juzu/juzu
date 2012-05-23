@@ -2,6 +2,7 @@ package org.juzu.impl.template.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
+import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.MetaModel;
@@ -73,7 +74,7 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
    }
 
    @Override
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, Map<String, Object> values) throws CompilationException
+   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) throws CompilationException
    {
       if (fqn.equals("org.juzu.Path"))
       {
@@ -86,7 +87,7 @@ public class TemplateMetaModelPlugin extends MetaModelPlugin
             TemplatesMetaModel at = application.getChild(TemplatesMetaModel.KEY);
 
             //
-            Path path = Path.parse((String)values.get("value"));
+            Path path = Path.parse((String)data.get("value"));
             ElementHandle.Field handle = ElementHandle.Field.create(variableElt);
             at.add(handle, path);
          }
