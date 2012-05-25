@@ -23,7 +23,6 @@ import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -122,18 +121,26 @@ public abstract class BaseProcessor extends AbstractProcessor
    /** Controls how error are reported. */
    private boolean formalErrorReporting;
 
+   /** . */
+   private ProcessingContext context;
+
    protected BaseProcessor()
    {
       this.formalErrorReporting = false;
    }
 
-   public boolean getFormalErrorReporting()
+   public final boolean getFormalErrorReporting()
    {
       return formalErrorReporting;
    }
 
+   public final ProcessingContext getContext()
+   {
+      return context;
+   }
+
    @Override
-   public Set<String> getSupportedOptions()
+   public final Set<String> getSupportedOptions()
    {
       Set<String> options = super.getSupportedOptions();
       HashSet<String> our = new HashSet<String>(options);
@@ -151,6 +158,7 @@ public abstract class BaseProcessor extends AbstractProcessor
 
       //
       this.formalErrorReporting = "formal".equalsIgnoreCase(processingEnv.getOptions().get("juzu.error_reporting"));
+      this.context = new ProcessingContext(processingEnv);
 
       //
       doInit(processingEnv);
@@ -253,20 +261,8 @@ public abstract class BaseProcessor extends AbstractProcessor
          e.printStackTrace(new PrintWriter(writer));
          logger.log(writer.getBuffer());
 
-         // Report to javac
-         Messager messager = processingEnv.getMessager();
-         if (element == null)
-         {
-            messager.printMessage(Diagnostic.Kind.ERROR, msg);
-         }
-         else if (annotation == null)
-         {
-            messager.printMessage(Diagnostic.Kind.ERROR, msg, element);
-         }
-         else
-         {
-            messager.printMessage(Diagnostic.Kind.ERROR, msg, element, annotation);
-         }
+         // Report to tool
+         context.report(Diagnostic.Kind.ERROR, msg, element, annotation, null);
       }
       finally
       {

@@ -29,6 +29,7 @@ import org.juzu.impl.utils.Spliterator;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -47,6 +48,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
@@ -89,8 +91,22 @@ public class ProcessingContext implements Filer, Elements
    /** Set for eclipse environment. */
    private final ReadFileSystem<File> sourcePath;
 
+   /** . */
+   private final ProcessingTool tool;
+
    public ProcessingContext(ProcessingEnvironment env)
    {
+      ProcessingTool tool;
+      if (env.getMessager().getClass().getName().startsWith("org.eclipse.jdt"))
+      {
+         tool = ProcessingTool.ECLIPSE_IDE;
+      }
+      else
+      {
+         tool = ProcessingTool.JAVAC;
+      }
+
+      //
       ReadFileSystem<File> sourcePath = null;
       try
       {
@@ -131,15 +147,31 @@ public class ProcessingContext implements Filer, Elements
       }
 
       //
+      log.log("Using processing tool " + tool);
       log.log("Using processing " + env);
       log.log("Using source path " + sourcePath);
 
       //
       this.env = env;
       this.sourcePath = sourcePath;
+      this.tool = tool;
    }
 
    // Various stuff ****************************************************************************************************
+
+   public void report(Diagnostic.Kind kind,
+   		      CharSequence msg,
+   		      Element e,
+   		      AnnotationMirror a,
+   		      AnnotationValue v)
+   {
+      tool.report(env.getMessager(), kind, msg, e, a, v);
+   }
+
+   public ProcessingEnvironment getEnv()
+   {
+      return env;
+   }
 
    public <E extends Element> E get(ElementHandle<E> handle)
    {
