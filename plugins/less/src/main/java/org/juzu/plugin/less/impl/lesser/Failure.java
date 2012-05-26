@@ -1,41 +1,16 @@
 package org.juzu.plugin.less.impl.lesser;
 
+import java.util.LinkedList;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Failure extends Result
 {
 
    /** . */
-   public final int line;
+   final LinkedList<LessError> errors = new LinkedList<LessError>();
 
-   /** . */
-   public final int column;
-
-   /** . */
-   public final int index;
-
-   /** . */
-   public final String message;
-
-   /** . */
-   public final String type;
-
-   /** . */
-   public final String extract;
-
-   public Failure(int line, int column, int index, String message, String type, String extract)
+   public LinkedList<LessError> getErrors()
    {
-      this.line = line;
-      this.column = column;
-      this.index = index;
-      this.message = message;
-      this.type = type;
-      this.extract = extract;
-   }
-
-   @Override
-   public String toString()
-   {
-      return "Failure[line=" + line +",column=" + column + ",index=" + index + ",message=" + message + ",type=" +
-         type + ",extract=" + extract + "]";
+      return errors;
    }
 }

@@ -13,13 +13,29 @@ public class Lesser
    private static final ThreadLocal<LessContext> current = new ThreadLocal<LessContext>();
 
    /** . */
+   private static final ThreadLocal<Result> currentResult = new ThreadLocal<Result>();
+
+   /** . */
    private final JSContext engine;
 
-   public class Loader
+   public class Bridge
    {
       public String load(String name)
       {
          return current.get().load(name);
+      }
+      public void failure(int line, int column, int index, String message, String type, String extract)
+      {
+         Failure failure = (Failure)currentResult.get();
+         if (failure == null)
+         {
+            currentResult.set(failure = new Failure());
+         }
+         failure.errors.add(new LessError(line, column, index, message, type, extract));
+      }
+      public void compilation(String result)
+      {
+         currentResult.set(new Compilation(result));
       }
    }
 
@@ -31,10 +47,10 @@ public class Lesser
       ByteArrayOutputStream baos = append(lessIn, new ByteArrayOutputStream());
 
       //
-      jsContext.put("loader", new Loader());
-      jsContext.eval("load = function(name) { return '' + loader.load(name); }");
-      jsContext.eval("failure = function(line, column, index, message, type, extract) { return new " + Failure.class.getName() + "(line, column, index, message, type, extract); }");
-      jsContext.eval("compilation = function(stylesheet) { return new " + Compilation.class.getName() + "(stylesheet); }");
+      jsContext.put("bridge", new Bridge());
+      jsContext.eval("load = function(name) { return '' + bridge.load(name); }");
+      jsContext.eval("failure = function(line, column, index, message, type, extract) { bridge.failure(line, column, index, message, type, extract); }");
+      jsContext.eval("compilation = function(stylesheet) { bridge.compilation(stylesheet); }");
       jsContext.put("window", "{}");
 
       //
@@ -54,11 +70,13 @@ public class Lesser
       current.set(context);
       try
       {
-         return (Result)engine.invokeFunction("parse", name, compress);
+         engine.invokeFunction("parse", name, compress);
+         return currentResult.get();
       }
       finally
       {
          current.set(null);
+         currentResult.set(null);
       }
    }
 

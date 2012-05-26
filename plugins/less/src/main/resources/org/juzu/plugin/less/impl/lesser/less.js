@@ -3103,25 +3103,24 @@ parse = (function (window, undefined) {
         var parser = new(less.Parser);
         try {
             parser.parse(data, function(err, tree) {
-                callback(err, tree, data, stylesheet);
+                if (err) { return failure(err.line, err.column, err.index, err.message, err.type, err.extract); }
+                try {
+                    callback(err, tree, data, stylesheet);
+                } catch (e) {
+                    failure(err.line, err.column, err.index, err.message, err.type, err.extract);
+                }
             });
         }
         catch (err) {
-            callback(err);
+            failure(err.line, err.column, err.index, err.message, err.type, err.extract);
         }
     }
 
     //
     function parse(s, compress) {
-        var ret = null;
         loadStyleSheet({href:s}, function(err, tree) {
-            if (err) {
-                ret = failure(err.line, err.column, err.index, err.message, err.type, err.extract);
-            } else {
-                ret = compilation(tree.toCSS({compress:compress}));
-            }
+            compilation(tree.toCSS({compress:compress}));
         });
-        return ret;
     }
 
     //
