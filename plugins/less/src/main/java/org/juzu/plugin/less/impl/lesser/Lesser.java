@@ -24,7 +24,7 @@ public class Lesser
       {
          return current.get().load(name);
       }
-      public void failure(String src, int line, int column, int index, String message, String type, String extract)
+      public void failure(String src, int line, int column, int index, String message, String type, String[] extract)
       {
          Failure failure = (Failure)currentResult.get();
          if (failure == null)

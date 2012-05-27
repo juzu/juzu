@@ -105,4 +105,20 @@ public class CompilerTestCase
          "  width: 2px;\n" +
          "}\n", compilation.getValue());
    }
+
+   @Test
+   public void testExtract() throws Exception
+   {
+      System.out.println("Extract");
+      URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
+      Failure failure = (Failure)lesser.compile(context, "extract.less");
+      Assert.assertEquals(1, failure.getErrors().size());
+      LessError error = failure.getErrors().get(0);
+      Assert.assertEquals(2, error.line);
+      String[] extract = error.extract;
+      Assert.assertEquals(3, extract.length);
+      Assert.assertEquals("// comment 1", extract[0]);
+      Assert.assertEquals("a { width: + 1px }", extract[1]);
+      Assert.assertEquals("// comment 2", extract[2]);
+   }
 }

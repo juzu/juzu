@@ -3105,6 +3105,9 @@ parse = (function (window, undefined) {
      * @return {*} what returned the failure method
      */
     function invokeFailure(src, err) {
+        if (err.stack) {
+            java.lang.System.out.println("we don't handle yet the stack from error : " + err.stack);
+        }
         return failure(src, err.line, err.column, err.index, err.message, err.type, err.extract);
     }
 
