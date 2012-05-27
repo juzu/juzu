@@ -3103,16 +3103,16 @@ parse = (function (window, undefined) {
         var parser = new(less.Parser);
         try {
             parser.parse(data, function(err, tree) {
-                if (err) { return failure(err.line, err.column, err.index, err.message, err.type, err.extract); }
+                if (err) { return failure(stylesheet.href, err.line, err.column, err.index, err.message, err.type, err.extract); }
                 try {
                     callback(err, tree, data, stylesheet);
                 } catch (e) {
-                    failure(err.line, err.column, err.index, err.message, err.type, err.extract);
+                    failure(stylesheet.href, err.line, err.column, err.index, err.message, err.type, err.extract);
                 }
             });
         }
         catch (err) {
-            failure(err.line, err.column, err.index, err.message, err.type, err.extract);
+            failure(stylesheet.href, err.line, err.column, err.index, err.message, err.type, err.extract);
         }
     }
 

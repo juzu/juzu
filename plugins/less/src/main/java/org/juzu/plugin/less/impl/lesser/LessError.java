@@ -5,6 +5,9 @@ public class LessError extends Result
 {
 
    /** . */
+   public final String src;
+
+   /** . */
    public final int line;
 
    /** . */
@@ -22,8 +25,9 @@ public class LessError extends Result
    /** . */
    public final String extract;
 
-   public LessError(int line, int column, int index, String message, String type, String extract)
+   public LessError(String src, int line, int column, int index, String message, String type, String extract)
    {
+      this.src = src;
       this.line = line;
       this.column = column;
       this.index = index;
@@ -35,7 +39,7 @@ public class LessError extends Result
    @Override
    public String toString()
    {
-      return "Failure[line=" + line +",column=" + column + ",index=" + index + ",message=" + message + ",type=" +
+      return "Failure[src=" + src + ",line=" + line +",column=" + column + ",index=" + index + ",message=" + message + ",type=" +
          type + ",extract=" + extract + "]";
    }
 }

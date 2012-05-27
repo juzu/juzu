@@ -24,14 +24,14 @@ public class Lesser
       {
          return current.get().load(name);
       }
-      public void failure(int line, int column, int index, String message, String type, String extract)
+      public void failure(String src, int line, int column, int index, String message, String type, String extract)
       {
          Failure failure = (Failure)currentResult.get();
          if (failure == null)
          {
             currentResult.set(failure = new Failure());
          }
-         failure.errors.add(new LessError(line, column, index, message, type, extract));
+         failure.errors.add(new LessError(src, line, column, index, message, type, extract));
       }
       public void compilation(String result)
       {
@@ -49,7 +49,7 @@ public class Lesser
       //
       jsContext.put("bridge", new Bridge());
       jsContext.eval("load = function(name) { return '' + bridge.load(name); }");
-      jsContext.eval("failure = function(line, column, index, message, type, extract) { bridge.failure(line, column, index, message, type, extract); }");
+      jsContext.eval("failure = function(src, line, column, index, message, type, extract) { bridge.failure(src, line, column, index, message, type, extract); }");
       jsContext.eval("compilation = function(stylesheet) { bridge.compilation(stylesheet); }");
       jsContext.put("window", "{}");
 

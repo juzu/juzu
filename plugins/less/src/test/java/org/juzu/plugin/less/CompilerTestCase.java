@@ -55,8 +55,9 @@ public class CompilerTestCase
       URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
       Failure ret = (Failure)lesser.compile(context, "fail.less");
       LinkedList<LessError> errors = ret.getErrors();
-      Assert.assertEquals(1, errors.size());;
+      Assert.assertEquals(1, errors.size());
       LessError error = errors.get(0);
+      Assert.assertEquals("fail.less", error.src);
       Assert.assertEquals(1, error.line);
       Assert.assertEquals(8, error.column);
       Assert.assertEquals(8, error.index);
