@@ -94,4 +94,14 @@ public class CompilerTestCase
       Assert.assertNotNull(compilation);
       System.out.println("parsed in " + time + "ms");
    }
+
+   @Test
+   public void testImport() throws Exception
+   {
+      URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
+      Compilation compilation = (Compilation)lesser.compile(context, "importer.less");
+      Assert.assertEquals("a {\n" +
+         "  width: 2px;\n" +
+         "}\n", compilation.getValue());
+   }
 }
