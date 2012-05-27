@@ -3097,22 +3097,33 @@ parse = (function (window, undefined) {
 
     })(require('./tree'));
 
+    /**
+     * Untangle the less err object before calling back the failure function.
+     *
+     * @param src the source location of the faulty less file
+     * @param err the less err
+     * @return {*} what returned the failure method
+     */
+    function invokeFailure(src, err) {
+        return failure(src, err.line, err.column, err.index, err.message, err.type, err.extract);
+    }
+
     //
     function loadStyleSheet(stylesheet, callback) {
         var data = load(stylesheet.href);
         var parser = new(less.Parser);
         try {
             parser.parse(data, function(err, tree) {
-                if (err) { return failure(stylesheet.href, err.line, err.column, err.index, err.message, err.type, err.extract); }
+                if (err) { return invokeFailure(stylesheet.href, err); }
                 try {
                     callback(err, tree, data, stylesheet);
                 } catch (e) {
-                    failure(stylesheet.href, err.line, err.column, err.index, err.message, err.type, err.extract);
+                    invokeFailure(stylesheet.href, err);
                 }
             });
         }
         catch (err) {
-            failure(stylesheet.href, err.line, err.column, err.index, err.message, err.type, err.extract);
+            invokeFailure(stylesheet.href, err);
         }
     }
 
