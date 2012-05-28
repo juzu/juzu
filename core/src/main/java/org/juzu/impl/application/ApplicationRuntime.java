@@ -312,7 +312,12 @@ public abstract class ApplicationRuntime<P, R, L>
          {
             logger.log("Building application");
             RAMFileSystem classes = new RAMFileSystem();
-            Compiler compiler = new Compiler(devScanner.getFileSystem(), classLoaderFS, classes, classes, false, false);
+            Compiler compiler = Compiler.
+               builder().
+               sourcePath(devScanner.getFileSystem()).
+               sourceOutput(classes).
+               classOutput(classes).
+               addClassPath(classLoaderFS).build();
             compiler.addAnnotationProcessor(new MainProcessor());
             List<CompilationError> res = compiler.compile();
             if (res.isEmpty())

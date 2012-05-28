@@ -56,7 +56,7 @@ public class Compiler
 
    public static Builder builder()
    {
-      return new Builder(null, null, null, new ArrayList<SimpleFileSystem<?>>(), false);
+      return new Builder(null, null, null, new ArrayList<SimpleFileSystem<?>>());
    }
 
    public static class Builder
@@ -75,24 +75,19 @@ public class Compiler
       private List<SimpleFileSystem<?>> classPaths;
 
       /** . */
-      private boolean force;
-
-      /** . */
-      private boolean formalErrorReporting;
+      private CompilerConfig config;
 
       private Builder(
          ReadFileSystem<?> sourcePath,
          ReadWriteFileSystem<?> sourceOutput,
          ReadWriteFileSystem<?> classOutput,
-         List<SimpleFileSystem<?>> classPaths,
-         boolean force)
+         List<SimpleFileSystem<?>> classPaths)
       {
          this.sourcePath = sourcePath;
          this.sourceOutput = sourceOutput;
          this.classOutput = classOutput;
          this.classPaths = classPaths;
-         this.force = force;
-         this.formalErrorReporting = false;
+         this.config = new CompilerConfig();
       }
 
       public Builder classOutput(ReadWriteFileSystem<?> classOutput)
@@ -125,15 +120,18 @@ public class Compiler
          return this;
       }
 
-      public Builder force(boolean force)
+      public Builder addClassPath(Iterable<SimpleFileSystem<?>> classPaths)
       {
-         this.force = force;
+         for (SimpleFileSystem<?> classPath : classPaths)
+         {
+            addClassPath(classPath);
+         }
          return this;
       }
 
-      public Builder formalErrorReporting(boolean reporting)
+      public Builder config(CompilerConfig config)
       {
-         this.formalErrorReporting = reporting;
+         this.config = config;
          return this;
       }
 
@@ -161,8 +159,7 @@ public class Compiler
             classPaths,
             sourceOutput,
             classOutput,
-            force,
-            formalErrorReporting
+            config
          );
          if (processor != null)
          {
@@ -194,28 +191,23 @@ public class Compiler
    private Collection<SimpleFileSystem<?>> classPaths;
 
    /** . */
-   private boolean force;
-
-   /** . */
-   private boolean formalErrorReporting;
+   private CompilerConfig config;
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
       ReadWriteFileSystem<?> output,
-      boolean force,
-      boolean formalErrorReporting)
+      CompilerConfig config)
    {
-      this(sourcePath, output, output, force, formalErrorReporting);
+      this(sourcePath, output, output, config);
    }
 
    public Compiler(
       ReadFileSystem<?> sourcePath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput,
-      boolean force,
-      boolean formalErrorReporting)
+      CompilerConfig config)
    {
-      this(sourcePath, Collections.<SimpleFileSystem<?>>emptyList(), sourceOutput, classOutput, force, formalErrorReporting);
+      this(sourcePath, Collections.<SimpleFileSystem<?>>emptyList(), sourceOutput, classOutput, config);
    }
 
    public Compiler(
@@ -223,10 +215,9 @@ public class Compiler
       SimpleFileSystem<?> classPath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput,
-      boolean force,
-      boolean formalErrorReporting)
+      CompilerConfig config)
    {
-      this(sourcePath, Collections.<SimpleFileSystem<?>>singletonList(classPath), sourceOutput, classOutput, force, formalErrorReporting);
+      this(sourcePath, Collections.<SimpleFileSystem<?>>singletonList(classPath), sourceOutput, classOutput, config);
    }
 
    public Compiler(
@@ -234,8 +225,7 @@ public class Compiler
       Collection<SimpleFileSystem<?>> classPaths,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput,
-      boolean force,
-      boolean formalErrorReporting)
+      CompilerConfig config)
    {
       this.sourcePath = sourcePath;
       this.classPaths = classPaths;
@@ -243,8 +233,7 @@ public class Compiler
       this.classOutput = classOutput;
       this.compiler = ToolProvider.getSystemJavaCompiler();
       this.processors = new HashSet<Processor>();
-      this.force = force;
-      this.formalErrorReporting = formalErrorReporting;
+      this.config = config;
    }
 
    public void addAnnotationProcessor(Processor annotationProcessorType)
@@ -351,7 +340,7 @@ public class Compiler
    {
       if (compilationUnits.isEmpty())
       {
-         if (!force)
+         if (!config.getForce())
          {
             return Collections.emptyList();
          }
@@ -433,9 +422,13 @@ public class Compiler
 
       //
       List<String> options = null;
-      if (formalErrorReporting)
+      for (String optionName : config.getProcessorOptionNames())
       {
-         options = Collections.singletonList("-Ajuzu.error_reporting=formal");
+         if (options == null)
+         {
+            options = new ArrayList<String>();
+         }
+         options.add("-A" + optionName + "=" + config.getProcessorOptionValue(optionName));
       }
 
       //

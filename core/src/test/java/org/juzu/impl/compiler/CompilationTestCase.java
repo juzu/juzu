@@ -342,7 +342,12 @@ public class CompilationTestCase extends AbstractTestCase
       }
 
       DiskFileSystem fs = diskFS("compiler", "errorcode");
-      Compiler compiler = Compiler.builder().formalErrorReporting(true).sourcePath(fs).output(new RAMFileSystem()).build();
+      Compiler compiler = Compiler.
+         builder().
+         config(new CompilerConfig().withProcessorOption("juzu.error_reporting", "formal")).
+         sourcePath(fs).
+         output(new RAMFileSystem()).
+         build();
       P processor = new P();
       compiler.addAnnotationProcessor(processor);
       List<CompilationError> errors = compiler.compile();

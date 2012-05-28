@@ -154,7 +154,14 @@ public class CompilerAssert<I, O>
 
    public CompilerAssert<I, O> formalErrorReporting(boolean formalErrorReporting)
    {
-      strategy.setFormalErrorReporting(true);
+      if (formalErrorReporting)
+      {
+         strategy.config.withProcessorOption("juzu.error_reporting", "formal");
+      }
+      else
+      {
+         strategy.config.withProcessorOption("juzu.error_reporting", null);
+      }
       return this;
    }
 
