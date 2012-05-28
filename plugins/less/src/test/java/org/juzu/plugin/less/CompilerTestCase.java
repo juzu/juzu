@@ -14,6 +14,7 @@ import org.juzu.plugin.less.impl.lesser.URLLessContext;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -66,6 +67,7 @@ public class CompilerTestCase
    @Test
    public void testCannotResolveImport() throws Exception
    {
+      System.out.println("Cannot resolve import");
       URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
       Failure failure = (Failure)lesser.compile(context, "cannotresolveimport.less");
       LinkedList<LessError> errors = failure.getErrors();
@@ -74,6 +76,7 @@ public class CompilerTestCase
       Assert.assertEquals(1, error.line);
       Assert.assertEquals(4, error.column);
       Assert.assertEquals(4, error.index);
+      Assert.assertEquals(Collections.emptyList(), Arrays.asList(error.extract));
    }
 
    @Test

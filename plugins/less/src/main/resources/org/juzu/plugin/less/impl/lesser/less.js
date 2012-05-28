@@ -3107,8 +3107,18 @@ parse = (function (window, undefined) {
     function invokeFailure(src, err) {
         if (err.stack) {
             java.lang.System.out.println("we don't handle yet the stack from error : " + err.stack);
+            return failure(src, err.line, err.column, err.index, err.message, err.type, err.extract);
+        } else if (err.extract) {
+            var extract = [];
+            for (var i = 0;i < err.extract.length;i++) {
+                // For some reason we have 'null' arriving there
+                // perhaps it's due to the Rhino version ?
+                if (err.extract[i] !== undefined && err.extract[i] != null && err.extract[i] != 'null') {
+                    extract.push(err.extract[i]);
+                }
+            }
+            return failure(src, err.line, err.column, err.index, err.message, err.type, extract);
         }
-        return failure(src, err.line, err.column, err.index, err.message, err.type, err.extract);
     }
 
     //

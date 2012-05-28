@@ -3,6 +3,7 @@ package org.juzu.plugin.less.impl;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
+import org.juzu.impl.compiler.CompilationMessage;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.compiler.ProcessingContext;
@@ -15,6 +16,7 @@ import org.juzu.plugin.less.Less;
 import org.juzu.plugin.less.impl.lesser.Compilation;
 import org.juzu.plugin.less.impl.lesser.Failure;
 import org.juzu.plugin.less.impl.lesser.JSR223Context;
+import org.juzu.plugin.less.impl.lesser.LessError;
 import org.juzu.plugin.less.impl.lesser.Lesser;
 import org.juzu.plugin.less.impl.lesser.Result;
 
@@ -25,7 +27,9 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -33,7 +37,9 @@ public class LessMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
-   public static final MessageCode COMPILATION_ERROR = new MessageCode("LESS_COMPILATION_ERROR", "There is an error in your .less file in %1$s");
+   public static final MessageCode COMPILATION_ERROR = new MessageCode(
+      "LESS_COMPILATION_ERROR",
+      "%1$s in %2$s on line %3$s, column %4$s:\n%5$s");
 
    /** . */
    public static final MessageCode MALFORMED_PATH = new MessageCode("LESS_MALFORMED_PATH", "The resource path %1$s is malformed");
@@ -152,8 +158,30 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                else
                {
                   Failure failure = (Failure)result;
-                  log.log("Resource " + resource + " for package " + pkgElt + " could not be compiled: " + failure);
-                  throw COMPILATION_ERROR.failure(pkgElt, annotationMirror, resource);
+                  LinkedList<LessError> errors = failure.getErrors();
+                  ArrayList<CompilationMessage> messages = new ArrayList<CompilationMessage>(errors.size());
+                  StringBuilder sb = new StringBuilder();
+                  for (LessError error : errors)
+                  {
+                     String text = error.message != null ? error.message : "There is an error in your .less file";
+                     int index = error.line - (error.extract.length -1) / 2;
+                     for (String line : error.extract)
+                     {
+                        sb.append("[").append(index).append("]");
+                        sb.append(index == error.line ? " -> " : "    ");
+                        sb.append(line).append("\n");
+                        index++;
+                     }
+                     CompilationMessage msg = new CompilationMessage(COMPILATION_ERROR,
+                        text,
+                        resource,
+                        error.line,
+                        error.column + 1,
+                        sb);
+                     log.log(msg.toDisplayString());
+                     messages.add(msg);
+                  }
+                  throw COMPILATION_ERROR.failure(pkgElt, annotationMirror, messages);
                }
             }
          }
