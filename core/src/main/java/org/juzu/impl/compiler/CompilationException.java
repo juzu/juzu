@@ -19,18 +19,22 @@
 
 package org.juzu.impl.compiler;
 
+import org.juzu.impl.utils.Tools;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilationException extends RuntimeException
+public class CompilationException extends RuntimeException implements Iterable<CompilationMessage>
 {
 
    /** . */
-   private final MessageCode code;
-
-   /** . */
-   private Object[] arguments;
+   private final List<CompilationMessage> messages;
 
    /** . */
    private final Element element;
@@ -50,10 +54,24 @@ public class CompilationException extends RuntimeException
 
    public CompilationException(Element element, AnnotationMirror annotation, MessageCode code, Object... arguments)
    {
-      this.code = code;
+      this(element, annotation, new CompilationMessage(code, arguments));
+   }
+
+   public CompilationException(Element element, AnnotationMirror annotation, CompilationMessage... messages)
+   {
+      this(element, annotation, Arrays.asList(messages));
+   }
+
+   public CompilationException(Element element, AnnotationMirror annotation, List<CompilationMessage> messages)
+   {
       this.element = element;
-      this.arguments = arguments;
       this.annotation = annotation;
+      this.messages = messages;
+   }
+
+   public Iterator<CompilationMessage> iterator()
+   {
+      return messages.iterator();
    }
 
    @Override
@@ -72,13 +90,8 @@ public class CompilationException extends RuntimeException
       return annotation;
    }
 
-   public MessageCode getCode()
+   public List<CompilationMessage> getMessages()
    {
-      return code;
-   }
-
-   public Object[] getArguments()
-   {
-      return arguments;
+      return messages;
    }
 }

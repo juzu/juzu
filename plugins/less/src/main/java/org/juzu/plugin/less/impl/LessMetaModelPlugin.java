@@ -4,7 +4,7 @@ import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.compiler.ErrorCode;
+import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.Logger;
@@ -33,10 +33,10 @@ public class LessMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
-   public static final ErrorCode COMPILATION_ERROR = new ErrorCode("LESS_COMPILATION_ERROR", "There is an error in your .less file in %1$s");
+   public static final MessageCode COMPILATION_ERROR = new MessageCode("LESS_COMPILATION_ERROR", "There is an error in your .less file in %1$s");
 
    /** . */
-   public static final ErrorCode MALFORMED_PATH = new ErrorCode("LESS_MALFORMED_PATH", "The resource path %1$s is malformed");
+   public static final MessageCode MALFORMED_PATH = new MessageCode("LESS_MALFORMED_PATH", "The resource path %1$s is malformed");
 
    /** . */
    static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);

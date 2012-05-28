@@ -196,7 +196,7 @@ public class ProcessingContext implements Filer, Elements
          }
          else
          {
-            throw new CompilationException(element, e.getCode(), (Object[])e.getArguments()).initCause(e);
+            throw new CompilationException(element, null, e.getMessages()).initCause(e);
          }
       }
       catch (Exception e)

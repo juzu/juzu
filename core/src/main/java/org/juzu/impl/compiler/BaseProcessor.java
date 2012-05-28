@@ -194,75 +194,88 @@ public abstract class BaseProcessor extends AbstractProcessor
       }
       catch (Exception e)
       {
-         StringBuilder msg;
-         Element element;
-         AnnotationMirror annotation;
          if (e instanceof CompilationException)
          {
             CompilationException ce = (CompilationException)e;
-            if (formalErrorReporting)
+            Element element = ce.getElement();
+            AnnotationMirror annotation = ce.getAnnotation();
+
+            //
+            StringBuilder msg = new StringBuilder();
+
+            for (CompilationMessage cm : ce)
             {
-               msg = new StringBuilder("[").append(ce.getCode().getKey()).append("](");
-               Object[] args = ce.getArguments();
-               for (int i = 0;i < args.length;i++)
+               msg.setLength(0);
+               MessageCode code = cm.getCode();
+               Object[] args = cm.getArguments();
+               if (formalErrorReporting)
                {
-                  if (i > 0)
+                  msg = msg.append("[").append(code.getKey()).append("](");
+                  for (int i = 0;i < args.length;i++)
                   {
-                     msg.append(',');
+                     if (i > 0)
+                     {
+                        msg.append(',');
+                     }
+                     msg.append(String.valueOf(args[i]));
                   }
-                  msg.append(String.valueOf(args[i]));
+                  msg.append(")");
                }
-               msg.append(")");
+               else
+               {
+                  new Formatter(msg).format(Locale.getDefault(), code.getMessage(), args).flush();
+               }
+
+               // Log error
+               StringWriter writer = new StringWriter();
+               if (element == null)
+               {
+                  writer.append("Compilation error: ");
+               }
+               else if (annotation == null)
+               {
+                  writer.
+                     append("Compilation error for element ").
+                     append(element.toString()).append(": ");
+               }
+               else
+               {
+                  writer.
+                     append("Compilation error for element ").
+                     append(element.toString()).
+                     append(" at annotation ").
+                     append(annotation.toString()).append(": ");
+               }
+               writer.append(msg).append("\n");
+               e.printStackTrace(new PrintWriter(writer));
+               logger.log(writer.getBuffer());
+
+               // Report to tool
+               context.report(Diagnostic.Kind.ERROR, msg, element, annotation, null);
             }
-            else
-            {
-               msg = new StringBuilder();
-               new Formatter(msg).format(Locale.getDefault(), ce.getCode().getMessage(), ce.getArguments()).flush();
-            }
-            element = ce.getElement();
-            annotation = ce.getAnnotation();
          }
          else
          {
+            String msg;
             if (e.getMessage() == null)
             {
-               msg = new StringBuilder("Exception : ").append(e.getClass().getName());
+               msg = "Exception : " + e.getClass().getName();
             }
             else
             {
-               msg = new StringBuilder(e.getMessage());
+               msg = e.getMessage();
             }
-            element = null;
-            annotation = null;
-         }
 
-         // Log error
-         StringWriter writer = new StringWriter();
-         if (element == null)
-         {
-            writer.
-               append("Compilation error: ");
-         }
-         else if (annotation == null)
-         {
-            writer.
-               append("Compilation error for element ").
-               append(element.toString()).append(": ");
-         }
-         else
-         {
-            writer.
-               append("Compilation error for element ").
-               append(element.toString()).
-               append(" at annotation ").
-               append(annotation.toString()).append(": ");
-         }
-         writer.append(msg).append("\n");
-         e.printStackTrace(new PrintWriter(writer));
-         logger.log(writer.getBuffer());
+            // Log error
+            StringWriter writer = new StringWriter();
+            writer.append("Compilation error: ");
+            writer.append(msg).append("\n");
+            e.printStackTrace(new PrintWriter(writer));
+            logger.log(writer.getBuffer());
 
-         // Report to tool
-         context.report(Diagnostic.Kind.ERROR, msg, element, annotation, null);
+            // Report to tool
+            context.report(Diagnostic.Kind.ERROR, msg, null, null, null);
+         }
       }
       finally
       {
