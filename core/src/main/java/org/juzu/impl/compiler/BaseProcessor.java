@@ -291,7 +291,7 @@ public abstract class BaseProcessor extends AbstractProcessor
                InputStream in = null;
                try
                {
-                  FileObject file = processingEnv.getFiler().getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "processor.log");
+                  FileObject file = context.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "processor.log");
                   in = file.openInputStream();
                   s = Tools.read(in, "UTF-8");
                }
@@ -305,7 +305,7 @@ public abstract class BaseProcessor extends AbstractProcessor
                OutputStream out = null;
                try
                {
-                  FileObject file = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "processor.log");
+                  FileObject file = context.createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "processor.log");
                   out = file.openOutputStream();
                   if (s != null)
                   {
