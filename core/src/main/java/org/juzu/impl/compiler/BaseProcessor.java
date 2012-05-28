@@ -161,7 +161,7 @@ public abstract class BaseProcessor extends AbstractProcessor
       this.context = new ProcessingContext(processingEnv);
 
       //
-      doInit(processingEnv);
+      doInit(context);
    }
 
    @Override
@@ -179,9 +179,9 @@ public abstract class BaseProcessor extends AbstractProcessor
    /**
     * Perform the processor initialization.
     *
-    * @param processingEnv the processing environment
+    * @param context the processing context
     */
-   protected void doInit(ProcessingEnvironment processingEnv)
+   protected void doInit(ProcessingContext context)
    {
    }
 

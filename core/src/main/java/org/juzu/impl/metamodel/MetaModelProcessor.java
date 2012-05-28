@@ -24,13 +24,12 @@ import org.juzu.impl.application.Scope;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.MessageCode;
+import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.Generated;
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -63,9 +62,6 @@ public abstract class MetaModelProcessor extends BaseProcessor
    private Set<TypeElement> annotations;
 
    /** . */
-   Filer filer;
-
-   /** . */
    private int index;
    
    /** . */
@@ -75,9 +71,9 @@ public abstract class MetaModelProcessor extends BaseProcessor
    private List<Plugin> plugins;
 
    @Override
-   protected void doInit(ProcessingEnvironment processingEnv)
+   protected void doInit(ProcessingContext context)
    {
-      log.log("Using processing env " + processingEnv.getClass().getName());
+      log.log("Using processing env " + context.getClass().getName());
 
       //
       ArrayList<Plugin> plugins = Tools.list(ServiceLoader.load(Plugin.class, Plugin.class.getClassLoader()));
@@ -90,12 +86,12 @@ public abstract class MetaModelProcessor extends BaseProcessor
 
       // 
       HashSet<TypeElement> supportedAnnotationTypes = new HashSet<TypeElement>();
-      supportedAnnotationTypes.add(processingEnv.getElementUtils().getTypeElement(Application.class.getName()));
+      supportedAnnotationTypes.add(context.getTypeElement(Application.class.getName()));
       for (Plugin plugin : plugins)
       {
          for (Map.Entry<Class<? extends Annotation>, Scope> entry : plugin.getAnnotationTypes().entrySet())
          {
-            TypeElement supportedAnnotationType = processingEnv.getElementUtils().getTypeElement(entry.getKey().getName());
+            TypeElement supportedAnnotationType = context.getTypeElement(entry.getKey().getName());
             Scope scope = entry.getValue();
             if (scope == Scope.APPLICATION)
             {
@@ -109,7 +105,6 @@ public abstract class MetaModelProcessor extends BaseProcessor
       }
       
       //
-      this.filer = processingEnv.getFiler();
       this.annotations = supportedAnnotationTypes;
       this.index = 0;
       this.plugins = plugins;
@@ -132,7 +127,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
             ObjectOutputStream out = null;
             try
             {
-               FileObject file = filer.createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "metamodel.ser");
+               FileObject file = getContext().createResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "metamodel.ser");
                out = new ObjectOutputStream(file.openOutputStream());
                out.writeObject(metaModel);
                metaModel = null;
@@ -156,7 +151,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
                InputStream in = null;
                try
                {
-                  FileObject file = filer.getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "metamodel.ser");
+                  FileObject file = getContext().getResource(StandardLocation.SOURCE_OUTPUT, "org.juzu", "metamodel.ser");
                   in = file.openInputStream();
                   ObjectInputStream ois = new ObjectInputStream(in);
                   metaModel = (MetaModel)ois.readObject();
