@@ -20,6 +20,7 @@
 package org.juzu.impl.metamodel;
 
 import org.juzu.Application;
+import org.juzu.impl.application.Scope;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.MessageCode;
@@ -40,9 +41,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -90,10 +93,18 @@ public abstract class MetaModelProcessor extends BaseProcessor
       supportedAnnotationTypes.add(processingEnv.getElementUtils().getTypeElement(Application.class.getName()));
       for (Plugin plugin : plugins)
       {
-         for (String supportedAnnotationName : plugin.getSupportedAnnotationTypes())
+         for (Map.Entry<Class<? extends Annotation>, Scope> entry : plugin.getAnnotationTypes().entrySet())
          {
-            TypeElement supportedAnnotationType = processingEnv.getElementUtils().getTypeElement(supportedAnnotationName);
-            supportedAnnotationTypes.add(supportedAnnotationType);
+            TypeElement supportedAnnotationType = processingEnv.getElementUtils().getTypeElement(entry.getKey().getName());
+            Scope scope = entry.getValue();
+            if (scope == Scope.APPLICATION)
+            {
+               supportedAnnotationTypes.add(supportedAnnotationType);
+            }
+            else
+            {
+               // To do
+            }
          }
       }
       

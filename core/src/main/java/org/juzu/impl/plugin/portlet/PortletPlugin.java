@@ -1,19 +1,17 @@
 package org.juzu.impl.plugin.portlet;
 
+import org.juzu.impl.application.Scope;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.plugin.Plugin;
-import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.portlet.Portlet;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.Set;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletPlugin extends Plugin
 {
-
-   /** . */
-   private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(Tools.set(Portlet.class.getName()));
 
    public PortletPlugin()
    {
@@ -21,9 +19,9 @@ public class PortletPlugin extends Plugin
    }
 
    @Override
-   public Set<String> getSupportedAnnotationTypes()
+   public Map<Class<? extends Annotation>, Scope> getAnnotationTypes()
    {
-      return SUPPORTED_ANNOTATIONS;
+      return Collections.<Class<? extends Annotation>, Scope>singletonMap(Portlet.class, Scope.APPLICATION);
    }
 
    @Override

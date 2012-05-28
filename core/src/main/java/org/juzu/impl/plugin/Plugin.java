@@ -1,16 +1,15 @@
 package org.juzu.impl.plugin;
 
+import org.juzu.impl.application.Scope;
 import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.impl.metadata.Descriptor;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.utils.JSON;
 
-import javax.annotation.processing.SupportedAnnotationTypes;
-import java.util.Arrays;
+import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Base class for a plugin.
@@ -33,10 +32,9 @@ public abstract class Plugin
       return name;
    }
 
-   public Set<String> getSupportedAnnotationTypes()
+   public Map<Class<? extends Annotation>, Scope> getAnnotationTypes()
    {
-      SupportedAnnotationTypes annotations = this.getClass().getAnnotation(SupportedAnnotationTypes.class);
-      return annotations != null ? new HashSet<String>(Arrays.asList(annotations.value())) : Collections.<String>emptySet();
+      return Collections.emptyMap();
    }
 
    /**
