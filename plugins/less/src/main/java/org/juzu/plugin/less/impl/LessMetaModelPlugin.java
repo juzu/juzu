@@ -3,6 +3,7 @@ package org.juzu.plugin.less.impl;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
+import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.CompilationMessage;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.MessageCode;
@@ -174,14 +175,14 @@ public class LessMetaModelPlugin extends MetaModelPlugin
                      }
                      CompilationMessage msg = new CompilationMessage(COMPILATION_ERROR,
                         text,
-                        resource,
+                        error.src,
                         error.line,
                         error.column + 1,
                         sb);
                      log.log(msg.toDisplayString());
                      messages.add(msg);
                   }
-                  throw COMPILATION_ERROR.failure(pkgElt, annotationMirror, messages);
+                  throw new CompilationException(pkgElt, annotationMirror, messages);
                }
             }
          }
