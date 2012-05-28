@@ -115,7 +115,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
             sb.append(uri);
             break;
          case CLASSPATH:
-            sb.append(req.getContextPath());
+            sb.append(req.getContextPath()).append("/assets");
             if (!uri.startsWith("/"))
             {
                sb.append('/');
