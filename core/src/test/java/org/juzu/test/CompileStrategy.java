@@ -158,9 +158,9 @@ public abstract class CompileStrategy<I, O>
       }
    }
 
-   public static class Global<I, O> extends CompileStrategy<I, O>
+   public static class Batch<I, O> extends CompileStrategy<I, O>
    {
-      public Global(SimpleFileSystem<?> classPath, ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput, Provider<? extends Processor> processorFactory)
+      public Batch(SimpleFileSystem<?> classPath, ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput, Provider<? extends Processor> processorFactory)
       {
          super(classPath, sourcePath, sourceOutput, classOutput, processorFactory);
       }

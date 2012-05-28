@@ -96,7 +96,7 @@ public class CompilerAssert<I, O>
          sourcePath,
          sourceOutput,
          classOutput,
-         META_MODEL_PROCESSOR_FACTORY) : new CompileStrategy.Global<I, O>(
+         META_MODEL_PROCESSOR_FACTORY) : new CompileStrategy.Batch<I, O>(
          classPath,
          sourcePath,
          sourceOutput,
