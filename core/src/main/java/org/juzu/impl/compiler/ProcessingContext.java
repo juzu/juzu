@@ -29,7 +29,6 @@ import org.juzu.impl.utils.Spliterator;
 import org.juzu.impl.utils.Tools;
 
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -73,7 +72,7 @@ public class ProcessingContext implements Filer, Elements
 {
 
    /** . */
-   private static final ErrorCode UNEXPECTED_ERROR = new ErrorCode("UNEXPECTED_ERROR", "Unexpected error: %1$s");
+   private static final MessageCode UNEXPECTED_ERROR = new MessageCode("UNEXPECTED_ERROR", "Unexpected error: %1$s");
 
    /**
     * We need two locations as the {@link javax.tools.StandardLocation#SOURCE_PATH} is not supported in eclipse ide

@@ -19,12 +19,12 @@
 
 package org.juzu.impl.controller.metamodel;
 
+import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.metamodel.Key;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.utils.Cardinality;
-import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.utils.JSON;
 import org.juzu.request.Phase;
 import org.juzu.impl.compiler.ElementHandle;
@@ -48,16 +48,16 @@ public class ControllerMetaModel extends MetaModelObject
 {
 
    /** . */
-   public static final ErrorCode CANNOT_WRITE_CONTROLLER_COMPANION = new ErrorCode("CANNOT_WRITE_CONTROLLER_COMPANION", "The controller companion %1$s cannot be written");
+   public static final MessageCode CANNOT_WRITE_CONTROLLER_COMPANION = new MessageCode("CANNOT_WRITE_CONTROLLER_COMPANION", "The controller companion %1$s cannot be written");
 
    /** . */
-   public static final ErrorCode CONTROLLER_METHOD_NOT_RESOLVED = new ErrorCode("CONTROLLER_METHOD_NOT_RESOLVED", "The controller method cannot be resolved %1$s");
+   public static final MessageCode CONTROLLER_METHOD_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_NOT_RESOLVED", "The controller method cannot be resolved %1$s");
 
    /** . */
-   public static final ErrorCode CONTROLLER_METHOD_DUPLICATE_ID = new ErrorCode("CONTROLLER_METHOD_DUPLICATE_ID", "Duplicate method controller id %1$s");
+   public static final MessageCode CONTROLLER_METHOD_DUPLICATE_ID = new MessageCode("CONTROLLER_METHOD_DUPLICATE_ID", "Duplicate method controller id %1$s");
 
    /** . */
-   public static final ErrorCode CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED = new ErrorCode("CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED", "The method parameter type %1s should be a string or annotated with @org.juzu.Param");
+   public static final MessageCode CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED", "The method parameter type %1s should be a string or annotated with @org.juzu.Param");
 
    /** A flag for handling modified event. */
    boolean modified;

@@ -22,13 +22,13 @@ package org.juzu.impl.application.metamodel;
 import org.juzu.Application;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.controller.metamodel.ControllersMetaModel;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
 import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplatesMetaModel;
-import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
 
@@ -43,10 +43,10 @@ public class ApplicationMetaModel extends MetaModelObject
 {
 
    /** . */
-   public static final ErrorCode CANNOT_WRITE_APPLICATION_CONFIG = new ErrorCode("CANNOT_WRITE_APPLICATION_CONFIG", "The application %1$s configuration cannot be written");
+   public static final MessageCode CANNOT_WRITE_APPLICATION_CONFIG = new MessageCode("CANNOT_WRITE_APPLICATION_CONFIG", "The application %1$s configuration cannot be written");
 
    /** . */
-   public static final ErrorCode CANNOT_WRITE_CONFIG = new ErrorCode("CANNOT_WRITE_CONFIG", "The configuration cannot be written");
+   public static final MessageCode CANNOT_WRITE_CONFIG = new MessageCode("CANNOT_WRITE_CONFIG", "The configuration cannot be written");
 
    /** . */
    final ElementHandle.Package handle;

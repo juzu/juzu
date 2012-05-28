@@ -328,7 +328,7 @@ public class CompilationTestCase extends AbstractTestCase
    @Test
    public void testErrorCode() throws IOException
    {
-      final ErrorCode code = new ErrorCode("ERROR_01", "The error");
+      final MessageCode code = new MessageCode("ERROR_01", "The error");
       class P extends BaseProcessor
       {
          @Override

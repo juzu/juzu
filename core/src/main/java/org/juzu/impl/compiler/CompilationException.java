@@ -27,7 +27,7 @@ public class CompilationException extends RuntimeException
 {
 
    /** . */
-   private final ErrorCode code;
+   private final MessageCode code;
 
    /** . */
    private Object[] arguments;
@@ -38,17 +38,17 @@ public class CompilationException extends RuntimeException
    /** . */
    private final AnnotationMirror annotation;
 
-   public CompilationException(ErrorCode code, Object... arguments)
+   public CompilationException(MessageCode code, Object... arguments)
    {
       this(null, code, arguments);
    }
 
-   public CompilationException(Element element, ErrorCode code, Object... arguments)
+   public CompilationException(Element element, MessageCode code, Object... arguments)
    {
       this(element, null, code, arguments);
    }
 
-   public CompilationException(Element element, AnnotationMirror annotation, ErrorCode code, Object... arguments)
+   public CompilationException(Element element, AnnotationMirror annotation, MessageCode code, Object... arguments)
    {
       this.code = code;
       this.element = element;
@@ -72,7 +72,7 @@ public class CompilationException extends RuntimeException
       return annotation;
    }
 
-   public ErrorCode getCode()
+   public MessageCode getCode()
    {
       return code;
    }

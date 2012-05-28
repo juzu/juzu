@@ -385,13 +385,13 @@ public class Compiler
                String message = diagnostic.getMessage(null);
 
                //
-               ErrorCode code = null;
+               MessageCode code = null;
                List<String> arguments = Collections.emptyList();
                Matcher matcher = PATTERN.matcher(message);
                if (matcher.find())
                {
                   String codeKey = matcher.group(1);
-                  code = ErrorCode.decode(codeKey);
+                  code = MessageCode.decode(codeKey);
 
                   //
                   if (matcher.group(2).length() > 0)

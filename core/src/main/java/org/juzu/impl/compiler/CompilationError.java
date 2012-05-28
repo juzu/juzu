@@ -29,7 +29,7 @@ public class CompilationError
 {
 
    /** . */
-   private final ErrorCode code;
+   private final MessageCode code;
 
    /** . */
    private final List<String> arguments;
@@ -46,7 +46,7 @@ public class CompilationError
    /** . */
    private final String message;
 
-   public CompilationError(ErrorCode code, List<String> arguments, String source, File sourceFile, Location location, String message)
+   public CompilationError(MessageCode code, List<String> arguments, String source, File sourceFile, Location location, String message)
    {
       this.code = code;
       this.arguments = arguments;
@@ -56,7 +56,7 @@ public class CompilationError
       this.message = message;
    }
 
-   public ErrorCode getCode()
+   public MessageCode getCode()
    {
       return code;
    }

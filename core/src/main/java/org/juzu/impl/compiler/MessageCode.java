@@ -24,20 +24,20 @@ import javax.lang.model.element.Element;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ErrorCode
+public class MessageCode
 {
 
    /** . */
-   private static final ConcurrentHashMap<String, ErrorCode> codes = new ConcurrentHashMap<String, ErrorCode>();
+   private static final ConcurrentHashMap<String, MessageCode> codes = new ConcurrentHashMap<String, MessageCode>();
 
    /**
-    * Decode the error key and return a corresponding error code object. If no error can be decoded
+    * Decode the message key and return a corresponding message code object. If no error can be decoded
     * for the specified key, null is returned.
     *
     * @param key the error key
     * @return the corresponding error
     */
-   public static ErrorCode decode(String key)
+   public static MessageCode decode(String key)
    {
       return codes.get(key);
    }
@@ -48,7 +48,7 @@ public class ErrorCode
    /** . */
    private final String message;
 
-   public ErrorCode(String key, String message)
+   public MessageCode(String key, String message)
    {
       codes.put(key, this);
 

@@ -4,9 +4,9 @@ import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
+import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.metamodel.MetaModelPlugin;
-import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
 import org.juzu.plugin.portlet.Portlet;
@@ -27,7 +27,7 @@ public class PortletMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
-   public static final ErrorCode CANNOT_WRITE_PORTLET_CLASS = new ErrorCode("CANNOT_WRITE_PORTLET_CLASS", "The portlet class %1$s cannot be written");
+   public static final MessageCode CANNOT_WRITE_PORTLET_CLASS = new MessageCode("CANNOT_WRITE_PORTLET_CLASS", "The portlet class %1$s cannot be written");
 
    /** . */
    private final HashMap<ElementHandle.Package, String> enabledMap = new HashMap<ElementHandle.Package, String>();

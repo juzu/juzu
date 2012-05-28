@@ -22,8 +22,8 @@ package org.juzu.impl.metamodel;
 import org.juzu.Application;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
+import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.plugin.Plugin;
-import org.juzu.impl.compiler.ErrorCode;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -51,7 +51,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
 {
 
    /** . */
-   public static final ErrorCode ANNOTATION_UNSUPPORTED = new ErrorCode("ANNOTATION_UNSUPPORTED", "The annotation of this element cannot be supported");
+   public static final MessageCode ANNOTATION_UNSUPPORTED = new MessageCode("ANNOTATION_UNSUPPORTED", "The annotation of this element cannot be supported");
 
    /** . */
    private MetaModel metaModel;
