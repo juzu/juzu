@@ -20,8 +20,6 @@
 package org.juzu.impl.template.ast;
 
 import org.junit.Test;
-import org.juzu.impl.template.ast.ASTNode;
-import org.juzu.impl.template.ast.SectionType;
 import org.juzu.impl.utils.Builder;
 import org.juzu.test.AbstractTestCase;
 
@@ -120,7 +118,7 @@ public class TemplateParserTestCase extends AbstractTestCase
    {
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parse("@{a()}"));
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parse("@{a(a=b)}"));
-      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parse("@{a(a=b,c=d)}"));
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").map("c", "d").build())), parse("@{a(a=b,c=d)}"));
 
       //
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parse("@{a( )}"));
@@ -128,8 +126,8 @@ public class TemplateParserTestCase extends AbstractTestCase
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parse("@{a(a =b)}"));
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parse("@{a(a= b)}"));
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parse("@{a(a=b )}"));
-      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parse("@{a(a=b ,c=d)}"));
-      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").put("c", "d").build())), parse("@{a(a=b, c=d)}"));
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").map("c", "d").build())), parse("@{a(a=b ,c=d)}"));
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").map("c", "d").build())), parse("@{a(a=b, c=d)}"));
 
       //
       assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "'b '").build())), parse("@{a(a='b ')}"));

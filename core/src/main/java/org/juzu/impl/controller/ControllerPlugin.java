@@ -29,8 +29,8 @@ public class ControllerPlugin extends Plugin
    {
       return Builder.<Class<? extends Annotation>, Scope>
          map(View.class, Scope.APPLICATION).
-         put(Action.class, Scope.APPLICATION).
-         put(Resource.class, Scope.APPLICATION).
+         map(Action.class, Scope.APPLICATION).
+         map(Resource.class, Scope.APPLICATION).
          build();
    }
 

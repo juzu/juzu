@@ -27,7 +27,7 @@ public class Builder
 
    public static <K, V> Map<K, V> map(K key, V value)
    {
-      return new Map<K, V>().put(key, value);
+      return new Map<K, V>().map(key, value);
    }
    
    public static class Map<K, V>
@@ -41,7 +41,7 @@ public class Builder
          this.map = new HashMap<K, V>();
       }
 
-      public Map<K, V> put(K key, V value)
+      public Map<K, V> map(K key, V value)
       {
          map.put(key, value);
          return this;
