@@ -99,7 +99,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
             }
             else
             {
-               // To do
+               throw new UnsupportedOperationException("Todo support shared annotation scope");
             }
          }
       }

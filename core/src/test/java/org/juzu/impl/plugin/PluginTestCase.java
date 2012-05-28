@@ -39,21 +39,21 @@ public class PluginTestCase extends AbstractInjectTestCase
    @Test
    public void testLifeCycle() throws Exception
    {
-      Registry.unset("plugin.lifecycle");
+      Registry.unset("plugin.impl.lifecycle");
 
-      MockApplication<?> app = application("plugin", "lifecycle").declareBean("plugin.lifecycle.LifeCycleImpl").init();
-      assertEquals("created", Registry.get("plugin.lifecycle"));
+      MockApplication<?> app = application("plugin", "impl", "lifecycle").declareBean("plugin.impl.lifecycle.LifeCycleImpl").init();
+      assertEquals("created", Registry.get("plugin.impl.lifecycle"));
 
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      assertEquals("after", Registry.get("plugin.lifecycle"));
+      assertEquals("after", Registry.get("plugin.impl.lifecycle"));
    }
 
    @Test
    public void testFailure() throws Exception
    {
-      MockApplication<?> app = application("plugin", "failure").declareBean("plugin.failure.FailureLifeCycle").init();
+      MockApplication<?> app = application("plugin", "impl", "failure").declareBean("plugin.impl.failure.FailureLifeCycle").init();
 
       //
       MockClient client = app.client();

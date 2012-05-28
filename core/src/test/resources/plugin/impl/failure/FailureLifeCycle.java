@@ -17,16 +17,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.failure;
+package plugin.impl.failure;
 
-import org.juzu.View;
+import org.juzu.Response;
+import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.request.RequestLifeCycle;
+import org.juzu.impl.request.Request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
+public class FailureLifeCycle extends RequestLifeCycle
 {
-   @View
-   public void index()
+   public FailureLifeCycle()
    {
-      throw new RuntimeException();
+   }
+
+   @Override
+   public void invoke(Request request) throws ApplicationException
+   {
+      try
+      {
+         super.invoke(request);
+      }
+      catch (ApplicationException e)
+      {
+         request.setResponse(Response.content("pass"));
+      }
    }
 }

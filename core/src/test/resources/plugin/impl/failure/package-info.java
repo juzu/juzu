@@ -18,6 +18,6 @@
  */
 
 @Application()
-package plugin.lifecycle;
+package plugin.impl.failure;
 
 import org.juzu.Application;

@@ -17,7 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application()
-package plugin.failure;
+package plugin.impl.lifecycle;
 
-import org.juzu.Application;
+import org.juzu.impl.application.ApplicationException;
+import org.juzu.impl.request.RequestLifeCycle;
+import org.juzu.impl.request.Request;
+import org.juzu.test.Registry;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class LifeCycleImpl extends RequestLifeCycle
+{
+   public LifeCycleImpl()
+   {
+      Registry.compareAndSet("plugin.impl.lifecycle", null, "created");
+   }
+
+   @Override
+   public void invoke(Request request) throws ApplicationException
+   {
+      Registry.compareAndSet("plugin.impl.lifecycle", "created", "before");
+      super.invoke(request);
+      Registry.compareAndSet("plugin.impl.lifecycle", "before", "after");
+   }
+}
