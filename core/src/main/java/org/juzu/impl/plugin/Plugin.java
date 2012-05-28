@@ -1,15 +1,14 @@
 package org.juzu.impl.plugin;
 
-import org.juzu.impl.application.Scope;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.impl.metadata.Descriptor;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.utils.JSON;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Base class for a plugin.
@@ -32,19 +31,19 @@ public abstract class Plugin
       return name;
    }
 
-   public Map<Class<? extends Annotation>, Scope> getAnnotationTypes()
+   public Set<Class<? extends Annotation>> getAnnotationTypes()
    {
-      return Collections.emptyMap();
+      return Collections.emptySet();
    }
 
    /**
-    * Returns the meta model plugin type.
+    * Returns the application meta model plugin type.
     *
-    * @return the meta model plugin type
+    * @return the application meta model plugin type
     */
-   public MetaModelPlugin newMetaModelPlugin()
+   public ApplicationMetaModelPlugin newApplicationMetaModelPlugin()
    {
-      return new MetaModelPlugin();
+      return new ApplicationMetaModelPlugin();
    }
 
    /**

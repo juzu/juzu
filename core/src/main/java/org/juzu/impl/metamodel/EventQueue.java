@@ -10,7 +10,17 @@ public class EventQueue implements Serializable
 {
 
    /** . */
-   private final LinkedList<MetaModelEvent> events = new LinkedList<MetaModelEvent>();
+   private final LinkedList<MetaModelEvent> events;
+
+   public EventQueue(EventQueue that)
+   {
+      this.events = new LinkedList<MetaModelEvent>(that.events);
+   }
+
+   public EventQueue()
+   {
+      this.events = new LinkedList<MetaModelEvent>();
+   }
 
    public List<MetaModelEvent> clear()
    {

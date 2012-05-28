@@ -79,7 +79,7 @@ public class MetaModelObject implements Serializable
       ArrayList<Key<O>> list = new ArrayList<Key<O>>(children.size());
       for (Key<?> key : children.keySet())
       {
-         if (filter.isInstance(key.getType()))
+         if (filter.isAssignableFrom(key.getType()))
          {
             // Yes : not great
             list.add((Key<O>)key);

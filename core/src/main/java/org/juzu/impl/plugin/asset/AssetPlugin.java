@@ -1,9 +1,8 @@
 package org.juzu.impl.plugin.asset;
 
 import org.juzu.asset.AssetLocation;
-import org.juzu.impl.application.Scope;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.asset.AssetMetaData;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.request.RequestLifeCycle;
 import org.juzu.impl.utils.JSON;
@@ -13,7 +12,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetPlugin extends Plugin
@@ -25,13 +24,13 @@ public class AssetPlugin extends Plugin
    }
 
    @Override
-   public Map<Class<? extends Annotation>, Scope> getAnnotationTypes()
+   public Set<Class<? extends Annotation>> getAnnotationTypes()
    {
-      return Collections.<Class<? extends Annotation>, Scope>singletonMap(Assets.class, Scope.APPLICATION);
+      return Collections.<Class<? extends Annotation>>singleton(Assets.class);
    }
 
    @Override
-   public MetaModelPlugin newMetaModelPlugin()
+   public ApplicationMetaModelPlugin newApplicationMetaModelPlugin()
    {
       return new AssetMetaModelPlugin();
    }

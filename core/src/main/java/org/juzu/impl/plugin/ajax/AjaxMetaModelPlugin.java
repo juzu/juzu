@@ -1,9 +1,9 @@
 package org.juzu.impl.plugin.ajax;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.JSON;
 import org.juzu.plugin.ajax.Ajax;
 
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxMetaModelPlugin extends MetaModelPlugin
+public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin
 {
 
    /** . */

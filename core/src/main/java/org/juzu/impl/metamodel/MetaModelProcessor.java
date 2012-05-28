@@ -19,13 +19,10 @@
 
 package org.juzu.impl.metamodel;
 
-import org.juzu.Application;
-import org.juzu.impl.application.Scope;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.compiler.ProcessingContext;
-import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Tools;
 
@@ -44,7 +41,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -68,7 +64,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
    private final Logger log = BaseProcessor.getLogger(getClass());
 
    /** . */
-   private List<Plugin> plugins;
+   private List<MetaModelPlugin> plugins;
 
    @Override
    protected void doInit(ProcessingContext context)
@@ -76,38 +72,30 @@ public abstract class MetaModelProcessor extends BaseProcessor
       log.log("Using processing env " + context.getClass().getName());
 
       //
-      ArrayList<Plugin> plugins = Tools.list(ServiceLoader.load(Plugin.class, Plugin.class.getClassLoader()));
+      ArrayList<MetaModelPlugin> metaModelPlugins = Tools.list(ServiceLoader.load(MetaModelPlugin.class, MetaModelPlugin.class.getClassLoader()));
       StringBuilder msg = new StringBuilder("Using plugins:");
-      for (Plugin plugin : plugins)
+      for (MetaModelPlugin plugin : metaModelPlugins)
       {
          msg.append(" ").append(plugin.getName());
       }
       log.log(msg);
 
-      // 
+
+      //
       HashSet<TypeElement> supportedAnnotationTypes = new HashSet<TypeElement>();
-      supportedAnnotationTypes.add(context.getTypeElement(Application.class.getName()));
-      for (Plugin plugin : plugins)
+      for (MetaModelPlugin plugin : metaModelPlugins)
       {
-         for (Map.Entry<Class<? extends Annotation>, Scope> entry : plugin.getAnnotationTypes().entrySet())
+         for (Class<? extends Annotation> type : plugin.getAnnotationTypes())
          {
-            TypeElement supportedAnnotationType = context.getTypeElement(entry.getKey().getName());
-            Scope scope = entry.getValue();
-            if (scope == Scope.APPLICATION)
-            {
-               supportedAnnotationTypes.add(supportedAnnotationType);
-            }
-            else
-            {
-               throw new UnsupportedOperationException("Todo support shared annotation scope");
-            }
+            TypeElement supportedAnnotationType = context.getTypeElement(type.getName());
+            supportedAnnotationTypes.add(supportedAnnotationType);
          }
       }
-      
+
       //
       this.annotations = supportedAnnotationTypes;
       this.index = 0;
-      this.plugins = plugins;
+      this.plugins = metaModelPlugins;
    }
 
    @Override
@@ -161,13 +149,15 @@ public abstract class MetaModelProcessor extends BaseProcessor
                {
                   log.log("Created new meta model");
                   MetaModel metaModel = new MetaModel();
+
+                  //
                   log.log("Adding meta model plugins");
-                  for (Plugin plugin : plugins)
+                  for (MetaModelPlugin plugin : plugins)
                   {
                      log.log("Adding meta model plugin: " + plugin.getName());
-                     metaModel.addPlugin(plugin.getName(), plugin.newMetaModelPlugin());
+                     metaModel.addPlugin(plugin.getName(), plugin);
                   }
-                  
+
                   //
                   this.metaModel = metaModel;
                }
@@ -203,7 +193,7 @@ public abstract class MetaModelProcessor extends BaseProcessor
 
             //
             log.log("Post processing model");
-            metaModel.postProcess();
+            metaModel.postProcessAnnotations();
 
             //
             log.log("Ending APT round #" + index++);

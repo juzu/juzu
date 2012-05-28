@@ -19,19 +19,17 @@
 
 package org.juzu.impl.metamodel;
 
-import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
-import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.ProcessingContext;
 import org.juzu.impl.utils.JSON;
 import org.juzu.impl.utils.Logger;
-import org.juzu.impl.utils.QN;
 
 import javax.lang.model.element.Element;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public final class MetaModel extends MetaModelObject
@@ -52,26 +50,35 @@ public final class MetaModel extends MetaModelObject
    /** . */
    private static final ThreadLocal<MetaModel> current = new ThreadLocal<MetaModel>();
 
-   /** . */
-   private final ApplicationsMetaModel applications = new ApplicationsMetaModel();
+   /** The meta model plugins. */
+   final LinkedHashMap<String, MetaModelPlugin> plugins = new LinkedHashMap<String, MetaModelPlugin>();
 
    /** . */
    private boolean queuing = false;
 
    public MetaModel()
    {
-      addChild(ApplicationsMetaModel.KEY, applications);
    }
-   
+
    public void addPlugin(String name, MetaModelPlugin plugin)
    {
-      applications.addPlugin(name, plugin);
+      plugins.put(name, plugin);
+
+      //
+      plugin.init(this);
    }
 
    public JSON toJSON()
    {
       JSON json = new JSON();
-      json.map("applications", getChild(ApplicationsMetaModel.KEY));
+      for (MetaModelPlugin plugin : plugins.values())
+      {
+         JSON pluginJSON = plugin.toJSON(this);
+         if (pluginJSON != null)
+         {
+            json.set(plugin.getName(), pluginJSON);
+         }
+      }
       return json;
    }
 
@@ -90,7 +97,10 @@ public final class MetaModel extends MetaModelObject
          garbage(this, this, new HashSet<MetaModelObject>());
 
          //
-         applications.postActivate(this);
+         for (MetaModelPlugin plugin : plugins.values())
+         {
+            plugin.postActivate(this);
+         }
       }
       finally
       {
@@ -104,7 +114,12 @@ public final class MetaModel extends MetaModelObject
       try
       {
          MetaModel.log.log("Processing annotation " + element);
-         applications.processAnnotation(this, element, annotationType, annotationData);
+
+         //
+         for (MetaModelPlugin plugin : plugins.values())
+         {
+            plugin.processAnnotation(this, element, annotationType, annotationData);
+         }
       }
       finally
       {
@@ -112,44 +127,53 @@ public final class MetaModel extends MetaModelObject
       }
    }
 
-   public void postProcess() throws CompilationException
+   public void postProcessAnnotations() throws CompilationException
    {
       queuing = true;
       try
       {
-         applications.postProcessAnnotations(this);
+         for (MetaModelPlugin plugin : plugins.values())
+         {
+            plugin.postProcessAnnotations(this);
+         }
       }
       finally
       {
          queuing = false;
       }
 
-      // For now we do this way lter we poll
-      applications.processEvents(this, dispatch);
+      //
+      for (MetaModelPlugin plugin : plugins.values())
+      {
+         plugin.processEvents(this, new EventQueue(dispatch));
+      }
+
+      // Clear dispatch queue
+      dispatch.clear();
+
 
       //
       MetaModel.log.log("Post processing");
-      applications.postProcessEvents(this);
+      for (MetaModelPlugin plugin : plugins.values())
+      {
+         plugin.postProcessEvents(this);
+      }
    }
 
    public void prePassivate()
    {
       try
       {
-         applications.prePassivate(this);
+         for (MetaModelPlugin plugin : plugins.values())
+         {
+            plugin.prePassivate(this);
+         }
       }
       finally
       {
          this.env = null;
          current.set(null);
       }
-   }
-
-   //
-
-   public ApplicationMetaModel addApplication(String packageName, String applicationName)
-   {
-      return applications.add(ElementHandle.Package.create(QN.parse(packageName)), applicationName);
    }
 
    //

@@ -6,6 +6,7 @@ import org.juzu.Response;
 import org.juzu.URLBuilder;
 import org.juzu.impl.application.ApplicationContext;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.CompilationException;
@@ -17,7 +18,6 @@ import org.juzu.impl.controller.descriptor.ControllerParameter;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.request.Request;
 import org.juzu.impl.utils.Cardinality;
 import org.juzu.impl.utils.FQN;
@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerMetaModelPlugin extends MetaModelPlugin
+public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin
 {
 
    /** . */

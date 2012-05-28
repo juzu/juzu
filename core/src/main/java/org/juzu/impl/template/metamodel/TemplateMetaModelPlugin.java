@@ -1,12 +1,12 @@
 package org.juzu.impl.template.metamodel;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.CompilationException;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.metamodel.MetaModel;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.metamodel.MetaModelProcessor;
 import org.juzu.impl.spi.template.TemplateProvider;
 import org.juzu.impl.template.compiler.Template;
@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateMetaModelPlugin extends MetaModelPlugin
+public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin
 {
 
    /** . */

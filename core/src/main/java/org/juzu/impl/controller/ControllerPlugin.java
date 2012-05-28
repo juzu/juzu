@@ -3,17 +3,16 @@ package org.juzu.impl.controller;
 import org.juzu.Action;
 import org.juzu.Resource;
 import org.juzu.View;
-import org.juzu.impl.application.Scope;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.controller.descriptor.ControllerDescriptor;
 import org.juzu.impl.controller.metamodel.ControllerMetaModelPlugin;
 import org.juzu.impl.metadata.Descriptor;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.plugin.Plugin;
-import org.juzu.impl.utils.Builder;
 import org.juzu.impl.utils.JSON;
+import org.juzu.impl.utils.Tools;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerPlugin extends Plugin
@@ -25,17 +24,13 @@ public class ControllerPlugin extends Plugin
    }
 
    @Override
-   public Map<Class<? extends Annotation>, Scope> getAnnotationTypes()
+   public Set<Class<? extends Annotation>> getAnnotationTypes()
    {
-      return Builder.<Class<? extends Annotation>, Scope>
-         map(View.class, Scope.APPLICATION).
-         map(Action.class, Scope.APPLICATION).
-         map(Resource.class, Scope.APPLICATION).
-         build();
+      return Tools.<Class<? extends Annotation>>set(View.class, Action.class, Resource.class);
    }
 
    @Override
-   public MetaModelPlugin newMetaModelPlugin()
+   public ApplicationMetaModelPlugin newApplicationMetaModelPlugin()
    {
       return new ControllerMetaModelPlugin();
    }

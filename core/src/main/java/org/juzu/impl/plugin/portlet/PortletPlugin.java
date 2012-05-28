@@ -1,13 +1,12 @@
 package org.juzu.impl.plugin.portlet;
 
-import org.juzu.impl.application.Scope;
-import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.plugin.Plugin;
 import org.juzu.plugin.portlet.Portlet;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletPlugin extends Plugin
@@ -19,13 +18,13 @@ public class PortletPlugin extends Plugin
    }
 
    @Override
-   public Map<Class<? extends Annotation>, Scope> getAnnotationTypes()
+   public Set<Class<? extends Annotation>> getAnnotationTypes()
    {
-      return Collections.<Class<? extends Annotation>, Scope>singletonMap(Portlet.class, Scope.APPLICATION);
+      return Collections.<Class<? extends Annotation>>singleton(Portlet.class);
    }
 
    @Override
-   public MetaModelPlugin newMetaModelPlugin()
+   public ApplicationMetaModelPlugin newApplicationMetaModelPlugin()
    {
       return new PortletMetaModelPlugin();
    }

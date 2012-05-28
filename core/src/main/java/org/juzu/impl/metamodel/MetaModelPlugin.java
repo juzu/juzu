@@ -1,75 +1,83 @@
 package org.juzu.impl.metamodel;
 
-import org.juzu.impl.application.metamodel.ApplicationMetaModel;
-import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.utils.JSON;
 
 import javax.lang.model.element.Element;
 import java.io.Serializable;
-import java.util.Map;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Set;
 
-/**
- * A plugin for meta model processing.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MetaModelPlugin implements Serializable
 {
-   
-   public void init(ApplicationsMetaModel applications)
+
+   /** The plugin name. */
+   private final String name;
+
+   protected MetaModelPlugin(String name)
    {
+      this.name = name;
    }
 
-   public void postActivateApplicationsMetaModel(ApplicationsMetaModel applications)
+   public final String getName()
    {
-   }
-
-   public void postActivate(ApplicationMetaModel application)
-   {
-   }
-
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data)
-   {
-   }
-
-   public void postProcessAnnotations(ApplicationMetaModel application)
-   {
-   }
-
-   public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event)
-   {
-   }
-
-   public void postProcessEvents(ApplicationMetaModel application)
-   {
-   }
-
-   public void prePassivate(ApplicationMetaModel model)
-   {
-   }
-
-   public void prePassivate(ApplicationsMetaModel applications)
-   {
-   }
-
-   public void postConstruct(ApplicationMetaModel application)
-   {
-   }
-
-   public void preDestroy(ApplicationMetaModel application)
-   {
+      return name;
    }
 
    /**
-    * Returns the plugin descriptor for the specified application or null if the plugin should not
-    * be involved at runtime.
+    * Returns the plugin descriptor or null.
     *
-    * @param application the application
+    * @param metaModel the meta model instance
     * @return the descriptor
     */
-   public JSON getDescriptor(ApplicationMetaModel application)
+   public JSON getDescriptor(MetaModel metaModel)
    {
       return null;
+   }
+
+   /**
+    * Returns a JSON representation mainly for testing purposes.
+    *
+    * @param metaModel the meta model instance
+    * @return the json representation
+    */
+   public JSON toJSON(MetaModel metaModel)
+   {
+      return null;
+   }
+
+   public Set<Class<? extends Annotation>> getAnnotationTypes()
+   {
+      return Collections.emptySet();
+   }
+
+   public void init(MetaModel metaModel)
+   {
+   }
+
+   public void postActivate(MetaModel metaModel)
+   {
+   }
+
+   public void processAnnotation(MetaModel metaModel, Element element, String fqn, AnnotationData data)
+   {
+   }
+
+   public void postProcessAnnotations(MetaModel metaModel)
+   {
+   }
+
+   public void processEvents(MetaModel metaModel, EventQueue queue)
+   {
+   }
+
+   public void postProcessEvents(MetaModel metaModel)
+   {
+   }
+
+   public void prePassivate(MetaModel metaModel)
+   {
    }
 }

@@ -22,6 +22,7 @@ package org.juzu.impl.metamodel;
 import org.junit.Test;
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.utils.JSON;
+import static org.juzu.impl.utils.JSON.json;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerAssert;
@@ -48,12 +49,14 @@ public class ApplicationTestCase extends AbstractTestCase
       assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers").
-            set("fqn", "model.meta.application.ApplicationApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.application]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers").
+               set("fqn", "model.meta.application.ApplicationApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.application]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
    }
@@ -87,12 +90,14 @@ public class ApplicationTestCase extends AbstractTestCase
       assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers").
-            set("fqn", "model.meta.application.ApplicationApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.application]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers").
+               set("fqn", "model.meta.application.ApplicationApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.application]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
    }
@@ -123,7 +128,10 @@ public class ApplicationTestCase extends AbstractTestCase
       assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
 
       //
-      JSON expected = new JSON().list("applications");
+      JSON expected = json().
+         set("applications", json().
+            list("values")
+         );
       assertEquals(expected, mm.toJSON());
    }
 }

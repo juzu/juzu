@@ -1,9 +1,8 @@
 package org.juzu.impl.plugin.binding;
 
-import org.juzu.impl.application.Scope;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.impl.metadata.Descriptor;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.plugin.Plugin;
 import org.juzu.impl.utils.JSON;
 import org.juzu.plugin.binding.Bindings;
@@ -12,7 +11,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BindingPlugin extends Plugin
@@ -24,13 +23,13 @@ public class BindingPlugin extends Plugin
    }
 
    @Override
-   public Map<Class<? extends Annotation>, Scope> getAnnotationTypes()
+   public Set<Class<? extends Annotation>> getAnnotationTypes()
    {
-      return Collections.<Class<? extends Annotation>, Scope>singletonMap(Bindings.class, Scope.APPLICATION);
+      return Collections.<Class<? extends Annotation>>singleton(Bindings.class);
    }
 
    @Override
-   public MetaModelPlugin newMetaModelPlugin()
+   public ApplicationMetaModelPlugin newApplicationMetaModelPlugin()
    {
       return new BindingMetaModelPlugin();
    }

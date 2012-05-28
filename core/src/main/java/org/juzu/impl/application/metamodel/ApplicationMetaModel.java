@@ -27,7 +27,6 @@ import org.juzu.impl.controller.metamodel.ControllersMetaModel;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplatesMetaModel;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
@@ -157,7 +156,7 @@ public class ApplicationMetaModel extends MetaModelObject
          model = applications.model;
 
          //
-         for (MetaModelPlugin plugin : applications.plugins.values())
+         for (ApplicationMetaModelPlugin plugin : applications.plugins.values())
          {
             plugin.postConstruct(this);
          }
@@ -172,7 +171,7 @@ public class ApplicationMetaModel extends MetaModelObject
          ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
 
          //
-         for (MetaModelPlugin plugin : applications.plugins.values())
+         for (ApplicationMetaModelPlugin plugin : applications.plugins.values())
          {
             plugin.preDestroy(this);
          }

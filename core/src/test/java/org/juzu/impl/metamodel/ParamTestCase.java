@@ -5,6 +5,7 @@ import japa.parser.ast.expr.AnnotationExpr;
 import org.junit.Test;
 import org.juzu.impl.compiler.CompilationError;
 import org.juzu.impl.utils.JSON;
+import static org.juzu.impl.utils.JSON.json;
 import org.juzu.impl.utils.Tools;
 import org.juzu.test.AbstractTestCase;
 import org.juzu.test.CompilerAssert;
@@ -18,30 +19,28 @@ public class ParamTestCase extends AbstractTestCase
 {
 
    /** . */
-   private static JSON expectedJSON = new JSON()
-      .list("applications",
-         new JSON().
-            list("controllers",
-               new JSON().
-                  set("handle", "ElementHandle.Class[fqn=model.meta.param.A]").
-                  list("methods",
-                     new JSON().
-                        set("handle", "ElementHandle.Method[fqn=model.meta.param.A,name=index,parameterTypes[model.meta.param.Bean]]").
-                        set("id", null).
-                        set("name", "index").
-                        set("phase", "RENDER").
-                        list("parameters",
-                           new JSON().
-                              set("name", "bean").
-                              set("declaredType", "model.meta.param.Bean").
-                              set("type", "ElementHandle.Class[fqn=model.meta.param.Bean]").
-                              set("cardinality", "SINGLE")
-                        )
+   private static JSON expectedJSON = json()
+      .set("applications", json().
+         list("values", json().
+            list("controllers", json().
+               set("handle", "ElementHandle.Class[fqn=model.meta.param.A]").
+               list("methods", json().
+                  set("handle", "ElementHandle.Method[fqn=model.meta.param.A,name=index,parameterTypes[model.meta.param.Bean]]").
+                  set("id", null).
+                  set("name", "index").
+                  set("phase", "RENDER").
+                  list("parameters", json().
+                     set("name", "bean").
+                     set("declaredType", "model.meta.param.Bean").
+                     set("type", "ElementHandle.Class[fqn=model.meta.param.Bean]").
+                     set("cardinality", "SINGLE")
                   )
+               )
             ).
             set("fqn", "model.meta.param.ParamApplication").
             set("handle", "ElementHandle.Package[qn=model.meta.param]").
             list("templates")
+         )
       );
    
    @Test

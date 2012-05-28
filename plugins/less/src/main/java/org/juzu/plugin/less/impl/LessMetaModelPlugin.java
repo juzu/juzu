@@ -1,6 +1,7 @@
 package org.juzu.plugin.less.impl;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
@@ -8,7 +9,6 @@ import org.juzu.impl.compiler.CompilationMessage;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.compiler.ProcessingContext;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Path;
 import org.juzu.impl.utils.QN;
@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LessMetaModelPlugin extends MetaModelPlugin
+public class LessMetaModelPlugin extends ApplicationMetaModelPlugin
 {
 
    /** . */

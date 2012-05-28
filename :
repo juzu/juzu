@@ -1,0 +1,13 @@
+yeah
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	modified:   src/main/java/org/juzu/impl/application/metamodel/ApplicationsMetaModelPlugin.java
+#	modified:   src/main/java/org/juzu/impl/metamodel/MetaModel.java
+#	modified:   src/main/java/org/juzu/impl/metamodel/MetaModelPlugin.java
+#	modified:   src/main/java/org/juzu/impl/metamodel/MetaModelProcessor.java
+#	modified:   src/test/java/org/juzu/impl/metamodel/PathTestCase.java
+#

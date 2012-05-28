@@ -76,6 +76,11 @@ public final class JSON implements Serializable
       Boolean.class
    ));
 
+   public static JSON json()
+   {
+      return new JSON();
+   }
+
    /** . */
    private final TreeMap<String, Object> entries = new TreeMap<String, Object>();
 

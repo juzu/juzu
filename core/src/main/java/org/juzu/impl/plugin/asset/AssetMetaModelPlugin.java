@@ -1,9 +1,9 @@
 package org.juzu.impl.plugin.asset;
 
 import org.juzu.impl.application.metamodel.ApplicationMetaModel;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.ElementHandle;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.JSON;
 import org.juzu.plugin.asset.Assets;
 
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetMetaModelPlugin extends MetaModelPlugin
+public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin
 {
 
    /** . */

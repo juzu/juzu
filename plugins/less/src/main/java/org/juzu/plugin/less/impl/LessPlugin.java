@@ -1,13 +1,12 @@
 package org.juzu.plugin.less.impl;
 
-import org.juzu.impl.application.Scope;
-import org.juzu.impl.metamodel.MetaModelPlugin;
+import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.plugin.Plugin;
 import org.juzu.plugin.less.Less;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LessPlugin extends Plugin
@@ -18,13 +17,13 @@ public class LessPlugin extends Plugin
    }
 
    @Override
-   public Map<Class<? extends Annotation>, Scope> getAnnotationTypes()
+   public Set<Class<? extends Annotation>> getAnnotationTypes()
    {
-      return Collections.<Class<? extends Annotation>, Scope>singletonMap(Less.class, Scope.APPLICATION);
+      return Collections.<Class<? extends Annotation>>singleton(Less.class);
    }
 
    @Override
-   public MetaModelPlugin newMetaModelPlugin()
+   public ApplicationMetaModelPlugin newApplicationMetaModelPlugin()
    {
       return new LessMetaModelPlugin();
    }

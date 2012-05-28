@@ -11,7 +11,6 @@ import org.juzu.impl.metamodel.Key;
 import org.juzu.impl.metamodel.MetaModel;
 import org.juzu.impl.metamodel.MetaModelEvent;
 import org.juzu.impl.metamodel.MetaModelObject;
-import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.template.metamodel.TemplateMetaModel;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.JSON;
@@ -51,7 +50,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
    final Map<BufKey, AnnotationData> toProcess = new HashMap<BufKey, AnnotationData>();
 
    /** The meta model plugins. */
-   final LinkedHashMap<String, MetaModelPlugin> plugins = new LinkedHashMap<String, MetaModelPlugin>();
+   final LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
 
    public ApplicationsMetaModel()
    {
@@ -81,7 +80,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       return getChild(Key.of(handle, ApplicationMetaModel.class));
    }
 
-   public void addPlugin(String name, MetaModelPlugin plugin)
+   public void addPlugin(String name, ApplicationMetaModelPlugin plugin)
    {
       plugins.put(name, plugin);
 
@@ -91,7 +90,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
 
    public void postActivate(MetaModel model)
    {
-      for (MetaModelPlugin plugin : plugins.values())
+      for (ApplicationMetaModelPlugin plugin : plugins.values())
       {
          plugin.postActivateApplicationsMetaModel(this);
       }
@@ -99,7 +98,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       //
       for (ApplicationMetaModel application : this)
       {
-         for (MetaModelPlugin plugin : plugins.values())
+         for (ApplicationMetaModelPlugin plugin : plugins.values())
          {
             plugin.postActivate(application);
          }
@@ -120,7 +119,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
          found = processApplication((PackageElement)element, annotationData);
 
          // Process this annotation manually
-         for (MetaModelPlugin plugin : plugins.values())
+         for (ApplicationMetaModelPlugin plugin : plugins.values())
          {
             plugin.processAnnotation(found, element, annotationFQN, annotationData);
          }
@@ -160,7 +159,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
             Element e = model.env.get(key.element);
             i.remove();
             MetaModel.log.log("Broadcasting annotation " + key + " = " +  data);
-            for (MetaModelPlugin plugin : plugins.values())
+            for (ApplicationMetaModelPlugin plugin : plugins.values())
             {
                plugin.processAnnotation(found, e, key.annotationFQN, data);
             }
@@ -176,7 +175,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       //
       for (ApplicationMetaModel application : this)
       {
-         for (MetaModelPlugin plugin : plugins.values())
+         for (ApplicationMetaModelPlugin plugin : plugins.values())
          {
             plugin.postProcessAnnotations(application);
          }
@@ -194,7 +193,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
 
          //
          MetaModel.log.log("Processing meta model event " + event.getType() + " " + event.getObject());
-         for (MetaModelPlugin plugin : plugins.values())
+         for (ApplicationMetaModelPlugin plugin : plugins.values())
          {
             plugin.processEvent(this, event);
          }
@@ -223,7 +222,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
    {
       for (ApplicationMetaModel application : this)
       {
-         for (MetaModelPlugin plugin : plugins.values())
+         for (ApplicationMetaModelPlugin plugin : plugins.values())
          {
             plugin.postProcessEvents(application);
          }
@@ -234,14 +233,14 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
    {
       for (ApplicationMetaModel application : this)
       {
-         for (MetaModelPlugin plugin : plugins.values())
+         for (ApplicationMetaModelPlugin plugin : plugins.values())
          {
             plugin.prePassivate(application);
          }
       }
 
       //
-      for (MetaModelPlugin plugin : plugins.values())
+      for (ApplicationMetaModelPlugin plugin : plugins.values())
       {
          plugin.prePassivate(this);
       }
@@ -379,7 +378,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
          descriptor.clear();
 
          // Emit config
-         for (Map.Entry<String, MetaModelPlugin> entry : plugins.entrySet())
+         for (Map.Entry<String, ApplicationMetaModelPlugin> entry : plugins.entrySet())
          {
             JSON pluginDescriptor = entry.getValue().getDescriptor(application);
             if (pluginDescriptor != null)

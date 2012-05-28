@@ -34,6 +34,7 @@ import org.juzu.impl.application.metamodel.ApplicationMetaModel;
 import org.juzu.impl.application.metamodel.ApplicationsMetaModel;
 import org.juzu.impl.controller.metamodel.ControllerMetaModel;
 import org.juzu.impl.utils.JSON;
+import static org.juzu.impl.utils.JSON.json;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.utils.FQN;
 import org.juzu.impl.utils.Tools;
@@ -61,21 +62,23 @@ public class ControllerTestCase extends AbstractTestCase
       MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("org", "juzu", "metamodel.ser"));
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers", new JSON().
-               set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-               list("methods", new JSON().
-                  set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                  set("id", null).
-                  set("name", "index").
-                  list("parameters").
-                  set("phase", "RENDER")
-               )
-            ).
-            set("fqn", "model.meta.controller.ControllerApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values",  json().
+               list("controllers", json().
+                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+                  list("methods", json().
+                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+                     set("id", null).
+                     set("name", "index").
+                     list("parameters").
+                     set("phase", "RENDER")
+                  )
+               ).
+               set("fqn", "model.meta.controller.ControllerApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
 
@@ -107,7 +110,10 @@ public class ControllerTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      JSON expected = new JSON().list("applications");
+      JSON expected = json().
+         set("applications", json().
+            list("values")
+         );
       assertEquals(expected, mm.toJSON());
 
       //
@@ -136,12 +142,14 @@ public class ControllerTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers").
-            set("fqn", "model.meta.controller.ControllerApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers").
+               set("fqn", "model.meta.controller.ControllerApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
 
@@ -174,21 +182,23 @@ public class ControllerTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers", new JSON().
-               set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-               list("methods", new JSON().
-                  set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                  set("id", null).
-                  set("name", "index").
-                  list("parameters").
-                  set("phase", "ACTION")
-               )
-            ).
-            set("fqn", "model.meta.controller.ControllerApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers", json().
+                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+                  list("methods", json().
+                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+                     set("id", null).
+                     set("name", "index").
+                     list("parameters").
+                     set("phase", "ACTION")
+                  )
+               ).
+               set("fqn", "model.meta.controller.ControllerApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
 
@@ -225,12 +235,14 @@ public class ControllerTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers").
-            set("fqn", "model.meta.controller.ControllerApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers").
+               set("fqn", "model.meta.controller.ControllerApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
 
@@ -270,21 +282,23 @@ public class ControllerTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers", new JSON().
-               set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-               list("methods", new JSON().
-                  set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                  set("id", null).
-                  set("name", "index").
-                  list("parameters").
-                  set("phase", "RENDER")
-               )
-            ).
-            set("fqn", "model.meta.controller.ControllerApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers", json().
+                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+                  list("methods", json().
+                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+                     set("id", null).
+                     set("name", "index").
+                     list("parameters").
+                     set("phase", "RENDER")
+                  )
+               ).
+               set("fqn", "model.meta.controller.ControllerApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
 
@@ -318,12 +332,14 @@ public class ControllerTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers").
-            set("fqn", "model.meta.controller.ControllerApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers").
+               set("fqn", "model.meta.controller.ControllerApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
 
@@ -362,21 +378,23 @@ public class ControllerTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers", new JSON().
-               set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-               list("methods", new JSON().
-                  set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                  set("id", null).
-                  set("name", "index").
-                  list("parameters").
-                  set("phase", "RENDER")
-               )
-            ).
-            set("fqn", "model.meta.controller.ControllerApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers", json().
+                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+                  list("methods", json().
+                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+                     set("id", null).
+                     set("name", "index").
+                     list("parameters").
+                     set("phase", "RENDER")
+                  )
+               ).
+               set("fqn", "model.meta.controller.ControllerApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
 
@@ -414,21 +432,23 @@ public class ControllerTestCase extends AbstractTestCase
       mm = Tools.unserialize(MetaModel.class, ser);
 
       //
-      JSON expected = new JSON()
-         .list("applications", new JSON().
-            list("controllers", new JSON().
-               set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-               list("methods", new JSON().
-                  set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                  set("id", null).
-                  set("name", "index").
-                  list("parameters").
-                  set("phase", "RENDER")
-               )
-            ).
-            set("fqn", "model.meta.controller.ControllerApplication").
-            set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-            list("templates")
+      JSON expected = json()
+         .set("applications", json().
+            list("values", json().
+               list("controllers", json().
+                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+                  list("methods", json().
+                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+                     set("id", null).
+                     set("name", "index").
+                     list("parameters").
+                     set("phase", "RENDER")
+                  )
+               ).
+               set("fqn", "model.meta.controller.ControllerApplication").
+               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+               list("templates")
+            )
          );
       assertEquals(expected, mm.toJSON());
 
