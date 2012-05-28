@@ -3131,7 +3131,7 @@ parse = (function (window, undefined) {
                 try {
                     callback(err, tree, data, stylesheet);
                 } catch (e) {
-                    invokeFailure(stylesheet.href, err);
+                    invokeFailure(stylesheet.href, e);
                 }
             });
         }

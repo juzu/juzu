@@ -62,12 +62,12 @@ public class CompilerTestCase
       Assert.assertEquals(1, error.line);
       Assert.assertEquals(8, error.column);
       Assert.assertEquals(8, error.index);
+      Assert.assertEquals("Parse", error.type);
    }
 
    @Test
    public void testCannotResolveImport() throws Exception
    {
-      System.out.println("Cannot resolve import");
       URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
       Failure failure = (Failure)lesser.compile(context, "cannotresolveimport.less");
       LinkedList<LessError> errors = failure.getErrors();
@@ -77,6 +77,7 @@ public class CompilerTestCase
       Assert.assertEquals(4, error.column);
       Assert.assertEquals(4, error.index);
       Assert.assertEquals(Collections.emptyList(), Arrays.asList(error.extract));
+      Assert.assertEquals("Parse", error.type);
    }
 
    @Test
@@ -96,7 +97,7 @@ public class CompilerTestCase
       Compilation compilation = (Compilation)lesser.compile(context, "bootstrap.less");
       time += System.currentTimeMillis();
       Assert.assertNotNull(compilation);
-      System.out.println("parsed in " + time + "ms");
+      System.out.println("Bootstrap parsed in " + time + "ms");
    }
 
    @Test
@@ -110,9 +111,22 @@ public class CompilerTestCase
    }
 
    @Test
+   public void testUnresolableVariable() throws Exception
+   {
+      URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
+      Failure failure = (Failure)lesser.compile(context, "unresolvablevariable.less");
+      LinkedList<LessError> errors = failure.getErrors();
+      Assert.assertEquals(1, errors.size());
+      LessError error = errors.get(0);
+      Assert.assertEquals(1, error.line);
+      Assert.assertEquals(17, error.column);
+      Assert.assertEquals(17, error.index);
+      Assert.assertEquals("Name", error.type);
+   }
+
+   @Test
    public void testExtract() throws Exception
    {
-      System.out.println("Extract");
       URLLessContext context = new URLLessContext(CompilerTestCase.class.getClassLoader().getResource("lesser/test/"));
       Failure failure = (Failure)lesser.compile(context, "extract.less");
       Assert.assertEquals(1, failure.getErrors().size());
