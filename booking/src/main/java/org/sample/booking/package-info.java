@@ -26,7 +26,8 @@
       @Script(src = "/public/javascripts/booking.js", depends = "ajax.app")
    },
    stylesheets = {
-      @Stylesheet(src = "/public/stylesheets/main.css")
+      @Stylesheet(src = "/public/stylesheets/main.css"),
+      @Stylesheet(src = "/public/ui-lightness/jquery-ui-1.7.2.custom.css")
    }
 )
 package org.sample.booking;
