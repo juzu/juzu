@@ -1,7 +1,5 @@
 package org.juzu.plugin.less.impl;
 
-import org.juzu.impl.application.metamodel.ApplicationMetaModel;
-import org.juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import org.juzu.impl.compiler.AnnotationData;
 import org.juzu.impl.compiler.BaseProcessor;
 import org.juzu.impl.compiler.CompilationException;
@@ -9,6 +7,8 @@ import org.juzu.impl.compiler.CompilationMessage;
 import org.juzu.impl.compiler.ElementHandle;
 import org.juzu.impl.compiler.MessageCode;
 import org.juzu.impl.compiler.ProcessingContext;
+import org.juzu.impl.metamodel.MetaModel;
+import org.juzu.impl.metamodel.MetaModelPlugin;
 import org.juzu.impl.utils.Logger;
 import org.juzu.impl.utils.Path;
 import org.juzu.impl.utils.QN;
@@ -28,13 +28,17 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LessMetaModelPlugin extends ApplicationMetaModelPlugin
+public class LessMetaModelPlugin extends MetaModelPlugin
 {
 
    /** . */
@@ -49,37 +53,50 @@ public class LessMetaModelPlugin extends ApplicationMetaModelPlugin
    static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);
 
    /** . */
-   private final HashMap<ElementHandle.Package, AnnotationData> enabledMap = new HashMap<ElementHandle.Package, AnnotationData>();
+   private HashMap<ElementHandle.Package, AnnotationData> annotations;
+
+   public LessMetaModelPlugin()
+   {
+      super("less");
+   }
 
    @Override
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data)
+   public void init(MetaModel metaModel)
+   {
+      annotations = new HashMap<ElementHandle.Package, AnnotationData>();
+   }
+
+   @Override
+   public Set<Class<? extends Annotation>> getAnnotationTypes()
+   {
+      return Collections.<Class<? extends Annotation>>singleton(Less.class);
+   }
+
+   @Override
+   public void processAnnotation(MetaModel metaModel, Element element, String fqn, AnnotationData data)
    {
       if (fqn.equals(Less.class.getName()))
       {
-         ElementHandle.Package pkg = application.getHandle();
+         ElementHandle.Package pkg = (ElementHandle.Package)ElementHandle.create(element);
          log.log("Recording less annotation for package " + pkg.getQN());
-         enabledMap.put(pkg, data);
+         annotations.put(pkg, data);
       }
    }
 
    @Override
-   public void preDestroy(ApplicationMetaModel application)
+   public void prePassivate(MetaModel metaModel)
    {
-      ElementHandle.Package pkg = application.getHandle();
-      log.log("Removing less annotation for package " + pkg.getQN());
-      AnnotationData data = enabledMap.remove(application.getHandle());
-      log.log("Removed less annotation for package " + pkg.getQN() + ": " + data);
-   }
+      // First clear annotation map
+      HashMap<ElementHandle.Package, AnnotationData> clone = annotations;
+      annotations = null;
 
-   @Override
-   public void prePassivate(ApplicationMetaModel model)
-   {
-      AnnotationData annotation = enabledMap.remove(model.getHandle());
-      if (annotation != null)
+      //
+      for (Map.Entry<ElementHandle.Package, AnnotationData> entry : clone.entrySet())
       {
-         ElementHandle.Package pkg = model.getHandle();
-         ProcessingContext env = model.model.env;
-         PackageElement pkgElt = env.get(model.getHandle());
+         AnnotationData annotation = entry.getValue();
+         ElementHandle.Package pkg = entry.getKey();
+         ProcessingContext env = metaModel.env;
+         PackageElement pkgElt = env.get(pkg);
          Boolean minify = (Boolean)annotation.get("minify");
          List<String> resources = (List<String>)annotation.get("value");
 
@@ -94,7 +111,7 @@ public class LessMetaModelPlugin extends ApplicationMetaModelPlugin
          {
 
             // For now we use the hardcoded assets package
-            QN assetPkg = model.getFQN().getPackageName().append("assets");
+            QN assetPkg = pkg.getQN().append("assets");
 
             //
             CompilerLessContext clc = new CompilerLessContext(env, assetPkg);
