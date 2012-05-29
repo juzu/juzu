@@ -59,7 +59,7 @@ public class AjaxLifeCycle extends RequestLifeCycle
       ApplicationDescriptor desc,
       @Manager(AssetType.SCRIPT) AssetManager manager)
    {
-      manager.addAsset(new AssetMetaData("ajax.plugin", AssetLocation.CLASSPATH, "/org/juzu/impl/plugin/ajax/script.js", "jquery"));
+      manager.addAsset(new AssetMetaData("juzu.ajax", AssetLocation.CLASSPATH, "/org/juzu/impl/plugin/ajax/script.js", "jquery"));
 
       //
       Map<String, ControllerMethod> table = new HashMap<String, ControllerMethod>();
@@ -94,7 +94,7 @@ public class AjaxLifeCycle extends RequestLifeCycle
             PropertyMap properties = new PropertyMap(response.getProperties());
 
             //
-            properties.addValues(Response.Render.SCRIPT, Asset.ref("ajax.plugin"));
+            properties.addValues(Response.Render.SCRIPT, Asset.ref("juzu.ajax"));
 
             //
             final Streamable<Stream.Char> decorated = render.getStreamable();
