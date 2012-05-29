@@ -49,25 +49,33 @@ public class Booking {
 //    @Required
 //     @Temporal(TemporalType.DATE)
 //    public Date checkinDate;
-    public String checkinDate;
+    public String checkinDate = "";
 
 //    @Required
 //     @Temporal(TemporalType.DATE)
 //    public Date checkoutDate;
-    public String checkoutDate;
+    public String checkoutDate = "";
 
 //    @Required(message="Credit card number is required")
 //    @Match(value="^\\d{16}$", message="Credit card number must be numeric and 16 digits long")
-    public String creditCard;
+    public String creditCard = "";
 
 //    @Required(message="Credit card name is required")
 //    @MinSize(value=3, message="Credit card name is required")
 //    @MaxSize(value=70, message="Credit card name is required")
-    public String creditCardName;
-    public int creditCardExpiryMonth;
-    public int creditCardExpiryYear;
-    public boolean smoking;
-    public int beds;
+    public String creditCardName = "";
+
+//    public int creditCardExpiryMonth;
+    public String creditCardExpiryMonth = "";
+
+//    public int creditCardExpiryYear;
+    public String creditCardExpiryYear = "";
+
+//    public boolean smoking;
+    public String smoking = "";
+
+//    public int beds;
+    public String beds = "";
 
    public Booking()
    {

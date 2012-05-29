@@ -41,7 +41,8 @@
         <input type="hidden" name="booking.checkinDate" value="${booking.checkinDate}">
     </p>
     <p>
-        <strong>Check out date:</strong> ${booking.checkoutDate.format('yyyy-MM-dd')}
+        <!--<strong>Check out date:</strong> ${booking.checkoutDate.format('yyyy-MM-dd')}-->
+        <strong>Check out date:</strong> ${booking.checkoutDate}
         <input type="hidden" name="booking.checkoutDate" value="${booking.checkoutDate}">
     </p>
     <p>

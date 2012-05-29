@@ -1,6 +1,7 @@
 #{decorate path=main.gtmpl/}
 #{title value='Book $hotel.name'/}
 #{param name=hotel/}
+#{param name=booking/}
 
 <h1>Book hotel</h1>
 
@@ -27,55 +28,55 @@
         <strong>Nightly rate:</strong> ${hotel.price}
     </p>
         <p>
-            <strong>Check In Date:</strong> <input type="text" size="10" name="booking.checkinDate" class="datepicker" value=""> *
+            <strong>Check In Date:</strong> <input type="text" size="10" name="booking.checkinDate" class="datepicker" value="${booking.checkinDate}"> *
             <span class="error"></span>
         </p>
         <p class="">
-            <strong>Check Out Date:</strong> <input type="text" size="10" name="booking.checkoutDate" class="datepicker" value=""> *
+            <strong>Check Out Date:</strong> <input type="text" size="10" name="booking.checkoutDate" class="datepicker" value="${booking.checkoutDate}"> *
             <span class="error"></span>
         </p>
     <p>
         <strong>Room preference:</strong>
-        <select name="beds">
-            <option value="1">One king-size bed</option>
-            <option value="2">Two double beds</option>
-            <option value="3">Three beds</option>
+        <select name="booking.beds">
+            <option value="1" <%= booking.beds == '1' ? 'selected' : '' %>>One king-size bed</option>
+            <option value="2" <%= booking.beds == '2' ? 'selected' : '' %>>Two double beds</option>
+            <option value="3" <%= booking.beds == '3' ? 'selected' : '' %>>Three beds</option>
         </select>
     </p>
     <p>
         <strong>Smoking preference:</strong>
-        <input type="radio" name="booking.smoking" value="true" checked> Smoking
-        <input type="radio" name="booking.smoking" value="false"> Non smoking
+        <input type="radio" name="booking.smoking" value="true" <%= booking.smoking != 'false' ? 'checked' : '' %>> Smoking
+        <input type="radio" name="booking.smoking" value="false" <%= booking.smoking == 'false' ? 'checked' : '' %>> Non smoking
     </p>
         <p>
-            <strong>Credit Card #:</strong> <input type="text" name="booking.creditCard" size="16" value=""> *
+            <strong>Credit Card #:</strong> <input type="text" name="booking.creditCard" size="16" value="${booking.creditCard}"> *
             <span class="error"></span>
         </p>
         <p>
-            <strong>Credit Card Name:</strong> <input type="text" name="booking.creditCardName" size="16" value=""> *
+            <strong>Credit Card Name:</strong> <input type="text" name="booking.creditCardName" size="16" value="${booking.creditCardName}"> *
             <span class="error"></span>
         </p>
     <p>
         <strong>Credit Card Expiry:</strong>
         <select name="booking.creditCardExpiryMonth">
-            <option value="1">Jan#</option>
-            <option value="2">Feb#</option>
-            <option value="3">Mar#</option>
-            <option value="4">Apr#</option>
-            <option value="5">May#</option>
-            <option value="6">Jun#</option>
-            <option value="7">Jul#</option>
-            <option value="8">Aug#</option>
-            <option value="9">Sep#</option>
-            <option value="10">Oct#</option>
-            <option value="11">Nov#</option>
-            <option value="112">Dec#</option>
+            <option value="1"  <%= booking.creditCardExpiryMonth == '1' ? 'selected' : '' %> >Jan#</option>
+            <option value="2"  <%= booking.creditCardExpiryMonth == '2' ? 'selected' : '' %> >Feb#</option>
+            <option value="3"  <%= booking.creditCardExpiryMonth == '3' ? 'selected' : '' %> >Mar#</option>
+            <option value="4"  <%= booking.creditCardExpiryMonth == '4' ? 'selected' : '' %> >Apr#</option>
+            <option value="5"  <%= booking.creditCardExpiryMonth == '5' ? 'selected' : '' %> >May#</option>
+            <option value="6"  <%= booking.creditCardExpiryMonth == '6' ? 'selected' : '' %> >Jun#</option>
+            <option value="7"  <%= booking.creditCardExpiryMonth == '7' ? 'selected' : '' %> >Jul#</option>
+            <option value="8"  <%= booking.creditCardExpiryMonth == '8' ? 'selected' : '' %> >Aug#</option>
+            <option value="9"  <%= booking.creditCardExpiryMonth == '9' ? 'selected' : '' %> >Sep#</option>
+            <option value="10" <%= booking.creditCardExpiryMonth == '10' ? 'selected' : '' %>>Oct#</option>
+            <option value="11" <%= booking.creditCardExpiryMonth == '11' ? 'selected' : '' %>>Nov#</option>
+            <option value="112"<%= booking.creditCardExpiryMonth == '12' ? 'selected' : '' %> >Dec#</option>
         </select>
         <select name="booking.creditCardExpiryYear">
-            <option value="2011">2011#</option>
-            <option value="2012">2012#</option>
-            <option value="2013">2013#</option>
-            <option value="2014">2014#</option>
+            <option value="2012" <%= booking.creditCardExpiryYear == '2012' ? 'selected' : '' %>>2012#</option>
+            <option value="2013" <%= booking.creditCardExpiryYear == '2013' ? 'selected' : '' %>>2013#</option>
+            <option value="2014" <%= booking.creditCardExpiryYear == '2014' ? 'selected' : '' %>>2014#</option>
+            <option value="2015" <%= booking.creditCardExpiryYear == '2015' ? 'selected' : '' %>>2015#</option>
         </select>
     </p>
     <p class="buttons">

@@ -112,14 +112,18 @@ public class Hotels // extends Application
    }
 
    @View
-   public void book(String id)
+   public void book(String id, Booking booking)
    {
       Hotel hotel = Hotel.findById(id);
-      book.with().hotel(hotel).render();
+      if (booking == null)
+      {
+         booking = new Booking();
+      }
+      book.with().hotel(hotel).booking(booking).render();
    }
 
    @Action
-   public Response processConfirmBooking(String confirm, String id, Booking booking)
+   public Response processConfirmBooking(String confirm, String id, String revise, Booking booking)
    {
       Hotel hotel = Hotel.findById(id);
       User user = User.find(login.getUserName(), null);
@@ -128,16 +132,14 @@ public class Hotels // extends Application
 
 //      validation.valid(booking);
 
-/*
-       // Errors or revise
-       if(validation.hasErrors() || params.get("revise") != null) {
-           render("@book", hotel, booking);
-       }
-
-       // Confirm
-*/
-      if (confirm != null)
+      // Errors or revise
+      if(/*validation.hasErrors() || */revise != null)
       {
+         return Hotels_.book(id, booking);
+      }
+      else if (confirm != null)
+      {
+         // Confirm
          booking.create();
          flash.setSuccess("Thank you, " + login.getUserName() + ", your confimation number for " + hotel.name
             + " is " + booking.id);
