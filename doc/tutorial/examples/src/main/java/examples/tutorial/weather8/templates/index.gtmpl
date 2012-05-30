@@ -1,0 +1,44 @@
+#{param name=location/}
+#{param name=temperature/}
+#{param name=locations/}
+#{param name=grade/}
+
+<div class="tutorial" style="padding: 10px">
+
+    <div>
+
+        <form action="@{add()}" method="post" style="float:left">
+            <fieldset>
+                <div class="controls">
+                    <div class="input-append">
+                        <input class="span2" type="text" size="16"name="location" value=""/><button type="submit" class="btn">Add</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+
+        <div class="btn-group" style="float:right">
+            <a class="btn <%=grade=='c'?'btn-inverse':''%>" href="@{updateGrade(grade='c',location=location)}">C</a>
+            <a class="btn <%=grade=='f'?'btn-inverse':''%>" href="@{updateGrade(grade='f',location=location)}">F</a>
+        </div>
+
+        <div style="clear:both"/>
+
+    </div>
+
+    <div class="accordion">
+
+        <% locations.each() { current -> %>
+        <div class="accordion-group">
+            <div class="accordion-heading"><a class="accordion-toggle" href="@{index(location = current)}">${current}</a></div>
+            <% if (current == location) { %>
+            <div class="accordion-body">
+                <div class="accordion-inner">The weather temperature in ${current} is ${temperature}&deg; ${grade.toUpperCase()}.</div>
+            </div>
+            <% } %>
+        </div>
+        <% } %>
+
+    </div>
+
+</div>

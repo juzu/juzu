@@ -10,7 +10,7 @@
      <portlet-class>examples.tutorial.weather1.Weather1Portlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
-       <value>dev</value>
+       <value>prod</value>
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
@@ -26,7 +26,7 @@
      <portlet-class>examples.tutorial.weather2.Weather2Portlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
-       <value>dev</value>
+       <value>prod</value>
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
@@ -42,7 +42,7 @@
     <portlet-class>examples.tutorial.weather3.Weather3Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
-      <value>dev</value>
+      <value>prod</value>
     </init-param>
     <init-param>
       <name>juzu.inject</name>
@@ -65,7 +65,7 @@
     <portlet-class>examples.tutorial.weather4.Weather4Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
-      <value>dev</value>
+      <value>prod</value>
     </init-param>
     <supports>
       <mime-type>text/html</mime-type>
@@ -81,7 +81,7 @@
     <portlet-class>examples.tutorial.weather5.Weather5Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
-      <value>dev</value>
+      <value>prod</value>
     </init-param>
     <supports>
       <mime-type>text/html</mime-type>
@@ -97,7 +97,7 @@
     <portlet-class>examples.tutorial.weather6.Weather6Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
-      <value>dev</value>
+      <value>prod</value>
     </init-param>
     <supports>
       <mime-type>text/html</mime-type>
@@ -113,13 +113,29 @@
     <portlet-class>examples.tutorial.weather7.Weather7Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
-      <value>dev</value>
+      <value>prod</value>
     </init-param>
     <supports>
       <mime-type>text/html</mime-type>
     </supports>
     <portlet-info>
       <title>Weather 7</title>
+      <keywords>juzu,sample</keywords>
+    </portlet-info>
+  </portlet>
+  <portlet>
+    <portlet-name>Weather8Portlet</portlet-name>
+    <display-name xml:lang="EN">Juzu Styled</display-name>
+    <portlet-class>examples.tutorial.weather8.Weather8Portlet</portlet-class>
+    <init-param>
+      <name>juzu.run_mode</name>
+      <value>prod</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>Weather 8</title>
       <keywords>juzu,sample</keywords>
     </portlet-info>
   </portlet>

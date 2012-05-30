@@ -43,6 +43,10 @@
       <type>war</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-less</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
