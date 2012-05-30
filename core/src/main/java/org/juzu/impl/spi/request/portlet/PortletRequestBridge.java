@@ -68,7 +68,10 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
    /** . */
    protected Request request;
 
-   PortletRequestBridge(PortletBridgeContext context, Rq req, Rs resp)
+   /** . */
+   protected final boolean prod;
+
+   PortletRequestBridge(PortletBridgeContext context, Rq req, Rs resp, boolean prod)
    {
       String methodId = null;
       Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
@@ -95,6 +98,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       this.httpContext = new PortletHttpContext(req);
       this.securityContext = new PortletSecurityContext(req);
       this.windowContext = new PortletWindowContext(this);
+      this.prod = prod;
    }
    
    public <T> T getProperty(PropertyType<T> propertyType)

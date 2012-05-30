@@ -30,9 +30,9 @@ import java.io.IOException;
 public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge
 {
 
-   public PortletResourceBridge(PortletBridgeContext context, ResourceRequest request, ResourceResponse response, boolean buffer)
+   public PortletResourceBridge(PortletBridgeContext context, ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod)
    {
-      super(context, request, response, buffer);
+      super(context, request, response, buffer, prod);
    }
 
    @Override

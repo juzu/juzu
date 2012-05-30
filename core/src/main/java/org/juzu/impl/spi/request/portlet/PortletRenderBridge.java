@@ -29,15 +29,16 @@ import org.w3c.dom.Element;
 import javax.portlet.MimeResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceURL;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge
 {
 
-   public PortletRenderBridge(PortletBridgeContext context, RenderRequest request, RenderResponse response, boolean buffer)
+   public PortletRenderBridge(PortletBridgeContext context, RenderRequest request, RenderResponse response, boolean buffer, boolean prod)
    {
-      super(context, request, response, buffer);
+      super(context, request, response, buffer, prod);
    }
 
    public void setTitle(String title)
@@ -102,45 +103,50 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
    private String getAssetURL(Asset.Literal asset)
    {
-      StringBuilder sb = new StringBuilder();
+      StringBuilder sb;
+      String url;
       String uri = asset.getURI();
       switch (asset.getLocation())
       {
          case SERVER:
+            sb = new StringBuilder();
             sb.append(req.getContextPath());
             if (!uri.startsWith("/"))
             {
                sb.append('/');
             }
             sb.append(uri);
+            url = sb.toString();
             break;
          case CLASSPATH:
-            sb.append(req.getContextPath()).append("/assets");
-            if (!uri.startsWith("/"))
+            if (prod)
             {
-               sb.append('/');
+               sb = new StringBuilder();
+               sb.append(req.getContextPath()).append("/assets");
+               if (!uri.startsWith("/"))
+               {
+                  sb.append('/');
+               }
+               sb.append(uri);
+               url = sb.toString();
             }
-            sb.append(uri);
+            else
+            {
+               ResourceURL r = resp.createResourceURL();
+               r.setParameter("juzu.request", "assets");
+               r.setResourceID(uri);
+               url = r.toString();
+            }
             break;
          case EXTERNAL:
-            sb.append(uri);
+            url = uri;
             break;
+         default:
+            throw new AssertionError();
       }
-      return sb.toString();
+      return url;
    }
    
-   private String getAssetURL(String url)
-   {
-      if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"))
-      {
-         return url;
-      }
-      else
-      {
-         return req.getContextPath() + "/" + url;
-      }
-   }
-
    @Override
    public void close()
    {

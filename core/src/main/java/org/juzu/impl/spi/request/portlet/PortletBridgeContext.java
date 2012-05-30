@@ -25,11 +25,15 @@ public class PortletBridgeContext
    /** . */
    final Logger log;
 
-   public PortletBridgeContext(ApplicationRuntime runtime, AssetManager assetManager, Logger log)
+   /** . */
+   final boolean prod;
+
+   public PortletBridgeContext(ApplicationRuntime runtime, AssetManager assetManager, Logger log, boolean prod)
    {
       this.runtime = runtime;
       this.assetManager = assetManager;
       this.log = log;
+      this.prod = prod;
    }
 
    public ApplicationContext getApplication()
@@ -49,16 +53,16 @@ public class PortletBridgeContext
 
    public PortletActionBridge create(ActionRequest req, ActionResponse resp)
    {
-      return new PortletActionBridge(this, req, resp);
+      return new PortletActionBridge(this, req, resp, prod);
    }
 
    public PortletRenderBridge create(RenderRequest req, RenderResponse resp, boolean buffer)
    {
-      return new PortletRenderBridge(this, req, resp, buffer);
+      return new PortletRenderBridge(this, req, resp, buffer, prod);
    }
 
    public PortletResourceBridge create(ResourceRequest req, ResourceResponse resp, boolean buffer)
    {
-      return new PortletResourceBridge(this, req, resp, buffer);
+      return new PortletResourceBridge(this, req, resp, buffer, prod);
    }
 }

@@ -58,6 +58,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
@@ -248,7 +249,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
          Collection<CompilationError> boot = runtime.boot();
          if (boot == null || boot.isEmpty())
          {
-            bridge = new PortletBridgeContext(runtime, runtime.getScriptManager(), log);
+            bridge = new PortletBridgeContext(runtime, runtime.getScriptManager(), log, prod);
          }
          return boot;
       }
@@ -356,48 +357,66 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             purgeSession(request);
          }
 
-         //
-         try
+         // See if ....
+         if (prod)
          {
-            TrimmingException.invoke(new TrimmingException.Callback()
+            try
             {
-               public void call() throws Throwable
+               TrimmingException.invoke(new TrimmingException.Callback()
                {
-                  PortletResourceBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
-                  try
+                  public void call() throws Throwable
                   {
-                     runtime.getContext().invoke(bridge);
-                     bridge.commit();
+                     PortletResourceBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
+                     try
+                     {
+                        runtime.getContext().invoke(bridge);
+                        bridge.commit();
+                     }
+                     catch (ApplicationException e)
+                     {
+                        throw e.getCause();
+                     }
+                     finally
+                     {
+                        bridge.close();
+                     }
                   }
-                  catch (ApplicationException e)
+               });
+            }
+            catch (TrimmingException e)
+            {
+               // Internal server error
+               response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
+
+               //
+               logThrowable(e);
+
+               //
+               if (!prod)
+               {
+                  PrintWriter writer = response.getWriter();
+                  writer.print("<html>\n");
+                  writer.print("<head>\n");
+                  writer.print("</head>\n");
+                  writer.print("<body>\n");
+                  renderThrowable(writer, e);
+                  writer.print("</body>\n");
+               }
+            }
+         }
+         else
+         {
+            if ("assets".equals(request.getParameter("juzu.request")))
+            {
+               String path = request.getResourceID();
+               if (runtime.getScriptManager().isClassPath(path) || runtime.getStylesheetManager().isClassPath(path))
+               {
+                  InputStream in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+                  if (in != null)
                   {
-                     throw e.getCause();
-                  }
-                  finally
-                  {
-                     bridge.close();
+                     Tools.copy(in, response.getPortletOutputStream());
                   }
                }
-            });
-         }
-         catch (TrimmingException e)
-         {
-            // Internal server error
-            response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
-
-            //
-            logThrowable(e);
-
-            //
-            if (!prod)
-            {
-               PrintWriter writer = response.getWriter();
-               writer.print("<html>\n");
-               writer.print("<head>\n");
-               writer.print("</head>\n");
-               writer.print("<body>\n");
-               renderThrowable(writer, e);
-               writer.print("</body>\n");
             }
          }
       }

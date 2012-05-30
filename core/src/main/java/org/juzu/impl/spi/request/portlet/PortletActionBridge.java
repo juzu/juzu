@@ -40,9 +40,9 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
    /** . */
    private boolean done;
 
-   public PortletActionBridge(PortletBridgeContext context, ActionRequest actionRequest, ActionResponse actionResponse)
+   public PortletActionBridge(PortletBridgeContext context, ActionRequest actionRequest, ActionResponse actionResponse, boolean prod)
    {
-      super(context, actionRequest, actionResponse);
+      super(context, actionRequest, actionResponse, prod);
 
       //
       this.done = false;
