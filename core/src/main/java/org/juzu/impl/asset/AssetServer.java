@@ -46,14 +46,27 @@ public class AssetServer
       {
          for (ApplicationRuntime<?, ?, ?> runtime : runtimes)
          {
-            if (runtime.getScriptManager().isClassPath(path) || runtime.getStylesheetManager().isClassPath(path))
+            String contentType;
+            InputStream in;
+            if (runtime.getScriptManager().isClassPath(path))
             {
-               InputStream in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
-               if (in != null)
-               {
-                  Tools.copy(in, resp.getOutputStream());
-                  return;
-               }
+               contentType = "text/javascript";
+               in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+            }
+            else if (runtime.getStylesheetManager().isClassPath(path))
+            {
+               contentType = "text/css";
+               in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+            }
+            else
+            {
+               contentType = null;
+               in = null;
+            }
+            if (in != null)
+            {
+               resp.setContentType(contentType);
+               Tools.copy(in, resp.getOutputStream());
             }
          }
       }

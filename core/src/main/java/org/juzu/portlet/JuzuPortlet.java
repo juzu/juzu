@@ -409,13 +409,27 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             if ("assets".equals(request.getParameter("juzu.request")))
             {
                String path = request.getResourceID();
-               if (runtime.getScriptManager().isClassPath(path) || runtime.getStylesheetManager().isClassPath(path))
+               String contentType;
+               InputStream in;
+               if (runtime.getScriptManager().isClassPath(path))
                {
-                  InputStream in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
-                  if (in != null)
-                  {
-                     Tools.copy(in, response.getPortletOutputStream());
-                  }
+                  contentType = "text/javascript";
+                  in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+               }
+               else if (runtime.getStylesheetManager().isClassPath(path))
+               {
+                  contentType = "text/css";
+                  in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+               }
+               else
+               {
+                  contentType = null;
+                  in = null;
+               }
+               if (in != null)
+               {
+                  response.setContentType(contentType);
+                  Tools.copy(in, response.getPortletOutputStream());
                }
             }
          }
