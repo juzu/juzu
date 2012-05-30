@@ -56,7 +56,6 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       }
       if (response instanceof Response.Update)
       {
-         done = true;
          Response.Update update = (Response.Update)response;
 
          // Parameters
@@ -100,11 +99,11 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
             }
          }
       }
-      else
+      else if (response instanceof Response.Redirect)
       {
-         done = true;
          Response.Redirect redirect = (Response.Redirect)response;
          super.resp.sendRedirect(redirect.getLocation());
       }
+      done = true;
    }
 }
