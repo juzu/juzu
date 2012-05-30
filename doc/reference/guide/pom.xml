@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-reference-parent</artifactId>
-    <version>0.4.5-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-reference-guide</artifactId>
-  <version>0.4.5-SNAPSHOT</version>
+  <version>0.5-SNAPSHOT</version>
 
   <name>Juzu Reference Guide</name>
   <description>The reference guide</description>
@@ -24,13 +24,13 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
-      <version>0.4.5-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <classifier>sources</classifier>
-      <version>0.4.5-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
 
     <dependency>
