@@ -28,7 +28,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Juzu -->
-    <wikbook.version>0.9.40</wikbook.version>
+    <wikbook.version>0.9.41</wikbook.version>
 
   </properties>
 
