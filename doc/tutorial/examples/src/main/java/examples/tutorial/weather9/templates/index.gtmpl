@@ -1,0 +1,50 @@
+#{param name=location/}
+#{param name=temperature/}
+#{param name=locations/}
+#{param name=grade/}
+
+<div class="tutorial" style="padding: 10px">
+
+  <div>
+
+    <form action="@{add()}" method="post" style="float:left">
+      <fieldset>
+        <div class="controls">
+          <div class="input-append">
+            <input class="span2" type="text" size="16" name="location" value=""/>
+            <button type="submit" class="btn">Add</button>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+
+    <div class="btn-group" style="float:right">
+      <a class="btn <%=grade=='c'?'btn-inverse':''%>" href="@{updateGrade(grade='c',location=location)}">C</a>
+      <a class="btn <%=grade=='f'?'btn-inverse':''%>" href="@{updateGrade(grade='f',location=location)}">F</a>
+    </div>
+
+    <div style="clear:both"/>
+
+  </div>
+
+  <% def id = Math.abs(new java.util.Random().nextInt()); %>
+  <div id="${id}" class="accordion">
+
+    <% def index = locations.indexOf(location);
+    index = index == -1 ? 0 : index;
+    locations.eachWithIndex() { current, i -> %>
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" href="#${current}" data-parent="${id}" data-toggle="collapse">${current}</a>
+      </div>
+      <% def expanded = i != index ? 'in' : ''; %>
+      <div id="${current}" class="accordion-body collapse ${expanded}">
+        <div class="accordion-inner">
+        </div>
+      </div>
+    </div>
+    <% } %>
+
+  </div>
+
+</div>

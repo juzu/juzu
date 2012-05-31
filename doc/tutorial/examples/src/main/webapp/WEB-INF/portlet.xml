@@ -139,4 +139,20 @@
       <keywords>juzu,sample</keywords>
     </portlet-info>
   </portlet>
+  <portlet>
+    <portlet-name>Weather9Portlet</portlet-name>
+    <display-name xml:lang="EN">Juzu Ajaxified</display-name>
+    <portlet-class>examples.tutorial.weather9.Weather9Portlet</portlet-class>
+    <init-param>
+      <name>juzu.run_mode</name>
+      <value>dev</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>Weather 9</title>
+      <keywords>juzu,sample</keywords>
+    </portlet-info>
+  </portlet>
 </portlet-app>
