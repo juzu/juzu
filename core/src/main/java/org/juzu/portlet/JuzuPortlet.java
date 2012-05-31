@@ -347,111 +347,79 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
    
    public void serveResource(final ResourceRequest request, final ResourceResponse response) throws PortletException, IOException
    {
-      Collection<CompilationError> errors = boot();
+      boolean assetRequest = "assets".equals(request.getParameter("juzu.request"));
 
       //
-      if (errors == null || errors.isEmpty())
+      if (assetRequest && !prod)
       {
-         if (errors != null)
+         String path = request.getResourceID();
+         String contentType;
+         InputStream in;
+         if (runtime.getScriptManager().isClassPath(path))
          {
-            purgeSession(request);
+            contentType = "text/javascript";
+            in = runtime.getClassLoader().getResourceAsStream(path.substring(1));
          }
-
-         //
-         boolean assetRequest = "assets".equals(request.getParameter("juzu.request"));
-
-         //
-         if (assetRequest && !prod)
+         else if (runtime.getStylesheetManager().isClassPath(path))
          {
-            String path = request.getResourceID();
-            String contentType;
-            InputStream in;
-            if (runtime.getScriptManager().isClassPath(path))
-            {
-               contentType = "text/javascript";
-               in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
-            }
-            else if (runtime.getStylesheetManager().isClassPath(path))
-            {
-               contentType = "text/css";
-               in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
-            }
-            else
-            {
-               contentType = null;
-               in = null;
-            }
-            if (in != null)
-            {
-               response.setContentType(contentType);
-               Tools.copy(in, response.getPortletOutputStream());
-            }
+            contentType = "text/css";
+            in = runtime.getClassLoader().getResourceAsStream(path.substring(1));
          }
          else
          {
-            try
-            {
-               TrimmingException.invoke(new TrimmingException.Callback()
-               {
-                  public void call() throws Throwable
-                  {
-                     PortletResourceBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
-                     try
-                     {
-                        runtime.getContext().invoke(bridge);
-                        bridge.commit();
-                     }
-                     catch (ApplicationException e)
-                     {
-                        throw e.getCause();
-                     }
-                     finally
-                     {
-                        bridge.close();
-                     }
-                  }
-               });
-            }
-            catch (TrimmingException e)
-            {
-               // Internal server error
-               response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
-
-               //
-               logThrowable(e);
-
-               //
-               if (!prod)
-               {
-                  PrintWriter writer = response.getWriter();
-                  writer.print("<html>\n");
-                  writer.print("<head>\n");
-                  writer.print("</head>\n");
-                  writer.print("<body>\n");
-                  renderThrowable(writer, e);
-                  writer.print("</body>\n");
-               }
-            }
+            contentType = null;
+            in = null;
+         }
+         if (in != null)
+         {
+            response.setContentType(contentType);
+            Tools.copy(in, response.getPortletOutputStream());
          }
       }
       else
       {
-         // Internal Server Error
-         response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
-
-         // Log errors
-         logErrors(errors);
-
-         //
-         if (!prod)
+         try
          {
-            PrintWriter writer = response.getWriter();
-            writer.print("<html>\n");
-            writer.print("<head>\n");
-            writer.print("</head>\n");
-            writer.print("<body>\n");
-            renderErrors(writer, errors);
-            writer.print("</body>\n");
+            TrimmingException.invoke(new TrimmingException.Callback()
+            {
+               public void call() throws Throwable
+               {
+                  PortletResourceBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
+                  try
+                  {
+                     runtime.getContext().invoke(bridge);
+                     bridge.commit();
+                  }
+                  catch (ApplicationException e)
+                  {
+                     throw e.getCause();
+                  }
+                  finally
+                  {
+                     bridge.close();
+                  }
+               }
+            });
+         }
+         catch (TrimmingException e)
+         {
+            // Internal server error
+            response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
+
+            //
+            logThrowable(e);
+
+            //
+            if (!prod)
+            {
+               PrintWriter writer = response.getWriter();
+               writer.print("<html>\n");
+               writer.print("<head>\n");
+               writer.print("</head>\n");
+               writer.print("<body>\n");
+               renderThrowable(writer, e);
+               writer.print("</body>\n");
+            }
          }
       }
    }

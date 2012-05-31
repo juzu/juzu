@@ -28,6 +28,7 @@ import org.juzu.impl.compiler.*;
 import org.juzu.impl.compiler.Compiler;
 import org.juzu.impl.fs.Change;
 import org.juzu.impl.fs.FileSystemScanner;
+import org.juzu.impl.fs.Filter;
 import org.juzu.impl.metadata.Descriptor;
 import org.juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import org.juzu.processor.MainProcessor;
@@ -189,7 +190,7 @@ public abstract class ApplicationRuntime<P, R, L>
       plugins.put(name, plugin);
    }
 
-   protected abstract ClassLoader getClassLoader();
+   public abstract ClassLoader getClassLoader();
 
    protected abstract ReadFileSystem<P> getClasses();
 
@@ -220,7 +221,7 @@ public abstract class ApplicationRuntime<P, R, L>
       }
 
       @Override
-      protected ClassLoader getClassLoader()
+      public ClassLoader getClassLoader()
       {
          return classLoader;
       }
@@ -314,19 +315,35 @@ public abstract class ApplicationRuntime<P, R, L>
          if (context == null)
          {
             logger.log("Building application");
-            RAMFileSystem classes = new RAMFileSystem();
+
+            //
+            ReadFileSystem<S> sourcePath = devScanner.getFileSystem();
+
+            // Copy everything that is not a java source
+            RAMFileSystem classOutput = new RAMFileSystem();
+            sourcePath.copy(new Filter.Default()
+            {
+               @Override
+               public boolean acceptFile(Object file, String name) throws IOException
+               {
+                  return !name.endsWith(".java");
+               }
+            }, classOutput);
+
+
+            //
             Compiler compiler = Compiler.
                builder().
-               sourcePath(devScanner.getFileSystem()).
-               sourceOutput(classes).
-               classOutput(classes).
+               sourcePath(sourcePath).
+               sourceOutput(classOutput).
+               classOutput(classOutput).
                addClassPath(classLoaderFS).build();
             compiler.addAnnotationProcessor(new MainProcessor());
             List<CompilationError> res = compiler.compile();
             if (res.isEmpty())
             {
-               this.classLoader = new URLClassLoader(new URL[]{classes.getURL()}, baseClassLoader);
-               this.classes = classes;
+               this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
+               this.classes = classOutput;
 
                //
                doBoot();
@@ -346,7 +363,7 @@ public abstract class ApplicationRuntime<P, R, L>
       }
 
       @Override
-      protected ClassLoader getClassLoader()
+      public ClassLoader getClassLoader()
       {
          return classLoader;
       }
