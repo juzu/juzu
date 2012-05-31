@@ -357,8 +357,37 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
             purgeSession(request);
          }
 
-         // See if ....
-         if (prod)
+         //
+         boolean assetRequest = "assets".equals(request.getParameter("juzu.request"));
+
+         //
+         if (assetRequest && !prod)
+         {
+            String path = request.getResourceID();
+            String contentType;
+            InputStream in;
+            if (runtime.getScriptManager().isClassPath(path))
+            {
+               contentType = "text/javascript";
+               in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+            }
+            else if (runtime.getStylesheetManager().isClassPath(path))
+            {
+               contentType = "text/css";
+               in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+            }
+            else
+            {
+               contentType = null;
+               in = null;
+            }
+            if (in != null)
+            {
+               response.setContentType(contentType);
+               Tools.copy(in, response.getPortletOutputStream());
+            }
+         }
+         else
          {
             try
             {
@@ -401,35 +430,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet
                   writer.print("<body>\n");
                   renderThrowable(writer, e);
                   writer.print("</body>\n");
-               }
-            }
-         }
-         else
-         {
-            if ("assets".equals(request.getParameter("juzu.request")))
-            {
-               String path = request.getResourceID();
-               String contentType;
-               InputStream in;
-               if (runtime.getScriptManager().isClassPath(path))
-               {
-                  contentType = "text/javascript";
-                  in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
-               }
-               else if (runtime.getStylesheetManager().isClassPath(path))
-               {
-                  contentType = "text/css";
-                  in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
-               }
-               else
-               {
-                  contentType = null;
-                  in = null;
-               }
-               if (in != null)
-               {
-                  response.setContentType(contentType);
-                  Tools.copy(in, response.getPortletOutputStream());
                }
             }
          }
