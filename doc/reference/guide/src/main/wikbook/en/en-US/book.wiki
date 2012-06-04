@@ -11,3 +11,7 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 = Controllers {{anchor id=controllers /}} =
 
 {{include document=controllers.wiki/}}
+
+= Inversion of Control {{anchor id=ioc /}} =
+
+{{include document=ioc.wiki/}}
