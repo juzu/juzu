@@ -34,7 +34,9 @@ import org.juzu.impl.spi.inject.InjectManager;
 import javax.inject.Provider;
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -57,12 +59,12 @@ public class ApplicationBootstrap
       this.descriptor = descriptor;
    }
 
-   public void start() throws Exception
+   public void start() throws ApplicationException
    {
       _start();
    }
    
-   private <B, I> void _start() throws Exception
+   private <B, I> void _start() throws ApplicationException
    {
       // Bind the application descriptor
       bootstrap.bindBean(ApplicationDescriptor.class, null, descriptor);
@@ -112,13 +114,41 @@ public class ApplicationBootstrap
          }
          else if (ProviderFactory.class.isAssignableFrom(implementation))
          {
-            ProviderFactory mp = (ProviderFactory)implementation.newInstance();
-            Provider provider = mp.getProvider(type);
+            ProviderFactory mp;
+            try
+            {
+               mp = (ProviderFactory)implementation.newInstance();
+            }
+            catch (InstantiationException e)
+            {
+               throw new ApplicationException(e);
+            }
+            catch (IllegalAccessException e)
+            {
+               throw new UndeclaredThrowableException(e);
+            }
+            Provider provider;
+            try
+            {
+               provider = mp.getProvider(type);
+            }
+            catch (Exception e)
+            {
+               throw new ApplicationException(e);
+            }
             bootstrap.bindProvider(type, bean.getScope(), bean.getQualifiers(), provider);
          }
          else if (Provider.class.isAssignableFrom(implementation))
          {
-            Method m = implementation.getMethod("get");
+            Method m = null;
+            try
+            {
+               m = implementation.getMethod("get");
+            }
+            catch (NoSuchMethodException e)
+            {
+               throw new UndeclaredThrowableException(e);
+            }
             Collection<Annotation> qualifiers = bean.getQualifiers();
             for (Annotation annotation : m.getAnnotations())
             {
@@ -140,14 +170,31 @@ public class ApplicationBootstrap
       }
 
       //
-      InjectManager<B, I> manager = bootstrap.create();
+      InjectManager<B, I> manager = null;
+      try
+      {
+         manager = bootstrap.create();
+      }
+      catch (Exception e)
+      {
+         throw new UnsupportedOperationException("handle me gracefully", e);
+      }
+
+      // Let the container create the application context bean
+      ApplicationContext context = null;
+      try
+      {
+         B contextBean = manager.resolveBean(ApplicationContext.class);
+         I contextInstance = manager.create(contextBean);
+         context = (ApplicationContext)manager.get(contextBean, contextInstance);
+      }
+      catch (InvocationTargetException e)
+      {
+         throw new UnsupportedOperationException("handle me gracefully", e);
+      }
 
       //
-      B contextBean = manager.resolveBean(ApplicationContext.class);
-      I contextInstance = manager.create(contextBean);
-      
-      //
-      this.context = (ApplicationContext)manager.get(contextBean, contextInstance);
+      this.context = context;
    }
    
    public ApplicationContext getContext()

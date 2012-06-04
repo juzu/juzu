@@ -28,6 +28,9 @@ public class MessageCode
 {
 
    /** . */
+   private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
+   /** . */
    private static final ConcurrentHashMap<String, MessageCode> codes = new ConcurrentHashMap<String, MessageCode>();
 
    /**
@@ -77,9 +80,20 @@ public class MessageCode
       return message;
    }
 
+   @Override
+   public String toString()
+   {
+      return "MessageCode[key=" + key + ",message=" + message + "]";
+   }
+
    public CompilationException failure(Object... args)
    {
       return new CompilationException(this, args);
+   }
+
+   public CompilationException failure(Element element)
+   {
+      return new CompilationException(element, this, EMPTY_OBJECT_ARRAY);
    }
 
    public CompilationException failure(Element element, Object... args)

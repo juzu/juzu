@@ -44,7 +44,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
    public final static Key<ApplicationsMetaModel> KEY = Key.of(ApplicationsMetaModel.class);
 
    /** . */
-   MetaModel model;
+   public MetaModel model;
 
    /** . */
    final Map<BufKey, AnnotationData> toProcess = new HashMap<BufKey, AnnotationData>();
