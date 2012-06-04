@@ -17,31 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.binding.metaprovider;
-
-import org.juzu.impl.inject.MetaProvider;
+package org.juzu.inject;
 
 import javax.inject.Provider;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaProviderImpl implements MetaProvider
+/**
+ * <p>The provider factory is the main entry point for providing custom providers.</p>
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public interface ProviderFactory
 {
-   public <T> Provider<? extends T> getProvider(Class<T> implementationType)
-   {
-      if (implementationType == Service.class)
-      {
-         Provider<Service> provider = new Provider<Service>()
-         {
-            public Service get()
-            {
-               return new ServiceImpl();
-            }
-         };
-         return (Provider<? extends T>)provider;
-      }
-      else
-      {
-         throw new AssertionError();
-      }
-   }
+
+   /**
+    * Returns a provider for a specific type or null if it cannot be produced.
+    *
+    * @param implementationType the implementation class object
+    * @param <T> the implementation generic type
+    * @return a provider for this class or null
+    * @throws Exception any exception that would prevent to obtain the provider
+    */
+   <T> Provider<? extends T> getProvider(Class<T> implementationType) throws Exception;
+
 }

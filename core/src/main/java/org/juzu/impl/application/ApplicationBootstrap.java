@@ -27,7 +27,7 @@ import org.juzu.impl.application.metadata.ApplicationDescriptor;
 import org.juzu.impl.inject.BeanFilter;
 import org.juzu.impl.metadata.BeanDescriptor;
 import org.juzu.impl.inject.Export;
-import org.juzu.impl.inject.MetaProvider;
+import org.juzu.inject.ProviderFactory;
 import org.juzu.impl.spi.inject.InjectBuilder;
 import org.juzu.impl.spi.inject.InjectManager;
 
@@ -110,9 +110,9 @@ public class ApplicationBootstrap
          {
             bootstrap.declareBean(type, bean.getScope(), bean.getQualifiers(), null);
          }
-         else if (MetaProvider.class.isAssignableFrom(implementation))
+         else if (ProviderFactory.class.isAssignableFrom(implementation))
          {
-            MetaProvider mp = (MetaProvider)implementation.newInstance();
+            ProviderFactory mp = (ProviderFactory)implementation.newInstance();
             Provider provider = mp.getProvider(type);
             bootstrap.bindProvider(type, bean.getScope(), bean.getQualifiers(), provider);
          }

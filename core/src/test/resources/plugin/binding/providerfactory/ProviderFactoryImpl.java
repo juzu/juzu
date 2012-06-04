@@ -17,10 +17,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Bindings(@Binding(value = Service.class, implementation = MetaProviderImpl.class))
-package plugin.binding.metaprovider;
+package plugin.binding.providerfactory;
 
-import org.juzu.Application;
-import org.juzu.plugin.binding.Binding;
-import org.juzu.plugin.binding.Bindings;
+import org.juzu.inject.ProviderFactory;
+
+import javax.inject.Provider;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ProviderFactoryImpl implements ProviderFactory
+{
+   public <T> Provider<? extends T> getProvider(Class<T> implementationType)
+   {
+      if (implementationType == Service.class)
+      {
+         Provider<Service> provider = new Provider<Service>()
+         {
+            public Service get()
+            {
+               return new ServiceImpl();
+            }
+         };
+         return (Provider<? extends T>)provider;
+      }
+      else
+      {
+         throw new AssertionError();
+      }
+   }
+}

@@ -17,9 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.binding.metaprovider;
+@Application
+@Bindings(@Binding(value = Service.class, implementation = ProviderFactoryImpl.class))
+package plugin.binding.providerfactory;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Service
-{
-}
+import org.juzu.Application;
+import org.juzu.plugin.binding.Binding;
+import org.juzu.plugin.binding.Bindings;

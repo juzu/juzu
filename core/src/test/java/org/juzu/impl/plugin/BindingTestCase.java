@@ -58,9 +58,9 @@ public class BindingTestCase extends AbstractInjectTestCase
    }
 
    @Test
-   public void testMetaProvider() throws Exception
+   public void testProviderFactory() throws Exception
    {
-      MockApplication<?> app = application("plugin", "binding", "metaprovider").init();
+      MockApplication<?> app = application("plugin", "binding", "providerfactory").init();
 
       //
       MockClient client = app.client();
