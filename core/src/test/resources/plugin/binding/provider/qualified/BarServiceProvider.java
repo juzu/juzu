@@ -17,31 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.binding.providerfactory;
+package plugin.binding.provider.qualified;
 
-import org.juzu.inject.ProviderFactory;
-
+import javax.inject.Named;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProviderFactoryImpl implements ProviderFactory
+public class BarServiceProvider implements Provider<Service>
 {
-   public <T> Provider<? extends T> getProvider(Class<T> implementationType)
+   @Named("bar")
+   public Service get()
    {
-      if (implementationType == Service.class)
+      return new Service()
       {
-         Provider<Service> provider = new Provider<Service>()
+         public String getName()
          {
-            public Service get()
-            {
-               return new ServiceImpl();
-            }
-         };
-         return (Provider<? extends T>)provider;
-      }
-      else
-      {
-         throw new AssertionError();
-      }
+            return "bar";
+         }
+      };
    }
 }

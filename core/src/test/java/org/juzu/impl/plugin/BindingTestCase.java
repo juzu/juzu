@@ -58,9 +58,9 @@ public class BindingTestCase extends AbstractInjectTestCase
    }
 
    @Test
-   public void testProviderFactory() throws Exception
+   public void testProviderFactoryCreate() throws Exception
    {
-      MockApplication<?> app = application("plugin", "binding", "providerfactory").init();
+      MockApplication<?> app = application("plugin", "binding", "provider", "factory", "create").init();
 
       //
       MockClient client = app.client();
@@ -71,7 +71,7 @@ public class BindingTestCase extends AbstractInjectTestCase
    @Test
    public void testProvider() throws Exception
    {
-      MockApplication<?> app = application("plugin", "binding", "provider").init();
+      MockApplication<?> app = application("plugin", "binding", "provider", "binding").init();
 
       //
       MockClient client = app.client();
@@ -82,7 +82,7 @@ public class BindingTestCase extends AbstractInjectTestCase
    @Test
    public void testQualifiedProvider() throws Exception
    {
-      MockApplication<?> app = application("plugin", "binding", "qualifiedprovider").init();
+      MockApplication<?> app = application("plugin", "binding", "provider", "qualified").init();
 
       //
       MockClient client = app.client();

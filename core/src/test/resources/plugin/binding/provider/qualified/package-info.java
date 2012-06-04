@@ -17,23 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.binding.qualifiedprovider;
+@Application
+@Bindings( {
+   @Binding(value = Service.class, implementation = FooServiceProvider.class),
+   @Binding(value = Service.class, implementation = BarServiceProvider.class)
+   })
+package plugin.binding.provider.qualified;
 
-import javax.inject.Named;
-import javax.inject.Provider;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BarServiceProvider implements Provider<Service>
-{
-   @Named("bar")
-   public Service get()
-   {
-      return new Service()
-      {
-         public String getName()
-         {
-            return "bar";
-         }
-      };
-   }
-}
+import org.juzu.Application;
+import org.juzu.plugin.binding.Binding;
+import org.juzu.plugin.binding.Bindings;
+import plugin.binding.provider.qualified.Service;

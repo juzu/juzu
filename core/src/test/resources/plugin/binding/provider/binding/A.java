@@ -17,23 +17,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.binding.qualifiedprovider;
+package plugin.binding.provider.binding;
 
-import javax.inject.Named;
-import javax.inject.Provider;
+import org.juzu.Controller;
+import org.juzu.Response;
+import org.juzu.View;
+
+import javax.inject.Inject;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FooServiceProvider implements Provider<Service>
+public class A extends Controller
 {
-   @Named("foo")
-   public Service get()
+
+   @Inject
+   Service service;
+
+   @View
+   public Response.Content index() throws IOException
    {
-      return new Service()
-      {
-         public String getName()
-         {
-            return "foo";
-         }
-      };
+      return Response.content(service != null ? "pass" : "");
    }
 }

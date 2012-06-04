@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.binding.providerfactory;
+package plugin.binding.provider.binding;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface Service

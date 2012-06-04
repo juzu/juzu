@@ -17,25 +17,62 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.binding.provider;
+package plugin.binding.provider.qualified;
 
-import org.juzu.Controller;
 import org.juzu.Response;
 import org.juzu.View;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
+public class A
 {
 
    @Inject
-   Service service;
+   @Named("foo")
+   Service fooService;
+
+   @Inject
+   @Named("bar")
+   Service barService;
 
    @View
    public Response.Content index() throws IOException
    {
-      return Response.content(service != null ? "pass" : "");
+      String resp;
+      if (fooService == null)
+      {
+         resp = "failed: no foo service";
+      }
+      else
+      {
+         String name = fooService.getName();
+         if ("foo".equals(name))
+         {
+            if (barService == null)
+            {
+               resp = "failed: no bar service";
+            }
+            else
+            {
+               name = barService.getName();
+               if ("bar".equals(name))
+               {
+                  resp = "pass";
+               }
+               else
+               {
+                  resp = "failed: wrong bar name " + name;
+               }
+            }
+         }
+         else
+         {
+            resp = "failed: wrong foo name " + name;
+         }
+      }
+      return Response.content(resp);
    }
 }

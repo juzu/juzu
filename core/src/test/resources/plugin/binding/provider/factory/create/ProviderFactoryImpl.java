@@ -17,10 +17,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.binding.qualifiedprovider;
+package plugin.binding.provider.factory.create;
+
+import org.juzu.inject.ProviderFactory;
+
+import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Service
+public class ProviderFactoryImpl implements ProviderFactory
 {
-   String getName();
+   public <T> Provider<? extends T> getProvider(Class<T> implementationType)
+   {
+      if (implementationType == Service.class)
+      {
+         Provider<Service> provider = new Provider<Service>()
+         {
+            public Service get()
+            {
+               return new ServiceImpl();
+            }
+         };
+         return (Provider<? extends T>)provider;
+      }
+      else
+      {
+         throw new AssertionError();
+      }
+   }
 }
