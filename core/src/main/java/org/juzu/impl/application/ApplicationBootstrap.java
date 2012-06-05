@@ -110,10 +110,12 @@ public class ApplicationBootstrap
          Class<?> implementation = bean.getImplementationType();
          if (implementation == null)
          {
+            // Direct declaration
             bootstrap.declareBean(type, bean.getScope(), bean.getQualifiers(), null);
          }
          else if (ProviderFactory.class.isAssignableFrom(implementation))
          {
+            // Instantiate provider factory
             ProviderFactory mp;
             try
             {
@@ -127,6 +129,8 @@ public class ApplicationBootstrap
             {
                throw new UndeclaredThrowableException(e);
             }
+
+            // Get provider from factory
             Provider provider;
             try
             {
@@ -136,41 +140,36 @@ public class ApplicationBootstrap
             {
                throw new ApplicationException(e);
             }
-            bootstrap.bindProvider(type, bean.getScope(), bean.getQualifiers(), provider);
+
+            // Bind provider instance
+            bootstrap.bindProvider(
+               type,
+               bean.getScope(),
+               determineQualifiers(type, bean.getQualifiers(), provider.getClass()),
+               provider);
          }
          else if (Provider.class.isAssignableFrom(implementation))
          {
-            Method m = null;
-            try
-            {
-               m = implementation.getMethod("get");
-            }
-            catch (NoSuchMethodException e)
-            {
-               throw new UndeclaredThrowableException(e);
-            }
-            Collection<Annotation> qualifiers = bean.getQualifiers();
-            for (Annotation annotation : m.getAnnotations())
-            {
-               if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
-               {
-                  if (qualifiers == null)
-                  {
-                     qualifiers = new ArrayList<Annotation>();
-                  }
-                  qualifiers.add(annotation);
-               }
-            }
-            bootstrap.declareProvider(type, bean.getScope(), qualifiers, (Class)implementation);
+            // Bind provider
+            bootstrap.declareProvider(
+               type,
+               bean.getScope(),
+               determineQualifiers(type, bean.getQualifiers(), implementation),
+               (Class)implementation);
          }
          else
          {
-            bootstrap.declareBean((Class)type, bean.getScope(), bean.getQualifiers(), (Class)implementation);
+            // Bean implementation declaration
+            bootstrap.declareBean(
+               (Class)type,
+               bean.getScope(),
+               bean.getQualifiers(),
+               (Class)implementation);
          }
       }
 
       //
-      InjectManager<B, I> manager = null;
+      InjectManager<B, I> manager;
       try
       {
          manager = bootstrap.create();
@@ -196,7 +195,40 @@ public class ApplicationBootstrap
       //
       this.context = context;
    }
-   
+
+   private Collection<Annotation> determineQualifiers(Class<?> type, Collection<Annotation> qualifiers, Class<?> implementation)
+   {
+      Collection<Annotation> overridenQualifiers = null;
+      try
+      {
+         Method get = implementation.getMethod("get");
+         for (Annotation annotation : get.getAnnotations())
+         {
+            if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
+            {
+               if (overridenQualifiers == null)
+               {
+                  overridenQualifiers = new ArrayList<Annotation>();
+               }
+               overridenQualifiers.add(annotation);
+            }
+         }
+      }
+      catch (NoSuchMethodException e)
+      {
+         throw new UndeclaredThrowableException(e);
+      }
+
+      // Override all qualifiers
+      if (overridenQualifiers != null)
+      {
+         qualifiers = overridenQualifiers;
+      }
+
+      //
+      return qualifiers;
+   }
+
    public ApplicationContext getContext()
    {
       return context;
