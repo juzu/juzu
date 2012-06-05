@@ -24,12 +24,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * An holder for a list of {@link Binding} declarations.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
 public @interface Bindings
 {
 
+   /**
+    * Declares a list of bindings.
+    *
+    * @return the bindings
+    */
    Binding[] value() default {};
 
 }

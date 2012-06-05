@@ -30,13 +30,16 @@ public interface ProviderFactory
 {
 
    /**
-    * Returns a provider for a specific type or null if it cannot be produced.
+    * Returns a provider for a specific type or null if it cannot be
+    * produced.
     *
     * @param implementationType the implementation class object
     * @param <T> the implementation generic type
     * @return a provider for this class or null
-    * @throws Exception any exception that would prevent to obtain the provider
+    * @throws Exception any exception that would prevent to obtain the
+    *         provider
     */
-   <T> Provider<? extends T> getProvider(Class<T> implementationType) throws Exception;
+   <T> Provider<? extends T> getProvider(Class<T> implementationType)
+      throws Exception;
 
 }
