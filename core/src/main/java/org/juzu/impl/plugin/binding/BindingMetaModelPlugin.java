@@ -96,7 +96,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin
 
          //
          TypeMirror providerFactoryTM = env.getTypeElement(ProviderFactory.class.getName()).asType();
-         TypeElement providerElt = env.getTypeElement(Provider.class.getName());
+         TypeElement providerElt = env.getTypeElement("javax.inject.Provider");
          DeclaredType providerTM = (DeclaredType)providerElt.asType();
          TypeMirror rawProviderTM = env.erasure(providerTM);
 
