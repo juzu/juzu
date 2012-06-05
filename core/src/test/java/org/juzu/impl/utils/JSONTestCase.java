@@ -219,4 +219,17 @@ public class JSONTestCase extends AbstractTestCase
       JSON expected = new JSON().set("a", Arrays.asList(new JSON().set("b", "c")));
       assertEquals(expected, json);
    }
+
+   @Test
+   public void testWriteIndented() throws Exception
+   {
+      assertEquals("{\n" +
+         "  \"a\":\"a_value\",\n" +
+         "  \"b\":2,\n" +
+         "  \"c\":[1,2,3],\n" +
+         "  \"d\":{\n" +
+         "    \"e\":true\n" +
+         "  }\n" +
+         "}", JSON.toString(new JSON().set("a", "a_value").set("b", 2).list("c", 1, 2, 3).set("d", new JSON().set("e", true)), new StringBuilder(), 2).toString());
+   }
 }

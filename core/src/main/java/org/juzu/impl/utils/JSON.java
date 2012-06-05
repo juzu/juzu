@@ -413,23 +413,13 @@ public final class JSON implements Serializable
          for (Iterator<?> i = list.iterator();i.hasNext();)
          {
             Object e = i.next();
-            if (indent > 0)
-            {
-               appendable.append('\n');
-               pad(appendable, margin + indent);
-            }
             toString(e, appendable, margin + indent, indent);
             if (i.hasNext())
             {
                appendable.append(',');
             }
-            else if (indent > 0)
-            {
-               appendable.append('\n');
-               pad(appendable, margin);
-            }
          }
-         appendable.append(']');
+         appendable.append("]");
       }
       else if (o instanceof Boolean || o instanceof Number)
       {
