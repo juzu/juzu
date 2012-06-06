@@ -20,4 +20,4 @@
 @Application
 package request.resource.notfound;
 
-import org.juzu.Application;
+import juzu.Application;

@@ -20,4 +20,4 @@
 @Application
 package model.processor.simple;
 
-import org.juzu.Application;
+import juzu.Application;

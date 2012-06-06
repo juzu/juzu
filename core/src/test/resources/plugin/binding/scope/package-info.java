@@ -21,7 +21,7 @@
 @Bindings(@Binding(value = Bean.class, scope = Scope.REQUEST))
 package plugin.binding.scope;
 
-import org.juzu.Application;
-import org.juzu.Scope;
-import org.juzu.plugin.binding.Binding;
-import org.juzu.plugin.binding.Bindings;
+import juzu.Application;
+import juzu.Scope;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

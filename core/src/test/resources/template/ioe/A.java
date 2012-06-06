@@ -19,13 +19,13 @@
 
 package template.ioe;
 
-import org.juzu.Controller;
-import org.juzu.Path;
-import org.juzu.Response;
-import org.juzu.UndeclaredIOException;
-import org.juzu.View;
-import org.juzu.io.AppendableStream;
-import org.juzu.template.Template;
+import juzu.Controller;
+import juzu.Path;
+import juzu.Response;
+import juzu.UndeclaredIOException;
+import juzu.View;
+import juzu.io.AppendableStream;
+import juzu.template.Template;
 
 import javax.inject.Inject;
 import java.io.IOException;

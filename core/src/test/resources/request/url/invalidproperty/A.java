@@ -19,10 +19,10 @@
 
 package request.url.invalidproperty;
 
-import org.juzu.PropertyType;
-import org.juzu.Response;
-import org.juzu.URLBuilder;
-import org.juzu.View;
+import juzu.PropertyType;
+import juzu.Response;
+import juzu.URLBuilder;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A

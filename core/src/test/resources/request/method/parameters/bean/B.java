@@ -17,7 +17,7 @@
 
 package request.method.parameters.bean;
 
-import org.juzu.Param;
+import juzu.Param;
 
 import java.util.List;
 

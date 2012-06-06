@@ -19,4 +19,4 @@
 
 @Application
 package request.scope.request;
-import org.juzu.Application;
+import juzu.Application;

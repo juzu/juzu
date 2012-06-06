@@ -20,4 +20,4 @@
 @Application
 package model.meta.controller;
 
-import org.juzu.Application;
+import juzu.Application;

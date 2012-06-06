@@ -19,8 +19,8 @@
 
 package request.render.response;
 
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Response;
+import juzu.View;
 
 import java.io.IOException;
 

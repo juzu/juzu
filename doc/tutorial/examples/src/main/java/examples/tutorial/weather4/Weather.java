@@ -20,9 +20,9 @@
 package examples.tutorial.weather4;
 
 import examples.tutorial.weather3.WeatherService;
-import org.juzu.Path;
-import org.juzu.View;
-import org.juzu.template.Template;
+import juzu.Path;
+import juzu.View;
+import juzu.template.Template;
 
 import javax.inject.Inject;
 import java.util.HashMap;

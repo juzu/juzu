@@ -19,10 +19,10 @@
 
 package request.action.render;
 
-import org.juzu.Action;
-import org.juzu.Controller;
-import org.juzu.View;
-import org.juzu.Response;
+import juzu.Action;
+import juzu.Controller;
+import juzu.View;
+import juzu.Response;
 
 import java.io.IOException;
 

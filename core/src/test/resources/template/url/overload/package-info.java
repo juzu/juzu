@@ -1,4 +1,4 @@
 @Application
 package template.url.overload;
 
-import org.juzu.Application;
+import juzu.Application;

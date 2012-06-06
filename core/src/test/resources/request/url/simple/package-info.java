@@ -20,4 +20,4 @@
 @Application
 package request.url.simple;
 
-import org.juzu.Application;
+import juzu.Application;

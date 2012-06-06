@@ -1,6 +1,0 @@
-org.juzu.impl.controller.ControllerPlugin
-org.juzu.impl.template.TemplatePlugin
-org.juzu.impl.plugin.binding.BindingPlugin
-org.juzu.impl.plugin.ajax.AjaxPlugin
-org.juzu.impl.plugin.asset.AssetPlugin
-org.juzu.impl.plugin.portlet.PortletPlugin

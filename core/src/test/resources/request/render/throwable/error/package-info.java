@@ -20,4 +20,4 @@
 @Application
 package request.render.throwable.error;
 
-import org.juzu.Application;
+import juzu.Application;

@@ -20,19 +20,17 @@
 package examples.tutorial.weather9;
 
 import examples.tutorial.weather3.WeatherService;
-import org.juzu.Action;
-import org.juzu.Path;
-import org.juzu.Response;
-import org.juzu.View;
-import org.juzu.Resource;
-import org.juzu.plugin.ajax.Ajax;
+import juzu.Action;
+import juzu.Path;
+import juzu.Response;
+import juzu.View;
+import juzu.Resource;
+import juzu.plugin.ajax.Ajax;
 
 import javax.inject.Inject;
 import javax.portlet.PortletPreferences;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Weather

@@ -20,4 +20,4 @@
 @Application
 package request.action.throwable.checked;
 
-import org.juzu.Application;
+import juzu.Application;

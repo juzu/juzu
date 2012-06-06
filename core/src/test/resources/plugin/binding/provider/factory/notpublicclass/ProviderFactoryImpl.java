@@ -19,7 +19,7 @@
 
 package plugin.binding.provider.factory.notpublicclass;
 
-import org.juzu.inject.ProviderFactory;
+import juzu.inject.ProviderFactory;
 
 import javax.inject.Provider;
 

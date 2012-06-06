@@ -1,8 +1,8 @@
 package org.sample;
 
-import org.juzu.View;
-import org.juzu.Path;
-import org.juzu.template.Template;
+import juzu.View;
+import juzu.Path;
+import juzu.template.Template;
 import javax.inject.Inject;
 import java.io.IOException;
 

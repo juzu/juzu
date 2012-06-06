@@ -20,10 +20,10 @@
 package examples.tutorial.weather6;
 
 import examples.tutorial.weather3.WeatherService;
-import org.juzu.Action;
-import org.juzu.Path;
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Action;
+import juzu.Path;
+import juzu.Response;
+import juzu.View;
 
 import javax.inject.Inject;
 import java.util.HashSet;

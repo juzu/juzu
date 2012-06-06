@@ -19,8 +19,8 @@
 
 package request.scope.flash;
 
-import org.juzu.FlashScoped;
-import org.juzu.test.Identifiable;
+import juzu.FlashScoped;
+import juzu.test.Identifiable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

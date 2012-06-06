@@ -1,4 +1,4 @@
 @Less("stylesheet.less")
 package plugin.less.compile;
 
-import org.juzu.plugin.less.Less;
+import juzu.plugin.less.Less;

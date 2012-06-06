@@ -20,4 +20,4 @@
 @Application
 package http.lifecycle;
 
-import org.juzu.Application;
+import juzu.Application;

@@ -214,7 +214,7 @@
         <configuration>
           <show>public</show>
           <quiet>true</quiet>
-          <excludePackageNames>org.juzu.impl</excludePackageNames>
+          <excludePackageNames>juzu.impl</excludePackageNames>
         </configuration>
         <executions>
           <execution>

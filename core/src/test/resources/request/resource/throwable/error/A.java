@@ -19,10 +19,10 @@
 
 package request.resource.throwable.error;
 
-import org.juzu.Controller;
-import org.juzu.Resource;
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Controller;
+import juzu.Resource;
+import juzu.Response;
+import juzu.View;
 
 import java.io.IOException;
 

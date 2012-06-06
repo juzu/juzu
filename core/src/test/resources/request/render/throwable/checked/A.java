@@ -19,8 +19,8 @@
 
 package request.render.throwable.checked;
 
-import org.juzu.Controller;
-import org.juzu.View;
+import juzu.Controller;
+import juzu.View;
 
 import javax.naming.AuthenticationException;
 

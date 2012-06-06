@@ -20,4 +20,4 @@
 @Application
 package template.throwable.checked;
 
-import org.juzu.Application;
+import juzu.Application;

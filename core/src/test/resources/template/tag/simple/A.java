@@ -19,10 +19,10 @@
 
 package template.tag.simple;
 
-import org.juzu.Path;
-import org.juzu.View;
-import org.juzu.io.Stream;
-import org.juzu.template.Template;
+import juzu.Path;
+import juzu.View;
+import juzu.io.Stream;
+import juzu.template.Template;
 
 import javax.inject.Inject;
 

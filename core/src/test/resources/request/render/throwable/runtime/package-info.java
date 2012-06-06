@@ -20,4 +20,4 @@
 @Application
 package request.render.throwable.runtime;
 
-import org.juzu.Application;
+import juzu.Application;

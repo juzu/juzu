@@ -19,4 +19,4 @@
 
 @Application
 package template.url.resolution;
-import org.juzu.Application;
+import juzu.Application;

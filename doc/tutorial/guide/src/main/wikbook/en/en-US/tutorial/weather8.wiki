@@ -87,7 +87,7 @@ annotate the ##examples.tutorial## package with the ##@Less## annotation to trig
 @Less(value = "bootstrap.less", minify = true)
 package examples.tutorial;
 
-import org.juzu.plugin.less.Less;
+import juzu.plugin.less.Less;
 {{/java}}
 
 This annotation triggers the compilation of the ##bootstrap.less## in the ##assets## package, the ##minified## parameter

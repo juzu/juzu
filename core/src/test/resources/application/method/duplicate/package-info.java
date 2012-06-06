@@ -19,4 +19,4 @@
 
 @Application
 package application.method.duplicate;
-import org.juzu.Application;
+import juzu.Application;

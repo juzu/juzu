@@ -19,7 +19,7 @@
 
 package request.method.action;
 
-import org.juzu.Action;
+import juzu.Action;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A

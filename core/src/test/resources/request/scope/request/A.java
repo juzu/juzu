@@ -19,10 +19,10 @@
 
 package request.scope.request;
 
-import org.juzu.Action;
-import org.juzu.View;
-import org.juzu.Resource;
-import org.juzu.test.Registry;
+import juzu.Action;
+import juzu.View;
+import juzu.Resource;
+import juzu.test.Registry;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.inject.Inject;

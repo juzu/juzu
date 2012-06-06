@@ -19,10 +19,10 @@
 
 package template.printer;
 
-import org.juzu.Controller;
-import org.juzu.Path;
-import org.juzu.View;
-import org.juzu.template.Template;
+import juzu.Controller;
+import juzu.Path;
+import juzu.View;
+import juzu.template.Template;
 
 import javax.inject.Inject;
 

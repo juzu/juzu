@@ -21,5 +21,5 @@
 @Portlet
 package examples.tutorial.weather3;
 
-import org.juzu.Application;
-import org.juzu.plugin.portlet.Portlet;
+import juzu.Application;
+import juzu.plugin.portlet.Portlet;

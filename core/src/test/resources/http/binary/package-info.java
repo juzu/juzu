@@ -20,4 +20,4 @@
 @Application
 package http.binary;
 
-import org.juzu.Application;
+import juzu.Application;

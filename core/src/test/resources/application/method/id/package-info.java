@@ -19,4 +19,4 @@
 
 @Application
 package application.method.id;
-import org.juzu.Application;
+import juzu.Application;

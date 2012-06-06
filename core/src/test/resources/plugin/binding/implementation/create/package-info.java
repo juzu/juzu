@@ -21,8 +21,6 @@
 @Bindings(@Binding(value = Service.class, implementation = ServiceImpl.class))
 package plugin.binding.implementation.create;
 
-import org.juzu.Application;
-import org.juzu.plugin.binding.Binding;
-import org.juzu.plugin.binding.Bindings;
-import plugin.binding.implementation.create.Service;
-import plugin.binding.implementation.create.ServiceImpl;
+import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

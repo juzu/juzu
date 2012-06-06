@@ -19,4 +19,4 @@
 @Application
 package request.method.parameters.bean;
 
-import org.juzu.Application;
+import juzu.Application;

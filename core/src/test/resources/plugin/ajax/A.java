@@ -19,11 +19,11 @@
 
 package plugin.ajax;
 
-import org.juzu.Controller;
-import org.juzu.Resource;
-import org.juzu.Response;
-import org.juzu.View;
-import org.juzu.plugin.ajax.Ajax;
+import juzu.Controller;
+import juzu.Resource;
+import juzu.Response;
+import juzu.View;
+import juzu.plugin.ajax.Ajax;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller

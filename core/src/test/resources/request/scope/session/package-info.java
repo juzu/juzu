@@ -20,4 +20,4 @@
 @Application
 package request.scope.session;
 
-import org.juzu.Application;
+import juzu.Application;

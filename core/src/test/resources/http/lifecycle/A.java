@@ -19,10 +19,10 @@
 
 package http.lifecycle;
 
-import org.juzu.Action;
-import org.juzu.Resource;
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Action;
+import juzu.Resource;
+import juzu.Response;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A

@@ -22,8 +22,8 @@
 @Assets(stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css", location = AssetLocation.CLASSPATH))
 package examples.tutorial.weather8;
 
-import org.juzu.Application;
-import org.juzu.asset.AssetLocation;
-import org.juzu.plugin.asset.Assets;
-import org.juzu.plugin.asset.Stylesheet;
-import org.juzu.plugin.portlet.Portlet;
+import juzu.Application;
+import juzu.asset.AssetLocation;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.portlet.Portlet;

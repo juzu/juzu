@@ -86,7 +86,7 @@
               <webappDirectory>\${project.build.directory}/gatein</webappDirectory>
               <overlays>
                 <overlay>
-                  <groupId>org.juzu</groupId>
+                  <groupId>juzu</groupId>
                   <artifactId>juzu-overlay-gatein</artifactId>
                 </overlay>
               </overlays>
@@ -102,7 +102,7 @@
               <webappDirectory>\${project.build.directory}/liferay</webappDirectory>
               <overlays>
                 <overlay>
-                  <groupId>org.juzu</groupId>
+                  <groupId>juzu</groupId>
                   <artifactId>juzu-overlay-liferay</artifactId>
                   <excludes>
                     <!-- Empty to have /META-INF/context.xml copied -->

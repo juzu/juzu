@@ -20,4 +20,4 @@
 @Application
 package template.throwable.error;
 
-import org.juzu.Application;
+import juzu.Application;

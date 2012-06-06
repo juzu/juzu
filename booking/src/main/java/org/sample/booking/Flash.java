@@ -19,13 +19,9 @@
 
 package org.sample.booking;
 
-import org.juzu.FlashScoped;
+import juzu.FlashScoped;
 
 import javax.inject.Named;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Named("flash")

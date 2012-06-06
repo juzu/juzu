@@ -19,10 +19,10 @@
 
 package plugin.impl.failure;
 
-import org.juzu.Response;
-import org.juzu.impl.application.ApplicationException;
-import org.juzu.impl.request.RequestLifeCycle;
-import org.juzu.impl.request.Request;
+import juzu.Response;
+import juzu.impl.application.ApplicationException;
+import juzu.impl.request.RequestLifeCycle;
+import juzu.impl.request.Request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FailureLifeCycle extends RequestLifeCycle

@@ -19,10 +19,10 @@
 
 package template.el;
 
-import org.juzu.Path;
-import org.juzu.View;
-import org.juzu.RequestScoped;
-import org.juzu.template.Template;
+import juzu.Path;
+import juzu.View;
+import juzu.RequestScoped;
+import juzu.template.Template;
 
 import javax.inject.Inject;
 import javax.inject.Named;

@@ -19,7 +19,7 @@
 
 package org.sample.booking.models;
 
-import org.juzu.Param;
+import juzu.Param;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -19,11 +19,11 @@
 
 package org.sample.booking.controllers;
 
-import org.juzu.Action;
-import org.juzu.Path;
-import org.juzu.View;
-import org.juzu.Response;
-import org.juzu.template.Template;
+import juzu.Action;
+import juzu.Path;
+import juzu.View;
+import juzu.Response;
+import juzu.template.Template;
 
 import javax.inject.Inject;
 

@@ -19,8 +19,8 @@
 
 package request.constructor.throwable.runtime;
 
-import org.juzu.Controller;
-import org.juzu.View;
+import juzu.Controller;
+import juzu.View;
 
 import java.util.ConcurrentModificationException;
 

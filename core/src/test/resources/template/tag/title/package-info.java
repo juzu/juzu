@@ -19,4 +19,4 @@
 
 @Application
 package template.tag.title;
-import org.juzu.Application;
+import juzu.Application;

@@ -19,4 +19,4 @@
 
 @Application
 package request.action.render;
-import org.juzu.Application;
+import juzu.Application;

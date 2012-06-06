@@ -19,9 +19,9 @@
 
 package request.action.redirect;
 
-import org.juzu.Action;
-import org.juzu.View;
-import org.juzu.Response;
+import juzu.Action;
+import juzu.View;
+import juzu.Response;
 
 import java.io.IOException;
 

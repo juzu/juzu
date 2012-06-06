@@ -20,4 +20,4 @@
 @Application
 package request.url.invalidproperty;
 
-import org.juzu.Application;
+import juzu.Application;

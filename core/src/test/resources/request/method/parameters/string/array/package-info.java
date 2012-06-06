@@ -20,4 +20,4 @@
 @Application
 package request.method.parameters.string.array;
 
-import org.juzu.Application;
+import juzu.Application;

@@ -20,4 +20,4 @@
 @Application
 package request.render.overridenindex;
 
-import org.juzu.Application;
+import juzu.Application;

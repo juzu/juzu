@@ -21,6 +21,6 @@
 @Bindings(@Binding(value = Service.class, implementation = ProviderFactoryImpl.class))
 package plugin.binding.provider.factory.abstractclass;
 
-import org.juzu.Application;
-import org.juzu.plugin.binding.Binding;
-import org.juzu.plugin.binding.Bindings;
+import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

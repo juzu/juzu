@@ -7,7 +7,7 @@
    <portlet>
      <portlet-name>SampleApplication</portlet-name>
      <display-name xml:lang="EN">Juzu Sample Application</display-name>
-     <portlet-class>org.juzu.portlet.JuzuPortlet</portlet-class>
+     <portlet-class>juzu.portlet.JuzuPortlet</portlet-class>
      <init-param>
        <name>juzu.run_mode</name>
        <value>prod</value>

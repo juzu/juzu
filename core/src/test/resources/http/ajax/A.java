@@ -19,12 +19,12 @@
 
 package http.ajax;
 
-import org.juzu.Controller;
-import org.juzu.Resource;
-import org.juzu.Response;
-import org.juzu.View;
-import org.juzu.asset.Asset;
-import org.juzu.asset.AssetLocation;
+import juzu.Controller;
+import juzu.Resource;
+import juzu.Response;
+import juzu.View;
+import juzu.asset.Asset;
+import juzu.asset.AssetLocation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller

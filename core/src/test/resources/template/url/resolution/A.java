@@ -19,9 +19,9 @@
 
 package template.url.resolution;
 
-import org.juzu.View;
-import org.juzu.Path;
-import org.juzu.template.Template;
+import juzu.View;
+import juzu.Path;
+import juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A

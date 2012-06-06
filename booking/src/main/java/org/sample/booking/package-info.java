@@ -32,8 +32,8 @@
 )
 package org.sample.booking;
 
-import org.juzu.Application;
-import org.juzu.plugin.asset.Assets;
-import org.juzu.plugin.asset.Script;
-import org.juzu.plugin.asset.Stylesheet;
-import org.juzu.plugin.portlet.Portlet;
+import juzu.Application;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.portlet.Portlet;

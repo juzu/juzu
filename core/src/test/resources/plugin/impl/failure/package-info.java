@@ -20,4 +20,4 @@
 @Application()
 package plugin.impl.failure;
 
-import org.juzu.Application;
+import juzu.Application;

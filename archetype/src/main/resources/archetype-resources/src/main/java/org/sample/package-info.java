@@ -1,2 +1,2 @@
-@org.juzu.Application
+@juzu.Application
 package org.sample;

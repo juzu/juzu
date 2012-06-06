@@ -19,8 +19,8 @@
 
 package plugin.binding.provider.qualified;
 
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Response;
+import juzu.View;
 
 import javax.inject.Inject;
 import javax.inject.Named;

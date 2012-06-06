@@ -19,10 +19,10 @@
 
 package http.resource;
 
-import org.juzu.Response;
-import org.juzu.View;
-import org.juzu.asset.Asset;
-import org.juzu.asset.AssetLocation;
+import juzu.Response;
+import juzu.View;
+import juzu.asset.Asset;
+import juzu.asset.AssetLocation;
 
 /** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
 public class A

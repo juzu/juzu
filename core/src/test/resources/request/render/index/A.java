@@ -19,9 +19,9 @@
 
 package request.render.index;
 
-import org.juzu.Controller;
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Controller;
+import juzu.Response;
+import juzu.View;
 
 import java.io.IOException;
 

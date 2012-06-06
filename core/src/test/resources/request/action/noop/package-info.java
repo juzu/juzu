@@ -19,4 +19,4 @@
 
 @Application
 package request.action.noop;
-import org.juzu.Application;
+import juzu.Application;

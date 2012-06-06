@@ -19,4 +19,4 @@
 
 @Application
 package template.ioe;
-import org.juzu.Application;
+import juzu.Application;

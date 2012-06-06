@@ -24,7 +24,6 @@
    })
 package plugin.binding.provider.qualified;
 
-import org.juzu.Application;
-import org.juzu.plugin.binding.Binding;
-import org.juzu.plugin.binding.Bindings;
-import plugin.binding.provider.qualified.Service;
+import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

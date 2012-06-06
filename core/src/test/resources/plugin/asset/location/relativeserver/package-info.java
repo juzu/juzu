@@ -21,7 +21,6 @@
 @Assets(scripts = @Script(id="jquery",src = "jquery.js"))
 package plugin.asset.location.relativeserver;
 
-import org.juzu.Application;
-import org.juzu.plugin.asset.Assets;
-import org.juzu.plugin.asset.Script;
-import org.juzu.plugin.asset.Stylesheet;
+import juzu.Application;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;

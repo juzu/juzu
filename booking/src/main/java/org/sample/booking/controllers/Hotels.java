@@ -19,12 +19,12 @@
 
 package org.sample.booking.controllers;
 
-import org.juzu.Action;
-import org.juzu.Path;
-import org.juzu.View;
-import org.juzu.Resource;
-import org.juzu.Response;
-import org.juzu.plugin.ajax.Ajax;
+import juzu.Action;
+import juzu.Path;
+import juzu.View;
+import juzu.Resource;
+import juzu.Response;
+import juzu.plugin.ajax.Ajax;
 import org.sample.booking.Flash;
 import org.sample.booking.models.Booking;
 import org.sample.booking.models.Hotel;

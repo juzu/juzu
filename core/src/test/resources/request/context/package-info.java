@@ -19,4 +19,4 @@
 
 @Application
 package request.context;
-import org.juzu.Application;
+import juzu.Application;

@@ -4,7 +4,7 @@
 <web-app>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>
-    <servlet-class>org.juzu.impl.asset.AssetServlet</servlet-class>
+    <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
   <servlet-mapping>

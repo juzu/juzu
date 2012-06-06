@@ -19,9 +19,9 @@
 
 package request.method.parameters.string.array;
 
-import org.juzu.Controller;
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Controller;
+import juzu.Response;
+import juzu.View;
 
 import java.io.IOException;
 import java.util.Arrays;

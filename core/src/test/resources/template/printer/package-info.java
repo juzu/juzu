@@ -19,4 +19,4 @@
 
 @Application
 package template.printer;
-import org.juzu.Application;
+import juzu.Application;

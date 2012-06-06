@@ -19,9 +19,8 @@
 
 package request.scope.session;
 
-import org.juzu.FlashScoped;
-import org.juzu.SessionScoped;
-import org.juzu.test.Identifiable;
+import juzu.SessionScoped;
+import juzu.test.Identifiable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

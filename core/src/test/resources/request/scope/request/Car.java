@@ -19,8 +19,8 @@
 
 package request.scope.request;
 
-import org.juzu.RequestScoped;
-import org.juzu.test.Identifiable;
+import juzu.RequestScoped;
+import juzu.test.Identifiable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

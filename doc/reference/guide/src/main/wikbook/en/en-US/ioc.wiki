@@ -44,9 +44,9 @@ Scopes define how a instances of a bean are managed by the IOC container: for a 
 Juzu provides 4 scopes to use within your application:
 
 * ##@javax.inject.Singleton## scope: a single bean instance is the same for the whole application
-* ##@org.juzu.RequestScoped## scope: the bean is instantiated once per request
-* ##@org.juzu.SessionScoped## scope: the bean is instantiated once per session
-* ##@org.juzu.FlashScoped## scope: the bean is instantiated once per request but is reused if it was instantiated during
+* ##@juzu.RequestScoped## scope: the bean is instantiated once per request
+* ##@juzu.SessionScoped## scope: the bean is instantiated once per session
+* ##@juzu.FlashScoped## scope: the bean is instantiated once per request but is reused if it was instantiated during
 an action request in the next render request and only in the first one
 
 == Qualifiers ==
@@ -78,7 +78,7 @@ Beans are simply the objects managed by the IOC engine. In a Juzu applications w
 
 == Template beans ==
 
-Every template has a corresponding ##org.juzu.template.Template## class at runtime. The template class allows
+Every template has a corresponding ##juzu.template.Template## class at runtime. The template class allows
 applications to interact with templates, most of the time for rendering purpose:
 
 {{java}}
@@ -193,13 +193,13 @@ Thanks to the provider, we have a ##Mailer## provider that returns a ##MailerImp
 
 === Beyond the provider ===
 
-The implementation class can also be an instance of ##org.juzu.inject.ProviderFactory##. The provider factory
+The implementation class can also be an instance of ##juzu.inject.ProviderFactory##. The provider factory
 is a factory for providers whose purpose is to return a ##Provider## for a specific class. The provider factory
 has the method:
 
 {{java}}
-{@javadoc org.juzu.inject.ProviderFactory#getProvider(java.lang.Class)}
-{@include org.juzu.inject.ProviderFactory#getProvider(java.lang.Class)}
+{@javadoc juzu.inject.ProviderFactory#getProvider(java.lang.Class)}
+{@include juzu.inject.ProviderFactory#getProvider(java.lang.Class)}
 {{/java}}
 
 The provider factory implementation must provide a public zero argument constructor and it will be instantiated

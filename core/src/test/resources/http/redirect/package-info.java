@@ -20,4 +20,4 @@
 @Application
 package http.redirect;
 
-import org.juzu.Application;
+import juzu.Application;

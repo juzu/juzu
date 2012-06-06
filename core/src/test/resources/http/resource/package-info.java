@@ -20,4 +20,4 @@
 @Application
 package http.resource;
 
-import org.juzu.Application;
+import juzu.Application;

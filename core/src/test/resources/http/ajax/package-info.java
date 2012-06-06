@@ -20,4 +20,4 @@
 @Application
 package http.ajax;
 
-import org.juzu.Application;
+import juzu.Application;

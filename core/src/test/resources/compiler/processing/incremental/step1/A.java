@@ -19,7 +19,7 @@
 
 package compiler.processing.incremental.step1;
 
-import org.juzu.test.Marker;
+import juzu.test.Marker;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Marker

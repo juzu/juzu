@@ -19,4 +19,4 @@
 
 @Application
 package request.method.resource;
-import org.juzu.Application;
+import juzu.Application;

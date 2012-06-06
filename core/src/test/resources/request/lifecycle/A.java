@@ -19,8 +19,8 @@
 
 package request.lifecycle;
 
-import org.juzu.View;
-import org.juzu.test.Registry;
+import juzu.View;
+import juzu.test.Registry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

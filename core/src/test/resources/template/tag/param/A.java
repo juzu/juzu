@@ -19,8 +19,8 @@
 
 package template.tag.param;
 
-import org.juzu.Path;
-import org.juzu.View;
+import juzu.Path;
+import juzu.View;
 
 import javax.inject.Inject;
 

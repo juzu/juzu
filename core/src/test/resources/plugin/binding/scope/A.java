@@ -19,9 +19,9 @@
 
 package plugin.binding.scope;
 
-import org.juzu.Controller;
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Controller;
+import juzu.Response;
+import juzu.View;
 
 import javax.inject.Inject;
 import java.io.IOException;

@@ -23,8 +23,8 @@ package model.processor.simple;
 public class A
 {
 
-   @javax.inject.Inject @org.juzu.Path("index.gtmpl") org.juzu.template.Template template;
+   @javax.inject.Inject @juzu.Path("index.gtmpl") juzu.template.Template template;
 
-   @org.juzu.View public void index() { }
+   @juzu.View public void index() { }
 
 }

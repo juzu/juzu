@@ -19,9 +19,9 @@
 
 package template.tag.simple.tags;
 
-import org.juzu.template.Renderable;
-import org.juzu.template.TemplateRenderContext;
-import org.juzu.template.TagHandler;
+import juzu.template.Renderable;
+import juzu.template.TemplateRenderContext;
+import juzu.template.TagHandler;
 
 import java.io.IOException;
 import java.util.Map;

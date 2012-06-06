@@ -19,10 +19,10 @@
 
 package plugin.impl.lifecycle;
 
-import org.juzu.impl.application.ApplicationException;
-import org.juzu.impl.request.RequestLifeCycle;
-import org.juzu.impl.request.Request;
-import org.juzu.test.Registry;
+import juzu.impl.application.ApplicationException;
+import juzu.impl.request.RequestLifeCycle;
+import juzu.impl.request.Request;
+import juzu.test.Registry;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LifeCycleImpl extends RequestLifeCycle

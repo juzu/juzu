@@ -19,7 +19,7 @@
 
 package org.sample.booking.controllers;
 
-import org.juzu.SessionScoped;
+import juzu.SessionScoped;
 
 import javax.inject.Named;
 import java.io.Serializable;

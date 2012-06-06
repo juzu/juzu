@@ -13,7 +13,7 @@ public class Controller {
 }}
 {{/java}}
 
-The annotation ##@org.juzu.View## declares a //view// controller, the name ##index## has a special meaning as it will
+The annotation ##@juzu.View## declares a //view// controller, the name ##index## has a special meaning as it will
 be used when no other controller is specifed in a Juzu request.
 
 Controller methods can declare parameters for receiving request parameters:
@@ -61,10 +61,10 @@ URL companion methods have the name of the originating method appended with the 
 
 There are several kinds of controllers bound to a request phase studied in the [[#concepts]]:
 
-* View controllers annoted with the ##@org.juzu.View## annotation
-* Action controllers annotated with the ##@org.juzu.Action## annotation
-* Resource controllers annotated with the ##@org.juzu.Resource## annotation
-* Event controllers annotated with the ##@org.juzu.Event## annotation (//not yet implemented//)
+* View controllers annoted with the ##@juzu.View## annotation
+* Action controllers annotated with the ##@juzu.Action## annotation
+* Resource controllers annotated with the ##@juzu.Resource## annotation
+* Event controllers annotated with the ##@juzu.Event## annotation (//not yet implemented//)
 
 == View controllers ==
 
@@ -79,7 +79,7 @@ Juzu supports simple data types such as string and structured data types modelle
 to more simple types such as number, etc..
 * Structured data types : todo
 
-View controller method should return a ##org.juzu.Response## object that is the content produced by the method. To be more precise
+View controller method should return a ##juzu.Response## object that is the content produced by the method. To be more precise
  it should return a ##Response.Content## or ##Response.Render## object (the latter being a subclass of the former) that contains
  everything Juzu needs to display the application.
 
@@ -88,11 +88,11 @@ to render the response produced by the view method. The invocation of the ##send
 is invoked.
 
 {{java}}
-{@include org.juzu.Response.Content#send(org.juzu.io.Stream)}
+{@include juzu.Response.Content#send(juzu.io.Stream)}
 {{/java}}
 
 During the view phase a controller can generate URLs to other phases (except the event phase) by using companion
- url methods. Companion url methods returns a ##org.juzu.URLBuilder## object to represent the URL. The final
+ url methods. Companion url methods returns a ##juzu.URLBuilder## object to represent the URL. The final
  URL is returned by the ##toString()## method of the builder.
 
 == Action controllers ==

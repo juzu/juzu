@@ -20,4 +20,4 @@
 @Application
 package application.resolver.overload;
 
-import org.juzu.Application;
+import juzu.Application;

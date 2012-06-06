@@ -2,6 +2,6 @@
 @Bindings(@Binding(Service.class))
 package plugin.binding.notclass;
 
-import org.juzu.Application;
-import org.juzu.plugin.binding.Binding;
-import org.juzu.plugin.binding.Bindings;
+import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

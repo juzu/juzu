@@ -1,4 +1,4 @@
 @Application
 package template.tag.param;
 
-import org.juzu.Application;
+import juzu.Application;

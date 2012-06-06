@@ -19,9 +19,9 @@
 
 package http.binary;
 
-import org.juzu.Resource;
-import org.juzu.Response;
-import org.juzu.View;
+import juzu.Resource;
+import juzu.Response;
+import juzu.View;
 
 import java.io.ByteArrayInputStream;
 

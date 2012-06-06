@@ -20,4 +20,4 @@
 @Application
 package model.meta.param;
 
-import org.juzu.Application;
+import juzu.Application;

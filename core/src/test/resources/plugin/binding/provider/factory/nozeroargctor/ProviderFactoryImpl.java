@@ -19,7 +19,7 @@
 
 package plugin.binding.provider.factory.nozeroargctor;
 
-import org.juzu.inject.ProviderFactory;
+import juzu.inject.ProviderFactory;
 
 import javax.inject.Provider;
 

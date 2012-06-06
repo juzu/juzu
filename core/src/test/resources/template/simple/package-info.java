@@ -19,4 +19,4 @@
 
 @Application
 package template.simple;
-import org.juzu.Application;
+import juzu.Application;
