@@ -26,124 +26,103 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockHttpContext implements HttpContext
-{
+public class MockHttpContext implements HttpContext {
 
-   /** . */
-   private static final Pattern CONTEXT_PATH_PATTERN = Pattern.compile("(?:/.*[^/])?");
+  /** . */
+  private static final Pattern CONTEXT_PATH_PATTERN = Pattern.compile("(?:/.*[^/])?");
 
-   /** . */
-   private static final Pattern FQDN_PATTERN = Pattern.compile("([a-zA-Z]+(([\\w-]+)*[\\w]+)*)+(\\.[a-zA-Z]+(([\\w-]+)*[\\w]+)*)*");
+  /** . */
+  private static final Pattern FQDN_PATTERN = Pattern.compile("([a-zA-Z]+(([\\w-]+)*[\\w]+)*)+(\\.[a-zA-Z]+(([\\w-]+)*[\\w]+)*)*");
 
-   /** . */
-   private ArrayList<Cookie> cookies;
+  /** . */
+  private ArrayList<Cookie> cookies;
 
-   /** . */
-   private String scheme;
+  /** . */
+  private String scheme;
 
-   /** . */
-   private int serverPort;
+  /** . */
+  private int serverPort;
 
-   /** . */
-   private String serverName;
+  /** . */
+  private String serverName;
 
-   /** . */
-   private String contextPath;
+  /** . */
+  private String contextPath;
 
-   public MockHttpContext()
-   {
-      this.cookies = new ArrayList<Cookie>();
-      this.scheme = "http";
-      this.serverPort = 80;
-      this.serverName = "localhost";
-      this.contextPath = "";
-   }
+  public MockHttpContext() {
+    this.cookies = new ArrayList<Cookie>();
+    this.scheme = "http";
+    this.serverPort = 80;
+    this.serverName = "localhost";
+    this.contextPath = "";
+  }
 
-   public Cookie[] getCookies()
-   {
-      Cookie[] c = new Cookie[cookies.size()];
-      for (int i = 0;i < cookies.size();i++)
-      {
-         c[i] = (Cookie)cookies.get(i).clone();
-      }
-      return c;
-   }
-   
-   public void addCookie(Cookie cookie)
-   {
-      cookies.add((Cookie)cookie.clone());
-   }
-   
-   public void clearCookies()
-   {
-      cookies.clear();
-   }
+  public Cookie[] getCookies() {
+    Cookie[] c = new Cookie[cookies.size()];
+    for (int i = 0;i < cookies.size();i++) {
+      c[i] = (Cookie)cookies.get(i).clone();
+    }
+    return c;
+  }
 
-   public String getScheme()
-   {
-      return scheme;
-   }
+  public void addCookie(Cookie cookie) {
+    cookies.add((Cookie)cookie.clone());
+  }
 
-   public void setScheme(String scheme)
-   {
-      if (scheme == null)
-      {
-         throw new NullPointerException("No null scheme value accepted");
-      }
-      if (!"http".equals(scheme) && !"https".equals(scheme))
-      {
-         throw new IllegalArgumentException("Scheme " + scheme + " is not valid");
-      }
-      this.scheme = scheme;
-   }
+  public void clearCookies() {
+    cookies.clear();
+  }
 
-   public int getServerPort()
-   {
-      return serverPort;
-   }
+  public String getScheme() {
+    return scheme;
+  }
 
-   public void setServerPort(int serverPort)
-   {
-      if (serverPort < 1)
-      {
-         throw new IllegalArgumentException("Port " + serverPort + " is not valid");
-      }
-      this.serverPort = serverPort;
-   }
+  public void setScheme(String scheme) {
+    if (scheme == null) {
+      throw new NullPointerException("No null scheme value accepted");
+    }
+    if (!"http".equals(scheme) && !"https".equals(scheme)) {
+      throw new IllegalArgumentException("Scheme " + scheme + " is not valid");
+    }
+    this.scheme = scheme;
+  }
 
-   public String getServerName()
-   {
-      return serverName;
-   }
+  public int getServerPort() {
+    return serverPort;
+  }
 
-   public void setServerName(String serverName)
-   {
-      if (serverName == null)
-      {
-         throw new NullPointerException("No null server name accepted");
-      }
-      if (!FQDN_PATTERN.matcher(serverName).matches())
-      {
-         throw new IllegalArgumentException("Illegal server name value " + serverName);
-      }
-      this.serverName = serverName;
-   }
+  public void setServerPort(int serverPort) {
+    if (serverPort < 1) {
+      throw new IllegalArgumentException("Port " + serverPort + " is not valid");
+    }
+    this.serverPort = serverPort;
+  }
 
-   public String getContextPath()
-   {
-      return contextPath;
-   }
+  public String getServerName() {
+    return serverName;
+  }
 
-   public void setContextPath(String contextPath)
-   {
-      if (contextPath == null)
-      {
-         throw new NullPointerException("No null context path accepted");
-      }
-      if (!CONTEXT_PATH_PATTERN.matcher(contextPath).matches())
-      {
-         throw new IllegalArgumentException("Illegal context path value " + contextPath);
-      }
-      this.contextPath = contextPath;
-   }
+  public void setServerName(String serverName) {
+    if (serverName == null) {
+      throw new NullPointerException("No null server name accepted");
+    }
+    if (!FQDN_PATTERN.matcher(serverName).matches()) {
+      throw new IllegalArgumentException("Illegal server name value " + serverName);
+    }
+    this.serverName = serverName;
+  }
+
+  public String getContextPath() {
+    return contextPath;
+  }
+
+  public void setContextPath(String contextPath) {
+    if (contextPath == null) {
+      throw new NullPointerException("No null context path accepted");
+    }
+    if (!CONTEXT_PATH_PATTERN.matcher(contextPath).matches()) {
+      throw new IllegalArgumentException("Illegal context path value " + contextPath);
+    }
+    this.contextPath = contextPath;
+  }
 }

@@ -28,64 +28,55 @@ import juzu.impl.utils.Location;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class TemplateExecutionException extends ApplicationException
-{
+public class TemplateExecutionException extends ApplicationException {
 
-   /** . */
-   private final String templateId;
+  /** . */
+  private final String templateId;
 
-   /** . */
-   private final Location location;
+  /** . */
+  private final Location location;
 
-   /** . */
-   private final String text;
+  /** . */
+  private final String text;
 
-   public TemplateExecutionException(String templateId, Location location, String text, String message, Throwable cause)
-   {
-      super(message, cause);
+  public TemplateExecutionException(String templateId, Location location, String text, String message, Throwable cause) {
+    super(message, cause);
 
-      //
-      this.templateId = templateId;
-      this.location = location;
-      this.text = text;
-   }
+    //
+    this.templateId = templateId;
+    this.location = location;
+    this.text = text;
+  }
 
-   public TemplateExecutionException(String templateId, Location location, String text, Throwable cause)
-   {
-      super(cause);
+  public TemplateExecutionException(String templateId, Location location, String text, Throwable cause) {
+    super(cause);
 
-      //
-      this.templateId = templateId;
-      this.location = location;
-      this.text = text;
-   }
+    //
+    this.templateId = templateId;
+    this.location = location;
+    this.text = text;
+  }
 
-   public String getText()
-   {
-      return text;
-   }
+  public String getText() {
+    return text;
+  }
 
-   public Integer getLineNumber()
-   {
-      return text != null ? location.getLine() : null;
-   }
+  public Integer getLineNumber() {
+    return text != null ? location.getLine() : null;
+  }
 
-   @Override
-   public String getMessage()
-   {
-      StringBuilder sb = new StringBuilder("Groovy template exception");
-      if (location != null)
-      {
-         sb.append(" at ").append(location);
-      }
-      if (text != null)
-      {
-         sb.append(" script ").append(text);
-      }
-      if (templateId != null)
-      {
-         sb.append(" for template ").append(templateId);
-      }
-      return sb.toString();
-   }
+  @Override
+  public String getMessage() {
+    StringBuilder sb = new StringBuilder("Groovy template exception");
+    if (location != null) {
+      sb.append(" at ").append(location);
+    }
+    if (text != null) {
+      sb.append(" script ").append(text);
+    }
+    if (templateId != null) {
+      sb.append(" for template ").append(templateId);
+    }
+    return sb.toString();
+  }
 }

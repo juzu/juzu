@@ -22,85 +22,73 @@ package juzu.impl.spi.fs.ram;
 import juzu.impl.utils.Content;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RAMPath
-{
+public abstract class RAMPath {
 
-   /** . */
-   private final String name;
+  /** . */
+  private final String name;
 
-   /** . */
-   private RAMDir parent;
+  /** . */
+  private RAMDir parent;
 
-   public RAMPath()
-   {
-      this.name = "";
-      this.parent = null;
-   }
+  public RAMPath() {
+    this.name = "";
+    this.parent = null;
+  }
 
-   RAMPath(RAMDir parent, String name)
-   {
-      if (parent == null)
-      {
-         throw new NullPointerException();
-      }
-      if (name == null)
-      {
-         throw new NullPointerException();
-      }
-      if (name.length() == 0)
-      {
-         throw new IllegalArgumentException();
-      }
+  RAMPath(RAMDir parent, String name) {
+    if (parent == null) {
+      throw new NullPointerException();
+    }
+    if (name == null) {
+      throw new NullPointerException();
+    }
+    if (name.length() == 0) {
+      throw new IllegalArgumentException();
+    }
 
-      //
-      this.name = name;
-      this.parent = parent;
-   }
+    //
+    this.name = name;
+    this.parent = parent;
+  }
 
-   public abstract RAMDir addDir(String name);
+  public abstract RAMDir addDir(String name);
 
-   public abstract RAMFile addFile(String name);
+  public abstract RAMFile addFile(String name);
 
-   public abstract Content getContent();
+  public abstract Content getContent();
 
-   public final RAMFile update(String content)
-   {
-      return update(new Content(System.currentTimeMillis(), content));
-   }
+  public final RAMFile update(String content) {
+    return update(new Content(System.currentTimeMillis(), content));
+  }
 
-   public abstract RAMFile update(Content content);
+  public abstract RAMFile update(Content content);
 
-   public abstract RAMPath getChild(String name);
+  public abstract RAMPath getChild(String name);
 
-   public abstract Iterable<RAMPath> getChildren();
+  public abstract Iterable<RAMPath> getChildren();
 
-   public abstract long getLastModified();
+  public abstract long getLastModified();
 
-   public abstract void touch();
+  public abstract void touch();
 
-   public final String getName()
-   {
-      return name;
-   }
+  public final String getName() {
+    return name;
+  }
 
-   public final RAMDir getParent()
-   {
-      return parent;
-   }
+  public final RAMDir getParent() {
+    return parent;
+  }
 
-   public final void del()
-   {
-      if (name.length() == 0)
-      {
-         throw new UnsupportedOperationException("Cannot remove root file");
-      }
-      if (parent == null)
-      {
-         throw new IllegalStateException("Cannot remove removed file");
-      }
+  public final void del() {
+    if (name.length() == 0) {
+      throw new UnsupportedOperationException("Cannot remove root file");
+    }
+    if (parent == null) {
+      throw new IllegalStateException("Cannot remove removed file");
+    }
 
-      //
-      parent.children.remove(name);
-      parent = null;
-   }
+    //
+    parent.children.remove(name);
+    parent = null;
+  }
 }

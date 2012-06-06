@@ -22,10 +22,8 @@ package juzu.impl.spi.inject.siblingproducers;
 import juzu.impl.spi.inject.declared.provider.injection.Bean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean2 extends Bean
-{
-   public Bean2()
-   {
-      super("ext2");
-   }
+public class Bean2 extends Bean {
+  public Bean2() {
+    super("ext2");
+  }
 }

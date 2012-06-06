@@ -19,6 +19,7 @@
 
 package juzu.impl.controller.metamodel;
 
+import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModel;
@@ -27,7 +28,6 @@ import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.utils.Cardinality;
 import juzu.impl.utils.JSON;
 import juzu.request.Phase;
-import juzu.impl.compiler.ElementHandle;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -44,61 +44,54 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerMetaModel extends MetaModelObject
-{
+public class ControllerMetaModel extends MetaModelObject {
 
-   /** . */
-   public static final MessageCode CANNOT_WRITE_CONTROLLER_COMPANION = new MessageCode("CANNOT_WRITE_CONTROLLER_COMPANION", "The controller companion %1$s cannot be written");
+  /** . */
+  public static final MessageCode CANNOT_WRITE_CONTROLLER_COMPANION = new MessageCode("CANNOT_WRITE_CONTROLLER_COMPANION", "The controller companion %1$s cannot be written");
 
-   /** . */
-   public static final MessageCode CONTROLLER_METHOD_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_NOT_RESOLVED", "The controller method cannot be resolved %1$s");
+  /** . */
+  public static final MessageCode CONTROLLER_METHOD_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_NOT_RESOLVED", "The controller method cannot be resolved %1$s");
 
-   /** . */
-   public static final MessageCode CONTROLLER_METHOD_DUPLICATE_ID = new MessageCode("CONTROLLER_METHOD_DUPLICATE_ID", "Duplicate method controller id %1$s");
+  /** . */
+  public static final MessageCode CONTROLLER_METHOD_DUPLICATE_ID = new MessageCode("CONTROLLER_METHOD_DUPLICATE_ID", "Duplicate method controller id %1$s");
 
-   /** . */
-   public static final MessageCode CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED", "The method parameter type %1s should be a string or annotated with @juzu.Param");
+  /** . */
+  public static final MessageCode CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED", "The method parameter type %1s should be a string or annotated with @juzu.Param");
 
-   /** A flag for handling modified event. */
-   boolean modified;
+  /** A flag for handling modified event. */
+  boolean modified;
 
-   /** The application. */
-   ControllersMetaModel controllers;
+  /** The application. */
+  ControllersMetaModel controllers;
 
-   /** . */
-   final ElementHandle.Class handle;
+  /** . */
+  final ElementHandle.Class handle;
 
-   public ControllerMetaModel(ElementHandle.Class handle)
-   {
-      this.handle = handle;
-      this.modified = false;
-   }
+  public ControllerMetaModel(ElementHandle.Class handle) {
+    this.handle = handle;
+    this.modified = false;
+  }
 
-   public JSON toJSON()
-   {
-      JSON json = new JSON();
-      json.set("handle", handle);
-      json.map("methods", getMethods());
-      return json;
-   }
+  public JSON toJSON() {
+    JSON json = new JSON();
+    json.set("handle", handle);
+    json.map("methods", getMethods());
+    return json;
+  }
 
-   public ElementHandle.Class getHandle()
-   {
-      return handle;
-   }
+  public ElementHandle.Class getHandle() {
+    return handle;
+  }
 
-   public Collection<ControllerMethodMetaModel> getMethods()
-   {
-      return getChildren(ControllerMethodMetaModel.class);
-   }
-   
-   public void remove(ElementHandle.Method handle)
-   {
-      removeChild(Key.of(handle, ControllerMethodMetaModel.class));
-   }
+  public Collection<ControllerMethodMetaModel> getMethods() {
+    return getChildren(ControllerMethodMetaModel.class);
+  }
 
-   public ControllerMethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters)
-   {
+  public void remove(ElementHandle.Method handle) {
+    removeChild(Key.of(handle, ControllerMethodMetaModel.class));
+  }
+
+  public ControllerMethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters) {
 /*
       ArrayList<ParameterMetaModel> params = new ArrayList<ParameterMetaModel>();
       ArrayList<String> types = new ArrayList<String>();
@@ -117,139 +110,121 @@ public class ControllerMetaModel extends MetaModelObject
       addChild(Key.of(handle, ControllerMethodMetaModel.class), method);
       return method;
 */
-      throw new UnsupportedOperationException("remove me at some point");
-   }
+    throw new UnsupportedOperationException("remove me at some point");
+  }
 
-   void addMethod(
-      MetaModel context,
-      ExecutableElement methodElt,
-      String annotationFQN,
-      Map<String,Serializable> annotationValues)
-   {
-      String id = (String)annotationValues.get("id");
+  void addMethod(
+    MetaModel context,
+    ExecutableElement methodElt,
+    String annotationFQN,
+    Map<String, Serializable> annotationValues) {
+    String id = (String)annotationValues.get("id");
 
-      //
-      for (Phase phase : Phase.values())
-      {
-         if (phase.annotation.getName().equals(annotationFQN))
-         {
-            ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
+    //
+    for (Phase phase : Phase.values()) {
+      if (phase.annotation.getName().equals(annotationFQN)) {
+        ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
 
-            // First remove the previous method
-            Key<ControllerMethodMetaModel> key = Key.of(origin, ControllerMethodMetaModel.class);
-            if (getChild(key) == null)
-            {
-               // Validate duplicate id within the same controller
-               for (ControllerMethodMetaModel existing : getChildren(ControllerMethodMetaModel.class))
-               {
-                  if (existing.id != null && existing.id.equals(id))
-                  {
-                     throw CONTROLLER_METHOD_DUPLICATE_ID.failure(methodElt, id);
-                  }
-               }
-
-               // Parameters
-               ArrayList<ParameterMetaModel> parameters = new ArrayList<ParameterMetaModel>();
-               List<? extends TypeMirror> parameterTypeMirrors = ((ExecutableType)methodElt.asType()).getParameterTypes();
-               List<? extends VariableElement> parameterVariableElements = methodElt.getParameters();
-               for (int i = 0;i < parameterTypeMirrors.size();i++)
-               {
-                  VariableElement parameterVariableElt = parameterVariableElements.get(i);
-                  TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i);
-                  TypeMirror erasedParameterTypeMirror = context.env.erasure(parameterTypeMirror);
-                  String parameterType = erasedParameterTypeMirror.toString();
-                  //
-                  String parameterName = parameterVariableElt.getSimpleName().toString();
-
-                  // Determine cardinality
-                  TypeMirror parameterSimpleTypeMirror;
-                  Cardinality parameterCardinality;
-                  switch (parameterTypeMirror.getKind())
-                  {
-                     case DECLARED:
-                        DeclaredType dt = (DeclaredType)parameterTypeMirror;
-                        TypeElement col = context.env.getTypeElement("java.util.List");
-                        TypeMirror tm = context.env.erasure(col.asType());
-                        TypeMirror err = context.env.erasure(dt);
-                        // context.env.isSubtype(err, tm)
-                        if (err.equals(tm))
-                        {
-                           if (dt.getTypeArguments().size() != 1)
-                           {
-                              throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
-                           }
-                           else
-                           {
-                              parameterCardinality = Cardinality.LIST;
-                              parameterSimpleTypeMirror = dt.getTypeArguments().get(0);
-                           }
-                        }
-                        else
-                        {
-                           parameterCardinality = Cardinality.SINGLE;
-                           parameterSimpleTypeMirror = parameterTypeMirror;
-                        }
-                        break;
-                     case ARRAY:
-                        // Unwrap array
-                        ArrayType arrayType = (ArrayType)parameterTypeMirror;
-                        parameterCardinality = Cardinality.ARRAY;
-                        parameterSimpleTypeMirror = arrayType.getComponentType();
-                        break;
-                     default:
-                        throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
-                  }
-                  if (parameterSimpleTypeMirror.getKind() != TypeKind.DECLARED)
-                  {
-                     throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
-                  }
-
-                  //
-                  TypeElement te = (TypeElement)context.env.asElement(parameterSimpleTypeMirror);
-                  ElementHandle.Class a = ElementHandle.Class.create(te);
-
-                  //
-                  parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, parameterType));
-               }
-
-               //
-               ControllerMethodMetaModel method = new ControllerMethodMetaModel(
-                  origin,
-                  id,
-                  phase,
-                  methodElt.getSimpleName().toString(),
-                  parameters);
-               addChild(key, method);
-               modified = true;
+        // First remove the previous method
+        Key<ControllerMethodMetaModel> key = Key.of(origin, ControllerMethodMetaModel.class);
+        if (getChild(key) == null) {
+          // Validate duplicate id within the same controller
+          for (ControllerMethodMetaModel existing : getChildren(ControllerMethodMetaModel.class)) {
+            if (existing.id != null && existing.id.equals(id)) {
+              throw CONTROLLER_METHOD_DUPLICATE_ID.failure(methodElt, id);
             }
-            break;
-         }
-      }
-   }
+          }
 
-   @Override
-   public boolean exist(MetaModel model)
-   {
-      return getChildren().size() > 0;
-   }
+          // Parameters
+          ArrayList<ParameterMetaModel> parameters = new ArrayList<ParameterMetaModel>();
+          List<? extends TypeMirror> parameterTypeMirrors = ((ExecutableType)methodElt.asType()).getParameterTypes();
+          List<? extends VariableElement> parameterVariableElements = methodElt.getParameters();
+          for (int i = 0;i < parameterTypeMirrors.size();i++) {
+            VariableElement parameterVariableElt = parameterVariableElements.get(i);
+            TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i);
+            TypeMirror erasedParameterTypeMirror = context.env.erasure(parameterTypeMirror);
+            String parameterType = erasedParameterTypeMirror.toString();
+            //
+            String parameterName = parameterVariableElt.getSimpleName().toString();
 
-   @Override
-   protected void preDetach(MetaModelObject parent)
-   {
-      if (parent instanceof ControllersMetaModel)
-      {
-         queue(MetaModelEvent.createRemoved(this));
-         controllers = null;
-      }
-   }
+            // Determine cardinality
+            TypeMirror parameterSimpleTypeMirror;
+            Cardinality parameterCardinality;
+            switch (parameterTypeMirror.getKind()) {
+              case DECLARED:
+                DeclaredType dt = (DeclaredType)parameterTypeMirror;
+                TypeElement col = context.env.getTypeElement("java.util.List");
+                TypeMirror tm = context.env.erasure(col.asType());
+                TypeMirror err = context.env.erasure(dt);
+                // context.env.isSubtype(err, tm)
+                if (err.equals(tm)) {
+                  if (dt.getTypeArguments().size() != 1) {
+                    throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
+                  }
+                  else {
+                    parameterCardinality = Cardinality.LIST;
+                    parameterSimpleTypeMirror = dt.getTypeArguments().get(0);
+                  }
+                }
+                else {
+                  parameterCardinality = Cardinality.SINGLE;
+                  parameterSimpleTypeMirror = parameterTypeMirror;
+                }
+                break;
+              case ARRAY:
+                // Unwrap array
+                ArrayType arrayType = (ArrayType)parameterTypeMirror;
+                parameterCardinality = Cardinality.ARRAY;
+                parameterSimpleTypeMirror = arrayType.getComponentType();
+                break;
+              default:
+                throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
+            }
+            if (parameterSimpleTypeMirror.getKind() != TypeKind.DECLARED) {
+              throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
+            }
 
-   @Override
-   protected void postAttach(MetaModelObject parent)
-   {
-      if (parent instanceof ControllersMetaModel)
-      {
-         controllers = (ControllersMetaModel)parent;
-         queue(MetaModelEvent.createAdded(this));
+            //
+            TypeElement te = (TypeElement)context.env.asElement(parameterSimpleTypeMirror);
+            ElementHandle.Class a = ElementHandle.Class.create(te);
+
+            //
+            parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, parameterType));
+          }
+
+          //
+          ControllerMethodMetaModel method = new ControllerMethodMetaModel(
+            origin,
+            id,
+            phase,
+            methodElt.getSimpleName().toString(),
+            parameters);
+          addChild(key, method);
+          modified = true;
+        }
+        break;
       }
-   }
+    }
+  }
+
+  @Override
+  public boolean exist(MetaModel model) {
+    return getChildren().size() > 0;
+  }
+
+  @Override
+  protected void preDetach(MetaModelObject parent) {
+    if (parent instanceof ControllersMetaModel) {
+      queue(MetaModelEvent.createRemoved(this));
+      controllers = null;
+    }
+  }
+
+  @Override
+  protected void postAttach(MetaModelObject parent) {
+    if (parent instanceof ControllersMetaModel) {
+      controllers = (ControllersMetaModel)parent;
+      queue(MetaModelEvent.createAdded(this));
+    }
+  }
 }

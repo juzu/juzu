@@ -19,12 +19,12 @@
 
 package juzu.test.protocol.mock;
 
+import juzu.impl.application.ApplicationException;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
 import juzu.request.Phase;
-import juzu.impl.application.ApplicationException;
 import juzu.request.RequestContext;
 import juzu.test.AbstractTestCase;
 
@@ -39,156 +39,131 @@ import java.util.Map;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class MockClient
-{
+public class MockClient {
 
-   private MockRequestBridge create(String url)
-   {
+  private MockRequestBridge create(String url) {
+    //
+    MockRequestBridge request;
+    try {
+      JSON json = (JSON)JSON.parse(url);
+
       //
-      MockRequestBridge request;
-      try
-      {
-         JSON json = (JSON)JSON.parse(url);
-         
-         //
-         JSON jsonParams = json.getJSON("parameters");
-         Map<String, String[]> parameters = new HashMap<String, String[]>();
-         for (String name : jsonParams.names())
-         {
-            List<? extends String> value = jsonParams.getList(name, String.class);
-            parameters.put(name, value.toArray(new String[value.size()]));
-         }
-         
-         //
-         String methodId = json.getJSON("properties").getString(RequestContext.METHOD_ID.class.getName());
-
-         Phase phase = Phase.valueOf(json.getString("phase"));
-         switch (phase)
-         {
-            case ACTION:
-               request = new MockActionBridge(this, methodId, parameters);
-               break;
-            case RENDER:
-               request =  new MockRenderBridge(this, methodId, parameters);
-               break;
-            case RESOURCE:
-               request =  new MockResourceBridge(this, methodId, parameters);
-               break;
-            default:
-               throw AbstractTestCase.failure("Not yet supported " + phase);
-         }
-      }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure(e);
+      JSON jsonParams = json.getJSON("parameters");
+      Map<String, String[]> parameters = new HashMap<String, String[]>();
+      for (String name : jsonParams.names()) {
+        List<? extends String> value = jsonParams.getList(name, String.class);
+        parameters.put(name, value.toArray(new String[value.size()]));
       }
 
       //
-      return request;
-   }
+      String methodId = json.getJSON("properties").getString(RequestContext.METHOD_ID.class.getName());
 
-   /** . */
-   final MockApplication<?> application;
-
-   /** . */
-   private ScopedContext session;
-
-   /** . */
-   private ScopedContext flash;
-
-   /** . */
-   private final LinkedList<List<Scoped>> flashHistory;
-
-   public MockClient(MockApplication<?> application)
-   {
-      this.application = application;
-      this.session = new ScopedContext();
-      this.flash  = null;
-      this.flashHistory = new LinkedList<List<Scoped>>();
-   }
-
-   public MockRenderBridge render(String methodId) throws ApplicationException
-   {
-      MockRenderBridge render = new MockRenderBridge(this, methodId, new HashMap<String, String[]>());
-      invoke(render);
-      return render;
-   }
-
-   public MockRenderBridge render() throws ApplicationException
-   {
-      return render(null);
-   }
-
-   public MockRequestBridge invoke(String url) throws ApplicationException
-   {
-      MockRequestBridge request = create(url);
-      invoke(request);
-      return request;
-   }
-
-   public Scoped getFlashValue(Object key)
-   {
-      return flash != null ? flash.get(key) : null;
-   }
-
-   public void setFlashValue(Object key, Scoped value)
-   {
-      if (flash == null)
-      {
-         flash = new ScopedContext();
+      Phase phase = Phase.valueOf(json.getString("phase"));
+      switch (phase) {
+        case ACTION:
+          request = new MockActionBridge(this, methodId, parameters);
+          break;
+        case RENDER:
+          request = new MockRenderBridge(this, methodId, parameters);
+          break;
+        case RESOURCE:
+          request = new MockResourceBridge(this, methodId, parameters);
+          break;
+        default:
+          throw AbstractTestCase.failure("Not yet supported " + phase);
       }
-      flash.set(key, value);
-   }
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
 
-   private void invoke(MockRequestBridge request) throws ApplicationException
-   {
-      try
-      {
-         application.invoke(request);
-      }
-      finally
-      {
-         request.close();
-         if (request instanceof MockRenderBridge)
-         {
-            if (flash != null)
-            {
-               flashHistory.addFirst(Tools.list(flash));
-               flash.close();
-               flash = null;
-            }
-            else
-            {
-               flashHistory.addFirst(Collections.<Scoped>emptyList());
-            }
-         }
-      }
-   }
+    //
+    return request;
+  }
 
-   public List<Scoped> getFlashHistory(int index)
-   {
-      if (index < 0)
-      {
-         throw new IndexOutOfBoundsException("Wrong index " + index);
-      }
-      if (index == 0)
-      {
-         return Tools.list(flash);
-      }
-      else
-      {
-         return flashHistory.get(index - 1);
-      }
-   }
+  /** . */
+  final MockApplication<?> application;
 
-   public ScopedContext getSession()
-   {
-      return session;
-   }
-   
-   public void invalidate()
-   {
-      session.close();
-      session = new ScopedContext();
-   }
+  /** . */
+  private ScopedContext session;
+
+  /** . */
+  private ScopedContext flash;
+
+  /** . */
+  private final LinkedList<List<Scoped>> flashHistory;
+
+  public MockClient(MockApplication<?> application) {
+    this.application = application;
+    this.session = new ScopedContext();
+    this.flash = null;
+    this.flashHistory = new LinkedList<List<Scoped>>();
+  }
+
+  public MockRenderBridge render(String methodId) throws ApplicationException {
+    MockRenderBridge render = new MockRenderBridge(this, methodId, new HashMap<String, String[]>());
+    invoke(render);
+    return render;
+  }
+
+  public MockRenderBridge render() throws ApplicationException {
+    return render(null);
+  }
+
+  public MockRequestBridge invoke(String url) throws ApplicationException {
+    MockRequestBridge request = create(url);
+    invoke(request);
+    return request;
+  }
+
+  public Scoped getFlashValue(Object key) {
+    return flash != null ? flash.get(key) : null;
+  }
+
+  public void setFlashValue(Object key, Scoped value) {
+    if (flash == null) {
+      flash = new ScopedContext();
+    }
+    flash.set(key, value);
+  }
+
+  private void invoke(MockRequestBridge request) throws ApplicationException {
+    try {
+      application.invoke(request);
+    }
+    finally {
+      request.close();
+      if (request instanceof MockRenderBridge) {
+        if (flash != null) {
+          flashHistory.addFirst(Tools.list(flash));
+          flash.close();
+          flash = null;
+        }
+        else {
+          flashHistory.addFirst(Collections.<Scoped>emptyList());
+        }
+      }
+    }
+  }
+
+  public List<Scoped> getFlashHistory(int index) {
+    if (index < 0) {
+      throw new IndexOutOfBoundsException("Wrong index " + index);
+    }
+    if (index == 0) {
+      return Tools.list(flash);
+    }
+    else {
+      return flashHistory.get(index - 1);
+    }
+  }
+
+  public ScopedContext getSession() {
+    return session;
+  }
+
+  public void invalidate() {
+    session.close();
+    session = new ScopedContext();
+  }
 }

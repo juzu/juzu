@@ -29,50 +29,41 @@ import javax.inject.Singleton;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopeMetadataResolverImpl extends AnnotationScopeMetadataResolver
-{
+public class ScopeMetadataResolverImpl extends AnnotationScopeMetadataResolver {
 
-   /** . */
-   private final Set<Scope> scopes;
+  /** . */
+  private final Set<Scope> scopes;
 
-   public ScopeMetadataResolverImpl(Set<Scope> scopes)
-   {
-      this.scopes = scopes;
-   }
+  public ScopeMetadataResolverImpl(Set<Scope> scopes) {
+    this.scopes = scopes;
+  }
 
-   @Override
-   public ScopeMetadata resolveScopeMetadata(BeanDefinition definition)
-   {
-      ScopeMetadata metadata = new ScopeMetadata();
-      if (definition instanceof AnnotatedBeanDefinition)
-      {
-         AnnotatedBeanDefinition annDef = (AnnotatedBeanDefinition) definition;
-         Set<String> annotationTypes = annDef.getMetadata().getAnnotationTypes();
-         
-         //
-         String scopeName;
-         if (annotationTypes.contains(Singleton.class.getName()))
-         {
-            scopeName = "singleton";
-         }
-         else
-         {
-            scopeName = "prototype";
-            for (Scope scope : scopes)
-            {
-               if (annotationTypes.contains(scope.getAnnotationType().getName()))
-               {
-                  scopeName = scope.name().toLowerCase();
-                  break;
-               }
-            }
-         }
-         metadata.setScopeName(scopeName);
-         return metadata;
+  @Override
+  public ScopeMetadata resolveScopeMetadata(BeanDefinition definition) {
+    ScopeMetadata metadata = new ScopeMetadata();
+    if (definition instanceof AnnotatedBeanDefinition) {
+      AnnotatedBeanDefinition annDef = (AnnotatedBeanDefinition)definition;
+      Set<String> annotationTypes = annDef.getMetadata().getAnnotationTypes();
+
+      //
+      String scopeName;
+      if (annotationTypes.contains(Singleton.class.getName())) {
+        scopeName = "singleton";
       }
-      else
-      {
-         return super.resolveScopeMetadata(definition);
+      else {
+        scopeName = "prototype";
+        for (Scope scope : scopes) {
+          if (annotationTypes.contains(scope.getAnnotationType().getName())) {
+            scopeName = scope.name().toLowerCase();
+            break;
+          }
+        }
       }
-   }
+      metadata.setScopeName(scopeName);
+      return metadata;
+    }
+    else {
+      return super.resolveScopeMetadata(definition);
+    }
+  }
 }

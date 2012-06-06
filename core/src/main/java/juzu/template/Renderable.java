@@ -22,9 +22,8 @@ package juzu.template;
 import juzu.UndeclaredIOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Renderable
-{
+public interface Renderable {
 
-   void render(TemplateRenderContext context) throws TemplateExecutionException, UndeclaredIOException;
+  void render(TemplateRenderContext context) throws TemplateExecutionException, UndeclaredIOException;
 
 }

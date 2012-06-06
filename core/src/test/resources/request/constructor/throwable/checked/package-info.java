@@ -17,7 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package request.constructor.throwable.checked;
+@Application package request.constructor.throwable.checked;
 
 import juzu.Application;

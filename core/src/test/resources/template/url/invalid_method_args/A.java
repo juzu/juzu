@@ -19,18 +19,18 @@
 
 package template.url.invalid_method_args;
 
-import juzu.View;
 import juzu.Path;
+import juzu.View;
 import juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @Path("index.gtmpl")
-   private Template index;
+  @Path("index.gtmpl")
+  private Template index;
 
-   @View
-   public void foo() { }
+  @View
+  public void foo() {
+  }
 
 }

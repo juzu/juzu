@@ -20,19 +20,18 @@
 @Application
 @Portlet
 @Assets(
-   scripts = {
-      @Script(id = "jquery", src = "jquery-1.7.1.min.js", location = AssetLocation.CLASSPATH),
-      @Script(id = "transition", src = "bootstrap-transition.js", location = AssetLocation.CLASSPATH, depends = "jquery"),
-      @Script(id = "collapse", src = "bootstrap-collapse.js", location = AssetLocation.CLASSPATH, depends = {"jquery", "transition"}),
-      @Script(src = "weather.js", location = AssetLocation.CLASSPATH, depends = {"jquery", "collapse"})
-   },
-   stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css", location = AssetLocation.CLASSPATH)
-)
-package examples.tutorial.weather9;
+  scripts = {
+    @Script(id = "jquery", src = "jquery-1.7.1.min.js", location = AssetLocation.CLASSPATH),
+    @Script(id = "transition", src = "bootstrap-transition.js", location = AssetLocation.CLASSPATH, depends = "jquery"),
+    @Script(id = "collapse", src = "bootstrap-collapse.js", location = AssetLocation.CLASSPATH, depends = {"jquery", "transition"}),
+    @Script(src = "weather.js", location = AssetLocation.CLASSPATH, depends = {"jquery", "collapse"})
+  },
+  stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css", location = AssetLocation.CLASSPATH)
+) package examples.tutorial.weather9;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.portlet.Portlet;

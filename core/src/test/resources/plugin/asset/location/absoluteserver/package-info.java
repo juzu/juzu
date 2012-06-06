@@ -19,11 +19,10 @@
 
 @Application()
 @Assets(
-   scripts = @Script(id="jquery",src = "/jquery.js"),
-   stylesheets = {
-      @Stylesheet(src = "/main.css"),
-      @Stylesheet(src = "/main.less")})
-package plugin.asset.location.absoluteserver;
+  scripts = @Script(id = "jquery", src = "/jquery.js"),
+  stylesheets = {
+    @Stylesheet(src = "/main.css"),
+    @Stylesheet(src = "/main.less")}) package plugin.asset.location.absoluteserver;
 
 import juzu.Application;
 import juzu.plugin.asset.Assets;

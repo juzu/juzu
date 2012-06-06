@@ -24,15 +24,14 @@ import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.asset.ManagerQualifier;
-import juzu.impl.compiler.*;
+import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.Filter;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
-import juzu.processor.MainProcessor;
 import juzu.impl.spi.fs.ReadFileSystem;
+import juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import juzu.impl.spi.fs.jar.JarFileSystem;
 import juzu.impl.spi.fs.ram.RAMFileSystem;
 import juzu.impl.spi.fs.ram.RAMPath;
@@ -42,6 +41,7 @@ import juzu.impl.spi.inject.spring.SpringBuilder;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Logger;
 import juzu.impl.utils.Tools;
+import juzu.processor.MainProcessor;
 
 import javax.portlet.PortletException;
 import java.io.File;
@@ -64,429 +64,371 @@ import java.util.jar.JarFile;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ApplicationRuntime<P, R, L>
-{
+public abstract class ApplicationRuntime<P, R, L> {
 
-   /** . */
-   private static final String[] CONFIG_PATH = {"juzu", "config.json"};
+  /** . */
+  private static final String[] CONFIG_PATH = {"juzu", "config.json"};
 
-   /** . */
-   protected final Logger logger;
+  /** . */
+  protected final Logger logger;
 
-   /** . */
-   protected ReadFileSystem<L> libs;
+  /** . */
+  protected ReadFileSystem<L> libs;
 
-   /** . */
-   protected String name;
+  /** . */
+  protected String name;
 
-   /** . */
-   protected InjectImplementation injectImplementation;
+  /** . */
+  protected InjectImplementation injectImplementation;
 
-   /** . */
-   protected ReadFileSystem<R> resources;
+  /** . */
+  protected ReadFileSystem<R> resources;
 
-   /** . */
-   protected ApplicationContext context;
+  /** . */
+  protected ApplicationContext context;
 
-   /** . */
-   protected AssetServer assetServer;
+  /** . */
+  protected AssetServer assetServer;
 
-   /** . */
-   protected AssetManager stylesheetManager;
+  /** . */
+  protected AssetManager stylesheetManager;
 
-   /** . */
-   protected AssetManager scriptManager;
+  /** . */
+  protected AssetManager scriptManager;
 
-   /** Additional plugins. */
-   protected Map<String, Descriptor> plugins;
+  /** Additional plugins. */
+  protected Map<String, Descriptor> plugins;
 
-   ApplicationRuntime(Logger logger)
-   {
-      this.logger = logger;
-   }
+  ApplicationRuntime(Logger logger) {
+    this.logger = logger;
+  }
 
-   public ReadFileSystem<L> getLibs()
-   {
-      return libs;
-   }
+  public ReadFileSystem<L> getLibs() {
+    return libs;
+  }
 
-   public void setLibs(ReadFileSystem<L> libs)
-   {
-      this.libs = libs;
-   }
+  public void setLibs(ReadFileSystem<L> libs) {
+    this.libs = libs;
+  }
 
-   public String getName()
-   {
-      return name;
-   }
+  public String getName() {
+    return name;
+  }
 
-   public void setName(String name)
-   {
-      this.name = name;
-   }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-   public InjectImplementation getInjectImplementation()
-   {
-      return injectImplementation;
-   }
+  public InjectImplementation getInjectImplementation() {
+    return injectImplementation;
+  }
 
-   public void setInjectImplementation(InjectImplementation injectImplementation)
-   {
-      this.injectImplementation = injectImplementation;
-   }
+  public void setInjectImplementation(InjectImplementation injectImplementation) {
+    this.injectImplementation = injectImplementation;
+  }
 
-   public ReadFileSystem<R> getResources()
-   {
-      return resources;
-   }
+  public ReadFileSystem<R> getResources() {
+    return resources;
+  }
 
-   public void setResources(ReadFileSystem<R> resources)
-   {
-      this.resources = resources;
-   }
+  public void setResources(ReadFileSystem<R> resources) {
+    this.resources = resources;
+  }
 
-   public ApplicationContext getContext()
-   {
-      return context;
-   }
+  public ApplicationContext getContext() {
+    return context;
+  }
 
-   public AssetServer getAssetServer()
-   {
-      return assetServer;
-   }
+  public AssetServer getAssetServer() {
+    return assetServer;
+  }
 
-   public AssetManager getScriptManager()
-   {
-      return scriptManager;
-   }
+  public AssetManager getScriptManager() {
+    return scriptManager;
+  }
 
-   public AssetManager getStylesheetManager()
-   {
-      return stylesheetManager;
-   }
+  public AssetManager getStylesheetManager() {
+    return stylesheetManager;
+  }
 
-   public void setAssetServer(AssetServer assetServer)
-   {
-      if (assetServer != null)
-      {
-         assetServer.register(this);
-      }
-      if (this.assetServer != null)
-      {
-         this.assetServer.unregister(this);
-      }
-      this.assetServer = assetServer;
-   }
+  public void setAssetServer(AssetServer assetServer) {
+    if (assetServer != null) {
+      assetServer.register(this);
+    }
+    if (this.assetServer != null) {
+      this.assetServer.unregister(this);
+    }
+    this.assetServer = assetServer;
+  }
 
-   public void addPlugin(String name, Descriptor plugin)
-   {
-      if (plugins == null)
-      {
-         plugins = new HashMap<String, Descriptor>();
-      }
-      plugins.put(name, plugin);
-   }
+  public void addPlugin(String name, Descriptor plugin) {
+    if (plugins == null) {
+      plugins = new HashMap<String, Descriptor>();
+    }
+    plugins.put(name, plugin);
+  }
 
-   public abstract ClassLoader getClassLoader();
+  public abstract ClassLoader getClassLoader();
 
-   protected abstract ReadFileSystem<P> getClasses();
+  protected abstract ReadFileSystem<P> getClasses();
 
-   public abstract Collection<CompilationError> boot() throws Exception;
+  public abstract Collection<CompilationError> boot() throws Exception;
 
-   public static class Static<P, R, L> extends ApplicationRuntime<P, R, L>
-   {
+  public static class Static<P, R, L> extends ApplicationRuntime<P, R, L> {
 
-      /** . */
-      private ReadFileSystem<P> classes;
+    /** . */
+    private ReadFileSystem<P> classes;
 
-      /** . */
-      private ClassLoader classLoader;
+    /** . */
+    private ClassLoader classLoader;
 
-      public Static(Logger logger)
-      {
-         super(logger);
-      }
+    public Static(Logger logger) {
+      super(logger);
+    }
 
-      public ReadFileSystem<P> getClasses()
-      {
-         return classes;
-      }
+    public ReadFileSystem<P> getClasses() {
+      return classes;
+    }
 
-      public void setClasses(ReadFileSystem<P> classes)
-      {
-         this.classes = classes;
-      }
+    public void setClasses(ReadFileSystem<P> classes) {
+      this.classes = classes;
+    }
 
-      @Override
-      public ClassLoader getClassLoader()
-      {
-         return classLoader;
-      }
+    @Override
+    public ClassLoader getClassLoader() {
+      return classLoader;
+    }
 
-      public void setClassLoader(ClassLoader cl)
-      {
-         this.classLoader = cl;
-      }
+    public void setClassLoader(ClassLoader cl) {
+      this.classLoader = cl;
+    }
 
-      @Override
-      public Collection<CompilationError> boot() throws Exception
-      {
-         if (context == null)
-         {
-            doBoot();
-         }
-
-         //
-         return null;
-      }
-   }
-
-   public static class Dynamic<R, L, S> extends ApplicationRuntime<RAMPath, R, L>
-   {
-
-      /** . */
-      private FileSystemScanner<S> devScanner;
-
-      /** . */
-      private ClassLoaderFileSystem classLoaderFS;
-
-      /** . */
-      private ReadFileSystem<RAMPath> classes;
-
-      /** . */
-      private ClassLoader classLoader;
-
-      /** . */
-      private ClassLoader baseClassLoader;
-
-      public Dynamic(Logger logger)
-      {
-         super(logger);
-      }
-
-      public void init(ClassLoader baseClassLoader, ReadFileSystem<S> fss) throws Exception
-      {
-         devScanner = FileSystemScanner.createTimestamped(fss);
-         devScanner.scan();
-         logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
-
-         //
-         this.baseClassLoader = baseClassLoader;
-         this.classLoaderFS = new ClassLoaderFileSystem(baseClassLoader);
-      }
-
-      public void init(ClassLoaderFileSystem baseClassPath, ReadFileSystem<S> fss) throws Exception
-      {
-         devScanner = FileSystemScanner.createTimestamped(fss);
-         devScanner.scan();
-         logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
-
-         //
-         this.baseClassLoader = baseClassPath.getClassLoader();
-         this.classLoaderFS = baseClassPath;
-      }
-
-      @Override
-      protected ReadFileSystem<RAMPath> getClasses()
-      {
-         return classes;
-      }
-
-      public Collection<CompilationError> boot() throws Exception
-      {
-         Map<String, Change> changes =  devScanner.scan();
-         if (context != null)
-         {
-            if (changes.size() > 0)
-            {
-               logger.log("Detected changes : " + changes);
-               context = null;
-            }
-            else
-            {
-               logger.log("No changes detected");
-            }
-         }
-
-         //
-         if (context == null)
-         {
-            logger.log("Building application");
-
-            //
-            ReadFileSystem<S> sourcePath = devScanner.getFileSystem();
-
-            // Copy everything that is not a java source
-            RAMFileSystem classOutput = new RAMFileSystem();
-            sourcePath.copy(new Filter.Default()
-            {
-               @Override
-               public boolean acceptFile(Object file, String name) throws IOException
-               {
-                  return !name.endsWith(".java");
-               }
-            }, classOutput);
-
-
-            //
-            Compiler compiler = Compiler.
-               builder().
-               sourcePath(sourcePath).
-               sourceOutput(classOutput).
-               classOutput(classOutput).
-               addClassPath(classLoaderFS).build();
-            compiler.addAnnotationProcessor(new MainProcessor());
-            List<CompilationError> res = compiler.compile();
-            if (res.isEmpty())
-            {
-               this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
-               this.classes = classOutput;
-
-               //
-               doBoot();
-
-               // Return empty to signal compilation occured
-               return Collections.emptyList();
-            }
-            else
-            {
-               return res;
-            }
-         }
-         else
-         {
-            return null;
-         }
-      }
-
-      @Override
-      public ClassLoader getClassLoader()
-      {
-         return classLoader;
-      }
-   }
-
-   protected final void doBoot() throws Exception
-   {
-      List<URL> jarURLs = new ArrayList<URL>();
-      for (Iterator<L> i = libs.getChildren(libs.getRoot());i.hasNext();)
-      {
-         L s = i.next();
-         URL url = libs.getURL(s);
-         jarURLs.add(url);
-      }
-
-      // Find an application
-      P f = getClasses().getPath(CONFIG_PATH);
-      URL url = getClasses().getURL(f);
-      String s = Tools.read(url);
-      JSON json = (JSON)JSON.parse(s);
-
-      // Get the application name
-      String fqn = null;
-      if (name != null)
-      {
-         fqn = (String)json.get(name.trim());
-      }
-      else
-      {
-         // Find the first valid application for now
-         for (String a : json.names())
-         {
-            String b = json.getString(a);
-            if (a.length() > 0 && b.length() > 0)
-            {
-               fqn = b;
-               break;
-            }
-         }
+    @Override
+    public Collection<CompilationError> boot() throws Exception {
+      if (context == null) {
+        doBoot();
       }
 
       //
-      if (fqn == null)
-      {
-         throw new Exception("Could not find an application to start " + json);
+      return null;
+    }
+  }
+
+  public static class Dynamic<R, L, S> extends ApplicationRuntime<RAMPath, R, L> {
+
+    /** . */
+    private FileSystemScanner<S> devScanner;
+
+    /** . */
+    private ClassLoaderFileSystem classLoaderFS;
+
+    /** . */
+    private ReadFileSystem<RAMPath> classes;
+
+    /** . */
+    private ClassLoader classLoader;
+
+    /** . */
+    private ClassLoader baseClassLoader;
+
+    public Dynamic(Logger logger) {
+      super(logger);
+    }
+
+    public void init(ClassLoader baseClassLoader, ReadFileSystem<S> fss) throws Exception {
+      devScanner = FileSystemScanner.createTimestamped(fss);
+      devScanner.scan();
+      logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
+
+      //
+      this.baseClassLoader = baseClassLoader;
+      this.classLoaderFS = new ClassLoaderFileSystem(baseClassLoader);
+    }
+
+    public void init(ClassLoaderFileSystem baseClassPath, ReadFileSystem<S> fss) throws Exception {
+      devScanner = FileSystemScanner.createTimestamped(fss);
+      devScanner.scan();
+      logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
+
+      //
+      this.baseClassLoader = baseClassPath.getClassLoader();
+      this.classLoaderFS = baseClassPath;
+    }
+
+    @Override
+    protected ReadFileSystem<RAMPath> getClasses() {
+      return classes;
+    }
+
+    public Collection<CompilationError> boot() throws Exception {
+      Map<String, Change> changes = devScanner.scan();
+      if (context != null) {
+        if (changes.size() > 0) {
+          logger.log("Detected changes : " + changes);
+          context = null;
+        }
+        else {
+          logger.log("No changes detected");
+        }
       }
 
       //
-      Class<?> clazz = getClassLoader().loadClass(fqn);
-      Field field = clazz.getDeclaredField("DESCRIPTOR");
-      ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
+      if (context == null) {
+        logger.log("Building application");
 
-      // Add additional plugins when available
-      if (plugins != null)
-      {
-         descriptor = descriptor.addPlugins(plugins);
+        //
+        ReadFileSystem<S> sourcePath = devScanner.getFileSystem();
+
+        // Copy everything that is not a java source
+        RAMFileSystem classOutput = new RAMFileSystem();
+        sourcePath.copy(new Filter.Default() {
+          @Override
+          public boolean acceptFile(Object file, String name) throws IOException {
+            return !name.endsWith(".java");
+          }
+        }, classOutput);
+
+
+        //
+        Compiler compiler = Compiler.
+          builder().
+          sourcePath(sourcePath).
+          sourceOutput(classOutput).
+          classOutput(classOutput).
+          addClassPath(classLoaderFS).build();
+        compiler.addAnnotationProcessor(new MainProcessor());
+        List<CompilationError> res = compiler.compile();
+        if (res.isEmpty()) {
+          this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
+          this.classes = classOutput;
+
+          //
+          doBoot();
+
+          // Return empty to signal compilation occured
+          return Collections.emptyList();
+        }
+        else {
+          return res;
+        }
       }
-
-      // Find the juzu jar
-      URL mainURL = null;
-      for (URL jarURL : jarURLs)
-      {
-         URL configURL = new URL("jar:" + jarURL.toString() + "!/juzu/impl/application/ApplicationBootstrap.class");
-         try
-         {
-            configURL.openStream();
-            mainURL = jarURL;
-            break;
-         }
-         catch (IOException ignore)
-         {
-         }
+      else {
+        return null;
       }
-      if (mainURL == null)
-      {
-         throw new PortletException("Cannot find juzu jar among " + jarURLs);
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+      return classLoader;
+    }
+  }
+
+  protected final void doBoot() throws Exception {
+    List<URL> jarURLs = new ArrayList<URL>();
+    for (Iterator<L> i = libs.getChildren(libs.getRoot());i.hasNext();) {
+      L s = i.next();
+      URL url = libs.getURL(s);
+      jarURLs.add(url);
+    }
+
+    // Find an application
+    P f = getClasses().getPath(CONFIG_PATH);
+    URL url = getClasses().getURL(f);
+    String s = Tools.read(url);
+    JSON json = (JSON)JSON.parse(s);
+
+    // Get the application name
+    String fqn = null;
+    if (name != null) {
+      fqn = (String)json.get(name.trim());
+    }
+    else {
+      // Find the first valid application for now
+      for (String a : json.names()) {
+        String b = json.getString(a);
+        if (a.length() > 0 && b.length() > 0) {
+          fqn = b;
+          break;
+        }
       }
-      JarFileSystem libs = new JarFileSystem(new JarFile(new File(mainURL.toURI())));
+    }
 
-      //
-      InjectBuilder injectBootstrap = injectImplementation.bootstrap();
-      injectBootstrap.addFileSystem(getClasses());
-      injectBootstrap.addFileSystem(libs);
-      injectBootstrap.setClassLoader(getClassLoader());
+    //
+    if (fqn == null) {
+      throw new Exception("Could not find an application to start " + json);
+    }
 
-      //
-      if (injectBootstrap instanceof SpringBuilder)
-      {
-         R springName = resources.getPath("spring.xml");
-         if (springName != null)
-         {
-            URL configurationURL = resources.getURL(springName);
-            ((SpringBuilder)injectBootstrap).setConfigurationURL(configurationURL);
-         }
+    //
+    Class<?> clazz = getClassLoader().loadClass(fqn);
+    Field field = clazz.getDeclaredField("DESCRIPTOR");
+    ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
+
+    // Add additional plugins when available
+    if (plugins != null) {
+      descriptor = descriptor.addPlugins(plugins);
+    }
+
+    // Find the juzu jar
+    URL mainURL = null;
+    for (URL jarURL : jarURLs) {
+      URL configURL = new URL("jar:" + jarURL.toString() + "!/juzu/impl/application/ApplicationBootstrap.class");
+      try {
+        configURL.openStream();
+        mainURL = jarURL;
+        break;
       }
+      catch (IOException ignore) {
+      }
+    }
+    if (mainURL == null) {
+      throw new PortletException("Cannot find juzu jar among " + jarURLs);
+    }
+    JarFileSystem libs = new JarFileSystem(new JarFile(new File(mainURL.toURI())));
 
-      //
-      ApplicationBootstrap bootstrap = new ApplicationBootstrap(
-         injectBootstrap,
-         descriptor
-      );
+    //
+    InjectBuilder injectBootstrap = injectImplementation.bootstrap();
+    injectBootstrap.addFileSystem(getClasses());
+    injectBootstrap.addFileSystem(libs);
+    injectBootstrap.setClassLoader(getClassLoader());
 
-      //
-      AssetManager scriptManager = new AssetManager(AssetType.SCRIPT);
-      AssetManager stylesheetManager = new AssetManager(AssetType.STYLESHEET);
-      injectBootstrap.bindBean(
-         AssetManager.class,
-         Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.SCRIPT)),
-         scriptManager);
-      injectBootstrap.bindBean(
-         AssetManager.class,
-         Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.STYLESHEET)),
-         stylesheetManager);
+    //
+    if (injectBootstrap instanceof SpringBuilder) {
+      R springName = resources.getPath("spring.xml");
+      if (springName != null) {
+        URL configurationURL = resources.getURL(springName);
+        ((SpringBuilder)injectBootstrap).setConfigurationURL(configurationURL);
+      }
+    }
 
-      //
-      //
-      logger.log("Starting " + descriptor.getName());
-      bootstrap.start();
+    //
+    ApplicationBootstrap bootstrap = new ApplicationBootstrap(
+      injectBootstrap,
+      descriptor
+    );
 
-      //
-      this.context = bootstrap.getContext();
-      this.scriptManager = scriptManager;
-      this.stylesheetManager = stylesheetManager;
-   }
+    //
+    AssetManager scriptManager = new AssetManager(AssetType.SCRIPT);
+    AssetManager stylesheetManager = new AssetManager(AssetType.STYLESHEET);
+    injectBootstrap.bindBean(
+      AssetManager.class,
+      Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.SCRIPT)),
+      scriptManager);
+    injectBootstrap.bindBean(
+      AssetManager.class,
+      Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.STYLESHEET)),
+      stylesheetManager);
 
-   public void shutdown()
-   {
-   }
+    //
+    //
+    logger.log("Starting " + descriptor.getName());
+    bootstrap.start();
+
+    //
+    this.context = bootstrap.getContext();
+    this.scriptManager = scriptManager;
+    this.stylesheetManager = stylesheetManager;
+  }
+
+  public void shutdown() {
+  }
 }

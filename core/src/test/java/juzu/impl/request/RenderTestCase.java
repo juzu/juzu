@@ -19,103 +19,96 @@
 
 package juzu.impl.request;
 
-import org.junit.Test;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderTestCase extends AbstractInjectTestCase
-{
+public class RenderTestCase extends AbstractInjectTestCase {
 
-   private static final Pattern P = Pattern.compile("([0-9]+)\\[(.*)\\]");
+  private static final Pattern P = Pattern.compile("([0-9]+)\\[(.*)\\]");
 
-   public RenderTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public RenderTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testIndex() throws Exception
-   {
-      MockApplication<?> app = application("request", "render", "index").init();
+  @Test
+  public void testIndex() throws Exception {
+    MockApplication<?> app = application("request", "render", "index").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals("index", render.assertStringResult());
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    assertEquals("index", render.assertStringResult());
+  }
 
-   @Test
-   public void testParameterizedIndex() throws Exception
-   {
-      MockApplication<?> app = application("request", "render", "parameterizedindex").init();
+  @Test
+  public void testParameterizedIndex() throws Exception {
+    MockApplication<?> app = application("request", "render", "parameterizedindex").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      Matcher m = P.matcher(render.assertStringResult());
-      assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
-      assertEquals("0", m.group(1));
-      render = (MockRenderBridge)client.invoke(m.group(2));
-      m.reset(render.assertStringResult());
-      assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
-      assertEquals("1", m.group(1));
-      render = (MockRenderBridge)client.invoke(m.group(2));
-      m.reset(render.assertStringResult());
-      assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
-      assertEquals("0", m.group(1));
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    Matcher m = P.matcher(render.assertStringResult());
+    assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
+    assertEquals("0", m.group(1));
+    render = (MockRenderBridge)client.invoke(m.group(2));
+    m.reset(render.assertStringResult());
+    assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
+    assertEquals("1", m.group(1));
+    render = (MockRenderBridge)client.invoke(m.group(2));
+    m.reset(render.assertStringResult());
+    assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
+    assertEquals("0", m.group(1));
+  }
 
-   @Test
-   public void testOverridenIndex() throws Exception
-   {
-      MockApplication<?> app = application("request", "render", "overridenindex").init();
+  @Test
+  public void testOverridenIndex() throws Exception {
+    MockApplication<?> app = application("request", "render", "overridenindex").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      Matcher m = P.matcher(render.assertStringResult());
-      assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
-      assertEquals("0", m.group(1));
-      render = (MockRenderBridge)client.invoke(m.group(2));
-      m.reset(render.assertStringResult());
-      assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
-      assertEquals("1", m.group(1));
-      render = (MockRenderBridge)client.invoke(m.group(2));
-      m.reset(render.assertStringResult());
-      assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
-      assertEquals("0", m.group(1));
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    Matcher m = P.matcher(render.assertStringResult());
+    assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
+    assertEquals("0", m.group(1));
+    render = (MockRenderBridge)client.invoke(m.group(2));
+    m.reset(render.assertStringResult());
+    assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
+    assertEquals("1", m.group(1));
+    render = (MockRenderBridge)client.invoke(m.group(2));
+    m.reset(render.assertStringResult());
+    assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
+    assertEquals("0", m.group(1));
+  }
 
-   @Test
-   public void testResponse() throws Exception
-   {
-      MockApplication<?> app = application("request", "render", "response").init();
+  @Test
+  public void testResponse() throws Exception {
+    MockApplication<?> app = application("request", "render", "response").init();
 
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals("foo", render.assertStringResult());
-   }
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    assertEquals("foo", render.assertStringResult());
+  }
 
-   @Test
-   public void testUpdate() throws Exception
-   {
-      MockApplication<?> app = application("request", "render", "update").init();
+  @Test
+  public void testUpdate() throws Exception {
+    MockApplication<?> app = application("request", "render", "update").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      String url = render.assertStringResult();
-      MockActionBridge action = (MockActionBridge)client.invoke(url);
-      action.assertRender("A.done", Collections.<String, String>emptyMap());
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String url = render.assertStringResult();
+    MockActionBridge action = (MockActionBridge)client.invoke(url);
+    action.assertRender("A.done", Collections.<String, String>emptyMap());
 
-   }
+  }
 }

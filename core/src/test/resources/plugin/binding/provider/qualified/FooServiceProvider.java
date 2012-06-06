@@ -23,17 +23,13 @@ import javax.inject.Named;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FooServiceProvider implements Provider<Service>
-{
-   @Named("foo")
-   public Service get()
-   {
-      return new Service()
-      {
-         public String getName()
-         {
-            return "foo";
-         }
-      };
-   }
+public class FooServiceProvider implements Provider<Service> {
+  @Named("foo")
+  public Service get() {
+    return new Service() {
+      public String getName() {
+        return "foo";
+      }
+    };
+  }
 }

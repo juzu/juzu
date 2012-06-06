@@ -30,9 +30,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
-public @interface Path
-{
+public @interface Path {
 
-   String value();
+  String value();
 
 }

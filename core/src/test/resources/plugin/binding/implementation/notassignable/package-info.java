@@ -18,8 +18,7 @@
  */
 
 @Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceImpl.class))
-package plugin.binding.implementation.notassignable;
+@Bindings(@Binding(value = Service.class, implementation = ServiceImpl.class)) package plugin.binding.implementation.notassignable;
 
 import juzu.Application;
 import juzu.plugin.binding.Binding;

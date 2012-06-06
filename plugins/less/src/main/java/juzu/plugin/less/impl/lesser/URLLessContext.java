@@ -6,30 +6,25 @@ import java.net.URI;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class URLLessContext implements LessContext
-{
+public class URLLessContext implements LessContext {
 
-   /** . */
-   private final URL baseURL;
+  /** . */
+  private final URL baseURL;
 
-   public URLLessContext(URL baseURL)
-   {
-      this.baseURL = baseURL;
-   }
+  public URLLessContext(URL baseURL) {
+    this.baseURL = baseURL;
+  }
 
-   public String load(String ref)
-   {
-      try
-      {
-         URI uri = baseURL.toURI().resolve(ref);
-         URL url = uri.toURL();
-         InputStream in = url.openStream();
-         ByteArrayOutputStream baos = Lesser.append(in, new ByteArrayOutputStream());
-         return baos.toString();
-      }
-      catch (Exception e)
-      {
-         return null;
-      }
-   }
+  public String load(String ref) {
+    try {
+      URI uri = baseURL.toURI().resolve(ref);
+      URL url = uri.toURL();
+      InputStream in = url.openStream();
+      ByteArrayOutputStream baos = Lesser.append(in, new ByteArrayOutputStream());
+      return baos.toString();
+    }
+    catch (Exception e) {
+      return null;
+    }
+  }
 }

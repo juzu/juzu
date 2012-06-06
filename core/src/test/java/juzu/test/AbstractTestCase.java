@@ -21,15 +21,15 @@ package juzu.test;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
 import juzu.impl.spi.fs.disk.DiskFileSystem;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
 import juzu.test.protocol.mock.MockApplication;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,303 +39,243 @@ import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 //@RunWith(JUnit38ClassRunner.class)
-public abstract class AbstractTestCase extends Assert
-{
+public abstract class AbstractTestCase extends Assert {
 
-   @Before
-   public void setUp() throws Exception
-   {
-   }
+  @Before
+  public void setUp() throws Exception {
+  }
 
-   @After
-   public void tearDown()
-   {
-   }
+  @After
+  public void tearDown() {
+  }
 
-   /**
-    * Wait for at least one millisecond, based on the current time clock.
-    *
-    * @return the time captured after the wait
-    */
-   public static long waitForOneMillis()
-   {
-      long snapshot = System.currentTimeMillis();
-      while (true)
-      {
-         try
-         {
-            long now = System.currentTimeMillis();
-            if (snapshot < now)
-            {
-               return now;
-            }
-            else
-            {
-               snapshot = now;
-               Thread.sleep(1);
-            }
-         }
-         catch (InterruptedException e)
-         {
-            AssertionFailedError afe = new AssertionFailedError("Was not expecting interruption");
-            afe.initCause(e);
-            throw afe;
-         }
+  /**
+   * Wait for at least one millisecond, based on the current time clock.
+   *
+   * @return the time captured after the wait
+   */
+  public static long waitForOneMillis() {
+    long snapshot = System.currentTimeMillis();
+    while (true) {
+      try {
+        long now = System.currentTimeMillis();
+        if (snapshot < now) {
+          return now;
+        }
+        else {
+          snapshot = now;
+          Thread.sleep(1);
+        }
       }
-   }
-
-   public static void fail(Throwable t)
-   {
-      throw failure(t);
-   }
-
-   public static AssertionFailedError failure(Throwable t)
-   {
-      AssertionFailedError afe = new AssertionFailedError();
-      afe.initCause(t);
-      return afe;
-   }
-
-   public static AssertionFailedError failure(String msg, Throwable t)
-   {
-      AssertionFailedError afe = new AssertionFailedError(msg);
-      afe.initCause(t);
-      return afe;
-   }
-
-   public static AssertionFailedError failure(String msg)
-   {
-      return new AssertionFailedError(msg);
-   }
-   
-   public static <T> T assertInstanceOf(Class<T> expectedInstance, Object o)
-   {
-      if (expectedInstance.isInstance(o))
-      {
-         return expectedInstance.cast(o);
+      catch (InterruptedException e) {
+        AssertionFailedError afe = new AssertionFailedError("Was not expecting interruption");
+        afe.initCause(e);
+        throw afe;
       }
-      else
-      {
-         throw failure("Was expecting " + o + " to be an instance of " + expectedInstance.getName());
+    }
+  }
+
+  public static void fail(Throwable t) {
+    throw failure(t);
+  }
+
+  public static AssertionFailedError failure(Throwable t) {
+    AssertionFailedError afe = new AssertionFailedError();
+    afe.initCause(t);
+    return afe;
+  }
+
+  public static AssertionFailedError failure(String msg, Throwable t) {
+    AssertionFailedError afe = new AssertionFailedError(msg);
+    afe.initCause(t);
+    return afe;
+  }
+
+  public static AssertionFailedError failure(String msg) {
+    return new AssertionFailedError(msg);
+  }
+
+  public static <T> T assertInstanceOf(Class<T> expectedInstance, Object o) {
+    if (expectedInstance.isInstance(o)) {
+      return expectedInstance.cast(o);
+    }
+    else {
+      throw failure("Was expecting " + o + " to be an instance of " + expectedInstance.getName());
+    }
+  }
+
+  public static <T> T assertNotInstanceOf(Class<?> expectedInstance, T o) {
+    if (expectedInstance.isInstance(o)) {
+      throw failure("Was expecting " + o + " not to be an instance of " + expectedInstance.getName());
+    }
+    else {
+      return o;
+    }
+  }
+
+  public static void assertDelete(File f) {
+    if (!f.exists()) {
+      throw failure("Was expecting file " + f.getAbsolutePath() + " to exist");
+    }
+    if (!f.delete()) {
+      throw failure("Was expecting file " + f.getAbsolutePath() + " to be deleted");
+    }
+  }
+
+  public static DiskFileSystem diskFS(String... packageName) {
+    File root = new File(System.getProperty("test.resources"));
+    return new DiskFileSystem(root, packageName);
+  }
+
+  @Rule
+  public TestName name = new TestName();
+
+  public final String getName() {
+    return name.getMethodName();
+  }
+
+  public final CompilerAssert<File, File> compiler(String... packageName) {
+    return compiler(false, packageName);
+  }
+
+  public final CompilerAssert<File, File> incrementalCompiler(String... packageName) {
+    return compiler(true, packageName);
+  }
+
+  private CompilerAssert<File, File> compiler(boolean incremental, String... packageName) {
+    DiskFileSystem input = diskFS(packageName);
+
+    if (packageName.length == 0) {
+      throw failure("Cannot compile empty package");
+    }
+
+    //
+    String outputPath = System.getProperty("test.generated.classes");
+    File a = new File(outputPath);
+    if (a.exists()) {
+      if (a.isFile()) {
+        throw failure("File " + outputPath + " already exist and is a file");
       }
-   }
-
-   public static <T> T assertNotInstanceOf(Class<?> expectedInstance, T o)
-   {
-      if (expectedInstance.isInstance(o))
-      {
-         throw failure("Was expecting " + o + " not to be an instance of " + expectedInstance.getName());
+    }
+    else {
+      if (!a.mkdirs()) {
+        throw failure("Could not create test generated source directory " + outputPath);
       }
-      else
-      {
-         return o;
+    }
+
+    // Find
+    String s = name.getMethodName();
+    String pkg = Tools.join('.', packageName) + "#" + s;
+    File f2 = new File(a, pkg);
+    for (int count = 0;;count++) {
+      if (!f2.exists()) {
+        break;
       }
-   }
-
-   public static void assertDelete(File f)
-   {
-      if (!f.exists())
-      {
-         throw failure("Was expecting file " + f.getAbsolutePath() + " to exist");
+      else {
+        f2 = new File(a, pkg + "-" + count);
       }
-      if (!f.delete())
-      {
-         throw failure("Was expecting file " + f.getAbsolutePath() + " to be deleted");
+    }
+
+    //
+    if (!f2.mkdirs()) {
+      throw failure("Could not create test generated source directory " + f2.getAbsolutePath());
+    }
+
+    //
+    File sourceOutputDir = new File(f2, "source-output");
+    assertTrue(sourceOutputDir.mkdir());
+    DiskFileSystem sourceOutput = new DiskFileSystem(sourceOutputDir);
+
+    //
+    File classOutputDir = new File(f2, "class-output");
+    assertTrue(classOutputDir.mkdir());
+    DiskFileSystem classOutput = new DiskFileSystem(classOutputDir);
+
+    //
+    File sourcePathDir = new File(f2, "source-path");
+    assertTrue(sourcePathDir.mkdir());
+    DiskFileSystem sourcePath = new DiskFileSystem(sourcePathDir);
+    try {
+      input.copy(sourcePath);
+    }
+    catch (IOException e) {
+      throw failure(e);
+    }
+
+    //
+    return new CompilerAssert<File, File>(incremental, sourcePath, sourceOutput, classOutput);
+  }
+
+  public MockApplication<?> application(InjectImplementation injectImplementation, String... packageName) {
+    CompilerAssert<File, File> helper = compiler(packageName);
+    helper.assertCompile();
+    return helper.application(injectImplementation);
+  }
+
+  public static void assertEquals(JSON expected, JSON test) {
+    if (expected != null) {
+      if (test == null) {
+        throw failure("Was expected " + expected + " to be not null");
       }
-   }
-
-   public static DiskFileSystem diskFS(String... packageName)
-   {
-      File root = new File(System.getProperty("test.resources"));
-      return new DiskFileSystem(root, packageName);
-   }
-
-   @Rule
-   public TestName name = new TestName();
-   
-   public final String getName()
-   {
-      return name.getMethodName();
-   }
-
-   public final CompilerAssert<File, File> compiler(String... packageName)
-   {
-      return compiler(false, packageName);
-   }
-
-   public final CompilerAssert<File, File> incrementalCompiler(String... packageName)
-   {
-      return compiler(true, packageName);
-   }
-
-   private CompilerAssert<File, File> compiler(boolean incremental, String... packageName)
-   {
-      DiskFileSystem input = diskFS(packageName);
-
-      if (packageName.length == 0)
-      {
-         throw failure("Cannot compile empty package");
+      else if (!expected.equals(test)) {
+        StringBuilder sb = null;
+        try {
+          sb = new StringBuilder("expected <");
+          expected.toString(sb, 2);
+          sb.append(">  but was:<");
+          test.toString(sb, 2);
+          sb.append(">");
+          throw failure(sb.toString());
+        }
+        catch (IOException e) {
+          throw failure("Unexpected", e);
+        }
       }
-
-      //
-      String outputPath = System.getProperty("test.generated.classes");
-      File a = new File(outputPath);
-      if (a.exists())
-      {
-         if (a.isFile())
-         {
-            throw failure("File " + outputPath + " already exist and is a file");
-         }
+    }
+    else {
+      if (test != null) {
+        throw failure("Was expected " + test + " to be null");
       }
-      else
-      {
-         if (!a.mkdirs())
-         {
-            throw failure("Could not create test generated source directory " + outputPath);
-         }
-      }
+    }
+  }
 
-      // Find
-      String s = name.getMethodName();
-      String pkg = Tools.join('.', packageName) + "#" + s;
-      File f2 = new File(a, pkg);
-      for (int count = 0;;count++)
-      {
-         if (!f2.exists())
-         {
-            break;
-         }
-         else
-         {
-            f2 = new File(a, pkg + "-" + count);
-         }
-      }
+  public static void assertNoSuchElement(Iterator<?> iterator) {
+    try {
+      Object next = iterator.next();
+      fail("Was not expecting to obtain " + next + " element from an iterator");
+    }
+    catch (NoSuchElementException expected) {
+    }
+  }
 
-      //
-      if (!f2.mkdirs())
-      {
-         throw failure("Could not create test generated source directory " + f2.getAbsolutePath());
+  public static <E> void assertEquals(List<? extends E> expected, Iterable<? extends E> test) {
+    int index = 0;
+    Iterator<? extends E> expectedIterator = expected.iterator();
+    Iterator<? extends E> testIterator = test.iterator();
+    while (true) {
+      if (expectedIterator.hasNext()) {
+        if (testIterator.hasNext()) {
+          E expectedNext = expectedIterator.next();
+          E testNext = testIterator.next();
+          if (!Tools.safeEquals(expectedNext, testNext)) {
+            throw failure("Elements at index " + index + " are not equals: " + expectedNext + "!=" + testNext);
+          }
+          else {
+            index++;
+          }
+        }
+        else {
+          throw failure("Tested iterable has more elements than the expected iterable at index " + index);
+        }
       }
-
-      //
-      File sourceOutputDir = new File(f2, "source-output");
-      assertTrue(sourceOutputDir.mkdir());
-      DiskFileSystem sourceOutput = new DiskFileSystem(sourceOutputDir);
-
-      //
-      File classOutputDir = new File(f2, "class-output");
-      assertTrue(classOutputDir.mkdir());
-      DiskFileSystem classOutput = new DiskFileSystem(classOutputDir);
-
-      //
-      File sourcePathDir = new File(f2, "source-path");
-      assertTrue(sourcePathDir.mkdir());
-      DiskFileSystem sourcePath = new DiskFileSystem(sourcePathDir);
-      try
-      {
-         input.copy(sourcePath);
+      else {
+        if (testIterator.hasNext()) {
+          throw failure("Expected iterable has more elements than the tested iterable at index " + index);
+        }
+        else {
+          break;
+        }
       }
-      catch (IOException e)
-      {
-         throw failure(e);
-      }
-
-      //
-      return new CompilerAssert<File, File>(incremental, sourcePath, sourceOutput, classOutput);
-   }
-
-   public MockApplication<?> application(InjectImplementation injectImplementation, String... packageName)
-   {
-      CompilerAssert<File, File> helper = compiler(packageName);
-      helper.assertCompile();
-      return helper.application(injectImplementation);
-   }
-
-   public static void assertEquals(JSON expected, JSON test)
-   {
-      if (expected != null)
-      {
-         if (test == null)
-         {
-            throw failure("Was expected " + expected + " to be not null");
-         }
-         else if (!expected.equals(test))
-         {
-            StringBuilder sb = null;
-            try
-            {
-               sb = new StringBuilder("expected <");
-               expected.toString(sb, 2);
-               sb.append(">  but was:<");
-               test.toString(sb, 2);
-               sb.append(">");
-               throw failure(sb.toString());
-            }
-            catch (IOException e)
-            {
-               throw failure("Unexpected", e);
-            }
-         }
-      }
-      else
-      {
-         if (test != null)
-         {
-            throw failure("Was expected " + test + " to be null");
-         }
-      }
-   }
-
-   public static void assertNoSuchElement(Iterator<?> iterator)
-   {
-      try
-      {
-         Object next = iterator.next();
-         fail("Was not expecting to obtain " + next + " element from an iterator");
-      }
-      catch (NoSuchElementException expected)
-      {
-      }
-   }
-
-   public static <E> void assertEquals(List<? extends E> expected, Iterable<? extends E> test)
-   {
-      int index = 0;
-      Iterator<? extends E> expectedIterator = expected.iterator();
-      Iterator<? extends E> testIterator = test.iterator();
-      while (true)
-      {
-         if (expectedIterator.hasNext())
-         {
-            if (testIterator.hasNext())
-            {
-               E expectedNext = expectedIterator.next();
-               E testNext = testIterator.next();
-               if (!Tools.safeEquals(expectedNext, testNext))
-               {
-                  throw failure("Elements at index " + index + " are not equals: " + expectedNext + "!=" + testNext);
-               }
-               else
-               {
-                  index++;
-               }
-            }
-            else
-            {
-               throw failure("Tested iterable has more elements than the expected iterable at index " + index);
-            }
-         }
-         else
-         {
-            if (testIterator.hasNext())
-            {
-               throw failure("Expected iterable has more elements than the tested iterable at index " + index);
-            }
-            else
-            {
-               break;
-            }
-         }
-      }
-   }
+    }
+  }
 }

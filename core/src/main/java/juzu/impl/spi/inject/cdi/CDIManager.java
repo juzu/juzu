@@ -35,141 +35,120 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>>
-{
+public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>> {
 
-   /** . */
-   static final ThreadLocal<CDIManager> boot = new ThreadLocal<CDIManager>();
+  /** . */
+  static final ThreadLocal<CDIManager> boot = new ThreadLocal<CDIManager>();
 
-   /** . */
-   private final Container container;
+  /** . */
+  private final Container container;
 
-   /** . */
-   private BeanManager manager;
+  /** . */
+  private BeanManager manager;
 
-   /** . */
-   final ArrayList<AbstractBean> boundBeans;
+  /** . */
+  final ArrayList<AbstractBean> boundBeans;
 
-   /** . */
-   final ClassLoader classLoader;
+  /** . */
+  final ClassLoader classLoader;
 
-   /** . */
-   final ArrayList<Bean> beans;
+  /** . */
+  final ArrayList<Bean> beans;
 
-   /** . */
-   final BeanFilter filter;
+  /** . */
+  final BeanFilter filter;
 
-   public CDIManager(
-      Container container,
-      BeanFilter filter,
-      ArrayList<AbstractBean> boundBeans) throws Exception
-   {
-      this.filter = filter;
-      this.boundBeans = boundBeans;
-      this.beans = new ArrayList<Bean>();
+  public CDIManager(
+    Container container,
+    BeanFilter filter,
+    ArrayList<AbstractBean> boundBeans) throws Exception {
+    this.filter = filter;
+    this.boundBeans = boundBeans;
+    this.beans = new ArrayList<Bean>();
 
-      //
-      boot.set(this);
-      try
-      {
-         container.start();
+    //
+    boot.set(this);
+    try {
+      container.start();
+    }
+    finally {
+      boot.set(null);
+    }
+
+    //
+    this.classLoader = container.getClassLoader();
+    this.manager = container.getManager();
+    this.container = container;
+  }
+
+  public InjectImplementation getImplementation() {
+    return InjectImplementation.CDI_WELD;
+  }
+
+  public ClassLoader getClassLoader() {
+    return classLoader;
+  }
+
+  public Bean<?> resolveBean(Class<?> type) {
+    Set<Bean<?>> beans = manager.getBeans(type);
+    switch (beans.size()) {
+      case 0:
+        return null;
+      case 1:
+        return beans.iterator().next();
+      default:
+        throw new AmbiguousResolutionException("Could not resolve bean of type " + type + ": " + beans);
+    }
+  }
+
+  public Iterable<Bean<?>> resolveBeans(Class<?> type) {
+    List<Bean<?>> resolved = Collections.emptyList();
+    for (int i = 0;i < beans.size();i++) {
+      Bean bean = beans.get(i);
+      if (type.isAssignableFrom(bean.getBeanClass())) {
+        if (resolved.isEmpty()) {
+          resolved = new ArrayList<Bean<?>>();
+        }
+        resolved.add(bean);
       }
-      finally
-      {
-         boot.set(null);
-      }
+    }
+    return manager.getBeans(type);
+  }
 
-      //
-      this.classLoader = container.getClassLoader();
-      this.manager = container.getManager();
-      this.container = container;
-   }
+  public Bean<?> resolveBean(String name) {
+    Set<Bean<?>> beans = manager.getBeans(name);
+    switch (beans.size()) {
+      case 0:
+        return null;
+      case 1:
+        return beans.iterator().next();
+      default:
+        throw new AmbiguousResolutionException("Could not resolve bean of type " + name + ": " + beans);
+    }
+  }
 
-   public InjectImplementation getImplementation()
-   {
-      return InjectImplementation.CDI_WELD;
-   }
+  public CreationalContext<?> create(Bean<?> bean) {
+    return manager.createCreationalContext(bean);
+  }
 
-   public ClassLoader getClassLoader()
-   {
-      return classLoader;
-   }
+  public void release(Bean<?> bean, CreationalContext<?> instance) {
+    instance.release();
+  }
 
-   public Bean<?> resolveBean(Class<?> type)
-   {
-      Set<Bean<?>> beans = manager.getBeans(type);
-      switch (beans.size())
-      {
-         case 0:
-            return null;
-         case 1:
-            return beans.iterator().next();
-         default:
-            throw new AmbiguousResolutionException("Could not resolve bean of type " + type + ": " + beans);
-      }
-   }
+  public Object get(Bean<?> bean, CreationalContext<?> instance) throws InvocationTargetException {
+    try {
+      return manager.getReference(bean, bean.getBeanClass(), instance);
+    }
+    catch (CreationException e) {
+      e.printStackTrace();
+      throw new InvocationTargetException(e.getCause());
+    }
+    catch (RuntimeException e) {
+      throw new InvocationTargetException(e);
+    }
+  }
 
-   public Iterable<Bean<?>> resolveBeans(Class<?> type)
-   {
-      List<Bean<?>> resolved = Collections.emptyList();
-      for (int i = 0;i < beans.size();i++)
-      {
-         Bean bean = beans.get(i);
-         if (type.isAssignableFrom(bean.getBeanClass()))
-         {
-            if (resolved.isEmpty())
-            {
-               resolved = new ArrayList<Bean<?>>();
-            }
-            resolved.add(bean);
-         }
-      }
-      return manager.getBeans(type);
-   }
-
-   public Bean<?> resolveBean(String name)
-   {
-      Set<Bean<?>> beans = manager.getBeans(name);
-      switch (beans.size())
-      {
-         case 0:
-            return null;
-         case 1:
-            return beans.iterator().next();
-         default:
-            throw new AmbiguousResolutionException("Could not resolve bean of type " + name + ": " + beans);
-      }
-   }
-
-   public CreationalContext<?> create(Bean<?> bean)
-   {
-      return manager.createCreationalContext(bean);
-   }
-
-   public void release(Bean<?> bean, CreationalContext<?> instance)
-   {
-      instance.release();
-   }
-
-   public Object get(Bean<?> bean, CreationalContext<?> instance) throws InvocationTargetException
-   {
-      try
-      {
-         return manager.getReference(bean, bean.getBeanClass(), instance);
-      }
-      catch (CreationException e)
-      {
-         e.printStackTrace();
-         throw new InvocationTargetException(e.getCause());
-      }
-      catch (RuntimeException e)
-      {
-         throw new InvocationTargetException(e);
-      }
-   }
-
-   public void shutdown()
-   {
-      container.stop();
-   }
+  public void shutdown() {
+    container.stop();
+  }
 }

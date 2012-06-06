@@ -25,18 +25,17 @@ import java.util.Collection;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class FileManager
-{
+public abstract class FileManager {
 
-   public abstract JavaFileObject getReadable(FileKey key) throws IOException;
+  public abstract JavaFileObject getReadable(FileKey key) throws IOException;
 
-   public abstract JavaFileObject getWritable(FileKey key) throws IOException;
+  public abstract JavaFileObject getWritable(FileKey key) throws IOException;
 
-   public abstract <C extends Collection<JavaFileObject>> C list(
-      String packageName,
-      Set<JavaFileObject.Kind> kinds,
-      boolean recurse,
-      C to) throws IOException;
+  public abstract <C extends Collection<JavaFileObject>> C list(
+    String packageName,
+    Set<JavaFileObject.Kind> kinds,
+    boolean recurse,
+    C to) throws IOException;
 
-   public abstract void clearCache();
+  public abstract void clearCache();
 }

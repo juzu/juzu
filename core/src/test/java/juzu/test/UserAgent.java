@@ -35,124 +35,102 @@ import java.util.IdentityHashMap;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class UserAgent 
-{
+public class UserAgent {
 
-   /** . */
-   private WebClient client;
+  /** . */
+  private WebClient client;
 
-   /** . */
-   private final URL homeURL;
+  /** . */
+  private final URL homeURL;
 
-   /** . */
-   private Page currentPage;
+  /** . */
+  private Page currentPage;
 
-   /** . */
-   private IdentityHashMap<Page, List<String>> alerts;
+  /** . */
+  private IdentityHashMap<Page, List<String>> alerts;
 
-   public UserAgent(URL homeURL)
-   {
-      WebClient client = new WebClient(BrowserVersion.FIREFOX_3_6);
-      client.setAlertHandler(new AlertHandler()
-      {
-         public void handleAlert(Page page, String message)
-         {
-            List<String> l = alerts.get(page);
-            if (l == null)
-            {
-               alerts.put(page, l = new ArrayList<String>());
-            }
-            l.add(message);
-         }
-      });
-      
-      //
-      this.alerts = new IdentityHashMap<Page, List<String>>();
-      this.client = client;
-      this.homeURL = homeURL;
-   }
+  public UserAgent(URL homeURL) {
+    WebClient client = new WebClient(BrowserVersion.FIREFOX_3_6);
+    client.setAlertHandler(new AlertHandler() {
+      public void handleAlert(Page page, String message) {
+        List<String> l = alerts.get(page);
+        if (l == null) {
+          alerts.put(page, l = new ArrayList<String>());
+        }
+        l.add(message);
+      }
+    });
 
-   public HtmlPage getPage(URL url)
-   {
-      return getPage(HtmlPage.class, url);
-   }
+    //
+    this.alerts = new IdentityHashMap<Page, List<String>>();
+    this.client = client;
+    this.homeURL = homeURL;
+  }
 
-   public HtmlPage getPage(String path)
-   {
-      return getPage(HtmlPage.class, path);
-   }
+  public HtmlPage getPage(URL url) {
+    return getPage(HtmlPage.class, url);
+  }
 
-   public <P extends Page> P getPage(Class<P> pageType, URL url)
-   {
-      Page page;
-      try
-      {
-         page = client.getPage(url);
-      }
-      catch (FailingHttpStatusCodeException e)
-      {
-         throw AbstractTestCase.failure("Cannot get initial page", e);
-      }
-      catch (IOException e)
-      {
-         throw AbstractTestCase.failure("Cannot get initial page", e);
-      }
-      if (pageType.isInstance(page))
-      {
-         currentPage = page;
-         return pageType.cast(page);
-      }
-      else
-      {
-         throw AbstractTestCase.failure("Was expecting an HTML page instead of " + page + " for URL " + page.getUrl());
-      }
-   }
+  public HtmlPage getPage(String path) {
+    return getPage(HtmlPage.class, path);
+  }
 
-   public <P extends Page> P getPage(Class<P> pageType, String path)
-   {
-      URL url;
-      try
-      {
-         url = homeURL.toURI().resolve(path).toURL();
-      }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure("Cannot build page URL " + path);
-      }
-      return getPage(pageType, url);
-   }
-   
-   public HtmlPage getHomePage()
-   {
-      return getPage(homeURL);
-   }
-   
-   public void assertRedirect(String expectedLocation, String url)
-   {
-      boolean redirectEnabled = client.isRedirectEnabled();
-      boolean throwExceptionOnFailingStatusCode = client.isThrowExceptionOnFailingStatusCode();
-      try
-      {
-         client.setRedirectEnabled(false);
-         client.setThrowExceptionOnFailingStatusCode(false);
-         Page redirect = client.getPage(url);
-         WebResponse resp = redirect.getWebResponse();
-         Assert.assertEquals(302, resp.getStatusCode());
-         Assert.assertEquals(expectedLocation, resp.getResponseHeaderValue("Location"));
-      }
-      catch (IOException e)
-      {
-         throw AbstractTestCase.failure("Cannot get load " + url, e);
-      }
-      finally
-      {
-         client.setRedirectEnabled(redirectEnabled);
-         client.setThrowExceptionOnFailingStatusCode(throwExceptionOnFailingStatusCode);
-      }
-   }
-   
-   public List<String> getAlerts(Page page)
-   {
-      return alerts.get(page);
-   }
+  public <P extends Page> P getPage(Class<P> pageType, URL url) {
+    Page page;
+    try {
+      page = client.getPage(url);
+    }
+    catch (FailingHttpStatusCodeException e) {
+      throw AbstractTestCase.failure("Cannot get initial page", e);
+    }
+    catch (IOException e) {
+      throw AbstractTestCase.failure("Cannot get initial page", e);
+    }
+    if (pageType.isInstance(page)) {
+      currentPage = page;
+      return pageType.cast(page);
+    }
+    else {
+      throw AbstractTestCase.failure("Was expecting an HTML page instead of " + page + " for URL " + page.getUrl());
+    }
+  }
+
+  public <P extends Page> P getPage(Class<P> pageType, String path) {
+    URL url;
+    try {
+      url = homeURL.toURI().resolve(path).toURL();
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure("Cannot build page URL " + path);
+    }
+    return getPage(pageType, url);
+  }
+
+  public HtmlPage getHomePage() {
+    return getPage(homeURL);
+  }
+
+  public void assertRedirect(String expectedLocation, String url) {
+    boolean redirectEnabled = client.isRedirectEnabled();
+    boolean throwExceptionOnFailingStatusCode = client.isThrowExceptionOnFailingStatusCode();
+    try {
+      client.setRedirectEnabled(false);
+      client.setThrowExceptionOnFailingStatusCode(false);
+      Page redirect = client.getPage(url);
+      WebResponse resp = redirect.getWebResponse();
+      Assert.assertEquals(302, resp.getStatusCode());
+      Assert.assertEquals(expectedLocation, resp.getResponseHeaderValue("Location"));
+    }
+    catch (IOException e) {
+      throw AbstractTestCase.failure("Cannot get load " + url, e);
+    }
+    finally {
+      client.setRedirectEnabled(redirectEnabled);
+      client.setThrowExceptionOnFailingStatusCode(throwExceptionOnFailingStatusCode);
+    }
+  }
+
+  public List<String> getAlerts(Page page) {
+    return alerts.get(page);
+  }
 }

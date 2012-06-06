@@ -27,29 +27,25 @@ import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationTemplateRenderContext extends TemplateRenderContext
-{
+public class ApplicationTemplateRenderContext extends TemplateRenderContext {
 
-   /** . */
-   private final ApplicationContext applicationContext;
+  /** . */
+  private final ApplicationContext applicationContext;
 
-   public ApplicationTemplateRenderContext(ApplicationContext applicationContext, PropertyMap properties, TemplateStub stub, Map<String, ?> attributes, Locale locale)
-   {
-      super(stub, properties, attributes, locale);
+  public ApplicationTemplateRenderContext(ApplicationContext applicationContext, PropertyMap properties, TemplateStub stub, Map<String, ?> attributes, Locale locale) {
+    super(stub, properties, attributes, locale);
 
-      //
-      this.applicationContext = applicationContext;
-   }
+    //
+    this.applicationContext = applicationContext;
+  }
 
-   @Override
-   public TemplateStub resolveTemplate(String path)
-   {
-      return applicationContext.resolveTemplateStub(path);
-   }
+  @Override
+  public TemplateStub resolveTemplate(String path) {
+    return applicationContext.resolveTemplateStub(path);
+  }
 
-   @Override
-   public Object resolveBean(String name) throws ApplicationException
-   {
-      return applicationContext.resolveBean(name);
-   }
+  @Override
+  public Object resolveBean(String name) throws ApplicationException {
+    return applicationContext.resolveBean(name);
+  }
 }

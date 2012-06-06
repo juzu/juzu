@@ -21,6 +21,5 @@ package compiler.processing.incremental.step3;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 
-public class C
-{
+public class C {
 }

@@ -25,11 +25,11 @@ import juzu.Scope;
 import juzu.View;
 import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.inject.BeanFilter;
-import juzu.impl.metadata.BeanDescriptor;
 import juzu.impl.inject.Export;
-import juzu.inject.ProviderFactory;
+import juzu.impl.metadata.BeanDescriptor;
 import juzu.impl.spi.inject.InjectBuilder;
 import juzu.impl.spi.inject.InjectManager;
+import juzu.inject.ProviderFactory;
 
 import javax.inject.Provider;
 import javax.inject.Qualifier;
@@ -41,201 +41,167 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationBootstrap
-{
+public class ApplicationBootstrap {
 
-   /** . */
-   public final InjectBuilder bootstrap;
+  /** . */
+  public final InjectBuilder bootstrap;
 
-   /** . */
-   public final ApplicationDescriptor descriptor;
+  /** . */
+  public final ApplicationDescriptor descriptor;
 
-   /** . */
-   private ApplicationContext context;
+  /** . */
+  private ApplicationContext context;
 
-   public ApplicationBootstrap(InjectBuilder bootstrap, ApplicationDescriptor descriptor)
-   {
-      this.bootstrap = bootstrap;
-      this.descriptor = descriptor;
-   }
+  public ApplicationBootstrap(InjectBuilder bootstrap, ApplicationDescriptor descriptor) {
+    this.bootstrap = bootstrap;
+    this.descriptor = descriptor;
+  }
 
-   public void start() throws ApplicationException
-   {
-      _start();
-   }
-   
-   private <B, I> void _start() throws ApplicationException
-   {
-      // Bind the application descriptor
-      bootstrap.bindBean(ApplicationDescriptor.class, null, descriptor);
+  public void start() throws ApplicationException {
+    _start();
+  }
 
-      // Bind the application context
-      bootstrap.declareBean(ApplicationContext.class, null, null, null);
+  private <B, I> void _start() throws ApplicationException {
+    // Bind the application descriptor
+    bootstrap.bindBean(ApplicationDescriptor.class, null, descriptor);
 
-      //
-      bootstrap.setFilter(new BeanFilter()
-      {
-         public <T> boolean acceptBean(Class<T> beanType)
-         {
-            if (beanType.getName().startsWith("juzu.") || beanType.getAnnotation(Export.class) != null)
-            {
-               return false;
+    // Bind the application context
+    bootstrap.declareBean(ApplicationContext.class, null, null, null);
+
+    //
+    bootstrap.setFilter(new BeanFilter() {
+      public <T> boolean acceptBean(Class<T> beanType) {
+        if (beanType.getName().startsWith("juzu.") || beanType.getAnnotation(Export.class) != null) {
+          return false;
+        }
+        else {
+          // Do that better with a meta annotation that describe Juzu annotation
+          // that veto beans
+          for (Method method : beanType.getMethods()) {
+            if (method.getAnnotation(View.class) != null || method.getAnnotation(Action.class) != null || method.getAnnotation(Resource.class) != null) {
+              return false;
             }
-            else
-            {
-               // Do that better with a meta annotation that describe Juzu annotation
-               // that veto beans
-               for (Method method : beanType.getMethods())
-               {
-                  if (method.getAnnotation(View.class) != null || method.getAnnotation(Action.class) != null || method.getAnnotation(Resource.class) != null)
-                  {
-                     return false;
-                  }
-               }
-               return true;
-            }
-         }
-      });
-
-      // Bind the scopes
-      for (Scope scope : Scope.values())
-      {
-         bootstrap.addScope(scope);
+          }
+          return true;
+        }
       }
+    });
 
-      // Bind the beans
-      for (BeanDescriptor bean : descriptor.getBeans())
-      {
-         Class<?> type = bean.getDeclaredType();
-         Class<?> implementation = bean.getImplementationType();
-         if (implementation == null)
-         {
-            // Direct declaration
-            bootstrap.declareBean(type, bean.getScope(), bean.getQualifiers(), null);
-         }
-         else if (ProviderFactory.class.isAssignableFrom(implementation))
-         {
-            // Instantiate provider factory
-            ProviderFactory mp;
-            try
-            {
-               mp = (ProviderFactory)implementation.newInstance();
-            }
-            catch (InstantiationException e)
-            {
-               throw new ApplicationException(e);
-            }
-            catch (IllegalAccessException e)
-            {
-               throw new UndeclaredThrowableException(e);
-            }
+    // Bind the scopes
+    for (Scope scope : Scope.values()) {
+      bootstrap.addScope(scope);
+    }
 
-            // Get provider from factory
-            Provider provider;
-            try
-            {
-               provider = mp.getProvider(type);
-            }
-            catch (Exception e)
-            {
-               throw new ApplicationException(e);
-            }
-
-            // Bind provider instance
-            bootstrap.bindProvider(
-               type,
-               bean.getScope(),
-               determineQualifiers(type, bean.getQualifiers(), provider.getClass()),
-               provider);
-         }
-         else if (Provider.class.isAssignableFrom(implementation))
-         {
-            // Bind provider
-            bootstrap.declareProvider(
-               type,
-               bean.getScope(),
-               determineQualifiers(type, bean.getQualifiers(), implementation),
-               (Class)implementation);
-         }
-         else
-         {
-            // Bean implementation declaration
-            bootstrap.declareBean(
-               (Class)type,
-               bean.getScope(),
-               bean.getQualifiers(),
-               (Class)implementation);
-         }
+    // Bind the beans
+    for (BeanDescriptor bean : descriptor.getBeans()) {
+      Class<?> type = bean.getDeclaredType();
+      Class<?> implementation = bean.getImplementationType();
+      if (implementation == null) {
+        // Direct declaration
+        bootstrap.declareBean(type, bean.getScope(), bean.getQualifiers(), null);
       }
+      else if (ProviderFactory.class.isAssignableFrom(implementation)) {
+        // Instantiate provider factory
+        ProviderFactory mp;
+        try {
+          mp = (ProviderFactory)implementation.newInstance();
+        }
+        catch (InstantiationException e) {
+          throw new ApplicationException(e);
+        }
+        catch (IllegalAccessException e) {
+          throw new UndeclaredThrowableException(e);
+        }
 
-      //
-      InjectManager<B, I> manager;
-      try
-      {
-         manager = bootstrap.create();
+        // Get provider from factory
+        Provider provider;
+        try {
+          provider = mp.getProvider(type);
+        }
+        catch (Exception e) {
+          throw new ApplicationException(e);
+        }
+
+        // Bind provider instance
+        bootstrap.bindProvider(
+          type,
+          bean.getScope(),
+          determineQualifiers(type, bean.getQualifiers(), provider.getClass()),
+          provider);
       }
-      catch (Exception e)
-      {
-         throw new UnsupportedOperationException("handle me gracefully", e);
+      else if (Provider.class.isAssignableFrom(implementation)) {
+        // Bind provider
+        bootstrap.declareProvider(
+          type,
+          bean.getScope(),
+          determineQualifiers(type, bean.getQualifiers(), implementation),
+          (Class)implementation);
       }
-
-      // Let the container create the application context bean
-      ApplicationContext context = null;
-      try
-      {
-         B contextBean = manager.resolveBean(ApplicationContext.class);
-         I contextInstance = manager.create(contextBean);
-         context = (ApplicationContext)manager.get(contextBean, contextInstance);
+      else {
+        // Bean implementation declaration
+        bootstrap.declareBean(
+          (Class)type,
+          bean.getScope(),
+          bean.getQualifiers(),
+          (Class)implementation);
       }
-      catch (InvocationTargetException e)
-      {
-         throw new UnsupportedOperationException("handle me gracefully", e);
+    }
+
+    //
+    InjectManager<B, I> manager;
+    try {
+      manager = bootstrap.create();
+    }
+    catch (Exception e) {
+      throw new UnsupportedOperationException("handle me gracefully", e);
+    }
+
+    // Let the container create the application context bean
+    ApplicationContext context = null;
+    try {
+      B contextBean = manager.resolveBean(ApplicationContext.class);
+      I contextInstance = manager.create(contextBean);
+      context = (ApplicationContext)manager.get(contextBean, contextInstance);
+    }
+    catch (InvocationTargetException e) {
+      throw new UnsupportedOperationException("handle me gracefully", e);
+    }
+
+    //
+    this.context = context;
+  }
+
+  private Collection<Annotation> determineQualifiers(Class<?> type, Collection<Annotation> qualifiers, Class<?> implementation) {
+    Collection<Annotation> overridenQualifiers = null;
+    try {
+      Method get = implementation.getMethod("get");
+      for (Annotation annotation : get.getAnnotations()) {
+        if (annotation.annotationType().getAnnotation(Qualifier.class) != null) {
+          if (overridenQualifiers == null) {
+            overridenQualifiers = new ArrayList<Annotation>();
+          }
+          overridenQualifiers.add(annotation);
+        }
       }
+    }
+    catch (NoSuchMethodException e) {
+      throw new UndeclaredThrowableException(e);
+    }
 
-      //
-      this.context = context;
-   }
+    // Override all qualifiers
+    if (overridenQualifiers != null) {
+      qualifiers = overridenQualifiers;
+    }
 
-   private Collection<Annotation> determineQualifiers(Class<?> type, Collection<Annotation> qualifiers, Class<?> implementation)
-   {
-      Collection<Annotation> overridenQualifiers = null;
-      try
-      {
-         Method get = implementation.getMethod("get");
-         for (Annotation annotation : get.getAnnotations())
-         {
-            if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
-            {
-               if (overridenQualifiers == null)
-               {
-                  overridenQualifiers = new ArrayList<Annotation>();
-               }
-               overridenQualifiers.add(annotation);
-            }
-         }
-      }
-      catch (NoSuchMethodException e)
-      {
-         throw new UndeclaredThrowableException(e);
-      }
+    //
+    return qualifiers;
+  }
 
-      // Override all qualifiers
-      if (overridenQualifiers != null)
-      {
-         qualifiers = overridenQualifiers;
-      }
+  public ApplicationContext getContext() {
+    return context;
+  }
 
-      //
-      return qualifiers;
-   }
-
-   public ApplicationContext getContext()
-   {
-      return context;
-   }
-
-   public void stop()
-   {
-      // container.stop();
-   }
+  public void stop() {
+    // container.stop();
+  }
 }

@@ -24,80 +24,67 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Content
-{
+public class Content {
 
-   /** . */
-   private long lastModified;
+  /** . */
+  private long lastModified;
 
-   /** . */
-   private byte[] data;
+  /** . */
+  private byte[] data;
 
-   /** . */
-   private Charset encoding;
+  /** . */
+  private Charset encoding;
 
-   public Content(long lastModified, byte[] data, Charset encoding)
-   {
-      if (data == null)
-      {
-         throw new NullPointerException("No null data accepted");
-      }
+  public Content(long lastModified, byte[] data, Charset encoding) {
+    if (data == null) {
+      throw new NullPointerException("No null data accepted");
+    }
 
-      //
-      this.lastModified = lastModified;
-      this.data = data;
-      this.encoding = encoding;
-   }
+    //
+    this.lastModified = lastModified;
+    this.data = data;
+    this.encoding = encoding;
+  }
 
-   public Content(long lastModified, CharSequence s)
-   {
-      this(lastModified, s, Charset.defaultCharset());
-   }
+  public Content(long lastModified, CharSequence s) {
+    this(lastModified, s, Charset.defaultCharset());
+  }
 
-   public Content(long lastModified, CharSequence s, Charset encoding)
-   {
-      this.encoding = encoding;
-      this.lastModified = lastModified;
-      this.data = s.toString().getBytes(encoding);
-   }
+  public Content(long lastModified, CharSequence s, Charset encoding) {
+    this.encoding = encoding;
+    this.lastModified = lastModified;
+    this.data = s.toString().getBytes(encoding);
+  }
 
-   public long getLastModified()
-   {
-      return lastModified;
-   }
+  public long getLastModified() {
+    return lastModified;
+  }
 
-   public Charset getEncoding()
-   {
-      return encoding;
-   }
+  public Charset getEncoding() {
+    return encoding;
+  }
 
-   public InputStream getInputStream()
-   {
-      return new ByteArrayInputStream(data);
-   }
+  public InputStream getInputStream() {
+    return new ByteArrayInputStream(data);
+  }
 
-   public CharSequence getCharSequence(Charset encoding)
-   {
-      return new String(data, encoding);
-   }
+  public CharSequence getCharSequence(Charset encoding) {
+    return new String(data, encoding);
+  }
 
-   public CharSequence getCharSequence()
-   {
-      if (encoding == null)
-      {
-         throw new IllegalStateException("No encoding set");
-      }
-      return new String(data, encoding);
-   }
+  public CharSequence getCharSequence() {
+    if (encoding == null) {
+      throw new IllegalStateException("No encoding set");
+    }
+    return new String(data, encoding);
+  }
 
-   public Content touch()
-   {
-      lastModified = System.currentTimeMillis();
-      return this;
-   }
+  public Content touch() {
+    lastModified = System.currentTimeMillis();
+    return this;
+  }
 
-   public int getSize()
-   {
-      return data.length;
-   }
+  public int getSize() {
+    return data.length;
+  }
 }

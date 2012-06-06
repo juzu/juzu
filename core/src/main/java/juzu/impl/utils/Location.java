@@ -22,59 +22,49 @@ package juzu.impl.utils;
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Location implements Serializable
-{
+public class Location implements Serializable {
 
-   /** . */
-   private final int col;
+  /** . */
+  private final int col;
 
-   /** . */
-   private final int line;
+  /** . */
+  private final int line;
 
-   public Location(int col, int line)
-   {
-      if (col < 0)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (line < 0)
-      {
-         throw new IllegalArgumentException();
-      }
+  public Location(int col, int line) {
+    if (col < 0) {
+      throw new IllegalArgumentException();
+    }
+    if (line < 0) {
+      throw new IllegalArgumentException();
+    }
 
-      //
-      this.col = col;
-      this.line = line;
-   }
+    //
+    this.col = col;
+    this.line = line;
+  }
 
-   public int getCol()
-   {
-      return col;
-   }
+  public int getCol() {
+    return col;
+  }
 
-   public int getLine()
-   {
-      return line;
-   }
+  public int getLine() {
+    return line;
+  }
 
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == this)
-      {
-         return true;
-      }
-      if (obj instanceof Location)
-      {
-         Location that = (Location)obj;
-         return col == that.col && line == that.line;
-      }
-      return false;
-   }
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (obj instanceof Location) {
+      Location that = (Location)obj;
+      return col == that.col && line == that.line;
+    }
+    return false;
+  }
 
-   @Override
-   public String toString()
-   {
-      return "Location[col=" + col + ",line=" + line + "]";
-   }
+  @Override
+  public String toString() {
+    return "Location[col=" + col + ",line=" + line + "]";
+  }
 }

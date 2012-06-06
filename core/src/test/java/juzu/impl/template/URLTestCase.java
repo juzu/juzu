@@ -19,48 +19,43 @@
 
 package juzu.impl.template;
 
-import org.junit.Test;
 import juzu.impl.compiler.CompilationError;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
+import org.junit.Test;
 
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class URLTestCase extends AbstractTestCase
-{
+public class URLTestCase extends AbstractTestCase {
 
-   @Test
-   public void testResolution() throws Exception
-   {
-      CompilerAssert<?, ?> compiler = compiler("template", "url", "resolution");
-      compiler.assertCompile();
-   }
+  @Test
+  public void testResolution() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("template", "url", "resolution");
+    compiler.assertCompile();
+  }
 
-   @Test
-   public void testInvalidMethodName() throws Exception
-   {
-      CompilerAssert<?, ?> compiler = compiler("template", "url", "invalid_method_name");
-      List<CompilationError> errors = compiler.failCompile();
-      assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
-      CompilationError error = errors.get(0);
-      assertEquals("/template/url/invalid_method_name/A.java", error.getSource());
-   }
+  @Test
+  public void testInvalidMethodName() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("template", "url", "invalid_method_name");
+    List<CompilationError> errors = compiler.failCompile();
+    assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
+    CompilationError error = errors.get(0);
+    assertEquals("/template/url/invalid_method_name/A.java", error.getSource());
+  }
 
-   @Test
-   public void testInvalidMethodArgs() throws Exception
-   {
-      CompilerAssert<?, ?> compiler = compiler("template", "url", "invalid_method_args");
-      List<CompilationError> errors = compiler.failCompile();
-      assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
-      CompilationError error = errors.get(0);
-      assertEquals("/template/url/invalid_method_args/A.java", error.getSource());
-   }
+  @Test
+  public void testInvalidMethodArgs() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("template", "url", "invalid_method_args");
+    List<CompilationError> errors = compiler.failCompile();
+    assertEquals("Was expecting 1 error instead of " + errors, 1, errors.size());
+    CompilationError error = errors.get(0);
+    assertEquals("/template/url/invalid_method_args/A.java", error.getSource());
+  }
 
-   @Test
-   public void testOverload() throws Exception
-   {
-      CompilerAssert<?, ?> compiler = compiler("template", "url", "overload");
-      compiler.assertCompile();
-   }
+  @Test
+  public void testOverload() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("template", "url", "overload");
+    compiler.assertCompile();
+  }
 }

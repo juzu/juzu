@@ -22,16 +22,13 @@ package juzu.test.protocol.mock;
 import juzu.io.AppendableStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockPrinter extends AppendableStream
-{
+public class MockPrinter extends AppendableStream {
 
-   public MockPrinter()
-   {
-      super(new StringBuilder());
-   }
+  public MockPrinter() {
+    super(new StringBuilder());
+  }
 
-   public StringBuilder getContent()
-   {
-      return (StringBuilder)delegate;
-   }
+  public StringBuilder getContent() {
+    return (StringBuilder)delegate;
+  }
 }

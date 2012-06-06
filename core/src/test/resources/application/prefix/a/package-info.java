@@ -1,4 +1,3 @@
-@Application
-package application.prefix.a;
+@Application package application.prefix.a;
 
 import juzu.Application;

@@ -20,22 +20,20 @@
 package juzu.impl.http;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.UserAgent;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RedirectTestCase extends AbstractHttpTestCase
-{
+public class RedirectTestCase extends AbstractHttpTestCase {
 
-   @Test
-   public void testRedirect() throws Exception
-   {
-      assertDeploy("http", "redirect");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      String actionURL = page.asText();
-      assertTrue(actionURL.length() > 0);
-      ua.assertRedirect("http://www.foo.org", actionURL);
-   }
+  @Test
+  public void testRedirect() throws Exception {
+    assertDeploy("http", "redirect");
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
+    String actionURL = page.asText();
+    assertTrue(actionURL.length() > 0);
+    ua.assertRedirect("http://www.foo.org", actionURL);
+  }
 }

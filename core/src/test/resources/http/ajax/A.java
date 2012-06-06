@@ -27,34 +27,31 @@ import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
-   
-   @View
-   public Response.Content index(String p)
-   {
-      String content =
-         "<script>\n" +
-         "$(function() {\n" +
-         "  $('#trigger').click(function() {\n" +
-         "    $.ajax({\n" +
-         "      url:'" + A_.resourceURL() + "',\n" +
-         "      async: false,\n" +
-         "      success: function(html) {\n" +
-         "        $('#foo').html(html);\n" +
-         "      }\n" +
-         "    });\n" +
-         "  });\n" +
-         "});\n" +
-         "</script>\n" +
-         "<a id='trigger' href='#'>click</a>\n" +
-         "<div id='foo'>foo</div>";
-      return Response.render(content).addScript(Asset.uri(AssetLocation.SERVER, "/jquery.js"));
-   }
-   
-   @Resource 
-   public Response.Content.Resource resource()
-   {
-      return Response.ok("bar");
-   }
+public class A extends Controller {
+
+  @View
+  public Response.Content index(String p) {
+    String content =
+      "<script>\n" +
+        "$(function() {\n" +
+        "  $('#trigger').click(function() {\n" +
+        "    $.ajax({\n" +
+        "      url:'" + A_.resourceURL() + "',\n" +
+        "      async: false,\n" +
+        "      success: function(html) {\n" +
+        "        $('#foo').html(html);\n" +
+        "      }\n" +
+        "    });\n" +
+        "  });\n" +
+        "});\n" +
+        "</script>\n" +
+        "<a id='trigger' href='#'>click</a>\n" +
+        "<div id='foo'>foo</div>";
+    return Response.render(content).addScript(Asset.uri(AssetLocation.SERVER, "/jquery.js"));
+  }
+
+  @Resource
+  public Response.Content.Resource resource() {
+    return Response.ok("bar");
+  }
 }

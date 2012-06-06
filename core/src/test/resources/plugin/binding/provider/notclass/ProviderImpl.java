@@ -22,14 +22,12 @@ package plugin.binding.provider.notclass;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum ProviderImpl implements Provider
-{
+public enum ProviderImpl implements Provider {
 
-   FOO;
+  FOO;
 
 
-   public Object get()
-   {
-      throw new UnsupportedOperationException();
-   }
+  public Object get() {
+    throw new UnsupportedOperationException();
+  }
 }

@@ -26,68 +26,57 @@ import java.util.Iterator;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilationException extends RuntimeException implements Iterable<CompilationMessage>
-{
+public class CompilationException extends RuntimeException implements Iterable<CompilationMessage> {
 
-   /** . */
-   private final List<CompilationMessage> messages;
+  /** . */
+  private final List<CompilationMessage> messages;
 
-   /** . */
-   private final Element element;
+  /** . */
+  private final Element element;
 
-   /** . */
-   private final AnnotationMirror annotation;
+  /** . */
+  private final AnnotationMirror annotation;
 
-   public CompilationException(MessageCode code, Object... arguments)
-   {
-      this(null, code, arguments);
-   }
+  public CompilationException(MessageCode code, Object... arguments) {
+    this(null, code, arguments);
+  }
 
-   public CompilationException(Element element, MessageCode code, Object... arguments)
-   {
-      this(element, null, code, arguments);
-   }
+  public CompilationException(Element element, MessageCode code, Object... arguments) {
+    this(element, null, code, arguments);
+  }
 
-   public CompilationException(Element element, AnnotationMirror annotation, MessageCode code, Object... arguments)
-   {
-      this(element, annotation, new CompilationMessage(code, arguments));
-   }
+  public CompilationException(Element element, AnnotationMirror annotation, MessageCode code, Object... arguments) {
+    this(element, annotation, new CompilationMessage(code, arguments));
+  }
 
-   public CompilationException(Element element, AnnotationMirror annotation, CompilationMessage... messages)
-   {
-      this(element, annotation, Arrays.asList(messages));
-   }
+  public CompilationException(Element element, AnnotationMirror annotation, CompilationMessage... messages) {
+    this(element, annotation, Arrays.asList(messages));
+  }
 
-   public CompilationException(Element element, AnnotationMirror annotation, List<CompilationMessage> messages)
-   {
-      this.element = element;
-      this.annotation = annotation;
-      this.messages = messages;
-   }
+  public CompilationException(Element element, AnnotationMirror annotation, List<CompilationMessage> messages) {
+    this.element = element;
+    this.annotation = annotation;
+    this.messages = messages;
+  }
 
-   public Iterator<CompilationMessage> iterator()
-   {
-      return messages.iterator();
-   }
+  public Iterator<CompilationMessage> iterator() {
+    return messages.iterator();
+  }
 
-   @Override
-   public synchronized CompilationException initCause(Throwable cause)
-   {
-      return (CompilationException)super.initCause(cause);
-   }
+  @Override
+  public synchronized CompilationException initCause(Throwable cause) {
+    return (CompilationException)super.initCause(cause);
+  }
 
-   public Element getElement()
-   {
-      return element;
-   }
+  public Element getElement() {
+    return element;
+  }
 
-   public AnnotationMirror getAnnotation()
-   {
-      return annotation;
-   }
+  public AnnotationMirror getAnnotation() {
+    return annotation;
+  }
 
-   public List<CompilationMessage> getMessages()
-   {
-      return messages;
-   }
+  public List<CompilationMessage> getMessages() {
+    return messages;
+  }
 }

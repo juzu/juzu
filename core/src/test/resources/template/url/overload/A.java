@@ -24,19 +24,16 @@ import juzu.View;
 import juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @Path("index.gtmpl")
-   Template template;
+  @Path("index.gtmpl")
+  Template template;
 
-   @View
-   public void index()
-   {
-   }
+  @View
+  public void index() {
+  }
 
-   @View
-   public void index(String s)
-   {
-   }
+  @View
+  public void index(String s) {
+  }
 }

@@ -24,24 +24,20 @@ import juzu.impl.spi.template.TemplateProvider;
 import juzu.impl.spi.template.TemplateStub;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GroovyTemplateProvider extends TemplateProvider
-{
+public class GroovyTemplateProvider extends TemplateProvider {
 
-   @Override
-   public Class<? extends TemplateStub> getTemplateStubType()
-   {
-      return GroovyTemplateLiteral.class;
-   }
+  @Override
+  public Class<? extends TemplateStub> getTemplateStubType() {
+    return GroovyTemplateLiteral.class;
+  }
 
-   @Override
-   public TemplateEmitter createEmitter()
-   {
-      return new GroovyTemplateEmitter();
-   }
+  @Override
+  public TemplateEmitter createEmitter() {
+    return new GroovyTemplateEmitter();
+  }
 
-   @Override
-   public String getTargetExtension()
-   {
-      return "groovy";
-   }
+  @Override
+  public String getTargetExtension() {
+    return "groovy";
+  }
 }

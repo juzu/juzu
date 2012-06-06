@@ -25,10 +25,8 @@ import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class BeanProvider implements Provider<Bean>
-{
-   public Bean get()
-   {
-      return new Bean("Foo");
-   }
+public class BeanProvider implements Provider<Bean> {
+  public Bean get() {
+    return new Bean("Foo");
+  }
 }

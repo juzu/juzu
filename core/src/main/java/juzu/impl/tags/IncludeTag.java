@@ -19,9 +19,9 @@
 
 package juzu.impl.tags;
 
+import juzu.impl.spi.template.TemplateStub;
 import juzu.impl.template.ast.ASTNode;
 import juzu.impl.template.compiler.ExtendedTagHandler;
-import juzu.impl.spi.template.TemplateStub;
 import juzu.impl.template.compiler.ProcessPhase;
 import juzu.impl.template.compiler.Template;
 import juzu.impl.utils.Path;
@@ -32,21 +32,18 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class IncludeTag extends ExtendedTagHandler
-{
+public class IncludeTag extends ExtendedTagHandler {
 
-   @Override
-   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t)
-   {
-      String path = tag.getArgs().get("path");
-      phase.resolveTemplate(Path.parse(path));
-   }
+  @Override
+  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) {
+    String path = tag.getArgs().get("path");
+    phase.resolveTemplate(Path.parse(path));
+  }
 
-   @Override
-   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
-   {
-      String path = args.get("path");
-      TemplateStub template = context.resolveTemplate(path);
-      template.render(context);
-   }
+  @Override
+  public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
+    String path = args.get("path");
+    TemplateStub template = context.resolveTemplate(path);
+    template.render(context);
+  }
 }

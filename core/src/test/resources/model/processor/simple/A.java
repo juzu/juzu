@@ -20,11 +20,14 @@
 package model.processor.simple;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @javax.inject.Inject @juzu.Path("index.gtmpl") juzu.template.Template template;
+  @javax.inject.Inject
+  @juzu.Path("index.gtmpl")
+  juzu.template.Template template;
 
-   @juzu.View public void index() { }
+  @juzu.View
+  public void index() {
+  }
 
 }

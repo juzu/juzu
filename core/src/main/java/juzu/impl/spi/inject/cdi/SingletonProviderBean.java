@@ -26,22 +26,19 @@ import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class SingletonProviderBean extends AbstractSingletonBean
-{
+class SingletonProviderBean extends AbstractSingletonBean {
 
-   /** . */
-   private final Provider provider;
+  /** . */
+  private final Provider provider;
 
-   SingletonProviderBean(Class type, Scope scope, Iterable<Annotation> qualifiers, Provider provider)
-   {
-      super(type, scope, qualifiers);
+  SingletonProviderBean(Class type, Scope scope, Iterable<Annotation> qualifiers, Provider provider) {
+    super(type, scope, qualifiers);
 
-      //
-      this.provider = provider;
-   }
+    //
+    this.provider = provider;
+  }
 
-   public Object create(CreationalContext creationalContext)
-   {
-      return provider.get();
-   }
+  public Object create(CreationalContext creationalContext) {
+    return provider.get();
+  }
 }

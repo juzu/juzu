@@ -24,18 +24,15 @@ import juzu.impl.inject.Export;
 import javax.inject.Named;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Bean
-{
+public abstract class Bean {
 
-   @Export
-   @Named("foo")
-   public static class Foo extends Bean
-   {
-   }
+  @Export
+  @Named("foo")
+  public static class Foo extends Bean {
+  }
 
-   @Export
-   @Named("bar")
-   public static class Bar extends Bean
-   {
-   }
+  @Export
+  @Named("bar")
+  public static class Bar extends Bean {
+  }
 }

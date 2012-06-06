@@ -25,32 +25,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class FilterImpl implements FilenameFilter
-{
+class FilterImpl implements FilenameFilter {
 
-   /** . */
-   private final Map<File, String> valids;
+  /** . */
+  private final Map<File, String> valids;
 
-   FilterImpl(File root, String[] path)
-   {
-      Map<File, String> valids = new HashMap<File, String>();
+  FilterImpl(File root, String[] path) {
+    Map<File, String> valids = new HashMap<File, String>();
 
-      {
-         File current = root;
-         for (String name : path)
-         {
-            valids.put(current, name);
-            current = new File(current, name);
-         }
+    {
+      File current = root;
+      for (String name : path) {
+        valids.put(current, name);
+        current = new File(current, name);
       }
+    }
 
 
-      this.valids = valids;
-   }
+    this.valids = valids;
+  }
 
-   public boolean accept(File dir, String name)
-   {
-      String found = valids.get(dir);
-      return found == null || found.equals(name);
-   }
+  public boolean accept(File dir, String name) {
+    String found = valids.get(dir);
+    return found == null || found.equals(name);
+  }
 }

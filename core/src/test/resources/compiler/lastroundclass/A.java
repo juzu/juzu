@@ -20,7 +20,6 @@
 package compiler.lastroundclass;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-   // Just here to trigger annotation processor
+public class A {
+  // Just here to trigger annotation processor
 }

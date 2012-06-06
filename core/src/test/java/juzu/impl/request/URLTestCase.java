@@ -19,7 +19,6 @@
 
 package juzu.impl.request;
 
-import org.junit.Test;
 import juzu.URLBuilder;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.impl.utils.JSON;
@@ -27,51 +26,47 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class URLTestCase extends AbstractInjectTestCase
-{
+public class URLTestCase extends AbstractInjectTestCase {
 
-   public URLTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public URLTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testSimple() throws Exception
-   {
-      MockApplication<?> app = application("request", "url", "simple");
-      app.init();
+  @Test
+  public void testSimple() throws Exception {
+    MockApplication<?> app = application("request", "url", "simple");
+    app.init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      JSON url = (JSON)JSON.parse(render.assertStringResult());
-      assertFalse(url.getJSON("properties").contains(URLBuilder.ESCAPE_XML.class.getName()));
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    JSON url = (JSON)JSON.parse(render.assertStringResult());
+    assertFalse(url.getJSON("properties").contains(URLBuilder.ESCAPE_XML.class.getName()));
+  }
 
-   @Test
-   public void testEscapeXML() throws Exception
-   {
-      MockApplication<?> app = application("request", "url", "escapexml");
-      app.init();
+  @Test
+  public void testEscapeXML() throws Exception {
+    MockApplication<?> app = application("request", "url", "escapexml");
+    app.init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      JSON url = (JSON)JSON.parse(render.assertStringResult());
-      assertEquals(Boolean.TRUE, url.getJSON("properties").get(URLBuilder.ESCAPE_XML.class.getName()));
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    JSON url = (JSON)JSON.parse(render.assertStringResult());
+    assertEquals(Boolean.TRUE, url.getJSON("properties").get(URLBuilder.ESCAPE_XML.class.getName()));
+  }
 
-   @Test
-   public void testInvalidProperty() throws Exception
-   {
-      MockApplication<?> app = application("request", "url", "invalidproperty");
-      app.init();
+  @Test
+  public void testInvalidProperty() throws Exception {
+    MockApplication<?> app = application("request", "url", "invalidproperty");
+    app.init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals("pass", render.assertStringResult());
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    assertEquals("pass", render.assertStringResult());
+  }
 }

@@ -20,11 +20,10 @@
 package juzu.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface WindowContext
-{
-   
-   String getId();
-   
-   String getNamespace();
-   
+public interface WindowContext {
+
+  String getId();
+
+  String getNamespace();
+
 }

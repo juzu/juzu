@@ -17,7 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package application.resolver.overload;
+@Application package application.resolver.overload;
 
 import juzu.Application;

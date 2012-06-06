@@ -26,25 +26,22 @@ import juzu.io.CharArray;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-class TextConstant
-{
+class TextConstant {
 
-   /** . */
-   final String name;
+  /** . */
+  final String name;
 
-   /** . */
-   final String text;
+  /** . */
+  final String text;
 
-   TextConstant(String name, String text)
-   {
-      this.name = name;
-      this.text = text;
-   }
+  TextConstant(String name, String text) {
+    this.name = name;
+    this.text = text;
+  }
 
-   String getDeclaration()
-   {
-      StringBuilder sb = new StringBuilder("");
-      juzu.impl.utils.Tools.escape(text, sb);
-      return "public static final " + CharArray.Simple.class.getName() + " " + name + " = new " + CharArray.Simple.class.getName() + "('" + sb + "');";
-   }
- }
+  String getDeclaration() {
+    StringBuilder sb = new StringBuilder("");
+    juzu.impl.utils.Tools.escape(text, sb);
+    return "public static final " + CharArray.Simple.class.getName() + " " + name + " = new " + CharArray.Simple.class.getName() + "('" + sb + "');";
+  }
+}

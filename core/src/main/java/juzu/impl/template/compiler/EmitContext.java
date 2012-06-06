@@ -25,14 +25,12 @@ import juzu.impl.utils.MethodInvocation;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class EmitContext
-{
+public class EmitContext {
 
-   public MethodInvocation resolveMethodInvocation(
-      String typeName,
-      String methodName,
-      Map<String, String> parameterMap) throws CompilationException
-   {
-      return null;
-   }
+  public MethodInvocation resolveMethodInvocation(
+    String typeName,
+    String methodName,
+    Map<String, String> parameterMap) throws CompilationException {
+    return null;
+  }
 }

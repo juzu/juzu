@@ -47,161 +47,140 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SpringBuilder extends InjectBuilder
-{
+public class SpringBuilder extends InjectBuilder {
 
-   /** . */
-   private ClassLoader classLoader;
+  /** . */
+  private ClassLoader classLoader;
 
-   /** . */
-   private Map<String, AbstractBean> beans = new LinkedHashMap<String, AbstractBean>();
+  /** . */
+  private Map<String, AbstractBean> beans = new LinkedHashMap<String, AbstractBean>();
 
-   /** The live instances. */
-   final Map<String, Object> instances = new HashMap<String, Object>();
+  /** The live instances. */
+  final Map<String, Object> instances = new HashMap<String, Object>();
 
-   /** . */
-   private Set<Scope> scopes = new LinkedHashSet<Scope>();
+  /** . */
+  private Set<Scope> scopes = new LinkedHashSet<Scope>();
 
-   /** . */
-   private URL configurationURL;
+  /** . */
+  private URL configurationURL;
 
-   /** . */
-   final ScopeMetadataResolverImpl scopeResolver = new ScopeMetadataResolverImpl(scopes);
+  /** . */
+  final ScopeMetadataResolverImpl scopeResolver = new ScopeMetadataResolverImpl(scopes);
 
-   public URL getConfigurationURL()
-   {
-      return configurationURL;
-   }
+  public URL getConfigurationURL() {
+    return configurationURL;
+  }
 
-   public void setConfigurationURL(URL configurationURL)
-   {
-      this.configurationURL = configurationURL;
-   }
+  public void setConfigurationURL(URL configurationURL) {
+    this.configurationURL = configurationURL;
+  }
 
-   @Override
-   public InjectBuilder setFilter(BeanFilter filter)
-   {
-      return this;
-   }
+  @Override
+  public InjectBuilder setFilter(BeanFilter filter) {
+    return this;
+  }
 
-   public <T> InjectBuilder declareBean(AbstractBean bean)
-   {
-      String name = "" + Math.random();
-      for (Annotation annotation : bean.type.getDeclaredAnnotations())
-      {
-         if (annotation instanceof Named)
-         {
-            Named named = (Named)annotation;
-            name = named.value();
-            break;
-         }
+  public <T> InjectBuilder declareBean(AbstractBean bean) {
+    String name = "" + Math.random();
+    for (Annotation annotation : bean.type.getDeclaredAnnotations()) {
+      if (annotation instanceof Named) {
+        Named named = (Named)annotation;
+        name = named.value();
+        break;
       }
-      beans.put(name, bean);
-      return this;
-   }
+    }
+    beans.put(name, bean);
+    return this;
+  }
 
-   @Override
-   public <T> InjectBuilder declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
-   {
-      if (implementationType == null)
-      {
-         implementationType = type;
+  @Override
+  public <T> InjectBuilder declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType) {
+    if (implementationType == null) {
+      implementationType = type;
+    }
+    return declareBean(new DeclaredBean(implementationType, beanScope, qualifiers));
+  }
+
+  @Override
+  public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance) {
+    return declareBean(new SingletonBean(instance, qualifiers));
+  }
+
+  @Override
+  public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, final Provider<T> provider) {
+    return declareBean(new SingletonProviderBean(beanType, beanScope, beanQualifiers, provider));
+  }
+
+  @Override
+  public <T> InjectBuilder declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider) {
+    return declareBean(new DeclaredProviderBean(type, beanScope, qualifiers, provider));
+  }
+
+  @Override
+  public <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs) {
+    return this;
+  }
+
+  @Override
+  public InjectBuilder addScope(Scope scope) {
+    scopes.add(scope);
+    return this;
+  }
+
+  @Override
+  public InjectBuilder setClassLoader(ClassLoader classLoader) {
+    this.classLoader = classLoader;
+    return this;
+  }
+
+  @Override
+  public <B, I> InjectManager<B, I> create() throws Exception {
+    DefaultListableBeanFactory factory;
+    if (configurationURL != null) {
+      factory = new XmlBeanFactory(new UrlResource(configurationURL));
+    }
+    else {
+      factory = new DefaultListableBeanFactory();
+    }
+
+    //
+    factory.setBeanClassLoader(classLoader);
+    factory.setInstantiationStrategy(new SingletonInstantiationStrategy(new CglibSubclassingInstantiationStrategy(), instances));
+
+    // Register scopes
+    for (Scope scope : scopes) {
+      if (!scope.isBuiltIn()) {
+        factory.registerScope(scope.name().toLowerCase(), new SpringScope(factory, scope, ScopeController.INSTANCE));
       }
-      return declareBean(new DeclaredBean(implementationType, beanScope, qualifiers));
-   }
+    }
 
-   @Override
-   public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance)
-   {
-      return declareBean(new SingletonBean(instance, qualifiers));
-   }
+    //
+    for (Map.Entry<String, AbstractBean> entry : beans.entrySet()) {
+      AbstractBean bean = entry.getValue();
+      String name = entry.getKey();
+      bean.configure(name, this, factory);
+    }
 
-   @Override
-   public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, final Provider<T> provider)
-   {
-      return declareBean(new SingletonProviderBean(beanType, beanScope, beanQualifiers, provider));
-   }
+    //
+    AutowiredAnnotationBeanPostProcessor beanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
+    beanPostProcessor.setAutowiredAnnotationType(Inject.class);
+    beanPostProcessor.setBeanFactory(factory);
+    factory.addBeanPostProcessor(beanPostProcessor);
 
-   @Override
-   public <T> InjectBuilder declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
-   {
-      return declareBean(new DeclaredProviderBean(type, beanScope, qualifiers, provider));
-   }
+    //
+    CommonAnnotationBeanPostProcessor commonAnnotationBeanProcessor = new CommonAnnotationBeanPostProcessor();
+    factory.addBeanPostProcessor(commonAnnotationBeanProcessor);
 
-   @Override
-   public <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs)
-   {
-      return this;
-   }
+    //
+    Set cqt = new HashSet();
+    cqt.add(Named.class);
+    CustomAutowireConfigurer configurer = new CustomAutowireConfigurer();
+    configurer.setCustomQualifierTypes(cqt);
+    QualifierAnnotationAutowireCandidateResolver customResolver = new QualifierAnnotationAutowireCandidateResolver();
+    factory.setAutowireCandidateResolver(customResolver);
+    configurer.postProcessBeanFactory(factory);
 
-   @Override
-   public InjectBuilder addScope(Scope scope)
-   {
-      scopes.add(scope);
-      return this;
-   }
-
-   @Override
-   public InjectBuilder setClassLoader(ClassLoader classLoader)
-   {
-      this.classLoader = classLoader;
-      return this;
-   }
-
-   @Override
-   public <B, I> InjectManager<B, I> create() throws Exception
-   {
-      DefaultListableBeanFactory factory;
-      if (configurationURL != null)
-      {
-         factory = new XmlBeanFactory(new UrlResource(configurationURL));
-      }
-      else
-      {
-         factory = new DefaultListableBeanFactory();
-      }
-
-      //
-      factory.setBeanClassLoader(classLoader);
-      factory.setInstantiationStrategy(new SingletonInstantiationStrategy(new CglibSubclassingInstantiationStrategy(), instances));
-
-      // Register scopes
-      for (Scope scope : scopes)
-      {
-         if (!scope.isBuiltIn())
-         {
-            factory.registerScope(scope.name().toLowerCase(), new SpringScope(factory, scope, ScopeController.INSTANCE));
-         }
-      }
-
-      //
-      for (Map.Entry<String, AbstractBean> entry : beans.entrySet())
-      {
-         AbstractBean bean = entry.getValue();
-         String name = entry.getKey();
-         bean.configure(name, this, factory);
-      }
-
-      //
-      AutowiredAnnotationBeanPostProcessor beanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
-      beanPostProcessor.setAutowiredAnnotationType(Inject.class);
-      beanPostProcessor.setBeanFactory(factory);
-      factory.addBeanPostProcessor(beanPostProcessor);
-
-      //
-      CommonAnnotationBeanPostProcessor commonAnnotationBeanProcessor = new CommonAnnotationBeanPostProcessor();
-      factory.addBeanPostProcessor(commonAnnotationBeanProcessor);
-
-      //
-      Set cqt = new HashSet();
-      cqt.add(Named.class);
-      CustomAutowireConfigurer configurer = new CustomAutowireConfigurer();
-      configurer.setCustomQualifierTypes(cqt);
-      QualifierAnnotationAutowireCandidateResolver customResolver = new QualifierAnnotationAutowireCandidateResolver();
-      factory.setAutowireCandidateResolver(customResolver);
-      configurer.postProcessBeanFactory(factory);
-
-      //
-      return (InjectManager<B, I>)new SpringManager(factory, classLoader);
-   }
+    //
+    return (InjectManager<B, I>)new SpringManager(factory, classLoader);
+  }
 }

@@ -27,46 +27,37 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   /** .*/
-   private static int serial;
+  /** . */
+  private static int serial;
 
-   @Inject
-   Bean bean;
+  @Inject
+  Bean bean;
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      if (bean != null)
-      {
-         serial = bean.getSerial();
-         return Response.content(A_.doneURL().toString());
-      }
-      else
-      {
-         return Response.content("");
-      }
-   }
+  @View
+  public Response.Content index() throws IOException {
+    if (bean != null) {
+      serial = bean.getSerial();
+      return Response.content(A_.doneURL().toString());
+    }
+    else {
+      return Response.content("");
+    }
+  }
 
-   @View
-   public Response.Content done() throws IOException
-   {
-      if (bean != null)
-      {
-         if (serial + 1 == bean.getSerial())
-         {
-            return Response.content("pass");
-         }
-         else
-         {
-            return Response.content("failure: was expecting to have" + serial + " + 1 == " + bean.getSerial());
-         }
+  @View
+  public Response.Content done() throws IOException {
+    if (bean != null) {
+      if (serial + 1 == bean.getSerial()) {
+        return Response.content("pass");
       }
-      else
-      {
-         return Response.content("failure");
+      else {
+        return Response.content("failure: was expecting to have" + serial + " + 1 == " + bean.getSerial());
       }
-   }
+    }
+    else {
+      return Response.content("failure");
+    }
+  }
 }

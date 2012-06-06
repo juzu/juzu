@@ -28,63 +28,56 @@ import juzu.impl.spi.request.RequestBridge;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestContext
-{
+public abstract class RequestContext {
 
-   /** Phase type literal. */
-   public static class METHOD_ID extends PropertyType<String> {}
+  /** Phase type literal. */
+  public static class METHOD_ID extends PropertyType<String> {
+  }
 
-   /** Phase type literal instance. */
-   public static METHOD_ID METHOD_ID = new METHOD_ID();
+  /** Phase type literal instance. */
+  public static METHOD_ID METHOD_ID = new METHOD_ID();
 
-   /** . */
-   protected final ApplicationContext application;
+  /** . */
+  protected final ApplicationContext application;
 
-   /** . */
-   protected final ControllerMethod method;
+  /** . */
+  protected final ControllerMethod method;
 
-   /** . */
-   protected final Request request;
+  /** . */
+  protected final Request request;
 
-   public RequestContext(Request request, ApplicationContext application, ControllerMethod method)
-   {
-      this.request = request;
-      this.application = application;
-      this.method = method;
-   }
+  public RequestContext(Request request, ApplicationContext application, ControllerMethod method) {
+    this.request = request;
+    this.application = application;
+    this.method = method;
+  }
 
-   public ApplicationContext getApplication()
-   {
-      return application;
-   }
+  public ApplicationContext getApplication() {
+    return application;
+  }
 
-   public ControllerMethod getMethod()
-   {
-      return method;
-   }
+  public ControllerMethod getMethod() {
+    return method;
+  }
 
-   public Map<String, String[]> getParameters()
-   {
-      return request.getParameters();
-   }
-   
-   public HttpContext getHttpContext()
-   {
-      return getBridge().getHttpContext();
-   }
-   
-   public SecurityContext getSecurityContext()
-   {
-      return getBridge().getSecurityContext();
-   }
-   
-   public <T> T getProperty(PropertyType<T> propertyType)
-   {
-      return getBridge().getProperty(propertyType);
-   }
+  public Map<String, String[]> getParameters() {
+    return request.getParameters();
+  }
 
-   public abstract Phase getPhase();
+  public HttpContext getHttpContext() {
+    return getBridge().getHttpContext();
+  }
 
-   protected abstract RequestBridge getBridge();
+  public SecurityContext getSecurityContext() {
+    return getBridge().getSecurityContext();
+  }
+
+  public <T> T getProperty(PropertyType<T> propertyType) {
+    return getBridge().getProperty(propertyType);
+  }
+
+  public abstract Phase getPhase();
+
+  protected abstract RequestBridge getBridge();
 
 }

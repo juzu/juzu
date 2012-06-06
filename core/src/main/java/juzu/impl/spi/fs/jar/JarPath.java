@@ -33,147 +33,124 @@ import java.util.LinkedHashMap;
 import java.util.jar.JarEntry;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JarPath
-{
+public class JarPath {
 
-   /** . */
-   final JarFileSystem owner;
+  /** . */
+  final JarFileSystem owner;
 
-   /** . */
-   final JarPath parent;
+  /** . */
+  final JarPath parent;
 
-   /** The name as in the jar entry. */
-   final String entryName;
+  /** The name as in the jar entry. */
+  final String entryName;
 
-   /** The name. */
-   final String name;
+  /** The name. */
+  final String name;
 
-   /** . */
-   final boolean dir;
+  /** . */
+  final boolean dir;
 
-   /** . */
-   URL url;
+  /** . */
+  URL url;
 
-   /** The optional attached entry. */
-   private JarEntry entry;
+  /** The optional attached entry. */
+  private JarEntry entry;
 
-   /** . */
-   private LinkedHashMap<String, JarPath> children;
+  /** . */
+  private LinkedHashMap<String, JarPath> children;
 
-   public JarPath(JarFileSystem owner)
-   {
-      this.entryName = "";
-      this.name = "";
-      this.dir = true;
-      this.entry = null;
-      this.children = null;
-      this.parent = null;
-      this.owner = owner;
-   }
+  public JarPath(JarFileSystem owner) {
+    this.entryName = "";
+    this.name = "";
+    this.dir = true;
+    this.entry = null;
+    this.children = null;
+    this.parent = null;
+    this.owner = owner;
+  }
 
-   public JarPath(JarFileSystem owner, JarPath parent, String entryName, String name, boolean dir)
-   {
-      this.parent = parent;
-      this.entryName = entryName;
-      this.name = name;
-      this.dir = dir;
-      this.children = null;
-      this.owner = owner;
-   }
+  public JarPath(JarFileSystem owner, JarPath parent, String entryName, String name, boolean dir) {
+    this.parent = parent;
+    this.entryName = entryName;
+    this.name = name;
+    this.dir = dir;
+    this.children = null;
+    this.owner = owner;
+  }
 
-   Iterator<JarPath> getChildren()
-   {
-      if (children == null || children.isEmpty())
-      {
-         return Collections.<JarPath>emptyList().iterator();
+  Iterator<JarPath> getChildren() {
+    if (children == null || children.isEmpty()) {
+      return Collections.<JarPath>emptyList().iterator();
+    }
+    else {
+      return children.values().iterator();
+    }
+  }
+
+  JarPath getChild(String name) {
+    if (children == null || children.isEmpty()) {
+      return null;
+    }
+    else {
+      return children.get(name);
+    }
+  }
+
+  URL getURL() throws IOException {
+    if (url == null) {
+      url = new URL("jar:" + owner.jarURL + "!/" + entryName);
+    }
+    return url;
+  }
+
+  void append(JarEntry entry) {
+    String entryName = entry.getName();
+    boolean dir = entryName.charAt(entryName.length() - 1) == '/';
+    String path = entryName.substring(0, entryName.length() - (dir ? 1 : 0));
+    Iterator<String> names = new Spliterator(path, '/');
+    JarPath current = this;
+    StringBuilder sb = new StringBuilder();
+    while (true) {
+      String name = names.next();
+      sb.append(name);
+
+      if (current.children == null) {
+        current.children = new LinkedHashMap<String, JarPath>();
       }
-      else
-      {
-         return children.values().iterator();
+      JarPath existing = current.children.get(name);
+
+      if (names.hasNext()) {
+        sb.append('/');
+        if (existing == null) {
+          current.children.put(name, existing = new JarPath(owner, current, sb.toString(), name, true));
+        }
+        current = existing;
       }
-   }
-
-   JarPath getChild(String name)
-   {
-      if (children == null || children.isEmpty())
-      {
-         return null;
-      }
-      else
-      {
-         return children.get(name);
-      }
-   }
-
-   URL getURL() throws IOException
-   {
-      if (url == null)
-      {
-         url = new URL("jar:" + owner.jarURL + "!/" + entryName);
-      }
-      return url;
-   }
-
-   void append(JarEntry entry)
-   {
-      String entryName = entry.getName();
-      boolean dir = entryName.charAt(entryName.length() - 1) == '/';
-      String path = entryName.substring(0, entryName.length() - (dir ? 1 : 0));
-      Iterator<String> names = new Spliterator(path, '/');
-      JarPath current = this;
-      StringBuilder sb = new StringBuilder();
-      while (true)
-      {
-         String name = names.next();
-         sb.append(name);
-
-         if (current.children == null)
-         {
-            current.children = new LinkedHashMap<String, JarPath>();
-         }
-         JarPath existing = current.children.get(name);
-
-         if (names.hasNext())
-         {
+      else {
+        if (existing == null) {
+          if (dir) {
             sb.append('/');
-            if (existing == null)
-            {
-               current.children.put(name, existing = new JarPath(owner, current, sb.toString(), name, true));
-            }
-            current = existing;
-         }
-         else
-         {
-            if (existing == null)
-            {
-               if (dir)
-               {
-                  sb.append('/');
-               }
-               current.children.put(name, existing = new JarPath(owner, current, sb.toString(), name, dir));
-               existing.entry = entry;
-            }
-            else
-            {
-               if (dir != existing.dir)
-               {
-                  throw new AssertionError();
-               }
-               if (existing.entry != null)
-               {
-                  throw new AssertionError();
-               }
-               existing.entry = entry;
-            }
-            break;
-         }
+          }
+          current.children.put(name, existing = new JarPath(owner, current, sb.toString(), name, dir));
+          existing.entry = entry;
+        }
+        else {
+          if (dir != existing.dir) {
+            throw new AssertionError();
+          }
+          if (existing.entry != null) {
+            throw new AssertionError();
+          }
+          existing.entry = entry;
+        }
+        break;
       }
-   }
+    }
+  }
 
-   Content getContent() throws IOException
-   {
-      InputStream in = owner.jar.getInputStream(entry);
-      byte[] bytes = Tools.bytes(in);
-      return new Content(entry.getTime(), bytes, Charset.defaultCharset());
-   }
+  Content getContent() throws IOException {
+    InputStream in = owner.jar.getInputStream(entry);
+    byte[] bytes = Tools.bytes(in);
+    return new Content(entry.getTime(), bytes, Charset.defaultCharset());
+  }
 }

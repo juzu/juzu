@@ -31,120 +31,102 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JarFileSystem extends ReadFileSystem<JarPath>
-{
+public class JarFileSystem extends ReadFileSystem<JarPath> {
 
-   /** . */
-   final JarFile jar;
+  /** . */
+  final JarFile jar;
 
-   /** . */
-   final URL jarURL;
+  /** . */
+  final URL jarURL;
 
-   /** A synthetic jar entry. */
-   private final JarPath root;
+  /** A synthetic jar entry. */
+  private final JarPath root;
 
-   public JarFileSystem(JarFile f) throws IOException
-   {
+  public JarFileSystem(JarFile f) throws IOException {
 
-      //
-      this.jar = f;
-      this.jarURL = new File(f.getName()).toURI().toURL();
+    //
+    this.jar = f;
+    this.jarURL = new File(f.getName()).toURI().toURL();
 
-      //
-      JarPath root = new JarPath(this);
-      for (Enumeration<JarEntry> en = jar.entries();en.hasMoreElements();)
-      {
-         JarEntry entry = en.nextElement();
-         root.append(entry);
-      }
+    //
+    JarPath root = new JarPath(this);
+    for (Enumeration<JarEntry> en = jar.entries();en.hasMoreElements();) {
+      JarEntry entry = en.nextElement();
+      root.append(entry);
+    }
 
-      //
-      this.root = root;
-   }
+    //
+    this.root = root;
+  }
 
-   @Override
-   public String getDescription()
-   {
-      return "jar[" + jarURL + "]";
-   }
+  @Override
+  public String getDescription() {
+    return "jar[" + jarURL + "]";
+  }
 
-   @Override
-   public boolean equals(JarPath left, JarPath right)
-   {
-      return left == right;
-   }
+  @Override
+  public boolean equals(JarPath left, JarPath right) {
+    return left == right;
+  }
 
-   @Override
-   public JarPath getRoot() throws IOException
-   {
-      return root;
-   }
+  @Override
+  public JarPath getRoot() throws IOException {
+    return root;
+  }
 
-   @Override
-   public JarPath getParent(JarPath path) throws IOException
-   {
-      return path.parent;
-   }
+  @Override
+  public JarPath getParent(JarPath path) throws IOException {
+    return path.parent;
+  }
 
-   @Override
-   public String getName(JarPath path) throws IOException
-   {
-      return path.name;
-   }
+  @Override
+  public String getName(JarPath path) throws IOException {
+    return path.name;
+  }
 
-   @Override
-   public Iterator<JarPath> getChildren(JarPath dir) throws IOException
-   {
-      if (isFile(dir))
-      {
-         throw new IllegalArgumentException("Not a directory");
-      }
-      return dir.getChildren();
-   }
+  @Override
+  public Iterator<JarPath> getChildren(JarPath dir) throws IOException {
+    if (isFile(dir)) {
+      throw new IllegalArgumentException("Not a directory");
+    }
+    return dir.getChildren();
+  }
 
-   @Override
-   public JarPath getChild(JarPath dir, String name) throws IOException
-   {
-      if (isFile(dir))
-      {
-         throw new IllegalArgumentException("Not a directory");
-      }
-      return dir.getChild(name);
-   }
+  @Override
+  public JarPath getChild(JarPath dir, String name) throws IOException {
+    if (isFile(dir)) {
+      throw new IllegalArgumentException("Not a directory");
+    }
+    return dir.getChild(name);
+  }
 
-   @Override
-   public boolean isDir(JarPath path) throws IOException
-   {
-      return path.dir;
-   }
+  @Override
+  public boolean isDir(JarPath path) throws IOException {
+    return path.dir;
+  }
 
-   @Override
-   public boolean isFile(JarPath path) throws IOException
-   {
-      return !isDir(path);
-   }
+  @Override
+  public boolean isFile(JarPath path) throws IOException {
+    return !isDir(path);
+  }
 
-   @Override
-   public Content getContent(JarPath file) throws IOException
-   {
-      return file.getContent();
-   }
+  @Override
+  public Content getContent(JarPath file) throws IOException {
+    return file.getContent();
+  }
 
-   @Override
-   public long getLastModified(JarPath path) throws IOException
-   {
-      return 0;
-   }
+  @Override
+  public long getLastModified(JarPath path) throws IOException {
+    return 0;
+  }
 
-   @Override
-   public URL getURL(JarPath path) throws IOException
-   {
-      return path.getURL();
-   }
+  @Override
+  public URL getURL(JarPath path) throws IOException {
+    return path.getURL();
+  }
 
-   @Override
-   public File getFile(JarPath path) throws IOException
-   {
-      return null;
-   }
+  @Override
+  public File getFile(JarPath path) throws IOException {
+    return null;
+  }
 }

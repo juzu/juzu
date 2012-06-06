@@ -22,49 +22,41 @@ package juzu.impl.spi.inject;
 import juzu.Scope;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopedKey
-{
+public class ScopedKey {
 
-   /** . */
-   private final Scope scope;
+  /** . */
+  private final Scope scope;
 
-   /** . */
-   private final Object scoped;
+  /** . */
+  private final Object scoped;
 
-   ScopedKey(Scope scope, Object scoped)
-   {
-      this.scope = scope;
-      this.scoped = scoped;
-   }
+  ScopedKey(Scope scope, Object scoped) {
+    this.scope = scope;
+    this.scoped = scoped;
+  }
 
-   public Scope getScope()
-   {
-      return scope;
-   }
+  public Scope getScope() {
+    return scope;
+  }
 
-   public Object getScoped()
-   {
-      return scoped;
-   }
+  public Object getScoped() {
+    return scoped;
+  }
 
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == this)
-      {
-         return true;
-      }
-      if (obj instanceof ScopedKey)
-      {
-         ScopedKey that = (ScopedKey)obj;
-         return scope == that.scope && scoped.equals(that.scoped);
-      }
-      return false;
-   }
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (obj instanceof ScopedKey) {
+      ScopedKey that = (ScopedKey)obj;
+      return scope == that.scope && scoped.equals(that.scoped);
+    }
+    return false;
+  }
 
-   @Override
-   public int hashCode()
-   {
-      return scope.hashCode() ^ scoped.hashCode();
-   }
+  @Override
+  public int hashCode() {
+    return scope.hashCode() ^ scoped.hashCode();
+  }
 }

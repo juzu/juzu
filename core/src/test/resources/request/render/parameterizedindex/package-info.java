@@ -1,4 +1,3 @@
-@Application
-package request.render.parameterizedindex;
+@Application package request.render.parameterizedindex;
 
 import juzu.Application;

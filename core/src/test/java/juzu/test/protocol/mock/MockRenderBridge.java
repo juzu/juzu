@@ -26,37 +26,31 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockRenderBridge extends MockMimeBridge implements RenderBridge
-{
+public class MockRenderBridge extends MockMimeBridge implements RenderBridge {
 
-   /** . */
-   private String title;
+  /** . */
+  private String title;
 
-   public MockRenderBridge(MockClient client, String methodId, Map<String, String[]> parameters)
-   {
-      super(client, methodId, parameters);
-   }
+  public MockRenderBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
+    super(client, methodId, parameters);
+  }
 
-   public String getTitle()
-   {
-      return title;
-   }
+  public String getTitle() {
+    return title;
+  }
 
-   public void setTitle(String title)
-   {
-      this.title = title;
-   }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-   @Override
-   public void end(Response response) throws IllegalStateException, IOException
-   {
-      super.end(response);
-      
-      //
-      if (response instanceof Response.Content.Render)
-      {
-         Response.Content.Render stream = (Response.Content.Render)response;
-         title = stream.getTitle();
-      }
-   }
+  @Override
+  public void end(Response response) throws IllegalStateException, IOException {
+    super.end(response);
+
+    //
+    if (response instanceof Response.Content.Render) {
+      Response.Content.Render stream = (Response.Content.Render)response;
+      title = stream.getTitle();
+    }
+  }
 }

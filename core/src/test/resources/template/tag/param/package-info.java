@@ -1,4 +1,3 @@
-@Application
-package template.tag.param;
+@Application package template.tag.param;
 
 import juzu.Application;

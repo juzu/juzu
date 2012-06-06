@@ -20,9 +20,8 @@
 package juzu.impl.spi.inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum Color
-{
+public enum Color {
 
-   RED, GREEN, BLUE, WHITE, BLACK
+  RED, GREEN, BLUE, WHITE, BLACK
 
 }

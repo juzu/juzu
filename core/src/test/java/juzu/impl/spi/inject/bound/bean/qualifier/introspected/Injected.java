@@ -25,11 +25,10 @@ import juzu.impl.spi.inject.Colorized;
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Injected
-{
+public class Injected {
 
-   @Inject
-   @Colorized(Color.BLUE)
-   public Bean singleton;
+  @Inject
+  @Colorized(Color.BLUE)
+  public Bean singleton;
 
 }

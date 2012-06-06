@@ -26,32 +26,29 @@ import juzu.request.Phase;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface MimeBridge extends RequestBridge
-{
+public interface MimeBridge extends RequestBridge {
 
-   /**
-    *
-    * @param phase the phase
-    * @param propertyType the property type
-    * @param propertyValue the property value
-    * @param <T> the property generic type
-    * @return null when the property is valid, an error message otherwise
-    */
-   <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue);
-   
-   /**
-    * Renders an URL.
-    *
-    *
-    * @param phase the phase
-    * @param parameters the url parameters
-    * @param properties the url properties
-    * @return the rendered URL
-    * @throws IllegalArgumentException if any argument is not valid
-    */
-   String renderURL(
-      Phase phase,
-      Map<String, String[]> parameters,
-      PropertyMap properties) throws IllegalArgumentException;
+  /**
+   * @param phase         the phase
+   * @param propertyType  the property type
+   * @param propertyValue the property value
+   * @param <T>           the property generic type
+   * @return null when the property is valid, an error message otherwise
+   */
+  <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue);
+
+  /**
+   * Renders an URL.
+   *
+   * @param phase      the phase
+   * @param parameters the url parameters
+   * @param properties the url properties
+   * @return the rendered URL
+   * @throws IllegalArgumentException if any argument is not valid
+   */
+  String renderURL(
+    Phase phase,
+    Map<String, String[]> parameters,
+    PropertyMap properties) throws IllegalArgumentException;
 
 }

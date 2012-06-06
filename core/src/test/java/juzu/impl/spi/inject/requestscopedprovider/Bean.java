@@ -23,13 +23,11 @@ import juzu.RequestScoped;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RequestScoped
-public class Bean
-{
+public class Bean {
 
-   public final BeanProvider provider;
+  public final BeanProvider provider;
 
-   public Bean(BeanProvider provider)
-   {
-      this.provider = provider;
-   }
+  public Bean(BeanProvider provider) {
+    this.provider = provider;
+  }
 }

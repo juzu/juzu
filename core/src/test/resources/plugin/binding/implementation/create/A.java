@@ -27,15 +27,13 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   @Inject
-   Service service;
+  @Inject
+  Service service;
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content(service != null ? "pass" : "");
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content(service != null ? "pass" : "");
+  }
 }

@@ -25,43 +25,35 @@ import java.io.InputStream;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class GroovyTemplateLiteral extends GroovyTemplateStub
-{
-   public GroovyTemplateLiteral()
-   {
-   }
+public abstract class GroovyTemplateLiteral extends GroovyTemplateStub {
+  public GroovyTemplateLiteral() {
+  }
 
-   @Override
-   public final String getScript()
-   {
-      try
-      {
-         String path = templateId.replace('.', '/') + ".groovy";
-         URL url = getClass().getClassLoader().getResource(path);
-         if (url != null)
-         {
-            byte[] buffer = new byte[256];
-            InputStream in = url.openStream();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            for (int l = in.read(buffer);l != -1;l = in.read(buffer))
-            {
-               baos.write(buffer, 0, l);
-            }
-            return baos.toString();
-         }
-         else
-         {
-            System.out.println("Could not load resource " + path);
-            System.out.println("Could not load resource " + path);
-            System.out.println("Could not load resource " + path);
-            System.out.println("Could not load resource " + path);
-            System.out.println("Could not load resource " + path);
-         }
+  @Override
+  public final String getScript() {
+    try {
+      String path = templateId.replace('.', '/') + ".groovy";
+      URL url = getClass().getClassLoader().getResource(path);
+      if (url != null) {
+        byte[] buffer = new byte[256];
+        InputStream in = url.openStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
+          baos.write(buffer, 0, l);
+        }
+        return baos.toString();
       }
-      catch (IOException e)
-      {
-         e.printStackTrace();
+      else {
+        System.out.println("Could not load resource " + path);
+        System.out.println("Could not load resource " + path);
+        System.out.println("Could not load resource " + path);
+        System.out.println("Could not load resource " + path);
+        System.out.println("Could not load resource " + path);
       }
-      return null;
-   }
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 }

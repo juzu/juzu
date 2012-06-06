@@ -17,6 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package request.method.render;
+@Application package request.method.render;
+
 import juzu.Application;

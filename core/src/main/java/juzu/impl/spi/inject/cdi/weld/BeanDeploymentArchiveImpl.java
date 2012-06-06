@@ -19,6 +19,8 @@
 
 package juzu.impl.spi.inject.cdi.weld;
 
+import juzu.impl.fs.Visitor;
+import juzu.impl.spi.fs.ReadFileSystem;
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
@@ -26,8 +28,6 @@ import org.jboss.weld.bootstrap.spi.BeansXml;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
 import org.jboss.weld.resources.ClassLoaderResourceLoader;
 import org.jboss.weld.resources.spi.ResourceLoader;
-import juzu.impl.fs.Visitor;
-import juzu.impl.spi.fs.ReadFileSystem;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,117 +38,102 @@ import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class BeanDeploymentArchiveImpl implements BeanDeploymentArchive
-{
+class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
 
-   /** . */
-   private final WeldContainer owner;
+  /** . */
+  private final WeldContainer owner;
 
-   /** . */
-   private final String id;
+  /** . */
+  private final String id;
 
-   /** . */
-   private final Collection<String> beanClasses;
+  /** . */
+  private final Collection<String> beanClasses;
 
-   /** . */
-   private final BeansXml xml;
+  /** . */
+  private final BeansXml xml;
 
-   /** . */
-   private final ServiceRegistry registry;
+  /** . */
+  private final ServiceRegistry registry;
 
-   BeanDeploymentArchiveImpl(
-      WeldContainer owner,
-      String id,
-      List<ReadFileSystem<?>> fileSystems) throws IOException
-   {
+  BeanDeploymentArchiveImpl(
+    WeldContainer owner,
+    String id,
+    List<ReadFileSystem<?>> fileSystems) throws IOException {
 
-      // A bit unchecked but well it's ok here
-      List<URL> xmlURLs = new ArrayList<URL>();
-      List<URL> fsURLs = new ArrayList<URL>();
-      final ArrayList<String> beanClasses = new ArrayList<String>();
-      for (final ReadFileSystem fileSystem : fileSystems)
-      {
-         fileSystem.traverse(new Visitor.Default()
-         {
-            @Override
-            public void file(Object file, String name) throws IOException
-            {
-               if (name.endsWith(".class"))
-               {
-                  StringBuilder fqn = new StringBuilder();
-                  fileSystem.packageOf(file, '.', fqn);
-                  if (fqn.length() > 0)
-                  {
-                     fqn.append('.');
-                  }
-                  fqn.append(name, 0, name.length() - ".class".length());
-                  beanClasses.add(fqn.toString());
-               }
+    // A bit unchecked but well it's ok here
+    List<URL> xmlURLs = new ArrayList<URL>();
+    List<URL> fsURLs = new ArrayList<URL>();
+    final ArrayList<String> beanClasses = new ArrayList<String>();
+    for (final ReadFileSystem fileSystem : fileSystems) {
+      fileSystem.traverse(new Visitor.Default() {
+        @Override
+        public void file(Object file, String name) throws IOException {
+          if (name.endsWith(".class")) {
+            StringBuilder fqn = new StringBuilder();
+            fileSystem.packageOf(file, '.', fqn);
+            if (fqn.length() > 0) {
+              fqn.append('.');
             }
-         });
+            fqn.append(name, 0, name.length() - ".class".length());
+            beanClasses.add(fqn.toString());
+          }
+        }
+      });
 
-         //
-         // fsURLs.add(fileSystem.getURL());
+      //
+      // fsURLs.add(fileSystem.getURL());
 
-         //
-         Object beansPath = fileSystem.getPath(Arrays.asList("META-INF", "beans.xml"));
-         if (beansPath != null)
-         {
-            xmlURLs.add(fileSystem.getURL(beansPath));
-         }
+      //
+      Object beansPath = fileSystem.getPath(Arrays.asList("META-INF", "beans.xml"));
+      if (beansPath != null) {
+        xmlURLs.add(fileSystem.getURL(beansPath));
       }
+    }
 
-      //
-      BeansXml xml = owner.bootstrap.parse(xmlURLs);
+    //
+    BeansXml xml = owner.bootstrap.parse(xmlURLs);
 
-      //
+    //
 //      URLClassLoader classLoader = new URLClassLoader(fsURLs.toArray(new URL[fsURLs.size()]), owner.classLoader);
-      ResourceLoader loader = new ClassLoaderResourceLoader(owner.classLoader);
+    ResourceLoader loader = new ClassLoaderResourceLoader(owner.classLoader);
 
-      //
-      ServiceRegistry registry = new SimpleServiceRegistry();
-      registry.add(ResourceLoader.class, loader);
+    //
+    ServiceRegistry registry = new SimpleServiceRegistry();
+    registry.add(ResourceLoader.class, loader);
 
-      //
-      this.beanClasses = beanClasses;
-      this.xml = xml;
-      this.id = id;
-      this.registry = registry;
-      this.owner = owner;
-   }
+    //
+    this.beanClasses = beanClasses;
+    this.xml = xml;
+    this.id = id;
+    this.registry = registry;
+    this.owner = owner;
+  }
 
-   public ClassLoader getClassLoader()
-   {
-      return owner.classLoader;
-   }
+  public ClassLoader getClassLoader() {
+    return owner.classLoader;
+  }
 
-   public Collection<BeanDeploymentArchive> getBeanDeploymentArchives()
-   {
-      return Collections.emptyList();
-   }
+  public Collection<BeanDeploymentArchive> getBeanDeploymentArchives() {
+    return Collections.emptyList();
+  }
 
-   public Collection<String> getBeanClasses()
-   {
-      return beanClasses;
-   }
+  public Collection<String> getBeanClasses() {
+    return beanClasses;
+  }
 
-   public BeansXml getBeansXml()
-   {
-      return xml;
-   }
+  public BeansXml getBeansXml() {
+    return xml;
+  }
 
-   public Collection<EjbDescriptor<?>> getEjbs()
-   {
-      return Collections.emptyList();
-   }
+  public Collection<EjbDescriptor<?>> getEjbs() {
+    return Collections.emptyList();
+  }
 
-   public ServiceRegistry getServices()
-   {
-      return registry;
-   }
+  public ServiceRegistry getServices() {
+    return registry;
+  }
 
-   public String getId()
-   {
-      return id;
-   }
+  public String getId() {
+    return id;
+  }
 }

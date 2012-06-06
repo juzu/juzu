@@ -27,19 +27,17 @@ import juzu.template.Template;
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @Path("index.gtmpl")
-   @Inject
-   Template index;
+  @Path("index.gtmpl")
+  @Inject
+  Template index;
 
-   @Inject
-   Stream.Char printer;
+  @Inject
+  Stream.Char printer;
 
-   @View
-   public void index()
-   {
-      index.renderTo(printer);
-   }
+  @View
+  public void index() {
+    index.renderTo(printer);
+  }
 }

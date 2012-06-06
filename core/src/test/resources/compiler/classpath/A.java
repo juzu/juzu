@@ -22,9 +22,8 @@ package compiler.classpath;
 import junit.framework.TestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   private TestCase testCase;
+  private TestCase testCase;
 
 }

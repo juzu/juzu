@@ -24,111 +24,96 @@ import juzu.impl.template.ast.SectionType;
 import juzu.impl.utils.Location;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class EmitterContext
-{
+class EmitterContext {
 
-   /** . */
-   private SectionType currentType = null;
+  /** . */
+  private SectionType currentType = null;
 
-   /** . */
-   private StringBuilder accumulatedText = new StringBuilder();
+  /** . */
+  private StringBuilder accumulatedText = new StringBuilder();
 
-   /** . */
-   final TemplateEmitter writer;
+  /** . */
+  final TemplateEmitter writer;
 
-   EmitterContext(TemplateEmitter writer)
-   {
-      this.writer = writer;
-   }
+  EmitterContext(TemplateEmitter writer) {
+    this.writer = writer;
+  }
 
-   void begin(SectionType sectionType, Location pos)
-   {
-      if (sectionType == null)
-      {
-         throw new NullPointerException();
-      }
-      if (pos == null)
-      {
-         throw new NullPointerException();
-      }
-      if (currentType != null)
-      {
-         throw new IllegalStateException();
-      }
-      this.currentType = sectionType;
+  void begin(SectionType sectionType, Location pos) {
+    if (sectionType == null) {
+      throw new NullPointerException();
+    }
+    if (pos == null) {
+      throw new NullPointerException();
+    }
+    if (currentType != null) {
+      throw new IllegalStateException();
+    }
+    this.currentType = sectionType;
 
-      //
-      switch (currentType)
-      {
-         case STRING:
-            break;
-         case SCRIPTLET:
-            writer.startScriptlet(pos);
-            break;
-         case EXPR:
-            writer.startExpression(pos);
-            break;
-      }
-   }
+    //
+    switch (currentType) {
+      case STRING:
+        break;
+      case SCRIPTLET:
+        writer.startScriptlet(pos);
+        break;
+      case EXPR:
+        writer.startExpression(pos);
+        break;
+    }
+  }
 
-   void appendText(String text)
-   {
-      switch (currentType)
-      {
-         case STRING:
-            accumulatedText.append(text);
-            break;
-         case SCRIPTLET:
-            writer.appendScriptlet(text);
-            break;
-         case EXPR:
-            writer.appendExpression(text);
-            break;
-      }
-   }
+  void appendText(String text) {
+    switch (currentType) {
+      case STRING:
+        accumulatedText.append(text);
+        break;
+      case SCRIPTLET:
+        writer.appendScriptlet(text);
+        break;
+      case EXPR:
+        writer.appendExpression(text);
+        break;
+    }
+  }
 
-   void appendLineBreak(Location position)
-   {
-      switch (currentType)
-      {
-         case STRING:
-            accumulatedText.append("\n");
-            break;
-         case SCRIPTLET:
-            writer.appendLineBreak(currentType, position);
-            break;
-         case EXPR:
-            writer.appendLineBreak(currentType, position);
-            break;
-      }
-   }
+  void appendLineBreak(Location position) {
+    switch (currentType) {
+      case STRING:
+        accumulatedText.append("\n");
+        break;
+      case SCRIPTLET:
+        writer.appendLineBreak(currentType, position);
+        break;
+      case EXPR:
+        writer.appendLineBreak(currentType, position);
+        break;
+    }
+  }
 
-   void end()
-   {
-      if (currentType == null)
-      {
-         throw new IllegalStateException();
-      }
+  void end() {
+    if (currentType == null) {
+      throw new IllegalStateException();
+    }
 
-      //
-      switch (currentType)
-      {
-         case STRING:
-            if (accumulatedText.length() > 0)
-            {
-               writer.appendText(accumulatedText.toString());
-               accumulatedText.setLength(0);
-            }
-            break;
-         case SCRIPTLET:
-            writer.endScriptlet();
-            break;
-         case EXPR:
-            writer.endExpression();
-            break;
-      }
+    //
+    switch (currentType) {
+      case STRING:
+        if (accumulatedText.length() > 0) {
+          writer.appendText(accumulatedText.toString());
+          accumulatedText.setLength(0);
+        }
+        break;
+      case SCRIPTLET:
+        writer.endScriptlet();
+        break;
+      case EXPR:
+        writer.endExpression();
+        break;
+    }
 
-      //
-      this.currentType = null;
-   }
+    //
+    this.currentType = null;
+  }
 }

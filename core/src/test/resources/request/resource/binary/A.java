@@ -29,22 +29,18 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   public A()
-   {
-   }
+  public A() {
+  }
 
-   @Resource
-   public Response.Content.Resource resource() throws AuthenticationException
-   {
-      return Response.ok("application/octet-stream", new ByteArrayInputStream("hello".getBytes()));
-   }
+  @Resource
+  public Response.Content.Resource resource() throws AuthenticationException {
+    return Response.ok("application/octet-stream", new ByteArrayInputStream("hello".getBytes()));
+  }
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content(A_.resourceURL().toString());
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content(A_.resourceURL().toString());
+  }
 }

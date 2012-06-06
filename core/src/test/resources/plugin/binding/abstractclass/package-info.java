@@ -1,6 +1,5 @@
 @Application
-@Bindings(@Binding(Service.class))
-package plugin.binding.abstractclass;
+@Bindings(@Binding(Service.class)) package plugin.binding.abstractclass;
 
 import juzu.Application;
 import juzu.plugin.binding.Binding;

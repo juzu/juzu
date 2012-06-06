@@ -31,66 +31,56 @@ import java.nio.charset.Charset;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface CharArray
-{
+public interface CharArray {
 
-   /**
-    * Returns the number of characters contained in this array.
-    *
-    * @return the length
-    */
-   int getLength();
+  /**
+   * Returns the number of characters contained in this array.
+   *
+   * @return the length
+   */
+  int getLength();
 
-   void write(OutputStream out) throws IOException, NullPointerException;
+  void write(OutputStream out) throws IOException, NullPointerException;
 
-   void write(Appendable appendable) throws IOException, NullPointerException;
+  void write(Appendable appendable) throws IOException, NullPointerException;
 
-   public static class Simple implements CharArray
-   {
+  public static class Simple implements CharArray {
 
-      /** . */
-      private static final Charset UTF_8 = Charset.forName("UTF-8");
+    /** . */
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-      /** . */
-      private final CharSequence chars;
+    /** . */
+    private final CharSequence chars;
 
-      /** . */
-      private final byte[] bytes;
+    /** . */
+    private final byte[] bytes;
 
-      public Simple(CharSequence sequence)
-      {
-         try
-         {
-            this.chars = sequence;
-            this.bytes = UTF_8.newEncoder().encode(CharBuffer.wrap(chars)).array();
-         }
-         catch (CharacterCodingException e)
-         {
-            throw new UndeclaredThrowableException(e);
-         }
+    public Simple(CharSequence sequence) {
+      try {
+        this.chars = sequence;
+        this.bytes = UTF_8.newEncoder().encode(CharBuffer.wrap(chars)).array();
       }
-
-      public int getLength()
-      {
-         return chars.length();
+      catch (CharacterCodingException e) {
+        throw new UndeclaredThrowableException(e);
       }
+    }
 
-      public void write(OutputStream out) throws IOException, NullPointerException
-      {
-         if (out == null)
-         {
-            throw new NullPointerException("No null dst argument accepted");
-         }
-         out.write(bytes);
-      }
+    public int getLength() {
+      return chars.length();
+    }
 
-      public void write(Appendable appendable) throws IOException
-      {
-         if (appendable == null)
-         {
-            throw new NullPointerException("No null dst argument accepted");
-         }
-         appendable.append(chars);
+    public void write(OutputStream out) throws IOException, NullPointerException {
+      if (out == null) {
+        throw new NullPointerException("No null dst argument accepted");
       }
-   }
+      out.write(bytes);
+    }
+
+    public void write(Appendable appendable) throws IOException {
+      if (appendable == null) {
+        throw new NullPointerException("No null dst argument accepted");
+      }
+      appendable.append(chars);
+    }
+  }
 }

@@ -27,22 +27,18 @@ import juzu.View;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   public A()
-   {
-   }
+  public A() {
+  }
 
-   @Resource
-   public void resource()
-   {
-      throw new UnknownError();
-   }
+  @Resource
+  public void resource() {
+    throw new UnknownError();
+  }
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content(A_.resourceURL().toString());
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content(A_.resourceURL().toString());
+  }
 }

@@ -25,13 +25,11 @@ import juzu.impl.template.compiler.ProcessPhase;
 import juzu.impl.template.compiler.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ParamTag extends ExtendedTagHandler
-{
+public class ParamTag extends ExtendedTagHandler {
 
-   @Override
-   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t)
-   {
-      String parameterName = tag.getArgs().get("name");
-      t.addParameter(parameterName);
-   }
+  @Override
+  public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) {
+    String parameterName = tag.getArgs().get("name");
+    t.addParameter(parameterName);
+  }
 }

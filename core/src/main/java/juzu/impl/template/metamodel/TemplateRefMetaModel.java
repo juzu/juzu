@@ -32,56 +32,48 @@ import javax.lang.model.element.VariableElement;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class TemplateRefMetaModel extends MetaModelObject
-{
+public class TemplateRefMetaModel extends MetaModelObject {
 
-   /** . */
-   final ElementHandle.Field handle;
+  /** . */
+  final ElementHandle.Field handle;
 
-   /** . */
-   juzu.impl.utils.Path path;
+  /** . */
+  juzu.impl.utils.Path path;
 
-   TemplateRefMetaModel(
-      ElementHandle.Field handle,
-      juzu.impl.utils.Path path)
-   {
-      this.handle = handle;
-      this.path = path;
-   }
+  TemplateRefMetaModel(
+    ElementHandle.Field handle,
+    juzu.impl.utils.Path path) {
+    this.handle = handle;
+    this.path = path;
+  }
 
-   public ElementHandle.Field getHandle()
-   {
-      return handle;
-   }
+  public ElementHandle.Field getHandle() {
+    return handle;
+  }
 
-   public juzu.impl.utils.Path getPath()
-   {
-      return path;
-   }
+  public juzu.impl.utils.Path getPath() {
+    return path;
+  }
 
-   public JSON toJSON()
-   {
-      JSON json = new JSON();
-      json.set("handle", handle);
-      json.set("template", getChild(TemplateMetaModel.KEY));
-      return json;
-   }
+  public JSON toJSON() {
+    JSON json = new JSON();
+    json.set("handle", handle);
+    json.set("template", getChild(TemplateMetaModel.KEY));
+    return json;
+  }
 
-   @Override
-   public boolean exist(MetaModel model)
-   {
-      VariableElement fieldElt = model.env.get(handle);
-      boolean exist = true;
-      if (fieldElt == null)
-      {
-         MetaModel.log.log("Removing handle " + handle + " that does not exist anymore");
-         exist = false;
-      }
-      else if (fieldElt.getAnnotation(Path.class) == null)
-      {
-         MetaModel.log.log("Removing handle " + handle + " that is not annoated anymore");
-         exist = false;
-      }
-      return exist;
-   }
+  @Override
+  public boolean exist(MetaModel model) {
+    VariableElement fieldElt = model.env.get(handle);
+    boolean exist = true;
+    if (fieldElt == null) {
+      MetaModel.log.log("Removing handle " + handle + " that does not exist anymore");
+      exist = false;
+    }
+    else if (fieldElt.getAnnotation(Path.class) == null) {
+      MetaModel.log.log("Removing handle " + handle + " that is not annoated anymore");
+      exist = false;
+    }
+    return exist;
+  }
 }

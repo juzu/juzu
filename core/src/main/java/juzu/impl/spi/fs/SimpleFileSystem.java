@@ -30,112 +30,93 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A degenerated file system which allows to:
- * <ul>
- *    <li>Retrieve a path according to its names</li>
- *    <li>Determine whether a path is a directory or a fiile</li>
- *    <li>List the set of children of a directory</li>
- *    <li>Determine the names of a path</li>
- *    <li>Retrieve the content of a file</li>
- * </ul>
- *
+ * A degenerated file system which allows to: <ul> <li>Retrieve a path according to its names</li> <li>Determine whether
+ * a path is a directory or a fiile</li> <li>List the set of children of a directory</li> <li>Determine the names of a
+ * path</li> <li>Retrieve the content of a file</li> </ul>
+ * <p/>
  * The file system is said to be degenerated because a valid path may not have valid ancestors.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class SimpleFileSystem<P>
-{
+public abstract class SimpleFileSystem<P> {
 
-   public final <A extends Appendable> A packageOf(P path, char separator, A appendable) throws NullPointerException, IOException
-   {
-      if (path == null)
-      {
-         throw new NullPointerException("No null path accepted");
+  public final <A extends Appendable> A packageOf(P path, char separator, A appendable) throws NullPointerException, IOException {
+    if (path == null) {
+      throw new NullPointerException("No null path accepted");
+    }
+    if (appendable == null) {
+      throw new NullPointerException("No null appendable accepted");
+    }
+    List<String> l = new ArrayList<String>();
+    packageOf(path, l);
+    bilto(l, separator, appendable);
+    return appendable;
+  }
+
+  public final void pathOf(P path, Collection<String> to) throws IOException {
+    packageOf(path, to);
+    if (isFile(path)) {
+      String name = getName(path);
+      to.add(name);
+    }
+  }
+
+  public final void pathOf(P path, char separator, Appendable appendable) throws NullPointerException, IOException {
+    if (path == null) {
+      throw new NullPointerException("No null path accepted");
+    }
+    if (appendable == null) {
+      throw new NullPointerException("No null appendable accepted");
+    }
+    List<String> l = new ArrayList<String>();
+    pathOf(path, l);
+    bilto(l, separator, appendable);
+  }
+
+  private void bilto(Collection<String> l, char separator, Appendable appendable) throws IOException {
+    boolean dot = false;
+    for (String name : l) {
+      if (dot) {
+        appendable.append(separator);
       }
-      if (appendable == null)
-      {
-         throw new NullPointerException("No null appendable accepted");
+      else {
+        dot = true;
       }
-      List<String> l = new ArrayList<String>();
-      packageOf(path, l);
-      bilto(l, separator, appendable);
-      return appendable;
-   }
+      appendable.append(name);
+    }
+  }
 
-   public final void pathOf(P path, Collection<String> to) throws IOException
-   {
-      packageOf(path, to);
-      if (isFile(path))
-      {
-         String name = getName(path);
-         to.add(name);
-      }
-   }
+  public final P getPath(String... names) throws IOException {
+    return getPath(Arrays.asList(names));
+  }
 
-   public final void pathOf(P path, char separator, Appendable appendable) throws NullPointerException, IOException
-   {
-      if (path == null)
-      {
-         throw new NullPointerException("No null path accepted");
-      }
-      if (appendable == null)
-      {
-         throw new NullPointerException("No null appendable accepted");
-      }
-      List<String> l = new ArrayList<String>();
-      pathOf(path, l);
-      bilto(l, separator, appendable);
-   }
+  /**
+   * Returns an description for the file system (for debugging purposes).
+   *
+   * @return the id
+   */
+  public abstract String getDescription();
 
-   private void bilto(Collection<String> l, char separator, Appendable appendable) throws IOException
-   {
-      boolean dot = false;
-      for (String name : l)
-      {
-         if (dot)
-         {
-            appendable.append(separator);
-         }
-         else
-         {
-            dot = true;
-         }
-         appendable.append(name);
-      }
-   }
+  public abstract String getName(P path) throws IOException;
 
-   public final P getPath(String... names) throws IOException
-   {
-      return getPath(Arrays.asList(names));
-   }
+  public abstract P getPath(Iterable<String> names) throws IOException;
 
-   /**
-    * Returns an description for the file system (for debugging purposes).
-    *
-    * @return the id
-    */
-   public abstract String getDescription();
+  public abstract void packageOf(P path, Collection<String> to) throws IOException;
 
-   public abstract String getName(P path) throws IOException;
+  public abstract Iterator<P> getChildren(P dir) throws IOException;
 
-   public abstract P getPath(Iterable<String> names) throws IOException;
+  public abstract boolean isDir(P path) throws IOException;
 
-   public abstract void packageOf(P path, Collection<String> to) throws IOException;
+  public abstract boolean isFile(P path) throws IOException;
 
-   public abstract Iterator<P> getChildren(P dir) throws IOException;
+  public abstract Content getContent(P file) throws IOException;
 
-   public abstract boolean isDir(P path) throws IOException;
-
-   public abstract boolean isFile(P path) throws IOException;
-
-   public abstract Content getContent(P file) throws IOException;
-
-   /**
-    * Attempt to return a {@link java.io.File} associated with this file or null if no physical file exists.
-    *
-    * @param path the path
-    * @return the file system object
-    * @throws IOException any IO exception
-    */
-   public abstract File getFile(P path) throws IOException;
+  /**
+   * Attempt to return a {@link java.io.File} associated with this file or null if no physical file exists.
+   *
+   * @param path the path
+   * @return the file system object
+   * @throws IOException any IO exception
+   */
+  public abstract File getFile(P path) throws IOException;
 }

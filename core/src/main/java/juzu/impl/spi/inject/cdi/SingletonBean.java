@@ -25,27 +25,23 @@ import javax.enterprise.context.spi.CreationalContext;
 import java.lang.annotation.Annotation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class SingletonBean extends AbstractSingletonBean
-{
+class SingletonBean extends AbstractSingletonBean {
 
-   private final Object instance;
+  private final Object instance;
 
-   SingletonBean(Class type, Iterable<Annotation> qualifiers, Object instance)
-   {
-      super(type, Scope.SINGLETON, qualifiers);
+  SingletonBean(Class type, Iterable<Annotation> qualifiers, Object instance) {
+    super(type, Scope.SINGLETON, qualifiers);
 
-      //
-      this.instance = instance;
-   }
+    //
+    this.instance = instance;
+  }
 
-   public Object create(CreationalContext creationalContext)
-   {
-      return instance;
-   }
+  public Object create(CreationalContext creationalContext) {
+    return instance;
+  }
 
-   @Override
-   public String toString()
-   {
-      return "SingletonBean[type=" + type + ",qualifiers=" + qualifiers + "]";
-   }
+  @Override
+  public String toString() {
+    return "SingletonBean[type=" + type + ",qualifiers=" + qualifiers + "]";
+  }
 }

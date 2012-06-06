@@ -24,16 +24,13 @@ package juzu.impl.application;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ApplicationException extends RuntimeException
-{
+public class ApplicationException extends RuntimeException {
 
-   public ApplicationException(String message, Throwable cause)
-   {
-      super(message, cause);
-   }
+  public ApplicationException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-   public ApplicationException(Throwable cause)
-   {
-      super(cause);
-   }
+  public ApplicationException(Throwable cause) {
+    super(cause);
+  }
 }

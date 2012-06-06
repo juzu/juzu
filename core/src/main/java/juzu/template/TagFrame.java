@@ -22,18 +22,16 @@ package juzu.template;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class TagFrame
-{
+class TagFrame {
 
-   /** . */
-   final TagHandler tag;
+  /** . */
+  final TagHandler tag;
 
-   /** . */
-   final Map<String, String> args;
+  /** . */
+  final Map<String, String> args;
 
-   TagFrame(TagHandler tag, Map<String, String> args)
-   {
-      this.tag = tag;
-      this.args = args;
-   }
+  TagFrame(TagHandler tag, Map<String, String> args) {
+    this.tag = tag;
+    this.args = args;
+  }
 }

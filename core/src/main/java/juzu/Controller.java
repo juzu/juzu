@@ -28,48 +28,42 @@ import juzu.request.ResourceContext;
 import juzu.request.SecurityContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Controller implements RequestLifeCycle
-{
+public abstract class Controller implements RequestLifeCycle {
 
-   /** . */
-   protected ActionContext actionContext;
+  /** . */
+  protected ActionContext actionContext;
 
-   /** . */
-   protected RenderContext renderContext;
+  /** . */
+  protected RenderContext renderContext;
 
-   /** . */
-   protected ResourceContext resourceContext;
+  /** . */
+  protected ResourceContext resourceContext;
 
-   /** . */
-   protected HttpContext httpContext;
+  /** . */
+  protected HttpContext httpContext;
 
-   /** . */
-   protected SecurityContext securityContext;
+  /** . */
+  protected SecurityContext securityContext;
 
-   public void beginRequest(RequestContext context)
-   {
-      if (context instanceof ActionContext)
-      {
-         actionContext = (ActionContext)context;
-      }
-      else if (context instanceof RenderContext)
-      {
-         renderContext = (RenderContext)context;
-      }
-      else if (context instanceof ResourceContext)
-      {
-         resourceContext = (ResourceContext)context;
-      }
-      httpContext = context.getHttpContext();
-      securityContext = context.getSecurityContext();
-   }
-   
-   public void endRequest(RequestContext context)
-   {
-      this.actionContext = null;
-      this.renderContext = null;
-      this.resourceContext = null;
-      this.httpContext = null;
-      this.securityContext = null;
-   }
+  public void beginRequest(RequestContext context) {
+    if (context instanceof ActionContext) {
+      actionContext = (ActionContext)context;
+    }
+    else if (context instanceof RenderContext) {
+      renderContext = (RenderContext)context;
+    }
+    else if (context instanceof ResourceContext) {
+      resourceContext = (ResourceContext)context;
+    }
+    httpContext = context.getHttpContext();
+    securityContext = context.getSecurityContext();
+  }
+
+  public void endRequest(RequestContext context) {
+    this.actionContext = null;
+    this.renderContext = null;
+    this.resourceContext = null;
+    this.httpContext = null;
+    this.securityContext = null;
+  }
 }

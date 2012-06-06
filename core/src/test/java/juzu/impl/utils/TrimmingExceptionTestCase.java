@@ -19,94 +19,76 @@
 
 package juzu.impl.utils;
 
-import org.junit.Test;
 import juzu.test.AbstractTestCase;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TrimmingExceptionTestCase extends AbstractTestCase
-{
+public class TrimmingExceptionTestCase extends AbstractTestCase {
 
-   @Test
-   public void testEmpty()
-   {
-      try
-      {
-         TrimmingException.invoke(new TrimmingException.Callback()
-         {
-            public void call() throws Exception
-            {
-               throw new UnsupportedOperationException();
-            }
-         });
-      }
-      catch (TrimmingException e)
-      {
-         assertEquals(0, e.getStackTrace().length);
-         assertEquals(null, e.getCause());
-      }
-   }
+  @Test
+  public void testEmpty() {
+    try {
+      TrimmingException.invoke(new TrimmingException.Callback() {
+        public void call() throws Exception {
+          throw new UnsupportedOperationException();
+        }
+      });
+    }
+    catch (TrimmingException e) {
+      assertEquals(0, e.getStackTrace().length);
+      assertEquals(null, e.getCause());
+    }
+  }
 
-   @Test
-   public void testException()
-   {
-      try
-      {
-         TrimmingException.invoke(new TrimmingException.Callback()
-         {
-            public void call() throws Exception
-            {
-               throw bar();
-            }
-         });
-      }
-      catch (TrimmingException e)
-      {
-         assertEquals(1, e.getStackTrace().length);
-         StackTraceElement elt = e.getStackTrace()[0];
-         assertEquals(getClass().getName(), elt.getClassName());
-         assertEquals("bar", elt.getMethodName());
-         assertEquals(null, e.getCause());
-      }
-   }
+  @Test
+  public void testException() {
+    try {
+      TrimmingException.invoke(new TrimmingException.Callback() {
+        public void call() throws Exception {
+          throw bar();
+        }
+      });
+    }
+    catch (TrimmingException e) {
+      assertEquals(1, e.getStackTrace().length);
+      StackTraceElement elt = e.getStackTrace()[0];
+      assertEquals(getClass().getName(), elt.getClassName());
+      assertEquals("bar", elt.getMethodName());
+      assertEquals(null, e.getCause());
+    }
+  }
 
-   @Test
-   public void testCause()
-   {
-      try
-      {
-         TrimmingException.invoke(new TrimmingException.Callback()
-         {
-            public void call() throws Exception
-            {
-               throw foo();
-            }
-         });
-      }
-      catch (TrimmingException e)
-      {
-         assertEquals(1, e.getStackTrace().length);
-         StackTraceElement elt = e.getStackTrace()[0];
-         assertEquals(getClass().getName(), elt.getClassName());
-         assertEquals("foo", elt.getMethodName());
-         Throwable cause = e.getCause();
-         assertEquals(2, cause.getStackTrace().length);
-         elt = cause.getStackTrace()[0];
-         assertEquals(getClass().getName(), elt.getClassName());
-         assertEquals("bar", elt.getMethodName());
-         elt = cause.getStackTrace()[1];
-         assertEquals(getClass().getName(), elt.getClassName());
-         assertEquals("foo", elt.getMethodName());
-         assertEquals(null, cause.getCause());
-      }
-   }
+  @Test
+  public void testCause() {
+    try {
+      TrimmingException.invoke(new TrimmingException.Callback() {
+        public void call() throws Exception {
+          throw foo();
+        }
+      });
+    }
+    catch (TrimmingException e) {
+      assertEquals(1, e.getStackTrace().length);
+      StackTraceElement elt = e.getStackTrace()[0];
+      assertEquals(getClass().getName(), elt.getClassName());
+      assertEquals("foo", elt.getMethodName());
+      Throwable cause = e.getCause();
+      assertEquals(2, cause.getStackTrace().length);
+      elt = cause.getStackTrace()[0];
+      assertEquals(getClass().getName(), elt.getClassName());
+      assertEquals("bar", elt.getMethodName());
+      elt = cause.getStackTrace()[1];
+      assertEquals(getClass().getName(), elt.getClassName());
+      assertEquals("foo", elt.getMethodName());
+      assertEquals(null, cause.getCause());
+    }
+  }
 
-   public Exception bar()
-   {
-      return new UnsupportedOperationException();
-   }
+  public Exception bar() {
+    return new UnsupportedOperationException();
+  }
 
-   public Exception foo()
-   {
-      return new IllegalArgumentException(bar());
-   }
+  public Exception foo() {
+    return new IllegalArgumentException(bar());
+  }
 }

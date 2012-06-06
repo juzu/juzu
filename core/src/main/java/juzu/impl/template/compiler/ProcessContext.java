@@ -22,11 +22,9 @@ package juzu.impl.template.compiler;
 import juzu.impl.utils.Path;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProcessContext
-{
+public class ProcessContext {
 
-   protected Template resolveTemplate(Path originPath, Path path)
-   {
-      return null;
-   }
+  protected Template resolveTemplate(Path originPath, Path path) {
+    return null;
+  }
 }

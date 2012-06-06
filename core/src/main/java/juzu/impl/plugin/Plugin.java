@@ -15,68 +15,57 @@ import java.util.Set;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Plugin
-{
+public abstract class Plugin {
 
-   /** The plugin name. */
-   private final String name;
+  /** The plugin name. */
+  private final String name;
 
-   protected Plugin(String name)
-   {
-      this.name = name;
-   }
+  protected Plugin(String name) {
+    this.name = name;
+  }
 
-   public String getName()
-   {
-      return name;
-   }
+  public String getName() {
+    return name;
+  }
 
-   public Set<Class<? extends Annotation>> getAnnotationTypes()
-   {
-      return Collections.emptySet();
-   }
+  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+    return Collections.emptySet();
+  }
 
-   /**
-    * Returns the application meta model plugin type.
-    *
-    * @return the application meta model plugin type
-    */
-   public ApplicationMetaModelPlugin newApplicationMetaModelPlugin()
-   {
-      return new ApplicationMetaModelPlugin();
-   }
+  /**
+   * Returns the application meta model plugin type.
+   *
+   * @return the application meta model plugin type
+   */
+  public ApplicationMetaModelPlugin newApplicationMetaModelPlugin() {
+    return new ApplicationMetaModelPlugin();
+  }
 
-   /**
-    * Returns the plugin descriptor.
-    *
-    * @return the descriptor
-    * @param loader the loader
-    * @param config the plugin config
-    * @throws Exception any exception
-    */
-   public Descriptor loadDescriptor(ClassLoader loader, JSON config) throws Exception
-   {
-      return new Descriptor()
-      {
-         @Override
-         public Iterable<BeanDescriptor> getBeans()
-         {
-            Class<? extends RequestLifeCycle> lifeCycleClass = getLifeCycleClass();
-            if (lifeCycleClass != null)
-            {
-               return Collections.singletonList(new BeanDescriptor(lifeCycleClass, null, null, null));
-            }
-            else
-            {
-               return Collections.emptyList();
-            }
-         }
-      };
-   }
-   
-   public Class<? extends RequestLifeCycle> getLifeCycleClass()
-   {
-      return null;
-   }
+  /**
+   * Returns the plugin descriptor.
+   *
+   * @param loader the loader
+   * @param config the plugin config
+   * @return the descriptor
+   * @throws Exception any exception
+   */
+  public Descriptor loadDescriptor(ClassLoader loader, JSON config) throws Exception {
+    return new Descriptor() {
+      @Override
+      public Iterable<BeanDescriptor> getBeans() {
+        Class<? extends RequestLifeCycle> lifeCycleClass = getLifeCycleClass();
+        if (lifeCycleClass != null) {
+          return Collections.singletonList(new BeanDescriptor(lifeCycleClass, null, null, null));
+        }
+        else {
+          return Collections.emptyList();
+        }
+      }
+    };
+  }
+
+  public Class<? extends RequestLifeCycle> getLifeCycleClass() {
+    return null;
+  }
 
 }

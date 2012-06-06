@@ -31,14 +31,13 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
-public @interface Bindings
-{
+public @interface Bindings {
 
-   /**
-    * Declares a list of bindings.
-    *
-    * @return the bindings
-    */
-   Binding[] value() default {};
+  /**
+   * Declares a list of bindings.
+   *
+   * @return the bindings
+   */
+  Binding[] value() default {};
 
 }

@@ -19,8 +19,8 @@
 
 package juzu.impl.spi.template;
 
-import juzu.template.TemplateRenderContext;
 import juzu.template.TemplateExecutionException;
+import juzu.template.TemplateRenderContext;
 
 import java.io.IOException;
 
@@ -29,16 +29,16 @@ import java.io.IOException;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class TemplateStub
-{
+public abstract class TemplateStub {
 
-   /**
-    * Renders the template.
-    *
-    * @param renderContext the render context
-    * @throws juzu.template.TemplateExecutionException any execution exception
-    * @throws IOException any io exception
-    */
-   public abstract void render(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException;
+  /**
+   * Renders the template.
+   *
+   * @param renderContext the render context
+   * @throws juzu.template.TemplateExecutionException
+   *                     any execution exception
+   * @throws IOException any io exception
+   */
+  public abstract void render(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException;
 
 }

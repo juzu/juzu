@@ -22,14 +22,12 @@ package application.method.duplicate;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-   @View(id = "foo")
-   public void a()
-   {
-   }
-   @View(id = "foo")
-   public void b()
-   {
-   }
+public class A {
+  @View(id = "foo")
+  public void a() {
+  }
+
+  @View(id = "foo")
+  public void b() {
+  }
 }

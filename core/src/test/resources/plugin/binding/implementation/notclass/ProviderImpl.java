@@ -20,9 +20,8 @@
 package plugin.binding.implementation.notclass;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum ProviderImpl implements Service
-{
+public enum ProviderImpl implements Service {
 
-   FOO
+  FOO
 
 }

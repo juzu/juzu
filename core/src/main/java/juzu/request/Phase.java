@@ -30,52 +30,38 @@ import java.lang.annotation.Annotation;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public enum Phase
-{
+public enum Phase {
 
-   /**
-    * Action phase.
-    */
-   ACTION(Action.class)
-   {
-      @Override
-      public String id(Annotation annotation) throws ClassCastException
-      {
-         return ((Action)annotation).id();
-      }
-   },
+  /** Action phase. */
+  ACTION(Action.class) {
+    @Override
+    public String id(Annotation annotation) throws ClassCastException {
+      return ((Action)annotation).id();
+    }
+  },
 
-   /**
-    * Render phase.
-    */
-   RENDER(View.class)
-   {
-      @Override
-      public String id(Annotation annotation) throws ClassCastException
-      {
-         return ((View)annotation).id();
-      }
-   },
+  /** Render phase. */
+  RENDER(View.class) {
+    @Override
+    public String id(Annotation annotation) throws ClassCastException {
+      return ((View)annotation).id();
+    }
+  },
 
-   /**
-    * Resource phase.
-    */
-   RESOURCE(Resource.class)
-   {
-      @Override
-      public String id(Annotation annotation) throws ClassCastException
-      {
-         return ((Resource)annotation).id();
-      }
-   };
+  /** Resource phase. */
+  RESOURCE(Resource.class) {
+    @Override
+    public String id(Annotation annotation) throws ClassCastException {
+      return ((Resource)annotation).id();
+    }
+  };
 
-   /** . */
-   public final Class<? extends Annotation> annotation;
+  /** . */
+  public final Class<? extends Annotation> annotation;
 
-   Phase(Class<? extends Annotation> annotation)
-   {
-      this.annotation = annotation;
-   }
+  Phase(Class<? extends Annotation> annotation) {
+    this.annotation = annotation;
+  }
 
-   public abstract String id(Annotation annotation) throws ClassCastException;
+  public abstract String id(Annotation annotation) throws ClassCastException;
 }

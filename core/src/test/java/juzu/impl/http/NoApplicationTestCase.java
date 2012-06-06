@@ -19,16 +19,14 @@
 
 package juzu.impl.http;
 
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class NoApplicationTestCase extends AbstractHttpTestCase
-{
+public class NoApplicationTestCase extends AbstractHttpTestCase {
 
-   @Test
-   public void testNoApplication()
-   {
-      assertInternalError();
-   }
+  @Test
+  public void testNoApplication() {
+    assertInternalError();
+  }
 }

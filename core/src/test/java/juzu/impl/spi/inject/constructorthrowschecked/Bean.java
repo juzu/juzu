@@ -22,10 +22,8 @@ package juzu.impl.spi.inject.constructorthrowschecked;
 import javax.naming.AuthenticationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean
-{
-   public Bean() throws Exception
-   {
-      throw new AuthenticationException("DON'T FREAK OUT");
-   }
+public class Bean {
+  public Bean() throws Exception {
+    throw new AuthenticationException("DON'T FREAK OUT");
+  }
 }

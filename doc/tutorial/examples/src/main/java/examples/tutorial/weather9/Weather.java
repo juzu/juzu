@@ -22,9 +22,9 @@ package examples.tutorial.weather9;
 import examples.tutorial.weather3.WeatherService;
 import juzu.Action;
 import juzu.Path;
+import juzu.Resource;
 import juzu.Response;
 import juzu.View;
-import juzu.Resource;
 import juzu.plugin.ajax.Ajax;
 
 import javax.inject.Inject;
@@ -33,80 +33,72 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Weather
-{
+public class Weather {
 
-   static List<String> locations = new ArrayList<String>();
+  static List<String> locations = new ArrayList<String>();
 
-   static
-   {
-      locations.add("marseille");
-      locations.add("paris");
-   }
+  static {
+    locations.add("marseille");
+    locations.add("paris");
+  }
 
-   @Inject
-   WeatherService weatherService;
+  @Inject
+  WeatherService weatherService;
 
-   @Inject
-   PortletPreferences preferences;
+  @Inject
+  PortletPreferences preferences;
 
-   @Inject
-   @Path("index.gtmpl")
-   examples.tutorial.weather9.templates.index index;
+  @Inject
+  @Path("index.gtmpl")
+  examples.tutorial.weather9.templates.index index;
 
-   @Inject
-   @Path("fragment.gtmpl")
-   examples.tutorial.weather9.templates.fragment fragment;
+  @Inject
+  @Path("fragment.gtmpl")
+  examples.tutorial.weather9.templates.fragment fragment;
 
-   @View
-   public void index()
-   {
-      index("marseille");
-   }
+  @View
+  public void index() {
+    index("marseille");
+  }
 
-   @View
-   public void index(String location)
-   {
-      String grade = preferences.getValue("grade", "c");
-      index.
-         with().
-         location(location).
-         temperature(weatherService.getTemperature(location, grade)).
-         grade(grade).
-         locations(locations).
-         render();
-   }
+  @View
+  public void index(String location) {
+    String grade = preferences.getValue("grade", "c");
+    index.
+      with().
+      location(location).
+      temperature(weatherService.getTemperature(location, grade)).
+      grade(grade).
+      locations(locations).
+      render();
+  }
 
-   @Action
-   public Response updateGrade(String grade, String location) throws java.io.IOException,
-      javax.portlet.PortletException
-   {
-      preferences.setValue("grade", grade);
-      preferences.store();
-      return Weather_.index(location);
-   }
+  @Action
+  public Response updateGrade(String grade, String location) throws java.io.IOException,
+    javax.portlet.PortletException {
+    preferences.setValue("grade", grade);
+    preferences.store();
+    return Weather_.index(location);
+  }
 
-   @Action
-   public Response add(String location)
-   {
-      if (!locations.contains(location))
-      {
-         locations.add(location);
-      }
-      return Weather_.index(location);
-   }
+  @Action
+  public Response add(String location) {
+    if (!locations.contains(location)) {
+      locations.add(location);
+    }
+    return Weather_.index(location);
+  }
 
-   @Ajax
-   @Resource
-   public void getFragment(String location)
-   {
-      String grade = preferences.getValue("grade", "c");
-      String temperature = weatherService.getTemperature(location, grade);
-      fragment.
-         with().
-         location(location).
-         temperature(weatherService.getTemperature(location, grade)).
-         grade(grade).
-         render();
-   }
+  @Ajax
+  @Resource
+  public void getFragment(String location) {
+    String grade = preferences.getValue("grade", "c");
+    String temperature = weatherService.getTemperature(location, grade);
+    fragment.
+      with().
+      location(location).
+      temperature(weatherService.getTemperature(location, grade)).
+      grade(grade).
+      render();
+  }
 }

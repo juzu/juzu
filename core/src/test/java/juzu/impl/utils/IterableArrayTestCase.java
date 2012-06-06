@@ -19,23 +19,21 @@
 
 package juzu.impl.utils;
 
-import org.junit.Test;
 import juzu.test.AbstractTestCase;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class IterableArrayTestCase extends AbstractTestCase
-{
+public class IterableArrayTestCase extends AbstractTestCase {
 
-   @Test
-   public void testSimple()
-   {
-      String[] a = {"a","b"};
-      assertEquals(Collections.<String>emptyList(), Tools.list(new IterableArray<String>(a, 0, 0)));
-      assertEquals(Arrays.asList("a"), Tools.list(new IterableArray<String>(a, 0, 1)));
-      assertEquals(Arrays.asList("a", "b"), Tools.list(new IterableArray<String>(a, 0, 2)));
-      assertEquals(Arrays.asList("b"), Tools.list(new IterableArray<String>(a, 1, 2)));
-   }
+  @Test
+  public void testSimple() {
+    String[] a = {"a", "b"};
+    assertEquals(Collections.<String>emptyList(), Tools.list(new IterableArray<String>(a, 0, 0)));
+    assertEquals(Arrays.asList("a"), Tools.list(new IterableArray<String>(a, 0, 1)));
+    assertEquals(Arrays.asList("a", "b"), Tools.list(new IterableArray<String>(a, 0, 2)));
+    assertEquals(Arrays.asList("b"), Tools.list(new IterableArray<String>(a, 1, 2)));
+  }
 }

@@ -27,31 +27,30 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class TemplateEmitter
-{
+public abstract class TemplateEmitter {
 
-   public abstract void startScriptlet(Location beginPosition);
+  public abstract void startScriptlet(Location beginPosition);
 
-   public abstract void appendScriptlet(String scriptlet);
+  public abstract void appendScriptlet(String scriptlet);
 
-   public abstract void endScriptlet();
+  public abstract void endScriptlet();
 
-   public abstract void startExpression(Location beginPosition);
+  public abstract void startExpression(Location beginPosition);
 
-   public abstract void appendExpression(String expr);
+  public abstract void appendExpression(String expr);
 
-   public abstract void endExpression();
+  public abstract void endExpression();
 
-   public abstract void appendText(String text);
+  public abstract void appendText(String text);
 
-   public abstract void appendLineBreak(SectionType currentType, Location position);
+  public abstract void appendLineBreak(SectionType currentType, Location position);
 
-   public abstract void url(String typeName, String methodName, List<String> args);
+  public abstract void url(String typeName, String methodName, List<String> args);
 
-   public abstract void openTag(String className, Map<String, String> args) throws IOException;
+  public abstract void openTag(String className, Map<String, String> args) throws IOException;
 
-   public abstract void closeTag(String tagName, Map<String, String> args) throws IOException;
+  public abstract void closeTag(String tagName, Map<String, String> args) throws IOException;
 
-   public abstract void tag(String tagName, Map<String, String> args);
+  public abstract void tag(String tagName, Map<String, String> args);
 
 }

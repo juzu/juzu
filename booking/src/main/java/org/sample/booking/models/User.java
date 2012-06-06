@@ -28,55 +28,48 @@ import java.util.Map;
 // @Entity
 // @Table(name="Customer")
 @Param
-public class User
-{
+public class User {
 
-   //    @Required
+  //    @Required
 //    @MaxSize(15)
 //    @MinSize(4)
 //    @Match(value="^\\w*$", message="Not a valid username")
-   public String username;
+  public String username;
 
-   //    @Required
+  //    @Required
 //    @MaxSize(15)
 //    @MinSize(5)
-   public String password;
+  public String password;
 
-   //    @Required
+  //    @Required
 //    @MaxSize(100)
-   public String name;
+  public String name;
 
-   public User()
-   {
-   }
+  public User() {
+  }
 
-   public User(String name, String password, String username)
-   {
-      this.name = name;
-      this.password = password;
-      this.username = username;
-   }
+  public User(String name, String password, String username) {
+    this.name = name;
+    this.password = password;
+    this.username = username;
+  }
 
-   public String toString()
-   {
-      return "User(" + username + ")";
-   }
+  public String toString() {
+    return "User(" + username + ")";
+  }
 
-   /** . */
-   private static final Map<String, User> users = new HashMap<String, User>();
+  /** . */
+  private static final Map<String, User> users = new HashMap<String, User>();
 
-   static
-   {
-      create(new User("Demo User", "demo", "demo"));
-   }
+  static {
+    create(new User("Demo User", "demo", "demo"));
+  }
 
-   public static User find(String username, String password)
-   {
-      return users.get(username);
-   }
+  public static User find(String username, String password) {
+    return users.get(username);
+  }
 
-   public static void create(User user)
-   {
-      users.put(user.username, user);
-   }
+  public static void create(User user) {
+    users.put(user.username, user);
+  }
 }

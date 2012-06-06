@@ -23,6 +23,5 @@ import juzu.test.Marker;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Marker
-public class A
-{
+public class A {
 }

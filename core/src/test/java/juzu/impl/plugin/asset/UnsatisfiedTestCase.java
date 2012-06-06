@@ -19,19 +19,17 @@
 
 package juzu.impl.plugin.asset;
 
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.protocol.mock.MockApplication;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class UnsatisfiedTestCase extends AbstractHttpTestCase
-{
-   @Test
-   public void testRequestFail()
-   {
-      MockApplication<?> app = assertDeploy("plugin", "asset", "unsatisfied");
+public class UnsatisfiedTestCase extends AbstractHttpTestCase {
+  @Test
+  public void testRequestFail() {
+    MockApplication<?> app = assertDeploy("plugin", "asset", "unsatisfied");
 
-      //
-      assertInternalError();
-   }
+    //
+    assertInternalError();
+  }
 }

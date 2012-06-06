@@ -20,6 +20,5 @@
 package plugin.binding.implementation.notassignable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServiceImpl
-{
+public class ServiceImpl {
 }

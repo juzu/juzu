@@ -21,29 +21,25 @@ package request.action.render;
 
 import juzu.Action;
 import juzu.Controller;
-import juzu.View;
 import juzu.Response;
+import juzu.View;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content(A_.actionURL().toString());
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content(A_.actionURL().toString());
+  }
 
-   @Action
-   public Response.Update action()
-   {
-      return A_.render("arg_value");
-   }
+  @Action
+  public Response.Update action() {
+    return A_.render("arg_value");
+  }
 
-   @View(id = "render")
-   public void render(String arg)
-   {
-   }
+  @View(id = "render")
+  public void render(String arg) {
+  }
 }

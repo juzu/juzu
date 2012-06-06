@@ -22,13 +22,14 @@ package request.method.render;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @View
-   public void noArg() { }
+  @View
+  public void noArg() {
+  }
 
-   @View
-   public void oneArg(String foo) { }
+  @View
+  public void oneArg(String foo) {
+  }
 
 }

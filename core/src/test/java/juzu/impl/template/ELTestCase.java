@@ -19,30 +19,27 @@
 
 package juzu.impl.template;
 
-import org.junit.Test;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ELTestCase extends AbstractInjectTestCase
-{
+public class ELTestCase extends AbstractInjectTestCase {
 
-   public ELTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public ELTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testResolveBean() throws Exception
-   {
-      MockApplication<?> app = application("template", "el").init();
+  @Test
+  public void testResolveBean() throws Exception {
+    MockApplication<?> app = application("template", "el").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals("A", render.assertStringResult());
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    assertEquals("A", render.assertStringResult());
+  }
 }

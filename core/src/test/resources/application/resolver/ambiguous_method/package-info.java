@@ -17,6 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package application.resolver.ambiguous_method;
+@Application package application.resolver.ambiguous_method;
+
 import juzu.Application;

@@ -18,8 +18,7 @@
  */
 
 @Application
-@Bindings(@Binding(value = Service.class, implementation = ProviderImpl.class))
-package plugin.binding.provider.notclass;
+@Bindings(@Binding(value = Service.class, implementation = ProviderImpl.class)) package plugin.binding.provider.notclass;
 
 import juzu.Application;
 import juzu.plugin.binding.Binding;

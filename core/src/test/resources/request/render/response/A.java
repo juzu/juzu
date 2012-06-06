@@ -25,12 +25,10 @@ import juzu.View;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content("foo");
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content("foo");
+  }
 }

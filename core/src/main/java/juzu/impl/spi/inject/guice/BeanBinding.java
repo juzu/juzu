@@ -29,126 +29,106 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class BeanBinding<T>
-{
+abstract class BeanBinding<T> {
 
-   /** . */
-   final Class<T> type;
+  /** . */
+  final Class<T> type;
 
-   /** . */
-   final Collection<Annotation> qualifiers;
+  /** . */
+  final Collection<Annotation> qualifiers;
 
-   /** . */
-   final Class<? extends Annotation> scopeType;
+  /** . */
+  final Class<? extends Annotation> scopeType;
 
-   BeanBinding(Class<T> type, Scope scope, Iterable<Annotation> declaredQualifiers, Class<? extends T> beanType)
-   {
-      Class<? extends Annotation> scopeType = null;
-      Map<Class<?>, Annotation> qualifiers = null;
-      if (declaredQualifiers != null)
-      {
-         for (Annotation declaredQualifier : declaredQualifiers)
-         {
-            if (qualifiers == null)
-            {
-               qualifiers = new HashMap<Class<?>, Annotation>();
-            }
-            qualifiers.put(declaredQualifier.annotationType(), declaredQualifier);
-         }
+  BeanBinding(Class<T> type, Scope scope, Iterable<Annotation> declaredQualifiers, Class<? extends T> beanType) {
+    Class<? extends Annotation> scopeType = null;
+    Map<Class<?>, Annotation> qualifiers = null;
+    if (declaredQualifiers != null) {
+      for (Annotation declaredQualifier : declaredQualifiers) {
+        if (qualifiers == null) {
+          qualifiers = new HashMap<Class<?>, Annotation>();
+        }
+        qualifiers.put(declaredQualifier.annotationType(), declaredQualifier);
       }
-      if (beanType != null)
-      {
-         for (Annotation ann : beanType.getDeclaredAnnotations())
-         {
-            if (ann.annotationType().getAnnotation(Qualifier.class) != null)
-            {
-               if (qualifiers == null)
-               {
-                  qualifiers = new HashMap<Class<?>, Annotation>();
-               }
-               qualifiers.put(ann.annotationType(), ann);
-            }
-            if (ann.annotationType().getAnnotation(javax.inject.Scope.class) != null)
-            {
-               scopeType = ann.annotationType();
-            }
-         }
+    }
+    if (beanType != null) {
+      for (Annotation ann : beanType.getDeclaredAnnotations()) {
+        if (ann.annotationType().getAnnotation(Qualifier.class) != null) {
+          if (qualifiers == null) {
+            qualifiers = new HashMap<Class<?>, Annotation>();
+          }
+          qualifiers.put(ann.annotationType(), ann);
+        }
+        if (ann.annotationType().getAnnotation(javax.inject.Scope.class) != null) {
+          scopeType = ann.annotationType();
+        }
       }
-      
+    }
+
+    //
+    if (scope != null) {
+      scopeType = scope.getAnnotationType();
+    }
+
+    //
+    this.type = type;
+    this.qualifiers = qualifiers != null ? qualifiers.values() : null;
+    this.scopeType = scopeType;
+  }
+
+  static class ToType<T> extends BeanBinding<T> {
+
+    /** . */
+    final Class<? extends T> implementationType;
+
+    ToType(Class<T> type, Scope scope, Iterable<Annotation> declaredQualifiers, Class<? extends T> implementationType) {
+      super(type, scope, declaredQualifiers, implementationType != null ? implementationType : type);
+
       //
-      if (scope != null)
-      {
-         scopeType = scope.getAnnotationType();
-      }
+      this.implementationType = implementationType;
+    }
+  }
+
+  static class ToProviderType<T> extends BeanBinding<T> {
+
+    /** . */
+    final Class<? extends Provider<T>> provider;
+
+    ToProviderType(Class<T> type, Scope scope, Iterable<Annotation> declaredQualifiers, Class<? extends Provider<T>> provider) {
+      super(type, scope, declaredQualifiers, null);
 
       //
-      this.type = type;
-      this.qualifiers = qualifiers != null ? qualifiers.values() : null;
-      this.scopeType = scopeType;
-   }
+      this.provider = provider;
+    }
+  }
 
-   static class ToType<T> extends BeanBinding<T>
-   {
+  static class ToInstance<T> extends BeanBinding<T> {
 
-      /** . */
-      final Class<? extends T> implementationType;
+    /** . */
+    final T instance;
 
-      ToType(Class<T> type, Scope scope, Iterable<Annotation> declaredQualifiers, Class<? extends T> implementationType)
-      {
-         super(type, scope, declaredQualifiers, implementationType != null ? implementationType : type);
+    ToInstance(Class<T> type, Iterable<Annotation> declaredQualifiers, T instance) {
+      super(type, null, declaredQualifiers, (Class<T>)instance.getClass());
 
-         //
-         this.implementationType = implementationType;
-      }
-   }
+      //
+      this.instance = instance;
+    }
+  }
 
-   static class ToProviderType<T> extends BeanBinding<T>
-   {
+  static class ToProviderInstance<T> extends BeanBinding<T> implements com.google.inject.Provider<T> {
 
-      /** . */
-      final Class<? extends Provider<T>> provider;
+    /** . */
+    final Provider<? extends T> provider;
 
-      ToProviderType(Class<T> type, Scope scope, Iterable<Annotation> declaredQualifiers, Class<? extends Provider<T>> provider)
-      {
-         super(type, scope, declaredQualifiers, null);
+    ToProviderInstance(Class<T> type, Scope scope, Iterable<Annotation> declaredQualifiers, Provider<? extends T> provider) {
+      super(type, scope, declaredQualifiers, null);
 
-         //
-         this.provider = provider;
-      }
-   }
+      //
+      this.provider = provider;
+    }
 
-   static class ToInstance<T> extends BeanBinding<T>
-   {
-
-      /** . */
-      final T instance;
-
-      ToInstance(Class<T> type, Iterable<Annotation> declaredQualifiers, T instance)
-      {
-         super(type, null, declaredQualifiers, (Class<T>)instance.getClass());
-
-         //
-         this.instance = instance;
-      }
-   }
-
-   static class ToProviderInstance<T> extends BeanBinding<T> implements com.google.inject.Provider<T>
-   {
-
-      /** . */
-      final Provider<? extends T> provider;
-
-      ToProviderInstance(Class<T> type, Scope scope, Iterable<Annotation> declaredQualifiers, Provider<? extends T> provider)
-      {
-         super(type, scope, declaredQualifiers, null);
-
-         //
-         this.provider = provider;
-      }
-
-      public T get()
-      {
-         return provider.get();
-      }
-   }
+    public T get() {
+      return provider.get();
+    }
+  }
 }

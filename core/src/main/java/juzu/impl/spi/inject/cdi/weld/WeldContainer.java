@@ -19,6 +19,10 @@
 
 package juzu.impl.spi.inject.cdi.weld;
 
+import juzu.Scope;
+import juzu.impl.inject.ScopeController;
+import juzu.impl.spi.fs.ReadFileSystem;
+import juzu.impl.spi.inject.cdi.Container;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.Bootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
@@ -27,10 +31,6 @@ import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.bootstrap.spi.Metadata;
-import juzu.Scope;
-import juzu.impl.inject.ScopeController;
-import juzu.impl.spi.inject.cdi.Container;
-import juzu.impl.spi.fs.ReadFileSystem;
 
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
@@ -40,92 +40,80 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WeldContainer extends Container
-{
+public class WeldContainer extends Container {
 
-   /** . */
-   final ClassLoader classLoader;
+  /** . */
+  final ClassLoader classLoader;
 
-   /** . */
-   final Bootstrap bootstrap;
+  /** . */
+  final Bootstrap bootstrap;
 
-   /** . */
-   private BeanManager manager;
+  /** . */
+  private BeanManager manager;
 
-   @Override
-   protected void doStart(List<ReadFileSystem<?>> fileSystems) throws Exception
-   {
-      final BeanDeploymentArchiveImpl bda = new BeanDeploymentArchiveImpl(this, "foo", fileSystems);
+  @Override
+  protected void doStart(List<ReadFileSystem<?>> fileSystems) throws Exception {
+    final BeanDeploymentArchiveImpl bda = new BeanDeploymentArchiveImpl(this, "foo", fileSystems);
 
-      //
-      Deployment deployment = new Deployment()
-      {
+    //
+    Deployment deployment = new Deployment() {
 
-         /** . */
-         final SimpleServiceRegistry registry = new SimpleServiceRegistry();
+      /** . */
+      final SimpleServiceRegistry registry = new SimpleServiceRegistry();
 
-         /** . */
-         final List<BeanDeploymentArchive> bdas = Arrays.<BeanDeploymentArchive>asList(bda);
+      /** . */
+      final List<BeanDeploymentArchive> bdas = Arrays.<BeanDeploymentArchive>asList(bda);
 
-         public Collection<BeanDeploymentArchive> getBeanDeploymentArchives()
-         {
-            return bdas;
-         }
-
-         public BeanDeploymentArchive loadBeanDeploymentArchive(Class<?> beanClass)
-         {
-            return bda;
-         }
-
-         public ServiceRegistry getServices()
-         {
-            return registry;
-         }
-
-         public Iterable<Metadata<Extension>> getExtensions()
-         {
-            return bootstrap.loadExtensions(Thread.currentThread().getContextClassLoader());
-         }
-      };
-
-      //
-      bootstrap.startContainer(Environments.SERVLET, deployment);
-      bootstrap.startInitialization();
-      bootstrap.deployBeans();
-      bootstrap.validateBeans();
-      bootstrap.endInitialization();
-
-      //
-      manager = bootstrap.getManager(bda);
-   }
-
-   public WeldContainer(ClassLoader classLoader, ScopeController scopeController, Set<Scope> scopes)
-   {
-      super(scopeController, scopes);
-
-      //
-      this.classLoader = classLoader;
-      this.bootstrap = new WeldBootstrap();
-   }
-
-   @Override
-   public BeanManager getManager()
-   {
-      return manager;
-   }
-
-   @Override
-   public ClassLoader getClassLoader()
-   {
-      return classLoader;
-   }
-
-   @Override
-   protected void doStop()
-   {
-      if (bootstrap != null)
-      {
-         bootstrap.shutdown();
+      public Collection<BeanDeploymentArchive> getBeanDeploymentArchives() {
+        return bdas;
       }
-   }
+
+      public BeanDeploymentArchive loadBeanDeploymentArchive(Class<?> beanClass) {
+        return bda;
+      }
+
+      public ServiceRegistry getServices() {
+        return registry;
+      }
+
+      public Iterable<Metadata<Extension>> getExtensions() {
+        return bootstrap.loadExtensions(Thread.currentThread().getContextClassLoader());
+      }
+    };
+
+    //
+    bootstrap.startContainer(Environments.SERVLET, deployment);
+    bootstrap.startInitialization();
+    bootstrap.deployBeans();
+    bootstrap.validateBeans();
+    bootstrap.endInitialization();
+
+    //
+    manager = bootstrap.getManager(bda);
+  }
+
+  public WeldContainer(ClassLoader classLoader, ScopeController scopeController, Set<Scope> scopes) {
+    super(scopeController, scopes);
+
+    //
+    this.classLoader = classLoader;
+    this.bootstrap = new WeldBootstrap();
+  }
+
+  @Override
+  public BeanManager getManager() {
+    return manager;
+  }
+
+  @Override
+  public ClassLoader getClassLoader() {
+    return classLoader;
+  }
+
+  @Override
+  protected void doStop() {
+    if (bootstrap != null) {
+      bootstrap.shutdown();
+    }
+  }
 }

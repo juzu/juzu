@@ -31,42 +31,34 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   @Inject
-   @Path("index.gtmpl")
-   Template index;
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
 
-   @View
-   public Response.Content index()
-   {
-      String ret = "";
-      AppendableStream printer = new AppendableStream(new Appendable()
-      {
-         public Appendable append(CharSequence csq) throws IOException
-         {
-            throw new IOException();
-         }
-
-         public Appendable append(CharSequence csq, int start, int end) throws IOException
-         {
-            throw new IOException();
-         }
-
-         public Appendable append(char c) throws IOException
-         {
-            throw new IOException();
-         }
-      });
-      try
-      {
-         index.renderTo(printer);
+  @View
+  public Response.Content index() {
+    String ret = "";
+    AppendableStream printer = new AppendableStream(new Appendable() {
+      public Appendable append(CharSequence csq) throws IOException {
+        throw new IOException();
       }
-      catch (UndeclaredIOException expected)
-      {
-         ret = "pass";
+
+      public Appendable append(CharSequence csq, int start, int end) throws IOException {
+        throw new IOException();
       }
-      return Response.content(ret);
-   }
+
+      public Appendable append(char c) throws IOException {
+        throw new IOException();
+      }
+    });
+    try {
+      index.renderTo(printer);
+    }
+    catch (UndeclaredIOException expected) {
+      ret = "pass";
+    }
+    return Response.content(ret);
+  }
 }

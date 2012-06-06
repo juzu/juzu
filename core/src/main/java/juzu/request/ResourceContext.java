@@ -25,29 +25,25 @@ import juzu.impl.request.Request;
 import juzu.impl.spi.request.ResourceBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResourceContext extends MimeContext
-{
+public class ResourceContext extends MimeContext {
 
-   /** . */
-   private ResourceBridge bridge;
+  /** . */
+  private ResourceBridge bridge;
 
-   public ResourceContext(Request request, ApplicationContext application, ControllerMethod method, ResourceBridge bridge)
-   {
-      super(request, application, method);
+  public ResourceContext(Request request, ApplicationContext application, ControllerMethod method, ResourceBridge bridge) {
+    super(request, application, method);
 
-      //
-      this.bridge = bridge;
-   }
+    //
+    this.bridge = bridge;
+  }
 
-   @Override
-   protected ResourceBridge getBridge()
-   {
-      return bridge;
-   }
+  @Override
+  protected ResourceBridge getBridge() {
+    return bridge;
+  }
 
-   @Override
-   public Phase getPhase()
-   {
-      return Phase.RESOURCE;
-   }
+  @Override
+  public Phase getPhase() {
+    return Phase.RESOURCE;
+  }
 }

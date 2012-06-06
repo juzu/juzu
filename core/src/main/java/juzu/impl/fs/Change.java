@@ -20,9 +20,8 @@
 package juzu.impl.fs;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum Change
-{
+public enum Change {
 
-   ADD, REMOVE, UPDATE
+  ADD, REMOVE, UPDATE
 
 }

@@ -19,7 +19,6 @@
 
 package juzu.impl.template;
 
-import org.junit.Test;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
 import juzu.impl.template.ast.ASTNode;
@@ -34,134 +33,120 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TagTestCase extends AbstractInjectTestCase
-{
+public class TagTestCase extends AbstractInjectTestCase {
 
-   public TagTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public TagTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   public void _testSimple() throws Exception
-   {
-      MockApplication<?> app = application("template", "tag", "simple").init();
-      app.init();
+  public void _testSimple() throws Exception {
+    MockApplication<?> app = application("template", "tag", "simple").init();
+    app.init();
+
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("<foo>bar</foo>", out);
+  }
+
+  @Test
+  public void testDecorate() throws Exception {
+    MockApplication<?> app = application("template", "tag", "decorate").init();
+
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("<foo>bar</foo>", out);
+  }
+
+  @Test
+  public void testInclude() throws Exception {
+    MockApplication<?> app = application("template", "tag", "include").init();
+
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("foo", out);
+  }
+
+  @Test
+  public void testTitle() throws Exception {
+    MockApplication<?> app = application("template", "tag", "title").init();
+
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String url = render.assertStringResult();
+    assertEquals("the_title", render.getTitle());
+    render = (MockRenderBridge)client.invoke(url);
+    assertEquals("4", render.getTitle());
+  }
+
+  @Test
+  public void testParam() throws Exception {
+    if (getDI() != InjectImplementation.INJECT_GUICE) {
+      MockApplication<?> app = application("template", "tag", "param").init();
 
       //
       MockClient client = app.client();
       MockRenderBridge render = client.render();
-      String out = render.assertStringResult();
-      assertEquals("<foo>bar</foo>", out);
-   }
+      String content = render.assertStringResult();
+      assertEquals("foo_value", content);
+    }
+  }
 
-   @Test
-   public void testDecorate() throws Exception
-   {
-      MockApplication<?> app = application("template", "tag", "decorate").init();
+  @Test
+  public void testRecompileTemplate() throws Exception {
+    MockApplication<?> app = application("template", "tag", "decorate").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      String out = render.assertStringResult();
-      assertEquals("<foo>bar</foo>", out);
-   }
+    // Manufacture a template
+    // to be removed later when we improve this
+    // but for now it will be enough
+    TemplateDescriptor desc = app.getContext().getDescriptor().getTemplates().getTemplate("foo.gtmpl");
+    assertNotNull(desc);
+    Template foo = new Template(
+      Path.parse("index.gtmpl"),
+      new ASTNode.Template(),
+      Path.parse(desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
+      System.currentTimeMillis());
 
-   @Test
-   public void testInclude() throws Exception
-   {
-      MockApplication<?> app = application("template", "tag", "include").init();
-
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      String out = render.assertStringResult();
-      assertEquals("foo", out);
-   }
-
-   @Test
-   public void testTitle() throws Exception
-   {
-      MockApplication<?> app = application("template", "tag", "title").init();
-
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      String url = render.assertStringResult();
-      assertEquals("the_title", render.getTitle());
-      render = (MockRenderBridge)client.invoke(url);
-      assertEquals("4", render.getTitle());
-   }
-
-   @Test
-   public void testParam() throws Exception
-   {
-      if (getDI() != InjectImplementation.INJECT_GUICE)
-      {
-         MockApplication<?> app = application("template", "tag", "param").init();
-
-         //
-         MockClient client = app.client();
-         MockRenderBridge render = client.render();
-         String content = render.assertStringResult();
-         assertEquals("foo_value", content);
+    //
+    HashMap<Path, Template> templates = new HashMap<Path, Template>();
+    templates.put(Path.parse("foo.gtmpl"), foo);
+    ProcessPhase process = new ProcessPhase(new ProcessContext() {
+      @Override
+      protected Template resolveTemplate(Path originPath, Path path) {
+        if (path.equals(Path.parse("index.gtmpl"))) {
+          try {
+            return new Template(
+              Path.parse("index.gtmpl"),
+              ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
+              Path.parse("template/tag/decorate/templates/index.gtmpl"),
+              System.currentTimeMillis()
+            );
+          }
+          catch (juzu.impl.template.ast.ParseException e) {
+            throw failure(e);
+          }
+        }
+        else {
+          return null;
+        }
       }
-   }
+    }, templates);
+    Template template = process.resolveTemplate(Path.parse("index.gtmpl"));
+    assertNotNull(template);
 
-   @Test
-   public void testRecompileTemplate() throws Exception
-   {
-      MockApplication<?> app = application("template", "tag", "decorate").init();
-      
-      // Manufacture a template
-      // to be removed later when we improve this
-      // but for now it will be enough
-      TemplateDescriptor desc = app.getContext().getDescriptor().getTemplates().getTemplate("foo.gtmpl");
-      assertNotNull(desc);
-      Template foo = new Template(
-         Path.parse("index.gtmpl"),
-         new ASTNode.Template(),
-         Path.parse(desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
-         System.currentTimeMillis());
-
-      //
-      HashMap<Path, Template> templates = new HashMap<Path, Template>();
-      templates.put(Path.parse("foo.gtmpl"), foo);
-      ProcessPhase process = new ProcessPhase(new ProcessContext()
-      {
-         @Override
-         protected Template resolveTemplate(Path originPath, Path path)
-         {
-            if (path.equals(Path.parse("index.gtmpl")))
-            {
-               try
-               {
-                  return new Template(
-                     Path.parse("index.gtmpl"),
-                     ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
-                     Path.parse("template/tag/decorate/templates/index.gtmpl"),
-                     System.currentTimeMillis()
-                  );
-               }
-               catch (juzu.impl.template.ast.ParseException e)
-               {
-                  throw failure(e);
-               }
-            }
-            else
-            {
-               return null;
-            }
-         }
-      }, templates);
-      Template template = process.resolveTemplate(Path.parse("index.gtmpl"));
-      assertNotNull(template);
-      
-      // Now emit the template
-      EmitPhase emit = new EmitPhase(new EmitContext());
-      emit.emit(new GroovyTemplateEmitter(), template.getAST());
-   }
+    // Now emit the template
+    EmitPhase emit = new EmitPhase(new EmitContext());
+    emit.emit(new GroovyTemplateEmitter(), template.getAST());
+  }
 }

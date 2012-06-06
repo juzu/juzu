@@ -25,39 +25,37 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>A package annotation for declaring an application.</p>
- * 
- * <p>By default the application name is the current package name whose first letter is capitalized and appended with
- * the word <i>Applicaiton</i>. For instance when this annotation annotates the package <code>org.hello</code> the
- * resulting application name will be <code>HelloApplication</code>. The application name can be overrided thanks to
- * the {@link #name} annotation parameter.</p>
+ * <p>A package annotation for declaring an application.</p> <p/> <p>By default the application name is the current
+ * package name whose first letter is capitalized and appended with the word <i>Applicaiton</i>. For instance when this
+ * annotation annotates the package <code>org.hello</code> the resulting application name will be
+ * <code>HelloApplication</code>. The application name can be overrided thanks to the {@link #name} annotation
+ * parameter.</p>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
-public @interface Application
-{
+public @interface Application {
 
-   /**
-    * Returns an optional application name.
-    *
-    * @return the application name
-    */
-   String name() default "";
+  /**
+   * Returns an optional application name.
+   *
+   * @return the application name
+   */
+  String name() default "";
 
-   /**
-    * Returns an optional default controller class.
-    *
-    * @return the default controller
-    */
-   Class<?> defaultController() default Object.class;
+  /**
+   * Returns an optional default controller class.
+   *
+   * @return the default controller
+   */
+  Class<?> defaultController() default Object.class;
 
-   /**
-    * Controls if the generated URL should be escaped to valid XML.
-    *
-    * @return the escape XML value
-    */
-   boolean escapeXML() default false;
+  /**
+   * Controls if the generated URL should be escaped to valid XML.
+   *
+   * @return the escape XML value
+   */
+  boolean escapeXML() default false;
 
 }

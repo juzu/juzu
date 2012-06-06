@@ -32,105 +32,88 @@ import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateRenderContext
-{
+public class TemplateRenderContext {
 
-   /** . */
-   private final Map<String, ?> attributes;
+  /** . */
+  private final Map<String, ?> attributes;
 
-   /** . */
-   private final Locale locale;
+  /** . */
+  private final Locale locale;
 
-   /** . */
-   private PropertyMap properties;
+  /** . */
+  private PropertyMap properties;
 
-   /** . */
-   protected Stream.Char printer;
+  /** . */
+  protected Stream.Char printer;
 
-   /** . */
-   private final TemplateStub stub;
+  /** . */
+  private final TemplateStub stub;
 
-   public TemplateRenderContext(TemplateStub stub)
-   {
-      this(stub, Collections.<String, Object>emptyMap());
-   }
+  public TemplateRenderContext(TemplateStub stub) {
+    this(stub, Collections.<String, Object>emptyMap());
+  }
 
-   public TemplateRenderContext(TemplateStub stub, Map<String, ?> attributes)
-   {
-      this(stub, null, attributes, null);
-   }
+  public TemplateRenderContext(TemplateStub stub, Map<String, ?> attributes) {
+    this(stub, null, attributes, null);
+  }
 
-   public TemplateRenderContext(TemplateStub stub, Locale locale)
-   {
-      this(stub, null, Collections.<String, Object>emptyMap(), locale);
-   }
+  public TemplateRenderContext(TemplateStub stub, Locale locale) {
+    this(stub, null, Collections.<String, Object>emptyMap(), locale);
+  }
 
-   public TemplateRenderContext(TemplateStub stub, PropertyMap properties, Map<String, ?> attributes, Locale locale)
-   {
-      this.locale = locale;
-      this.attributes = attributes;
-      this.stub = stub;
-      this.properties = properties;
-   }
+  public TemplateRenderContext(TemplateStub stub, PropertyMap properties, Map<String, ?> attributes, Locale locale) {
+    this.locale = locale;
+    this.attributes = attributes;
+    this.stub = stub;
+    this.properties = properties;
+  }
 
-   public Map<String, ?> getAttributes()
-   {
-      return attributes;
-   }
+  public Map<String, ?> getAttributes() {
+    return attributes;
+  }
 
-   public Locale getLocale()
-   {
-      return locale;
-   }
+  public Locale getLocale() {
+    return locale;
+  }
 
-   public Stream.Char getPrinter()
-   {
-      return printer;
-   }
+  public Stream.Char getPrinter() {
+    return printer;
+  }
 
-   public void setTitle(String title)
-   {
-      if (properties != null)
-      {
-         properties.setValue(Response.Render.TITLE, title);
-      }
-   }
+  public void setTitle(String title) {
+    if (properties != null) {
+      properties.setValue(Response.Render.TITLE, title);
+    }
+  }
 
-   public TemplateStub resolveTemplate(String path)
-   {
-      return null;
-   }
+  public TemplateStub resolveTemplate(String path) {
+    return null;
+  }
 
-   public Object resolveBean(String expression) throws ApplicationException
-   {
-      return null;
-   }
+  public Object resolveBean(String expression) throws ApplicationException {
+    return null;
+  }
 
-   public StringBuilder render() throws IOException
-   {
-      StringBuilder buffer = new StringBuilder();
-      render(new AppendableStream(buffer));
-      return buffer;
-   }
+  public StringBuilder render() throws IOException {
+    StringBuilder buffer = new StringBuilder();
+    render(new AppendableStream(buffer));
+    return buffer;
+  }
 
-   public void render(Stream.Char printer) throws IOException
-   {
-      if (this.printer != null)
-      {
-         throw new IllegalStateException("Already rendering");
-      }
+  public void render(Stream.Char printer) throws IOException {
+    if (this.printer != null) {
+      throw new IllegalStateException("Already rendering");
+    }
 
-      //
-      this.printer = printer;
+    //
+    this.printer = printer;
 
-      //
-      try
-      {
-         stub.render(this);
-      }
-      finally
-      {
-         this.printer = null;
-      }
-   }
+    //
+    try {
+      stub.render(this);
+    }
+    finally {
+      this.printer = null;
+    }
+  }
 }

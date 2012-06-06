@@ -20,12 +20,12 @@
 package juzu.impl.controller.metamodel;
 
 import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
 import juzu.request.Phase;
-import juzu.impl.compiler.ElementHandle;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
@@ -34,117 +34,101 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerMethodMetaModel extends MetaModelObject
-{
+public class ControllerMethodMetaModel extends MetaModelObject {
 
-   /** The controller. */
-   ControllerMetaModel controller;
+  /** The controller. */
+  ControllerMetaModel controller;
 
-   /** . */
-   final ElementHandle.Method handle;
+  /** . */
+  final ElementHandle.Method handle;
 
-   /** . */
-   final String id;
+  /** . */
+  final String id;
 
-   /** . */
-   final Phase phase;
+  /** . */
+  final Phase phase;
 
-   /** . */
-   final String name;
+  /** . */
+  final String name;
 
-   /** . */
-   final ArrayList<ParameterMetaModel> parameters;
+  /** . */
+  final ArrayList<ParameterMetaModel> parameters;
 
-   ControllerMethodMetaModel(
-      ElementHandle.Method handle,
-      String id,
-      Phase phase,
-      String name,
-      ArrayList<ParameterMetaModel> parameters)
-   {
-      this.handle = handle;
-      this.id = id;
-      this.phase = phase;
-      this.name = name;
-      this.parameters = parameters;
-   }
+  ControllerMethodMetaModel(
+    ElementHandle.Method handle,
+    String id,
+    Phase phase,
+    String name,
+    ArrayList<ParameterMetaModel> parameters) {
+    this.handle = handle;
+    this.id = id;
+    this.phase = phase;
+    this.name = name;
+    this.parameters = parameters;
+  }
 
-   public JSON toJSON()
-   {
-      JSON json = new JSON();
-      json.set("handle", handle);
-      json.set("id", id);
-      json.set("phase", phase);
-      json.set("name", name);
-      json.map("parameters", new ArrayList<ParameterMetaModel>(parameters));
-      return json;
-   }
+  public JSON toJSON() {
+    JSON json = new JSON();
+    json.set("handle", handle);
+    json.set("id", id);
+    json.set("phase", phase);
+    json.set("name", name);
+    json.map("parameters", new ArrayList<ParameterMetaModel>(parameters));
+    return json;
+  }
 
-   public ControllerMetaModel getController()
-   {
-      return controller;
-   }
+  public ControllerMetaModel getController() {
+    return controller;
+  }
 
-   public ElementHandle.Method getHandle()
-   {
-      return handle;
-   }
+  public ElementHandle.Method getHandle() {
+    return handle;
+  }
 
-   public String getId()
-   {
-      return id;
-   }
+  public String getId() {
+    return id;
+  }
 
-   public Phase getPhase()
-   {
-      return phase;
-   }
+  public Phase getPhase() {
+    return phase;
+  }
 
-   public String getName()
-   {
-      return name;
-   }
+  public String getName() {
+    return name;
+  }
 
-   public ArrayList<ParameterMetaModel> getParameters()
-   {
-      return parameters;
-   }
-   
-   public ParameterMetaModel getParameter(int index)
-   {
-      return parameters.get(index);
-   }
-   
-   public Set<String> getParameterNames()
-   {
-      Set<String> tmp = new HashSet<String>();
-      for (ParameterMetaModel param : parameters)
-      {
-         tmp.add(param.getName());
+  public ArrayList<ParameterMetaModel> getParameters() {
+    return parameters;
+  }
+
+  public ParameterMetaModel getParameter(int index) {
+    return parameters.get(index);
+  }
+
+  public Set<String> getParameterNames() {
+    Set<String> tmp = new HashSet<String>();
+    for (ParameterMetaModel param : parameters) {
+      tmp.add(param.getName());
+    }
+    return tmp;
+  }
+
+  @Override
+  protected void postAttach(MetaModelObject parent) {
+    controller = (ControllerMetaModel)parent;
+  }
+
+  @Override
+  public boolean exist(MetaModel model) {
+    ExecutableElement methodElt = model.env.get(handle);
+    if (methodElt != null) {
+      AnnotationMirror am = Tools.getAnnotation(methodElt, phase.annotation.getName());
+      if (am != null) {
+        AnnotationData values = AnnotationData.create(am);
+        String id = (String)values.get("id");
+        return Tools.safeEquals(id, this.id);
       }
-      return tmp;
-   }
-
-   @Override
-   protected void postAttach(MetaModelObject parent)
-   {
-      controller = (ControllerMetaModel)parent;
-   }
-
-   @Override
-   public boolean exist(MetaModel model)
-   {
-      ExecutableElement methodElt = model.env.get(handle);
-      if (methodElt != null)
-      {
-         AnnotationMirror am = Tools.getAnnotation(methodElt, phase.annotation.getName());
-         if (am != null)
-         {
-            AnnotationData values = AnnotationData.create(am);
-            String id = (String)values.get("id");
-            return Tools.safeEquals(id, this.id);
-         }
-      }
-      return false;
-   }
+    }
+    return false;
+  }
 }

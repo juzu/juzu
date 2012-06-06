@@ -30,45 +30,40 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Weather
-{
+public class Weather {
 
-   static Set<String> locations = new HashSet<String>();
+  static Set<String> locations = new HashSet<String>();
 
-   static
-   {
-      locations.add("marseille");
-      locations.add("paris");
-   }
+  static {
+    locations.add("marseille");
+    locations.add("paris");
+  }
 
-   @Inject
-   WeatherService weatherService;
+  @Inject
+  WeatherService weatherService;
 
-   @Inject
-   @Path("index.gtmpl")
-   examples.tutorial.weather6.templates.index index;
+  @Inject
+  @Path("index.gtmpl")
+  examples.tutorial.weather6.templates.index index;
 
-   @View
-   public void index()
-   {
-      index("marseille");
-   }
+  @View
+  public void index() {
+    index("marseille");
+  }
 
-   @View
-   public void index(String location)
-   {
-      index.
-         with().
-         location(location).
-         temperature(weatherService.getTemperature(location)).
-         locations(locations).
-         render();
-   }
+  @View
+  public void index(String location) {
+    index.
+      with().
+      location(location).
+      temperature(weatherService.getTemperature(location)).
+      locations(locations).
+      render();
+  }
 
-   @Action
-   public Response add(String location)
-   {
-      locations.add(location);
-      return Weather_.index(location);
-   }
+  @Action
+  public Response add(String location) {
+    locations.add(location);
+    return Weather_.index(location);
+  }
 }

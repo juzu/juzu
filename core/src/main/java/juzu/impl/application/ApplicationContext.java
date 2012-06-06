@@ -22,8 +22,8 @@ package juzu.impl.application;
 import juzu.PropertyMap;
 import juzu.UndeclaredIOException;
 import juzu.impl.application.metadata.ApplicationDescriptor;
-import juzu.impl.controller.descriptor.ControllerMethodResolver;
 import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.ControllerMethodResolver;
 import juzu.impl.inject.Export;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.request.Request;
@@ -53,233 +53,193 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
 @Singleton
-public class ApplicationContext
-{
+public class ApplicationContext {
 
-   /** . */
-   private final ApplicationDescriptor descriptor;
+  /** . */
+  private final ApplicationDescriptor descriptor;
 
-   /** . */
-   final InjectManager injectManager;
+  /** . */
+  final InjectManager injectManager;
 
-   /** . */
-   private final ControllerMethodResolver controllerResolver;
+  /** . */
+  private final ControllerMethodResolver controllerResolver;
 
-   /** . */
-   public ArrayList<RequestLifeCycle> plugins;
+  /** . */
+  public ArrayList<RequestLifeCycle> plugins;
 
-   @Inject
-   public ApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor) throws Exception
-   {
-      this.descriptor = descriptor;
-      this.injectManager = injectManager;
-      this.controllerResolver = new ControllerMethodResolver(descriptor.getController());
-      this.plugins = getPlugins(injectManager);
-   }
+  @Inject
+  public ApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor) throws Exception {
+    this.descriptor = descriptor;
+    this.injectManager = injectManager;
+    this.controllerResolver = new ControllerMethodResolver(descriptor.getController());
+    this.plugins = getPlugins(injectManager);
+  }
 
-   private <B, I> ArrayList<RequestLifeCycle> getPlugins(InjectManager<B, I> manager) throws Exception
-   {
-      ArrayList<RequestLifeCycle> plugins = new ArrayList<RequestLifeCycle>();
-      for (B pluginBean : manager.resolveBeans(RequestLifeCycle.class))
-      {
-         I pluginInstance = manager.create(pluginBean);
-         RequestLifeCycle plugin = (RequestLifeCycle)manager.get(pluginBean, pluginInstance);
-         plugins.add(plugin);
+  private <B, I> ArrayList<RequestLifeCycle> getPlugins(InjectManager<B, I> manager) throws Exception {
+    ArrayList<RequestLifeCycle> plugins = new ArrayList<RequestLifeCycle>();
+    for (B pluginBean : manager.resolveBeans(RequestLifeCycle.class)) {
+      I pluginInstance = manager.create(pluginBean);
+      RequestLifeCycle plugin = (RequestLifeCycle)manager.get(pluginBean, pluginInstance);
+      plugins.add(plugin);
+    }
+    return plugins;
+  }
+
+  public String getName() {
+    return descriptor.getName();
+  }
+
+  public List<RequestLifeCycle> getPlugins() {
+    return plugins;
+  }
+
+  public ClassLoader getClassLoader() {
+    return injectManager.getClassLoader();
+  }
+
+  public ApplicationDescriptor getDescriptor() {
+    return descriptor;
+  }
+
+  public InjectManager getInjectManager() {
+    return injectManager;
+  }
+
+  public void invoke(RequestBridge bridge) throws ApplicationException {
+    Phase phase;
+    if (bridge instanceof RenderBridge) {
+      phase = Phase.RENDER;
+    }
+    else if (bridge instanceof ActionBridge) {
+      phase = Phase.ACTION;
+    }
+    else if (bridge instanceof ResourceBridge) {
+      phase = Phase.RESOURCE;
+    }
+    else {
+      throw new AssertionError();
+    }
+
+    //
+    String methodId = bridge.getProperty(RequestContext.METHOD_ID);
+
+    //
+    Map<String, String[]> parameters = new HashMap<String, String[]>();
+    for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet()) {
+      String name = entry.getKey();
+      String[] value = entry.getValue();
+      if (name.startsWith("juzu.")) {
+        if (name.equals("juzu.op")) {
+          methodId = value[0];
+        }
       }
-      return plugins;
-   }
-
-   public String getName()
-   {
-      return descriptor.getName();
-   }
-
-   public List<RequestLifeCycle> getPlugins()
-   {
-      return plugins;
-   }
-
-   public ClassLoader getClassLoader()
-   {
-      return injectManager.getClassLoader();
-   }
-
-   public ApplicationDescriptor getDescriptor()
-   {
-      return descriptor;
-   }
-
-   public InjectManager getInjectManager()
-   {
-      return injectManager;
-   }
-
-   public void invoke(RequestBridge bridge) throws ApplicationException
-   {
-      Phase phase;
-      if (bridge instanceof RenderBridge)
-      {
-         phase = Phase.RENDER;
+      else {
+        parameters.put(name, value);
       }
-      else if (bridge instanceof ActionBridge)
-      {
-         phase = Phase.ACTION;
-      }
-      else if (bridge instanceof ResourceBridge)
-      {
-         phase = Phase.RESOURCE;
-      }
-      else
-      {
-         throw new AssertionError();
-      }
+    }
 
-      //
-      String methodId = bridge.getProperty(RequestContext.METHOD_ID);
+    //
+    ControllerMethod method;
+    if (methodId == null) {
+      method = controllerResolver.resolve(parameters.keySet());
+    }
+    else {
+      method = controllerResolver.resolve(phase, methodId, parameters.keySet());
+    }
 
-      //
-      Map<String, String[]> parameters = new HashMap<String, String[]>();
-      for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet())
-      {
-         String name = entry.getKey();
-         String[] value = entry.getValue();
-         if (name.startsWith("juzu."))
-         {
-            if (name.equals("juzu.op"))
-            {
-               methodId = value[0];
-            }
-         }
-         else
-         {
-            parameters.put(name, value);
-         }
+    //
+    if (method == null) {
+      StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
+        "phase=" + phase + " and parameters={");
+      int index = 0;
+      for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet()) {
+        if (index++ > 0) {
+          sb.append(',');
+        }
+        sb.append(entry.getKey()).append('=').append(Arrays.asList(entry.getValue()));
       }
+      sb.append("}");
+      throw new UnsupportedOperationException(sb.toString());
+    }
 
-      //
-      ControllerMethod method;
-      if (methodId == null)
-      {
-         method = controllerResolver.resolve(parameters.keySet());
+    //
+    Object[] args = method.getArgs(parameters);
+    Request request = new Request(this, method, parameters, args, bridge);
+
+    //
+    ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
+    try {
+      ClassLoader classLoader = injectManager.getClassLoader();
+      Thread.currentThread().setContextClassLoader(classLoader);
+      ScopeController.begin(request);
+      bridge.begin(request);
+      request.invoke();
+      try {
+        bridge.end(request.getResponse());
       }
-      else
-      {
-         method = controllerResolver.resolve(phase, methodId, parameters.keySet());
+      catch (IOException e) {
+        throw new UndeclaredIOException(e);
       }
+    }
+    finally {
+      ScopeController.end();
+      Thread.currentThread().setContextClassLoader(oldCL);
+    }
+  }
 
-      //
-      if (method == null)
-      {
-         StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
-            "phase=" + phase + " and parameters={");
-         int index = 0;
-         for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet())
-         {
-            if (index++ > 0)
-            {
-               sb.append(',');
-            }
-            sb.append(entry.getKey()).append('=').append(Arrays.asList(entry.getValue()));
-         }
-         sb.append("}");
-         throw new UnsupportedOperationException(sb.toString());
+  public Object resolveBean(String name) throws ApplicationException {
+    return resolveBean(injectManager, name);
+  }
+
+  private <B, I> Object resolveBean(InjectManager<B, I> manager, String name) throws ApplicationException {
+    B bean = manager.resolveBean(name);
+    if (bean != null) {
+      try {
+        I cc = manager.create(bean);
+        return manager.get(bean, cc);
       }
-
-      //
-      Object[] args = method.getArgs(parameters);
-      Request request = new Request(this, method, parameters, args, bridge);
-
-      //
-      ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
-      try
-      {
-         ClassLoader classLoader = injectManager.getClassLoader();
-         Thread.currentThread().setContextClassLoader(classLoader);
-         ScopeController.begin(request);
-         bridge.begin(request);
-         request.invoke();
-         try
-         {
-            bridge.end(request.getResponse());
-         }
-         catch (IOException e)
-         {
-            throw new UndeclaredIOException(e);
-         }
+      catch (InvocationTargetException e) {
+        throw new ApplicationException(e.getCause());
       }
-      finally
-      {
-         ScopeController.end();
-         Thread.currentThread().setContextClassLoader(oldCL);
+    }
+    else {
+      return null;
+    }
+  }
+
+  public TemplateStub resolveTemplateStub(String path) {
+    return resolveTemplateStub(juzu.impl.utils.Path.parse(path));
+  }
+
+  public TemplateStub resolveTemplateStub(juzu.impl.utils.Path path) {
+    try {
+      StringBuilder id = new StringBuilder(descriptor.getTemplates().getPackageName());
+      for (String name : path) {
+        if (id.length() > 0) {
+          id.append('.');
+        }
+        id.append(name);
       }
-   }
+      id.append("_");
+      ClassLoader cl = injectManager.getClassLoader();
+      Class<?> stubClass = cl.loadClass(id.toString());
+      return (TemplateStub)stubClass.newInstance();
+    }
+    catch (Exception e) {
+      throw new UnsupportedOperationException("handle me gracefully", e);
+    }
+  }
 
-   public Object resolveBean(String name) throws ApplicationException
-   {
-      return resolveBean(injectManager, name);
-   }
+  public TemplateRenderContext render(Template template, PropertyMap properties, Map<String, ?> parameters, Locale locale) {
+    //
+    TemplateStub stub = resolveTemplateStub(template.getPath());
 
-   private <B, I> Object resolveBean(InjectManager<B, I> manager, String name) throws ApplicationException
-   {
-      B bean = manager.resolveBean(name);
-      if (bean != null)
-      {
-         try
-         {
-            I cc = manager.create(bean);
-            return manager.get(bean, cc);
-         }
-         catch (InvocationTargetException e)
-         {
-            throw new ApplicationException(e.getCause());
-         }
-      }
-      else
-      {
-         return null;
-      }
-   }
-
-   public TemplateStub resolveTemplateStub(String path)
-   {
-      return resolveTemplateStub(juzu.impl.utils.Path.parse(path));
-   }
-
-   public TemplateStub resolveTemplateStub(juzu.impl.utils.Path path)
-   {
-      try
-      {
-         StringBuilder id = new StringBuilder(descriptor.getTemplates().getPackageName());
-         for (String name : path)
-         {
-            if (id.length() > 0)
-            {
-               id.append('.');
-            }
-            id.append(name);
-         }
-         id.append("_");
-         ClassLoader cl = injectManager.getClassLoader();
-         Class<?> stubClass = cl.loadClass(id.toString());
-         return(TemplateStub)stubClass.newInstance();
-      }
-      catch (Exception e)
-      {
-         throw new UnsupportedOperationException("handle me gracefully", e);
-      }
-   }
-
-   public TemplateRenderContext render(Template template, PropertyMap properties, Map<String, ?> parameters, Locale locale)
-   {
-      //
-      TemplateStub stub = resolveTemplateStub(template.getPath());
-
-      //
-      return new ApplicationTemplateRenderContext(
-         ApplicationContext.this,
-         properties,
-         stub,
-         parameters,
-         locale);
-   }
+    //
+    return new ApplicationTemplateRenderContext(
+      ApplicationContext.this,
+      properties,
+      stub,
+      parameters,
+      locale);
+  }
 }

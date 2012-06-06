@@ -22,28 +22,23 @@ package juzu.impl.fs;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Visitor<P>
-{
+public interface Visitor<P> {
 
-   void enterDir(P dir, String name) throws IOException;
+  void enterDir(P dir, String name) throws IOException;
 
-   void file(P file, String name) throws IOException;
+  void file(P file, String name) throws IOException;
 
-   void leaveDir(P dir, String name) throws IOException;
+  void leaveDir(P dir, String name) throws IOException;
 
-   /**
-    * A default implementation for the visitor.
-    */
-   public static class Default<P> implements Visitor<P>
-   {
-      public void enterDir(P dir, String name) throws IOException
-      {
-      }
-      public void file(P file, String name) throws IOException
-      {
-      }
-      public void leaveDir(P dir, String name) throws IOException
-      {
-      }
-   }
+  /** A default implementation for the visitor. */
+  public static class Default<P> implements Visitor<P> {
+    public void enterDir(P dir, String name) throws IOException {
+    }
+
+    public void file(P file, String name) throws IOException {
+    }
+
+    public void leaveDir(P dir, String name) throws IOException {
+    }
+  }
 }

@@ -22,24 +22,22 @@ package juzu.impl.http;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.UserAgent;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BinaryTestCase extends AbstractHttpTestCase
-{
+public class BinaryTestCase extends AbstractHttpTestCase {
 
-   @Test
-   public void testBinary() throws Exception
-   {
-      assertDeploy("http", "binary");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      String url = page.asText();
-      UnexpectedPage resource = ua.getPage(UnexpectedPage.class, url);
-      WebResponse resp = resource.getWebResponse();
-      assertEquals("application/octet-stream", resp.getContentType());
-      assertEquals("hello", resp.getContentAsString());
-   }
+  @Test
+  public void testBinary() throws Exception {
+    assertDeploy("http", "binary");
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
+    String url = page.asText();
+    UnexpectedPage resource = ua.getPage(UnexpectedPage.class, url);
+    WebResponse resp = resource.getWebResponse();
+    assertEquals("application/octet-stream", resp.getContentType());
+    assertEquals("hello", resp.getContentAsString());
+  }
 }

@@ -19,74 +19,63 @@
 
 package juzu.impl.template;
 
-import org.junit.Test;
 import juzu.impl.application.ApplicationException;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.template.TemplateExecutionException;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
+import org.junit.Test;
 
 import javax.naming.AuthenticationException;
 import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ThrowableTestCase extends AbstractInjectTestCase
-{
+public class ThrowableTestCase extends AbstractInjectTestCase {
 
-   public ThrowableTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public ThrowableTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testChecked() throws Exception
-   {
-      MockApplication<?> app = application("template", "throwable", "checked").init();
+  @Test
+  public void testChecked() throws Exception {
+    MockApplication<?> app = application("template", "throwable", "checked").init();
 
-      //
-      MockClient client = app.client();
-      try
-      {
-         client.render();
-      }
-      catch (ApplicationException e)
-      {
-         assertInstanceOf(AuthenticationException.class, assertInstanceOf(TemplateExecutionException.class, e.getCause()).getCause());
-      }
-   }
+    //
+    MockClient client = app.client();
+    try {
+      client.render();
+    }
+    catch (ApplicationException e) {
+      assertInstanceOf(AuthenticationException.class, assertInstanceOf(TemplateExecutionException.class, e.getCause()).getCause());
+    }
+  }
 
-   @Test
-   public void testRuntime() throws Exception
-   {
-      MockApplication<?> app = application("template", "throwable", "runtime").init();
+  @Test
+  public void testRuntime() throws Exception {
+    MockApplication<?> app = application("template", "throwable", "runtime").init();
 
-      //
-      MockClient client = app.client();
-      try
-      {
-         client.render();
-      }
-      catch (ApplicationException e)
-      {
-         assertInstanceOf(ConcurrentModificationException.class, assertInstanceOf(TemplateExecutionException.class, e.getCause()).getCause());
-      }
-   }
+    //
+    MockClient client = app.client();
+    try {
+      client.render();
+    }
+    catch (ApplicationException e) {
+      assertInstanceOf(ConcurrentModificationException.class, assertInstanceOf(TemplateExecutionException.class, e.getCause()).getCause());
+    }
+  }
 
-   @Test
-   public void testError() throws Exception
-   {
-      MockApplication<?> app = application("template", "throwable", "error").init();
+  @Test
+  public void testError() throws Exception {
+    MockApplication<?> app = application("template", "throwable", "error").init();
 
-      //
-      MockClient client = app.client();
-      try
-      {
-         client.render();
-      }
-      catch (ApplicationException e)
-      {
-         assertInstanceOf(UnknownError.class, e.getCause()).getCause();
-      }
-   }
+    //
+    MockClient client = app.client();
+    try {
+      client.render();
+    }
+    catch (ApplicationException e) {
+      assertInstanceOf(UnknownError.class, e.getCause()).getCause();
+    }
+  }
 }

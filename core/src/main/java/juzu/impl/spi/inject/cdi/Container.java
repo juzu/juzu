@@ -29,56 +29,49 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Container
-{
+public abstract class Container {
 
-   /** . */
-   static final ThreadLocal<Container> boot = new ThreadLocal<Container>();
+  /** . */
+  static final ThreadLocal<Container> boot = new ThreadLocal<Container>();
 
-   /** . */
-   private List<ReadFileSystem<?>> fileSystems;
+  /** . */
+  private List<ReadFileSystem<?>> fileSystems;
 
-   /** . */
-   final Set<Scope> scopes;
+  /** . */
+  final Set<Scope> scopes;
 
-   /** . */
-   final ScopeController scopeController;
+  /** . */
+  final ScopeController scopeController;
 
-   protected Container(ScopeController scopeController, Set<Scope> scopes)
-   {
-      this.fileSystems = new ArrayList<ReadFileSystem<?>>();
-      this.scopes = scopes;
-      this.scopeController = scopeController;
-   }
+  protected Container(ScopeController scopeController, Set<Scope> scopes) {
+    this.fileSystems = new ArrayList<ReadFileSystem<?>>();
+    this.scopes = scopes;
+    this.scopeController = scopeController;
+  }
 
-   public abstract BeanManager getManager();
+  public abstract BeanManager getManager();
 
-   public abstract ClassLoader getClassLoader();
+  public abstract ClassLoader getClassLoader();
 
-   public void addFileSystem(ReadFileSystem<?> fileSystem)
-   {
-      fileSystems.add(fileSystem);
-   }
+  public void addFileSystem(ReadFileSystem<?> fileSystem) {
+    fileSystems.add(fileSystem);
+  }
 
-   protected abstract void doStart(List<ReadFileSystem<?>> fileSystems) throws Exception;
+  protected abstract void doStart(List<ReadFileSystem<?>> fileSystems) throws Exception;
 
-   protected abstract void doStop();
+  protected abstract void doStop();
 
-   public void start() throws Exception
-   {
-      boot.set(this);
-      try
-      {
-         doStart(fileSystems);
-      }
-      finally
-      {
-         boot.set(null);
-      }
-   }
+  public void start() throws Exception {
+    boot.set(this);
+    try {
+      doStart(fileSystems);
+    }
+    finally {
+      boot.set(null);
+    }
+  }
 
-   public void stop()
-   {
-      doStop();
-   }
+  public void stop() {
+    doStop();
+  }
 }

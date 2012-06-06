@@ -10,73 +10,63 @@ import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class SingletonProviderBean extends AbstractBean
-{
+class SingletonProviderBean extends AbstractBean {
 
-   /** . */
-   final Provider provider;
+  /** . */
+  final Provider provider;
 
-   /** . */
-   final Scope scope;
+  /** . */
+  final Scope scope;
 
-   SingletonProviderBean(Class type, Scope scope, Iterable<Annotation> qualifiers, Provider provider)
-   {
-      super(type, qualifiers);
+  SingletonProviderBean(Class type, Scope scope, Iterable<Annotation> qualifiers, Provider provider) {
+    super(type, qualifiers);
 
-      //
-      this.scope = scope;
-      this.provider = provider;
-   }
+    //
+    this.scope = scope;
+    this.provider = provider;
+  }
 
-   @Override
-   void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory)
-   {
-      String _name = "" + Math.random();
-      AnnotatedGenericBeanDefinition _definition = new AnnotatedGenericBeanDefinition(provider.getClass());
-      _definition.setScope("singleton");
-      factory.registerBeanDefinition(_name, _definition);
-      builder.instances.put(_name, provider);
+  @Override
+  void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory) {
+    String _name = "" + Math.random();
+    AnnotatedGenericBeanDefinition _definition = new AnnotatedGenericBeanDefinition(provider.getClass());
+    _definition.setScope("singleton");
+    factory.registerBeanDefinition(_name, _definition);
+    builder.instances.put(_name, provider);
 
-      //
-      AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
+    //
+    AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
 
-      //
-      if (scope != null)
-      {
-         definition.setScope(scope.name().toLowerCase());
+    //
+    if (scope != null) {
+      definition.setScope(scope.name().toLowerCase());
+    }
+    else {
+      ScopeMetadata scopeMD = builder.scopeResolver.resolveScopeMetadata(definition);
+      if (scopeMD != null) {
+        definition.setScope(scopeMD.getScopeName());
       }
-      else
-      {
-         ScopeMetadata scopeMD = builder.scopeResolver.resolveScopeMetadata(definition);
-         if (scopeMD != null)
-         {
-            definition.setScope(scopeMD.getScopeName());
-         }
+    }
+
+    //
+    if (qualifiers != null) {
+      for (AutowireCandidateQualifier qualifier : qualifiers) {
+        definition.addQualifier(qualifier);
       }
+    }
 
-      //
-      if (qualifiers != null)
-      {
-         for (AutowireCandidateQualifier qualifier : qualifiers)
-         {
-            definition.addQualifier(qualifier);
-         }
+    //
+    if (qualifiers != null) {
+      for (AutowireCandidateQualifier qualifier : qualifiers) {
+        definition.addQualifier(qualifier);
       }
+    }
 
-      //
-      if (qualifiers != null)
-      {
-         for (AutowireCandidateQualifier qualifier : qualifiers)
-         {
-            definition.addQualifier(qualifier);
-         }
-      }
+    //
+    definition.setFactoryBeanName(_name);
+    definition.setFactoryMethodName("get");
 
-      //
-      definition.setFactoryBeanName(_name);
-      definition.setFactoryMethodName("get");
-
-      //
-      factory.registerBeanDefinition(name, definition);
-   }
+    //
+    factory.registerBeanDefinition(name, definition);
+  }
 }

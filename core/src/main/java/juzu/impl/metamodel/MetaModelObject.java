@@ -31,225 +31,183 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaModelObject implements Serializable
-{
+public class MetaModelObject implements Serializable {
 
-   /** The children. */
-   private final HashMap<Key<?>, MetaModelObject> children = new HashMap<Key<?>, MetaModelObject>();
+  /** The children. */
+  private final HashMap<Key<?>, MetaModelObject> children = new HashMap<Key<?>, MetaModelObject>();
 
-   /** The parents. */
-   private final HashMap<MetaModelObject, Key<?>> parents = new HashMap<MetaModelObject, Key<?>>();
+  /** The parents. */
+  private final HashMap<MetaModelObject, Key<?>> parents = new HashMap<MetaModelObject, Key<?>>();
 
-   /** . */
-   private MetaModel metaModel;
+  /** . */
+  private MetaModel metaModel;
 
-   public MetaModelObject()
-   {
-      if (this instanceof MetaModel)
-      {
-         metaModel = (MetaModel)this;
+  public MetaModelObject() {
+    if (this instanceof MetaModel) {
+      metaModel = (MetaModel)this;
+    }
+  }
+
+  public final Collection<MetaModelObject> getParents() {
+    return parents.keySet();
+  }
+
+  public final <O extends MetaModelObject> O getChild(Key<O> key) {
+    MetaModelObject child = children.get(key);
+    if (child != null) {
+      return key.getType().cast(child);
+    }
+    else {
+      return null;
+    }
+  }
+
+  public final Collection<MetaModelObject> getChildren() {
+    return getChildren(MetaModelObject.class);
+  }
+
+  public final <O extends MetaModelObject> Collection<Key<O>> getKeys(Class<O> filter) {
+    ArrayList<Key<O>> list = new ArrayList<Key<O>>(children.size());
+    for (Key<?> key : children.keySet()) {
+      if (filter.isAssignableFrom(key.getType())) {
+        // Yes : not great
+        list.add((Key<O>)key);
       }
-   }
+    }
+    return list;
+  }
 
-   public final Collection<MetaModelObject> getParents()
-   {
-      return parents.keySet();
-   }
-
-   public final <O extends MetaModelObject> O getChild(Key<O> key)
-   {
-      MetaModelObject child = children.get(key);
-      if (child != null)
-      {
-         return key.getType().cast(child);
+  public final <O extends MetaModelObject> Collection<O> getChildren(Class<O> filter) {
+    ArrayList<O> list = new ArrayList<O>(children.size());
+    for (MetaModelObject child : children.values()) {
+      if (filter.isInstance(child)) {
+        list.add(filter.cast(child));
       }
-      else
-      {
-         return null;
+    }
+    return list;
+  }
+
+  public final <O extends MetaModelObject> O addChild(Key<O> key, O child) throws IllegalArgumentException, IllegalStateException {
+    if (closure(child, new HashSet<MetaModelObject>()).contains(this)) {
+      throw new IllegalStateException("Cycle detected");
+    }
+    else {
+      if (child.parents.containsKey(this)) {
+        throw new IllegalArgumentException("Child " + child + " cannot be added for key " + key + " because parent already contains it");
       }
-   }
+      else {
+        if (child.parents.size() == 0) {
+          // Note : it may be null
+          child.metaModel = metaModel;
 
-   public final Collection<MetaModelObject> getChildren()
-   {
-      return getChildren(MetaModelObject.class);
-   }
+          // Post construct
+          child.postConstruct();
+        }
+        else if (child.metaModel != metaModel) {
+          throw new UnsupportedOperationException("handle me gracefully " + child.metaModel + " " + metaModel);
+        }
 
-   public final <O extends MetaModelObject> Collection<Key<O>> getKeys(Class<O> filter)
-   {
-      ArrayList<Key<O>> list = new ArrayList<Key<O>>(children.size());
-      for (Key<?> key : children.keySet())
-      {
-         if (filter.isAssignableFrom(key.getType()))
-         {
-            // Yes : not great
-            list.add((Key<O>)key);
-         }
+        // Wire
+        children.put(key, child);
+        child.parents.put(this, key);
+
+
+        // Post attach
+        child.postAttach(this);
+
+        //
+        return child;
       }
-      return list;
-   }
+    }
+  }
 
-   public final <O extends MetaModelObject> Collection<O> getChildren(Class<O> filter)
-   {
-      ArrayList<O> list = new ArrayList<O>(children.size());
-      for (MetaModelObject child : children.values())
-      {
-         if (filter.isInstance(child))
-         {
-            list.add(filter.cast(child));
-         }
-      }
-      return list;
-   }
+  public final <O extends MetaModelObject> O removeChild(Key<O> key) {
+    MetaModelObject child = children.remove(key);
+    if (child != null) {
+      if (child.parents.remove(this) != null) {
+        child.preDetach(this);
 
-   public final <O extends MetaModelObject> O addChild(Key<O> key, O child) throws IllegalArgumentException, IllegalStateException
-   {
-      if (closure(child, new HashSet<MetaModelObject>()).contains(this))
-      {
-         throw new IllegalStateException("Cycle detected");
-      }
-      else
-      {
-         if (child.parents.containsKey(this))
-         {
-            throw new IllegalArgumentException("Child " + child + " cannot be added for key " + key + " because parent already contains it");
-         }
-         else
-         {
-            if (child.parents.size() == 0)
-            {
-               // Note : it may be null
-               child.metaModel = metaModel;
-
-               // Post construct
-               child.postConstruct();
+        // Remove orphan
+        if (child.parents.isEmpty()) {
+          // Remove children if needed
+          if (child.children.size() > 0) {
+            for (Key<?> key2 : new ArrayList<Key<?>>(child.children.keySet())) {
+              child.removeChild(key2);
             }
-            else if (child.metaModel != metaModel)
-            {
-               throw new UnsupportedOperationException("handle me gracefully " + child.metaModel + " " + metaModel);
-            }
+          }
 
-            // Wire
-            children.put(key, child);
-            child.parents.put(this, key);
-            
+          // Remove callback
+          child.preRemove();
 
-            // Post attach
-            child.postAttach(this);
+          //
+          child.metaModel = null;
+        }
 
-            //
-            return child;
-         }
+        //
+        return key.getType().cast(child);
       }
-   }
-
-   public final <O extends MetaModelObject> O removeChild(Key<O> key)
-   {
-      MetaModelObject child = children.remove(key);
-      if (child != null)
-      {
-         if (child.parents.remove(this) != null)
-         {
-            child.preDetach(this);
-            
-            // Remove orphan
-            if (child.parents.isEmpty())
-            {
-               // Remove children if needed
-               if (child.children.size() > 0)
-               {
-                  for (Key<?> key2 : new ArrayList<Key<?>>(child.children.keySet()))
-                  {
-                     child.removeChild(key2);
-                  }
-               }
-
-               // Remove callback
-               child.preRemove();
-
-               //
-               child.metaModel = null;
-            }
-
-            //
-            return key.getType().cast(child);
-         }
-         else
-         {
-            throw new AssertionError("Internal bug");
-         }
+      else {
+        throw new AssertionError("Internal bug");
       }
-      else
-      {
-         throw new IllegalArgumentException("The element is not child of this node");
+    }
+    else {
+      throw new IllegalArgumentException("The element is not child of this node");
+    }
+  }
+
+  public final void remove() {
+    // We remove a node by detaching it from all its parents
+    while (parents.size() > 0) {
+      Iterator<Map.Entry<MetaModelObject, Key<?>>> iterator = parents.entrySet().iterator();
+      Map.Entry<MetaModelObject, Key<?>> entry = iterator.next();
+      MetaModelObject parent = entry.getKey();
+      Key<?> key = entry.getValue();
+      parent.removeChild(key);
+    }
+  }
+
+  public void queue(MetaModelEvent event) {
+    metaModel.queue(event);
+  }
+
+  protected void postConstruct() {
+  }
+
+  protected void preDetach(MetaModelObject parent) {
+  }
+
+  protected void postAttach(MetaModelObject parent) {
+  }
+
+  protected void preRemove() {
+  }
+
+  /**
+   * Check the existence of the object, the default implementation always return true.
+   *
+   * @param model
+   * @return the existence
+   */
+  public boolean exist(MetaModel model) {
+    return true;
+  }
+
+  public JSON toJSON() {
+    return new JSON();
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "[" + toJSON() + "]";
+  }
+
+  private Set<MetaModelObject> closure(MetaModelObject node, Set<MetaModelObject> closure) {
+    if (!closure.contains(node)) {
+      closure.add(node);
+      for (MetaModelObject child : node.children.values()) {
+        closure(child, closure);
       }
-   }
-
-   public final void remove()
-   {
-      // We remove a node by detaching it from all its parents
-      while (parents.size() > 0)
-      {
-         Iterator<Map.Entry<MetaModelObject, Key<?>>> iterator = parents.entrySet().iterator();
-         Map.Entry<MetaModelObject, Key<?>> entry = iterator.next();
-         MetaModelObject parent = entry.getKey();
-         Key<?> key = entry.getValue();
-         parent.removeChild(key);
-      }
-   }
-
-   public void queue(MetaModelEvent event)
-   {
-      metaModel.queue(event);
-   }
-   
-   protected void postConstruct()
-   {
-   }
-
-   protected void preDetach(MetaModelObject parent)
-   {
-   }
-
-   protected void postAttach(MetaModelObject parent)
-   {
-   }
-
-   protected void preRemove()
-   {
-   }
-
-   /**
-    * Check the existence of the object, the default implementation always return true.
-    *
-    * @return the existence
-    * @param model
-    */
-   public boolean exist(MetaModel model)
-   {
-      return true;
-   }
-
-   public JSON toJSON()
-   {
-      return new JSON();
-   }
-
-   @Override
-   public String toString()
-   {
-      return getClass().getSimpleName() + "[" + toJSON() + "]";
-   }
-
-   private Set<MetaModelObject> closure(MetaModelObject node, Set<MetaModelObject> closure)
-   {
-      if (!closure.contains(node))
-      {
-         closure.add(node);
-         for (MetaModelObject child : node.children.values())
-         {
-            closure(child, closure);
-         }
-      }
-      return closure;
-   }
+    }
+    return closure;
+  }
 }

@@ -19,45 +19,41 @@
 
 package juzu.impl.request;
 
-import org.junit.Test;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
 import juzu.test.protocol.mock.MockResourceBridge;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResourceTestCase extends AbstractInjectTestCase
-{
+public class ResourceTestCase extends AbstractInjectTestCase {
 
-   public ResourceTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public ResourceTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testNotFound() throws Exception
-   {
-      MockApplication<?> app = application("request", "resource", "notfound").init();
+  @Test
+  public void testNotFound() throws Exception {
+    MockApplication<?> app = application("request", "resource", "notfound").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
-      resource.assertNotFound();
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
+    resource.assertNotFound();
+  }
 
-   @Test
-   public void testBinary() throws Exception
-   {
-      MockApplication<?> app = application("request", "resource", "binary").init();
+  @Test
+  public void testBinary() throws Exception {
+    MockApplication<?> app = application("request", "resource", "binary").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
-      assertEquals("hello", new String(resource.assertBinaryResult(), "UTF-8"));
-      assertEquals("application/octet-stream", resource.getMimeType());
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
+    assertEquals("hello", new String(resource.assertBinaryResult(), "UTF-8"));
+    assertEquals("application/octet-stream", resource.getMimeType());
+  }
 }

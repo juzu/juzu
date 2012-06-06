@@ -26,24 +26,20 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @View
-   public void index()
-   {
-      Registry.compareAndSet("count", 0, 1);
-   }
+  @View
+  public void index() {
+    Registry.compareAndSet("count", 0, 1);
+  }
 
-   @PostConstruct
-   public void after()
-   {
-      Registry.compareAndSet("count", null, 0);
-   }
+  @PostConstruct
+  public void after() {
+    Registry.compareAndSet("count", null, 0);
+  }
 
-   @PreDestroy
-   public void before()
-   {
-      Registry.compareAndSet("count", 1, 2);
-   }
+  @PreDestroy
+  public void before() {
+    Registry.compareAndSet("count", 1, 2);
+  }
 }

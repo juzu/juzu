@@ -27,26 +27,23 @@ import javax.inject.Inject;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @Path("index.gtmpl")
-   @Inject
-   Template index;
+  @Path("index.gtmpl")
+  @Inject
+  Template index;
 
-   @Path("dynamic.gtmpl")
-   @Inject
-   Template dynamic;
+  @Path("dynamic.gtmpl")
+  @Inject
+  Template dynamic;
 
-   @View
-   public void index()
-   {
-      index.render();
-   }
+  @View
+  public void index() {
+    index.render();
+  }
 
-   @View
-   public void dynamic()
-   {
-      dynamic.render(Collections.singletonMap("expression", "4"));
-   }
+  @View
+  public void dynamic() {
+    dynamic.render(Collections.singletonMap("expression", "4"));
+  }
 }

@@ -31,58 +31,52 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Weather
-{
+public class Weather {
 
-   static Set<String> locations = new HashSet<String>();
+  static Set<String> locations = new HashSet<String>();
 
-   static
-   {
-      locations.add("marseille");
-      locations.add("paris");
-   }
+  static {
+    locations.add("marseille");
+    locations.add("paris");
+  }
 
-   @Inject
-   WeatherService weatherService;
+  @Inject
+  WeatherService weatherService;
 
-   @Inject
-   PortletPreferences preferences;
+  @Inject
+  PortletPreferences preferences;
 
-   @Inject
-   @Path("index.gtmpl")
-   examples.tutorial.weather7.templates.index index;
+  @Inject
+  @Path("index.gtmpl")
+  examples.tutorial.weather7.templates.index index;
 
-   @View
-   public void index()
-   {
-      index("marseille");
-   }
+  @View
+  public void index() {
+    index("marseille");
+  }
 
-   @View
-   public void index(String location)
-   {
-      String grade = preferences.getValue("grade", "c");
-      index.
-         with().
-         location(location).
-         temperature(weatherService.getTemperature(location, grade)).
-         grade(grade).
-         locations(locations).
-         render();
-   }
+  @View
+  public void index(String location) {
+    String grade = preferences.getValue("grade", "c");
+    index.
+      with().
+      location(location).
+      temperature(weatherService.getTemperature(location, grade)).
+      grade(grade).
+      locations(locations).
+      render();
+  }
 
-   @Action
-   public void updateGrade(String grade) throws java.io.IOException,
-      javax.portlet.PortletException
-   {
-      preferences.setValue("grade", grade);
-      preferences.store();
-   }
+  @Action
+  public void updateGrade(String grade) throws java.io.IOException,
+    javax.portlet.PortletException {
+    preferences.setValue("grade", grade);
+    preferences.store();
+  }
 
-   @Action
-   public Response add(String location)
-   {
-      locations.add(location);
-      return Weather_.index(location);
-   }
+  @Action
+  public Response add(String location) {
+    locations.add(location);
+    return Weather_.index(location);
+  }
 }

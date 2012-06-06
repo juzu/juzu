@@ -20,22 +20,20 @@
 package application.method.id;
 
 import juzu.Action;
-import juzu.View;
 import juzu.Resource;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-   @View(id = "foo")
-   public void a()
-   {
-   }
-   @Action(id = "bar")
-   public void b()
-   {
-   }
-   @Resource(id = "juu")
-   public void c()
-   {
-   }
+public class A {
+  @View(id = "foo")
+  public void a() {
+  }
+
+  @Action(id = "bar")
+  public void b() {
+  }
+
+  @Resource(id = "juu")
+  public void c() {
+  }
 }

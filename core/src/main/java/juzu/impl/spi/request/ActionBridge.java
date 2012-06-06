@@ -20,7 +20,6 @@
 package juzu.impl.spi.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ActionBridge extends RequestBridge
-{
+public interface ActionBridge extends RequestBridge {
 
 }

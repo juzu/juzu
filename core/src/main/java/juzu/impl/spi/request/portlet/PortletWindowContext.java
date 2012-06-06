@@ -22,24 +22,20 @@ package juzu.impl.spi.request.portlet;
 import juzu.request.WindowContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class PortletWindowContext implements WindowContext
-{
+class PortletWindowContext implements WindowContext {
 
-   /** . */
-   private final PortletRequestBridge<?, ?> request;
+  /** . */
+  private final PortletRequestBridge<?, ?> request;
 
-   PortletWindowContext(PortletRequestBridge<?, ?> request)
-   {
-      this.request = request;
-   }
+  PortletWindowContext(PortletRequestBridge<?, ?> request) {
+    this.request = request;
+  }
 
-   public String getId()
-   {
-      return request.req.getWindowID();
-   }
+  public String getId() {
+    return request.req.getWindowID();
+  }
 
-   public String getNamespace()
-   {
-      return request.resp.getNamespace();
-   }
+  public String getNamespace() {
+    return request.resp.getNamespace();
+  }
 }

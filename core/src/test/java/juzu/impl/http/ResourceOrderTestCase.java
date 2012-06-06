@@ -21,38 +21,35 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import junit.framework.AssertionFailedError;
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.UserAgent;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**  @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
-public class ResourceOrderTestCase extends AbstractHttpTestCase
-{
-   @Test
-   public void testResourceOrder() throws Exception
-   {
-      assertDeploy("http", "resource");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      DomNode head = page.getElementsByTagName("head").get(0);
-      DomNodeList<DomNode> headChildren = head.getChildNodes();
+/** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
+public class ResourceOrderTestCase extends AbstractHttpTestCase {
+  @Test
+  public void testResourceOrder() throws Exception {
+    assertDeploy("http", "resource");
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
+    DomNode head = page.getElementsByTagName("head").get(0);
+    DomNodeList<DomNode> headChildren = head.getChildNodes();
 
-      List<String> previous = new ArrayList<String>();
-      for(DomNode node : headChildren) {
-         assertOrder(previous, node);
-         previous.add(node.getNodeName());
-      }
-   }
+    List<String> previous = new ArrayList<String>();
+    for (DomNode node : headChildren) {
+      assertOrder(previous, node);
+      previous.add(node.getNodeName());
+    }
+  }
 
-    private void assertOrder(List<String> previous, DomNode current) {
+  private void assertOrder(List<String> previous, DomNode current) {
 
-       if ("link".equals(current.getNodeName()) && previous.contains("script"))
-       {
-          throw new AssertionFailedError("js must be set before css resource");
-       }
+    if ("link".equals(current.getNodeName()) && previous.contains("script")) {
+      throw new AssertionFailedError("js must be set before css resource");
+    }
 
-   }
+  }
 }

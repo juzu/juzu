@@ -19,9 +19,9 @@
 
 package juzu.impl.spi.fs.jar;
 
-import org.junit.Test;
 import juzu.impl.fs.Visitor;
 import juzu.test.AbstractTestCase;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,35 +29,30 @@ import java.net.URL;
 import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JarFileSystemTestCase extends AbstractTestCase
-{
+public class JarFileSystemTestCase extends AbstractTestCase {
 
-   @Test
-   public void testFoo() throws Exception
-   {
-      URL url = Test.class.getProtectionDomain().getCodeSource().getLocation();
-      System.out.println("url = " + url);
-      JarFile file = new JarFile(new File(url.toURI()));
-      final JarFileSystem filesystem = new JarFileSystem(file);
-      filesystem.traverse(new Visitor.Default<JarPath>()
-      {
-         @Override
-         public void enterDir(JarPath dir, String name) throws IOException
-         {
-            StringBuilder sb = new StringBuilder();
-            filesystem.packageOf(dir, '/', sb);
-            System.out.println("dir " + sb);
-         }
-      });
-   }
+  @Test
+  public void testFoo() throws Exception {
+    URL url = Test.class.getProtectionDomain().getCodeSource().getLocation();
+    System.out.println("url = " + url);
+    JarFile file = new JarFile(new File(url.toURI()));
+    final JarFileSystem filesystem = new JarFileSystem(file);
+    filesystem.traverse(new Visitor.Default<JarPath>() {
+      @Override
+      public void enterDir(JarPath dir, String name) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        filesystem.packageOf(dir, '/', sb);
+        System.out.println("dir " + sb);
+      }
+    });
+  }
 
-   @Test
-   public void testBaseURL() throws Exception
-   {
-      URL url = Test.class.getProtectionDomain().getCodeSource().getLocation();
-      JarFile file = new JarFile(new File(url.toURI()));
-      JarFileSystem filesystem = new JarFileSystem(file);
-      URL baseURL = filesystem.getURL();
-      assertNotNull(baseURL);
-   }
+  @Test
+  public void testBaseURL() throws Exception {
+    URL url = Test.class.getProtectionDomain().getCodeSource().getLocation();
+    JarFile file = new JarFile(new File(url.toURI()));
+    JarFileSystem filesystem = new JarFileSystem(file);
+    URL baseURL = filesystem.getURL();
+    assertNotNull(baseURL);
+  }
 }

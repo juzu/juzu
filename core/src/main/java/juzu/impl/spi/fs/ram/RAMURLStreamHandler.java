@@ -28,30 +28,25 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMURLStreamHandler extends URLStreamHandler
-{
+public class RAMURLStreamHandler extends URLStreamHandler {
 
-   /** . */
-   private RAMFileSystem fs;
+  /** . */
+  private RAMFileSystem fs;
 
-   public RAMURLStreamHandler(RAMFileSystem fs)
-   {
-      this.fs = fs;
-   }
+  public RAMURLStreamHandler(RAMFileSystem fs) {
+    this.fs = fs;
+  }
 
-   @Override
-   protected URLConnection openConnection(URL u) throws IOException
-   {
-      Iterable<String> names = Spliterator.split(u.getPath().substring(1), '/');
-      RAMPath path = fs.getPath(names);
-      if (path instanceof RAMFile)
-      {
-         Content content = ((RAMFile)path).getContent();
-         if (content != null)
-         {
-            return new RAMURLConnection(u, content);
-         }
+  @Override
+  protected URLConnection openConnection(URL u) throws IOException {
+    Iterable<String> names = Spliterator.split(u.getPath().substring(1), '/');
+    RAMPath path = fs.getPath(names);
+    if (path instanceof RAMFile) {
+      Content content = ((RAMFile)path).getContent();
+      if (content != null) {
+        return new RAMURLConnection(u, content);
       }
-      throw new IOException("Could not connect to non existing content " + names);
-   }
+    }
+    throw new IOException("Could not connect to non existing content " + names);
+  }
 }

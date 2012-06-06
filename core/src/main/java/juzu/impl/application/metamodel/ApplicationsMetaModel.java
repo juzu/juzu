@@ -31,390 +31,326 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationsMetaModel extends MetaModelObject implements Iterable<ApplicationMetaModel>
-{
+public class ApplicationsMetaModel extends MetaModelObject implements Iterable<ApplicationMetaModel> {
 
-   /** . */
-   private static final String APPLICATION_DESCRIPTOR = ApplicationDescriptor.class.getSimpleName();
+  /** . */
+  private static final String APPLICATION_DESCRIPTOR = ApplicationDescriptor.class.getSimpleName();
 
-   /** . */
-   private Map<String, String> moduleConfig;
+  /** . */
+  private Map<String, String> moduleConfig;
 
-   /** . */
-   public final static Key<ApplicationsMetaModel> KEY = Key.of(ApplicationsMetaModel.class);
+  /** . */
+  public final static Key<ApplicationsMetaModel> KEY = Key.of(ApplicationsMetaModel.class);
 
-   /** . */
-   public MetaModel model;
+  /** . */
+  public MetaModel model;
 
-   /** . */
-   final Map<BufKey, AnnotationData> toProcess = new HashMap<BufKey, AnnotationData>();
+  /** . */
+  final Map<BufKey, AnnotationData> toProcess = new HashMap<BufKey, AnnotationData>();
 
-   /** The meta model plugins. */
-   final LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
+  /** The meta model plugins. */
+  final LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
 
-   public ApplicationsMetaModel()
-   {
-      this.moduleConfig = new HashMap<String, String>();
-   }
+  public ApplicationsMetaModel() {
+    this.moduleConfig = new HashMap<String, String>();
+  }
 
-   @Override
-   public JSON toJSON()
-   {
-      JSON json = new JSON();
-      json.map("values", getChildren(ApplicationMetaModel.class));
-      return json;
-   }
+  @Override
+  public JSON toJSON() {
+    JSON json = new JSON();
+    json.map("values", getChildren(ApplicationMetaModel.class));
+    return json;
+  }
 
-   public Iterator<ApplicationMetaModel> iterator()
-   {
-      return getChildren(ApplicationMetaModel.class).iterator();
-   }
+  public Iterator<ApplicationMetaModel> iterator() {
+    return getChildren(ApplicationMetaModel.class).iterator();
+  }
 
-   public ProcessingContext getContext()
-   {
-      return model.env;
-   }
+  public ProcessingContext getContext() {
+    return model.env;
+  }
 
-   public ApplicationMetaModel get(ElementHandle.Package handle)
-   {
-      return getChild(Key.of(handle, ApplicationMetaModel.class));
-   }
+  public ApplicationMetaModel get(ElementHandle.Package handle) {
+    return getChild(Key.of(handle, ApplicationMetaModel.class));
+  }
 
-   public void addPlugin(String name, ApplicationMetaModelPlugin plugin)
-   {
-      plugins.put(name, plugin);
+  public void addPlugin(String name, ApplicationMetaModelPlugin plugin) {
+    plugins.put(name, plugin);
 
-      //
-      plugin.init(this);
-   }
+    //
+    plugin.init(this);
+  }
 
-   public void postActivate(MetaModel model)
-   {
-      for (ApplicationMetaModelPlugin plugin : plugins.values())
-      {
-         plugin.postActivateApplicationsMetaModel(this);
+  public void postActivate(MetaModel model) {
+    for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+      plugin.postActivateApplicationsMetaModel(this);
+    }
+
+    //
+    for (ApplicationMetaModel application : this) {
+      for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+        plugin.postActivate(application);
+      }
+    }
+  }
+
+  public void processAnnotation(MetaModel model, Element element, String annotationFQN, AnnotationData annotationData) throws CompilationException {
+    PackageElement pkg = model.env.getPackageOf(element);
+    QN pkgQN = QN.parse(pkg.getQualifiedName());
+
+    //
+    ApplicationMetaModel found = null;
+
+    //
+    if (annotationFQN.equals(Application.class.getName())) {
+      found = processApplication((PackageElement)element, annotationData);
+
+      // Process this annotation manually
+      for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+        plugin.processAnnotation(found, element, annotationFQN, annotationData);
+      }
+    }
+    else {
+      for (ApplicationMetaModel application : this) {
+        if (application.fqn.getPackageName().isPrefix(pkgQN)) {
+          found = application;
+          break;
+        }
       }
 
       //
-      for (ApplicationMetaModel application : this)
-      {
-         for (ApplicationMetaModelPlugin plugin : plugins.values())
-         {
-            plugin.postActivate(application);
-         }
+      BufKey key = new BufKey(model.env, element, annotationFQN);
+      if (found == null) {
+        toProcess.put(key, annotationData);
+        MetaModel.log.log("Buffering " + key + " = " + annotationData);
       }
-   }
+      else {
+        found.toProcess.put(key, annotationData);
+      }
+    }
 
-   public void processAnnotation(MetaModel model, Element element, String annotationFQN, AnnotationData annotationData) throws CompilationException
-   {
-      PackageElement pkg = model.env.getPackageOf(element);
-      QN pkgQN = QN.parse(pkg.getQualifiedName());
+    // Broadcast annotations
+    if (found != null) {
+      for (Iterator<Map.Entry<BufKey, AnnotationData>> i = found.toProcess.entrySet().iterator();i.hasNext();) {
+        Map.Entry<BufKey, AnnotationData> entry = i.next();
+        BufKey key = entry.getKey();
+        AnnotationData data = entry.getValue();
+        Element e = model.env.get(key.element);
+        i.remove();
+        MetaModel.log.log("Broadcasting annotation " + key + " = " + data);
+        for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+          plugin.processAnnotation(found, e, key.annotationFQN, data);
+        }
+        found.processed.put(key, data);
+      }
+    }
+  }
+
+  public void postProcessAnnotations(MetaModel model) {
+    resolveApplications();
+
+    //
+    for (ApplicationMetaModel application : this) {
+      for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+        plugin.postProcessAnnotations(application);
+      }
+    }
+  }
+
+  public void processEvents(MetaModel model, EventQueue queue) {
+    while (queue.hasEvents()) {
+      MetaModelEvent event = queue.popEvent();
 
       //
-      ApplicationMetaModel found = null;
+      processEvent(event);
 
       //
-      if (annotationFQN.equals(Application.class.getName()))
-      {
-         found = processApplication((PackageElement)element, annotationData);
-
-         // Process this annotation manually
-         for (ApplicationMetaModelPlugin plugin : plugins.values())
-         {
-            plugin.processAnnotation(found, element, annotationFQN, annotationData);
-         }
+      MetaModel.log.log("Processing meta model event " + event.getType() + " " + event.getObject());
+      for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+        plugin.processEvent(this, event);
       }
-      else
-      {
-         for (ApplicationMetaModel application : this)
-         {
-            if (application.fqn.getPackageName().isPrefix(pkgQN))
-            {
-               found = application;
-               break;
-            }
-         }
+    }
+  }
 
-         //
-         BufKey key = new BufKey(model.env, element, annotationFQN);
-         if (found == null)
-         {
-            toProcess.put(key, annotationData);
-            MetaModel.log.log("Buffering " + key + " = " + annotationData);
-         }
-         else
-         {
-            found.toProcess.put(key, annotationData);
-         }
+  private void processEvent(MetaModelEvent event) {
+    MetaModelObject obj = event.getObject();
+    if (obj instanceof ApplicationMetaModel) {
+      ApplicationMetaModel application = (ApplicationMetaModel)obj;
+      if (event.getType() == MetaModelEvent.AFTER_ADD) {
+        moduleConfig.put(application.getFQN().getSimpleName(), application.getFQN().getName());
+        emitApplication(model.env, application);
       }
-
-      // Broadcast annotations
-      if (found != null)
-      {
-         for (Iterator<Map.Entry<BufKey, AnnotationData>> i = found.toProcess.entrySet().iterator();i.hasNext();)
-         {
-            Map.Entry<BufKey, AnnotationData> entry = i.next();
-            BufKey key = entry.getKey();
-            AnnotationData data = entry.getValue();
-            Element e = model.env.get(key.element);
-            i.remove();
-            MetaModel.log.log("Broadcasting annotation " + key + " = " +  data);
-            for (ApplicationMetaModelPlugin plugin : plugins.values())
-            {
-               plugin.processAnnotation(found, e, key.annotationFQN, data);
-            }
-            found.processed.put(key, data);
-         }
+      else if (event.getType() == MetaModelEvent.BEFORE_REMOVE) {
+        moduleConfig.remove(application.getFQN().getSimpleName());
       }
-   }
+    }
+  }
 
-   public void postProcessAnnotations(MetaModel model)
-   {
-      resolveApplications();
+  public void postProcessEvents(MetaModel model) throws CompilationException {
+    for (ApplicationMetaModel application : this) {
+      for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+        plugin.postProcessEvents(application);
+      }
+    }
+  }
+
+  public void prePassivate(MetaModel model) {
+    for (ApplicationMetaModel application : this) {
+      for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+        plugin.prePassivate(application);
+      }
+    }
+
+    //
+    for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+      plugin.prePassivate(this);
+    }
+
+    //
+    MetaModel.log.log("Emitting config");
+    emitConfig(model);
+  }
+
+  // ****
+
+  private ApplicationMetaModel processApplication(PackageElement packageElt, Map<String, Serializable> annotationValues) throws CompilationException {
+    String name = (String)annotationValues.get("name");
+    ElementHandle.Package handle = ElementHandle.Package.create(packageElt);
+    ApplicationMetaModel application = get(handle);
+
+    //
+    if (application == null) {
+      application = add(handle, name);
+    }
+    else {
+      application.modified = true;
+    }
+
+    //
+    return application;
+  }
+
+  public ApplicationMetaModel add(ElementHandle.Package handle, String applicationName) {
+    ApplicationMetaModel application = new ApplicationMetaModel(handle, applicationName);
+
+    // Let's find buffered annotations
+    for (Iterator<Map.Entry<BufKey, AnnotationData>> i = toProcess.entrySet().iterator();i.hasNext();) {
+      Map.Entry<BufKey, AnnotationData> entry = i.next();
+      BufKey key = entry.getKey();
+      if (handle.getQN().isPrefix(key.pkg)) {
+        AnnotationData data = entry.getValue();
+        i.remove();
+        MetaModel.log.log("Moving " + key + " = " + data);
+        application.toProcess.put(key, data);
+      }
+    }
+
+    // Add child
+    addChild(Key.of(handle, ApplicationMetaModel.class), application);
+
+    //
+    return application;
+  }
+
+  private void resolveApplications() {
+    for (ApplicationMetaModel application : getChildren(ApplicationMetaModel.class)) {
+      if (application.modified) {
+        queue(MetaModelEvent.createUpdated(application));
+        application.modified = false;
+      }
+    }
+  }
+
+  private void emitApplication(ProcessingContext env, ApplicationMetaModel application) throws CompilationException {
+    PackageElement elt = env.get(application.getHandle());
+    FQN fqn = application.getFQN();
+
+    //
+    Writer writer = null;
+    try {
+      JavaFileObject applicationFile = env.createSourceFile(fqn, elt);
+      writer = applicationFile.openWriter();
+
+      writer.append("package ").append(fqn.getPackageName()).append(";\n");
+
+      // Imports
+      writer.append("import ").append(Tools.getImport(ApplicationDescriptor.class)).append(";\n");
+
+      // Open class
+      writer.append("public class ").append(fqn.getSimpleName()).append(" {\n");
+
+      // Singleton
+      writer.append("public static final ").append(APPLICATION_DESCRIPTOR).append(" DESCRIPTOR = new ").append(APPLICATION_DESCRIPTOR).append("(");
+      writer.append(fqn.getSimpleName()).append(".class");
+      writer.append(");\n");
+
+      // Close class
+      writer.append("}\n");
 
       //
-      for (ApplicationMetaModel application : this)
-      {
-         for (ApplicationMetaModelPlugin plugin : plugins.values())
-         {
-            plugin.postProcessAnnotations(application);
-         }
-      }
-   }
+      MetaModel.log.log("Generated application " + fqn.getName() + " as " + applicationFile.toUri());
+    }
+    catch (IOException e) {
+      throw TemplateMetaModel.CANNOT_WRITE_APPLICATION.failure(e, elt, application.getFQN());
+    }
+    finally {
+      Tools.safeClose(writer);
+    }
+  }
 
-   public void processEvents(MetaModel model, EventQueue queue)
-   {
-      while (queue.hasEvents())
-      {
-         MetaModelEvent event = queue.popEvent();
+  private void emitConfig(MetaModel model) {
+    JSON descriptor = new JSON();
+    descriptor.merge(moduleConfig);
 
-         //
-         processEvent(event);
+    // Module config
+    Writer writer = null;
+    try {
+      FileObject fo = model.env.createResource(StandardLocation.CLASS_OUTPUT, "juzu", "config.json");
+      writer = fo.openWriter();
+      descriptor.toString(writer, 2);
+    }
+    catch (IOException e) {
+      throw ApplicationMetaModel.CANNOT_WRITE_CONFIG.failure(e);
+    }
+    finally {
+      Tools.safeClose(writer);
+    }
 
-         //
-         MetaModel.log.log("Processing meta model event " + event.getType() + " " + event.getObject());
-         for (ApplicationMetaModelPlugin plugin : plugins.values())
-         {
-            plugin.processEvent(this, event);
-         }
-      }
-   }
+    // Application configs
+    for (ApplicationMetaModel application : model.getChild(ApplicationsMetaModel.KEY)) {
+      descriptor.clear();
 
-   private void processEvent(MetaModelEvent event)
-   {
-      MetaModelObject obj = event.getObject();
-      if (obj instanceof ApplicationMetaModel)
-      {
-         ApplicationMetaModel application = (ApplicationMetaModel)obj;
-         if (event.getType() == MetaModelEvent.AFTER_ADD)
-         {
-            moduleConfig.put(application.getFQN().getSimpleName(), application.getFQN().getName());
-            emitApplication(model.env, application);
-         }
-         else if (event.getType() == MetaModelEvent.BEFORE_REMOVE)
-         {
-            moduleConfig.remove(application.getFQN().getSimpleName());
-         }
-      }
-   }
-
-   public void postProcessEvents(MetaModel model) throws CompilationException
-   {
-      for (ApplicationMetaModel application : this)
-      {
-         for (ApplicationMetaModelPlugin plugin : plugins.values())
-         {
-            plugin.postProcessEvents(application);
-         }
-      }
-   }
-
-   public void prePassivate(MetaModel model)
-   {
-      for (ApplicationMetaModel application : this)
-      {
-         for (ApplicationMetaModelPlugin plugin : plugins.values())
-         {
-            plugin.prePassivate(application);
-         }
+      // Emit config
+      for (Map.Entry<String, ApplicationMetaModelPlugin> entry : plugins.entrySet()) {
+        JSON pluginDescriptor = entry.getValue().getDescriptor(application);
+        if (pluginDescriptor != null) {
+          descriptor.set(entry.getKey(), pluginDescriptor);
+        }
       }
 
       //
-      for (ApplicationMetaModelPlugin plugin : plugins.values())
-      {
-         plugin.prePassivate(this);
+      writer = null;
+      try {
+        FileObject fo = model.env.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.json");
+        writer = fo.openWriter();
+        descriptor.toString(writer, 2);
       }
-
-      //
-      MetaModel.log.log("Emitting config");
-      emitConfig(model);
-   }
-
-   // ****
-
-   private ApplicationMetaModel processApplication(PackageElement packageElt, Map<String, Serializable> annotationValues) throws CompilationException
-   {
-      String name = (String)annotationValues.get("name");
-      ElementHandle.Package handle = ElementHandle.Package.create(packageElt);
-      ApplicationMetaModel application = get(handle);
-
-      //
-      if (application == null)
-      {
-         application = add(handle, name);
+      catch (IOException e) {
+        throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, model.env.get(application.getHandle()), application.getFQN());
       }
-      else
-      {
-         application.modified = true;
+      finally {
+        Tools.safeClose(writer);
       }
-      
-      //
-      return application;
-   }
+    }
+  }
 
-   public ApplicationMetaModel add(ElementHandle.Package handle, String applicationName)
-   {
-      ApplicationMetaModel application = new ApplicationMetaModel(handle, applicationName);
+  @Override
+  protected void postAttach(MetaModelObject parent) {
+    model = (MetaModel)parent;
+  }
 
-      // Let's find buffered annotations
-      for (Iterator<Map.Entry<BufKey, AnnotationData>> i = toProcess.entrySet().iterator();i.hasNext();)
-      {
-         Map.Entry<BufKey, AnnotationData> entry = i.next();
-         BufKey key = entry.getKey();
-         if (handle.getQN().isPrefix(key.pkg))
-         {
-            AnnotationData data = entry.getValue();
-            i.remove();
-            MetaModel.log.log("Moving " + key + " = " +  data);
-            application.toProcess.put(key, data);
-         }
-      }
-
-      // Add child
-      addChild(Key.of(handle, ApplicationMetaModel.class), application);
-
-      //
-      return application;
-   }
-
-   private void resolveApplications()
-   {
-      for (ApplicationMetaModel application : getChildren(ApplicationMetaModel.class))
-      {
-         if (application.modified)
-         {
-            queue(MetaModelEvent.createUpdated(application));
-            application.modified = false;
-         }
-      }
-   }
-
-   private void emitApplication(ProcessingContext env, ApplicationMetaModel application) throws CompilationException
-   {
-      PackageElement elt = env.get(application.getHandle());
-      FQN fqn = application.getFQN();
-
-      //
-      Writer writer = null;
-      try
-      {
-         JavaFileObject applicationFile = env.createSourceFile(fqn, elt);
-         writer = applicationFile.openWriter();
-
-         writer.append("package ").append(fqn.getPackageName()).append(";\n");
-
-         // Imports
-         writer.append("import ").append(Tools.getImport(ApplicationDescriptor.class)).append(";\n");
-
-         // Open class
-         writer.append("public class ").append(fqn.getSimpleName()).append(" {\n");
-
-         // Singleton
-         writer.append("public static final ").append(APPLICATION_DESCRIPTOR).append(" DESCRIPTOR = new ").append(APPLICATION_DESCRIPTOR).append("(");
-         writer.append(fqn.getSimpleName()).append(".class");
-         writer.append(");\n");
-
-         // Close class
-         writer.append("}\n");
-
-         //
-         MetaModel.log.log("Generated application " + fqn.getName() + " as " + applicationFile.toUri());
-      }
-      catch (IOException e)
-      {
-         throw TemplateMetaModel.CANNOT_WRITE_APPLICATION.failure(e, elt, application.getFQN());
-      }
-      finally
-      {
-         Tools.safeClose(writer);
-      }
-   }
-
-   private void emitConfig(MetaModel model)
-   {
-      JSON descriptor = new JSON();
-      descriptor.merge(moduleConfig);
-
-      // Module config
-      Writer writer = null;
-      try
-      {
-         FileObject fo = model.env.createResource(StandardLocation.CLASS_OUTPUT, "juzu", "config.json");
-         writer = fo.openWriter();
-         descriptor.toString(writer, 2);
-      }
-      catch (IOException e)
-      {
-         throw ApplicationMetaModel.CANNOT_WRITE_CONFIG.failure(e);
-      }
-      finally
-      {
-         Tools.safeClose(writer);
-      }
-
-      // Application configs
-      for (ApplicationMetaModel application : model.getChild(ApplicationsMetaModel.KEY))
-      {
-         descriptor.clear();
-
-         // Emit config
-         for (Map.Entry<String, ApplicationMetaModelPlugin> entry : plugins.entrySet())
-         {
-            JSON pluginDescriptor = entry.getValue().getDescriptor(application);
-            if (pluginDescriptor != null)
-            {
-               descriptor.set(entry.getKey(), pluginDescriptor);
-            }
-         }
-
-         //
-         writer = null;
-         try
-         {
-            FileObject fo = model.env.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.json");
-            writer = fo.openWriter();
-            descriptor.toString(writer, 2);
-         }
-         catch (IOException e)
-         {
-            throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, model.env.get(application.getHandle()), application.getFQN());
-         }
-         finally
-         {
-            Tools.safeClose(writer);
-         }
-      }
-   }
-
-   @Override
-   protected void postAttach(MetaModelObject parent)
-   {
-      model = (MetaModel)parent;
-   }
-
-   @Override
-   protected void preDetach(MetaModelObject parent)
-   {
-      model = null;
-   }
+  @Override
+  protected void preDetach(MetaModelObject parent) {
+    model = null;
+  }
 }

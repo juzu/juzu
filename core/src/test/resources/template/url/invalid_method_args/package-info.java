@@ -17,6 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package template.url.invalid_method_args;
+@Application package template.url.invalid_method_args;
+
 import juzu.Application;

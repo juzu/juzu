@@ -25,16 +25,13 @@ import juzu.View;
 import javax.naming.AuthenticationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   public A()
-   {
-   }
+  public A() {
+  }
 
-   @View
-   public void index() throws Exception
-   {
-      throw new AuthenticationException();
-   }
+  @View
+  public void index() throws Exception {
+    throw new AuthenticationException();
+  }
 }

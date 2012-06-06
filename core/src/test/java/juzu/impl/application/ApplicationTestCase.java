@@ -19,67 +19,62 @@
 
 package juzu.impl.application;
 
-import org.junit.Test;
 import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
+import org.junit.Test;
 
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationTestCase extends AbstractTestCase
-{
+public class ApplicationTestCase extends AbstractTestCase {
 
-   @Test
-   public void testDefaultController() throws Exception
-   {
-      CompilerAssert<?, ?> compiler = compiler("application", "default_controller");
-      compiler.assertCompile();
-      Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
-      Class<?> aClass = compiler.assertClass("application.default_controller.A");
+  @Test
+  public void testDefaultController() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("application", "default_controller");
+    compiler.assertCompile();
+    Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
+    Class<?> aClass = compiler.assertClass("application.default_controller.A");
 
-      //
-      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      assertSame(aClass, desc.getController().getDefault());
-   }
+    //
+    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    assertSame(aClass, desc.getController().getDefault());
+  }
 
-   public void _testMethodId() throws Exception
-   {
-      CompilerAssert<?, ?> compiler = compiler("application", "method", "id");
-      compiler.assertCompile();
-      Class<?> appClass = compiler.assertClass("application.method.id.IdApplication");
-      Class<?> aClass = compiler.assertClass("application.method.id.A");
+  public void _testMethodId() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("application", "method", "id");
+    compiler.assertCompile();
+    Class<?> appClass = compiler.assertClass("application.method.id.IdApplication");
+    Class<?> aClass = compiler.assertClass("application.method.id.A");
 
-      //
-      ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-      ControllerMethod a = desc.getController().getMethod(aClass, "a");
-      ControllerMethod b = desc.getController().getMethod(aClass, "b");
-      ControllerMethod c = desc.getController().getMethod(aClass, "c");
+    //
+    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ControllerMethod a = desc.getController().getMethod(aClass, "a");
+    ControllerMethod b = desc.getController().getMethod(aClass, "b");
+    ControllerMethod c = desc.getController().getMethod(aClass, "c");
 
-      //
-      assertEquals("foo", a.getId());
-      assertEquals("bar", b.getId());
-      assertEquals("juu", c.getId());
+    //
+    assertEquals("foo", a.getId());
+    assertEquals("bar", b.getId());
+    assertEquals("juu", c.getId());
 
-      //
-      assertSame(a, desc.getController().getMethodById("foo"));
-      assertSame(b, desc.getController().getMethodById("bar"));
-      assertSame(c, desc.getController().getMethodById("juu"));
-   }
+    //
+    assertSame(a, desc.getController().getMethodById("foo"));
+    assertSame(b, desc.getController().getMethodById("bar"));
+    assertSame(c, desc.getController().getMethodById("juu"));
+  }
 
-   public void _testDuplicateMethod() throws Exception
-   {
-      CompilerAssert<?, ?> compiler = compiler("application", "method", "duplicate");
-      List<CompilationError> errors = compiler.failCompile();
-      assertEquals("Was expecting a single error instead of " + errors, 1, errors.size());
-      assertEquals("/application/method/duplicate/A.java", errors.get(0).getSource());
-   }
+  public void _testDuplicateMethod() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("application", "method", "duplicate");
+    List<CompilationError> errors = compiler.failCompile();
+    assertEquals("Was expecting a single error instead of " + errors, 1, errors.size());
+    assertEquals("/application/method/duplicate/A.java", errors.get(0).getSource());
+  }
 
-   public void _testPrefix() throws Exception
-   {
-      CompilerAssert<?, ?> compiler = compiler("application", "prefix");
-      compiler.assertCompile();
-   }
+  public void _testPrefix() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("application", "prefix");
+    compiler.assertCompile();
+  }
 }

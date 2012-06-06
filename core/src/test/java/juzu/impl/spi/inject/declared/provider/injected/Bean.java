@@ -1,14 +1,12 @@
 package juzu.impl.spi.inject.declared.provider.injected;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean
-{
+public class Bean {
 
-   /** . */
-   public final Dependency dependency;
+  /** . */
+  public final Dependency dependency;
 
-   public Bean(Dependency dependency)
-   {
-      this.dependency = dependency;
-   }
+  public Bean(Dependency dependency) {
+    this.dependency = dependency;
+  }
 }

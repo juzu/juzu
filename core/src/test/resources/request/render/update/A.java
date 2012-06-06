@@ -27,24 +27,20 @@ import juzu.View;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   @Action 
-   public Response.Update process()
-   {
-      return A_.done();
-   }
-   
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content(A_.processURL().toString());
-   }
+  @Action
+  public Response.Update process() {
+    return A_.done();
+  }
 
-   @View
-   public Response.Content done() throws IOException
-   {
-      return Response.content("done");
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content(A_.processURL().toString());
+  }
+
+  @View
+  public Response.Content done() throws IOException {
+    return Response.content("done");
+  }
 }

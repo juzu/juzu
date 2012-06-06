@@ -22,13 +22,12 @@ package juzu.request;
 import java.security.Principal;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface SecurityContext
-{
+public interface SecurityContext {
 
-   String getRemoteUser();
+  String getRemoteUser();
 
-   Principal getUserPrincipal();
+  Principal getUserPrincipal();
 
-   boolean isUserInRole(String role);
+  boolean isUserInRole(String role);
 
 }

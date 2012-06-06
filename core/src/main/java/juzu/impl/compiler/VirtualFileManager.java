@@ -22,8 +22,8 @@ package juzu.impl.compiler;
 import juzu.impl.compiler.file.CompositeFileManager;
 import juzu.impl.compiler.file.FileKey;
 import juzu.impl.compiler.file.FileManager;
-import juzu.impl.compiler.file.SimpleFileManager;
 import juzu.impl.compiler.file.JavaFileObjectImpl;
+import juzu.impl.compiler.file.SimpleFileManager;
 import juzu.impl.spi.fs.ReadFileSystem;
 import juzu.impl.spi.fs.ReadWriteFileSystem;
 import juzu.impl.spi.fs.SimpleFileSystem;
@@ -41,170 +41,142 @@ import java.util.Collections;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager>
-{
+class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager> {
 
-   /** . */
-   final SimpleFileManager<?> sourcePath;
+  /** . */
+  final SimpleFileManager<?> sourcePath;
 
-   /** . */
-   final SimpleFileManager<?> classOutput;
+  /** . */
+  final SimpleFileManager<?> classOutput;
 
-   /** . */
-   final CompositeFileManager classPath;
+  /** . */
+  final CompositeFileManager classPath;
 
-   /** . */
-   final SimpleFileManager<?> sourceOutput;
+  /** . */
+  final SimpleFileManager<?> sourceOutput;
 
-   public VirtualFileManager(
-      JavaFileManager fileManager,
-      ReadFileSystem<?> sourcePath,
-      Collection<SimpleFileSystem<?>> classPath,
-      ReadWriteFileSystem<?> sourceOutput,
-      ReadWriteFileSystem<?> classOutput)
-   {
-      super(fileManager);
+  public VirtualFileManager(
+    JavaFileManager fileManager,
+    ReadFileSystem<?> sourcePath,
+    Collection<SimpleFileSystem<?>> classPath,
+    ReadWriteFileSystem<?> sourceOutput,
+    ReadWriteFileSystem<?> classOutput) {
+    super(fileManager);
 
-      //
-      this.sourcePath = safeWrap(sourcePath);
-      this.classPath = new CompositeFileManager(classPath);
-      this.classOutput = safeWrap(classOutput);
-      this.sourceOutput = safeWrap(sourceOutput);
-   }
+    //
+    this.sourcePath = safeWrap(sourcePath);
+    this.classPath = new CompositeFileManager(classPath);
+    this.classOutput = safeWrap(classOutput);
+    this.sourceOutput = safeWrap(sourceOutput);
+  }
 
-   private <P> SimpleFileManager<P> safeWrap(ReadFileSystem<P> fs)
-   {
-      return fs != null ? new SimpleFileManager<P>(fs) : null;
-   }
+  private <P> SimpleFileManager<P> safeWrap(ReadFileSystem<P> fs) {
+    return fs != null ? new SimpleFileManager<P>(fs) : null;
+  }
 
-   private FileManager getFiles(Location location)
-   {
-      if (location instanceof StandardLocation)
-      {
-         switch ((StandardLocation)location)
-         {
-            case SOURCE_PATH:
-               return sourcePath;
-            case SOURCE_OUTPUT:
-               return sourceOutput;
-            case CLASS_OUTPUT:
-               return classOutput;
-            case CLASS_PATH:
-               return classPath;
-         }
+  private FileManager getFiles(Location location) {
+    if (location instanceof StandardLocation) {
+      switch ((StandardLocation)location) {
+        case SOURCE_PATH:
+          return sourcePath;
+        case SOURCE_OUTPUT:
+          return sourceOutput;
+        case CLASS_OUTPUT:
+          return classOutput;
+        case CLASS_PATH:
+          return classPath;
       }
-      return null;
-   }
+    }
+    return null;
+  }
 
-   // **************
+  // **************
 
-   @Override
-   public JavaFileObject getJavaFileForInput(Location location, String className, JavaFileObject.Kind kind) throws IOException
-   {
-      throw new UnsupportedOperationException("Does not seem used at the moment, for now we leave it as is");
-   }
+  @Override
+  public JavaFileObject getJavaFileForInput(Location location, String className, JavaFileObject.Kind kind) throws IOException {
+    throw new UnsupportedOperationException("Does not seem used at the moment, for now we leave it as is");
+  }
 
-   @Override
-   public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException
-   {
-      Iterable<JavaFileObject> ret;
-      if (location == StandardLocation.PLATFORM_CLASS_PATH)
-      {
-         ret = super.list(location, packageName, kinds, recurse);
-      }
-      else
-      {
-         FileManager files = getFiles(location);
-         if (files != null)
-         {
-            ret = files.list(packageName, kinds, recurse, new ArrayList<JavaFileObject>());
-         }
-         else
-         {
-            ret = Collections.emptyList();
-         }
-      }
-      return ret;
-   }
-
-   @Override
-   public String inferBinaryName(Location location, JavaFileObject file)
-   {
-      if (file instanceof JavaFileObjectImpl<?>)
-      {
-         JavaFileObjectImpl<?> fileClass = (JavaFileObjectImpl<?>)file;
-         return fileClass.getKey().fqn;
-      }
-      else
-      {
-         return super.inferBinaryName(location, file);
-      }
-   }
-
-   @Override
-   public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException
-   {
-      FileKey key = FileKey.newResourceName(packageName, relativeName);
+  @Override
+  public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
+    Iterable<JavaFileObject> ret;
+    if (location == StandardLocation.PLATFORM_CLASS_PATH) {
+      ret = super.list(location, packageName, kinds, recurse);
+    }
+    else {
       FileManager files = getFiles(location);
-      if (files != null)
-      {
-         return files.getReadable(key);
+      if (files != null) {
+        ret = files.list(packageName, kinds, recurse, new ArrayList<JavaFileObject>());
       }
-      else
-      {
-         throw new FileNotFoundException("Cannot write: " + location);
+      else {
+        ret = Collections.emptyList();
       }
-   }
+    }
+    return ret;
+  }
 
-   @Override
-   public FileObject getFileForOutput(Location location, String packageName, String relativeName, FileObject sibling) throws IOException
-   {
-      FileKey key = FileKey.newResourceName(packageName, relativeName);
+  @Override
+  public String inferBinaryName(Location location, JavaFileObject file) {
+    if (file instanceof JavaFileObjectImpl<?>) {
+      JavaFileObjectImpl<?> fileClass = (JavaFileObjectImpl<?>)file;
+      return fileClass.getKey().fqn;
+    }
+    else {
+      return super.inferBinaryName(location, file);
+    }
+  }
 
-      // Address a bug
-      if (location == StandardLocation.SOURCE_PATH)
-      {
-         FileObject file = sourcePath.getReadable(key);
-         if (file == null)
-         {
-            throw new FileNotFoundException("Not found:" + key.toString());
-         }
-         return file;
+  @Override
+  public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException {
+    FileKey key = FileKey.newResourceName(packageName, relativeName);
+    FileManager files = getFiles(location);
+    if (files != null) {
+      return files.getReadable(key);
+    }
+    else {
+      throw new FileNotFoundException("Cannot write: " + location);
+    }
+  }
+
+  @Override
+  public FileObject getFileForOutput(Location location, String packageName, String relativeName, FileObject sibling) throws IOException {
+    FileKey key = FileKey.newResourceName(packageName, relativeName);
+
+    // Address a bug
+    if (location == StandardLocation.SOURCE_PATH) {
+      FileObject file = sourcePath.getReadable(key);
+      if (file == null) {
+        throw new FileNotFoundException("Not found:" + key.toString());
       }
-      else
-      {
-         FileManager files = getFiles(location);
-         if (files != null)
-         {
-            return files.getWritable(key);
-         }
-         else
-         {
-            throw new FileNotFoundException("Cannot write: " + location);
-         }
-      }
-   }
-
-   @Override
-   public boolean isSameFile(FileObject a, FileObject b)
-   {
-      FileKey ka = ((JavaFileObjectImpl)a).getKey();
-      FileKey kb = ((JavaFileObjectImpl)b).getKey();
-      return ka.equals(kb);
-   }
-
-   @Override
-   public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException
-   {
+      return file;
+    }
+    else {
       FileManager files = getFiles(location);
-      if (files != null)
-      {
-         FileKey key = FileKey.newJavaName(className, kind);
-         return files.getWritable(key);
+      if (files != null) {
+        return files.getWritable(key);
       }
-      else
-      {
-         throw new UnsupportedOperationException("Location " + location + " not supported");
+      else {
+        throw new FileNotFoundException("Cannot write: " + location);
       }
-   }
+    }
+  }
+
+  @Override
+  public boolean isSameFile(FileObject a, FileObject b) {
+    FileKey ka = ((JavaFileObjectImpl)a).getKey();
+    FileKey kb = ((JavaFileObjectImpl)b).getKey();
+    return ka.equals(kb);
+  }
+
+  @Override
+  public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
+    FileManager files = getFiles(location);
+    if (files != null) {
+      FileKey key = FileKey.newJavaName(className, kind);
+      return files.getWritable(key);
+    }
+    else {
+      throw new UnsupportedOperationException("Location " + location + " not supported");
+    }
+  }
 }

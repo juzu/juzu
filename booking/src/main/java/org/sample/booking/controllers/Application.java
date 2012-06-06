@@ -21,18 +21,16 @@ package org.sample.booking.controllers;
 
 import juzu.Action;
 import juzu.Path;
-import juzu.View;
 import juzu.Response;
+import juzu.View;
 import juzu.template.Template;
+import org.sample.booking.Flash;
+import org.sample.booking.models.User;
 
 import javax.inject.Inject;
 
-import org.sample.booking.*;
-import org.sample.booking.models.User;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Application
-{
+public class Application {
 
 /*
    @Before
@@ -57,43 +55,40 @@ public class Application
    // ~~
    */
 
-   @Inject @Path("index.gtmpl")
-   Template index;
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
 
-   @Inject @Path("register.gtmpl")
-   Template register;
+  @Inject
+  @Path("register.gtmpl")
+  Template register;
 
-   @Inject
-   Login login;
+  @Inject
+  Login login;
 
-   @Inject
-   Hotels hotels;
+  @Inject
+  Hotels hotels;
 
-   @Inject
-   Flash flash;
+  @Inject
+  Flash flash;
 
-   @View
-   public void index()
-   {
-      if (login.isConnected())
-      {
-         hotels.index();
-      }
-      else
-      {
-         index.render();
-      }
-   }
+  @View
+  public void index() {
+    if (login.isConnected()) {
+      hotels.index();
+    }
+    else {
+      index.render();
+    }
+  }
 
-   @View
-   public void register()
-   {
-      register.render();
-   }
+  @View
+  public void register() {
+    register.render();
+  }
 
-   @Action
-   public Response saveUser(User user, String verifyPassword)
-   {
+  @Action
+  public Response saveUser(User user, String verifyPassword) {
 /*
        validation.required(verifyPassword);
        validation.equals(verifyPassword, user.password).message("Your password doesn't match");
@@ -101,37 +96,33 @@ public class Application
            render("@register", user, verifyPassword);
        }
 */
-      User.create(user);
+    User.create(user);
+    login.setUserName(user.username);
+    flash.setSuccess("Welcome, " + user.name);
+    return Application_.index();
+  }
+
+
+  @Action
+  public Response login(User u) {
+    System.out.println("Want login " + u.username + " " + u.password);
+    User user = User.find(u.username, u.password);
+    if (user != null) {
       login.setUserName(user.username);
       flash.setSuccess("Welcome, " + user.name);
-      return Application_.index();
-   }
+      return Hotels_.index();
+    }
+    else {
+      // Oops
+      flash.setUsername(u.username);
+      flash.setError("Login failed");
+      return null;
+    }
+  }
 
-
-   @Action
-   public Response login(User u)
-   {
-      System.out.println("Want login " + u.username + " " + u.password);
-      User user = User.find(u.username, u.password);
-      if (user != null)
-      {
-         login.setUserName(user.username);
-         flash.setSuccess("Welcome, " + user.name);
-         return Hotels_.index();
-      }
-      else
-      {
-         // Oops
-         flash.setUsername(u.username);
-         flash.setError("Login failed");
-         return null;
-      }
-   }
-
-   @Action
-   public Response logout()
-   {
-      login.setUserName(null);
-      return Application_.index();
-   }
+  @Action
+  public Response logout() {
+    login.setUserName(null);
+    return Application_.index();
+  }
 }

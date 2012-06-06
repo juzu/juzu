@@ -22,6 +22,5 @@ package plugin.binding.provider.factory.abstractclass;
 import juzu.inject.ProviderFactory;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ProviderFactoryImpl implements ProviderFactory
-{
+public abstract class ProviderFactoryImpl implements ProviderFactory {
 }

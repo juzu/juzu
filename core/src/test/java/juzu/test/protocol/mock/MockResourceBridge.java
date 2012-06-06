@@ -19,54 +19,46 @@
 
 package juzu.test.protocol.mock;
 
-import org.junit.Assert;
 import juzu.Response;
 import juzu.impl.spi.request.ResourceBridge;
+import org.junit.Assert;
 
 import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
-{
+public class MockResourceBridge extends MockMimeBridge implements ResourceBridge {
 
-   /** . */
-   private int status;
-   
-   public MockResourceBridge(MockClient client, String methodId, Map<String, String[]> parameters)
-   {
-      super(client, methodId, parameters);
-   }
+  /** . */
+  private int status;
 
-   public void assertOk()
-   {
-      assertStatus(200);
-   }
+  public MockResourceBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
+    super(client, methodId, parameters);
+  }
 
-   public void assertNotFound()
-   {
-      assertStatus(404);
-   }
+  public void assertOk() {
+    assertStatus(200);
+  }
 
-   public void assertStatus(int status)
-   {
-      Assert.assertEquals(status, this.status);
-   }
+  public void assertNotFound() {
+    assertStatus(404);
+  }
 
-   @Override
-   public void end(Response response) throws IllegalStateException, IOException
-   {
-      super.end(response);
-      
-      //
-      if (response instanceof Response.Content.Resource)
-      {
-         Response.Content.Resource resource = (Response.Content.Resource)response;
-         status = resource.getStatus();
-      }
-      else
-      {
-         status = 200;
-      }
-   }
+  public void assertStatus(int status) {
+    Assert.assertEquals(status, this.status);
+  }
+
+  @Override
+  public void end(Response response) throws IllegalStateException, IOException {
+    super.end(response);
+
+    //
+    if (response instanceof Response.Content.Resource) {
+      Response.Content.Resource resource = (Response.Content.Resource)response;
+      status = resource.getStatus();
+    }
+    else {
+      status = 200;
+    }
+  }
 }

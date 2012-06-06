@@ -23,17 +23,15 @@ import juzu.impl.inject.Export;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class Bean
-{
+public class Bean {
 
-   /** . */
-   private static int sequence = 0;
+  /** . */
+  private static int sequence = 0;
 
-   /** . */
-   public final int count;
+  /** . */
+  public final int count;
 
-   public Bean()
-   {
-      count = sequence++;
-   }
+  public Bean() {
+    count = sequence++;
+  }
 }

@@ -22,6 +22,5 @@ package juzu.processor;
 import juzu.impl.metamodel.MetaModelProcessor;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MainProcessor extends MetaModelProcessor
-{
+public class MainProcessor extends MetaModelProcessor {
 }

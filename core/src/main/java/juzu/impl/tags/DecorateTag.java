@@ -19,9 +19,9 @@
 
 package juzu.impl.tags;
 
+import juzu.impl.spi.template.TemplateStub;
 import juzu.impl.template.ast.ASTNode;
 import juzu.impl.template.compiler.ExtendedTagHandler;
-import juzu.impl.spi.template.TemplateStub;
 import juzu.impl.template.compiler.ProcessPhase;
 import juzu.impl.template.compiler.Template;
 import juzu.impl.template.metamodel.TemplateMetaModel;
@@ -34,69 +34,56 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DecorateTag extends ExtendedTagHandler
-{
+public class DecorateTag extends ExtendedTagHandler {
 
-   /** . */
-   static final ThreadLocal<Renderable> current = new ThreadLocal<Renderable>();
+  /** . */
+  static final ThreadLocal<Renderable> current = new ThreadLocal<Renderable>();
 
-   @Override
-   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t)
-   {
-      ASTNode current =  tag;
-      while (true)
-      {
-         if (current instanceof ASTNode.Block)
-         {
-            current = ((ASTNode.Block)current).getParent();
-         }
-         else
-         {
-            break;
-         }
+  @Override
+  public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) {
+    ASTNode current = tag;
+    while (true) {
+      if (current instanceof ASTNode.Block) {
+        current = ((ASTNode.Block)current).getParent();
       }
+      else {
+        break;
+      }
+    }
 
-      //
-      ASTNode.Template template = (ASTNode.Template)current;
-      for (ASTNode.Block child : new ArrayList<ASTNode.Block<?>>(template.getChildren()))
-      {
-         if (child != tag)
-         {
-            tag.addChild(child);
-         }
+    //
+    ASTNode.Template template = (ASTNode.Template)current;
+    for (ASTNode.Block child : new ArrayList<ASTNode.Block<?>>(template.getChildren())) {
+      if (child != tag) {
+        tag.addChild(child);
       }
+    }
 
-      //
-      if (tag.getParent() != template)
-      {
-         template.addChild(tag);
-      }
-   }
+    //
+    if (tag.getParent() != template) {
+      template.addChild(tag);
+    }
+  }
 
-   @Override
-   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t)
-   {
-      String path = tag.getArgs().get("path");
-      Template resolved = phase.resolveTemplate(Path.parse(path));
-      if (resolved == null)
-      {
-         throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
-      }
-   }
+  @Override
+  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) {
+    String path = tag.getArgs().get("path");
+    Template resolved = phase.resolveTemplate(Path.parse(path));
+    if (resolved == null) {
+      throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
+    }
+  }
 
-   @Override
-   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
-   {
-      current.set(body);
-      try
-      {
-         String path = args.get("path");
-         TemplateStub template = context.resolveTemplate(path);
-         template.render(context);
-      }
-      finally
-      {
-         current.set(null);
-      }
-   }
+  @Override
+  public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
+    current.set(body);
+    try {
+      String path = args.get("path");
+      TemplateStub template = context.resolveTemplate(path);
+      template.render(context);
+    }
+    finally {
+      current.set(null);
+    }
+  }
 }

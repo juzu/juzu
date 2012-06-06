@@ -23,33 +23,28 @@ import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerBean
-{
+public class ControllerBean {
 
-   /** . */
-   private final Class<?> type;
+  /** . */
+  private final Class<?> type;
 
-   /** . */
-   private final List<ControllerMethod> methods;
+  /** . */
+  private final List<ControllerMethod> methods;
 
-   public ControllerBean(Class<?> type, List<ControllerMethod> methods)
-   {
-      this.type = type;
-      this.methods = Collections.unmodifiableList(methods);
-   }
+  public ControllerBean(Class<?> type, List<ControllerMethod> methods) {
+    this.type = type;
+    this.methods = Collections.unmodifiableList(methods);
+  }
 
-   public String getTypeName()
-   {
-      return type.getName();
-   }
+  public String getTypeName() {
+    return type.getName();
+  }
 
-   public Class<?> getType()
-   {
-      return type;
-   }
+  public Class<?> getType() {
+    return type;
+  }
 
-   public List<ControllerMethod> getMethods()
-   {
-      return methods;
-   }
+  public List<ControllerMethod> getMethods() {
+    return methods;
+  }
 }

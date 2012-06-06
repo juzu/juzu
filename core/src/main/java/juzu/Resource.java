@@ -26,10 +26,10 @@ import java.lang.annotation.Target;
 
 /**
  * Annotate a method for declaring a resource serving controller method.
- *
+ * <p/>
  * <code><pre>
  *    public void MyController {
- *
+ * <p/>
  *       &#064;Resource
  *       public void myResource() {
  *          ...
@@ -41,7 +41,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Resource
-{
-   String id() default "";
+public @interface Resource {
+  String id() default "";
 }

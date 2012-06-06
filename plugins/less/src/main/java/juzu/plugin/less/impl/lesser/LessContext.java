@@ -5,7 +5,6 @@ package juzu.plugin.less.impl.lesser;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface LessContext
-{
-   String load(String ref);
+public interface LessContext {
+  String load(String ref);
 }

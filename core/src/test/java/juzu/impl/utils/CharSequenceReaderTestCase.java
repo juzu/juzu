@@ -19,43 +19,39 @@
 
 package juzu.impl.utils;
 
-import org.junit.Test;
 import juzu.test.AbstractTestCase;
+import org.junit.Test;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CharSequenceReaderTestCase extends AbstractTestCase
-{
+public class CharSequenceReaderTestCase extends AbstractTestCase {
 
-   @Test
+  @Test
 
-   public void testEmpty() throws IOException
-   {
-      CharSequenceReader reader = new CharSequenceReader("");
-      assertEquals(-1, reader.read());
-   }
+  public void testEmpty() throws IOException {
+    CharSequenceReader reader = new CharSequenceReader("");
+    assertEquals(-1, reader.read());
+  }
 
-   @Test
-   public void testSimple() throws IOException
-   {
-      CharSequenceReader reader = new CharSequenceReader("foo");
-      assertEquals('f', reader.read());
-      assertEquals('o', reader.read());
-      assertEquals('o', reader.read());
-      assertEquals(-1, reader.read());
-   }
+  @Test
+  public void testSimple() throws IOException {
+    CharSequenceReader reader = new CharSequenceReader("foo");
+    assertEquals('f', reader.read());
+    assertEquals('o', reader.read());
+    assertEquals('o', reader.read());
+    assertEquals(-1, reader.read());
+  }
 
-   @Test
-   public void testUnread() throws IOException
-   {
-      CharSequenceReader reader = new CharSequenceReader("");
-      reader.unread('o');
-      reader.unread('o');
-      reader.unread('f');
-      assertEquals('f', reader.read());
-      assertEquals('o', reader.read());
-      assertEquals('o', reader.read());
-      assertEquals(-1, reader.read());
-   }
+  @Test
+  public void testUnread() throws IOException {
+    CharSequenceReader reader = new CharSequenceReader("");
+    reader.unread('o');
+    reader.unread('o');
+    reader.unread('f');
+    assertEquals('f', reader.read());
+    assertEquals('o', reader.read());
+    assertEquals('o', reader.read());
+    assertEquals(-1, reader.read());
+  }
 }

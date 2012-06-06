@@ -27,55 +27,47 @@ import juzu.impl.spi.request.ActionBridge;
 import juzu.impl.utils.ParameterMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ActionContext extends RequestContext
-{
+public class ActionContext extends RequestContext {
 
-   /** . */
-   private ActionBridge bridge;
+  /** . */
+  private ActionBridge bridge;
 
-   public ActionContext(Request request, ApplicationContext application, ControllerMethod method, ActionBridge bridge)
-   {
-      super(request, application, method);
+  public ActionContext(Request request, ApplicationContext application, ControllerMethod method, ActionBridge bridge) {
+    super(request, application, method);
 
-      //
-      this.bridge = bridge;
-   }
+    //
+    this.bridge = bridge;
+  }
 
-   @Override
-   protected ActionBridge getBridge()
-   {
-      return bridge;
-   }
+  @Override
+  protected ActionBridge getBridge() {
+    return bridge;
+  }
 
-   @Override
-   public Phase getPhase()
-   {
-      return Phase.ACTION;
-   }
+  @Override
+  public Phase getPhase() {
+    return Phase.ACTION;
+  }
 
-   public Response.Update createResponse(ControllerMethod method) throws IllegalStateException
-   {
-      Response.Update update = new Response.Update();
-      update.setProperty(RequestContext.METHOD_ID, method.getId());
-      return update;
-   }
+  public Response.Update createResponse(ControllerMethod method) throws IllegalStateException {
+    Response.Update update = new Response.Update();
+    update.setProperty(RequestContext.METHOD_ID, method.getId());
+    return update;
+  }
 
-   public Response.Update createResponse(ControllerMethod method, Object arg) throws IllegalStateException
-   {
-      Response.Update response = createResponse(method);
-      if (arg != null)
-      {
-         // Yeah OK nasty cast, we'll see later
-         method.setArgs(new Object[]{arg}, (ParameterMap)response.getParameters());
-      }
-      return response;
-   }
-
-   public Response.Update createResponse(ControllerMethod method, Object[] args) throws IllegalStateException
-   {
-      Response.Update response = createResponse(method);
+  public Response.Update createResponse(ControllerMethod method, Object arg) throws IllegalStateException {
+    Response.Update response = createResponse(method);
+    if (arg != null) {
       // Yeah OK nasty cast, we'll see later
-      method.setArgs(args, (ParameterMap)response.getParameters());
-      return response;
-   }
+      method.setArgs(new Object[]{arg}, (ParameterMap)response.getParameters());
+    }
+    return response;
+  }
+
+  public Response.Update createResponse(ControllerMethod method, Object[] args) throws IllegalStateException {
+    Response.Update response = createResponse(method);
+    // Yeah OK nasty cast, we'll see later
+    method.setArgs(args, (ParameterMap)response.getParameters());
+    return response;
+  }
 }

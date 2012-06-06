@@ -17,7 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application()
-package plugin.impl.lifecycle;
+@Application() package plugin.impl.lifecycle;
 
 import juzu.Application;

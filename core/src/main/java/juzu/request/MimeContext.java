@@ -31,65 +31,57 @@ import juzu.io.AppendableStream;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MimeContext extends RequestContext
-{
+public abstract class MimeContext extends RequestContext {
 
-   /** . */
-   private final ApplicationContext application;
+  /** . */
+  private final ApplicationContext application;
 
-   protected MimeContext(Request request,ApplicationContext application, ControllerMethod method)
-   {
-      super(request, application, method);
-      
-      //
-      this.application = application;
-   }
+  protected MimeContext(Request request, ApplicationContext application, ControllerMethod method) {
+    super(request, application, method);
 
-   @Override
-   protected abstract MimeBridge getBridge();
+    //
+    this.application = application;
+  }
 
-   public URLBuilder createURLBuilder(ControllerMethod method)
-   {
-      URLBuilder builder = new URLBuilder(getBridge(), method);
+  @Override
+  protected abstract MimeBridge getBridge();
 
-      // Bridge escape XML value
-      ApplicationDescriptor desc = application.getDescriptor();
-      builder.escapeXML(desc.getController().getEscapeXML());
+  public URLBuilder createURLBuilder(ControllerMethod method) {
+    URLBuilder builder = new URLBuilder(getBridge(), method);
 
-      //
-      return builder;
-   }
+    // Bridge escape XML value
+    ApplicationDescriptor desc = application.getDescriptor();
+    builder.escapeXML(desc.getController().getEscapeXML());
 
-   public URLBuilder createURLBuilder(ControllerMethod method, Object arg)
-   {
-      URLBuilder builder = createURLBuilder(method);
-      method.setArgs(new Object[]{arg}, builder.getParameters());
-      return builder;
-   }
+    //
+    return builder;
+  }
 
-   public URLBuilder createURLBuilder(ControllerMethod method, Object[] args)
-   {
-      URLBuilder builder = createURLBuilder(method);
-      method.setArgs(args, builder.getParameters());
-      return builder;
-   }
+  public URLBuilder createURLBuilder(ControllerMethod method, Object arg) {
+    URLBuilder builder = createURLBuilder(method);
+    method.setArgs(new Object[]{arg}, builder.getParameters());
+    return builder;
+  }
 
-   public void setResponse(Response.Content response) throws IOException, IllegalStateException
-   {
-      // Consume response here
-      StringBuilder buffer = new StringBuilder();
-      AppendableStream printer = new AppendableStream(buffer);
-      response.send(printer);
-      if (response instanceof Response.Content.Render)
-      {
-         response = Response.render(((Response.Content.Render)response).getTitle(), buffer.toString());
-      }
-      else
-      {
-         response = Response.status(((Response.Content.Resource)response).getStatus(), buffer.toString());
-      }
-      
-      //
-      request.setResponse(response);
-   }
+  public URLBuilder createURLBuilder(ControllerMethod method, Object[] args) {
+    URLBuilder builder = createURLBuilder(method);
+    method.setArgs(args, builder.getParameters());
+    return builder;
+  }
+
+  public void setResponse(Response.Content response) throws IOException, IllegalStateException {
+    // Consume response here
+    StringBuilder buffer = new StringBuilder();
+    AppendableStream printer = new AppendableStream(buffer);
+    response.send(printer);
+    if (response instanceof Response.Content.Render) {
+      response = Response.render(((Response.Content.Render)response).getTitle(), buffer.toString());
+    }
+    else {
+      response = Response.status(((Response.Content.Resource)response).getStatus(), buffer.toString());
+    }
+
+    //
+    request.setResponse(response);
+  }
 }

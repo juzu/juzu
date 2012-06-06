@@ -21,36 +21,34 @@ package juzu.impl.plugin;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.UserAgent;
 import juzu.test.protocol.mock.MockApplication;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxTestCase extends AbstractHttpTestCase
-{
+public class AjaxTestCase extends AbstractHttpTestCase {
 
-   @Test
-   public void testAjaxResource() throws Exception
-   {
-      MockApplication<?> app = assertDeploy("plugin", "ajax");
+  @Test
+  public void testAjaxResource() throws Exception {
+    MockApplication<?> app = assertDeploy("plugin", "ajax");
 
-      //
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
+    //
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
 
-      System.out.println("page.asText() = " + page.asText());
+    System.out.println("page.asText() = " + page.asText());
 
-      HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
-      trigger.click();
+    HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
+    trigger.click();
 
-      HtmlAnchor trigger2 = (HtmlAnchor)page.getElementById("trigger2");
-      trigger2.click();
+    HtmlAnchor trigger2 = (HtmlAnchor)page.getElementById("trigger2");
+    trigger2.click();
 
-      List<String> alerts = ua.getAlerts(page);
-      assertEquals(Arrays.asList("OK MEN", "OK MEN 2"), alerts);
-   }
+    List<String> alerts = ua.getAlerts(page);
+    assertEquals(Arrays.asList("OK MEN", "OK MEN 2"), alerts);
+  }
 }

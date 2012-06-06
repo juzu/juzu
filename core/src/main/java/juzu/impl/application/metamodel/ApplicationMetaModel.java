@@ -38,151 +38,132 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationMetaModel extends MetaModelObject
-{
+public class ApplicationMetaModel extends MetaModelObject {
 
-   /** . */
-   public static final MessageCode CANNOT_WRITE_APPLICATION_CONFIG = new MessageCode("CANNOT_WRITE_APPLICATION_CONFIG", "The application %1$s configuration cannot be written");
+  /** . */
+  public static final MessageCode CANNOT_WRITE_APPLICATION_CONFIG = new MessageCode("CANNOT_WRITE_APPLICATION_CONFIG", "The application %1$s configuration cannot be written");
 
-   /** . */
-   public static final MessageCode CANNOT_WRITE_CONFIG = new MessageCode("CANNOT_WRITE_CONFIG", "The configuration cannot be written");
+  /** . */
+  public static final MessageCode CANNOT_WRITE_CONFIG = new MessageCode("CANNOT_WRITE_CONFIG", "The configuration cannot be written");
 
-   /** . */
-   final ElementHandle.Package handle;
+  /** . */
+  final ElementHandle.Package handle;
 
-   /** . */
-   final FQN fqn;
+  /** . */
+  final FQN fqn;
 
-   /** . */
-   public MetaModel model;
+  /** . */
+  public MetaModel model;
 
-   /** . */
-   boolean modified;
+  /** . */
+  boolean modified;
 
-   /** . */
-   final Map<BufKey, AnnotationData> toProcess;
+  /** . */
+  final Map<BufKey, AnnotationData> toProcess;
 
-   /** . */
-   final Map<BufKey, AnnotationData> processed;
+  /** . */
+  final Map<BufKey, AnnotationData> processed;
 
-   /** . */
-   final String baseName;
+  /** . */
+  final String baseName;
 
-   ApplicationMetaModel(
-      ElementHandle.Package handle,
-      String baseName)
-   {
+  ApplicationMetaModel(
+    ElementHandle.Package handle,
+    String baseName) {
+    //
+    if (baseName == null) {
+      String s = handle.getQN().getValue();
+      int index = s.lastIndexOf('.');
+      baseName = Character.toUpperCase(s.charAt(index + 1)) + s.substring(index + 2);
+    }
+
+    //
+    String name = baseName + "Application";
+    FQN fqn = new FQN(handle.getQN(), name);
+
+    //
+    this.handle = handle;
+    this.fqn = fqn;
+    this.modified = false;
+    this.baseName = baseName;
+    this.toProcess = new HashMap<BufKey, AnnotationData>();
+    this.processed = new HashMap<BufKey, AnnotationData>();
+  }
+
+  public ControllersMetaModel getControllers() {
+    return getChild(ControllersMetaModel.KEY);
+  }
+
+  public TemplatesMetaModel getTemplates() {
+    return getChild(TemplatesMetaModel.KEY);
+  }
+
+  public FQN getFQN() {
+    return fqn;
+  }
+
+  public String getBaseName() {
+    return baseName;
+  }
+
+  public ElementHandle.Package getHandle() {
+    return handle;
+  }
+
+  public JSON toJSON() {
+    JSON json = new JSON();
+    json.set("handle", handle);
+    json.set("fqn", fqn.getName());
+    json.map("templates", getTemplates());
+    json.map("controllers", getControllers());
+    return json;
+  }
+
+  @Override
+  public boolean exist(MetaModel model) {
+    PackageElement element = model.env.get(handle);
+    boolean found = false;
+    if (element != null) {
+      for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
+        if (found = ((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().contentEquals(Application.class.getName())) {
+          break;
+        }
+      }
+    }
+    return found;
+  }
+
+  @Override
+  protected void postAttach(MetaModelObject parent) {
+    if (parent instanceof ApplicationsMetaModel) {
+      queue(MetaModelEvent.createAdded(this));
+      ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
+      model = applications.model;
+
       //
-      if (baseName == null)
-      {
-         String s = handle.getQN().getValue();
-         int index = s.lastIndexOf('.');
-         baseName = Character.toUpperCase(s.charAt(index + 1)) + s.substring(index +2);
+      for (ApplicationMetaModelPlugin plugin : applications.plugins.values()) {
+        plugin.postConstruct(this);
+      }
+    }
+  }
+
+  @Override
+  protected void preDetach(MetaModelObject parent) {
+    if (parent instanceof ApplicationsMetaModel) {
+      ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
+
+      //
+      for (ApplicationMetaModelPlugin plugin : applications.plugins.values()) {
+        plugin.preDestroy(this);
       }
 
       //
-      String name = baseName + "Application";
-      FQN fqn = new FQN(handle.getQN(), name);
+      applications.toProcess.putAll(processed);
+      toProcess.clear();
 
       //
-      this.handle = handle;
-      this.fqn = fqn;
-      this.modified = false;
-      this.baseName = baseName;
-      this.toProcess = new HashMap<BufKey, AnnotationData>();
-      this.processed = new HashMap<BufKey, AnnotationData>();
-   }
-
-   public ControllersMetaModel getControllers()
-   {
-      return getChild(ControllersMetaModel.KEY);
-   }
-
-   public TemplatesMetaModel getTemplates()
-   {
-      return getChild(TemplatesMetaModel.KEY);
-   }
-
-   public FQN getFQN()
-   {
-      return fqn;
-   }
-
-   public String getBaseName()
-   {
-      return baseName;
-   }
-
-   public ElementHandle.Package getHandle()
-   {
-      return handle;
-   }
-
-   public JSON toJSON()
-   {
-      JSON json = new JSON();
-      json.set("handle", handle);
-      json.set("fqn", fqn.getName());
-      json.map("templates", getTemplates());
-      json.map("controllers", getControllers());
-      return json;
-   }
-
-   @Override
-   public boolean exist(MetaModel model)
-   {
-      PackageElement element = model.env.get(handle);
-      boolean found = false;
-      if (element != null)
-      {
-         for (AnnotationMirror annotationMirror : element.getAnnotationMirrors())
-         {
-            if (found = ((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().contentEquals(Application.class.getName()))
-            {
-               break;
-            }
-         }
-      }
-      return found;
-   }
-
-   @Override
-   protected void postAttach(MetaModelObject parent)
-   {
-      if (parent instanceof ApplicationsMetaModel)
-      {
-         queue(MetaModelEvent.createAdded(this));
-         ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
-         model = applications.model;
-
-         //
-         for (ApplicationMetaModelPlugin plugin : applications.plugins.values())
-         {
-            plugin.postConstruct(this);
-         }
-      }
-   }
-
-   @Override
-   protected void preDetach(MetaModelObject parent)
-   {
-      if (parent instanceof ApplicationsMetaModel)
-      {
-         ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
-
-         //
-         for (ApplicationMetaModelPlugin plugin : applications.plugins.values())
-         {
-            plugin.preDestroy(this);
-         }
-
-         //
-         applications.toProcess.putAll(processed);
-         toProcess.clear();
-
-         //
-         queue(MetaModelEvent.createRemoved(this));
-         model = null;
-      }
-   }
+      queue(MetaModelEvent.createRemoved(this));
+      model = null;
+    }
+  }
 }

@@ -17,7 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package request.resource.throwable.runtime;
+@Application package request.resource.throwable.runtime;
 
 import juzu.Application;

@@ -20,6 +20,5 @@
 package juzu.impl.spi.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ResourceBridge extends MimeBridge
-{
+public interface ResourceBridge extends MimeBridge {
 }

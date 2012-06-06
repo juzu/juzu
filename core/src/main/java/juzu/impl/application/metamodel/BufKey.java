@@ -8,49 +8,42 @@ import javax.lang.model.element.Element;
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class BufKey implements Serializable
-{
+class BufKey implements Serializable {
 
-   /** . */
-   final QN pkg;
+  /** . */
+  final QN pkg;
 
-   /** . */
-   final ElementHandle element;
+  /** . */
+  final ElementHandle element;
 
-   /** . */
-   final String annotationFQN;
+  /** . */
+  final String annotationFQN;
 
-   BufKey(ProcessingContext env, Element element, String annotationFQN)
-   {
-      this.pkg = QN.parse(env.getPackageOf(element).getQualifiedName());
-      this.element = ElementHandle.create(element);
-      this.annotationFQN = annotationFQN;
-   }
+  BufKey(ProcessingContext env, Element element, String annotationFQN) {
+    this.pkg = QN.parse(env.getPackageOf(element).getQualifiedName());
+    this.element = ElementHandle.create(element);
+    this.annotationFQN = annotationFQN;
+  }
 
-   @Override
-   public int hashCode()
-   {
-      return element.hashCode() ^ annotationFQN.hashCode();
-   }
+  @Override
+  public int hashCode() {
+    return element.hashCode() ^ annotationFQN.hashCode();
+  }
 
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (this == obj)
-      {
-         return true;
-      }
-      if (obj instanceof BufKey)
-      {
-         BufKey that = (BufKey)obj;
-         return element.equals(that.element) && annotationFQN.equals(that.annotationFQN);
-      }
-      return false;
-   }
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof BufKey) {
+      BufKey that = (BufKey)obj;
+      return element.equals(that.element) && annotationFQN.equals(that.annotationFQN);
+    }
+    return false;
+  }
 
-   @Override
-   public String toString()
-   {
-      return getClass().getSimpleName() + "[element=" + element + ",annotation=" + annotationFQN + "]";
-   }
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "[element=" + element + ",annotation=" + annotationFQN + "]";
+  }
 }

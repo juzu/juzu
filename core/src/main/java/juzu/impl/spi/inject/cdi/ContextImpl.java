@@ -29,59 +29,49 @@ import javax.enterprise.context.spi.CreationalContext;
 import java.lang.annotation.Annotation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-final class ContextImpl implements Context
-{
+final class ContextImpl implements Context {
 
-   /** . */
-   private final ScopeController controller;
+  /** . */
+  private final ScopeController controller;
 
-   /** . */
-   private final Class<? extends Annotation> scopeType;
+  /** . */
+  private final Class<? extends Annotation> scopeType;
 
-   /** . */
-   private final Scope scope;
+  /** . */
+  private final Scope scope;
 
-   ContextImpl(ScopeController controller, Scope scope, Class<? extends Annotation> scopeType)
-   {
-      this.controller = controller;
-      this.scopeType = scopeType;
-      this.scope = scope;
-   }
+  ContextImpl(ScopeController controller, Scope scope, Class<? extends Annotation> scopeType) {
+    this.controller = controller;
+    this.scopeType = scopeType;
+    this.scope = scope;
+  }
 
-   public Class<? extends Annotation> getScope()
-   {
-      return scopeType;
-   }
+  public Class<? extends Annotation> getScope() {
+    return scopeType;
+  }
 
-   public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext)
-   {
-      try
-      {
-         CDIScoped<T> scoped = (CDIScoped<T>)controller.get(scope, contextual);
-         if (scoped == null)
-         {
-            if (creationalContext != null)
-            {
-               T object = contextual.create(creationalContext);
-               scoped = new CDIScoped<T>(contextual, creationalContext, object);
-               controller.put(scope, contextual, scoped);
-            }
-         }
-         return scoped != null ? scoped.object : null;
+  public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext) {
+    try {
+      CDIScoped<T> scoped = (CDIScoped<T>)controller.get(scope, contextual);
+      if (scoped == null) {
+        if (creationalContext != null) {
+          T object = contextual.create(creationalContext);
+          scoped = new CDIScoped<T>(contextual, creationalContext, object);
+          controller.put(scope, contextual, scoped);
+        }
       }
-      catch (IllegalStateException e)
-      {
-         throw new ContextNotActiveException("Context not active for scope=" + scope + " contextual=" + contextual, e);
-      }
-   }
+      return scoped != null ? scoped.object : null;
+    }
+    catch (IllegalStateException e) {
+      throw new ContextNotActiveException("Context not active for scope=" + scope + " contextual=" + contextual, e);
+    }
+  }
 
-   public <T> T get(Contextual<T> contextual)
-   {
-      return get(contextual, null);
-   }
+  public <T> T get(Contextual<T> contextual) {
+    return get(contextual, null);
+  }
 
-   public boolean isActive()
-   {
-      return controller.isActive(scope);
-   }
+  public boolean isActive() {
+    return controller.isActive(scope);
+  }
 }

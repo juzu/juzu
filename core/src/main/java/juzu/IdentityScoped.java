@@ -28,8 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Scope
-@Target( { TYPE, METHOD, FIELD })
+@Target({TYPE, METHOD, FIELD})
 @Retention(RUNTIME)
-public @interface IdentityScoped
-{
+public @interface IdentityScoped {
 }

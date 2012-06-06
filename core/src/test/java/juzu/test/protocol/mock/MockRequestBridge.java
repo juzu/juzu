@@ -36,190 +36,157 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockRequestBridge implements RequestBridge
-{
+public abstract class MockRequestBridge implements RequestBridge {
 
-   /** . */
-   protected final MockClient client;
+  /** . */
+  protected final MockClient client;
 
-   /** . */
-   private final String methodId;
+  /** . */
+  private final String methodId;
 
-   /** . */
-   private final Map<String, String[]> parameters;
+  /** . */
+  private final Map<String, String[]> parameters;
 
-   /** . */
-   private final ScopedContext attributes;
+  /** . */
+  private final ScopedContext attributes;
 
-   /** . */
-   private final MockHttpContext httpContext;
+  /** . */
+  private final MockHttpContext httpContext;
 
-   /** . */
-   private final MockSecurityContext securityContext;
+  /** . */
+  private final MockSecurityContext securityContext;
 
-   /** . */
-   private final MockWindowContext windowContext;
+  /** . */
+  private final MockWindowContext windowContext;
 
-   /** . */
-   private final List<Scoped> attributesHistory;
+  /** . */
+  private final List<Scoped> attributesHistory;
 
-   public MockRequestBridge(MockClient client, String methodId, Map<String, String[]> parameters)
-   {
-      this.client = client;
-      this.methodId = methodId;
-      this.parameters = parameters;
-      this.attributes = new ScopedContext();
-      this.httpContext = new MockHttpContext();
-      this.securityContext = new MockSecurityContext();
-      this.windowContext = new MockWindowContext();
-      this.attributesHistory = new ArrayList<Scoped>();
-   }
+  public MockRequestBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
+    this.client = client;
+    this.methodId = methodId;
+    this.parameters = parameters;
+    this.attributes = new ScopedContext();
+    this.httpContext = new MockHttpContext();
+    this.securityContext = new MockSecurityContext();
+    this.windowContext = new MockWindowContext();
+    this.attributesHistory = new ArrayList<Scoped>();
+  }
 
-   public List<Scoped> getAttributesHistory()
-   {
-      return attributesHistory;
-   }
+  public List<Scoped> getAttributesHistory() {
+    return attributesHistory;
+  }
 
-   public <T> T getProperty(PropertyType<T> propertyType)
-   {
-      if (RequestContext.METHOD_ID.equals(propertyType))
-      {
-         return propertyType.getType().cast(methodId);
-      }
+  public <T> T getProperty(PropertyType<T> propertyType) {
+    if (RequestContext.METHOD_ID.equals(propertyType)) {
+      return propertyType.getType().cast(methodId);
+    }
+    return null;
+  }
+
+  public Map<String, String[]> getParameters() {
+    return parameters;
+  }
+
+  public Scoped getFlashValue(Object key) {
+    return client.getFlashValue(key);
+  }
+
+  public void setFlashValue(Object key, Scoped value) {
+    client.setFlashValue(key, value);
+  }
+
+  public Scoped getRequestValue(Object key) {
+    return attributes.get(key);
+  }
+
+  public void setRequestValue(Object key, Scoped value) {
+    if (value != null) {
+      attributes.set(key, value);
+    }
+    else {
+      attributes.set(key, null);
+    }
+  }
+
+  public Scoped getSessionValue(Object key) {
+    return client.getSession().get(key);
+  }
+
+  public void setSessionValue(Object key, Scoped value) {
+    if (value != null) {
+      client.getSession().set(key, value);
+    }
+    else {
+      client.getSession().set(key, null);
+    }
+  }
+
+  public Scoped getIdentityValue(Object key) {
+    return null;
+  }
+
+  public void setIdentityValue(Object key, Scoped value) {
+  }
+
+  public MockSecurityContext getSecurityContext() {
+    return securityContext;
+  }
+
+  public MockHttpContext getHttpContext() {
+    return httpContext;
+  }
+
+  public MockWindowContext getWindowContext() {
+    return windowContext;
+  }
+
+  void close() {
+    attributesHistory.addAll(Tools.list(attributes));
+    attributes.close();
+  }
+
+  public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
+    return _checkPropertyValidity(phase, propertyType, propertyValue);
+  }
+
+  public String _checkPropertyValidity(Phase phase, PropertyType<?> propertyType, Object propertyValue) {
+    if (propertyType == URLBuilder.ESCAPE_XML) {
+      // OK
       return null;
-   }
-
-   public Map<String, String[]> getParameters()
-   {
-      return parameters;
-   }
-
-   public Scoped getFlashValue(Object key)
-   {
-      return client.getFlashValue(key);
-   }
-
-   public void setFlashValue(Object key, Scoped value)
-   {
-      client.setFlashValue(key, value);
-   }
-
-   public Scoped getRequestValue(Object key)
-   {
-      return attributes.get(key);
-   }
-
-   public void setRequestValue(Object key, Scoped value)
-   {
-      if (value != null)
-      {
-         attributes.set(key, value);
-      }
-      else
-      {
-         attributes.set(key, null);
-      }
-   }
-
-   public Scoped getSessionValue(Object key)
-   {
-      return client.getSession().get(key);
-   }
-
-   public void setSessionValue(Object key, Scoped value)
-   {
-      if (value != null)
-      {
-         client.getSession().set(key, value);
-      }
-      else
-      {
-         client.getSession().set(key, null);
-      }
-   }
-
-   public Scoped getIdentityValue(Object key)
-   {
+    }
+    else if (propertyType == RequestContext.METHOD_ID) {
+      // OK
       return null;
-   }
+    }
+    else {
+      return "Unsupported property " + propertyType + " = " + propertyValue;
+    }
+  }
 
-   public void setIdentityValue(Object key, Scoped value)
-   {
-   }
-
-   public MockSecurityContext getSecurityContext()
-   {
-      return securityContext;
-   }
-
-   public MockHttpContext getHttpContext()
-   {
-      return httpContext;
-   }
-
-   public MockWindowContext getWindowContext()
-   {
-      return windowContext;
-   }
-
-   void close()
-   {
-      attributesHistory.addAll(Tools.list(attributes));
-      attributes.close();
-   }
-
-   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
-   {
-      return _checkPropertyValidity(phase, propertyType, propertyValue);
-   }
-
-   public String _checkPropertyValidity(Phase phase, PropertyType<?> propertyType, Object propertyValue)
-   {
-      if (propertyType == URLBuilder.ESCAPE_XML)
-      {
-         // OK
-         return null;
+  public String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties) {
+    JSON props = new JSON();
+    if (properties != null) {
+      for (PropertyType<?> property : properties) {
+        Object value = properties.getValue(property);
+        String valid = _checkPropertyValidity(phase, property, value);
+        if (valid != null) {
+          throw new IllegalArgumentException(valid);
+        }
+        else {
+          props.set(property.getClass().getName(), value);
+        }
       }
-      else if (propertyType == RequestContext.METHOD_ID)
-      {
-         // OK
-         return null;
-      }
-      else
-      {
-         return "Unsupported property " + propertyType + " = " + propertyValue;
-      }
-   }
+    }
 
-   public String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties)
-   {
-      JSON props = new JSON();
-      if (properties != null)
-      {
-         for (PropertyType<?> property : properties)
-         {
-            Object value = properties.getValue(property);
-            String valid = _checkPropertyValidity(phase, property, value);
-            if (valid != null)
-            {
-               throw new IllegalArgumentException(valid);
-            }
-            else
-            {
-               props.set(property.getClass().getName(), value);
-            }
-         }
-      }
+    //
+    JSON url = new JSON();
+    url.set("phase", phase.name());
+    url.map("parameters", parameters);
+    url.set("properties", props);
+    return url.toString();
+  }
 
-      //
-      JSON url = new JSON();
-      url.set("phase", phase.name());
-      url.map("parameters", parameters);
-      url.set("properties", props);
-      return url.toString();
-   }
-
-   public void begin(Request request)
-   {
-   }
+  public void begin(Request request) {
+  }
 }

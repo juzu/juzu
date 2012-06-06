@@ -27,34 +27,29 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class RAMURLConnection extends URLConnection
-{
+class RAMURLConnection extends URLConnection {
 
-   /** . */
-   private final Content content;
+  /** . */
+  private final Content content;
 
-   public RAMURLConnection(URL url, Content content)
-   {
-      super(url);
+  public RAMURLConnection(URL url, Content content) {
+    super(url);
 
-      //
-      this.content = content;
-   }
+    //
+    this.content = content;
+  }
 
-   @Override
-   public void connect() throws IOException
-   {
-   }
+  @Override
+  public void connect() throws IOException {
+  }
 
-   @Override
-   public InputStream getInputStream() throws IOException
-   {
-      return content.getInputStream();
-   }
+  @Override
+  public InputStream getInputStream() throws IOException {
+    return content.getInputStream();
+  }
 
-   @Override
-   public long getLastModified()
-   {
-      return content.getLastModified();
-   }
+  @Override
+  public long getLastModified() {
+    return content.getLastModified();
+  }
 }

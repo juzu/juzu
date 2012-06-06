@@ -20,21 +20,20 @@
 package juzu.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestLifeCycle
-{
+public interface RequestLifeCycle {
 
-   /**
-    * Signals a request begins.
-    *
-    * @param context the request context
-    */
-   void beginRequest(RequestContext context);
+  /**
+   * Signals a request begins.
+   *
+   * @param context the request context
+   */
+  void beginRequest(RequestContext context);
 
-   /**
-    * Singles a request ends.
-    *
-    * @param context the request context
-    */
-   void endRequest(RequestContext context);
+  /**
+   * Singles a request ends.
+   *
+   * @param context the request context
+   */
+  void endRequest(RequestContext context);
 
 }

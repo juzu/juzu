@@ -22,106 +22,89 @@ package juzu.impl.metamodel;
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaModelEvent implements Serializable
-{
+public class MetaModelEvent implements Serializable {
 
-   public static MetaModelEvent createAdded(MetaModelObject object, Object payload)
-   {
-      return new MetaModelEvent(AFTER_ADD, object, payload);
-   }
+  public static MetaModelEvent createAdded(MetaModelObject object, Object payload) {
+    return new MetaModelEvent(AFTER_ADD, object, payload);
+  }
 
-   public static MetaModelEvent createAdded(MetaModelObject object)
-   {
-      return new MetaModelEvent(AFTER_ADD, object, null);
-   }
+  public static MetaModelEvent createAdded(MetaModelObject object) {
+    return new MetaModelEvent(AFTER_ADD, object, null);
+  }
 
-   public static MetaModelEvent createUpdated(MetaModelObject object, Object payload)
-   {
-      return new MetaModelEvent(UPDATED, object, payload);
-   }
+  public static MetaModelEvent createUpdated(MetaModelObject object, Object payload) {
+    return new MetaModelEvent(UPDATED, object, payload);
+  }
 
-   public static MetaModelEvent createUpdated(MetaModelObject object)
-   {
-      return new MetaModelEvent(UPDATED, object, null);
-   }
+  public static MetaModelEvent createUpdated(MetaModelObject object) {
+    return new MetaModelEvent(UPDATED, object, null);
+  }
 
-   public static MetaModelEvent createRemoved(MetaModelObject object, Object payload)
-   {
-      return new MetaModelEvent(BEFORE_REMOVE, object, payload);
-   }
+  public static MetaModelEvent createRemoved(MetaModelObject object, Object payload) {
+    return new MetaModelEvent(BEFORE_REMOVE, object, payload);
+  }
 
-   public static MetaModelEvent createRemoved(MetaModelObject object)
-   {
-      return new MetaModelEvent(BEFORE_REMOVE, object, null);
-   }
+  public static MetaModelEvent createRemoved(MetaModelObject object) {
+    return new MetaModelEvent(BEFORE_REMOVE, object, null);
+  }
 
-   /** . */
-   public static final int AFTER_ADD = 0;
+  /** . */
+  public static final int AFTER_ADD = 0;
 
-   /** . */
-   public static final int BEFORE_REMOVE = 1;
+  /** . */
+  public static final int BEFORE_REMOVE = 1;
 
-   /** . */
-   public static final int UPDATED = 2;
+  /** . */
+  public static final int UPDATED = 2;
 
-   /** . */
-   private final int type;
+  /** . */
+  private final int type;
 
-   /** . */
-   private final MetaModelObject object;
+  /** . */
+  private final MetaModelObject object;
 
-   /** . */
-   private final Object payload;
+  /** . */
+  private final Object payload;
 
-   private MetaModelEvent(int type, MetaModelObject object, Object payload)
-   {
-      if (type < 0 || type > 3)
-      {
-         throw new IllegalArgumentException();
-      }
-      if (object == null)
-      {
-         throw new NullPointerException();
-      }
+  private MetaModelEvent(int type, MetaModelObject object, Object payload) {
+    if (type < 0 || type > 3) {
+      throw new IllegalArgumentException();
+    }
+    if (object == null) {
+      throw new NullPointerException();
+    }
 
-      //
-      this.type = type;
-      this.object = object;
-      this.payload = payload;
-   }
+    //
+    this.type = type;
+    this.object = object;
+    this.payload = payload;
+  }
 
-   public int getType()
-   {
-      return type;
-   }
+  public int getType() {
+    return type;
+  }
 
-   public MetaModelObject getObject()
-   {
-      return object;
-   }
+  public MetaModelObject getObject() {
+    return object;
+  }
 
-   public Object getPayload()
-   {
-      return payload;
-   }
+  public Object getPayload() {
+    return payload;
+  }
 
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == this)
-      {
-         return true;
-      }
-      if (obj instanceof MetaModelEvent)
-      {
-         MetaModelEvent that = (MetaModelEvent)obj;
-         return type == that.type && object.equals(that.object);
-      }
-      return false;
-   }
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (obj instanceof MetaModelEvent) {
+      MetaModelEvent that = (MetaModelEvent)obj;
+      return type == that.type && object.equals(that.object);
+    }
+    return false;
+  }
 
-   public String toString()
-   {
-      return getClass().getSimpleName() + "[type=" + type + ",object=" + object.getClass().getSimpleName() + "]";
-   }
+  public String toString() {
+    return getClass().getSimpleName() + "[type=" + type + ",object=" + object.getClass().getSimpleName() + "]";
+  }
 }

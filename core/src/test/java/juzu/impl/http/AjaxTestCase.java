@@ -21,22 +21,20 @@ package juzu.impl.http;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.UserAgent;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxTestCase extends AbstractHttpTestCase
-{
+public class AjaxTestCase extends AbstractHttpTestCase {
 
-   @Test
-   public void testAjax() throws Exception
-   {
-      assertDeploy("http", "ajax");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
-      trigger.click();
-      assertEquals("bar", page.getElementById("foo").asText());
-   }
+  @Test
+  public void testAjax() throws Exception {
+    assertDeploy("http", "ajax");
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
+    HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
+    trigger.click();
+    assertEquals("bar", page.getElementById("foo").asText());
+  }
 }

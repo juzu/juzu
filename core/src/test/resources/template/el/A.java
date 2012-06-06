@@ -20,8 +20,8 @@
 package template.el;
 
 import juzu.Path;
-import juzu.View;
 import juzu.RequestScoped;
+import juzu.View;
 import juzu.template.Template;
 
 import javax.inject.Inject;
@@ -30,24 +30,21 @@ import javax.inject.Named;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Named("a")
 @RequestScoped
-public class A
-{
+public class A {
 
-   @Inject
-   @Path("index.gtmpl")
-   Template index;
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
 
-   String value;
+  String value;
 
-   public String getValue()
-   {
-      return value;
-   }
+  public String getValue() {
+    return value;
+  }
 
-   @View
-   public void index()
-   {
-      value = "A";
-      index.render();
-   }
+  @View
+  public void index() {
+    value = "A";
+    index.render();
+  }
 }

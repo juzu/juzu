@@ -22,12 +22,12 @@ package juzu.test;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.metamodel.MetaModelProcessor;
-import juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
-import juzu.impl.utils.Tools;
-import juzu.processor.MainProcessor;
 import juzu.impl.spi.fs.ReadFileSystem;
 import juzu.impl.spi.fs.ReadWriteFileSystem;
+import juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
 import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.utils.Tools;
+import juzu.processor.MainProcessor;
 import juzu.test.protocol.mock.MockApplication;
 
 import javax.annotation.processing.Processor;
@@ -45,216 +45,177 @@ import java.util.WeakHashMap;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class CompilerAssert<I, O>
-{
+public class CompilerAssert<I, O> {
 
-   public static final Provider<MetaModelProcessor> META_MODEL_PROCESSOR_FACTORY = new Provider<MetaModelProcessor>()
-   {
-      public MetaModelProcessor get()
-      {
-         return new MainProcessor();
+  public static final Provider<MetaModelProcessor> META_MODEL_PROCESSOR_FACTORY = new Provider<MetaModelProcessor>() {
+    public MetaModelProcessor get() {
+      return new MainProcessor();
+    }
+  };
+
+  /** A cache to speed up unit tests. */
+  private static WeakHashMap<ClassLoader, ClassLoaderFileSystem> classPathCache = new WeakHashMap<ClassLoader, ClassLoaderFileSystem>();
+
+  /** . */
+  private ClassLoader baseClassLoader;
+
+  /** . */
+  private ClassLoader classLoader;
+
+  /** . */
+  private CompileStrategy<I, O> strategy;
+
+  public CompilerAssert(
+    boolean incremental,
+    ReadWriteFileSystem<I> sourcePath,
+    ReadWriteFileSystem<O> sourceOutput,
+    ReadWriteFileSystem<O> classOutput) {
+    ClassLoader baseClassLoader = Thread.currentThread().getContextClassLoader();
+
+    //
+    ClassLoaderFileSystem classPath = classPathCache.get(baseClassLoader);
+    if (classPath == null) {
+      try {
+        classPathCache.put(baseClassLoader, classPath = new ClassLoaderFileSystem(baseClassLoader));
       }
-   };
-
-   /** A cache to speed up unit tests. */
-   private static WeakHashMap<ClassLoader, ClassLoaderFileSystem> classPathCache = new WeakHashMap<ClassLoader, ClassLoaderFileSystem>();
-
-   /** . */
-   private ClassLoader baseClassLoader;
-
-   /** . */
-   private ClassLoader classLoader;
-
-   /** . */
-   private CompileStrategy<I, O> strategy;
-
-   public CompilerAssert(
-      boolean incremental,
-      ReadWriteFileSystem<I> sourcePath,
-      ReadWriteFileSystem<O> sourceOutput,
-      ReadWriteFileSystem<O> classOutput)
-   {
-      ClassLoader baseClassLoader = Thread.currentThread().getContextClassLoader();
-
-      //
-      ClassLoaderFileSystem classPath = classPathCache.get(baseClassLoader);
-      if (classPath == null)
-      {
-         try
-         {
-            classPathCache.put(baseClassLoader, classPath = new ClassLoaderFileSystem(baseClassLoader));
-         }
-         catch (IOException e)
-         {
-            throw AbstractTestCase.failure(e);
-         }
+      catch (IOException e) {
+        throw AbstractTestCase.failure(e);
       }
+    }
 
-      //
-      this.strategy = incremental ? new CompileStrategy.Incremental<I, O>(
-         classPath,
-         sourcePath,
-         sourceOutput,
-         classOutput,
-         META_MODEL_PROCESSOR_FACTORY) : new CompileStrategy.Batch<I, O>(
-         classPath,
-         sourcePath,
-         sourceOutput,
-         classOutput,
-         META_MODEL_PROCESSOR_FACTORY);
+    //
+    this.strategy = incremental ? new CompileStrategy.Incremental<I, O>(
+      classPath,
+      sourcePath,
+      sourceOutput,
+      classOutput,
+      META_MODEL_PROCESSOR_FACTORY) : new CompileStrategy.Batch<I, O>(
+      classPath,
+      sourcePath,
+      sourceOutput,
+      classOutput,
+      META_MODEL_PROCESSOR_FACTORY);
 
-      //
-      this.baseClassLoader = baseClassLoader;
-   }
+    //
+    this.baseClassLoader = baseClassLoader;
+  }
 
-   public CompilerAssert(
-      ReadWriteFileSystem<I> sourcePath,
-      ReadWriteFileSystem<O> sourceOutput,
-      ReadWriteFileSystem<O> classOutput)
-   {
-      this(false, sourcePath, sourceOutput, classOutput);
-   }
+  public CompilerAssert(
+    ReadWriteFileSystem<I> sourcePath,
+    ReadWriteFileSystem<O> sourceOutput,
+    ReadWriteFileSystem<O> classOutput) {
+    this(false, sourcePath, sourceOutput, classOutput);
+  }
 
-   public CompilerAssert(ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
-   {
-      this(false, sourcePath, output, output);
-   }
+  public CompilerAssert(ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output) {
+    this(false, sourcePath, output, output);
+  }
 
-   public CompilerAssert(boolean incremental, ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output)
-   {
-      this(incremental, sourcePath, output, output);
-   }
+  public CompilerAssert(boolean incremental, ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> output) {
+    this(incremental, sourcePath, output, output);
+  }
 
-   public CompilerAssert<I, O> with(Provider<? extends Processor> processorFactory)
-   {
-      strategy.processorFactory = processorFactory;
-      return this;
-   }
+  public CompilerAssert<I, O> with(Provider<? extends Processor> processorFactory) {
+    strategy.processorFactory = processorFactory;
+    return this;
+  }
 
-   public CompilerAssert<I, O> addClassPath(ReadFileSystem<?> classPath)
-   {
-      strategy.addClassPath(classPath);
-      return this;
-   }
+  public CompilerAssert<I, O> addClassPath(ReadFileSystem<?> classPath) {
+    strategy.addClassPath(classPath);
+    return this;
+  }
 
-   public ReadFileSystem<I> getSourcePath()
-   {
-      return strategy.sourcePath;
-   }
+  public ReadFileSystem<I> getSourcePath() {
+    return strategy.sourcePath;
+  }
 
-   public ReadWriteFileSystem<O> getClassOutput()
-   {
-      return strategy.classOutput;
-   }
+  public ReadWriteFileSystem<O> getClassOutput() {
+    return strategy.classOutput;
+  }
 
-   public ReadWriteFileSystem<O> getSourceOutput()
-   {
-      return strategy.sourceOutput;
-   }
+  public ReadWriteFileSystem<O> getSourceOutput() {
+    return strategy.sourceOutput;
+  }
 
-   public CompilerAssert<I, O> formalErrorReporting(boolean formalErrorReporting)
-   {
-      if (formalErrorReporting)
-      {
-         strategy.config.withProcessorOption("juzu.error_reporting", "formal");
+  public CompilerAssert<I, O> formalErrorReporting(boolean formalErrorReporting) {
+    if (formalErrorReporting) {
+      strategy.config.withProcessorOption("juzu.error_reporting", "formal");
+    }
+    else {
+      strategy.config.withProcessorOption("juzu.error_reporting", null);
+    }
+    return this;
+  }
+
+  public ClassLoader getClassLoader() {
+    return classLoader;
+  }
+
+  public List<CompilationError> failCompile() {
+    try {
+      List<CompilationError> errors = strategy.compile();
+      AbstractTestCase.assertTrue("Was expecting compilation to fail", errors.size() > 0);
+      return errors;
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
+
+  public MockApplication<?> application(InjectImplementation injectImplementation) {
+    try {
+      return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation.bootstrap());
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
+
+  public Compiler assertCompile() {
+    try {
+      List<CompilationError> errors = strategy.compile();
+      AbstractTestCase.assertEquals("Compilation failed : " + errors, Collections.<CompilationError>emptyList(), errors);
+      classLoader = new URLClassLoader(new URL[]{strategy.classOutput.getURL()}, baseClassLoader);
+      return strategy.compiler;
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
+
+  public Class<?> assertClass(String className) {
+    try {
+      return classLoader.loadClass(className);
+    }
+    catch (ClassNotFoundException e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
+
+  public void assertRemove(String... names) {
+    try {
+      I path = strategy.sourcePath.getPath(names);
+      if (path == null) {
+        throw AbstractTestCase.failure("Cannot remove path " + Tools.join('/', names));
       }
-      else
-      {
-         strategy.config.withProcessorOption("juzu.error_reporting", null);
-      }
-      return this;
-   }
+      strategy.sourcePath.removePath(path);
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
 
-   public ClassLoader getClassLoader()
-   {
-      return classLoader;
-   }
-
-   public List<CompilationError> failCompile()
-   {
-      try
-      {
-         List<CompilationError> errors = strategy.compile();
-         AbstractTestCase.assertTrue("Was expecting compilation to fail", errors.size() > 0);
-         return errors;
-      }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
-   }
-
-   public MockApplication<?> application(InjectImplementation injectImplementation)
-   {
-      try
-      {
-         return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation.bootstrap());
-      }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
-   }
-
-   public Compiler assertCompile()
-   {
-      try
-      {
-         List<CompilationError> errors = strategy.compile();
-         AbstractTestCase.assertEquals("Compilation failed : " + errors, Collections.<CompilationError>emptyList(), errors);
-         classLoader = new URLClassLoader(new URL[]{strategy.classOutput.getURL()}, baseClassLoader);
-         return strategy.compiler;
-      }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
-   }
-
-   public Class<?> assertClass(String className)
-   {
-      try
-      {
-         return classLoader.loadClass(className);
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
-   }
-   
-   public void assertRemove(String ... names)
-   {
-      try
-      {
-         I path = strategy.sourcePath.getPath(names);
-         if (path == null)
-         {
-            throw AbstractTestCase.failure("Cannot remove path " + Tools.join('/', names));
-         }
-         strategy.sourcePath.removePath(path);
-      }
-      catch (Exception e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
-   }
-
-   public JavaFile<I> assertJavaFile(String... names)
-   {
-      I path;
-      try
-      {
-         path = strategy.sourcePath.getPath(names);
-      }
-      catch (IOException e)
-      {
-         throw AbstractTestCase.failure(e);
-      }
-      if (path == null)
-      {
-         throw AbstractTestCase.failure("Was not expecting " + Arrays.asList(names) + " to be null file");
-      }
-      return new JavaFile<I>(strategy.sourcePath, path);
-   }
+  public JavaFile<I> assertJavaFile(String... names) {
+    I path;
+    try {
+      path = strategy.sourcePath.getPath(names);
+    }
+    catch (IOException e) {
+      throw AbstractTestCase.failure(e);
+    }
+    if (path == null) {
+      throw AbstractTestCase.failure("Was not expecting " + Arrays.asList(names) + " to be null file");
+    }
+    return new JavaFile<I>(strategy.sourcePath, path);
+  }
 }

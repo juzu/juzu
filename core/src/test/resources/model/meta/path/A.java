@@ -23,10 +23,9 @@ import juzu.Path;
 import juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @Path("foo.gtmpl")
-   Template index;
+  @Path("foo.gtmpl")
+  Template index;
 
 }

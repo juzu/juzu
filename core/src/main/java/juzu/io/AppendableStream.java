@@ -27,62 +27,51 @@ import java.io.IOException;
 /**
  * Implementation of the {@link juzu.io.Stream.Char} interface that uses an appendable delegate.
  *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> 
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class AppendableStream implements Stream.Char
-{
+public class AppendableStream implements Stream.Char {
 
-   /** . */
-   protected final Appendable delegate;
+  /** . */
+  protected final Appendable delegate;
 
-   public AppendableStream(Appendable delegate)
-   {
-      if (delegate == null)
-      {
-         throw new NullPointerException("No null writer accepted");
-      }
+  public AppendableStream(Appendable delegate) {
+    if (delegate == null) {
+      throw new NullPointerException("No null writer accepted");
+    }
 
-      //
-      this.delegate = delegate;
-   }
+    //
+    this.delegate = delegate;
+  }
 
-   public Stream.Char append(char c) throws IOException
-   {
-      delegate.append(c);
-      return this;
-   }
+  public Stream.Char append(char c) throws IOException {
+    delegate.append(c);
+    return this;
+  }
 
-   public Stream.Char append(CharSequence s) throws IOException
-   {
-      delegate.append(s);
-      return this;
-   }
+  public Stream.Char append(CharSequence s) throws IOException {
+    delegate.append(s);
+    return this;
+  }
 
-   public Stream.Char append(CharSequence csq, int start, int end) throws IOException
-   {
-      delegate.append(csq, start, end);
-      return this;
-   }
+  public Stream.Char append(CharSequence csq, int start, int end) throws IOException {
+    delegate.append(csq, start, end);
+    return this;
+  }
 
-   public Stream.Char append(CharArray chars) throws IOException
-   {
-      chars.write(delegate);
-      return this;
-   }
+  public Stream.Char append(CharArray chars) throws IOException {
+    chars.write(delegate);
+    return this;
+  }
 
-   public void close() throws IOException
-   {
-      if (delegate instanceof Closeable)
-      {
-         ((Closeable)delegate).close();
-      }
-   }
+  public void close() throws IOException {
+    if (delegate instanceof Closeable) {
+      ((Closeable)delegate).close();
+    }
+  }
 
-   public void flush() throws IOException
-   {
-      if (delegate instanceof Flushable)
-      {
-         ((Flushable)delegate).flush();
-      }
-   }
+  public void flush() throws IOException {
+    if (delegate instanceof Flushable) {
+      ((Flushable)delegate).flush();
+    }
+  }
 }

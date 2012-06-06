@@ -18,8 +18,7 @@
  */
 
 @Application()
-@Assets(scripts = @Script(id="jquery",src = "/jquery.js", depends = "foo"))
-package plugin.asset.unsatisfied;
+@Assets(scripts = @Script(id = "jquery", src = "/jquery.js", depends = "foo")) package plugin.asset.unsatisfied;
 
 import juzu.Application;
 import juzu.plugin.asset.Assets;

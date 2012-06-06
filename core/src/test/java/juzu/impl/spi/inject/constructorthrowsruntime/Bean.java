@@ -22,10 +22,8 @@ package juzu.impl.spi.inject.constructorthrowsruntime;
 import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean
-{
-   public Bean()
-   {
-      throw new ConcurrentModificationException("DON'T FREAK OUT");
-   }
+public class Bean {
+  public Bean() {
+    throw new ConcurrentModificationException("DON'T FREAK OUT");
+  }
 }

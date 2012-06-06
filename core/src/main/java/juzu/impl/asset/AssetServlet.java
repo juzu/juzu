@@ -26,37 +26,30 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetServlet extends HttpServlet
-{
+public class AssetServlet extends HttpServlet {
 
-   @Override
-   public void init() throws ServletException
-   {
-      AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
-      if (server == null)
-      {
-         server = new AssetServer();
-         getServletContext().setAttribute("asset.server", server);
-      }
-   }
+  @Override
+  public void init() throws ServletException {
+    AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
+    if (server == null) {
+      server = new AssetServer();
+      getServletContext().setAttribute("asset.server", server);
+    }
+  }
 
-   @Override
-   public void destroy()
-   {
-      getServletContext().removeAttribute("asset.server");
-   }
+  @Override
+  public void destroy() {
+    getServletContext().removeAttribute("asset.server");
+  }
 
-   @Override
-   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-   {
-      AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
-      if (server != null)
-      {
-         server.doGet(req, resp);
-      }
-      else
-      {
-         resp.sendError(500, "No asset server");
-      }
-   }
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
+    if (server != null) {
+      server.doGet(req, resp);
+    }
+    else {
+      resp.sendError(500, "No asset server");
+    }
+  }
 }

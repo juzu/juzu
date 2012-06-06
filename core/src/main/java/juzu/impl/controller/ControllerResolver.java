@@ -31,248 +31,215 @@ import java.util.Set;
 
 /**
  * Controller method resolution algorithm.
- *
- * Resolves a controller method for a specified set of parameter names. The algorithm attempts to resolve
- * a single value with the following algorithm:
- *
- * <ul>
- *    <li>Filter the list of controllers, this is specific to the resolve method.</li>
- *    <li>When no method is retained, the null value is returned.</li>
- *    <li>When several methods are retained the resulting list is sorted according <i>resolution order</i>.
- *    If a first value is greater than all the others, this result is returned, otherwise a {@link juzu.AmbiguousResolutionException}
- *    is thrown.</li>
- * </ul>
- *
- * The <i>resolution order</i> uses three criteria for comparing two methods in the context of the specified parameter names.
- *
- * <ol>
- *    <li>The greater number of matched specified parameters.</li>
- *    <li>The lesser number of unmatched method arguments.</li>
- *    <li>The lesser number of unmatched method parameters.</li>
- *    <li>The default controller class.</li>
+ * <p/>
+ * Resolves a controller method for a specified set of parameter names. The algorithm attempts to resolve a single value
+ * with the following algorithm:
+ * <p/>
+ * <ul> <li>Filter the list of controllers, this is specific to the resolve method.</li> <li>When no method is retained,
+ * the null value is returned.</li> <li>When several methods are retained the resulting list is sorted according
+ * <i>resolution order</i>. If a first value is greater than all the others, this result is returned, otherwise a {@link
+ * juzu.AmbiguousResolutionException} is thrown.</li> </ul>
+ * <p/>
+ * The <i>resolution order</i> uses three criteria for comparing two methods in the context of the specified parameter
+ * names.
+ * <p/>
+ * <ol> <li>The greater number of matched specified parameters.</li> <li>The lesser number of unmatched method
+ * arguments.</li> <li>The lesser number of unmatched method parameters.</li> <li>The default controller class.</li>
  * </ol>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ControllerResolver<M>
-{
+public abstract class ControllerResolver<M> {
 
-   // todo : take in account multi valued parameters
-   // todo : what happens with type conversion, somehow we should forbid m(String a) and m(int a)
+  // todo : take in account multi valued parameters
+  // todo : what happens with type conversion, somehow we should forbid m(String a) and m(int a)
 
-   public abstract M[] getMethods();
-   
-   public abstract String getId(M method);
-   
-   public abstract Phase getPhase(M method);
-   
-   public abstract String getName(M method);
-   
-   public abstract boolean isDefault(M method);
-   
-   public abstract Collection<String> getParameterNames(M method);
+  public abstract M[] getMethods();
 
-   private class Match implements Comparable<Match>
-   {
+  public abstract String getId(M method);
 
-      /** . */
-      final M method;
+  public abstract Phase getPhase(M method);
 
-      /** . */
-      final int score1;
+  public abstract String getName(M method);
 
-      /** . */
-      final int score2;
+  public abstract boolean isDefault(M method);
 
-      /** . */
-      final int score3;
+  public abstract Collection<String> getParameterNames(M method);
 
-      /** . */
-      final int score4;
+  private class Match implements Comparable<Match> {
 
-      Match(Set<String> parameterNames, M method)
-      {
-         this.method = method;
+    /** . */
+    final M method;
 
-         // The number of matched parameters
-         HashSet<String> a = new HashSet<String>(parameterNames);
-         a.retainAll(getParameterNames(method));
-         this.score1 = a.size();
+    /** . */
+    final int score1;
 
-         // The number of unmatched arguments
-         a = new HashSet<String>(getParameterNames(method));
-         a.removeAll(parameterNames);
-         this.score2 = a.size();
+    /** . */
+    final int score2;
 
-         // The number of unmatched parameters
-         a = new HashSet<String>(parameterNames);
-         a.removeAll(getParameterNames(method));
-         this.score3 = a.size();
+    /** . */
+    final int score3;
 
-         // The default method
-         this.score4 = isDefault(method) ? 0 : 1;
+    /** . */
+    final int score4;
+
+    Match(Set<String> parameterNames, M method) {
+      this.method = method;
+
+      // The number of matched parameters
+      HashSet<String> a = new HashSet<String>(parameterNames);
+      a.retainAll(getParameterNames(method));
+      this.score1 = a.size();
+
+      // The number of unmatched arguments
+      a = new HashSet<String>(getParameterNames(method));
+      a.removeAll(parameterNames);
+      this.score2 = a.size();
+
+      // The number of unmatched parameters
+      a = new HashSet<String>(parameterNames);
+      a.removeAll(getParameterNames(method));
+      this.score3 = a.size();
+
+      // The default method
+      this.score4 = isDefault(method) ? 0 : 1;
+    }
+
+    public int compareTo(Match o) {
+      int delta = o.score1 - score1;
+      if (delta == 0) {
+        delta = score2 - o.score2;
+        if (delta == 0) {
+          delta = score3 - o.score3;
+          if (delta == 0) {
+            delta = score4 - o.score4;
+          }
+        }
       }
+      return delta;
+    }
 
-      public int compareTo(Match o)
-      {
-         int delta = o.score1 - score1;
-         if (delta == 0)
-         {
-            delta = score2 - o.score2;
-            if (delta == 0)
-            {
-               delta = score3 - o.score3;
-               if (delta == 0)
-               {
-                  delta = score4 - o.score4;
-               }
-            }
-         }
-         return delta;
+    @Override
+    public String toString() {
+      return "Match[score1=" + score1 + ",score2=" + score2 + ",score3=" + score3 + ",score4=" + score4 + ",method=" + method + "]";
+    }
+  }
+
+  /**
+   * A method matches the filter when it has the render phase and the name <code>index</code>.
+   *
+   * @param parameterNames the parameter names
+   * @return the resolved controller method
+   * @throws NullPointerException if the parameter names set is nul
+   * @throws juzu.AmbiguousResolutionException
+   *                              if more than a single result is found
+   */
+  public final M resolve(Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
+    if (parameterNames == null) {
+      throw new NullPointerException("No null parameter names accepted");
+    }
+
+    //
+    List<Match> matches = new ArrayList<Match>();
+    for (M method : getMethods()) {
+      if (getPhase(method) == Phase.RENDER && getName(method).equals("index")) {
+        matches.add(new Match(parameterNames, method));
       }
+    }
 
-      @Override
-      public String toString()
-      {
-         return "Match[score1=" + score1 + ",score2=" + score2 + ",score3=" + score3 + ",score4=" + score4 + ",method=" + method + "]";
+    //
+    return select(matches);
+  }
+
+  /**
+   * A method matches the filter when it matches the phase and the method id.
+   *
+   * @param phase          the phrase
+   * @param methodId       the method id
+   * @param parameterNames the parameter names
+   * @return the resolved controller method
+   * @throws NullPointerException if any parameter is nul
+   * @throws juzu.AmbiguousResolutionException
+   *                              if more than a single result is found
+   */
+  public final M resolve(Phase phase, String methodId, final Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
+    if (parameterNames == null) {
+      throw new NullPointerException("No null parameter names accepted");
+    }
+    if (phase == null) {
+      throw new NullPointerException("Phase parameter cannot be null");
+    }
+    if (methodId == null) {
+      throw new NullPointerException("Method id parameter cannot be null");
+    }
+
+    //
+    List<Match> matches = new ArrayList<Match>();
+    for (M method : getMethods()) {
+      if (getPhase(method) == phase && getId(method).equals(methodId)) {
+        matches.add(new Match(parameterNames, method));
       }
-   }
+    }
 
-   /**
-    * A method matches the filter when it has the render phase and the name <code>index</code>.
-    *
-    * @param parameterNames the parameter names
-    * @return the resolved controller method
-    * @throws NullPointerException if the parameter names set is nul
-    * @throws juzu.AmbiguousResolutionException if more than a single result is found
-    */
-   public final M resolve(Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException
-   {
-      if (parameterNames == null)
-      {
-         throw new NullPointerException("No null parameter names accepted");
-      }
+    //
+    return select(matches);
+  }
 
-      //
-      List<Match> matches = new ArrayList<Match>();
-      for (M method : getMethods())
-      {
-         if (getPhase(method) == Phase.RENDER && getName(method).equals("index"))
-         {
+  /**
+   * A method matches the filter when it matches the type name, the method name and contains all the parameters.
+   *
+   * @param typeName       the optional type name
+   * @param methodName     the method name
+   * @param parameterNames the parameter names
+   * @return the resolved controller method
+   * @throws NullPointerException if the methodName or parameterNames argument is null
+   * @throws juzu.AmbiguousResolutionException
+   *                              if more than a single result is found
+   */
+  public M resolve(String typeName, String methodName, Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
+    if (parameterNames == null) {
+      throw new NullPointerException("No null parameter names accepted");
+    }
+    if (methodName == null) {
+      throw new NullPointerException("Phase parameter cannot be null");
+    }
+
+    //
+    List<Match> matches = new ArrayList<Match>();
+    for (M method : getMethods()) {
+      if (getParameterNames(method).containsAll(parameterNames)) {
+        if (typeName == null) {
+          if (getName(method).equals(methodName)) {
             matches.add(new Match(parameterNames, method));
-         }
-      }
-
-      //
-      return select(matches);
-   }
-
-   /**
-    * A method matches the filter when it matches the phase and the method id.
-    *
-    * @param phase the phrase
-    * @param methodId the method id
-    * @param parameterNames the parameter names
-    * @return the resolved controller method
-    * @throws NullPointerException if any parameter is nul
-    * @throws juzu.AmbiguousResolutionException if more than a single result is found
-    */
-   public final M resolve(Phase phase, String methodId, final Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException
-   {
-      if (parameterNames == null)
-      {
-         throw new NullPointerException("No null parameter names accepted");
-      }
-      if (phase == null)
-      {
-         throw new NullPointerException("Phase parameter cannot be null");
-      }
-      if (methodId == null)
-      {
-         throw new NullPointerException("Method id parameter cannot be null");
-      }
-
-      //
-      List<Match> matches = new ArrayList<Match>();
-      for (M method : getMethods())
-      {
-         if (getPhase(method) == phase && getId(method).equals(methodId))
-         {
+          }
+        }
+        else {
+          String id = typeName + "." + methodName;
+          if (getId(method).equals(id)) {
             matches.add(new Match(parameterNames, method));
-         }
+          }
+        }
       }
+    }
 
-      //
-      return select(matches);
-   }
+    //
+    return select(matches);
+  }
 
-   /**
-    * A method matches the filter when it matches the type name, the method name and contains all the parameters.
-    *
-    * @param typeName the optional type name
-    * @param methodName the method name
-    * @param parameterNames the parameter names
-    * @return the resolved controller method
-    * @throws NullPointerException if the methodName or parameterNames argument is null
-    * @throws juzu.AmbiguousResolutionException if more than a single result is found
-    */
-   public M resolve(String typeName, String methodName, Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException
-   {
-      if (parameterNames == null)
-      {
-         throw new NullPointerException("No null parameter names accepted");
+  private M select(List<Match> matches) throws AmbiguousResolutionException {
+    M found = null;
+    if (matches.size() > 0) {
+      Collections.sort(matches);
+      Match first = matches.get(0);
+      if (matches.size() > 1) {
+        Match second = matches.get(1);
+        if (first.compareTo(second) == 0) {
+          throw new AmbiguousResolutionException("Two methods satisfies the index criteria: " +
+            first.method + " and " + second.method);
+        }
       }
-      if (methodName == null)
-      {
-         throw new NullPointerException("Phase parameter cannot be null");
-      }
-
-      //
-      List<Match> matches = new ArrayList<Match>();
-      for (M method : getMethods())
-      {
-         if (getParameterNames(method).containsAll(parameterNames))
-         {
-            if (typeName == null)
-            {
-               if (getName(method).equals(methodName))
-               {
-                  matches.add(new Match(parameterNames, method));
-               }
-            }
-            else
-            {
-               String id = typeName + "." + methodName;
-               if (getId(method).equals(id))
-               {
-                  matches.add(new Match(parameterNames, method));
-               }
-            }
-         }
-      }
-
-      //
-      return select(matches);
-   }
-
-   private M select(List<Match> matches) throws AmbiguousResolutionException
-   {
-      M found = null;
-      if (matches.size() > 0)
-      {
-         Collections.sort(matches);
-         Match first = matches.get(0);
-         if (matches.size() > 1)
-         {
-            Match second = matches.get(1);
-            if (first.compareTo(second) == 0)
-            {
-               throw new AmbiguousResolutionException("Two methods satisfies the index criteria: " +
-                  first.method + " and " + second.method);
-            }
-         }
-         found = first.method;
-      }
-      return found;
-   }
+      found = first.method;
+    }
+    return found;
+  }
 }

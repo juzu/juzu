@@ -44,96 +44,81 @@ import java.util.List;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ExtensionImpl implements Extension
-{
+public class ExtensionImpl implements Extension {
 
-   /** . */
-   private final static AnnotationLiteral<Produces> PRODUCES_ANNOTATION_LITERAL = new AnnotationLiteral<Produces>()
-   {
-   };
+  /** . */
+  private final static AnnotationLiteral<Produces> PRODUCES_ANNOTATION_LITERAL = new AnnotationLiteral<Produces>() {
+  };
 
-   /** . */
-   private final CDIManager manager;
+  /** . */
+  private final CDIManager manager;
 
-   /** The singletons to shut down. */
-   private List<Bean<?>> singletons;
+  /** The singletons to shut down. */
+  private List<Bean<?>> singletons;
 
-   public ExtensionImpl()
-   {
-      this.manager = CDIManager.boot.get();
-      this.singletons = new ArrayList<Bean<?>>();
-   }
+  public ExtensionImpl() {
+    this.manager = CDIManager.boot.get();
+    this.singletons = new ArrayList<Bean<?>>();
+  }
 
-   <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat)
-   {
+  <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat) {
 
-      AnnotatedType<T> annotatedType = pat.getAnnotatedType();
-      Class<T> type = annotatedType.getJavaClass();
+    AnnotatedType<T> annotatedType = pat.getAnnotatedType();
+    Class<T> type = annotatedType.getJavaClass();
 
-      // Determine if bean is a singleton bound
-      boolean bound = false;
-      for (AbstractBean boundBean : manager.boundBeans)
-      {
-         if (boundBean.getBeanClass().isAssignableFrom(type))
-         {
-            bound = true;
-         }
+    // Determine if bean is a singleton bound
+    boolean bound = false;
+    for (AbstractBean boundBean : manager.boundBeans) {
+      if (boundBean.getBeanClass().isAssignableFrom(type)) {
+        bound = true;
       }
+    }
 
-      //
-      boolean veto = bound || manager.filter != null && !manager.filter.acceptBean(type);
+    //
+    boolean veto = bound || manager.filter != null && !manager.filter.acceptBean(type);
 
-      //
-      if (veto)
-      {
-         pat.veto();
+    //
+    if (veto) {
+      pat.veto();
+    }
+  }
+
+  void afterBeanDiscovery(@Observes AfterBeanDiscovery event, BeanManager beanManager) {
+    Container container = Container.boot.get();
+
+    //
+    for (Scope scope : container.scopes) {
+      if (!scope.isBuiltIn()) {
+        event.addContext(new ContextImpl(container.scopeController, scope, scope.getAnnotationType()));
       }
-   }
+    }
 
-   void afterBeanDiscovery(@Observes AfterBeanDiscovery event, BeanManager beanManager)
-   {
-      Container container = Container.boot.get();
+    // Add the manager
+    event.addBean(new SingletonBean(InjectManager.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), manager));
 
-      //
-      for (Scope scope : container.scopes)
-      {
-         if (!scope.isBuiltIn())
-         {
-            event.addContext(new ContextImpl(container.scopeController, scope, scope.getAnnotationType()));
-         }
-      }
+    // Add bound beans
+    for (AbstractBean bean : manager.boundBeans) {
+      bean.register(beanManager);
+      event.addBean(bean);
+    }
+  }
 
-      // Add the manager
-      event.addBean(new SingletonBean(InjectManager.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), manager));
+  void processBean(@Observes ProcessBean event, BeanManager beanManager) {
+    Bean bean = event.getBean();
+    manager.beans.add(bean);
 
-      // Add bound beans
-      for (AbstractBean bean : manager.boundBeans)
-      {
-         bean.register(beanManager);
-         event.addBean(bean);
-      }
-   }
+    //
+    if (bean.getScope() == Singleton.class) {
+      singletons.add(bean);
+    }
+  }
 
-   void processBean(@Observes ProcessBean event, BeanManager beanManager)
-   {
-      Bean bean = event.getBean();
-      manager.beans.add(bean);
-      
-      //
-      if (bean.getScope() == Singleton.class)
-      {
-         singletons.add(bean);
-      }
-   }
-
-   public void beforeShutdown(@Observes BeforeShutdown event, BeanManager beanManager) 
-   {
-      // Take care of destroying singletons
-      for (Bean singleton : singletons)
-      {
-         CreationalContext cc = beanManager.createCreationalContext(singleton);
-         Object o = beanManager.getReference(singleton, singleton.getBeanClass(), cc);
-         singleton.destroy(o, cc);
-      }
-   }
+  public void beforeShutdown(@Observes BeforeShutdown event, BeanManager beanManager) {
+    // Take care of destroying singletons
+    for (Bean singleton : singletons) {
+      CreationalContext cc = beanManager.createCreationalContext(singleton);
+      Object o = beanManager.getReference(singleton, singleton.getBeanClass(), cc);
+      singleton.destroy(o, cc);
+    }
+  }
 }

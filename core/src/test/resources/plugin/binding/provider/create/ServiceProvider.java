@@ -22,12 +22,9 @@ package plugin.binding.provider.create;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServiceProvider implements Provider<Service>
-{
-   public Service get()
-   {
-      return new Service()
-      {
-      };
-   }
+public class ServiceProvider implements Provider<Service> {
+  public Service get() {
+    return new Service() {
+    };
+  }
 }

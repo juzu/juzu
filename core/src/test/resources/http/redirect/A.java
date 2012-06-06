@@ -24,18 +24,15 @@ import juzu.Response;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-   
-   @Action
-   public Response.Redirect action()
-   {
-      return Response.redirect("http://www.foo.org");
-   }
-   
-   @View
-   public Response.Content index(String p)
-   {
-      return Response.render(A_.actionURL().toString());
-   }
+public class A {
+
+  @Action
+  public Response.Redirect action() {
+    return Response.redirect("http://www.foo.org");
+  }
+
+  @View
+  public Response.Content index(String p) {
+    return Response.render(A_.actionURL().toString());
+  }
 }

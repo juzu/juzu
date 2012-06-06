@@ -28,22 +28,18 @@ import java.io.IOException;
 import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   public A()
-   {
-   }
+  public A() {
+  }
 
-   @Action
-   public void action()
-   {
-      throw new ConcurrentModificationException();
-   }
+  @Action
+  public void action() {
+    throw new ConcurrentModificationException();
+  }
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content(A_.actionURL().toString());
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content(A_.actionURL().toString());
+  }
 }

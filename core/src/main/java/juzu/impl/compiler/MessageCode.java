@@ -24,85 +24,75 @@ import javax.lang.model.element.Element;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MessageCode
-{
+public class MessageCode {
 
-   /** . */
-   private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+  /** . */
+  private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-   /** . */
-   private static final ConcurrentHashMap<String, MessageCode> codes = new ConcurrentHashMap<String, MessageCode>();
+  /** . */
+  private static final ConcurrentHashMap<String, MessageCode> codes = new ConcurrentHashMap<String, MessageCode>();
 
-   /**
-    * Decode the message key and return a corresponding message code object. If no error can be decoded
-    * for the specified key, null is returned.
-    *
-    * @param key the error key
-    * @return the corresponding error
-    */
-   public static MessageCode decode(String key)
-   {
-      return codes.get(key);
-   }
+  /**
+   * Decode the message key and return a corresponding message code object. If no error can be decoded for the
+   * specified key, null is returned.
+   *
+   * @param key the error key
+   * @return the corresponding error
+   */
+  public static MessageCode decode(String key) {
+    return codes.get(key);
+  }
 
-   /** . */
-   private final String key;
+  /** . */
+  private final String key;
 
-   /** . */
-   private final String message;
+  /** . */
+  private final String message;
 
-   public MessageCode(String key, String message)
-   {
-      codes.put(key, this);
+  public MessageCode(String key, String message) {
+    codes.put(key, this);
 
-      //
-      this.key = key;
-      this.message = message;
-   }
+    //
+    this.key = key;
+    this.message = message;
+  }
 
-   /**
-    * The error key.
-    *
-    * @return the error key
-    */
-   public String getKey()
-   {
-      return key;
-   }
+  /**
+   * The error key.
+   *
+   * @return the error key
+   */
+  public String getKey() {
+    return key;
+  }
 
-   /**
-    * The error message.
-    *
-    * @return the error message
-    */
-   public String getMessage()
-   {
-      return message;
-   }
+  /**
+   * The error message.
+   *
+   * @return the error message
+   */
+  public String getMessage() {
+    return message;
+  }
 
-   @Override
-   public String toString()
-   {
-      return "MessageCode[key=" + key + ",message=" + message + "]";
-   }
+  @Override
+  public String toString() {
+    return "MessageCode[key=" + key + ",message=" + message + "]";
+  }
 
-   public CompilationException failure(Object... args)
-   {
-      return new CompilationException(this, args);
-   }
+  public CompilationException failure(Object... args) {
+    return new CompilationException(this, args);
+  }
 
-   public CompilationException failure(Element element)
-   {
-      return new CompilationException(element, this, EMPTY_OBJECT_ARRAY);
-   }
+  public CompilationException failure(Element element) {
+    return new CompilationException(element, this, EMPTY_OBJECT_ARRAY);
+  }
 
-   public CompilationException failure(Element element, Object... args)
-   {
-      return new CompilationException(element, this, args);
-   }
+  public CompilationException failure(Element element, Object... args) {
+    return new CompilationException(element, this, args);
+  }
 
-   public CompilationException failure(Element element, AnnotationMirror annotation, Object... args)
-   {
-      return new CompilationException(element, annotation, this, args);
-   }
+  public CompilationException failure(Element element, AnnotationMirror annotation, Object... args) {
+    return new CompilationException(element, annotation, this, args);
+  }
 }

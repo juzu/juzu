@@ -10,50 +10,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class AbstractBean
-{
+abstract class AbstractBean {
 
-   /** . */
-   final Class<?> type;
-   
-   /** . */
-   final List<AutowireCandidateQualifier> qualifiers;
+  /** . */
+  final Class<?> type;
 
-   AbstractBean(Class<?> type, Iterable<Annotation> qualifiers)
-   {
-      List<AutowireCandidateQualifier> list = null;
-      if (qualifiers != null)
-      {
-         list = new ArrayList<AutowireCandidateQualifier>();
-         for (Annotation annotation : qualifiers)
-         {
-            Class<? extends Annotation> annotationType = annotation.annotationType();
-            AutowireCandidateQualifier md = new AutowireCandidateQualifier(annotationType.getName());
-            for (Method method : annotationType.getMethods())
-            {
-               if (method.getParameterTypes().length == 0 && method.getDeclaringClass() != Object.class)
-               {
-                  try
-                  {
-                     String attrName = method.getName();
-                     Object attrValue = method.invoke(annotation);
-                     md.addMetadataAttribute(new BeanMetadataAttribute(attrName, attrValue));
-                  }
-                  catch (Exception e)
-                  {
-                     throw new UnsupportedOperationException("handle me gracefully", e);
-                  }
-               }
+  /** . */
+  final List<AutowireCandidateQualifier> qualifiers;
+
+  AbstractBean(Class<?> type, Iterable<Annotation> qualifiers) {
+    List<AutowireCandidateQualifier> list = null;
+    if (qualifiers != null) {
+      list = new ArrayList<AutowireCandidateQualifier>();
+      for (Annotation annotation : qualifiers) {
+        Class<? extends Annotation> annotationType = annotation.annotationType();
+        AutowireCandidateQualifier md = new AutowireCandidateQualifier(annotationType.getName());
+        for (Method method : annotationType.getMethods()) {
+          if (method.getParameterTypes().length == 0 && method.getDeclaringClass() != Object.class) {
+            try {
+              String attrName = method.getName();
+              Object attrValue = method.invoke(annotation);
+              md.addMetadataAttribute(new BeanMetadataAttribute(attrName, attrValue));
             }
-            list.add(md);
-         }
+            catch (Exception e) {
+              throw new UnsupportedOperationException("handle me gracefully", e);
+            }
+          }
+        }
+        list.add(md);
       }
+    }
 
-      //
-      this.type = type;
-      this.qualifiers = list;
-   }
+    //
+    this.type = type;
+    this.qualifiers = list;
+  }
 
-   abstract void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory);
+  abstract void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory);
 
 }

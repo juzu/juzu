@@ -20,54 +20,46 @@
 package request.scope.request;
 
 import juzu.Action;
-import juzu.View;
 import juzu.Resource;
+import juzu.View;
 import juzu.test.Registry;
 
 import javax.enterprise.context.ContextNotActiveException;
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @Action
-   public void action()
-   {
-      try
-      {
-         long code = car.getIdentityHashCode();
-         Registry.set("car", code);
-         Registry.set("status", car.getStatus());
-      }
-      catch (ContextNotActiveException expected)
-      {
-      }
-   }
-
-   @Inject
-   private Car car;
-
-   @View
-   public void index()
-   {
-      Registry.set("car", car.getIdentityHashCode());
+  @Action
+  public void action() {
+    try {
+      long code = car.getIdentityHashCode();
+      Registry.set("car", code);
       Registry.set("status", car.getStatus());
-      Registry.set("action", A_.actionURL().toString());
-      Registry.set("resource", A_.resourceURL().toString());
-   }
+    }
+    catch (ContextNotActiveException expected) {
+    }
+  }
 
-   @Resource
-   public void resource()
-   {
-      try
-      {
-         long code = car.getIdentityHashCode();
-         Registry.set("car", code);
-         Registry.set("status", car.getStatus());
-      }
-      catch (ContextNotActiveException expected)
-      {
-      }
-   }
+  @Inject
+  private Car car;
+
+  @View
+  public void index() {
+    Registry.set("car", car.getIdentityHashCode());
+    Registry.set("status", car.getStatus());
+    Registry.set("action", A_.actionURL().toString());
+    Registry.set("resource", A_.resourceURL().toString());
+  }
+
+  @Resource
+  public void resource() {
+    try {
+      long code = car.getIdentityHashCode();
+      Registry.set("car", code);
+      Registry.set("status", car.getStatus());
+    }
+    catch (ContextNotActiveException expected) {
+    }
+  }
 }

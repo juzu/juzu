@@ -20,6 +20,5 @@
 package juzu.impl.spi.inject.implementationtype;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractBean
-{
+public abstract class AbstractBean {
 }

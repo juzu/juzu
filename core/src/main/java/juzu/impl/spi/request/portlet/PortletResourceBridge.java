@@ -27,28 +27,23 @@ import javax.portlet.ResourceResponse;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge
-{
+public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge {
 
-   public PortletResourceBridge(PortletBridgeContext context, ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod)
-   {
-      super(context, request, response, buffer, prod);
-   }
+  public PortletResourceBridge(PortletBridgeContext context, ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod) {
+    super(context, request, response, buffer, prod);
+  }
 
-   @Override
-   public void end(Response response) throws IllegalStateException, IOException
-   {
-      if (response instanceof Response.Content.Resource)
-      {
-         Response.Content.Resource resource = (Response.Content.Resource)response;
-         int status = resource.getStatus();
-         if (status != 200)
-         {
-            this.resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
-         }
+  @Override
+  public void end(Response response) throws IllegalStateException, IOException {
+    if (response instanceof Response.Content.Resource) {
+      Response.Content.Resource resource = (Response.Content.Resource)response;
+      int status = resource.getStatus();
+      if (status != 200) {
+        this.resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
       }
-      
-      //
-      super.end(response);
-   }
+    }
+
+    //
+    super.end(response);
+  }
 }

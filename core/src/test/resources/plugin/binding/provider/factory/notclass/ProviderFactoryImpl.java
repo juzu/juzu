@@ -24,14 +24,12 @@ import juzu.inject.ProviderFactory;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum ProviderFactoryImpl implements ProviderFactory
-{
+public enum ProviderFactoryImpl implements ProviderFactory {
 
-   FOO;
+  FOO;
 
 
-   public <T> Provider<? extends T> getProvider(Class<T> implementationType) throws Exception
-   {
-      throw new UnsupportedOperationException();
-   }
+  public <T> Provider<? extends T> getProvider(Class<T> implementationType) throws Exception {
+    throw new UnsupportedOperationException();
+  }
 }

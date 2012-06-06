@@ -28,164 +28,137 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FileKey
-{
+public class FileKey {
 
-   public static FileKey newResourceName(String packageName, String name) throws IOException
-   {
-      return new FileKey(packageName, name, JavaFileObject.Kind.OTHER);
-   }
+  public static FileKey newResourceName(String packageName, String name) throws IOException {
+    return new FileKey(packageName, name, JavaFileObject.Kind.OTHER);
+  }
 
-   public static FileKey newJavaName(String className, JavaFileObject.Kind kind) throws IOException
-   {
-      if (kind == JavaFileObject.Kind.SOURCE || kind == JavaFileObject.Kind.CLASS)
-      {
-         int pos = className.lastIndexOf('.');
-         if (pos == -1)
-         {
-            return new FileKey("", className, kind);
-         }
-         else
-         {
-            return new FileKey(className.substring(0, pos), className.substring(pos + 1), kind);
-         }
+  public static FileKey newJavaName(String className, JavaFileObject.Kind kind) throws IOException {
+    if (kind == JavaFileObject.Kind.SOURCE || kind == JavaFileObject.Kind.CLASS) {
+      int pos = className.lastIndexOf('.');
+      if (pos == -1) {
+        return new FileKey("", className, kind);
       }
-      else
-      {
-         throw new IllegalArgumentException("Kind " + kind + " not accepted");
+      else {
+        return new FileKey(className.substring(0, pos), className.substring(pos + 1), kind);
       }
-   }
+    }
+    else {
+      throw new IllegalArgumentException("Kind " + kind + " not accepted");
+    }
+  }
 
-   public static FileKey newJavaName(String packageName, String name) throws IOException
-   {
-      JavaFileObject.Kind kind;
-      if (name.endsWith(".java"))
-      {
-         kind = JavaFileObject.Kind.SOURCE;
-      }
-      else if (name.endsWith(".class"))
-      {
-         kind = JavaFileObject.Kind.CLASS;
-      }
-      else
-      {
-         throw new IllegalArgumentException("Illegal name " + name);
-      }
-      String rawName = name.substring(0, name.length() - kind.extension.length());
-      return new FileKey(packageName, rawName, kind);
-   }
+  public static FileKey newJavaName(String packageName, String name) throws IOException {
+    JavaFileObject.Kind kind;
+    if (name.endsWith(".java")) {
+      kind = JavaFileObject.Kind.SOURCE;
+    }
+    else if (name.endsWith(".class")) {
+      kind = JavaFileObject.Kind.CLASS;
+    }
+    else {
+      throw new IllegalArgumentException("Illegal name " + name);
+    }
+    String rawName = name.substring(0, name.length() - kind.extension.length());
+    return new FileKey(packageName, rawName, kind);
+  }
 
-   public static FileKey newName(String packageName, String name) throws IOException
-   {
-      JavaFileObject.Kind kind;
-      if (name.endsWith(".java"))
-      {
-         kind = JavaFileObject.Kind.SOURCE;
-      }
-      else if (name.endsWith(".class"))
-      {
-         kind = JavaFileObject.Kind.CLASS;
-      }
-      else
-      {
-         kind = JavaFileObject.Kind.OTHER;
-      }
-      String rawName = name.substring(0, name.length() - kind.extension.length());
-      return new FileKey(packageName, rawName, kind);
-   }
+  public static FileKey newName(String packageName, String name) throws IOException {
+    JavaFileObject.Kind kind;
+    if (name.endsWith(".java")) {
+      kind = JavaFileObject.Kind.SOURCE;
+    }
+    else if (name.endsWith(".class")) {
+      kind = JavaFileObject.Kind.CLASS;
+    }
+    else {
+      kind = JavaFileObject.Kind.OTHER;
+    }
+    String rawName = name.substring(0, name.length() - kind.extension.length());
+    return new FileKey(packageName, rawName, kind);
+  }
 
-   /** . */
-   public final Iterable<String> packageNames;
+  /** . */
+  public final Iterable<String> packageNames;
 
-   /** . */
-   public final Iterable<String> names;
+  /** . */
+  public final Iterable<String> names;
 
-   /** . */
-   public final String packageFQN;
+  /** . */
+  public final String packageFQN;
 
-   /** . */
-   public final String rawName;
+  /** . */
+  public final String rawName;
 
-   /** . */
-   public final String fqn;
+  /** . */
+  public final String fqn;
 
-   /** . */
-   public final String name;
+  /** . */
+  public final String name;
 
-   /** . */
-   public final URI uri;
+  /** . */
+  public final URI uri;
 
-   /** . */
-   public final JavaFileObject.Kind kind;
+  /** . */
+  public final JavaFileObject.Kind kind;
 
-   private FileKey(String packageFQN, String rawName, JavaFileObject.Kind kind) throws IOException
-   {
-      String name = rawName + kind.extension;
-      String path;
-      String fqn;
-      if (packageFQN.length() == 0)
-      {
-         path = "/" + name;
-         fqn = rawName;
-      }
-      else
-      {
-         path = "/" + packageFQN.replace('.', '/') + '/' + name;
-         fqn = packageFQN + "." + rawName;
-      }
-      try
-      {
-         String[] abc = Tools.split(packageFQN, '.', 1);
-         abc[abc.length - 1] = name;
+  private FileKey(String packageFQN, String rawName, JavaFileObject.Kind kind) throws IOException {
+    String name = rawName + kind.extension;
+    String path;
+    String fqn;
+    if (packageFQN.length() == 0) {
+      path = "/" + name;
+      fqn = rawName;
+    }
+    else {
+      path = "/" + packageFQN.replace('.', '/') + '/' + name;
+      fqn = packageFQN + "." + rawName;
+    }
+    try {
+      String[] abc = Tools.split(packageFQN, '.', 1);
+      abc[abc.length - 1] = name;
 
-         //
-         this.packageNames = new IterableArray<String>(abc, 0, abc.length - 1);
-         this.names = new IterableArray<String>(abc, 0, abc.length);
-         this.packageFQN = packageFQN;
-         this.rawName = rawName;
-         this.uri = new URI(path);
-         this.fqn = fqn;
-         this.kind = kind;
-         this.name = name;
-      }
-      catch (URISyntaxException e)
-      {
-         throw new IOException("Could not create path " + path, e);
-      }
-   }
+      //
+      this.packageNames = new IterableArray<String>(abc, 0, abc.length - 1);
+      this.names = new IterableArray<String>(abc, 0, abc.length);
+      this.packageFQN = packageFQN;
+      this.rawName = rawName;
+      this.uri = new URI(path);
+      this.fqn = fqn;
+      this.kind = kind;
+      this.name = name;
+    }
+    catch (URISyntaxException e) {
+      throw new IOException("Could not create path " + path, e);
+    }
+  }
 
-   public FileKey as(JavaFileObject.Kind kind) throws IOException
-   {
-      return new FileKey(packageFQN, rawName, kind);
-   }
+  public FileKey as(JavaFileObject.Kind kind) throws IOException {
+    return new FileKey(packageFQN, rawName, kind);
+  }
 
-   @Override
-   public final int hashCode()
-   {
-      return packageFQN.hashCode() ^ rawName.hashCode() ^ kind.hashCode();
-   }
+  @Override
+  public final int hashCode() {
+    return packageFQN.hashCode() ^ rawName.hashCode() ^ kind.hashCode();
+  }
 
-   @Override
-   public final boolean equals(Object obj)
-   {
-      if (obj == this)
-      {
-         return true;
-      }
-      else if (obj instanceof FileKey)
-      {
-         FileKey that = (FileKey)obj;
-         return packageFQN.equals(that.packageFQN) && rawName.equals(that.rawName) && kind.equals(that.kind);
-      }
-      else
-      {
-         return false;
-      }
-   }
+  @Override
+  public final boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    else if (obj instanceof FileKey) {
+      FileKey that = (FileKey)obj;
+      return packageFQN.equals(that.packageFQN) && rawName.equals(that.rawName) && kind.equals(that.kind);
+    }
+    else {
+      return false;
+    }
+  }
 
-   @Override
-   public String toString()
-   {
-      return "FileKey[packageName=" + packageFQN + ",rawName=" + rawName + ",kind=" + kind + "]";
-   }
+  @Override
+  public String toString() {
+    return "FileKey[packageName=" + packageFQN + ",rawName=" + rawName + ",kind=" + kind + "]";
+  }
 }

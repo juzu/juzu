@@ -24,14 +24,11 @@ import juzu.impl.template.ast.ASTNode;
 import juzu.template.TagHandler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ExtendedTagHandler extends TagHandler
-{
+public abstract class ExtendedTagHandler extends TagHandler {
 
-   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException
-   {
-   }
+  public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException {
+  }
 
-   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException
-   {
-   }
+  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException {
+  }
 }

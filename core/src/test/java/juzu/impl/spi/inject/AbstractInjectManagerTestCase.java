@@ -30,108 +30,91 @@ import juzu.test.AbstractInjectTestCase;
 
 import java.io.File;
 
-/**
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInjectTestCase
-{
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInjectTestCase {
 
-   /** . */
-   protected InjectBuilder bootstrap;
+  /** . */
+  protected InjectBuilder bootstrap;
 
-   /** . */
-   protected InjectManager<B, I> mgr;
+  /** . */
+  protected InjectManager<B, I> mgr;
 
-   /** . */
-   protected ReadFileSystem<?> fs;
+  /** . */
+  protected ReadFileSystem<?> fs;
 
-   /** . */
-   protected ScopingContextImpl scopingContext;
+  /** . */
+  protected ScopingContextImpl scopingContext;
 
-   public AbstractInjectManagerTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public AbstractInjectManagerTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   protected final void init() throws Exception
-   {
-      init(Tools.split(getClass().getPackage().getName(), '.'));
-   }
-   
-   protected final void init(String... pkg) throws Exception
-   {
-      File root = new File(AbstractInjectManagerTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-      assertTrue(root.exists());
-      assertTrue(root.isDirectory());
-      init(new DiskFileSystem(root, pkg), Thread.currentThread().getContextClassLoader());
-   }
+  protected final void init() throws Exception {
+    init(Tools.split(getClass().getPackage().getName(), '.'));
+  }
 
-   protected final void init(ReadFileSystem<?> fs, ClassLoader classLoader) throws Exception
-   {
-      InjectBuilder bootstrap = getManager();
-      bootstrap.addFileSystem(fs);
-      bootstrap.setClassLoader(classLoader);
-      bootstrap.setFilter(BeanFilter.DEFAULT);
+  protected final void init(String... pkg) throws Exception {
+    File root = new File(AbstractInjectManagerTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+    assertTrue(root.exists());
+    assertTrue(root.isDirectory());
+    init(new DiskFileSystem(root, pkg), Thread.currentThread().getContextClassLoader());
+  }
 
-      //
-      this.bootstrap = bootstrap;
-      this.fs = fs;
-   }
+  protected final void init(ReadFileSystem<?> fs, ClassLoader classLoader) throws Exception {
+    InjectBuilder bootstrap = getManager();
+    bootstrap.addFileSystem(fs);
+    bootstrap.setClassLoader(classLoader);
+    bootstrap.setFilter(BeanFilter.DEFAULT);
 
-   protected final void boot(Scope... scopes) throws Exception
-   {
-      for (Scope scope : scopes)
-      {
-         bootstrap.addScope(scope);
-      }
-      mgr = bootstrap.create();
-   }
+    //
+    this.bootstrap = bootstrap;
+    this.fs = fs;
+  }
 
-   protected final <T> T getBean(Class<T> beanType) throws Exception
-   {
-      B bean = mgr.resolveBean(beanType);
-      assertNotNull("Could not resolve bean of type " + beanType, bean);
-      I beanInstance = mgr.create(bean);
-      assertNotNull("Could not create bean instance of type " + beanType + " from bean " + bean, beanInstance);
-      Object o = mgr.get(bean, beanInstance);
-      assertNotNull("Could not obtain bean object from bean instance " + beanInstance + " of type " + beanType, o);
-      return beanType.cast(o);
-   }
+  protected final void boot(Scope... scopes) throws Exception {
+    for (Scope scope : scopes) {
+      bootstrap.addScope(scope);
+    }
+    mgr = bootstrap.create();
+  }
 
-   protected final Object getBean(String beanName) throws Exception
-   {
-      B bean = mgr.resolveBean(beanName);
-      assertNotNull("Could not find bean " + beanName, bean);
-      I beanInstance = mgr.create(bean);
-      assertNotNull(beanInstance);
-      return mgr.get(bean, beanInstance);
-   }
+  protected final <T> T getBean(Class<T> beanType) throws Exception {
+    B bean = mgr.resolveBean(beanType);
+    assertNotNull("Could not resolve bean of type " + beanType, bean);
+    I beanInstance = mgr.create(bean);
+    assertNotNull("Could not create bean instance of type " + beanType + " from bean " + bean, beanInstance);
+    Object o = mgr.get(bean, beanInstance);
+    assertNotNull("Could not obtain bean object from bean instance " + beanInstance + " of type " + beanType, o);
+    return beanType.cast(o);
+  }
 
-   protected final void beginScoping() throws Exception
-   {
-      if (scopingContext != null)
-      {
-         throw failure("Already scoping");
-      }
-      ScopeController.begin(scopingContext = new ScopingContextImpl());
-   }
-   
-   protected final void endScoping() throws Exception
-   {
-      if (scopingContext == null)
-      {
-         throw failure("Not scoping");
-      }
-      ScopeController.end();
-      for (Scoped scoped : scopingContext.getEntries().values())
-      {
-         scoped.destroy();
-      }
-      scopingContext = null;
-   }
+  protected final Object getBean(String beanName) throws Exception {
+    B bean = mgr.resolveBean(beanName);
+    assertNotNull("Could not find bean " + beanName, bean);
+    I beanInstance = mgr.create(bean);
+    assertNotNull(beanInstance);
+    return mgr.get(bean, beanInstance);
+  }
 
-   protected final InjectBuilder getManager() throws Exception
-   {
-      return getDI().bootstrap();
-   }
+  protected final void beginScoping() throws Exception {
+    if (scopingContext != null) {
+      throw failure("Already scoping");
+    }
+    ScopeController.begin(scopingContext = new ScopingContextImpl());
+  }
+
+  protected final void endScoping() throws Exception {
+    if (scopingContext == null) {
+      throw failure("Not scoping");
+    }
+    ScopeController.end();
+    for (Scoped scoped : scopingContext.getEntries().values()) {
+      scoped.destroy();
+    }
+    scopingContext = null;
+  }
+
+  protected final InjectBuilder getManager() throws Exception {
+    return getDI().bootstrap();
+  }
 }

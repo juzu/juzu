@@ -5,18 +5,15 @@ package juzu.impl.inject;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface Scoped
-{
+public interface Scoped {
 
-   /**
-    * Returns the scoped value.
-    *
-    * @return the value
-    */
-   Object get();
+  /**
+   * Returns the scoped value.
+   *
+   * @return the value
+   */
+  Object get();
 
-   /**
-    * Signals the scoped value is destroyed.
-    */
-   void destroy();
+  /** Signals the scoped value is destroyed. */
+  void destroy();
 }

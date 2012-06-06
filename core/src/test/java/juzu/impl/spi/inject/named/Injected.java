@@ -26,24 +26,21 @@ import javax.inject.Named;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class Injected
-{
+public class Injected {
 
-   @Inject
-   @Named("foo")
-   private Bean foo;
+  @Inject
+  @Named("foo")
+  private Bean foo;
 
-   @Inject
-   @Named("bar")
-   private Bean bar;
+  @Inject
+  @Named("bar")
+  private Bean bar;
 
-   public Bean getFoo()
-   {
-      return foo;
-   }
+  public Bean getFoo() {
+    return foo;
+  }
 
-   public Bean getBar()
-   {
-      return bar;
-   }
+  public Bean getBar() {
+    return bar;
+  }
 }

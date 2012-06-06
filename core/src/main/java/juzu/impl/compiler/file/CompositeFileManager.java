@@ -27,69 +27,56 @@ import java.util.Collection;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompositeFileManager extends FileManager
-{
+public class CompositeFileManager extends FileManager {
 
-   /** . */
-   private FileManager[] components;
+  /** . */
+  private FileManager[] components;
 
-   public CompositeFileManager(Collection<SimpleFileSystem<?>> fsList)
-   {
-      FileManager[] components = new FileManager[fsList.size()];
-      int index = 0;
-      for (SimpleFileSystem<?> fs : fsList)
-      {
-         components[index++] = SimpleFileManager.wrap(fs);
+  public CompositeFileManager(Collection<SimpleFileSystem<?>> fsList) {
+    FileManager[] components = new FileManager[fsList.size()];
+    int index = 0;
+    for (SimpleFileSystem<?> fs : fsList) {
+      components[index++] = SimpleFileManager.wrap(fs);
+    }
+
+    //
+    this.components = components;
+  }
+
+  @Override
+  public JavaFileObject getReadable(FileKey key) throws IOException {
+    for (FileManager component : components) {
+      JavaFileObject readable = component.getReadable(key);
+      if (readable != null) {
+        return readable;
       }
+    }
+    return null;
+  }
 
-      //
-      this.components = components;
-   }
-
-   @Override
-   public JavaFileObject getReadable(FileKey key) throws IOException
-   {
-      for (FileManager component : components)
-      {
-         JavaFileObject readable = component.getReadable(key);
-         if (readable != null)
-         {
-            return readable;
-         }
+  @Override
+  public JavaFileObject getWritable(FileKey key) throws IOException {
+    for (FileManager component : components) {
+      JavaFileObject writable = component.getWritable(key);
+      if (writable != null) {
+        return writable;
       }
-      return null;
-   }
+    }
+    return null;
+  }
 
-   @Override
-   public JavaFileObject getWritable(FileKey key) throws IOException
-   {
-      for (FileManager component : components)
-      {
-         JavaFileObject writable = component.getWritable(key);
-         if (writable != null)
-         {
-            return writable;
-         }
-      }
-      return null;
-   }
+  @Override
+  public <C extends Collection<JavaFileObject>> C list(String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse, C to) throws IOException {
+    for (FileManager component : components) {
+      component.list(packageName, kinds, recurse, to);
+    }
+    return to;
+  }
 
-   @Override
-   public <C extends Collection<JavaFileObject>> C list(String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse, C to) throws IOException
-   {
-      for (FileManager component : components)
-      {
-         component.list(packageName, kinds, recurse, to);
-      }
-      return to;
-   }
-
-   @Override
-   public void clearCache()
-   {
-      for (FileManager component : components)
-      {
-         component.clearCache();
-      }
-   }
+  @Override
+  public void clearCache() {
+    for (FileManager component : components) {
+      component.clearCache();
+    }
+  }
 }

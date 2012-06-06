@@ -5,148 +5,124 @@ import juzu.impl.utils.JSON;
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Key<O extends MetaModelObject> implements Serializable
-{
-   
-   public static <O extends MetaModelObject> Key<O> of(Object value, Class<O> type)
-   {
-      return new Wrapper<O>(value, type);
-   }
+public abstract class Key<O extends MetaModelObject> implements Serializable {
 
-   public static <O extends MetaModelObject> Key<O> of(Class<O> type)
-   {
-      return new Literal<O>(type);
-   }
-   
-   public abstract JSON toJSON();
+  public static <O extends MetaModelObject> Key<O> of(Object value, Class<O> type) {
+    return new Wrapper<O>(value, type);
+  }
 
-   protected abstract Class<O> getType();
+  public static <O extends MetaModelObject> Key<O> of(Class<O> type) {
+    return new Literal<O>(type);
+  }
 
-   @Override
-   public abstract boolean equals(Object obj);
+  public abstract JSON toJSON();
 
-   @Override
-   public abstract int hashCode();
+  protected abstract Class<O> getType();
 
-   private static final class Literal<O extends MetaModelObject> extends Key<O>
-   {
+  @Override
+  public abstract boolean equals(Object obj);
 
-      /** . */
-      private final Class<O> type;
-      
-      private Literal(Class<O> type) throws NullPointerException
-      {
-         if (type == null)
-         {
-            throw new NullPointerException("No null type accepted");
-         }
+  @Override
+  public abstract int hashCode();
 
-         //
-         this.type = type;
+  private static final class Literal<O extends MetaModelObject> extends Key<O> {
+
+    /** . */
+    private final Class<O> type;
+
+    private Literal(Class<O> type) throws NullPointerException {
+      if (type == null) {
+        throw new NullPointerException("No null type accepted");
       }
 
-      @Override
-      public JSON toJSON()
-      {
-         return new JSON().set("type", type.getName());
+      //
+      this.type = type;
+    }
+
+    @Override
+    public JSON toJSON() {
+      return new JSON().set("type", type.getName());
+    }
+
+    @Override
+    protected Class<O> getType() {
+      return type;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (obj instanceof Literal<?>) {
+        Literal<?> that = (Literal<?>)obj;
+        return type.equals(that.type);
+      }
+      return false;
+    }
+
+    @Override
+    public int hashCode() {
+      return type.hashCode();
+    }
+
+    @Override
+    public String toString() {
+      return getClass().getSimpleName() + "[" + type.getName() + "]";
+    }
+  }
+
+  private static final class Wrapper<O extends MetaModelObject> extends Key<O> {
+
+    /** . */
+    private final Object value;
+
+    /** . */
+    private final Class<O> type;
+
+    private Wrapper(Object value, Class<O> type) throws NullPointerException {
+      if (value == null) {
+        throw new NullPointerException("No null value accepted");
+      }
+      if (type == null) {
+        throw new NullPointerException("No null type accepted");
       }
 
-      @Override
-      protected Class<O> getType()
-      {
-         return type;
+      //
+      this.value = value;
+      this.type = type;
+    }
+
+    @Override
+    protected Class<O> getType() {
+      return type;
+    }
+
+    @Override
+    public JSON toJSON() {
+      return new JSON().set("value", value).set("type", type.getName());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
       }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         if (obj instanceof Literal<?>)
-         {
-            Literal<?> that = (Literal<?>)obj;
-            return type.equals(that.type);
-         }
-         return false;
+      if (obj instanceof Wrapper<?>) {
+        Wrapper<?> that = (Wrapper<?>)obj;
+        return value.equals(that.value) && type.equals(that.type);
       }
+      return false;
+    }
 
-      @Override
-      public int hashCode()
-      {
-         return type.hashCode();
-      }
+    @Override
+    public int hashCode() {
+      return value.hashCode() ^ type.hashCode();
+    }
 
-      @Override
-      public String toString()
-      {
-         return getClass().getSimpleName() + "[" + type.getName() + "]";
-      }
-   }
-   
-   private static final class Wrapper<O extends MetaModelObject> extends Key<O>
-   {
-
-      /** . */
-      private final Object value;
-
-      /** . */
-      private final Class<O> type;
-
-      private Wrapper(Object value, Class<O> type) throws NullPointerException
-      {
-         if (value == null)
-         {
-            throw new NullPointerException("No null value accepted");
-         }
-         if (type == null)
-         {
-            throw new NullPointerException("No null type accepted");
-         }
-
-         //
-         this.value = value;
-         this.type = type;
-      }
-
-      @Override
-      protected Class<O> getType()
-      {
-         return type;  
-      }
-
-      @Override
-      public JSON toJSON()
-      {
-         return new JSON().set("value", value).set("type", type.getName());
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         if (obj instanceof Wrapper<?>)
-         {
-            Wrapper<?> that = (Wrapper<?>)obj;
-            return value.equals(that.value) && type.equals(that.type);
-         }
-         return false;  
-      }
-
-      @Override
-      public int hashCode()
-      {
-         return value.hashCode() ^ type.hashCode();
-      }
-
-      @Override
-      public String toString()
-      {
-         return getClass().getSimpleName() + "[value=" + value + ",type=" + type.getName() + "]";
-      }
-   }
+    @Override
+    public String toString() {
+      return getClass().getSimpleName() + "[value=" + value + ",type=" + type.getName() + "]";
+    }
+  }
 }

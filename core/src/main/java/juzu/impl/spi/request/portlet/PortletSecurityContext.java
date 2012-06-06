@@ -25,29 +25,24 @@ import javax.portlet.PortletRequest;
 import java.security.Principal;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletSecurityContext implements SecurityContext
-{
+public class PortletSecurityContext implements SecurityContext {
 
-   /** . */
-   private final PortletRequest request;
+  /** . */
+  private final PortletRequest request;
 
-   public PortletSecurityContext(PortletRequest request)
-   {
-      this.request = request;
-   }
+  public PortletSecurityContext(PortletRequest request) {
+    this.request = request;
+  }
 
-   public String getRemoteUser()
-   {
-      return request.getRemoteUser();
-   }
+  public String getRemoteUser() {
+    return request.getRemoteUser();
+  }
 
-   public Principal getUserPrincipal()
-   {
-      return request.getUserPrincipal();
-   }
+  public Principal getUserPrincipal() {
+    return request.getUserPrincipal();
+  }
 
-   public boolean isUserInRole(String role)
-   {
-      return request.isUserInRole(role);
-   }
+  public boolean isUserInRole(String role) {
+    return request.isUserInRole(role);
+  }
 }

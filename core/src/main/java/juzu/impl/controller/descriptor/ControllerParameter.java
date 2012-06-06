@@ -28,109 +28,93 @@ import juzu.impl.utils.Tools;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ControllerParameter
-{
+public class ControllerParameter {
 
-   /** . */
-   private final String name;
+  /** . */
+  private final String name;
 
-   /** . */
-   private final Cardinality cardinality;
+  /** . */
+  private final Cardinality cardinality;
 
-   /** . */
-   private final String value;
+  /** . */
+  private final String value;
 
-   /** . */
-   private final Class<?> type;
+  /** . */
+  private final Class<?> type;
 
-   public ControllerParameter(String name, Cardinality cardinality) throws NullPointerException
-   {
-      this(name, cardinality, null);
-   }
+  public ControllerParameter(String name, Cardinality cardinality) throws NullPointerException {
+    this(name, cardinality, null);
+  }
 
-   public ControllerParameter(String name, Cardinality cardinality, String value) throws NullPointerException
-   {
-      this(name, cardinality, value, null);
-   }
+  public ControllerParameter(String name, Cardinality cardinality, String value) throws NullPointerException {
+    this(name, cardinality, value, null);
+  }
 
-   public ControllerParameter(String name, Cardinality cardinality, String value, Class<?> type) throws NullPointerException
-   {
-      if (name == null)
-      {
-         throw new NullPointerException("No null parameter name accepted");
-      }
-      if (cardinality == null)
-      {
-         throw new NullPointerException("No null parameter cardinality accepted");
-      }
+  public ControllerParameter(String name, Cardinality cardinality, String value, Class<?> type) throws NullPointerException {
+    if (name == null) {
+      throw new NullPointerException("No null parameter name accepted");
+    }
+    if (cardinality == null) {
+      throw new NullPointerException("No null parameter cardinality accepted");
+    }
 
-      //
-      this.name = name;
-      this.cardinality = cardinality;
-      this.value = value;
-      this.type = type;
-   }
+    //
+    this.name = name;
+    this.cardinality = cardinality;
+    this.value = value;
+    this.type = type;
+  }
 
-   /**
-    * Returns the parameter name.
-    *
-    * @return the parameter name
-    */
-   public String getName()
-   {
-      return name;
-   }
+  /**
+   * Returns the parameter name.
+   *
+   * @return the parameter name
+   */
+  public String getName() {
+    return name;
+  }
 
-   /**
-    * Returns the parameter cardinality.
-    *
-    * @return the parameter cardinality
-    */
-   public Cardinality getCardinality()
-   {
-      return cardinality;
-   }
+  /**
+   * Returns the parameter cardinality.
+   *
+   * @return the parameter cardinality
+   */
+  public Cardinality getCardinality() {
+    return cardinality;
+  }
 
-   /**
-    * Returns the value matched by a controller parameter or null if the parameter can match any value.
-    *
-    * @return the parameter value
-    */
-   public String getValue()
-   {
-      return value;
-   }
+  /**
+   * Returns the value matched by a controller parameter or null if the parameter can match any value.
+   *
+   * @return the parameter value
+   */
+  public String getValue() {
+    return value;
+  }
 
-   public Class<?> getType()
-   {
-      return type;
-   }
+  public Class<?> getType() {
+    return type;
+  }
 
-   void setValue(ParameterMap builder, Object value)
-   {
-   }
+  void setValue(ParameterMap builder, Object value) {
+  }
 
   @Override
-   public boolean equals(Object obj)
-   {
-      if (obj == this)
-      {
-         return true;
-      }
-      else if (obj instanceof ControllerParameter)
-      {
-         ControllerParameter that = (ControllerParameter)obj;
-         return name.equals(that.name) && Tools.safeEquals(value, that.value);
-      }
-      else
-      {
-         return false;
-      }
-   }
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    else if (obj instanceof ControllerParameter) {
+      ControllerParameter that = (ControllerParameter)obj;
+      return name.equals(that.name) && Tools.safeEquals(value, that.value);
+    }
+    else {
+      return false;
+    }
+  }
 
-   @Override
-   public String toString()
-   {
-      return "ControllerParameter[name=" + name + ",value=" + value + "]";
-   }
+  @Override
+  public String toString() {
+    return "ControllerParameter[name=" + name + ",value=" + value + "]";
+  }
 }

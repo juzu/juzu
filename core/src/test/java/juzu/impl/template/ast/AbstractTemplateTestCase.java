@@ -19,11 +19,11 @@
 
 package juzu.impl.template.ast;
 
+import juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
+import juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import juzu.impl.template.compiler.EmitContext;
 import juzu.impl.template.compiler.EmitPhase;
 import juzu.impl.utils.MethodInvocation;
-import juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
-import juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
 import juzu.io.AppendableStream;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
@@ -38,71 +38,57 @@ import java.util.Map;
 import java.util.Random;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractTemplateTestCase extends AbstractTestCase
-{
+public abstract class AbstractTemplateTestCase extends AbstractTestCase {
 
-   public GroovyTemplateStub template(final String text) throws IOException
-   {
-      GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
-      try
-      {
-         EmitPhase tcc = new EmitPhase(new EmitContext()
-         {
-            @Override
-            public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap)
-            {
-               if (parameterMap.size() > 0)
-               {
-                  throw failure("Unexpected non empty parameter map");
-               }
-               Class clazz = AbstractTemplateTestCase.this.getClass();
-               try
-               {
-                  Method m = clazz.getMethod(methodName);
-                  return new MethodInvocation(clazz.getName(), m.getName(), Collections.<String>emptyList());
-               }
-               catch (NoSuchMethodException e)
-               {
-                  // Should we thrown a CompilationException instead ?
-                  throw failure(e);
-               }
-            }
-         });
-         tcc.emit(generator, ASTNode.Template.parse(text));
-      }
-      catch (juzu.impl.template.ast.ParseException e)
-      {
-         throw failure(e);
-      }
-      return generator.build("template_" + Math.abs(new Random().nextLong()));
-   }
+  public GroovyTemplateStub template(final String text) throws IOException {
+    GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
+    try {
+      EmitPhase tcc = new EmitPhase(new EmitContext() {
+        @Override
+        public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) {
+          if (parameterMap.size() > 0) {
+            throw failure("Unexpected non empty parameter map");
+          }
+          Class clazz = AbstractTemplateTestCase.this.getClass();
+          try {
+            Method m = clazz.getMethod(methodName);
+            return new MethodInvocation(clazz.getName(), m.getName(), Collections.<String>emptyList());
+          }
+          catch (NoSuchMethodException e) {
+            // Should we thrown a CompilationException instead ?
+            throw failure(e);
+          }
+        }
+      });
+      tcc.emit(generator, ASTNode.Template.parse(text));
+    }
+    catch (juzu.impl.template.ast.ParseException e) {
+      throw failure(e);
+    }
+    return generator.build("template_" + Math.abs(new Random().nextLong()));
+  }
 
-   public String render(String template) throws IOException, TemplateExecutionException
-   {
-      return render(template, null, null);
-   }
+  public String render(String template) throws IOException, TemplateExecutionException {
+    return render(template, null, null);
+  }
 
-   public String render(String template, Locale locale) throws IOException, TemplateExecutionException
-   {
-      return render(template, null, locale);
-   }
+  public String render(String template, Locale locale) throws IOException, TemplateExecutionException {
+    return render(template, null, locale);
+  }
 
-   public String render(String template, Map<String, ?> attributes) throws IOException, TemplateExecutionException
-   {
-      return render(template, attributes, null);
-   }
+  public String render(String template, Map<String, ?> attributes) throws IOException, TemplateExecutionException {
+    return render(template, attributes, null);
+  }
 
-   public String render(String text, Map<String, ?> attributes, Locale locale) throws IOException, TemplateExecutionException
-   {
-      StringWriter out = new StringWriter();
-      render(text, attributes, locale, out);
-      return out.toString();
-   }
+  public String render(String text, Map<String, ?> attributes, Locale locale) throws IOException, TemplateExecutionException {
+    StringWriter out = new StringWriter();
+    render(text, attributes, locale, out);
+    return out.toString();
+  }
 
-   public void render(String text, Map<String, ?> attributes, Locale locale, Appendable appendable) throws IOException, TemplateExecutionException
-   {
-      GroovyTemplateStub template = template(text);
-      TemplateRenderContext renderContext = new TemplateRenderContext(template, null, attributes, locale);
-      renderContext.render(new AppendableStream(appendable));
-   }
+  public void render(String text, Map<String, ?> attributes, Locale locale, Appendable appendable) throws IOException, TemplateExecutionException {
+    GroovyTemplateStub template = template(text);
+    TemplateRenderContext renderContext = new TemplateRenderContext(template, null, attributes, locale);
+    renderContext.render(new AppendableStream(appendable));
+  }
 }

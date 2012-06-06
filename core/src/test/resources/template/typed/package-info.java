@@ -1,4 +1,3 @@
-@Application
-package template.typed;
+@Application package template.typed;
 
 import juzu.Application;

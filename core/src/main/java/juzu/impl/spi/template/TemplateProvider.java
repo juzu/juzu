@@ -24,13 +24,12 @@ package juzu.impl.spi.template;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class TemplateProvider
-{
+public abstract class TemplateProvider {
 
-   public abstract Class<? extends TemplateStub> getTemplateStubType();
+  public abstract Class<? extends TemplateStub> getTemplateStubType();
 
-   public abstract TemplateEmitter createEmitter();
+  public abstract TemplateEmitter createEmitter();
 
-   public abstract String getTargetExtension();
+  public abstract String getTargetExtension();
 
 }

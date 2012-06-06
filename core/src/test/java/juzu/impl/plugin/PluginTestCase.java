@@ -19,45 +19,41 @@
 
 package juzu.impl.plugin;
 
-import org.junit.Test;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.Registry;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PluginTestCase extends AbstractInjectTestCase
-{
+public class PluginTestCase extends AbstractInjectTestCase {
 
-   public PluginTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public PluginTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testLifeCycle() throws Exception
-   {
-      Registry.unset("plugin.impl.lifecycle");
+  @Test
+  public void testLifeCycle() throws Exception {
+    Registry.unset("plugin.impl.lifecycle");
 
-      MockApplication<?> app = application("plugin", "impl", "lifecycle").declareBean("plugin.impl.lifecycle.LifeCycleImpl").init();
-      assertEquals("created", Registry.get("plugin.impl.lifecycle"));
+    MockApplication<?> app = application("plugin", "impl", "lifecycle").declareBean("plugin.impl.lifecycle.LifeCycleImpl").init();
+    assertEquals("created", Registry.get("plugin.impl.lifecycle"));
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals("after", Registry.get("plugin.impl.lifecycle"));
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    assertEquals("after", Registry.get("plugin.impl.lifecycle"));
+  }
 
-   @Test
-   public void testFailure() throws Exception
-   {
-      MockApplication<?> app = application("plugin", "impl", "failure").declareBean("plugin.impl.failure.FailureLifeCycle").init();
+  @Test
+  public void testFailure() throws Exception {
+    MockApplication<?> app = application("plugin", "impl", "failure").declareBean("plugin.impl.failure.FailureLifeCycle").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals("pass", render.assertStringResult());
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    assertEquals("pass", render.assertStringResult());
+  }
 }

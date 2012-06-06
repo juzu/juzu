@@ -25,16 +25,13 @@ import juzu.View;
 import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   public A()
-   {
-      throw new ConcurrentModificationException();
-   }
+  public A() {
+    throw new ConcurrentModificationException();
+  }
 
-   @View
-   public void index() throws Exception
-   {
-   }
+  @View
+  public void index() throws Exception {
+  }
 }

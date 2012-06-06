@@ -27,37 +27,31 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   @View(id = "none")
-   public Response.Content none() throws IOException
-   {
-      return Response.content(A_.mvURL(null).toString());
-   }
+  @View(id = "none")
+  public Response.Content none() throws IOException {
+    return Response.content(A_.mvURL(null).toString());
+  }
 
-   @View(id = "0")
-   public Response.Content zero() throws IOException
-   {
-      return Response.content(A_.mvURL(new String[]{}).toString());
-   }
+  @View(id = "0")
+  public Response.Content zero() throws IOException {
+    return Response.content(A_.mvURL(new String[]{}).toString());
+  }
 
-   @View(id = "1")
-   public Response.Content one() throws IOException
-   {
-      return Response.content(A_.mvURL(new String[]{"bar"}).toString());
-   }
+  @View(id = "1")
+  public Response.Content one() throws IOException {
+    return Response.content(A_.mvURL(new String[]{"bar"}).toString());
+  }
 
-   @View(id = "2")
-   public Response.Content two() throws IOException
-   {
-      return Response.content(A_.mvURL(new String[]{"bar_1", "bar_2"}).toString());
-   }
+  @View(id = "2")
+  public Response.Content two() throws IOException {
+    return Response.content(A_.mvURL(new String[]{"bar_1", "bar_2"}).toString());
+  }
 
-   @View
-   public Response.Content mv(String[] foo) throws IOException
-   {
-      String s = foo != null ? Arrays.<String>asList((String[])foo).toString() : "";
-      return Response.content(s);
-   }
+  @View
+  public Response.Content mv(String[] foo) throws IOException {
+    String s = foo != null ? Arrays.<String>asList((String[])foo).toString() : "";
+    return Response.content(s);
+  }
 }

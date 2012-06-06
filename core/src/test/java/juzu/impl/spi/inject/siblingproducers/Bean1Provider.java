@@ -26,12 +26,10 @@ import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class Bean1Provider implements Provider<Bean1>
-{
+public class Bean1Provider implements Provider<Bean1> {
 
-   @Produces
-   public Bean1 get()
-   {
-      return new Bean1();
-   }
+  @Produces
+  public Bean1 get() {
+    return new Bean1();
+  }
 }

@@ -23,43 +23,41 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlLink;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.UserAgent;
 import juzu.test.protocol.mock.MockApplication;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AbsoluteServerLocationTestCase extends AbstractHttpTestCase
-{
+public class AbsoluteServerLocationTestCase extends AbstractHttpTestCase {
 
-   @Test
-   public void testSatisfied() throws Exception
-   {
-      MockApplication<?> app = assertDeploy("plugin", "asset", "location", "absoluteserver");
+  @Test
+  public void testSatisfied() throws Exception {
+    MockApplication<?> app = assertDeploy("plugin", "asset", "location", "absoluteserver");
 
-      //
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
+    //
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
 
-      // Script
-      HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
-      trigger.click();
-      List<String> alerts = ua.getAlerts(page);
-      assertEquals(Arrays.asList("OK MEN"), alerts);
+    // Script
+    HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
+    trigger.click();
+    List<String> alerts = ua.getAlerts(page);
+    assertEquals(Arrays.asList("OK MEN"), alerts);
 
-      // CSS
-      List<HtmlElement> links = page.getElementsByTagName("link");
-      assertEquals(2, links.size());
-      HtmlLink link1 = (HtmlLink)links.get(0);
-      assertEquals("stylesheet", link1.getRelAttribute());
-      assertEquals("/juzu/main.css", link1.getHrefAttribute());
-      assertEquals("text/css", link1.getTypeAttribute());
-      HtmlLink link2 = (HtmlLink)links.get(1);
-      assertEquals("stylesheet", link2.getRelAttribute());
-      assertEquals("/juzu/main.less", link2.getHrefAttribute());
-      assertEquals("text/less", link2.getTypeAttribute());
-   }
+    // CSS
+    List<HtmlElement> links = page.getElementsByTagName("link");
+    assertEquals(2, links.size());
+    HtmlLink link1 = (HtmlLink)links.get(0);
+    assertEquals("stylesheet", link1.getRelAttribute());
+    assertEquals("/juzu/main.css", link1.getHrefAttribute());
+    assertEquals("text/css", link1.getTypeAttribute());
+    HtmlLink link2 = (HtmlLink)links.get(1);
+    assertEquals("stylesheet", link2.getRelAttribute());
+    assertEquals("/juzu/main.less", link2.getHrefAttribute());
+    assertEquals("text/less", link2.getTypeAttribute());
+  }
 }

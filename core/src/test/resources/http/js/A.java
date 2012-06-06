@@ -23,13 +23,11 @@ import juzu.Response;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-   
-   @View
-   public Response.Content index(String p)
-   {
-      String content = "<script>alert('foo');</script>";
-      return Response.render(content);
-   }
+public class A {
+
+  @View
+  public Response.Content index(String p) {
+    String content = "<script>alert('foo');</script>";
+    return Response.render(content);
+  }
 }

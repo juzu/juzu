@@ -18,8 +18,7 @@
  */
 
 @Application
-@Bindings(@Binding(value = Bean.class, scope = Scope.REQUEST))
-package plugin.binding.scope;
+@Bindings(@Binding(value = Bean.class, scope = Scope.REQUEST)) package plugin.binding.scope;
 
 import juzu.Application;
 import juzu.Scope;

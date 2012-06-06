@@ -24,12 +24,12 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation declares a java type to be a valid controller method parameter type:
- *
+ * <p/>
  * <code><pre>
  *    public class Controller {
  *       &#064;View public Response.Render display(User user) { ...}
  *    }
- *
+ * <p/>
  *    &#064;Param
  *    public class User {
  *       ...
@@ -40,6 +40,5 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Param
-{
+public @interface Param {
 }

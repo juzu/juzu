@@ -38,161 +38,137 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class AbstractBean implements Bean
-{
+abstract class AbstractBean implements Bean {
 
-   /** . */
-   static final Annotation DEFAULT_QUALIFIER = new AnnotationLiteral<Default>() {};
+  /** . */
+  static final Annotation DEFAULT_QUALIFIER = new AnnotationLiteral<Default>() {
+  };
 
-   /** . */
-   static final Annotation ANY_QUALIFIER = new AnnotationLiteral<Any>() {};
+  /** . */
+  static final Annotation ANY_QUALIFIER = new AnnotationLiteral<Any>() {
+  };
 
-   /** . */
-   protected final Class<?> type;
+  /** . */
+  protected final Class<?> type;
 
-   /** . */
-   protected final Set<Annotation> qualifiers;
+  /** . */
+  protected final Set<Annotation> qualifiers;
 
-   /** . */
-   private Class<? extends Annotation> scope;
+  /** . */
+  private Class<? extends Annotation> scope;
 
-   /** . */
-   private final Set<Type> types;
+  /** . */
+  private final Set<Type> types;
 
-   /** . */
-   protected BeanManager manager;
+  /** . */
+  protected BeanManager manager;
 
-   /** . */
-   private String name;
+  /** . */
+  private String name;
 
-   AbstractBean(Class<?> type, juzu.Scope scope, Iterable<Annotation> qualifiers)
-   {
-      HashSet<Type> types = new HashSet<Type>();
-      collectSuperTypes(type, types);
+  AbstractBean(Class<?> type, juzu.Scope scope, Iterable<Annotation> qualifiers) {
+    HashSet<Type> types = new HashSet<Type>();
+    collectSuperTypes(type, types);
 
-      // Determine scope
-      Class<? extends Annotation> scopeAnnotation = null;
-      if (scope != null)
-      {
-         scopeAnnotation = scope.getAnnotationType();
+    // Determine scope
+    Class<? extends Annotation> scopeAnnotation = null;
+    if (scope != null) {
+      scopeAnnotation = scope.getAnnotationType();
+    }
+    else {
+      for (Annotation annotation : type.getAnnotations()) {
+        Class<? extends Annotation> annotationType = annotation.annotationType();
+        if (annotationType.getAnnotation(Scope.class) != null) {
+          scopeAnnotation = annotationType;
+          break;
+        }
       }
-      else
-      {
-         for (Annotation annotation : type.getAnnotations())
-         {
-            Class<? extends Annotation> annotationType = annotation.annotationType();
-            if (annotationType.getAnnotation(Scope.class) != null)
-            {
-               scopeAnnotation = annotationType;
-               break;
-            }
-         }
-         if (scopeAnnotation == null)
-         {
-            scopeAnnotation = Dependent.class;
-         }
+      if (scopeAnnotation == null) {
+        scopeAnnotation = Dependent.class;
       }
+    }
 
-      // Build the qualifier map
-      Map<Class<? extends Annotation>, Annotation> qualifierMap = new HashMap<Class<? extends Annotation>, Annotation>();
-      if (qualifiers != null)
-      {
-         for (Annotation qualifier : qualifiers)
-         {
-            qualifierMap.put(qualifier.annotationType(), qualifier);
-         }
+    // Build the qualifier map
+    Map<Class<? extends Annotation>, Annotation> qualifierMap = new HashMap<Class<? extends Annotation>, Annotation>();
+    if (qualifiers != null) {
+      for (Annotation qualifier : qualifiers) {
+        qualifierMap.put(qualifier.annotationType(), qualifier);
       }
-      else
-      {
-         // Introspect qualifiers if the qualifiers were not set
-         for (Annotation annotation : type.getAnnotations())
-         {
-            if (annotation.annotationType().getAnnotation(Qualifier.class) != null)
-            {
-               qualifierMap.put(annotation.annotationType(), annotation);
-            }
-         }
+    }
+    else {
+      // Introspect qualifiers if the qualifiers were not set
+      for (Annotation annotation : type.getAnnotations()) {
+        if (annotation.annotationType().getAnnotation(Qualifier.class) != null) {
+          qualifierMap.put(annotation.annotationType(), annotation);
+        }
       }
-      qualifierMap.put(Default.class, AbstractBean.DEFAULT_QUALIFIER);
-      qualifierMap.put(Any.class, AbstractBean.ANY_QUALIFIER);
-      
-      //
-      String name = null;
-      Annotation named = qualifierMap.get(Named.class);
-      if (named != null)
-      {
-         name = ((Named)named).value();
-      }
+    }
+    qualifierMap.put(Default.class, AbstractBean.DEFAULT_QUALIFIER);
+    qualifierMap.put(Any.class, AbstractBean.ANY_QUALIFIER);
 
-      //
-      this.type = type;
-      this.types = types;
-      this.qualifiers = Collections.unmodifiableSet(new HashSet<Annotation>(qualifierMap.values()));
-      this.name = name;
-      this.scope = scopeAnnotation;
-   }
+    //
+    String name = null;
+    Annotation named = qualifierMap.get(Named.class);
+    if (named != null) {
+      name = ((Named)named).value();
+    }
 
-   private void collectSuperTypes(Class<?> type, HashSet<Type> superTypes)
-   {
-      superTypes.add(type);
-      Class<?> superClassType = type.getSuperclass();
-      if (superClassType != null)
-      {
-         collectSuperTypes(superClassType, superTypes);
-      }
-      for (Class<?> interfaceType : type.getInterfaces())
-      {
-         collectSuperTypes(interfaceType, superTypes);
-      }
-   }
+    //
+    this.type = type;
+    this.types = types;
+    this.qualifiers = Collections.unmodifiableSet(new HashSet<Annotation>(qualifierMap.values()));
+    this.name = name;
+    this.scope = scopeAnnotation;
+  }
 
-   void register(BeanManager manager)
-   {
-      this.manager = manager;
-   }
+  private void collectSuperTypes(Class<?> type, HashSet<Type> superTypes) {
+    superTypes.add(type);
+    Class<?> superClassType = type.getSuperclass();
+    if (superClassType != null) {
+      collectSuperTypes(superClassType, superTypes);
+    }
+    for (Class<?> interfaceType : type.getInterfaces()) {
+      collectSuperTypes(interfaceType, superTypes);
+    }
+  }
 
-   public final Set<Type> getTypes()
-   {
-      return types;
-   }
+  void register(BeanManager manager) {
+    this.manager = manager;
+  }
 
-   public final Class<? extends Annotation> getScope()
-   {
-      return scope;
-   }
+  public final Set<Type> getTypes() {
+    return types;
+  }
 
-   public final Set<Annotation> getQualifiers()
-   {
-      return qualifiers;
-   }
+  public final Class<? extends Annotation> getScope() {
+    return scope;
+  }
 
-   public final String getName()
-   {
-      return name;
-   }
+  public final Set<Annotation> getQualifiers() {
+    return qualifiers;
+  }
 
-   public final Set<Class<? extends Annotation>> getStereotypes()
-   {
-      return Collections.emptySet();
-   }
+  public final String getName() {
+    return name;
+  }
 
-   public final Class<?> getBeanClass()
-   {
-      return type;
-   }
+  public final Set<Class<? extends Annotation>> getStereotypes() {
+    return Collections.emptySet();
+  }
 
-   public final boolean isAlternative()
-   {
-      return false;
-   }
+  public final Class<?> getBeanClass() {
+    return type;
+  }
 
-   public final boolean isNullable()
-   {
-      return false;
-   }
+  public final boolean isAlternative() {
+    return false;
+  }
 
-   public final Set<InjectionPoint> getInjectionPoints()
-   {
-      return Collections.emptySet();
-   }
+  public final boolean isNullable() {
+    return false;
+  }
+
+  public final Set<InjectionPoint> getInjectionPoints() {
+    return Collections.emptySet();
+  }
 }

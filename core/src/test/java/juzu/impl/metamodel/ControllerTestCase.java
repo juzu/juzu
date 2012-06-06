@@ -27,20 +27,19 @@ import japa.parser.ast.expr.MemberValuePair;
 import japa.parser.ast.expr.NormalAnnotationExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.type.ClassOrInterfaceType;
-import org.junit.Test;
 import juzu.Action;
 import juzu.View;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
-import juzu.impl.controller.metamodel.ControllerMetaModel;
-import juzu.impl.utils.JSON;
-import static juzu.impl.utils.JSON.json;
 import juzu.impl.compiler.ElementHandle;
+import juzu.impl.controller.metamodel.ControllerMetaModel;
 import juzu.impl.utils.FQN;
+import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.JavaFile;
+import org.junit.Test;
 
 import java.io.File;
 import java.lang.reflect.Modifier;
@@ -48,449 +47,442 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static juzu.impl.utils.JSON.json;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerTestCase extends AbstractTestCase
-{
+public class ControllerTestCase extends AbstractTestCase {
 
-   @Test
-   public void testBuild() throws Exception
-   {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      helper.assertCompile();
+  @Test
+  public void testBuild() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    helper.assertCompile();
 
-      //
-      MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    //
+    MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
 
-      //
-      JSON expected = json()
-         .set("applications", json().
-            list("values",  json().
-               list("controllers", json().
-                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-                  list("methods", json().
-                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                     set("id", null).
-                     set("name", "index").
-                     list("parameters").
-                     set("phase", "RENDER")
-                  )
-               ).
-               set("fqn", "model.meta.controller.ControllerApplication").
-               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-               list("templates")
+    //
+    JSON expected = json()
+      .set("applications", json().
+        list("values", json().
+          list("controllers", json().
+            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            list("methods", json().
+              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("id", null).
+              set("name", "index").
+              list("parameters").
+              set("phase", "RENDER")
             )
-         );
-      assertEquals(expected, mm.toJSON());
+          ).
+          set("fqn", "model.meta.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          list("templates")
+        )
+      );
+    assertEquals(expected, mm.toJSON());
 
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      ApplicationMetaModel application = mm.getChild(ApplicationsMetaModel.KEY).iterator().next();
-      ControllerMetaModel controller = application.getControllers().iterator().next();
-      assertEquals(Arrays.asList(
-         MetaModelEvent.createAdded(application),
-         MetaModelEvent.createAdded(controller),
-         MetaModelEvent.createUpdated(controller)
-      ), events);
-   }
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    ApplicationMetaModel application = mm.getChild(ApplicationsMetaModel.KEY).iterator().next();
+    ControllerMetaModel controller = application.getControllers().iterator().next();
+    assertEquals(Arrays.asList(
+      MetaModelEvent.createAdded(application),
+      MetaModelEvent.createAdded(controller),
+      MetaModelEvent.createUpdated(controller)
+    ), events);
+  }
 
-   @Test
-   public void testRemoveApplication() throws Exception {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      helper.assertCompile();
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.getQueue().clear();
-      Tools.serialize(mm, ser);
+  @Test
+  public void testRemoveApplication() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    helper.assertCompile();
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    mm.getQueue().clear();
+    Tools.serialize(mm, ser);
 
-      //
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
+    //
+    assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
 
-      //
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, ser);
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    mm = Tools.unserialize(MetaModel.class, ser);
 
-      //
-      JSON expected = json().
-         set("applications", json().
-            list("values")
-         );
-      assertEquals(expected, mm.toJSON());
+    //
+    JSON expected = json().
+      set("applications", json().
+        list("values")
+      );
+    assertEquals(expected, mm.toJSON());
 
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(2, events.size());
-      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-      assertInstanceOf(ApplicationMetaModel.class, events.get(0).getObject());
-      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
-      assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
-   }
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(2, events.size());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+    assertInstanceOf(ApplicationMetaModel.class, events.get(0).getObject());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
+    assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
+  }
 
-   @Test
-   public void testRemoveController() throws Exception {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      helper.assertCompile();
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.getQueue().clear();
-      Tools.serialize(mm, ser);
+  @Test
+  public void testRemoveController() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    helper.assertCompile();
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    mm.getQueue().clear();
+    Tools.serialize(mm, ser);
 
-      //
-      assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "A.java"));
+    //
+    assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "A.java"));
 
-      //
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, ser);
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    mm = Tools.unserialize(MetaModel.class, ser);
 
-      //
-      JSON expected = json()
-         .set("applications", json().
-            list("values", json().
-               list("controllers").
-               set("fqn", "model.meta.controller.ControllerApplication").
-               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-               list("templates")
+    //
+    JSON expected = json()
+      .set("applications", json().
+        list("values", json().
+          list("controllers").
+          set("fqn", "model.meta.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          list("templates")
+        )
+      );
+    assertEquals(expected, mm.toJSON());
+
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(1, events.size());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+    assertInstanceOf(ControllerMetaModel.class, events.get(0).getObject());
+  }
+
+  @Test
+  public void testChangeAnnotation() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    helper.assertCompile();
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    mm.getQueue().clear();
+    Tools.serialize(mm, ser);
+
+    //
+    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    ClassOrInterfaceDeclaration a = file.assertDeclaration();
+    MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
+    decl.getAnnotations().get(0).setName(ASTHelper.createNameExpr(Action.class.getName()));
+    file.assertSave();
+
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    mm = Tools.unserialize(MetaModel.class, ser);
+
+    //
+    JSON expected = json()
+      .set("applications", json().
+        list("values", json().
+          list("controllers", json().
+            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            list("methods", json().
+              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("id", null).
+              set("name", "index").
+              list("parameters").
+              set("phase", "ACTION")
             )
-         );
-      assertEquals(expected, mm.toJSON());
+          ).
+          set("fqn", "model.meta.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          list("templates")
+        )
+      );
+    assertEquals(expected, mm.toJSON());
 
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(1, events.size());
-      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-      assertInstanceOf(ControllerMetaModel.class, events.get(0).getObject());
-   }
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(3, events.size());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+    assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
+    assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
+    assertTrue(events.get(1).getObject() instanceof ControllerMetaModel);
+    assertEquals(MetaModelEvent.UPDATED, events.get(2).getType());
+    assertTrue(events.get(2).getObject() instanceof ControllerMetaModel);
+  }
 
-   @Test
-   public void testChangeAnnotation() throws Exception
-   {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      helper.assertCompile();
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.getQueue().clear();
-      Tools.serialize(mm, ser);
+  @Test
+  public void testRemoveAnnotation() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    helper.assertCompile();
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    mm.getQueue().clear();
+    Tools.serialize(mm, ser);
 
-      //
-      JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
-      ClassOrInterfaceDeclaration a = file.assertDeclaration();
-      MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
-      decl.getAnnotations().get(0).setName(ASTHelper.createNameExpr(Action.class.getName()));
-      file.assertSave();
+    //
+    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    ClassOrInterfaceDeclaration a = file.assertDeclaration();
+    MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
+    decl.getAnnotations().clear();
+    file.assertSave();
 
-      //
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, ser);
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    mm = Tools.unserialize(MetaModel.class, ser);
 
-      //
-      JSON expected = json()
-         .set("applications", json().
-            list("values", json().
-               list("controllers", json().
-                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-                  list("methods", json().
-                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                     set("id", null).
-                     set("name", "index").
-                     list("parameters").
-                     set("phase", "ACTION")
-                  )
-               ).
-               set("fqn", "model.meta.controller.ControllerApplication").
-               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-               list("templates")
+    //
+    JSON expected = json()
+      .set("applications", json().
+        list("values", json().
+          list("controllers").
+          set("fqn", "model.meta.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          list("templates")
+        )
+      );
+    assertEquals(expected, mm.toJSON());
+
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(1, events.size());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+    assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
+  }
+
+  @Test
+  public void testAddMethod() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    ClassOrInterfaceDeclaration a = file.assertDeclaration();
+    MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
+    assertTrue(a.getMembers().remove(decl));
+    file.assertSave();
+    helper.assertCompile();
+
+    //
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(1, events.size());
+    assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
+    assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
+    Tools.serialize(mm, ser);
+
+    //
+    a.getMembers().add(decl);
+    file.assertSave();
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+
+    //
+    mm = Tools.unserialize(MetaModel.class, ser);
+
+    //
+    JSON expected = json()
+      .set("applications", json().
+        list("values", json().
+          list("controllers", json().
+            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            list("methods", json().
+              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("id", null).
+              set("name", "index").
+              list("parameters").
+              set("phase", "RENDER")
             )
-         );
-      assertEquals(expected, mm.toJSON());
+          ).
+          set("fqn", "model.meta.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          list("templates")
+        )
+      );
+    assertEquals(expected, mm.toJSON());
 
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(3, events.size());
-      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-      assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
-      assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
-      assertTrue(events.get(1).getObject() instanceof ControllerMetaModel);
-      assertEquals(MetaModelEvent.UPDATED, events.get(2).getType());
-      assertTrue(events.get(2).getObject() instanceof ControllerMetaModel);
-   }
+    //
+    events = mm.getQueue().clear();
+    assertEquals(2, events.size());
+    assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
+    assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
+    assertEquals(MetaModelEvent.UPDATED, events.get(1).getType());
+    assertTrue(events.get(1).getObject() instanceof ControllerMetaModel);
+  }
 
-   @Test
-   public void testRemoveAnnotation() throws Exception
-   {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      helper.assertCompile();
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.getQueue().clear();
-      Tools.serialize(mm, ser);
+  @Test
+  public void testRemoveSingleMethod() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    helper.assertCompile();
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    mm.getQueue().clear();
+    Tools.serialize(mm, ser);
 
-      //
-      JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
-      ClassOrInterfaceDeclaration a = file.assertDeclaration();
-      MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
-      decl.getAnnotations().clear();
-      file.assertSave();
+    //
+    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    ClassOrInterfaceDeclaration a = file.assertDeclaration();
+    a.getMembers().clear();
+    file.assertSave();
 
-      //
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, ser);
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    mm = Tools.unserialize(MetaModel.class, ser);
 
-      //
-      JSON expected = json()
-         .set("applications", json().
-            list("values", json().
-               list("controllers").
-               set("fqn", "model.meta.controller.ControllerApplication").
-               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-               list("templates")
+    //
+    JSON expected = json()
+      .set("applications", json().
+        list("values", json().
+          list("controllers").
+          set("fqn", "model.meta.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          list("templates")
+        )
+      );
+    assertEquals(expected, mm.toJSON());
+
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(1, events.size());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+    assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
+  }
+
+  @Test
+  public void testRemoveMethod() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+
+    //
+    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    ClassOrInterfaceDeclaration a = file.assertDeclaration();
+    MethodDeclaration show = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "show");
+    show.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
+    show.setBody(new BlockStmt());
+    a.getMembers().add(show);
+    file.assertSave();
+    helper.assertCompile();
+
+    //
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    mm.getQueue().clear();
+    Tools.serialize(mm, ser);
+
+    //
+    assertTrue(a.getMembers().remove(show));
+    file.assertSave();
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    mm = Tools.unserialize(MetaModel.class, ser);
+
+    //
+    JSON expected = json()
+      .set("applications", json().
+        list("values", json().
+          list("controllers", json().
+            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            list("methods", json().
+              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("id", null).
+              set("name", "index").
+              list("parameters").
+              set("phase", "RENDER")
             )
-         );
-      assertEquals(expected, mm.toJSON());
+          ).
+          set("fqn", "model.meta.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          list("templates")
+        )
+      );
+    assertEquals(expected, mm.toJSON());
 
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(1, events.size());
-      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-      assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
-   }
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(0, events.size());
+  }
 
-   @Test
-   public void testAddMethod() throws Exception
-   {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
-      ClassOrInterfaceDeclaration a = file.assertDeclaration();
-      MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
-      assertTrue(a.getMembers().remove(decl));
-      file.assertSave();
-      helper.assertCompile();
+  @Test
+  public void testRemoveOverloadedMethod() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    ClassOrInterfaceDeclaration a = file.assertDeclaration();
+    MethodDeclaration index = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "index");
+    ASTHelper.addParameter(index, ASTHelper.createParameter(new ClassOrInterfaceType(String.class.getName()), "s"));
+    index.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
+    index.setBody(new BlockStmt());
+    a.getMembers().add(index);
+    file.assertSave();
+    helper.assertCompile();
 
-      //
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(1, events.size());
-      assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
-      assertTrue(events.get(0).getObject() instanceof ApplicationMetaModel);
-      Tools.serialize(mm, ser);
+    //
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    mm.getQueue().clear();
+    Tools.serialize(mm, ser);
 
-      //
-      a.getMembers().add(decl);
-      file.assertSave();
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
+    //
+    assertTrue(a.getMembers().remove(index));
+    file.assertSave();
 
-      //
-      mm = Tools.unserialize(MetaModel.class, ser);
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    mm = Tools.unserialize(MetaModel.class, ser);
 
-      //
-      JSON expected = json()
-         .set("applications", json().
-            list("values", json().
-               list("controllers", json().
-                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-                  list("methods", json().
-                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                     set("id", null).
-                     set("name", "index").
-                     list("parameters").
-                     set("phase", "RENDER")
-                  )
-               ).
-               set("fqn", "model.meta.controller.ControllerApplication").
-               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-               list("templates")
+    //
+    JSON expected = json()
+      .set("applications", json().
+        list("values", json().
+          list("controllers", json().
+            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            list("methods", json().
+              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("id", null).
+              set("name", "index").
+              list("parameters").
+              set("phase", "RENDER")
             )
-         );
-      assertEquals(expected, mm.toJSON());
+          ).
+          set("fqn", "model.meta.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          list("templates")
+        )
+      );
+    assertEquals(expected, mm.toJSON());
 
-      //
-      events = mm.getQueue().clear();
-      assertEquals(2, events.size());
-      assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
-      assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
-      assertEquals(MetaModelEvent.UPDATED, events.get(1).getType());
-      assertTrue(events.get(1).getObject() instanceof ControllerMetaModel);
-   }
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(0, events.size());
+  }
 
-   @Test
-   public void testRemoveSingleMethod() throws Exception
-   {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      helper.assertCompile();
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.getQueue().clear();
-      Tools.serialize(mm, ser);
+  @Test
+  public void testRefactorPackageName() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    helper.assertCompile();
 
-      //
-      JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
-      ClassOrInterfaceDeclaration a = file.assertDeclaration();
-      a.getMembers().clear();
-      file.assertSave();
+    //
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    mm.getQueue().clear();
+    Tools.serialize(mm, ser);
 
-      //
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, ser);
+    //
+    File file = helper.getSourcePath().getPath("model", "meta", "controller", "A.java");
+    File sub = new File(file.getParentFile(), "sub");
+    assertTrue(sub.mkdir());
+    File tmp = new File(sub, file.getName());
+    assertTrue(file.renameTo(tmp));
+    JavaFile javaFile = helper.assertJavaFile("model", "meta", "controller", "sub", "A.java");
+    javaFile.assertCompilationUnit().getPackage().setName(ASTHelper.createNameExpr("model.meta.controller.sub"));
+    javaFile.assertSave();
 
-      //
-      JSON expected = json()
-         .set("applications", json().
-            list("values", json().
-               list("controllers").
-               set("fqn", "model.meta.controller.ControllerApplication").
-               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-               list("templates")
-            )
-         );
-      assertEquals(expected, mm.toJSON());
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    mm = Tools.unserialize(MetaModel.class, ser);
 
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(1, events.size());
-      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-      assertTrue(events.get(0).getObject() instanceof ControllerMetaModel);
-   }
-
-   @Test
-   public void testRemoveMethod() throws Exception
-   {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-
-      //
-      JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
-      ClassOrInterfaceDeclaration a = file.assertDeclaration();
-      MethodDeclaration show = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "show");
-      show.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
-      show.setBody(new BlockStmt());
-      a.getMembers().add(show);
-      file.assertSave();
-      helper.assertCompile();
-
-      //
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.getQueue().clear();
-      Tools.serialize(mm, ser);
-
-      //
-      assertTrue(a.getMembers().remove(show));
-      file.assertSave();
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, ser);
-
-      //
-      JSON expected = json()
-         .set("applications", json().
-            list("values", json().
-               list("controllers", json().
-                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-                  list("methods", json().
-                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                     set("id", null).
-                     set("name", "index").
-                     list("parameters").
-                     set("phase", "RENDER")
-                  )
-               ).
-               set("fqn", "model.meta.controller.ControllerApplication").
-               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-               list("templates")
-            )
-         );
-      assertEquals(expected, mm.toJSON());
-
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(0, events.size());
-   }
-
-   @Test
-   public void testRemoveOverloadedMethod() throws Exception
-   {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
-      ClassOrInterfaceDeclaration a = file.assertDeclaration();
-      MethodDeclaration index = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "index");
-      ASTHelper.addParameter(index, ASTHelper.createParameter(new ClassOrInterfaceType(String.class.getName()), "s"));
-      index.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
-      index.setBody(new BlockStmt());
-      a.getMembers().add(index);
-      file.assertSave();
-      helper.assertCompile();
-
-      //
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.getQueue().clear();
-      Tools.serialize(mm, ser);
-
-      //
-      assertTrue(a.getMembers().remove(index));
-      file.assertSave();
-
-      //
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, ser);
-
-      //
-      JSON expected = json()
-         .set("applications", json().
-            list("values", json().
-               list("controllers", json().
-                  set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
-                  list("methods", json().
-                     set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
-                     set("id", null).
-                     set("name", "index").
-                     list("parameters").
-                     set("phase", "RENDER")
-                  )
-               ).
-               set("fqn", "model.meta.controller.ControllerApplication").
-               set("handle", "ElementHandle.Package[qn=model.meta.controller]").
-               list("templates")
-            )
-         );
-      assertEquals(expected, mm.toJSON());
-
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(0, events.size());
-   }
-
-   @Test
-   public void testRefactorPackageName() throws Exception
-   {
-      CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-      helper.assertCompile();
-
-      //
-      File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-      MetaModel mm = Tools.unserialize(MetaModel.class, ser);
-      mm.getQueue().clear();
-      Tools.serialize(mm, ser);
-
-      //
-      File file = helper.getSourcePath().getPath("model", "meta", "controller", "A.java");
-      File sub = new File(file.getParentFile(), "sub");
-      assertTrue(sub.mkdir());
-      File tmp = new File(sub, file.getName());
-      assertTrue(file.renameTo(tmp));
-      JavaFile javaFile = helper.assertJavaFile("model", "meta", "controller", "sub", "A.java");
-      javaFile.assertCompilationUnit().getPackage().setName(ASTHelper.createNameExpr("model.meta.controller.sub"));
-      javaFile.assertSave();
-
-      //
-      helper.addClassPath(helper.getClassOutput()).assertCompile();
-      mm = Tools.unserialize(MetaModel.class, ser);
-
-      //
-      List<MetaModelEvent> events = mm.getQueue().clear();
-      assertEquals(3, events.size());
-      assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-      assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.A")), ((ControllerMetaModel)events.get(0).getObject()).getHandle());
-      assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
-      assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
-      assertEquals(MetaModelEvent.UPDATED, events.get(2).getType());
-      assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
-   }
+    //
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(3, events.size());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+    assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.A")), ((ControllerMetaModel)events.get(0).getObject()).getHandle());
+    assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
+    assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
+    assertEquals(MetaModelEvent.UPDATED, events.get(2).getType());
+    assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
+  }
 }

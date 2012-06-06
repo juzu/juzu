@@ -26,16 +26,14 @@ import juzu.template.Template;
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Weather
-{
+public class Weather {
 
-   @Inject
-   @Path("index.gtmpl")
-   Template index;
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
 
-   @View
-   public void index()
-   {
-      index.render();
-   }
+  @View
+  public void index() {
+    index.render();
+  }
 }

@@ -27,24 +27,21 @@ import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class Injected
-{
+public class Injected {
 
-   @Inject
-   @Colorized(Color.RED)
-   private Bean red;
+  @Inject
+  @Colorized(Color.RED)
+  private Bean red;
 
-   @Inject
-   @Colorized(Color.GREEN)
-   private Bean green;
+  @Inject
+  @Colorized(Color.GREEN)
+  private Bean green;
 
-   public Bean getRed()
-   {
-      return red;
-   }
+  public Bean getRed() {
+    return red;
+  }
 
-   public Bean getGreen()
-   {
-      return green;
-   }
+  public Bean getGreen() {
+    return green;
+  }
 }

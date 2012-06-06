@@ -17,7 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package request.render.throwable.error;
+@Application package request.render.throwable.error;
 
 import juzu.Application;

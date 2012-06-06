@@ -22,25 +22,20 @@ package juzu.impl.fs;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Filter<P>
-{
+public interface Filter<P> {
 
-   boolean acceptDir(P dir, String name) throws IOException;
+  boolean acceptDir(P dir, String name) throws IOException;
 
-   boolean acceptFile(P file, String name) throws IOException;
+  boolean acceptFile(P file, String name) throws IOException;
 
-   /**
-    * A default implementation for the filter.
-    */
-   public static class Default<P> implements Filter<P>
-   {
-      public boolean acceptDir(P dir, String name) throws IOException
-      {
-         return true;
-      }
-      public boolean acceptFile(P file, String name) throws IOException
-      {
-         return true;
-      }
-   }
+  /** A default implementation for the filter. */
+  public static class Default<P> implements Filter<P> {
+    public boolean acceptDir(P dir, String name) throws IOException {
+      return true;
+    }
+
+    public boolean acceptFile(P file, String name) throws IOException {
+      return true;
+    }
+  }
 }

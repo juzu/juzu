@@ -31,51 +31,50 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestBridge
-{
+public interface RequestBridge {
 
-   /**
-    * Returns the request parameters.
-    *
-    * @return the request parameters
-    */
-   Map<String, String[]> getParameters();
+  /**
+   * Returns the request parameters.
+   *
+   * @return the request parameters
+   */
+  Map<String, String[]> getParameters();
 
-   <T> T getProperty(PropertyType<T> propertyType);
+  <T> T getProperty(PropertyType<T> propertyType);
 
-   Scoped getFlashValue(Object key);
+  Scoped getFlashValue(Object key);
 
-   void setFlashValue(Object key, Scoped value);
+  void setFlashValue(Object key, Scoped value);
 
-   Scoped getRequestValue(Object key);
+  Scoped getRequestValue(Object key);
 
-   void setRequestValue(Object key, Scoped value);
+  void setRequestValue(Object key, Scoped value);
 
-   Scoped getSessionValue(Object key);
+  Scoped getSessionValue(Object key);
 
-   void setSessionValue(Object key, Scoped value);
+  void setSessionValue(Object key, Scoped value);
 
-   Scoped getIdentityValue(Object key);
+  Scoped getIdentityValue(Object key);
 
-   void setIdentityValue(Object key, Scoped value);
+  void setIdentityValue(Object key, Scoped value);
 
-   HttpContext getHttpContext();
+  HttpContext getHttpContext();
 
-   SecurityContext getSecurityContext();
-   
-   WindowContext getWindowContext();
+  SecurityContext getSecurityContext();
 
-   /**
-    * End the request with the specified response. The response argument may be null if no response
-    * was explictly provided by the application.
-    *
-    * @param response the response
-    * @throws IllegalArgumentException if the response cannot be honoured
-    * @throws IllegalStateException if the request bridge is already associated with a response
-    * @throws IOException any io exception
-    */
-   void end(Response response) throws IllegalArgumentException, IllegalStateException, IOException;
+  WindowContext getWindowContext();
 
-   void begin(Request request);
+  /**
+   * End the request with the specified response. The response argument may be null if no response was explictly
+   * provided by the application.
+   *
+   * @param response the response
+   * @throws IllegalArgumentException if the response cannot be honoured
+   * @throws IllegalStateException    if the request bridge is already associated with a response
+   * @throws IOException              any io exception
+   */
+  void end(Response response) throws IllegalArgumentException, IllegalStateException, IOException;
+
+  void begin(Request request);
 
 }

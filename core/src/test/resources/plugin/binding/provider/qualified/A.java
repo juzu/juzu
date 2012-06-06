@@ -27,52 +27,42 @@ import javax.inject.Named;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @Inject
-   @Named("foo")
-   Service fooService;
+  @Inject
+  @Named("foo")
+  Service fooService;
 
-   @Inject
-   @Named("bar")
-   Service barService;
+  @Inject
+  @Named("bar")
+  Service barService;
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      String resp;
-      if (fooService == null)
-      {
-         resp = "failed: no foo service";
+  @View
+  public Response.Content index() throws IOException {
+    String resp;
+    if (fooService == null) {
+      resp = "failed: no foo service";
+    }
+    else {
+      String name = fooService.getName();
+      if ("foo".equals(name)) {
+        if (barService == null) {
+          resp = "failed: no bar service";
+        }
+        else {
+          name = barService.getName();
+          if ("bar".equals(name)) {
+            resp = "pass";
+          }
+          else {
+            resp = "failed: wrong bar name " + name;
+          }
+        }
       }
-      else
-      {
-         String name = fooService.getName();
-         if ("foo".equals(name))
-         {
-            if (barService == null)
-            {
-               resp = "failed: no bar service";
-            }
-            else
-            {
-               name = barService.getName();
-               if ("bar".equals(name))
-               {
-                  resp = "pass";
-               }
-               else
-               {
-                  resp = "failed: wrong bar name " + name;
-               }
-            }
-         }
-         else
-         {
-            resp = "failed: wrong foo name " + name;
-         }
+      else {
+        resp = "failed: wrong foo name " + name;
       }
-      return Response.content(resp);
-   }
+    }
+    return Response.content(resp);
+  }
 }

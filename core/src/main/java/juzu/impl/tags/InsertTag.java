@@ -20,23 +20,20 @@
 package juzu.impl.tags;
 
 import juzu.template.Renderable;
-import juzu.template.TemplateRenderContext;
 import juzu.template.TagHandler;
+import juzu.template.TemplateRenderContext;
 
 import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class InsertTag extends TagHandler
-{
+public class InsertTag extends TagHandler {
 
-   @Override
-   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
-   {
-      Renderable body_ = DecorateTag.current.get();
-      if (body_ != null)
-      {
-         body_.render(context);
-      }
-   }
+  @Override
+  public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
+    Renderable body_ = DecorateTag.current.get();
+    if (body_ != null) {
+      body_.render(context);
+    }
+  }
 }

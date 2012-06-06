@@ -7,16 +7,15 @@ import java.lang.annotation.Target;
 
 /**
  * Declares assets.
- * 
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> 
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
-public @interface Assets
-{
+public @interface Assets {
 
-   Script[] scripts() default {};
+  Script[] scripts() default {};
 
-   Stylesheet[] stylesheets() default {};
+  Stylesheet[] stylesheets() default {};
 
 }

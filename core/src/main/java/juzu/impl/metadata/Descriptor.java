@@ -7,16 +7,14 @@ import java.util.Collections;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Descriptor
-{
+public abstract class Descriptor {
 
-   /**
-    * Returns the associated plugin class.
-    *
-    * @return the list of bean ot install
-    */
-   public Iterable<BeanDescriptor> getBeans()
-   {
-      return Collections.emptyList();
-   }
+  /**
+   * Returns the associated plugin class.
+   *
+   * @return the list of bean ot install
+   */
+  public Iterable<BeanDescriptor> getBeans() {
+    return Collections.emptyList();
+  }
 }

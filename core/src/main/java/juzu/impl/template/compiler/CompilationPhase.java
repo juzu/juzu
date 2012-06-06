@@ -33,94 +33,75 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilationPhase
-{
+public class CompilationPhase {
 
-   /** . */
-   private final Map<String, TagHandler> tags = new HashMap<String, TagHandler>();
+  /** . */
+  private final Map<String, TagHandler> tags = new HashMap<String, TagHandler>();
 
-   /** . */
-   private final IdentityHashMap<ASTNode.Tag, TagHandler> tagHandlers = new IdentityHashMap<ASTNode.Tag, TagHandler>();
+  /** . */
+  private final IdentityHashMap<ASTNode.Tag, TagHandler> tagHandlers = new IdentityHashMap<ASTNode.Tag, TagHandler>();
 
-   public CompilationPhase()
-   {
-      // Built in tags
+  public CompilationPhase() {
+    // Built in tags
 
-      tags.put("include", new IncludeTag());
-      tags.put("insert", new InsertTag());
-      tags.put("decorate", new DecorateTag());
-      tags.put("title", new TitleTag());
-      tags.put("param", new ParamTag());
-   }
+    tags.put("include", new IncludeTag());
+    tags.put("insert", new InsertTag());
+    tags.put("decorate", new DecorateTag());
+    tags.put("title", new TitleTag());
+    tags.put("param", new ParamTag());
+  }
 
-   public TagHandler resolveTag(String name)
-   {
-      return tags.get(name);
-   }
-   
-   public TagHandler get(ASTNode.Tag node)
-   {
-      return tagHandlers.get(node);
-   }
+  public TagHandler resolveTag(String name) {
+    return tags.get(name);
+  }
 
-   protected void doAttribute(ASTNode<?> node) throws CompilationException
-   {
-      if (node instanceof ASTNode.Template)
-      {
-         for (ASTNode.Block child : node.getChildren())
-         {
-            doAttribute(child);
-         }
-      }
-      else if (node instanceof ASTNode.Section)
-      {
-         // Do nothing
-      }
-      else if (node instanceof ASTNode.URL)
-      {
-         // Do nothing
-      }
-      else if (node instanceof ASTNode.Tag)
-      {
-         ASTNode.Tag nodeTag = (ASTNode.Tag)node;
-         TagHandler handler = resolveTag(nodeTag.getName());
-         if (handler == null)
-         {
-            throw new UnsupportedOperationException("handle me gracefully " + nodeTag.getName());
-         }
-         tagHandlers.put(nodeTag, handler);
-         for (ASTNode.Block<?> child : nodeTag.getChildren())
-         {
-            doAttribute(child);
-         }
-      }
-   }
+  public TagHandler get(ASTNode.Tag node) {
+    return tagHandlers.get(node);
+  }
 
-   protected void doUnattribute(ASTNode<?> node) throws CompilationException
-   {
-      if (node instanceof ASTNode.Template)
-      {
-         for (ASTNode.Block child : node.getChildren())
-         {
-            doUnattribute(child);
-         }
+  protected void doAttribute(ASTNode<?> node) throws CompilationException {
+    if (node instanceof ASTNode.Template) {
+      for (ASTNode.Block child : node.getChildren()) {
+        doAttribute(child);
       }
-      else if (node instanceof ASTNode.Section)
-      {
-         // Do nothing
+    }
+    else if (node instanceof ASTNode.Section) {
+      // Do nothing
+    }
+    else if (node instanceof ASTNode.URL) {
+      // Do nothing
+    }
+    else if (node instanceof ASTNode.Tag) {
+      ASTNode.Tag nodeTag = (ASTNode.Tag)node;
+      TagHandler handler = resolveTag(nodeTag.getName());
+      if (handler == null) {
+        throw new UnsupportedOperationException("handle me gracefully " + nodeTag.getName());
       }
-      else if (node instanceof ASTNode.URL)
-      {
-         // Do nothing
+      tagHandlers.put(nodeTag, handler);
+      for (ASTNode.Block<?> child : nodeTag.getChildren()) {
+        doAttribute(child);
       }
-      else if (node instanceof ASTNode.Tag)
-      {
-         ASTNode.Tag nodeTag = (ASTNode.Tag)node;
-         tagHandlers.remove(nodeTag);
-         for (ASTNode.Block<?> child : nodeTag.getChildren())
-         {
-            doAttribute(child);
-         }
+    }
+  }
+
+  protected void doUnattribute(ASTNode<?> node) throws CompilationException {
+    if (node instanceof ASTNode.Template) {
+      for (ASTNode.Block child : node.getChildren()) {
+        doUnattribute(child);
       }
-   }
+    }
+    else if (node instanceof ASTNode.Section) {
+      // Do nothing
+    }
+    else if (node instanceof ASTNode.URL) {
+      // Do nothing
+    }
+    else if (node instanceof ASTNode.Tag) {
+      ASTNode.Tag nodeTag = (ASTNode.Tag)node;
+      tagHandlers.remove(nodeTag);
+      for (ASTNode.Block<?> child : nodeTag.getChildren()) {
+        doAttribute(child);
+      }
+    }
+  }
 }

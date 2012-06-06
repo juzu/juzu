@@ -23,6 +23,5 @@ import juzu.impl.inject.Export;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class Bean extends AbstractBean
-{
+public class Bean extends AbstractBean {
 }

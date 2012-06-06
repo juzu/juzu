@@ -27,21 +27,18 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TitleTag extends TagHandler
-{
+public class TitleTag extends TagHandler {
 
-   @Override
-   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException
-   {
-      String title = args.get("value");
+  @Override
+  public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
+    String title = args.get("value");
 
-      //
-      if (title != null)
-      {
-         context.setTitle(title);
-      }
+    //
+    if (title != null) {
+      context.setTitle(title);
+    }
 
-      //
-      body.render(context);
-   }
+    //
+    body.render(context);
+  }
 }

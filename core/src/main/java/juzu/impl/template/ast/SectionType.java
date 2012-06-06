@@ -20,13 +20,12 @@
 package juzu.impl.template.ast;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum SectionType
-{
+public enum SectionType {
 
-   STRING,
+  STRING,
 
-   SCRIPTLET,
+  SCRIPTLET,
 
-   EXPR
+  EXPR
 
 }

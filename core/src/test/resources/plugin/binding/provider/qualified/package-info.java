@@ -18,11 +18,10 @@
  */
 
 @Application
-@Bindings( {
-   @Binding(value = Service.class, implementation = FooServiceProvider.class),
-   @Binding(value = Service.class, implementation = BarServiceProvider.class)
-   })
-package plugin.binding.provider.qualified;
+@Bindings({
+  @Binding(value = Service.class, implementation = FooServiceProvider.class),
+  @Binding(value = Service.class, implementation = BarServiceProvider.class)
+}) package plugin.binding.provider.qualified;
 
 import juzu.Application;
 import juzu.plugin.binding.Binding;

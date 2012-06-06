@@ -25,65 +25,56 @@ import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class SpringScope implements Scope
-{
+class SpringScope implements Scope {
 
-   /** . */
-   private final DefaultListableBeanFactory factory;
+  /** . */
+  private final DefaultListableBeanFactory factory;
 
-   /** . */
-   private final juzu.Scope scope;
+  /** . */
+  private final juzu.Scope scope;
 
-   /** . */
-   private final ScopeController controller;
+  /** . */
+  private final ScopeController controller;
 
-   SpringScope(DefaultListableBeanFactory factory, juzu.Scope scope, ScopeController controller)
-   {
-      this.factory = factory;
-      this.scope = scope;
-      this.controller = controller;
-   }
+  SpringScope(DefaultListableBeanFactory factory, juzu.Scope scope, ScopeController controller) {
+    this.factory = factory;
+    this.scope = scope;
+    this.controller = controller;
+  }
 
-   public Object get(String name, ObjectFactory<?> objectFactory)
-   {
-      SpringScoped scoped = (SpringScoped)controller.get(scope, name);
-      if (scoped == null)
-      {
-         // We register first the scoped object
-         // as creating the object from the factory
-         // will make a call in the method registerDestructionCallback
-         scoped = new SpringScoped(factory, name);
-         controller.put(scope, name, scoped);
+  public Object get(String name, ObjectFactory<?> objectFactory) {
+    SpringScoped scoped = (SpringScoped)controller.get(scope, name);
+    if (scoped == null) {
+      // We register first the scoped object
+      // as creating the object from the factory
+      // will make a call in the method registerDestructionCallback
+      scoped = new SpringScoped(factory, name);
+      controller.put(scope, name, scoped);
 
-         // Create the object, it will likely create a registerDestructionCallback invocation
-         // to set the callback when the object will need to be destroyed
-         scoped.o = objectFactory.getObject();
-      }
-      return scoped.o;
-   }
+      // Create the object, it will likely create a registerDestructionCallback invocation
+      // to set the callback when the object will need to be destroyed
+      scoped.o = objectFactory.getObject();
+    }
+    return scoped.o;
+  }
 
-   public Object remove(String name)
-   {
-      SpringScoped scoped = (SpringScoped)controller.get(scope, name);
-      return scoped != null ? scoped.o : null;
-   }
+  public Object remove(String name) {
+    SpringScoped scoped = (SpringScoped)controller.get(scope, name);
+    return scoped != null ? scoped.o : null;
+  }
 
-   public void registerDestructionCallback(String name, Runnable callback)
-   {
-      SpringScoped scoped = (SpringScoped)controller.get(scope, name);
-      if (scoped != null)
-      {
-         scoped.destructionCallback = callback;
-      }
-   }
+  public void registerDestructionCallback(String name, Runnable callback) {
+    SpringScoped scoped = (SpringScoped)controller.get(scope, name);
+    if (scoped != null) {
+      scoped.destructionCallback = callback;
+    }
+  }
 
-   public Object resolveContextualObject(String key)
-   {
-      throw new UnsupportedOperationException();
-   }
+  public Object resolveContextualObject(String key) {
+    throw new UnsupportedOperationException();
+  }
 
-   public String getConversationId()
-   {
-      return "foo"; // ????
-   }
+  public String getConversationId() {
+    return "foo"; // ????
+  }
 }

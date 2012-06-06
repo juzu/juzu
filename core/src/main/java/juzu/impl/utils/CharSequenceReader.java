@@ -20,61 +20,50 @@
 package juzu.impl.utils;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CharSequenceReader
-{
+public class CharSequenceReader {
 
-   /** . */
-   private final CharSequence s;
+  /** . */
+  private final CharSequence s;
 
-   /** . */
-   private char[] unread;
+  /** . */
+  private char[] unread;
 
-   /** . */
-   private int pos;
+  /** . */
+  private int pos;
 
-   /** . */
-   private int index;
+  /** . */
+  private int index;
 
-   public CharSequenceReader(CharSequence s)
-   {
-      this.s = s;
-      this.unread = null;
-      this.pos = 0;
-      this.index = 0;
-   }
+  public CharSequenceReader(CharSequence s) {
+    this.s = s;
+    this.unread = null;
+    this.pos = 0;
+    this.index = 0;
+  }
 
-   public int read()
-   {
-      if (pos > 0)
-      {
-         return unread[--pos];
+  public int read() {
+    if (pos > 0) {
+      return unread[--pos];
+    }
+    else {
+      if (index < s.length()) {
+        return s.charAt(index++);
       }
-      else
-      {
-         if (index < s.length())
-         {
-            return s.charAt(index++);
-         }
-         else
-         {
-            return -1;
-         }
+      else {
+        return -1;
       }
-   }
+    }
+  }
 
-   public void unread(int c)
-   {
-      if (unread == null)
-      {
-         unread = new char[10];
-      }
-      if (pos + 1 < unread.length)
-      {
-         unread[pos++] = (char)c;
-      }
-      else
-      {
-         throw new IllegalStateException("Buffer full");
-      }
-   }
+  public void unread(int c) {
+    if (unread == null) {
+      unread = new char[10];
+    }
+    if (pos + 1 < unread.length) {
+      unread[pos++] = (char)c;
+    }
+    else {
+      throw new IllegalStateException("Buffer full");
+    }
+  }
 }

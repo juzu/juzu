@@ -22,7 +22,8 @@ package model.meta.param;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
-@View public void index(Bean bean) { }
+public class A {
+  @View
+  public void index(Bean bean) {
+  }
 }

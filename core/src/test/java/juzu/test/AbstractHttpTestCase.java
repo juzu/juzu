@@ -22,15 +22,15 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
+import juzu.impl.spi.inject.InjectImplementation;
+import juzu.test.protocol.http.InvocationServlet;
+import juzu.test.protocol.mock.MockApplication;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
-import juzu.impl.spi.inject.InjectImplementation;
-import juzu.test.protocol.http.InvocationServlet;
-import juzu.test.protocol.mock.MockApplication;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,84 +38,70 @@ import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
-public abstract class AbstractHttpTestCase extends AbstractTestCase
-{
+public abstract class AbstractHttpTestCase extends AbstractTestCase {
 
-   /** . */
-   private static AbstractHttpTestCase currentTest;
+  /** . */
+  private static AbstractHttpTestCase currentTest;
 
-   /** The currently deployed application. */
-   private MockApplication<?> application;
+  /** The currently deployed application. */
+  private MockApplication<?> application;
 
-   public static MockApplication<?> getApplication() throws IllegalStateException
-   {
-      if (currentTest == null)
-      {
-         throw new IllegalStateException("No deployed test");
-      }
-      return currentTest.application;
-   }
+  public static MockApplication<?> getApplication() throws IllegalStateException {
+    if (currentTest == null) {
+      throw new IllegalStateException("No deployed test");
+    }
+    return currentTest.application;
+  }
 
-   @Override
-   public void setUp()
-   {
-      currentTest = this;
-   }
+  @Override
+  public void setUp() {
+    currentTest = this;
+  }
 
-   @Override
-   public void tearDown()
-   {
-      application = null;
-      currentTest = null;
-   }
+  @Override
+  public void tearDown() {
+    application = null;
+    currentTest = null;
+  }
 
-   @Deployment(testable=false)
-   public static WebArchive createDeployment()
-   {
-      URL descriptor = InvocationServlet.class.getResource("web.xml");
-      URL jquery = InvocationServlet.class.getResource("jquery-1.7.1.js");
-      URL stylesheet = InvocationServlet.class.getResource("main.css");
-      return ShrinkWrap.create(WebArchive.class, "juzu.war").
-         addAsWebResource(jquery, "jquery.js").
-         addAsWebResource(stylesheet, "main.css").
-         setWebXML(descriptor);
-   }
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    URL descriptor = InvocationServlet.class.getResource("web.xml");
+    URL jquery = InvocationServlet.class.getResource("jquery-1.7.1.js");
+    URL stylesheet = InvocationServlet.class.getResource("main.css");
+    return ShrinkWrap.create(WebArchive.class, "juzu.war").
+      addAsWebResource(jquery, "jquery.js").
+      addAsWebResource(stylesheet, "main.css").
+      setWebXML(descriptor);
+  }
 
-   @ArquillianResource
-   protected URL deploymentURL;
+  @ArquillianResource
+  protected URL deploymentURL;
 
-   public MockApplication<?> assertDeploy(String... packageName)
-   {
-      try
-      {
-         return application = application(InjectImplementation.CDI_WELD, packageName);
-      }
-      catch (Exception e)
-      {
-         throw failure("Could not deploy application " + Arrays.asList(packageName), e);
-      }
-   }
-   
-   public void assertInternalError()
-   {
-      WebClient client = new WebClient();
-      try
-      {
-         Page page = client.getPage(deploymentURL + "/juzu");
-         throw failure("Was expecting an internal error instead of page " + page.toString());
-      }
-      catch (FailingHttpStatusCodeException e)
-      {
-         assertEquals(500, e.getStatusCode());
-      }
-      catch (IOException e)
-      {
-         throw failure("Was not expecting io exception", e);
-      }
-   }
-   
-   public UserAgent assertInitialPage()
-   {
-      return new UserAgent(deploymentURL);
-   }
+  public MockApplication<?> assertDeploy(String... packageName) {
+    try {
+      return application = application(InjectImplementation.CDI_WELD, packageName);
+    }
+    catch (Exception e) {
+      throw failure("Could not deploy application " + Arrays.asList(packageName), e);
+    }
+  }
+
+  public void assertInternalError() {
+    WebClient client = new WebClient();
+    try {
+      Page page = client.getPage(deploymentURL + "/juzu");
+      throw failure("Was expecting an internal error instead of page " + page.toString());
+    }
+    catch (FailingHttpStatusCodeException e) {
+      assertEquals(500, e.getStatusCode());
+    }
+    catch (IOException e) {
+      throw failure("Was not expecting io exception", e);
+    }
+  }
+
+  public UserAgent assertInitialPage() {
+    return new UserAgent(deploymentURL);
+  }
 }

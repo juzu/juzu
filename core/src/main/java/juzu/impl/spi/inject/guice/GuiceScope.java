@@ -29,34 +29,28 @@ import juzu.impl.inject.ScopeController;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class GuiceScope implements Scope
-{
+public class GuiceScope implements Scope {
 
-   private final juzu.Scope scope;
+  private final juzu.Scope scope;
 
-   /** . */
-   private final ScopeController controller;
+  /** . */
+  private final ScopeController controller;
 
-   public GuiceScope(juzu.Scope scope, ScopeController controller)
-   {
-      this.scope = scope;
-      this.controller = controller;
-   }
+  public GuiceScope(juzu.Scope scope, ScopeController controller) {
+    this.scope = scope;
+    this.controller = controller;
+  }
 
-   public <T> Provider<T> scope(final Key<T> key, final Provider<T> unscoped)
-   {
-      return new Provider<T>()
-      {
-         public T get()
-         {
-            GuiceScoped scoped = (GuiceScoped)controller.get(scope, key);
-            if (scoped == null)
-            {
-               scoped = new GuiceScoped(unscoped.get());
-               controller.put(scope, key, scoped);
-            }
-            return (T)scoped.o;
-         }
-      };
-   }
+  public <T> Provider<T> scope(final Key<T> key, final Provider<T> unscoped) {
+    return new Provider<T>() {
+      public T get() {
+        GuiceScoped scoped = (GuiceScoped)controller.get(scope, key);
+        if (scoped == null) {
+          scoped = new GuiceScoped(unscoped.get());
+          controller.put(scope, key, scoped);
+        }
+        return (T)scoped.o;
+      }
+    };
+  }
 }

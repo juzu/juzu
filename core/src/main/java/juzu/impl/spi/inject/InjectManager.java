@@ -22,49 +22,48 @@ package juzu.impl.spi.inject;
 import java.lang.reflect.InvocationTargetException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface InjectManager<B, I>
-{
+public interface InjectManager<B, I> {
 
-   /**
-    * Returns the implementation.
-    *
-    * @return the implementation
-    */
-   InjectImplementation getImplementation();
+  /**
+   * Returns the implementation.
+   *
+   * @return the implementation
+   */
+  InjectImplementation getImplementation();
 
-   ClassLoader getClassLoader();
+  ClassLoader getClassLoader();
 
-   B resolveBean(Class<?> type);
+  B resolveBean(Class<?> type);
 
-   B resolveBean(String name);
+  B resolveBean(String name);
 
-   Iterable<B> resolveBeans(Class<?> type);
+  Iterable<B> resolveBeans(Class<?> type);
 
-   /**
-    * Create a bean instance for the specified bean.
-    *
-    * @param bean the bean
-    * @return the bean instance
-    * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
-    */
-   I create(B bean) throws InvocationTargetException;
+  /**
+   * Create a bean instance for the specified bean.
+   *
+   * @param bean the bean
+   * @return the bean instance
+   * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
+   */
+  I create(B bean) throws InvocationTargetException;
 
-   /**
-    * Get the bean object associated the bean instance.
-    *
-    * @param bean the bean
-    * @param instance the bean instance
-    * @return the bean instance
-    * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
-    */
-   Object get(B bean, I instance) throws InvocationTargetException;
+  /**
+   * Get the bean object associated the bean instance.
+   *
+   * @param bean     the bean
+   * @param instance the bean instance
+   * @return the bean instance
+   * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
+   */
+  Object get(B bean, I instance) throws InvocationTargetException;
 
-   void release(B bean, I instance);
+  void release(B bean, I instance);
 
-   /**
-    * Shutdown the manager. The implementation should care bout shutting down the existing bean
-    * in particular the singleton beans that are managed outside of an explicit scope.
-    */
-   void shutdown();
+  /**
+   * Shutdown the manager. The implementation should care bout shutting down the existing bean in particular the
+   * singleton beans that are managed outside of an explicit scope.
+   */
+  void shutdown();
 
 }

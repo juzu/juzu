@@ -25,19 +25,16 @@ import juzu.impl.inject.Export;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RequestScoped
 @Export
-public class Bean
-{
+public class Bean {
 
-   /** . */
-   private String value;
+  /** . */
+  private String value;
 
-   public Bean()
-   {
-      this.value = "" + Math.random();
-   }
+  public Bean() {
+    this.value = "" + Math.random();
+  }
 
-   public String getValue()
-   {
-      return value;
-   }
+  public String getValue() {
+    return value;
+  }
 }

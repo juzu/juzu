@@ -27,36 +27,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopingContextImpl implements ScopingContext
-{
+public class ScopingContextImpl implements ScopingContext {
 
-   /** . */
-   private final Map<ScopedKey, Scoped> entries = new HashMap<ScopedKey, Scoped>();
+  /** . */
+  private final Map<ScopedKey, Scoped> entries = new HashMap<ScopedKey, Scoped>();
 
-   public Scoped getContextualValue(Scope scope, Object key)
-   {
-      return entries.get(new ScopedKey(scope, key));
-   }
+  public Scoped getContextualValue(Scope scope, Object key) {
+    return entries.get(new ScopedKey(scope, key));
+  }
 
-   public void setContextualValue(Scope scope, Object key, Scoped value)
-   {
-      if (value != null)
-      {
-         entries.put(new ScopedKey(scope, key), value);
-      }
-      else
-      {
-         entries.remove(new ScopedKey(scope, key));
-      }
-   }
+  public void setContextualValue(Scope scope, Object key, Scoped value) {
+    if (value != null) {
+      entries.put(new ScopedKey(scope, key), value);
+    }
+    else {
+      entries.remove(new ScopedKey(scope, key));
+    }
+  }
 
-   public boolean isActive(Scope scope)
-   {
-      return true;
-   }
+  public boolean isActive(Scope scope) {
+    return true;
+  }
 
-   public Map<ScopedKey, Scoped> getEntries()
-   {
-      return entries;
-   }
+  public Map<ScopedKey, Scoped> getEntries() {
+    return entries;
+  }
 }

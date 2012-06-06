@@ -17,6 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application(defaultController = A.class)
-package application.default_controller;
+@Application(defaultController = A.class) package application.default_controller;
+
 import juzu.Application;

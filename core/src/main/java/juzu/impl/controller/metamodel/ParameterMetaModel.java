@@ -6,51 +6,45 @@ import juzu.impl.utils.Cardinality;
 import juzu.impl.utils.JSON;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ParameterMetaModel extends MetaModelObject
-{
+public class ParameterMetaModel extends MetaModelObject {
 
-   /** . */
-   final String name;
+  /** . */
+  final String name;
 
-   /** . */
-   final Cardinality cardinality;
+  /** . */
+  final Cardinality cardinality;
 
-   /** . */
-   final ElementHandle.Class type;
+  /** . */
+  final ElementHandle.Class type;
 
-   /** . */
-   final String declaredType;
+  /** . */
+  final String declaredType;
 
-   public ParameterMetaModel(String name, Cardinality cardinality, ElementHandle.Class type, String declaredType)
-   {
-      this.name = name;
-      this.cardinality = cardinality;
-      this.type = type;
-      this.declaredType = declaredType;
-   }
+  public ParameterMetaModel(String name, Cardinality cardinality, ElementHandle.Class type, String declaredType) {
+    this.name = name;
+    this.cardinality = cardinality;
+    this.type = type;
+    this.declaredType = declaredType;
+  }
 
-   public String getName()
-   {
-      return name;
-   }
+  public String getName() {
+    return name;
+  }
 
-   public Cardinality getCardinality()
-   {
-      return cardinality;
-   }
+  public Cardinality getCardinality() {
+    return cardinality;
+  }
 
-   public ElementHandle.Class getType()
-   {
-      return type;
-   }
+  public ElementHandle.Class getType() {
+    return type;
+  }
 
-   @Override
-   public JSON toJSON()
-   {
-      return new JSON().
-         set("name", name).
-         set("type", type).
-         set("declaredType", declaredType).
-         set("cardinality", cardinality);
-   }
+  @Override
+  public JSON toJSON() {
+    return new JSON().
+      set("name", name).
+      set("type", type).
+      set("declaredType", declaredType).
+      set("cardinality", cardinality);
+  }
 }

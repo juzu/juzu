@@ -20,65 +20,55 @@
 package juzu.impl.utils;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TrimmingException extends Exception
-{
+public class TrimmingException extends Exception {
 
-   public static void invoke(Callback callback) throws TrimmingException
-   {
-      try
-      {
-         callback.call();
-      }
-      catch (Throwable t)
-      {
-         throw new TrimmingException(t);
-      }
-   }
+  public static void invoke(Callback callback) throws TrimmingException {
+    try {
+      callback.call();
+    }
+    catch (Throwable t) {
+      throw new TrimmingException(t);
+    }
+  }
 
-   /** . */
-   private final String toString;
+  /** . */
+  private final String toString;
 
-   /** . */
-   private final Throwable source;
-   
-   private TrimmingException(Throwable t)
-   {
-      this(t, new Exception().getStackTrace().length);
-   }
+  /** . */
+  private final Throwable source;
 
-   private TrimmingException(Throwable t, int toTrim)
-   {
-      // Trim the trace
-      StackTraceElement[] trace = t.getStackTrace();
-      StackTraceElement[] trimmed = new StackTraceElement[trace.length - toTrim];
-      System.arraycopy(trace, 0, trimmed, 0, trimmed.length);
-      setStackTrace(trimmed);
-      
-      //
-      this.toString = t.toString();
-      this.source = t;
+  private TrimmingException(Throwable t) {
+    this(t, new Exception().getStackTrace().length);
+  }
 
-      // Recursively build the causes
-      Throwable cause = t.getCause();
-      if (cause != null)
-      {
-         initCause(new TrimmingException(cause, toTrim));
-      }
-   }
+  private TrimmingException(Throwable t, int toTrim) {
+    // Trim the trace
+    StackTraceElement[] trace = t.getStackTrace();
+    StackTraceElement[] trimmed = new StackTraceElement[trace.length - toTrim];
+    System.arraycopy(trace, 0, trimmed, 0, trimmed.length);
+    setStackTrace(trimmed);
 
-   public Throwable getSource()
-   {
-      return source;
-   }
+    //
+    this.toString = t.toString();
+    this.source = t;
 
-   @Override
-   public String toString()
-   {
-      return toString;
-   }
+    // Recursively build the causes
+    Throwable cause = t.getCause();
+    if (cause != null) {
+      initCause(new TrimmingException(cause, toTrim));
+    }
+  }
 
-   public static interface Callback
-   {
-      void call() throws Throwable;
-   }
+  public Throwable getSource() {
+    return source;
+  }
+
+  @Override
+  public String toString() {
+    return toString;
+  }
+
+  public static interface Callback {
+    void call() throws Throwable;
+  }
 }

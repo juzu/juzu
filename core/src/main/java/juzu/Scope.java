@@ -23,70 +23,57 @@ import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum Scope
-{
+public enum Scope {
 
-   SINGLETON(Singleton.class)
-      {
-         @Override
-         public boolean isBuiltIn()
-         {
-            return true;
-         }
-      },
+  SINGLETON(Singleton.class) {
+    @Override
+    public boolean isBuiltIn() {
+      return true;
+    }
+  },
 
-   REQUEST(RequestScoped.class)
-   {
-      @Override
-      public boolean isBuiltIn()
-      {
-         return false;
-      }
-   },
+  REQUEST(RequestScoped.class) {
+    @Override
+    public boolean isBuiltIn() {
+      return false;
+    }
+  },
 
-   SESSION(SessionScoped.class)
-   {
-      @Override
-      public boolean isBuiltIn()
-      {
-         return false;
-      }
-   },
+  SESSION(SessionScoped.class) {
+    @Override
+    public boolean isBuiltIn() {
+      return false;
+    }
+  },
 
-   /**
-    * todo : study more in depth how flash scoped is propagated to other phase, specially the resource phase
-    * todo : that should kind of have an ID.
-    */
-   FLASH(FlashScoped.class)
-   {
-      @Override
-      public boolean isBuiltIn()
-      {
-         return false;
-      }
-   },
+  /**
+   * todo : study more in depth how flash scoped is propagated to other phase, specially the resource phase todo : that
+   * should kind of have an ID.
+   */
+  FLASH(FlashScoped.class) {
+    @Override
+    public boolean isBuiltIn() {
+      return false;
+    }
+  },
 
-   IDENTITY(IdentityScoped.class)
-   {
-      @Override
-      public boolean isBuiltIn()
-      {
-         return false;
-      }
-   };
-   
-   /** . */
-   private final Class<? extends Annotation> annotationType;
+  IDENTITY(IdentityScoped.class) {
+    @Override
+    public boolean isBuiltIn() {
+      return false;
+    }
+  };
 
-   Scope(Class<? extends Annotation> annotationType)
-   {
-      this.annotationType = annotationType;
-   }
+  /** . */
+  private final Class<? extends Annotation> annotationType;
 
-   public abstract boolean isBuiltIn();
+  Scope(Class<? extends Annotation> annotationType) {
+    this.annotationType = annotationType;
+  }
 
-   public Class<? extends Annotation> getAnnotationType()
-   {
-      return annotationType;
-   }
+  public abstract boolean isBuiltIn();
+
+  public Class<? extends Annotation> getAnnotationType() {
+    return annotationType;
+  }
 }

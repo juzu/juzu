@@ -22,153 +22,130 @@ package juzu.impl.spi.template.gtmpl;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
+import juzu.impl.spi.template.TemplateStub;
+import juzu.template.TemplateExecutionException;
+import juzu.template.TemplateRenderContext;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import juzu.impl.spi.template.TemplateStub;
-import juzu.template.TemplateRenderContext;
-import juzu.template.TemplateExecutionException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class GroovyTemplateStub extends TemplateStub
-{
+public abstract class GroovyTemplateStub extends TemplateStub {
 
-   /** . */
-   protected final String templateId;
+  /** . */
+  protected final String templateId;
 
-   /** . */
-   private Class<?> scriptClass;
+  /** . */
+  private Class<?> scriptClass;
 
-   /** . */
-   private HashMap<Integer, Foo> locationTable;
+  /** . */
+  private HashMap<Integer, Foo> locationTable;
 
-   protected GroovyTemplateStub()
-   {
-      String name = getClass().getName();
-      this.templateId = name.substring(0, name.length() - 1); // Remove trailing _
-   }
+  protected GroovyTemplateStub() {
+    String name = getClass().getName();
+    this.templateId = name.substring(0, name.length() - 1); // Remove trailing _
+  }
 
-   public GroovyTemplateStub(String templateId)
-   {
-      this.templateId = templateId;
-      this.scriptClass = null;
-      this.locationTable = null;
-   }
+  public GroovyTemplateStub(String templateId) {
+    this.templateId = templateId;
+    this.scriptClass = null;
+    this.locationTable = null;
+  }
 
-   private Class<?> getScriptClass()
-   {
-      if (scriptClass == null)
-      {
-         CompilerConfiguration config = new CompilerConfiguration();
-         config.setScriptBaseClass(BaseScript.class.getName());
-         String script = getScript();
-         GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
-         GroovyClassLoader loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), config);
-         try
-         {
-            scriptClass = loader.parseClass(gcs, false);
-            Class<?> constants = scriptClass.getClassLoader().loadClass("Constants");
-            locationTable = (HashMap<Integer, Foo>)constants.getField("TABLE").get(null);
-         }
-         catch (Exception e)
-         {
-            throw new UnsupportedOperationException("handle me gracefully", e);
-         }
+  private Class<?> getScriptClass() {
+    if (scriptClass == null) {
+      CompilerConfiguration config = new CompilerConfiguration();
+      config.setScriptBaseClass(BaseScript.class.getName());
+      String script = getScript();
+      GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
+      GroovyClassLoader loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), config);
+      try {
+        scriptClass = loader.parseClass(gcs, false);
+        Class<?> constants = scriptClass.getClassLoader().loadClass("Constants");
+        locationTable = (HashMap<Integer, Foo>)constants.getField("TABLE").get(null);
       }
-      return scriptClass;
-   }
-
-   public abstract String getScript();
-
-   public String getClassName()
-   {
-      return getScriptClass().getName();
-   }
-
-   @Override
-   public void render(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException
-   {
-      Class<?> scriptClass = getScriptClass();
-      BaseScript script = (BaseScript)InvokerHelper.createScript(scriptClass, renderContext.getAttributes() != null ? new Binding(renderContext.getAttributes()) : new Binding());
-      script.init(renderContext);
-
-      //
-      try
-      {
-         script.run();
+      catch (Exception e) {
+        throw new UnsupportedOperationException("handle me gracefully", e);
       }
-      catch (Exception e)
-      {
-         if (e instanceof IOException)
-         {
-            throw (IOException)e;
-         }
-         else
-         {
-            throw buildRuntimeException(e);
-         }
-      }
-      catch (Throwable e)
-      {
-         if (e instanceof Error)
-         {
-            throw ((Error)e);
-         }
-         throw buildRuntimeException(e);
-      }
-   }
+    }
+    return scriptClass;
+  }
 
-   private TemplateExecutionException buildRuntimeException(Throwable t)
-   {
-      StackTraceElement[] trace = t.getStackTrace();
+  public abstract String getScript();
 
-      //
-      Foo firstItem = null;
+  public String getClassName() {
+    return getScriptClass().getName();
+  }
 
-      // Try to find the groovy script lines
-      for (int i = 0;i < trace.length;i++)
-      {
-         StackTraceElement element = trace[i];
-         if (element.getClassName().equals(scriptClass.getName()))
-         {
-            int lineNumber = element.getLineNumber();
-            Foo item = locationTable.get(lineNumber);
-            int templateLineNumber;
-            if (item != null)
-            {
-               templateLineNumber = item.getPosition().getLine();
-               if (firstItem == null)
-               {
-                  firstItem = item;
-               }
-            }
-            else
-            {
-               templateLineNumber = -1;
-            }
-            element = new StackTraceElement(
-               element.getClassName(),
-               element.getMethodName(),
-               element.getFileName(),
-               templateLineNumber);
-            trace[i] = element;
-         }
+  @Override
+  public void render(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException {
+    Class<?> scriptClass = getScriptClass();
+    BaseScript script = (BaseScript)InvokerHelper.createScript(scriptClass, renderContext.getAttributes() != null ? new Binding(renderContext.getAttributes()) : new Binding());
+    script.init(renderContext);
+
+    //
+    try {
+      script.run();
+    }
+    catch (Exception e) {
+      if (e instanceof IOException) {
+        throw (IOException)e;
       }
-
-      //
-      t.setStackTrace(trace);
-
-      //
-      if (firstItem != null)
-      {
-         return new TemplateExecutionException(templateId, firstItem.getPosition(), firstItem.getValue(), t);
+      else {
+        throw buildRuntimeException(e);
       }
-      else
-      {
-         return new TemplateExecutionException(templateId, null, null, t);
+    }
+    catch (Throwable e) {
+      if (e instanceof Error) {
+        throw ((Error)e);
       }
-   }
+      throw buildRuntimeException(e);
+    }
+  }
+
+  private TemplateExecutionException buildRuntimeException(Throwable t) {
+    StackTraceElement[] trace = t.getStackTrace();
+
+    //
+    Foo firstItem = null;
+
+    // Try to find the groovy script lines
+    for (int i = 0;i < trace.length;i++) {
+      StackTraceElement element = trace[i];
+      if (element.getClassName().equals(scriptClass.getName())) {
+        int lineNumber = element.getLineNumber();
+        Foo item = locationTable.get(lineNumber);
+        int templateLineNumber;
+        if (item != null) {
+          templateLineNumber = item.getPosition().getLine();
+          if (firstItem == null) {
+            firstItem = item;
+          }
+        }
+        else {
+          templateLineNumber = -1;
+        }
+        element = new StackTraceElement(
+          element.getClassName(),
+          element.getMethodName(),
+          element.getFileName(),
+          templateLineNumber);
+        trace[i] = element;
+      }
+    }
+
+    //
+    t.setStackTrace(trace);
+
+    //
+    if (firstItem != null) {
+      return new TemplateExecutionException(templateId, firstItem.getPosition(), firstItem.getValue(), t);
+    }
+    else {
+      return new TemplateExecutionException(templateId, null, null, t);
+    }
+  }
 }

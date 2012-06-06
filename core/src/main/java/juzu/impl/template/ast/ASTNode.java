@@ -32,351 +32,295 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ASTNode<N extends ASTNode<N>> implements Serializable
-{
+public abstract class ASTNode<N extends ASTNode<N>> implements Serializable {
 
-   /** . */
-   private static final Coordinate DUMB = new Coordinate(0, new Location(1, 1));
+  /** . */
+  private static final Coordinate DUMB = new Coordinate(0, new Location(1, 1));
 
-   /** . */
-   private final Location beginPosition;
+  /** . */
+  private final Location beginPosition;
 
-   /** . */
-   protected final List<Block<?>> children;
+  /** . */
+  protected final List<Block<?>> children;
 
-   /** . */
-   private final List<Block<?>> unmodifiableChildren;
+  /** . */
+  private final List<Block<?>> unmodifiableChildren;
 
-   protected ASTNode(Location beginPosition, List<ASTNode.Block<?>> children)
-   {
-      if (beginPosition == null)
-      {
-         throw new NullPointerException("No null position accepted");
+  protected ASTNode(Location beginPosition, List<ASTNode.Block<?>> children) {
+    if (beginPosition == null) {
+      throw new NullPointerException("No null position accepted");
+    }
+    this.beginPosition = beginPosition;
+    this.children = children;
+    this.unmodifiableChildren = children != null ? Collections.unmodifiableList(children) : Collections.<Block<?>>emptyList();
+  }
+
+  public Location getBeginPosition() {
+    return beginPosition;
+  }
+
+  public List<Block<?>> getChildren() {
+    return unmodifiableChildren;
+  }
+
+  public N addChildren(Iterable<Block<?>> children) {
+    for (Block child : children) {
+      addChild(child);
+    }
+    return (N)this;
+  }
+
+  public N addChild(Block<?> child) {
+    if (children == null) {
+      throw new IllegalStateException("Node " + this + " cannot have children");
+    }
+    if (child.parent != null) {
+      child.parent.children.remove(child);
+      child.parent = null;
+    }
+    child.parent = this;
+    children.add(child);
+    return (N)this;
+  }
+
+  public static class Template extends ASTNode<Template> {
+
+    public static Template parse(CharSequence s) throws ParseException {
+      // At this point we could use something like a CharSequenceReader class or something
+      TemplateParser parser = new TemplateParser(new OffsetTokenManager(new OffsetCharStream(new OffsetReader(new StringReader(s.toString())))));
+      return parser.parse();
+    }
+
+    public Template() {
+      super(new Location(0, 0), new ArrayList<Block<?>>());
+    }
+
+
+  }
+
+  public abstract static class Block<B extends Block<B>> extends ASTNode<B> {
+
+    /** . */
+    private final Coordinate begin;
+
+    /** . */
+    private final Coordinate end;
+
+    /** . */
+    private ASTNode<?> parent;
+
+    protected Block(Coordinate begin, Coordinate end, List<Block<?>> children) {
+      super(begin.getPosition(), children);
+
+      //
+      this.begin = begin;
+      this.end = end;
+      this.parent = null;
+    }
+
+    public ASTNode<?> getParent() {
+      return parent;
+    }
+
+    public void addAfter(Block sibling) {
+      if (sibling.parent != null) {
+        sibling.parent.children.remove(sibling);
+        sibling.parent = null;
       }
-      this.beginPosition = beginPosition;
-      this.children = children;
-      this.unmodifiableChildren = children != null ? Collections.unmodifiableList(children) : Collections.<Block<?>>emptyList();
-   }
+      int index = parent.children.indexOf(this);
+      parent.children.add(index + 1, sibling);
+      sibling.parent = parent;
+    }
 
-   public Location getBeginPosition()
-   {
-      return beginPosition;
-   }
-
-   public List<Block<?>> getChildren()
-   {
-      return unmodifiableChildren;
-   }
-
-   public N addChildren(Iterable<Block<?>> children)
-   {
-      for (Block child : children)
-      {
-         addChild(child);
+    public void remove() throws IllegalStateException {
+      if (parent == null) {
+        throw new IllegalStateException("No parent");
       }
-      return (N)this;
-   }
+      parent.children.remove(this);
+      parent = null;
+    }
 
-   public N addChild(Block<?> child)
-   {
-      if (children == null)
-      {
-         throw new IllegalStateException("Node " + this + " cannot have children");
+    public Coordinate getBegin() {
+      return begin;
+    }
+
+    public Coordinate getEnd() {
+      return end;
+    }
+
+    public int getBeginOffset() {
+      return begin.getOffset();
+    }
+
+    public int getEndOffset() {
+      return end.getOffset();
+    }
+
+    public Location getEndPosition() {
+      return end.getPosition();
+    }
+  }
+
+  public static class Tag extends Block<Tag> {
+
+    /** The tag name. */
+    private final String name;
+
+    /** . */
+    private final Map<String, String> args;
+
+    /** . */
+    private transient TagHandler handler;
+
+    public Tag(String name) {
+      this(name, Collections.<String, String>emptyMap());
+    }
+
+    public Tag(String name, Map<String, String> args) {
+      this(DUMB, DUMB, name, args);
+    }
+
+    public Tag(Coordinate begin, Coordinate end, String name, Map<String, String> args) {
+      super(begin, end, new ArrayList<Block<?>>());
+
+      //
+      this.name = name;
+      this.args = args;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public Map<String, String> getArgs() {
+      return args;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
       }
-      if (child.parent != null)
-      {
-         child.parent.children.remove(child);
-         child.parent = null;
+      if (obj instanceof Tag) {
+        Tag that = (Tag)obj;
+        return name.equals(name) && args.equals(that.args) && children.equals(that.children);
       }
-      child.parent = this;
-      children.add(child);
-      return (N)this;
-   }
+      return false;
+    }
 
-   public static class Template extends ASTNode<Template>
-   {
+    @Override
+    public String toString() {
+      return getClass().getSimpleName() + "[name=" + name + ",args=" + args + "]";
+    }
+  }
 
-      public static Template parse(CharSequence s) throws ParseException
-      {
-         // At this point we could use something like a CharSequenceReader class or something
-         TemplateParser parser = new TemplateParser(new OffsetTokenManager(new OffsetCharStream(new OffsetReader(new StringReader(s.toString())))));
-         return parser.parse();
+  public static class URL extends Block<URL> {
+
+    /** . */
+    private final String typeName;
+
+    /** . */
+    private final String methodName;
+
+    /** . */
+    private final Map<String, String> args;
+
+    public URL(String typeName, String methodName, Map<String, String> args) {
+      this(DUMB, DUMB, typeName, methodName, args);
+    }
+
+    public URL(Coordinate begin, Coordinate end, String typeName, String methodName, Map<String, String> args) {
+      super(begin, end, null);
+
+      //
+      this.typeName = typeName;
+      this.methodName = methodName;
+      this.args = args;
+    }
+
+    public String getTypeName() {
+      return typeName;
+    }
+
+    public String getMethodName() {
+      return methodName;
+    }
+
+    public Map<String, String> getArgs() {
+      return args;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
       }
-
-      public Template()
-      {
-         super(new Location(0, 0), new ArrayList<Block<?>>());
+      if (obj instanceof URL) {
+        URL that = (URL)obj;
+        return Tools.safeEquals(typeName, that.typeName) && methodName.equals(that.methodName) && args.equals(that.args);
       }
+      return false;
+    }
 
+    @Override
+    public String toString() {
+      return getClass().getSimpleName() + "[name=" + methodName + ",args=" + args + "]";
+    }
+  }
 
-   }
+  public static class Section extends Block<Section> {
 
-   public abstract static class Block<B extends Block<B>> extends ASTNode<B>
-   {
+    /** . */
+    private final SectionType type;
 
-      /** . */
-      private final Coordinate begin;
+    /** . */
+    private final String text;
 
-      /** . */
-      private final Coordinate end;
+    public Section(SectionType type, String text) {
+      this(DUMB, DUMB, type, text);
+    }
 
-      /** . */
-      private ASTNode<?> parent;
+    public Section(Coordinate begin, Coordinate end, SectionType type, String text) {
+      super(begin, end, null);
 
-      protected Block(Coordinate begin, Coordinate end, List<Block<?>> children)
-      {
-         super(begin.getPosition(), children);
-
-         //
-         this.begin = begin;
-         this.end = end;
-         this.parent = null;
+      //
+      if (type == null) {
+        throw new NullPointerException();
       }
-
-      public ASTNode<?> getParent()
-      {
-         return parent;
-      }
-
-      public void addAfter(Block sibling)
-      {
-         if (sibling.parent != null)
-         {
-            sibling.parent.children.remove(sibling);
-            sibling.parent = null;
-         }
-         int index = parent.children.indexOf(this);
-         parent.children.add(index + 1, sibling);
-         sibling.parent = parent;
-      }
-
-      public void remove() throws IllegalStateException
-      {
-         if (parent == null)
-         {
-            throw new IllegalStateException("No parent");
-         }
-         parent.children.remove(this);
-         parent = null;
-      }
-
-      public Coordinate getBegin()
-      {
-         return begin;
-      }
-
-      public Coordinate getEnd()
-      {
-         return end;
-      }
-
-      public int getBeginOffset()
-      {
-         return begin.getOffset();
-      }
-
-      public int getEndOffset()
-      {
-         return end.getOffset();
-      }
-
-      public Location getEndPosition()
-      {
-         return end.getPosition();
-      }
-   }
-
-   public static class Tag extends Block<Tag>
-   {
-
-      /** The tag name. */
-      private final String name;
-
-      /** . */
-      private final Map<String, String> args;
-
-      /** . */
-      private transient TagHandler handler;
-
-      public Tag(String name)
-      {
-         this(name, Collections.<String, String>emptyMap());
-      }
-
-      public Tag(String name, Map<String, String> args)
-      {
-         this(DUMB, DUMB, name, args);
-      }
-
-      public Tag(Coordinate begin, Coordinate end, String name, Map<String, String> args)
-      {
-         super(begin, end, new ArrayList<Block<?>>());
-
-         //
-         this.name = name;
-         this.args = args;
-      }
-
-      public String getName()
-      {
-         return name;
-      }
-
-      public Map<String, String> getArgs()
-      {
-         return args;
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         if (obj instanceof Tag)
-         {
-            Tag that = (Tag)obj;
-            return name.equals(name) && args.equals(that.args) && children.equals(that.children);
-         }
-         return false;
-      }
-
-      @Override
-      public String toString()
-      {
-         return getClass().getSimpleName() +  "[name=" + name + ",args=" + args + "]";
-      }
-   }
-
-   public static class URL extends Block<URL>
-   {
-
-      /** . */
-      private final String typeName;
-
-      /** . */
-      private final String methodName;
-
-      /** . */
-      private final Map<String, String> args;
-
-      public URL(String typeName, String methodName, Map<String, String> args)
-      {
-         this(DUMB, DUMB, typeName, methodName, args);
-      }
-
-      public URL(Coordinate begin, Coordinate end, String typeName, String methodName, Map<String, String> args)
-      {
-         super(begin, end, null);
-
-         //
-         this.typeName = typeName;
-         this.methodName = methodName;
-         this.args = args;
-      }
-
-      public String getTypeName()
-      {
-         return typeName;
-      }
-
-      public String getMethodName()
-      {
-         return methodName;
-      }
-
-      public Map<String, String> getArgs()
-      {
-         return args;
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         if (obj instanceof URL)
-         {
-            URL that = (URL)obj;
-            return Tools.safeEquals(typeName, that.typeName) && methodName.equals(that.methodName) && args.equals(that.args);
-         }
-         return false;
+      if (text == null) {
+        throw new NullPointerException();
       }
 
-      @Override
-      public String toString()
-      {
-         return getClass().getSimpleName() +  "[name=" + methodName + ",args=" + args + "]";
+
+      //
+      this.text = text;
+      this.type = type;
+    }
+
+    public SectionType getType() {
+      return type;
+    }
+
+    public String getText() {
+      return text;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
       }
-   }
-
-   public static class Section extends Block<Section>
-   {
-
-      /** . */
-      private final SectionType type;
-
-      /** . */
-      private final String text;
-
-      public Section(SectionType type, String text)
-      {
-         this(DUMB, DUMB, type, text);
+      if (obj instanceof Section) {
+        Section that = (Section)obj;
+        return type == that.type && text.equals(that.text);
       }
+      return false;
+    }
 
-      public Section(Coordinate begin, Coordinate end, SectionType type, String text)
-      {
-         super(begin, end, null);
-
-         //
-         if (type == null)
-         {
-            throw new NullPointerException();
-         }
-         if (text == null)
-         {
-            throw new NullPointerException();
-         }
-
-
-         //
-         this.text = text;
-         this.type = type;
-      }
-
-      public SectionType getType()
-      {
-         return type;
-      }
-
-      public String getText()
-      {
-         return text;
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         if (obj instanceof Section)
-         {
-            Section that = (Section)obj;
-            return type == that.type && text.equals(that.text);
-         }
-         return false;
-      }
-
-      @Override
-      public String toString()
-      {
-         return getClass().getSimpleName() +  "[type=" + type + ",text=" + text + "]";
-      }
-   }
+    @Override
+    public String toString() {
+      return getClass().getSimpleName() + "[type=" + type + ",text=" + text + "]";
+    }
+  }
 
 }

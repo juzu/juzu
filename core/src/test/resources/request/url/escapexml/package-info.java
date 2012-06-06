@@ -1,4 +1,3 @@
-@Application(escapeXML = true)
-package request.url.escapexml;
+@Application(escapeXML = true) package request.url.escapexml;
 
 import juzu.Application;

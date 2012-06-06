@@ -34,76 +34,62 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge
-{
+public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge {
 
-   /** . */
-   private boolean done;
+  /** . */
+  private boolean done;
 
-   public PortletActionBridge(PortletBridgeContext context, ActionRequest actionRequest, ActionResponse actionResponse, boolean prod)
-   {
-      super(context, actionRequest, actionResponse, prod);
+  public PortletActionBridge(PortletBridgeContext context, ActionRequest actionRequest, ActionResponse actionResponse, boolean prod) {
+    super(context, actionRequest, actionResponse, prod);
+
+    //
+    this.done = false;
+  }
+
+  public void end(Response response) throws IllegalStateException, IOException {
+    if (done) {
+      throw new IllegalStateException();
+    }
+    if (response instanceof Response.Update) {
+      Response.Update update = (Response.Update)response;
+
+      // Parameters
+      for (Map.Entry<String, String[]> entry : update.getParameters().entrySet()) {
+        super.resp.setRenderParameter(entry.getKey(), entry.getValue());
+      }
+
+      // Method id
+      String methodId = update.getProperties().getValue(RenderContext.METHOD_ID);
+      if (methodId != null) {
+        super.resp.setRenderParameter("juzu.op", methodId);
+      }
 
       //
-      this.done = false;
-   }
-
-   public void end(Response response) throws IllegalStateException, IOException
-   {
-      if (done)
-      {
-         throw new IllegalStateException();
+      PortletMode portletMode = update.getProperties().getValue(JuzuPortlet.PORTLET_MODE);
+      if (portletMode != null) {
+        try {
+          super.resp.setPortletMode(portletMode);
+        }
+        catch (PortletModeException e) {
+          throw new IllegalArgumentException(e);
+        }
       }
-      if (response instanceof Response.Update)
-      {
-         Response.Update update = (Response.Update)response;
 
-         // Parameters
-         for (Map.Entry<String, String[]> entry : update.getParameters().entrySet())
-         {
-            super.resp.setRenderParameter(entry.getKey(), entry.getValue());
-         }
-
-         // Method id
-         String methodId = update.getProperties().getValue(RenderContext.METHOD_ID);
-         if (methodId != null)
-         {
-            super.resp.setRenderParameter("juzu.op", methodId);
-         }
-
-         //
-         PortletMode portletMode = update.getProperties().getValue(JuzuPortlet.PORTLET_MODE);
-         if (portletMode != null)
-         {
-            try
-            {
-               super.resp.setPortletMode(portletMode);
-            }
-            catch (PortletModeException e)
-            {
-               throw new IllegalArgumentException(e);
-            }
-         }
-
-         //
-         WindowState windowState = update.getProperties().getValue(JuzuPortlet.WINDOW_STATE);
-         if (windowState != null)
-         {
-            try
-            {
-               super.resp.setWindowState(windowState);
-            }
-            catch (WindowStateException e)
-            {
-               throw new IllegalArgumentException(e);
-            }
-         }
+      //
+      WindowState windowState = update.getProperties().getValue(JuzuPortlet.WINDOW_STATE);
+      if (windowState != null) {
+        try {
+          super.resp.setWindowState(windowState);
+        }
+        catch (WindowStateException e) {
+          throw new IllegalArgumentException(e);
+        }
       }
-      else if (response instanceof Response.Redirect)
-      {
-         Response.Redirect redirect = (Response.Redirect)response;
-         super.resp.sendRedirect(redirect.getLocation());
-      }
-      done = true;
-   }
+    }
+    else if (response instanceof Response.Redirect) {
+      Response.Redirect redirect = (Response.Redirect)response;
+      super.resp.sendRedirect(redirect.getLocation());
+    }
+    done = true;
+  }
 }

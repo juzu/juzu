@@ -25,39 +25,32 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.Cookie;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletHttpContext implements HttpContext
-{
+public class PortletHttpContext implements HttpContext {
 
-   /** . */
-   private final PortletRequest request;
+  /** . */
+  private final PortletRequest request;
 
-   public PortletHttpContext(PortletRequest request)
-   {
-      this.request = request;
-   }
+  public PortletHttpContext(PortletRequest request) {
+    this.request = request;
+  }
 
-   public Cookie[] getCookies()
-   {
-      return request.getCookies();
-   }
+  public Cookie[] getCookies() {
+    return request.getCookies();
+  }
 
-   public String getScheme()
-   {
-      return request.getScheme();
-   }
+  public String getScheme() {
+    return request.getScheme();
+  }
 
-   public int getServerPort()
-   {
-      return request.getServerPort();
-   }
+  public int getServerPort() {
+    return request.getServerPort();
+  }
 
-   public String getServerName()
-   {
-      return request.getServerName();
-   }
+  public String getServerName() {
+    return request.getServerName();
+  }
 
-   public String getContextPath()
-   {
-      return request.getContextPath();
-   }
+  public String getContextPath() {
+    return request.getContextPath();
+  }
 }

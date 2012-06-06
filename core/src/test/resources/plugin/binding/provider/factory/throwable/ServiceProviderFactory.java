@@ -24,15 +24,12 @@ import juzu.inject.ProviderFactory;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServiceProviderFactory implements ProviderFactory
-{
+public class ServiceProviderFactory implements ProviderFactory {
 
-   public ServiceProviderFactory()
-   {
-   }
+  public ServiceProviderFactory() {
+  }
 
-   public <T> Provider<? extends T> getProvider(Class<T> implementationType) throws Exception
-   {
-      throw new SecurityException();
-   }
+  public <T> Provider<? extends T> getProvider(Class<T> implementationType) throws Exception {
+    throw new SecurityException();
+  }
 }

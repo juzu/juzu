@@ -22,13 +22,12 @@ package juzu.impl.inject;
 import juzu.Scope;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ScopingContext
-{
+public interface ScopingContext {
 
-   Scoped getContextualValue(Scope scope, Object key);
+  Scoped getContextualValue(Scope scope, Object key);
 
-   void setContextualValue(Scope scope, Object key, Scoped value);
+  void setContextualValue(Scope scope, Object key, Scoped value);
 
-   boolean isActive(Scope scope);
+  boolean isActive(Scope scope);
 
 }

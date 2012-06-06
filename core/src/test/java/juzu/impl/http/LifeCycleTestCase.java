@@ -20,25 +20,23 @@
 package juzu.impl.http;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.UserAgent;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LifeCycleTestCase extends AbstractHttpTestCase
-{
+public class LifeCycleTestCase extends AbstractHttpTestCase {
 
-   @Test
-   public void testLifeCycle() throws Exception
-   {
-      assertDeploy("http", "lifecycle");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      String actionURL = page.asText();
-      assertTrue(actionURL.length() > 0);
-      String resourceURL = ((HtmlPage)page.getWebClient().getPage(actionURL)).asText();
-      assertTrue(resourceURL.length() > 0);
-      String done = ((HtmlPage)page.getWebClient().getPage(resourceURL)).asText();
-      assertEquals("done", done);
-   }
+  @Test
+  public void testLifeCycle() throws Exception {
+    assertDeploy("http", "lifecycle");
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
+    String actionURL = page.asText();
+    assertTrue(actionURL.length() > 0);
+    String resourceURL = ((HtmlPage)page.getWebClient().getPage(actionURL)).asText();
+    assertTrue(resourceURL.length() > 0);
+    String done = ((HtmlPage)page.getWebClient().getPage(resourceURL)).asText();
+    assertEquals("done", done);
+  }
 }

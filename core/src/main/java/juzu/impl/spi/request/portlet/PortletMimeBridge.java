@@ -23,12 +23,12 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.URLBuilder;
+import juzu.impl.spi.request.MimeBridge;
+import juzu.io.AppendableStream;
+import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
 import juzu.portlet.JuzuPortlet;
 import juzu.request.Phase;
-import juzu.impl.spi.request.MimeBridge;
-import juzu.io.BinaryOutputStream;
-import juzu.io.AppendableStream;
 import juzu.request.RequestContext;
 
 import javax.portlet.BaseURL;
@@ -46,241 +46,194 @@ import java.util.Enumeration;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge
-{
+abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge {
 
-   /** . */
-   private String mimeType;
-   
-   /** . */
-   private Object result;
+  /** . */
+  private String mimeType;
 
-   /** . */
-   private final boolean buffer;
+  /** . */
+  private Object result;
 
-   PortletMimeBridge(PortletBridgeContext context, Rq request, Rs response, boolean buffer, boolean prod)
-   {
-      super(context, request, response, prod);
+  /** . */
+  private final boolean buffer;
+
+  PortletMimeBridge(PortletBridgeContext context, Rq request, Rs response, boolean buffer, boolean prod) {
+    super(context, request, response, prod);
+
+    //
+    this.buffer = buffer;
+  }
+
+  public void commit() throws IOException {
+    if (result != null) {
+      if (mimeType != null) {
+        resp.setContentType(mimeType);
+      }
+      if (result instanceof String) {
+        resp.getWriter().write((String)result);
+      }
+      else {
+        resp.getPortletOutputStream().write((byte[])result);
+      }
+    }
+  }
+
+  public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
+    if (propertyType == JuzuPortlet.PORTLET_MODE) {
+      if (phase == Phase.RESOURCE) {
+        return "Resource URL don't have portlet modes";
+      }
+      PortletMode portletMode = (PortletMode)propertyValue;
+      for (Enumeration<PortletMode> e = req.getPortalContext().getSupportedPortletModes();e.hasMoreElements();) {
+        PortletMode next = e.nextElement();
+        if (next.equals(portletMode)) {
+          return null;
+        }
+      }
+      return "Unsupported portlet mode " + portletMode;
+    }
+    else if (propertyType == JuzuPortlet.WINDOW_STATE) {
+      if (phase == Phase.RESOURCE) {
+        return "Resource URL don't have windwo state";
+      }
+      WindowState windowState = (WindowState)propertyValue;
+      for (Enumeration<WindowState> e = req.getPortalContext().getSupportedWindowStates();e.hasMoreElements();) {
+        WindowState next = e.nextElement();
+        if (next.equals(windowState)) {
+          return null;
+        }
+      }
+      return "Unsupported window state " + windowState;
+    }
+    else {
+      // For now we ignore other properties
+      return null;
+    }
+  }
+
+  public String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties) {
+    BaseURL url;
+    switch (phase) {
+      case ACTION:
+        url = resp.createActionURL();
+        break;
+      case RENDER:
+        url = resp.createRenderURL();
+        break;
+      case RESOURCE:
+        url = resp.createResourceURL();
+        break;
+      default:
+        throw new AssertionError("Unexpected phase " + phase);
+    }
+
+    // Set generic parameters
+    url.setParameters(parameters);
+
+    //
+    boolean escapeXML = false;
+    if (properties != null) {
+      Boolean escapeXMLProperty = properties.getValue(URLBuilder.ESCAPE_XML);
+      if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty)) {
+        escapeXML = true;
+      }
+
+      // Handle portlet mode
+      PortletMode portletModeProperty = properties.getValue(JuzuPortlet.PORTLET_MODE);
+      if (portletModeProperty != null) {
+        if (url instanceof PortletURL) {
+          try {
+            ((PortletURL)url).setPortletMode(portletModeProperty);
+          }
+          catch (PortletModeException e) {
+            throw new IllegalArgumentException(e);
+          }
+        }
+        else {
+          throw new IllegalArgumentException();
+        }
+      }
+
+      // Handle window state
+      WindowState windowStateProperty = properties.getValue(JuzuPortlet.WINDOW_STATE);
+      if (windowStateProperty != null) {
+        if (url instanceof PortletURL) {
+          try {
+            ((PortletURL)url).setWindowState(windowStateProperty);
+          }
+          catch (WindowStateException e) {
+            throw new IllegalArgumentException(e);
+          }
+        }
+        else {
+          throw new IllegalArgumentException();
+        }
+      }
+
+      // Set method id
+      String methodId = properties.getValue(RequestContext.METHOD_ID);
+      if (methodId != null) {
+        url.setParameter("juzu.op", methodId);
+      }
+    }
+
+    //
+    if (escapeXML) {
+      try {
+        StringWriter writer = new StringWriter();
+        url.write(writer, true);
+        return writer.toString();
+      }
+      catch (IOException ignore) {
+        // This should not happen
+        return "";
+      }
+    }
+    else {
+      return url.toString();
+    }
+  }
+
+  public void end(Response response) throws IllegalStateException, IOException {
+    if (response instanceof Response.Content<?>) {
+      Response.Content<?> content = (Response.Content<?>)response;
 
       //
-      this.buffer = buffer;
-   }
-   
-   public void commit() throws IOException
-   {
-      if (result != null)
-      {
-         if (mimeType != null)
-         {
-            resp.setContentType(mimeType);
-         }
-         if (result instanceof String)
-         {
-            resp.getWriter().write((String)result);
-         }
-         else 
-         {
-            resp.getPortletOutputStream().write((byte[])result);
-         }
-      }
-   }
-
-   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue)
-   {
-      if (propertyType == JuzuPortlet.PORTLET_MODE)
-      {
-         if (phase == Phase.RESOURCE)
-         {
-            return "Resource URL don't have portlet modes";
-         }
-         PortletMode portletMode = (PortletMode)propertyValue;
-         for (Enumeration<PortletMode> e = req.getPortalContext().getSupportedPortletModes();e.hasMoreElements();)
-         {
-            PortletMode next = e.nextElement();
-            if (next.equals(portletMode))
-            {
-               return null;
-            }
-         }
-         return "Unsupported portlet mode " + portletMode;
-      }
-      else if (propertyType == JuzuPortlet.WINDOW_STATE)
-      {
-         if (phase == Phase.RESOURCE)
-         {
-            return "Resource URL don't have windwo state";
-         }
-         WindowState windowState = (WindowState)propertyValue;
-         for (Enumeration<WindowState> e = req.getPortalContext().getSupportedWindowStates();e.hasMoreElements();)
-         {
-            WindowState next = e.nextElement();
-            if (next.equals(windowState))
-            {
-               return null;
-            }
-         }
-         return "Unsupported window state " + windowState;
-      }
-      else
-      {
-         // For now we ignore other properties
-         return null;
-      }
-   }
-
-   public String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties)
-   {
-      BaseURL url;
-      switch (phase)
-      {
-         case ACTION:
-            url = resp.createActionURL();
-            break;
-         case RENDER:
-            url = resp.createRenderURL();
-            break;
-         case RESOURCE:
-            url = resp.createResourceURL();
-            break;
-         default:
-            throw new AssertionError("Unexpected phase " + phase);
+      String mimeType = content.getMimeType();
+      if (mimeType != null) {
+        if (buffer) {
+          this.mimeType = mimeType;
+        }
+        else {
+          this.resp.setContentType(mimeType);
+        }
       }
 
-      // Set generic parameters
-      url.setParameters(parameters);
-
-      //
-      boolean escapeXML = false;
-      if (properties != null)
-      {
-         Boolean escapeXMLProperty = properties.getValue(URLBuilder.ESCAPE_XML);
-         if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty))
-         {
-            escapeXML = true;
-         }
-         
-         // Handle portlet mode
-         PortletMode portletModeProperty = properties.getValue(JuzuPortlet.PORTLET_MODE);
-         if (portletModeProperty != null)
-         {
-            if (url instanceof PortletURL)
-            {
-               try
-               {
-                  ((PortletURL)url).setPortletMode(portletModeProperty);
-               }
-               catch (PortletModeException e)
-               {
-                  throw new IllegalArgumentException(e);
-               }
-            }
-            else
-            {
-               throw new IllegalArgumentException();
-            }
-         }
-         
-         // Handle window state
-         WindowState windowStateProperty = properties.getValue(JuzuPortlet.WINDOW_STATE);
-         if (windowStateProperty != null)
-         {
-            if (url instanceof PortletURL)
-            {
-               try
-               {
-                  ((PortletURL)url).setWindowState(windowStateProperty);
-               }
-               catch (WindowStateException e)
-               {
-                  throw new IllegalArgumentException(e);
-               }
-            }
-            else
-            {
-               throw new IllegalArgumentException();
-            }
-         }
-
-         // Set method id
-         String methodId = properties.getValue(RequestContext.METHOD_ID);
-         if (methodId != null)
-         {
-            url.setParameter("juzu.op", methodId);
-         }
+      // Send content
+      if (content.getKind() == Stream.Char.class) {
+        Stream.Char stream;
+        if (buffer) {
+          StringBuilder sb = new StringBuilder();
+          stream = new AppendableStream(sb);
+          ((Response.Content<Stream.Char>)response).send(stream);
+          result = sb.toString();
+        }
+        else {
+          ((Response.Content<Stream.Char>)response).send(new AppendableStream(this.resp.getWriter()));
+        }
       }
-
-      //
-      if (escapeXML)
-      {
-         try
-         {
-            StringWriter writer = new StringWriter();
-            url.write(writer, true);
-            return writer.toString();
-         }
-         catch (IOException ignore)
-         {
-            // This should not happen
-            return "";
-         }
+      else {
+        Stream.Binary stream;
+        if (buffer) {
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          stream = new BinaryOutputStream(baos);
+          ((Response.Content<Stream.Binary>)response).send(stream);
+          result = baos.toByteArray();
+        }
+        else {
+          ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
+        }
       }
-      else
-      {
-         return url.toString();
-      }
-   }
-
-   public void end(Response response) throws IllegalStateException, IOException
-   {
-      if (response instanceof Response.Content<?>)
-      {
-         Response.Content<?> content = (Response.Content<?>)response;
-
-         //
-         String mimeType = content.getMimeType();
-         if (mimeType != null)
-         {
-            if (buffer)
-            {
-               this.mimeType = mimeType;
-            }
-            else
-            {
-               this.resp.setContentType(mimeType);
-            }
-         }
-
-         // Send content
-         if (content.getKind() == Stream.Char.class)
-         {
-            Stream.Char stream;
-            if (buffer)
-            {
-               StringBuilder sb = new StringBuilder();
-               stream = new AppendableStream(sb);
-               ((Response.Content<Stream.Char>)response).send(stream);
-               result = sb.toString();
-            }
-            else
-            {
-               ((Response.Content<Stream.Char>)response).send(new AppendableStream(this.resp.getWriter()));
-            }
-         }
-         else
-         {
-            Stream.Binary stream;
-            if (buffer)
-            {
-               ByteArrayOutputStream baos = new ByteArrayOutputStream();
-               stream = new BinaryOutputStream(baos);
-               ((Response.Content<Stream.Binary>)response).send(stream);
-               result = baos.toByteArray();
-            }
-            else
-            {
-               ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
-            }
-         }
-      }
-   }
+    }
+  }
 }

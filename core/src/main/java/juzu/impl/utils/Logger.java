@@ -24,22 +24,21 @@ package juzu.impl.utils;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface Logger
-{
+public interface Logger {
 
-   /**
-    * Log a message.
-    *
-    * @param msg the message
-    */
-   void log(CharSequence msg);
+  /**
+   * Log a message.
+   *
+   * @param msg the message
+   */
+  void log(CharSequence msg);
 
-   /**
-    * Log a message assocated with a throwable.
-    *
-    * @param msg the message
-    * @param t the throwable
-    */
-   void log(CharSequence msg, Throwable t);
+  /**
+   * Log a message assocated with a throwable.
+   *
+   * @param msg the message
+   * @param t   the throwable
+   */
+  void log(CharSequence msg, Throwable t);
 
 }

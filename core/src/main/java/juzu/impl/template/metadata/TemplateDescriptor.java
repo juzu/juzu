@@ -23,31 +23,27 @@ import juzu.Path;
 import juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateDescriptor
-{
+public class TemplateDescriptor {
 
-   /** . */
-   private final String path;
+  /** . */
+  private final String path;
 
-   /** . */
-   private final Class<? extends Template> template;
+  /** . */
+  private final Class<? extends Template> template;
 
-   public TemplateDescriptor(Class<? extends Template> template)
-   {
-      Path path = template.getAnnotation(Path.class);
+  public TemplateDescriptor(Class<? extends Template> template) {
+    Path path = template.getAnnotation(Path.class);
 
-      //
-      this.path = path.value();
-      this.template = template;
-   }
+    //
+    this.path = path.value();
+    this.template = template;
+  }
 
-   public String getPath()
-   {
-      return path;
-   }
+  public String getPath() {
+    return path;
+  }
 
-   public Class<? extends Template> getType()
-   {
-      return template;
-   }
+  public Class<? extends Template> getType() {
+    return template;
+  }
 }

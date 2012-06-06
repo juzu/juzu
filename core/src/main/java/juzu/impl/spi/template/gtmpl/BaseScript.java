@@ -21,116 +21,93 @@ package juzu.impl.spi.template.gtmpl;
 
 import groovy.lang.Binding;
 import groovy.lang.Script;
-import org.codehaus.groovy.runtime.InvokerInvocationException;
 import juzu.impl.application.ApplicationException;
 import juzu.template.TemplateRenderContext;
+import org.codehaus.groovy.runtime.InvokerInvocationException;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class BaseScript extends Script
-{
+public abstract class BaseScript extends Script {
 
-   /** . */
-   private GroovyPrinter printer;
+  /** . */
+  private GroovyPrinter printer;
 
-   /** . */
-   private TemplateRenderContext renderContext;
+  /** . */
+  private TemplateRenderContext renderContext;
 
-   protected BaseScript()
-   {
-   }
+  protected BaseScript() {
+  }
 
-   protected BaseScript(Binding binding)
-   {
-      super(binding);
-   }
+  protected BaseScript(Binding binding) {
+    super(binding);
+  }
 
-   public void init(TemplateRenderContext renderContext)
-   {
-      this.printer = new GroovyPrinter(renderContext);
-      this.renderContext = renderContext;
-   }
+  public void init(TemplateRenderContext renderContext) {
+    this.printer = new GroovyPrinter(renderContext);
+    this.renderContext = renderContext;
+  }
 
-   @Override
-   public Object getProperty(String property)
-   {
-      Object value;
-      if ("out".equals(property))
-      {
-         value = printer;
+  @Override
+  public Object getProperty(String property) {
+    Object value;
+    if ("out".equals(property)) {
+      value = printer;
+    }
+    else if ("renderContext".equals(property)) {
+      value = renderContext;
+    }
+    else {
+      try {
+        value = renderContext.resolveBean(property);
       }
-      else if ("renderContext".equals(property))
-      {
-         value = renderContext;
+      catch (ApplicationException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+          throw (RuntimeException)cause;
+        }
+        else if (cause instanceof Error) {
+          throw (Error)cause;
+        }
+        else {
+          throw new UndeclaredThrowableException(cause);
+        }
       }
-      else
-      {
-         try
-         {
-            value = renderContext.resolveBean(property);
-         }
-         catch (ApplicationException e)
-         {
-            Throwable cause = e.getCause();
-            if (cause instanceof RuntimeException)
-            {
-               throw (RuntimeException)cause;
-            }
-            else if (cause instanceof Error)
-            {
-               throw (Error)cause;
-            }
-            else
-            {
-               throw new UndeclaredThrowableException(cause);
-            }
-         }
-         if (value == null)
-         {
-            value = super.getProperty(property);
-         }
+      if (value == null) {
+        value = super.getProperty(property);
       }
-      return value;
-   }
+    }
+    return value;
+  }
 
-   @Override
-   public void println(Object o)
-   {
-      try
-      {
-         printer.println(o);
-      }
-      catch (IOException e)
-      {
-         throw new InvokerInvocationException(e);
-      }
-   }
+  @Override
+  public void println(Object o) {
+    try {
+      printer.println(o);
+    }
+    catch (IOException e) {
+      throw new InvokerInvocationException(e);
+    }
+  }
 
-   @Override
-   public void println()
-   {
-      try
-      {
-         printer.println();
-      }
-      catch (IOException e)
-      {
-         throw new InvokerInvocationException(e);
-      }
-   }
+  @Override
+  public void println() {
+    try {
+      printer.println();
+    }
+    catch (IOException e) {
+      throw new InvokerInvocationException(e);
+    }
+  }
 
-   @Override
-   public void print(Object o)
-   {
-      try
-      {
-         printer.print(o);
-      }
-      catch (IOException e)
-      {
-         throw new InvokerInvocationException(e);
-      }
-   }
+  @Override
+  public void print(Object o) {
+    try {
+      printer.print(o);
+    }
+    catch (IOException e) {
+      throw new InvokerInvocationException(e);
+    }
+  }
 }

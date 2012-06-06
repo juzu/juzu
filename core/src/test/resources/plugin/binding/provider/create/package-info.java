@@ -18,8 +18,7 @@
  */
 
 @Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceProvider.class))
-package plugin.binding.provider.create;
+@Bindings(@Binding(value = Service.class, implementation = ServiceProvider.class)) package plugin.binding.provider.create;
 
 import juzu.Application;
 import juzu.plugin.binding.Binding;

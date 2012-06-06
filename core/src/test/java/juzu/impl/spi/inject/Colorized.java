@@ -26,9 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Colorized
-{
+public @interface Colorized {
 
-   Color value();
+  Color value();
 
 }

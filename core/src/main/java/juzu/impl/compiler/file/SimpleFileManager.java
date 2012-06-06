@@ -32,113 +32,93 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SimpleFileManager<P> extends FileManager
-{
+public class SimpleFileManager<P> extends FileManager {
 
-   public static <P> SimpleFileManager<P> wrap(SimpleFileSystem<P> fs)
-   {
-      return new SimpleFileManager<P>(fs);
-   }
+  public static <P> SimpleFileManager<P> wrap(SimpleFileSystem<P> fs) {
+    return new SimpleFileManager<P>(fs);
+  }
 
-   /** . */
-   final SimpleFileSystem<P> fs;
+  /** . */
+  final SimpleFileSystem<P> fs;
 
-   /** . */
-   final Map<FileKey, JavaFileObjectImpl<P>> entries;
+  /** . */
+  final Map<FileKey, JavaFileObjectImpl<P>> entries;
 
-   public SimpleFileManager(SimpleFileSystem<P> fs)
-   {
-      this.fs = fs;
-      this.entries = new HashMap<FileKey, JavaFileObjectImpl<P>>();
-   }
+  public SimpleFileManager(SimpleFileSystem<P> fs) {
+    this.fs = fs;
+    this.entries = new HashMap<FileKey, JavaFileObjectImpl<P>>();
+  }
 
-   public SimpleFileSystem<P> getFileSystem()
-   {
-      return fs;
-   }
+  public SimpleFileSystem<P> getFileSystem() {
+    return fs;
+  }
 
-   public void clearCache()
-   {
-      entries.clear();
-   }
+  public void clearCache() {
+    entries.clear();
+  }
 
-   public JavaFileObject getReadable(FileKey key) throws IOException
-   {
+  public JavaFileObject getReadable(FileKey key) throws IOException {
+    JavaFileObjectImpl<P> entry = entries.get(key);
+    if (entry == null) {
+      P file = fs.getPath(key.names);
+      if (file != null && fs.isFile(file)) {
+        entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
+      }
+    }
+    return entry;
+  }
+
+  public JavaFileObject getWritable(FileKey key) throws IOException {
+    if (fs instanceof ReadWriteFileSystem<?>) {
+      ReadWriteFileSystem<P> rwFS = (ReadWriteFileSystem<P>)fs;
       JavaFileObjectImpl<P> entry = entries.get(key);
-      if (entry == null)
-      {
-         P file = fs.getPath(key.names);
-         if (file != null && fs.isFile(file))
-         {
-            entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
-         }
+      if (entry == null) {
+        P file = rwFS.getPath(key.names);
+        entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
       }
       return entry;
-   }
+    }
+    else {
+      throw new UnsupportedOperationException("File system is not writable");
+    }
+  }
 
-   public JavaFileObject getWritable(FileKey key) throws IOException
-   {
-      if (fs instanceof ReadWriteFileSystem<?>)
-      {
-         ReadWriteFileSystem<P> rwFS = (ReadWriteFileSystem<P>)fs;
-         JavaFileObjectImpl<P> entry = entries.get(key);
-         if (entry == null)
-         {
-            P file = rwFS.getPath(key.names);
-            entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
-         }
-         return entry;
-      }
-      else
-      {
-         throw new UnsupportedOperationException("File system is not writable");
-      }
-   }
+  @Override
+  public <C extends Collection<JavaFileObject>> C list(
+    String packageName,
+    Set<JavaFileObject.Kind> kinds,
+    boolean recurse,
+    C to) throws IOException {
+    Iterable<String> packageNames = Spliterator.split(packageName, '.');
+    P dir = fs.getPath(packageNames);
+    if (dir != null && fs.isDir(dir)) {
+      list(dir, kinds, recurse, to);
+    }
+    return to;
+  }
 
-   @Override
-   public <C extends Collection<JavaFileObject>> C list(
-      String packageName,
-      Set<JavaFileObject.Kind> kinds,
-      boolean recurse,
-      C to) throws IOException
-   {
-      Iterable<String> packageNames = Spliterator.split(packageName, '.');
-      P dir = fs.getPath(packageNames);
-      if (dir != null && fs.isDir(dir))
-      {
-         list(dir, kinds, recurse, to);
+  private void list(
+    P root,
+    Set<JavaFileObject.Kind> kinds,
+    boolean recurse,
+    Collection<JavaFileObject> to) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    fs.packageOf(root, '.', sb);
+    String packageName = sb.toString();
+    for (Iterator<P> i = fs.getChildren(root);i.hasNext();) {
+      P child = i.next();
+      if (fs.isDir(child)) {
+        if (recurse) {
+          list(child, kinds, true, to);
+        }
       }
-      return to;
-   }
-
-   private void list(
-      P root,
-      Set<JavaFileObject.Kind> kinds,
-      boolean recurse,
-      Collection<JavaFileObject> to) throws IOException
-   {
-      StringBuilder sb = new StringBuilder();
-      fs.packageOf(root, '.', sb);
-      String packageName = sb.toString();
-      for (Iterator<P> i = fs.getChildren(root);i.hasNext();)
-      {
-         P child = i.next();
-         if (fs.isDir(child))
-         {
-            if (recurse)
-            {
-               list(child, kinds, true, to);
-            }
-         }
-         else
-         {
-            String name = fs.getName(child);
-            FileKey key = FileKey.newName(packageName, name);
-            if (kinds.contains(key.kind))
-            {
-               to.add(getReadable(key));
-            }
-         }
+      else {
+        String name = fs.getName(child);
+        FileKey key = FileKey.newName(packageName, name);
+        if (kinds.contains(key.kind)) {
+          to.add(getReadable(key));
+        }
       }
-   }
+    }
+  }
 }

@@ -26,10 +26,10 @@ import java.lang.annotation.Target;
 
 /**
  * Annotate a method for declaring a view controller method.
- *
+ * <p/>
  * <code><pre>
  *    public void MyController {
- *
+ * <p/>
  *       &#064;Action
  *       public void myAction() {
  *          ...
@@ -41,7 +41,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Action
-{
-   String id() default "";
+public @interface Action {
+  String id() default "";
 }

@@ -18,8 +18,7 @@
  */
 
 @Application
-@Bindings(@Binding(value = Service.class, implementation = ProviderFactoryImpl.class))
-package plugin.binding.provider.factory.nopublicctor;
+@Bindings(@Binding(value = Service.class, implementation = ProviderFactoryImpl.class)) package plugin.binding.provider.factory.nopublicctor;
 
 import juzu.Application;
 import juzu.plugin.binding.Binding;

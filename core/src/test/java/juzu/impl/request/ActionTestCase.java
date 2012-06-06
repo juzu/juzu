@@ -19,58 +19,53 @@
 
 package juzu.impl.request;
 
-import org.junit.Test;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ActionTestCase extends AbstractInjectTestCase
-{
+public class ActionTestCase extends AbstractInjectTestCase {
 
-   public ActionTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public ActionTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testNoOp() throws Exception
-   {
-      MockApplication<?> app = application("request", "action", "noop").init();
+  @Test
+  public void testNoOp() throws Exception {
+    MockApplication<?> app = application("request", "action", "noop").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
-      action.assertNoResponse();
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
+    action.assertNoResponse();
+  }
 
-   @Test
-   public void testRedirect() throws Exception
-   {
-      MockApplication<?> app = application("request", "action", "redirect").init();
+  @Test
+  public void testRedirect() throws Exception {
+    MockApplication<?> app = application("request", "action", "redirect").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
-      action.assertRedirect("http://www.julienviet.com");
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
+    action.assertRedirect("http://www.julienviet.com");
+  }
 
-   @Test
-   public void testRender() throws Exception
-   {
-      MockApplication<?> app = application("request", "action", "render").init();
+  @Test
+  public void testRender() throws Exception {
+    MockApplication<?> app = application("request", "action", "render").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
-      action.assertRender("render", Collections.singletonMap("arg", "arg_value"));
-   }
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
+    action.assertRender("render", Collections.singletonMap("arg", "arg_value"));
+  }
 }

@@ -33,159 +33,133 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JavaFileObjectImpl<P> extends SimpleJavaFileObject
-{
+public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
 
-   /***/
-   final FileKey key;
+  /***/
+  final FileKey key;
 
-   /** . */
-   final SimpleFileManager<P> manager;
+  /** . */
+  final SimpleFileManager<P> manager;
 
-   /** The file, might not exist when this object will create. */
-   private P file;
+  /** The file, might not exist when this object will create. */
+  private P file;
 
-   /** . */
-   Content content;
+  /** . */
+  Content content;
 
-   /** . */
-   private boolean writing;
+  /** . */
+  private boolean writing;
 
-   public JavaFileObjectImpl(FileKey key, SimpleFileManager<P> manager, P file)
-   {
-      super(key.uri, key.kind);
+  public JavaFileObjectImpl(FileKey key, SimpleFileManager<P> manager, P file) {
+    super(key.uri, key.kind);
 
-      //
-      this.key = key;
-      this.manager = manager;
-      this.file = file;
-      this.writing = false;
-   }
+    //
+    this.key = key;
+    this.manager = manager;
+    this.file = file;
+    this.writing = false;
+  }
 
-   public FileKey getKey()
-   {
-      return key;
-   }
+  public FileKey getKey() {
+    return key;
+  }
 
-   private Content getContent() throws IOException
-   {
-      if (writing)
-      {
-         throw new IllegalStateException("Opened for writing");
-      }
-      if (file == null)
-      {
-         throw new FileNotFoundException("File " + key + " cannot be found");
-      }
-      if (content == null)
-      {
-         content = manager.fs.getContent(file);
-      }
-      return content;
-   }
+  private Content getContent() throws IOException {
+    if (writing) {
+      throw new IllegalStateException("Opened for writing");
+    }
+    if (file == null) {
+      throw new FileNotFoundException("File " + key + " cannot be found");
+    }
+    if (content == null) {
+      content = manager.fs.getContent(file);
+    }
+    return content;
+  }
 
-   public File getFile() throws IOException
-   {
-      return manager.fs.getFile(file);
-   }
+  public File getFile() throws IOException {
+    return manager.fs.getFile(file);
+  }
 
-   @Override
-   public String getName()
-   {
-      return key.rawName;
-   }
+  @Override
+  public String getName() {
+    return key.rawName;
+  }
 
-   /**
-    * We subclass this in order to have the correct name in the stack trace. This is not really documented
-    * anywhere.
-    *
-    * @return the file name
-    */
-   @Override
-   public String toString()
-   {
-      return key.rawName;
-   }
+  /**
+   * We subclass this in order to have the correct name in the stack trace. This is not really documented anywhere.
+   *
+   * @return the file name
+   */
+  @Override
+  public String toString() {
+    return key.rawName;
+  }
 
-   @Override
-   public long getLastModified()
-   {
-      try
-      {
-         return getContent().getLastModified();
-      }
-      catch (IOException e)
-      {
-         // We return 0 as the javadoc say to do
-         return 0;
-      }
-   }
+  @Override
+  public long getLastModified() {
+    try {
+      return getContent().getLastModified();
+    }
+    catch (IOException e) {
+      // We return 0 as the javadoc say to do
+      return 0;
+    }
+  }
 
-   @Override
-   public final CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException
-   {
-      return getContent().getCharSequence();
-   }
+  @Override
+  public final CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
+    return getContent().getCharSequence();
+  }
 
-   @Override
-   public final InputStream openInputStream() throws IOException
-   {
-      return getContent().getInputStream();
-   }
+  @Override
+  public final InputStream openInputStream() throws IOException {
+    return getContent().getInputStream();
+  }
 
-   @Override
-   public OutputStream openOutputStream() throws IOException
-   {
-      if (writing)
-      {
-         throw new IllegalStateException("Opened for writing");
-      }
-      if (manager.fs instanceof ReadWriteFileSystem<?>)
-      {
-         final ReadWriteFileSystem<P> fs = (ReadWriteFileSystem<P>)manager.fs;
-         return new ByteArrayOutputStream() {
-            @Override
-            public void close() throws IOException
-            {
-               content = new Content(System.currentTimeMillis(), toByteArray(), null);
-               P file = fs.makeFile(key.packageNames, key.name);
-               fs.setContent(file, content);
-               JavaFileObjectImpl.this.file = file;
-               JavaFileObjectImpl.this.writing = false;
-            }
-         };
-      }
-      else
-      {
-         throw new UnsupportedOperationException("Read only");
-      }
-   }
+  @Override
+  public OutputStream openOutputStream() throws IOException {
+    if (writing) {
+      throw new IllegalStateException("Opened for writing");
+    }
+    if (manager.fs instanceof ReadWriteFileSystem<?>) {
+      final ReadWriteFileSystem<P> fs = (ReadWriteFileSystem<P>)manager.fs;
+      return new ByteArrayOutputStream() {
+        @Override
+        public void close() throws IOException {
+          content = new Content(System.currentTimeMillis(), toByteArray(), null);
+          P file = fs.makeFile(key.packageNames, key.name);
+          fs.setContent(file, content);
+          JavaFileObjectImpl.this.file = file;
+          JavaFileObjectImpl.this.writing = false;
+        }
+      };
+    }
+    else {
+      throw new UnsupportedOperationException("Read only");
+    }
+  }
 
-   @Override
-   public Writer openWriter() throws IOException
-   {
-      if (writing)
-      {
-         throw new IllegalStateException("Opened for writing");
-      }
-      if (manager.fs instanceof ReadWriteFileSystem<?>)
-      {
-         final ReadWriteFileSystem<P> fs = (ReadWriteFileSystem<P>)manager.fs;
-         return new StringWriter() {
-            @Override
-            public void close() throws IOException
-            {
-               content = new Content(System.currentTimeMillis(), getBuffer());
-               P file = fs.makeFile(key.packageNames, key.name);
-               fs.setContent(file, content);
-               JavaFileObjectImpl.this.file = file;
-               JavaFileObjectImpl.this.writing = false;
-            }
-         };
-      }
-      else
-      {
-         throw new UnsupportedOperationException("Read only");
-      }
-   }
+  @Override
+  public Writer openWriter() throws IOException {
+    if (writing) {
+      throw new IllegalStateException("Opened for writing");
+    }
+    if (manager.fs instanceof ReadWriteFileSystem<?>) {
+      final ReadWriteFileSystem<P> fs = (ReadWriteFileSystem<P>)manager.fs;
+      return new StringWriter() {
+        @Override
+        public void close() throws IOException {
+          content = new Content(System.currentTimeMillis(), getBuffer());
+          P file = fs.makeFile(key.packageNames, key.name);
+          fs.setContent(file, content);
+          JavaFileObjectImpl.this.file = file;
+          JavaFileObjectImpl.this.writing = false;
+        }
+      };
+    }
+    else {
+      throw new UnsupportedOperationException("Read only");
+    }
+  }
 }

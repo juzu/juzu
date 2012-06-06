@@ -19,43 +19,40 @@
 
 package juzu.impl.request;
 
-import org.junit.Test;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RequestContextTestCase extends AbstractInjectTestCase
-{
+public class RequestContextTestCase extends AbstractInjectTestCase {
 
-   public RequestContextTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public RequestContextTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testInjection() throws Exception
-   {
-      MockApplication<?> app = application("request", "context").init();
+  @Test
+  public void testInjection() throws Exception {
+    MockApplication<?> app = application("request", "context").init();
 
-      //
-      MockClient client = app.client();
-      MockRenderBridge render = client.render();
-      assertEquals("render_phase", render.assertStringResult());
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    assertEquals("render_phase", render.assertStringResult());
 
-      //
-      String url = render.getTitle();
-      MockActionBridge action = (MockActionBridge)client.invoke(url);
-      //
+    //
+    String url = render.getTitle();
+    MockActionBridge action = (MockActionBridge)client.invoke(url);
+    //
 //      client.
 //      client.invoke();
 //      assertNull(Registry.get("car"));
 
-      //
+    //
 //      client.invoke(Registry.<String>unset("resource"));
 //      assertNull(Registry.get("car"));
-   }
+  }
 }

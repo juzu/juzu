@@ -27,141 +27,114 @@ import juzu.template.TagHandler;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProcessPhase extends CompilationPhase
-{
+public class ProcessPhase extends CompilationPhase {
 
-   /** . */
-   private final Map<Path, Template> templates;
+  /** . */
+  private final Map<Path, Template> templates;
 
-   /** . */
-   private final ProcessContext context;
+  /** . */
+  private final ProcessContext context;
 
-   public ProcessPhase(ProcessContext context, Map<Path, Template> templates)
-   {
-      this.templates = templates;
-      this.context = context;
-   }
+  public ProcessPhase(ProcessContext context, Map<Path, Template> templates) {
+    this.templates = templates;
+    this.context = context;
+  }
 
-   public Map<Path, Template> getTemplates()
-   {
-      return templates;
-   }
+  public Map<Path, Template> getTemplates() {
+    return templates;
+  }
 
-   /** . */
-   private Path originPath;
+  /** . */
+  private Path originPath;
 
-   public Template resolveTemplate(Path path) throws CompilationException
-   {
-      boolean initial;
-      if (originPath == null)
-      {
-         originPath = path;
-         initial = true;
-      }
-      else
-      {
-         initial = false;
+  public Template resolveTemplate(Path path) throws CompilationException {
+    boolean initial;
+    if (originPath == null) {
+      originPath = path;
+      initial = true;
+    }
+    else {
+      initial = false;
+    }
+
+    //
+    try {
+      Template template = templates.get(path);
+
+      //
+      if (template == null) {
+        template = context.resolveTemplate(originPath, path);
+
+        //
+        if (template != null) {
+          templates.put(path, template);
+
+          //
+          ASTNode.Template templateAST = template.getAST();
+
+          // Process template
+          doAttribute(templateAST);
+          doProcess(template, templateAST);
+          doResolve(template, templateAST);
+          doUnattribute(templateAST);
+        }
       }
 
       //
-      try
-      {
-         Template template = templates.get(path);
+      return template;
+    }
+    finally {
+      if (initial) {
+        originPath = null;
+      }
+    }
+  }
 
-         //
-         if (template == null)
-         {
-            template = context.resolveTemplate(originPath, path);
-   
-            //
-            if (template != null)
-            {
-               templates.put(path, template);
-   
-               //
-               ASTNode.Template templateAST = template.getAST();
-   
-               // Process template
-               doAttribute(templateAST);
-               doProcess(template, templateAST);
-               doResolve(template, templateAST);
-               doUnattribute(templateAST);
-            }
-         }
+  private void doProcess(Template template, ASTNode<?> node) throws CompilationException {
+    if (node instanceof ASTNode.Template) {
+      for (ASTNode.Block child : node.getChildren()) {
+        doProcess(template, child);
+      }
+    }
+    else if (node instanceof ASTNode.Section) {
+      // Do nothing
+    }
+    else if (node instanceof ASTNode.URL) {
+      // Do nothing
+    }
+    else if (node instanceof ASTNode.Tag) {
+      ASTNode.Tag nodeTag = (ASTNode.Tag)node;
+      TagHandler handler = get(nodeTag);
+      if (handler instanceof ExtendedTagHandler) {
+        ((ExtendedTagHandler)handler).process(this, nodeTag, template);
+      }
+      for (ASTNode.Block child : nodeTag.getChildren()) {
+        doProcess(template, child);
+      }
+    }
+  }
 
-         //
-         return template;
+  private void doResolve(Template template, ASTNode<?> node) throws CompilationException {
+    if (node instanceof ASTNode.Template) {
+      for (ASTNode.Block child : node.getChildren()) {
+        doResolve(template, child);
       }
-      finally
-      {
-         if (initial)
-         {
-            originPath = null;
-         }
+    }
+    else if (node instanceof ASTNode.Section) {
+      // Do nothing
+    }
+    else if (node instanceof ASTNode.URL) {
+      // Do nothing
+    }
+    else if (node instanceof ASTNode.Tag) {
+      ASTNode.Tag nodeTag = (ASTNode.Tag)node;
+      TagHandler handler = get(nodeTag);
+      if (handler instanceof ExtendedTagHandler) {
+        ((ExtendedTagHandler)handler).compile(this, nodeTag, template);
       }
-   }
-
-   private void doProcess(Template template, ASTNode<?> node) throws CompilationException
-   {
-      if (node instanceof ASTNode.Template)
-      {
-         for (ASTNode.Block child : node.getChildren())
-         {
-            doProcess(template, child);
-         }
+      for (ASTNode.Block child : nodeTag.getChildren()) {
+        doResolve(template, child);
       }
-      else if (node instanceof ASTNode.Section)
-      {
-         // Do nothing
-      }
-      else if (node instanceof ASTNode.URL)
-      {
-         // Do nothing
-      }
-      else if (node instanceof ASTNode.Tag)
-      {
-         ASTNode.Tag nodeTag = (ASTNode.Tag)node;
-         TagHandler handler = get(nodeTag);
-         if (handler instanceof ExtendedTagHandler)
-         {
-            ((ExtendedTagHandler)handler).process(this, nodeTag, template);
-         }
-         for (ASTNode.Block child : nodeTag.getChildren())
-         {
-            doProcess(template, child);
-         }
-      }
-   }
-
-   private void doResolve(Template template, ASTNode<?> node) throws CompilationException
-   {
-      if (node instanceof ASTNode.Template)
-      {
-         for (ASTNode.Block child : node.getChildren())
-         {
-            doResolve(template, child);
-         }
-      }
-      else if (node instanceof ASTNode.Section)
-      {
-         // Do nothing
-      }
-      else if (node instanceof ASTNode.URL)
-      {
-         // Do nothing
-      }
-      else if (node instanceof ASTNode.Tag)
-      {
-         ASTNode.Tag nodeTag = (ASTNode.Tag)node;
-         TagHandler handler = get(nodeTag);
-         if (handler instanceof ExtendedTagHandler)
-         {
-            ((ExtendedTagHandler)handler).compile(this, nodeTag, template);
-         }
-         for (ASTNode.Block child : nodeTag.getChildren())
-         {
-            doResolve(template, child);
-         }
-      }
-   }
+    }
+  }
 }

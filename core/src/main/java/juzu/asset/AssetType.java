@@ -6,23 +6,20 @@ import java.util.Collections;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum AssetType
-{
+public enum AssetType {
 
-   STYLESHEET("css", "less"),
+  STYLESHEET("css", "less"),
 
-   SCRIPT("js");
+  SCRIPT("js");
 
-   /** . */
-   private final Set<String> extensions;
+  /** . */
+  private final Set<String> extensions;
 
-   private AssetType(String... extensions)
-   {
-      this.extensions = Collections.unmodifiableSet(Tools.set(extensions));
-   }
+  private AssetType(String... extensions) {
+    this.extensions = Collections.unmodifiableSet(Tools.set(extensions));
+  }
 
-   public Set<String> getExtensions()
-   {
-      return extensions;
-   }
+  public Set<String> getExtensions() {
+    return extensions;
+  }
 }

@@ -18,8 +18,7 @@
  */
 
 @Application
-@Bindings(@Binding(value = Service.class, implementation = ServiceProviderFactory.class))
-package plugin.binding.provider.factory.throwable;
+@Bindings(@Binding(value = Service.class, implementation = ServiceProviderFactory.class)) package plugin.binding.provider.factory.throwable;
 
 import juzu.Application;
 import juzu.plugin.binding.Binding;

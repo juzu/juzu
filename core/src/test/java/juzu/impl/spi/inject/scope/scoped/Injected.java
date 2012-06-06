@@ -26,11 +26,10 @@ import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class Injected
-{
+public class Injected {
 
-   @Inject
-   @RequestScoped
-   public Bean scoped;
+  @Inject
+  @RequestScoped
+  public Bean scoped;
 
 }

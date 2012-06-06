@@ -23,8 +23,12 @@ import juzu.PropertyType;
 import juzu.impl.application.ApplicationException;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetServer;
-import juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
+import juzu.impl.compiler.CompilationError;
 import juzu.impl.plugin.portlet.PortletDescriptor;
+import juzu.impl.spi.fs.ReadFileSystem;
+import juzu.impl.spi.fs.classloader.ClassLoaderFileSystem;
+import juzu.impl.spi.fs.disk.DiskFileSystem;
+import juzu.impl.spi.fs.war.WarFileSystem;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.impl.spi.request.portlet.PortletActionBridge;
 import juzu.impl.spi.request.portlet.PortletBridgeContext;
@@ -34,10 +38,6 @@ import juzu.impl.utils.DevClassLoader;
 import juzu.impl.utils.Logger;
 import juzu.impl.utils.Tools;
 import juzu.impl.utils.TrimmingException;
-import juzu.impl.compiler.CompilationError;
-import juzu.impl.spi.fs.ReadFileSystem;
-import juzu.impl.spi.fs.disk.DiskFileSystem;
-import juzu.impl.spi.fs.war.WarFileSystem;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -66,535 +66,454 @@ import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JuzuPortlet implements Portlet, ResourceServingPortlet
-{
+public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
-   /** . */
-   public static final class PORTLET_MODE extends PropertyType<PortletMode> {}
+  /** . */
+  public static final class PORTLET_MODE extends PropertyType<PortletMode> {
+  }
 
-   /** . */
-   public static final class WINDOW_STATE extends PropertyType<WindowState> {}
+  /** . */
+  public static final class WINDOW_STATE extends PropertyType<WindowState> {
+  }
 
-   /** . */
-   public static final PORTLET_MODE PORTLET_MODE = new PORTLET_MODE();
+  /** . */
+  public static final PORTLET_MODE PORTLET_MODE = new PORTLET_MODE();
 
-   /** . */
-   public static final WINDOW_STATE WINDOW_STATE = new WINDOW_STATE();
+  /** . */
+  public static final WINDOW_STATE WINDOW_STATE = new WINDOW_STATE();
 
-   /** . */
-   private PortletConfig config;
+  /** . */
+  private PortletConfig config;
 
-   /** . */
-   private ApplicationRuntime<?, String, String> runtime;
+  /** . */
+  private ApplicationRuntime<?, String, String> runtime;
 
-   /** . */
-   private boolean prod;
+  /** . */
+  private boolean prod;
 
-   /** . */
-   private String srcPath;
+  /** . */
+  private String srcPath;
 
-   /** . */
-   private String appName;
+  /** . */
+  private String appName;
 
-   /** . */
-   private InjectImplementation injectImpl;
+  /** . */
+  private InjectImplementation injectImpl;
 
-   /** . */
-   private ReadFileSystem<String> libs;
+  /** . */
+  private ReadFileSystem<String> libs;
 
-   /** . */
-   private ReadFileSystem<String> resources;
+  /** . */
+  private ReadFileSystem<String> resources;
 
-   /** . */
-   private Logger log;
+  /** . */
+  private Logger log;
 
-   /** . */
-   private PortletBridgeContext bridge;
-   
-   public void init(final PortletConfig config) throws PortletException
-   {
-      this.config = config;
-      this.log = new Logger()
-      {
-         public void log(CharSequence msg)
-         {
-            System.out.println("[" + config.getPortletName() + "] " + msg);
-         }
-         public void log(CharSequence msg, Throwable t)
-         {
-            System.err.println("[" + config.getPortletName() + "] " + msg);
-            t.printStackTrace();
-         }
-      };
+  /** . */
+  private PortletBridgeContext bridge;
 
-      //
-      String runMode = config.getInitParameter("juzu.run_mode");
-      runMode = runMode == null ? "prod" : runMode.trim().toLowerCase();
-
-      //
-      String inject = config.getInitParameter("juzu.inject");
-      InjectImplementation injectImpl;
-      if (inject == null)
-      {
-         injectImpl = InjectImplementation.CDI_WELD;
+  public void init(final PortletConfig config) throws PortletException {
+    this.config = config;
+    this.log = new Logger() {
+      public void log(CharSequence msg) {
+        System.out.println("[" + config.getPortletName() + "] " + msg);
       }
-      else
-      {
-         inject = inject.trim().toLowerCase();
-         if ("weld".equals(inject))
-         {
-            injectImpl = InjectImplementation.CDI_WELD;
-         }
-         else if ("spring".equals(inject))
-         {
-            injectImpl = InjectImplementation.INJECT_SPRING;
-         }
-         else
-         {
-            throw new PortletException("unrecognized inject vendor " + inject);
-         }
+
+      public void log(CharSequence msg, Throwable t) {
+        System.err.println("[" + config.getPortletName() + "] " + msg);
+        t.printStackTrace();
       }
-      log.log("Using injection " + injectImpl.name());
+    };
+
+    //
+    String runMode = config.getInitParameter("juzu.run_mode");
+    runMode = runMode == null ? "prod" : runMode.trim().toLowerCase();
+
+    //
+    String inject = config.getInitParameter("juzu.inject");
+    InjectImplementation injectImpl;
+    if (inject == null) {
+      injectImpl = InjectImplementation.CDI_WELD;
+    }
+    else {
+      inject = inject.trim().toLowerCase();
+      if ("weld".equals(inject)) {
+        injectImpl = InjectImplementation.CDI_WELD;
+      }
+      else if ("spring".equals(inject)) {
+        injectImpl = InjectImplementation.INJECT_SPRING;
+      }
+      else {
+        throw new PortletException("unrecognized inject vendor " + inject);
+      }
+    }
+    log.log("Using injection " + injectImpl.name());
+
+    //
+    this.appName = getApplicationName(config);
+    this.prod = !("dev".equals(runMode));
+    this.srcPath = config.getInitParameter("juzu.src_path");
+    this.injectImpl = injectImpl;
+    this.libs = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/lib/");
+    this.resources = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/");
+
+    //
+    Collection<CompilationError> errors = boot();
+    if (errors != null && errors.size() > 0) {
+      log.log("Error when compiling application " + errors);
+    }
+  }
+
+  /**
+   * Returns the application name to use using the <code>juzu.app_name</code> init parameter of the portlet deployment
+   * descriptor. Subclass can override it to provide a custom application name.
+   *
+   * @param config the portlet config
+   * @return the application name
+   */
+  protected String getApplicationName(PortletConfig config) {
+    return config.getInitParameter("juzu.app_name");
+  }
+
+  private Collection<CompilationError> boot() throws PortletException {
+    if (runtime == null) {
+      if (prod) {
+        runtime = new ApplicationRuntime.Static<String, String, String>(log);
+        ((ApplicationRuntime.Static<String, String, String>)runtime).setClasses(WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/"));
+        ((ApplicationRuntime.Static<String, String, String>)runtime).setClassLoader(Thread.currentThread().getContextClassLoader());
+      }
+      else {
+        try {
+          // Share the same classpath for the whole application
+          PortletContext context = config.getPortletContext();
+          ClassLoaderFileSystem classPath = (ClassLoaderFileSystem)context.getAttribute("juzu.clfs");
+          if (classPath == null) {
+            ClassLoader devCL = new DevClassLoader(Thread.currentThread().getContextClassLoader());
+            context.setAttribute("juzu.clfs", classPath = new ClassLoaderFileSystem(devCL));
+          }
+
+          //
+          runtime = new ApplicationRuntime.Dynamic<String, String, String>(log);
+          if (srcPath != null) {
+            ReadFileSystem<File> fss = new DiskFileSystem(new File(srcPath));
+            ((ApplicationRuntime.Dynamic<String, String, File>)runtime).init(classPath, fss);
+          }
+          else {
+            ReadFileSystem<String> fss = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
+            ((ApplicationRuntime.Dynamic<String, String, String>)runtime).init(classPath, fss);
+          }
+        }
+        catch (Exception e) {
+          throw e instanceof PortletException ? (PortletException)e : new PortletException(e);
+        }
+      }
 
       //
-      this.appName = getApplicationName(config);
-      this.prod = !("dev".equals(runMode));
-      this.srcPath = config.getInitParameter("juzu.src_path");
-      this.injectImpl = injectImpl;
-      this.libs = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/lib/");
-      this.resources = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/");
+      AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
+      if (server == null) {
+        server = new AssetServer();
+        config.getPortletContext().setAttribute("asset.server", server);
+      }
+
+      // Configure the runtime
+      runtime.setLibs(libs);
+      runtime.setResources(resources);
+      runtime.setInjectImplementation(injectImpl);
+      runtime.setName(appName);
+      runtime.setAssetServer(server);
+      runtime.addPlugin("portlet", PortletDescriptor.INSTANCE);
+    }
+
+    //
+    try {
+      Collection<CompilationError> boot = runtime.boot();
+      if (boot == null || boot.isEmpty()) {
+        bridge = new PortletBridgeContext(runtime, runtime.getScriptManager(), log, prod);
+      }
+      return boot;
+    }
+    catch (Exception e) {
+      throw new PortletException("Could not find an application to start", e);
+    }
+  }
+
+  public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException {
+    PortletActionBridge bridge = this.bridge.create(request, response);
+    try {
+      runtime.getContext().invoke(bridge);
+    }
+    catch (ApplicationException e) {
+      // For now we do that until we find something better specially for the dev mode
+      throw new PortletException(e.getCause());
+    }
+    finally {
+      bridge.close();
+    }
+  }
+
+  /**
+   * Purge the session.
+   *
+   * @param req the request owning the session
+   */
+  private void purgeSession(PortletRequest req) {
+    PortletSession session = req.getPortletSession();
+    for (String key : new HashSet<String>(session.getAttributeMap().keySet())) {
+      session.removeAttribute(key);
+    }
+  }
+
+  public void render(final RenderRequest request, final RenderResponse response) throws PortletException, IOException {
+    Collection<CompilationError> errors = boot();
+
+    //
+    if (errors == null || errors.isEmpty()) {
+      if (errors != null) {
+        purgeSession(request);
+      }
 
       //
-      Collection<CompilationError> errors = boot();
-      if (errors != null && errors.size() > 0)
-      {
-         log.log("Error when compiling application " + errors);
-      }
-   }
-
-   /**
-    * Returns the application name to use using the <code>juzu.app_name</code> init parameter of the portlet
-    * deployment descriptor. Subclass can override it to provide a custom application name.
-    *
-    * @param config the portlet config
-    * @return the application name
-    */
-   protected String getApplicationName(PortletConfig config)
-   {
-      return config.getInitParameter("juzu.app_name");
-   }
-
-   private Collection<CompilationError> boot() throws PortletException
-   {
-      if (runtime == null)
-      {
-         if (prod)
-         {
-            runtime = new ApplicationRuntime.Static<String, String, String>(log);
-            ((ApplicationRuntime.Static<String, String, String>)runtime).setClasses(WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/"));
-            ((ApplicationRuntime.Static<String, String, String>)runtime).setClassLoader(Thread.currentThread().getContextClassLoader());
-         }
-         else
-         {
-            try
-            {
-               // Share the same classpath for the whole application
-               PortletContext context = config.getPortletContext();
-               ClassLoaderFileSystem classPath = (ClassLoaderFileSystem)context.getAttribute("juzu.clfs");
-               if (classPath == null)
-               {
-                  ClassLoader devCL = new DevClassLoader(Thread.currentThread().getContextClassLoader());
-                  context.setAttribute("juzu.clfs", classPath = new ClassLoaderFileSystem(devCL));
-               }
-
-               //
-               runtime = new ApplicationRuntime.Dynamic<String, String, String>(log);
-               if (srcPath != null)
-               {
-                  ReadFileSystem<File> fss = new DiskFileSystem(new File(srcPath));
-                  ((ApplicationRuntime.Dynamic<String, String, File>)runtime).init(classPath, fss);
-               }
-               else
-               {
-                  ReadFileSystem<String> fss = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
-                  ((ApplicationRuntime.Dynamic<String, String, String>)runtime).init(classPath, fss);
-               }
+      try {
+        TrimmingException.invoke(new TrimmingException.Callback() {
+          public void call() throws Throwable {
+            PortletRenderBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
+            try {
+              runtime.getContext().invoke(bridge);
+              bridge.commit();
             }
-            catch (Exception e)
-            {
-               throw e instanceof PortletException ? (PortletException)e : new PortletException(e);
+            catch (ApplicationException e) {
+              throw e.getCause();
             }
-         }
-
-         //
-         AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
-         if (server == null)
-         {
-            server = new AssetServer();
-            config.getPortletContext().setAttribute("asset.server", server);
-         }
-
-         // Configure the runtime
-         runtime.setLibs(libs);
-         runtime.setResources(resources);
-         runtime.setInjectImplementation(injectImpl);
-         runtime.setName(appName);
-         runtime.setAssetServer(server);
-         runtime.addPlugin("portlet", PortletDescriptor.INSTANCE);
-      }
-
-      //
-      try
-      {
-         Collection<CompilationError> boot = runtime.boot();
-         if (boot == null || boot.isEmpty())
-         {
-            bridge = new PortletBridgeContext(runtime, runtime.getScriptManager(), log, prod);
-         }
-         return boot;
-      }
-      catch (Exception e)
-      {
-         throw new PortletException("Could not find an application to start", e);
-      }
-   }
-
-   public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException
-   {
-      PortletActionBridge bridge = this.bridge.create(request, response);
-      try
-      {
-         runtime.getContext().invoke(bridge);
-      }
-      catch (ApplicationException e)
-      {
-         // For now we do that until we find something better specially for the dev mode
-         throw new PortletException(e.getCause());
-      }
-      finally
-      {
-         bridge.close();
-      }
-   }
-
-   /**
-    * Purge the session.
-    *
-    * @param req the request owning the session
-    */
-   private void purgeSession(PortletRequest req)
-   {
-      PortletSession session = req.getPortletSession();
-      for (String key : new HashSet<String>(session.getAttributeMap().keySet()))
-      {
-         session.removeAttribute(key);
-      }
-   }
-
-   public void render(final RenderRequest request, final RenderResponse response) throws PortletException, IOException
-   {
-      Collection<CompilationError> errors = boot();
-
-      //
-      if (errors == null || errors.isEmpty())
-      {
-         if (errors != null)
-         {
-            purgeSession(request);
-         }
-
-         //
-         try
-         {
-            TrimmingException.invoke(new TrimmingException.Callback()
-            {
-               public void call() throws Throwable
-               {
-                  PortletRenderBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
-                  try
-                  {
-                     runtime.getContext().invoke(bridge);
-                     bridge.commit();
-                  }
-                  catch (ApplicationException e)
-                  {
-                     throw e.getCause();
-                  }
-                  finally
-                  {
-                     bridge.close();
-                  }
-               }
-            });
-         }
-         catch (TrimmingException e)
-         {
-            if (prod)
-            {
-               throw new PortletException(e.getSource());
+            finally {
+              bridge.close();
             }
-            else
-            {
-               renderThrowable(response.getWriter(), e);
+          }
+        });
+      }
+      catch (TrimmingException e) {
+        if (prod) {
+          throw new PortletException(e.getSource());
+        }
+        else {
+          renderThrowable(response.getWriter(), e);
+        }
+      }
+    }
+    else {
+      renderErrors(response.getWriter(), errors);
+    }
+  }
+
+  public void serveResource(final ResourceRequest request, final ResourceResponse response) throws PortletException, IOException {
+    boolean assetRequest = "assets".equals(request.getParameter("juzu.request"));
+
+    //
+    if (assetRequest && !prod) {
+      String path = request.getResourceID();
+      String contentType;
+      InputStream in;
+      if (runtime.getScriptManager().isClassPath(path)) {
+        contentType = "text/javascript";
+        in = runtime.getClassLoader().getResourceAsStream(path.substring(1));
+      }
+      else if (runtime.getStylesheetManager().isClassPath(path)) {
+        contentType = "text/css";
+        in = runtime.getClassLoader().getResourceAsStream(path.substring(1));
+      }
+      else {
+        contentType = null;
+        in = null;
+      }
+      if (in != null) {
+        response.setContentType(contentType);
+        Tools.copy(in, response.getPortletOutputStream());
+      }
+    }
+    else {
+      try {
+        TrimmingException.invoke(new TrimmingException.Callback() {
+          public void call() throws Throwable {
+            PortletResourceBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
+            try {
+              runtime.getContext().invoke(bridge);
+              bridge.commit();
             }
-         }
-      }
-      else
-      {
-         renderErrors(response.getWriter(), errors);
-      }
-   }
-   
-   public void serveResource(final ResourceRequest request, final ResourceResponse response) throws PortletException, IOException
-   {
-      boolean assetRequest = "assets".equals(request.getParameter("juzu.request"));
-
-      //
-      if (assetRequest && !prod)
-      {
-         String path = request.getResourceID();
-         String contentType;
-         InputStream in;
-         if (runtime.getScriptManager().isClassPath(path))
-         {
-            contentType = "text/javascript";
-            in = runtime.getClassLoader().getResourceAsStream(path.substring(1));
-         }
-         else if (runtime.getStylesheetManager().isClassPath(path))
-         {
-            contentType = "text/css";
-            in = runtime.getClassLoader().getResourceAsStream(path.substring(1));
-         }
-         else
-         {
-            contentType = null;
-            in = null;
-         }
-         if (in != null)
-         {
-            response.setContentType(contentType);
-            Tools.copy(in, response.getPortletOutputStream());
-         }
-      }
-      else
-      {
-         try
-         {
-            TrimmingException.invoke(new TrimmingException.Callback()
-            {
-               public void call() throws Throwable
-               {
-                  PortletResourceBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
-                  try
-                  {
-                     runtime.getContext().invoke(bridge);
-                     bridge.commit();
-                  }
-                  catch (ApplicationException e)
-                  {
-                     throw e.getCause();
-                  }
-                  finally
-                  {
-                     bridge.close();
-                  }
-               }
-            });
-         }
-         catch (TrimmingException e)
-         {
-            // Internal server error
-            response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
-
-            //
-            logThrowable(e);
-
-            //
-            if (!prod)
-            {
-               PrintWriter writer = response.getWriter();
-               writer.print("<html>\n");
-               writer.print("<head>\n");
-               writer.print("</head>\n");
-               writer.print("<body>\n");
-               renderThrowable(writer, e);
-               writer.print("</body>\n");
+            catch (ApplicationException e) {
+              throw e.getCause();
             }
-         }
-      }
-   }
-
-   private void sendJuzuCSS(PrintWriter writer) throws IOException
-   {
-      // Get CSS
-      URL cssURL = JuzuPortlet.class.getResource("juzu.css");
-      String css = Tools.read(cssURL);
-      css = css.replace("\"", "\\\"");
-      css = css.replace("'", "\\'");
-      css = css.replace("\n", "\\n");
-
-      //
-      writer.append("<script type='text/javascript'>\n");
-      writer.append("var styleElement = document.createElement('style');\n");
-      writer.append("var css = '");
-      writer.append(css);
-      writer.append("';\n");
-      writer.append("styleElement.type = 'text/css';\n");
-      writer.append("if (styleElement.styleSheet) {;\n");
-      writer.append("styleElement.styleSheet.cssText = css;\n");
-      writer.append("} else {\n");
-      writer.append("styleElement.appendChild(document.createTextNode(css));\n");
-      writer.append("}\n");
-      writer.append("document.getElementsByTagName(\"head\")[0].appendChild(styleElement);\n");
-      writer.append("</script>\n");
-   }
-
-   private void logThrowable(Throwable t)
-   {
-      log.log(t.getMessage(), t);
-   }
-
-   private void logErrors(Collection<CompilationError> errors)
-   {
-      // Todo format that better like it is in renderErrors
-      StringBuilder sb = new StringBuilder("Compilation errors:\n");
-      for (CompilationError error : errors)
-      {
-         if (error.getSourceFile() != null)
-         {
-            sb.append(error.getSourceFile().getAbsolutePath());
-         }
-         else
-         {
-            sb.append(error.getSource());
-         }
-         sb.append(':').append(error.getLocation().getLine()).append(':').append(error.getMessage()).append('\n');
-      }
-      log.log(sb.toString());
-   }
-
-   private void renderThrowable(PrintWriter writer, Throwable t) throws PortletException, IOException
-   {
-      // Trim the stack trace to remove stuff we don't want to see
-      int size = 0;
-      StackTraceElement[] trace = t.getStackTrace();
-      for (StackTraceElement element : trace)
-      {
-         if (element.getClassName().equals(JuzuPortlet.class.getName()))
-         {
-            break;
-         }
-         else
-         {
-            size++;
-         }
-      }
-      StackTraceElement[] ourTrace = new StackTraceElement[size];
-      System.arraycopy(trace, 0, ourTrace, 0, ourTrace.length);
-      t.setStackTrace(ourTrace);
-
-      //
-      sendJuzuCSS(writer);
-
-      // We hack a bit
-      final AtomicBoolean open = new AtomicBoolean(false);
-      PrintWriter formatter = new PrintWriter(writer)
-      {
-         @Override
-         public void println(Object x)
-         {
-            if (open.get())
-            {
-               super.append("</ul></pre>");
+            finally {
+              bridge.close();
             }
-            super.append("<div class=\"juzu-message\">");
-            super.append(String.valueOf(x));
-            super.append("</div>");
-            open.set(false);
-         }
+          }
+        });
+      }
+      catch (TrimmingException e) {
+        // Internal server error
+        response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
 
-         @Override
-         public void println(String x)
-         {
-            if (!open.get())
-            {
-               super.append("<pre><ul>");
-               open.set(true);
-            }
-            super.append("<li><span>");
-            super.append(x);
-            super.append("</span></li>");
-         }
+        //
+        logThrowable(e);
 
-         @Override
-         public void println()
-         {
-            // Do nothing
-         }
-      };
+        //
+        if (!prod) {
+          PrintWriter writer = response.getWriter();
+          writer.print("<html>\n");
+          writer.print("<head>\n");
+          writer.print("</head>\n");
+          writer.print("<body>\n");
+          renderThrowable(writer, e);
+          writer.print("</body>\n");
+        }
+      }
+    }
+  }
 
-      //
-      writer.append("<div class=\"juzu\">");
+  private void sendJuzuCSS(PrintWriter writer) throws IOException {
+    // Get CSS
+    URL cssURL = JuzuPortlet.class.getResource("juzu.css");
+    String css = Tools.read(cssURL);
+    css = css.replace("\"", "\\\"");
+    css = css.replace("'", "\\'");
+    css = css.replace("\n", "\\n");
+
+    //
+    writer.append("<script type='text/javascript'>\n");
+    writer.append("var styleElement = document.createElement('style');\n");
+    writer.append("var css = '");
+    writer.append(css);
+    writer.append("';\n");
+    writer.append("styleElement.type = 'text/css';\n");
+    writer.append("if (styleElement.styleSheet) {;\n");
+    writer.append("styleElement.styleSheet.cssText = css;\n");
+    writer.append("} else {\n");
+    writer.append("styleElement.appendChild(document.createTextNode(css));\n");
+    writer.append("}\n");
+    writer.append("document.getElementsByTagName(\"head\")[0].appendChild(styleElement);\n");
+    writer.append("</script>\n");
+  }
+
+  private void logThrowable(Throwable t) {
+    log.log(t.getMessage(), t);
+  }
+
+  private void logErrors(Collection<CompilationError> errors) {
+    // Todo format that better like it is in renderErrors
+    StringBuilder sb = new StringBuilder("Compilation errors:\n");
+    for (CompilationError error : errors) {
+      if (error.getSourceFile() != null) {
+        sb.append(error.getSourceFile().getAbsolutePath());
+      }
+      else {
+        sb.append(error.getSource());
+      }
+      sb.append(':').append(error.getLocation().getLine()).append(':').append(error.getMessage()).append('\n');
+    }
+    log.log(sb.toString());
+  }
+
+  private void renderThrowable(PrintWriter writer, Throwable t) throws PortletException, IOException {
+    // Trim the stack trace to remove stuff we don't want to see
+    int size = 0;
+    StackTraceElement[] trace = t.getStackTrace();
+    for (StackTraceElement element : trace) {
+      if (element.getClassName().equals(JuzuPortlet.class.getName())) {
+        break;
+      }
+      else {
+        size++;
+      }
+    }
+    StackTraceElement[] ourTrace = new StackTraceElement[size];
+    System.arraycopy(trace, 0, ourTrace, 0, ourTrace.length);
+    t.setStackTrace(ourTrace);
+
+    //
+    sendJuzuCSS(writer);
+
+    // We hack a bit
+    final AtomicBoolean open = new AtomicBoolean(false);
+    PrintWriter formatter = new PrintWriter(writer) {
+      @Override
+      public void println(Object x) {
+        if (open.get()) {
+          super.append("</ul></pre>");
+        }
+        super.append("<div class=\"juzu-message\">");
+        super.append(String.valueOf(x));
+        super.append("</div>");
+        open.set(false);
+      }
+
+      @Override
+      public void println(String x) {
+        if (!open.get()) {
+          super.append("<pre><ul>");
+          open.set(true);
+        }
+        super.append("<li><span>");
+        super.append(x);
+        super.append("</span></li>");
+      }
+
+      @Override
+      public void println() {
+        // Do nothing
+      }
+    };
+
+    //
+    writer.append("<div class=\"juzu\">");
+    writer.append("<div class=\"juzu-box\">");
+
+    // We hack a bit with our formatter
+    t.printStackTrace(formatter);
+
+    //
+    if (open.get()) {
+      writer.append("</ul></pre>");
+    }
+
+    //
+    writer.append("</div>");
+    writer.append("</div>");
+  }
+
+  private void renderErrors(PrintWriter writer, Collection<CompilationError> errors) throws PortletException, IOException {
+    sendJuzuCSS(writer);
+
+    //
+    writer.append("<div class=\"juzu\">");
+    for (CompilationError error : errors) {
       writer.append("<div class=\"juzu-box\">");
+      writer.append("<div class=\"juzu-message\">").append(error.getMessage()).append("</div>");
 
-      // We hack a bit with our formatter
-      t.printStackTrace(formatter);
-
-      //
-      if (open.get())
-      {
-         writer.append("</ul></pre>");
-      }
-      
-      //
-      writer.append("</div>");
-      writer.append("</div>");
-   }
-
-   private void renderErrors(PrintWriter writer, Collection<CompilationError> errors) throws PortletException, IOException
-   {
-      sendJuzuCSS(writer);
-
-      //
-      writer.append("<div class=\"juzu\">");
-      for (CompilationError error : errors)
-      {
-         writer.append("<div class=\"juzu-box\">");
-         writer.append("<div class=\"juzu-message\">").append(error.getMessage()).append("</div>");
-
-         // Display the source code
-         File source = error.getSourceFile();
-         if (source != null)
-         {
-            int line = error.getLocation().getLine();
-            int from = line - 2;
-            int to = line + 3;
-            BufferedReader reader = new BufferedReader(new FileReader(source));
-            int count = 1;
-            writer.append("<pre><ol start=\"").append(String.valueOf(from)).append("\">");
-            for (String s = reader.readLine();s != null;s = reader.readLine())
-            {
-               if (count >= from && count < to)
-               {
-                  if (count == line)
-                  {
-                     writer.append("<li><span class=\"error\">").append(s).append("</span></li>");
-                  }
-                  else
-                  {
-                     writer.append("<li><span>").append(s).append("</span></li>");
-                  }
-               }
-               count++;
+      // Display the source code
+      File source = error.getSourceFile();
+      if (source != null) {
+        int line = error.getLocation().getLine();
+        int from = line - 2;
+        int to = line + 3;
+        BufferedReader reader = new BufferedReader(new FileReader(source));
+        int count = 1;
+        writer.append("<pre><ol start=\"").append(String.valueOf(from)).append("\">");
+        for (String s = reader.readLine();s != null;s = reader.readLine()) {
+          if (count >= from && count < to) {
+            if (count == line) {
+              writer.append("<li><span class=\"error\">").append(s).append("</span></li>");
             }
-            writer.append("</ol></pre>");
-         }
-         writer.append("</div>");
+            else {
+              writer.append("<li><span>").append(s).append("</span></li>");
+            }
+          }
+          count++;
+        }
+        writer.append("</ol></pre>");
       }
       writer.append("</div>");
-   }
+    }
+    writer.append("</div>");
+  }
 
-   public void destroy()
-   {
-   }
+  public void destroy() {
+  }
 }

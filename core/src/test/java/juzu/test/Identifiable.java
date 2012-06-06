@@ -23,13 +23,12 @@ package juzu.test;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public interface Identifiable
-{
+public interface Identifiable {
 
-   /** . */
-   int CONSTRUCTED = 0, MANAGED = 1, DESTROYED = 2;
-   
-   long getIdentityHashCode();
-   
-   int getStatus();
+  /** . */
+  int CONSTRUCTED = 0, MANAGED = 1, DESTROYED = 2;
+
+  long getIdentityHashCode();
+
+  int getStatus();
 }

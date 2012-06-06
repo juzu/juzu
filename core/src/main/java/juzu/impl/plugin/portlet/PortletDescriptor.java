@@ -11,24 +11,21 @@ import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletDescriptor extends Descriptor
-{
+public class PortletDescriptor extends Descriptor {
 
-   /** . */
-   private static List<BeanDescriptor> DESCRIPTORS = Collections.unmodifiableList(Tools.list(
-      new BeanDescriptor(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class))
-   );
+  /** . */
+  private static List<BeanDescriptor> DESCRIPTORS = Collections.unmodifiableList(Tools.list(
+    new BeanDescriptor(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class))
+  );
 
-   /** . */
-   public static PortletDescriptor INSTANCE = new PortletDescriptor();
+  /** . */
+  public static PortletDescriptor INSTANCE = new PortletDescriptor();
 
-   private PortletDescriptor()
-   {
-   }
+  private PortletDescriptor() {
+  }
 
-   @Override
-   public Iterable<BeanDescriptor> getBeans()
-   {
-      return DESCRIPTORS;
-   }
+  @Override
+  public Iterable<BeanDescriptor> getBeans() {
+    return DESCRIPTORS;
+  }
 }

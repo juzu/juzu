@@ -22,11 +22,9 @@ package application.resolver.default_controller;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class B
-{
+public class B {
 
-   @View
-   public void index()
-   {
-   }
+  @View
+  public void index() {
+  }
 }

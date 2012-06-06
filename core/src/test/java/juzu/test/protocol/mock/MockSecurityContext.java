@@ -25,60 +25,49 @@ import java.security.Principal;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockSecurityContext implements SecurityContext
-{
+public class MockSecurityContext implements SecurityContext {
 
-   /** . */
-   private String remoteUser;
+  /** . */
+  private String remoteUser;
 
-   /** . */
-   private Set<String> roles;
+  /** . */
+  private Set<String> roles;
 
-   /** . */
-   private Principal principal;
-   
-   public String getRemoteUser()
-   {
-      return remoteUser;
-   }
+  /** . */
+  private Principal principal;
 
-   public void setRemoteUser(String remoteUser)
-   {
-      if (remoteUser == null)
-      {
-         this.remoteUser = null;
-         this.principal = null;
-      }
-      else
-      {
-         this.remoteUser = remoteUser;
-         this.principal = new Principal()
-         {
-            public String getName()
-            {
-               return MockSecurityContext.this.remoteUser;
-            }
-         };
-      }
-   }
+  public String getRemoteUser() {
+    return remoteUser;
+  }
 
-   public Principal getUserPrincipal()
-   {
-      return principal;
-   }
+  public void setRemoteUser(String remoteUser) {
+    if (remoteUser == null) {
+      this.remoteUser = null;
+      this.principal = null;
+    }
+    else {
+      this.remoteUser = remoteUser;
+      this.principal = new Principal() {
+        public String getName() {
+          return MockSecurityContext.this.remoteUser;
+        }
+      };
+    }
+  }
 
-   public boolean isUserInRole(String role)
-   {
-      return roles.contains(role);
-   }
-   
-   public void addRole(String role)
-   {
-      roles.add(role);
-   }
-   
-   public void clearRoles()
-   {
-      roles.clear();
-   }
+  public Principal getUserPrincipal() {
+    return principal;
+  }
+
+  public boolean isUserInRole(String role) {
+    return roles.contains(role);
+  }
+
+  public void addRole(String role) {
+    roles.add(role);
+  }
+
+  public void clearRoles() {
+    roles.clear();
+  }
 }

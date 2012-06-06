@@ -19,115 +19,109 @@
 
 package juzu.impl.request;
 
-import org.junit.Test;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MethodParametersTestCase extends AbstractInjectTestCase
-{
+public class MethodParametersTestCase extends AbstractInjectTestCase {
 
-   public MethodParametersTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public MethodParametersTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   @Test
-   public void testStringArray() throws Exception
-   {
-      MockApplication<?> app = application("request", "method", "parameters", "string", "array").init();
+  @Test
+  public void testStringArray() throws Exception {
+    MockApplication<?> app = application("request", "method", "parameters", "string", "array").init();
 
-      //
-      MockClient client = app.client();
+    //
+    MockClient client = app.client();
 
-      //
-      MockRenderBridge render = client.render("none");
-      MockRenderBridge mv = (MockRenderBridge)client.invoke(render.assertStringResult());
-      assertEquals("", mv.assertStringResult());
+    //
+    MockRenderBridge render = client.render("none");
+    MockRenderBridge mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+    assertEquals("", mv.assertStringResult());
 
-      //
-      render = client.render("0");
-      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
-      assertEquals("", mv.assertStringResult());
+    //
+    render = client.render("0");
+    mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+    assertEquals("", mv.assertStringResult());
 
-      //
-      render = client.render("1");
-      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
-      assertEquals(Arrays.asList("bar").toString(), mv.assertStringResult());
+    //
+    render = client.render("1");
+    mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+    assertEquals(Arrays.asList("bar").toString(), mv.assertStringResult());
 
-      //
-      render = client.render("2");
-      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
-      assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
-   }
+    //
+    render = client.render("2");
+    mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+    assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
+  }
 
-   @Test
-   public void testStringList() throws Exception
-   {
-      MockApplication<?> app = application("request", "method", "parameters", "string", "list").init();
+  @Test
+  public void testStringList() throws Exception {
+    MockApplication<?> app = application("request", "method", "parameters", "string", "list").init();
 
-      //
-      MockClient client = app.client();
+    //
+    MockClient client = app.client();
 
-      //
-      MockRenderBridge render = client.render("none");
-      MockRenderBridge mv = (MockRenderBridge)client.invoke(render.assertStringResult());
-      assertEquals("", mv.assertStringResult());
+    //
+    MockRenderBridge render = client.render("none");
+    MockRenderBridge mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+    assertEquals("", mv.assertStringResult());
 
-      //
-      render = client.render("0");
-      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
-      assertEquals("", mv.assertStringResult());
+    //
+    render = client.render("0");
+    mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+    assertEquals("", mv.assertStringResult());
 
-      //
-      render = client.render("1");
-      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
-      assertEquals(Arrays.asList("bar").toString(), mv.assertStringResult());
+    //
+    render = client.render("1");
+    mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+    assertEquals(Arrays.asList("bar").toString(), mv.assertStringResult());
 
-      //
-      render = client.render("2");
-      mv = (MockRenderBridge)client.invoke(render.assertStringResult());
-      assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
-   }
+    //
+    render = client.render("2");
+    mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+    assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
+  }
 
-   @Test
-   public void testBean() throws Exception
-   {
-      MockApplication<?> app = application("request", "method", "parameters", "bean").init();
+  @Test
+  public void testBean() throws Exception {
+    MockApplication<?> app = application("request", "method", "parameters", "bean").init();
 
-      //
-      MockClient client = app.client();
+    //
+    MockClient client = app.client();
 
-      //
-      assertBean(client, "a", "v");
-      assertBean(client, "b", Arrays.asList("v1", "v2").toString());
-      assertBean(client, "c", Arrays.asList("v1", "v2").toString());
-      assertBean(client, "d", "v");
-      assertBean(client, "e", Arrays.asList("v1", "v2").toString());
-      assertBean(client, "f", Arrays.asList("v1", "v2").toString());
-      assertBean(client, "g", "s_valuev");
-      assertBean(client, "g", "s_valuev");
-      assertBean(client, "h", "s_valuev");
+    //
+    assertBean(client, "a", "v");
+    assertBean(client, "b", Arrays.asList("v1", "v2").toString());
+    assertBean(client, "c", Arrays.asList("v1", "v2").toString());
+    assertBean(client, "d", "v");
+    assertBean(client, "e", Arrays.asList("v1", "v2").toString());
+    assertBean(client, "f", Arrays.asList("v1", "v2").toString());
+    assertBean(client, "g", "s_valuev");
+    assertBean(client, "g", "s_valuev");
+    assertBean(client, "h", "s_valuev");
 
-   }
+  }
 
-   private void assertBean(MockClient client, String name, Object expected) throws Exception
-   {
-      MockRenderBridge render = client.render(name);
-      String url = render.assertStringResult();
-      MockRenderBridge m = (MockRenderBridge)client.invoke(url);
-      assertEquals(expected, m.assertStringResult());
+  private void assertBean(MockClient client, String name, Object expected) throws Exception {
+    MockRenderBridge render = client.render(name);
+    String url = render.assertStringResult();
+    MockRenderBridge m = (MockRenderBridge)client.invoke(url);
+    assertEquals(expected, m.assertStringResult());
 
-      render = client.render(name + "Action");
-      url = render.assertStringResult();
-      MockActionBridge action = (MockActionBridge)client.invoke(url);
-      MockRenderBridge m2 = (MockRenderBridge)client.invoke(action.assertUpdate());
-      assertEquals(expected, m2.assertStringResult());
-   }
+    render = client.render(name + "Action");
+    url = render.assertStringResult();
+    MockActionBridge action = (MockActionBridge)client.invoke(url);
+    MockRenderBridge m2 = (MockRenderBridge)client.invoke(action.assertUpdate());
+    assertEquals(expected, m2.assertStringResult());
+  }
 }

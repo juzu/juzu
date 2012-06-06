@@ -12,62 +12,49 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ApplicationMetaModelPlugin implements Serializable
-{
-   
-   public void init(ApplicationsMetaModel applications)
-   {
-   }
+public class ApplicationMetaModelPlugin implements Serializable {
 
-   public void postActivateApplicationsMetaModel(ApplicationsMetaModel applications)
-   {
-   }
+  public void init(ApplicationsMetaModel applications) {
+  }
 
-   public void postActivate(ApplicationMetaModel application)
-   {
-   }
+  public void postActivateApplicationsMetaModel(ApplicationsMetaModel applications) {
+  }
 
-   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data)
-   {
-   }
+  public void postActivate(ApplicationMetaModel application) {
+  }
 
-   public void postProcessAnnotations(ApplicationMetaModel application)
-   {
-   }
+  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {
+  }
 
-   public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event)
-   {
-   }
+  public void postProcessAnnotations(ApplicationMetaModel application) {
+  }
 
-   public void postProcessEvents(ApplicationMetaModel application)
-   {
-   }
+  public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event) {
+  }
 
-   public void prePassivate(ApplicationMetaModel model)
-   {
-   }
+  public void postProcessEvents(ApplicationMetaModel application) {
+  }
 
-   public void prePassivate(ApplicationsMetaModel applications)
-   {
-   }
+  public void prePassivate(ApplicationMetaModel model) {
+  }
 
-   public void postConstruct(ApplicationMetaModel application)
-   {
-   }
+  public void prePassivate(ApplicationsMetaModel applications) {
+  }
 
-   public void preDestroy(ApplicationMetaModel application)
-   {
-   }
+  public void postConstruct(ApplicationMetaModel application) {
+  }
 
-   /**
-    * Returns the plugin descriptor for the specified application or null if the plugin should not
-    * be involved at runtime.
-    *
-    * @param application the application
-    * @return the descriptor
-    */
-   public JSON getDescriptor(ApplicationMetaModel application)
-   {
-      return null;
-   }
+  public void preDestroy(ApplicationMetaModel application) {
+  }
+
+  /**
+   * Returns the plugin descriptor for the specified application or null if the plugin should not be involved at
+   * runtime.
+   *
+   * @param application the application
+   * @return the descriptor
+   */
+  public JSON getDescriptor(ApplicationMetaModel application) {
+    return null;
+  }
 }

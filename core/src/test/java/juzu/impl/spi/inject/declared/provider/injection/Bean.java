@@ -20,19 +20,16 @@
 package juzu.impl.spi.inject.declared.provider.injection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean
-{
+public class Bean {
 
-   /** . */
-   private String name;
+  /** . */
+  private String name;
 
-   public Bean(String name)
-   {
-      this.name = name;
-   }
+  public Bean(String name) {
+    this.name = name;
+  }
 
-   public String getName()
-   {
-      return name;
-   }
+  public String getName() {
+    return name;
+  }
 }

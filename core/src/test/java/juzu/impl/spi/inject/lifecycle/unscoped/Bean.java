@@ -4,24 +4,21 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean
-{
+public class Bean {
 
-   /** . */
-   public static int construct;
+  /** . */
+  public static int construct;
 
-   /** . */
-   public static int destroy;
+  /** . */
+  public static int destroy;
 
-   @PostConstruct
-   public void create()
-   {
-      construct++;
-   }
+  @PostConstruct
+  public void create() {
+    construct++;
+  }
 
-   @PreDestroy
-   public void destroy()
-   {
-      destroy++;
-   }
+  @PreDestroy
+  public void destroy() {
+    destroy++;
+  }
 }

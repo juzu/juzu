@@ -20,24 +20,22 @@
 package juzu.impl.http;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Test;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.UserAgent;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JavascriptTestCase extends AbstractHttpTestCase
-{
+public class JavascriptTestCase extends AbstractHttpTestCase {
 
-   @Test
-   public void testJavascript() throws Exception
-   {
-      assertDeploy("http", "js");
-      UserAgent ua = assertInitialPage();
-      HtmlPage page = ua.getHomePage();
-      List<String> alerts = ua.getAlerts(page);
-      assertEquals(Arrays.asList("foo"), alerts);
-   }
+  @Test
+  public void testJavascript() throws Exception {
+    assertDeploy("http", "js");
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
+    List<String> alerts = ua.getAlerts(page);
+    assertEquals(Arrays.asList("foo"), alerts);
+  }
 }

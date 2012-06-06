@@ -27,28 +27,23 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WeatherService
-{
+public class WeatherService {
 
-   public String getTemperature(String location)
-   {
-      return getTemperature(location, "c");
-   }
+  public String getTemperature(String location) {
+    return getTemperature(location, "c");
+  }
 
-   public String getTemperature(String location, String grade)
-   {
-      try
-      {
-         XPath xpath = XPathFactory.newInstance().newXPath();
-         XPathExpression expr = xpath.compile("//temp_" + grade + "/@data");
-         String url = "http://www.google.com/ig/api?weather=" + location;
-         InputSource src = new InputSource(url);
-         src.setEncoding("ISO-8859-1");
-         return expr.evaluate(src);
-      }
-      catch (XPathExpressionException e)
-      {
-         return "unavailable";
-      }
-   }
+  public String getTemperature(String location, String grade) {
+    try {
+      XPath xpath = XPathFactory.newInstance().newXPath();
+      XPathExpression expr = xpath.compile("//temp_" + grade + "/@data");
+      String url = "http://www.google.com/ig/api?weather=" + location;
+      InputSource src = new InputSource(url);
+      src.setEncoding("ISO-8859-1");
+      return expr.evaluate(src);
+    }
+    catch (XPathExpressionException e) {
+      return "unavailable";
+    }
+  }
 }

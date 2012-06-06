@@ -26,25 +26,20 @@ import juzu.View;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content("0[" + A_.indexURL("foo").toString() + "]");
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content("0[" + A_.indexURL("foo").toString() + "]");
+  }
 
-   @View
-   public Response.Content index(String param) throws IOException
-   {
-      if (param != null)
-      {
-         return Response.content("1[" + A_.indexURL(null).toString() + "]");
-      }
-      else
-      {
-         return Response.content("fail]");
-      }
-   }
+  @View
+  public Response.Content index(String param) throws IOException {
+    if (param != null) {
+      return Response.content("1[" + A_.indexURL(null).toString() + "]");
+    }
+    else {
+      return Response.content("fail]");
+    }
+  }
 }

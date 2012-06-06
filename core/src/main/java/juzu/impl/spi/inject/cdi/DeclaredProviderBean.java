@@ -11,67 +11,60 @@ import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class DeclaredProviderBean extends AbstractDeclaredBean
-{
+class DeclaredProviderBean extends AbstractDeclaredBean {
 
-   /** . */
-   private final Class<? extends Provider> providerType;
+  /** . */
+  private final Class<? extends Provider> providerType;
 
-   /** . */
-   protected AnnotatedType at;
+  /** . */
+  protected AnnotatedType at;
 
-   /** . */
-   protected InjectionTarget it;
+  /** . */
+  protected InjectionTarget it;
 
-   /** . */
-   protected AnnotatedType providerAT;
+  /** . */
+  protected AnnotatedType providerAT;
 
-   /** . */
-   protected InjectionTarget providerIT;
+  /** . */
+  protected InjectionTarget providerIT;
 
-   DeclaredProviderBean(Class<?> type, Scope scope, Iterable<Annotation> qualifiers, Class<? extends Provider> providerType)
-   {
-      super(type, scope, qualifiers);
-      
-      //
-      this.providerType = providerType;
-   }
+  DeclaredProviderBean(Class<?> type, Scope scope, Iterable<Annotation> qualifiers, Class<? extends Provider> providerType) {
+    super(type, scope, qualifiers);
 
-   @Override
-   void register(BeanManager manager)
-   {
-      super.register(manager);
+    //
+    this.providerType = providerType;
+  }
 
-      //
-      providerAT = manager.createAnnotatedType(providerType);
-      providerIT = manager.createInjectionTarget(providerAT);
-   }
+  @Override
+  void register(BeanManager manager) {
+    super.register(manager);
 
-   public Object create(CreationalContext ctx)
-   {
-      Object instance;
-      try
-      {
-         Provider provider = (Provider)providerIT.produce(ctx);
-         providerIT.inject(provider, ctx);
-         providerIT.postConstruct(provider);
+    //
+    providerAT = manager.createAnnotatedType(providerType);
+    providerIT = manager.createInjectionTarget(providerAT);
+  }
 
-         // Get instance
-         instance = provider.get();
+  public Object create(CreationalContext ctx) {
+    Object instance;
+    try {
+      Provider provider = (Provider)providerIT.produce(ctx);
+      providerIT.inject(provider, ctx);
+      providerIT.postConstruct(provider);
 
-         // Now get rid of provider
-         providerIT.preDestroy(provider);
-         providerIT.dispose(provider);
-      }
-      catch (Exception e)
-      {
-         throw new CreationException(e.getCause());
-      }
-      return instance;
-   }
+      // Get instance
+      instance = provider.get();
 
-   public void destroy(Object instance, CreationalContext ctx)
-   {
-      ctx.release();
-   }
+      // Now get rid of provider
+      providerIT.preDestroy(provider);
+      providerIT.dispose(provider);
+    }
+    catch (Exception e) {
+      throw new CreationException(e.getCause());
+    }
+    return instance;
+  }
+
+  public void destroy(Object instance, CreationalContext ctx) {
+    ctx.release();
+  }
 }

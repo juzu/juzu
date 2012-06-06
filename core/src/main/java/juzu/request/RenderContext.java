@@ -25,29 +25,25 @@ import juzu.impl.request.Request;
 import juzu.impl.spi.request.RenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderContext extends MimeContext
-{
+public class RenderContext extends MimeContext {
 
-   /** . */
-   private RenderBridge bridge;
+  /** . */
+  private RenderBridge bridge;
 
-   public RenderContext(Request request, ApplicationContext application, ControllerMethod method, RenderBridge bridge)
-   {
-      super(request, application, method);
+  public RenderContext(Request request, ApplicationContext application, ControllerMethod method, RenderBridge bridge) {
+    super(request, application, method);
 
-      //
-      this.bridge = bridge;
-   }
+    //
+    this.bridge = bridge;
+  }
 
-   @Override
-   protected RenderBridge getBridge()
-   {
-      return bridge;
-   }
+  @Override
+  protected RenderBridge getBridge() {
+    return bridge;
+  }
 
-   @Override
-   public Phase getPhase()
-   {
-      return Phase.RENDER;
-   }
+  @Override
+  public Phase getPhase() {
+    return Phase.RENDER;
+  }
 }

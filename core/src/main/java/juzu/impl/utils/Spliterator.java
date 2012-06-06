@@ -24,116 +24,94 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * An iterator that splits a string into chunks without requiring to allocate an array to hold
- * the various chunks of the splitted string.
- *
- * <ul>
- *    <li>"" -> ()</li>
- *    <li>"." -> ("","")</li>
- *    <li>"a" -> ("a")</li>
- * </ul>
+ * An iterator that splits a string into chunks without requiring to allocate an array to hold the various chunks of the
+ * splitted string.
+ * <p/>
+ * <ul> <li>"" -> ()</li> <li>"." -> ("","")</li> <li>"a" -> ("a")</li> </ul>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class Spliterator implements Iterator<String>
-{
+public class Spliterator implements Iterator<String> {
 
-   public static Iterable<String> split(final String s, final char separator) throws NullPointerException
-   {
-      return new Iterable<String>()
-      {
-         public Iterator<String> iterator()
-         {
-            return new Spliterator(s, separator);
-         }
-      };
-   }
-
-   public static <C extends Collection<String>> C split(final String s, final char separator, C to) throws NullPointerException
-   {
-      for (Spliterator i = new Spliterator(s, separator);i.hasNext();)
-      {
-         to.add(i.next());
+  public static Iterable<String> split(final String s, final char separator) throws NullPointerException {
+    return new Iterable<String>() {
+      public Iterator<String> iterator() {
+        return new Spliterator(s, separator);
       }
-      return to;
-   }
+    };
+  }
 
-   /** . */
-   private final String s;
+  public static <C extends Collection<String>> C split(final String s, final char separator, C to) throws NullPointerException {
+    for (Spliterator i = new Spliterator(s, separator);i.hasNext();) {
+      to.add(i.next());
+    }
+    return to;
+  }
 
-   /** . */
-   private final char separator;
+  /** . */
+  private final String s;
 
-   /** . */
-   private int from;
+  /** . */
+  private final char separator;
 
-   /** . */
-   private Integer to;
+  /** . */
+  private int from;
 
-   /**
-    * Creates a spliterator.
-    *
-    * @param s the string to split
-    * @param separator the separator
-    * @throws NullPointerException if the string is null
-    */
-   public Spliterator(String s, char separator) throws NullPointerException
-   {
-      if (s == null)
-      {
-         throw new NullPointerException();
+  /** . */
+  private Integer to;
+
+  /**
+   * Creates a spliterator.
+   *
+   * @param s         the string to split
+   * @param separator the separator
+   * @throws NullPointerException if the string is null
+   */
+  public Spliterator(String s, char separator) throws NullPointerException {
+    if (s == null) {
+      throw new NullPointerException();
+    }
+
+    //
+    this.s = s;
+    this.separator = separator;
+    this.from = s.length() == 0 ? -1 : 0;
+    this.to = null;
+  }
+
+  public boolean hasNext() {
+    if (from == -1) {
+      return false;
+    }
+    else {
+      if (to == null) {
+        to = s.indexOf(separator, from);
       }
+      return true;
+    }
+  }
 
-      //
-      this.s = s;
-      this.separator = separator;
-      this.from = s.length()  == 0 ? -1 : 0;
-      this.to = null;
-   }
+  public String next() {
+    if (hasNext()) {
+      String next;
+      if (to == -1) {
+        next = s.substring(from);
+        from = -1;
+      }
+      else {
+        next = s.substring(from, to);
+        from = to + 1;
+      }
+      to = null;
+      return next;
+    }
+    else {
+      throw new NoSuchElementException();
+    }
+  }
 
-   public boolean hasNext()
-   {
-      if (from == -1)
-      {
-         return false;
-      }
-      else
-      {
-         if (to == null)
-         {
-            to = s.indexOf(separator, from);
-         }
-         return true;
-      }
-   }
-
-   public String next()
-   {
-      if (hasNext())
-      {
-         String next;
-         if (to == -1)
-         {
-            next = s.substring(from);
-            from = -1;
-         }
-         else
-         {
-            next = s.substring(from, to);
-            from = to + 1;
-         }
-         to = null;
-         return next;
-      }
-      else
-      {
-         throw new NoSuchElementException();
-      }
-   }
-
-   public void remove()
-   {
-      throw new UnsupportedOperationException();
-   }
+  public void remove() {
+    throw new UnsupportedOperationException();
+  }
 }

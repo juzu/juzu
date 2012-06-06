@@ -26,16 +26,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge
-{
+public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
 
-   ServletMimeBridge(
-      ServletBridgeContext context,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      String methodId,
-      Map<String, String[]> parameters)
-   {
-      super(context, req, resp, methodId, parameters);
-   }
+  ServletMimeBridge(
+    ServletBridgeContext context,
+    HttpServletRequest req,
+    HttpServletResponse resp,
+    String methodId,
+    Map<String, String[]> parameters) {
+    super(context, req, resp, methodId, parameters);
+  }
 }

@@ -27,31 +27,26 @@ import javax.annotation.PreDestroy;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @SessionScoped
-public class Car implements Identifiable
-{
+public class Car implements Identifiable {
 
-   /** . */
-   private int status = CONSTRUCTED;
+  /** . */
+  private int status = CONSTRUCTED;
 
-   public long getIdentityHashCode()
-   {
-      return System.identityHashCode(this);
-   }
-   
-   @PostConstruct
-   public void create()
-   {
-      status = MANAGED;
-   }
+  public long getIdentityHashCode() {
+    return System.identityHashCode(this);
+  }
 
-   @PreDestroy
-   public void destroy()
-   {
-      status = DESTROYED;
-   }
+  @PostConstruct
+  public void create() {
+    status = MANAGED;
+  }
 
-   public int getStatus()
-   {
-      return status;
-   }
+  @PreDestroy
+  public void destroy() {
+    status = DESTROYED;
+  }
+
+  public int getStatus() {
+    return status;
+  }
 }

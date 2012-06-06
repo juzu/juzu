@@ -22,10 +22,10 @@ package juzu.impl.spi.inject.cdi;
 import juzu.Scope;
 import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.ScopeController;
+import juzu.impl.spi.fs.ReadFileSystem;
 import juzu.impl.spi.inject.InjectBuilder;
 import juzu.impl.spi.inject.InjectManager;
 import juzu.impl.spi.inject.cdi.weld.WeldContainer;
-import juzu.impl.spi.fs.ReadFileSystem;
 
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
@@ -35,96 +35,84 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIBuilder extends InjectBuilder
-{
+public class CDIBuilder extends InjectBuilder {
 
-   /** . */
-   private Set<Scope> scopes;
+  /** . */
+  private Set<Scope> scopes;
 
-   /** . */
-   private ClassLoader classLoader;
+  /** . */
+  private ClassLoader classLoader;
 
-   /** . */
-   private List<ReadFileSystem<?>> fileSystems;
+  /** . */
+  private List<ReadFileSystem<?>> fileSystems;
 
-   /** . */
-   private ArrayList<AbstractBean> boundBeans;
+  /** . */
+  private ArrayList<AbstractBean> boundBeans;
 
-   /** . */
-   private BeanFilter filter;
+  /** . */
+  private BeanFilter filter;
 
-   public CDIBuilder()
-   {
-      this.scopes = new HashSet<Scope>();
-      this.fileSystems = new ArrayList<ReadFileSystem<?>>();
-      this.boundBeans = new ArrayList<AbstractBean>();
-      this.filter = null;
-   }
+  public CDIBuilder() {
+    this.scopes = new HashSet<Scope>();
+    this.fileSystems = new ArrayList<ReadFileSystem<?>>();
+    this.boundBeans = new ArrayList<AbstractBean>();
+    this.filter = null;
+  }
 
-   @Override
-   public <T> InjectBuilder declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType)
-   {
-      boundBeans.add(new DeclaredBean(implementationType != null ? implementationType : type, beanScope, qualifiers));
-      return this;
-   }
+  @Override
+  public <T> InjectBuilder declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType) {
+    boundBeans.add(new DeclaredBean(implementationType != null ? implementationType : type, beanScope, qualifiers));
+    return this;
+  }
 
-   @Override
-   public <T> InjectBuilder declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider)
-   {
-      boundBeans.add(new DeclaredProviderBean(type, beanScope, qualifiers, provider));
-      return this;
-   }
+  @Override
+  public <T> InjectBuilder declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider) {
+    boundBeans.add(new DeclaredProviderBean(type, beanScope, qualifiers, provider));
+    return this;
+  }
 
-   @Override
-   public <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs)
-   {
-      fileSystems.add(fs);
-      return this;
-   }
+  @Override
+  public <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs) {
+    fileSystems.add(fs);
+    return this;
+  }
 
-   @Override
-   public InjectBuilder addScope(Scope scope)
-   {
-      scopes.add(scope);
-      return this;
-   }
+  @Override
+  public InjectBuilder addScope(Scope scope) {
+    scopes.add(scope);
+    return this;
+  }
 
-   @Override
-   public InjectBuilder setClassLoader(ClassLoader classLoader)
-   {
-      this.classLoader = classLoader;
-      return this;
-   }
+  @Override
+  public InjectBuilder setClassLoader(ClassLoader classLoader) {
+    this.classLoader = classLoader;
+    return this;
+  }
 
-   @Override
-   public InjectBuilder setFilter(BeanFilter filter)
-   {
-      this.filter = filter;
-      return this;
-   }
+  @Override
+  public InjectBuilder setFilter(BeanFilter filter) {
+    this.filter = filter;
+    return this;
+  }
 
-   @Override
-   public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance)
-   {
-      boundBeans.add(new SingletonBean(type, qualifiers, instance));
-      return this;
-   }
+  @Override
+  public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance) {
+    boundBeans.add(new SingletonBean(type, qualifiers, instance));
+    return this;
+  }
 
-   @Override
-   public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider)
-   {
-      boundBeans.add(new SingletonProviderBean(beanType, beanScope, beanQualifiers, provider));
-      return this;
-   }
+  @Override
+  public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider) {
+    boundBeans.add(new SingletonProviderBean(beanType, beanScope, beanQualifiers, provider));
+    return this;
+  }
 
-   @Override
-   public InjectManager<?, ?> create() throws Exception
-   {
-      Container container = new WeldContainer(classLoader, ScopeController.INSTANCE, scopes);
-      for (ReadFileSystem<?> fs : fileSystems)
-      {
-         container.addFileSystem(fs);
-      }
-      return new CDIManager(container, filter, boundBeans);
-   }
+  @Override
+  public InjectManager<?, ?> create() throws Exception {
+    Container container = new WeldContainer(classLoader, ScopeController.INSTANCE, scopes);
+    for (ReadFileSystem<?> fs : fileSystems) {
+      container.addFileSystem(fs);
+    }
+    return new CDIManager(container, filter, boundBeans);
+  }
 }

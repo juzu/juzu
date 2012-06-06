@@ -29,54 +29,46 @@ import java.util.Collection;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ControllerMethodResolver extends ControllerResolver<ControllerMethod>
-{
+public class ControllerMethodResolver extends ControllerResolver<ControllerMethod> {
 
-   /** . */
-   private final ControllerDescriptor desc;
+  /** . */
+  private final ControllerDescriptor desc;
 
-   /** . */
-   private final ControllerMethod[] methods;
+  /** . */
+  private final ControllerMethod[] methods;
 
-   public ControllerMethodResolver(ControllerDescriptor desc) throws NullPointerException
-   {
-      this.methods = desc.getMethods().toArray(new ControllerMethod[desc.getMethods().size()]);
-      this.desc = desc;
-   }
+  public ControllerMethodResolver(ControllerDescriptor desc) throws NullPointerException {
+    this.methods = desc.getMethods().toArray(new ControllerMethod[desc.getMethods().size()]);
+    this.desc = desc;
+  }
 
-   @Override
-   public ControllerMethod[] getMethods()
-   {
-      return methods;
-   }
+  @Override
+  public ControllerMethod[] getMethods() {
+    return methods;
+  }
 
-   @Override
-   public String getId(ControllerMethod method)
-   {
-      return method.getId();
-   }
+  @Override
+  public String getId(ControllerMethod method) {
+    return method.getId();
+  }
 
-   @Override
-   public Phase getPhase(ControllerMethod method)
-   {
-      return method.getPhase();
-   }
+  @Override
+  public Phase getPhase(ControllerMethod method) {
+    return method.getPhase();
+  }
 
-   @Override
-   public String getName(ControllerMethod method)
-   {
-      return method.getName();
-   }
+  @Override
+  public String getName(ControllerMethod method) {
+    return method.getName();
+  }
 
-   @Override
-   public boolean isDefault(ControllerMethod method)
-   {
-      return method.getType() == desc.getDefault();
-   }
+  @Override
+  public boolean isDefault(ControllerMethod method) {
+    return method.getType() == desc.getDefault();
+  }
 
-   @Override
-   public Collection<String> getParameterNames(ControllerMethod method)
-   {
-      return method.getArgumentNames();
-   }
+  @Override
+  public Collection<String> getParameterNames(ControllerMethod method) {
+    return method.getArgumentNames();
+  }
 }

@@ -31,72 +31,71 @@ import java.lang.annotation.Annotation;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class InjectBuilder
-{
+public abstract class InjectBuilder {
 
-   /**
-    * Declares a bean, bound to an optional implementation.
-    *
-    * @param beanType the bean declared bean type
-    * @param beanScope the bean scope
-    * @param beanQualifiers the bean qualifiers
-    * @param implementationType the bean implementation type
-    * @return this builder
-    */
-   public abstract <T> InjectBuilder declareBean(
-      Class<T> beanType,
-      Scope beanScope,
-      Iterable<Annotation> beanQualifiers,
-      Class<? extends T> implementationType);
+  /**
+   * Declares a bean, bound to an optional implementation.
+   *
+   * @param beanType           the bean declared bean type
+   * @param beanScope          the bean scope
+   * @param beanQualifiers     the bean qualifiers
+   * @param implementationType the bean implementation type
+   * @return this builder
+   */
+  public abstract <T> InjectBuilder declareBean(
+    Class<T> beanType,
+    Scope beanScope,
+    Iterable<Annotation> beanQualifiers,
+    Class<? extends T> implementationType);
 
-   /**
-    * Declares a bean that will be obtained by the specified provider.
-    *
-    * @param beanType the bean declared bean type
-    * @param beanScope the bean scope
-    * @param beanQualifiers the bean qualifiers
-    * @param providerType the bean provider type
-    * @return this builder
-    */
-   public abstract <T> InjectBuilder declareProvider(
-      Class<T> beanType,
-      Scope beanScope,
-      Iterable<Annotation> beanQualifiers,
-      Class<? extends Provider<T>> providerType);
+  /**
+   * Declares a bean that will be obtained by the specified provider.
+   *
+   * @param beanType       the bean declared bean type
+   * @param beanScope      the bean scope
+   * @param beanQualifiers the bean qualifiers
+   * @param providerType   the bean provider type
+   * @return this builder
+   */
+  public abstract <T> InjectBuilder declareProvider(
+    Class<T> beanType,
+    Scope beanScope,
+    Iterable<Annotation> beanQualifiers,
+    Class<? extends Provider<T>> providerType);
 
-   /**
-    * Bind a bean type to a specified bean provider.
-    *
-    * @param beanType the bean declared bean type
-    * @param beanScope the bean scope
-    * @param beanQualifiers the bean qualifiers
-    * @param provider the bean provider
-    * @return this builder
-    */
-   public abstract <T> InjectBuilder bindProvider(
-      Class<T> beanType,
-      Scope beanScope,
-      Iterable<Annotation> beanQualifiers,
-      Provider<T> provider);
+  /**
+   * Bind a bean type to a specified bean provider.
+   *
+   * @param beanType       the bean declared bean type
+   * @param beanScope      the bean scope
+   * @param beanQualifiers the bean qualifiers
+   * @param provider       the bean provider
+   * @return this builder
+   */
+  public abstract <T> InjectBuilder bindProvider(
+    Class<T> beanType,
+    Scope beanScope,
+    Iterable<Annotation> beanQualifiers,
+    Provider<T> provider);
 
-   /**
-    * Bind a bean type to a specified bean instance.
-    *
-    * @param beanType the bean declared bean type
-    * @param beanQualifiers the bean qualifiers
-    * @param instance the bean instance
-    * @return this builder
-    */
-   public abstract <T> InjectBuilder bindBean(Class<T> beanType, Iterable<Annotation> beanQualifiers, T instance);
+  /**
+   * Bind a bean type to a specified bean instance.
+   *
+   * @param beanType       the bean declared bean type
+   * @param beanQualifiers the bean qualifiers
+   * @param instance       the bean instance
+   * @return this builder
+   */
+  public abstract <T> InjectBuilder bindBean(Class<T> beanType, Iterable<Annotation> beanQualifiers, T instance);
 
-   public abstract <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs);
+  public abstract <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs);
 
-   public abstract InjectBuilder addScope(Scope scope);
+  public abstract InjectBuilder addScope(Scope scope);
 
-   public abstract InjectBuilder setClassLoader(ClassLoader classLoader);
-   
-   public abstract InjectBuilder setFilter(BeanFilter filter);
+  public abstract InjectBuilder setClassLoader(ClassLoader classLoader);
 
-   public abstract <B, I> InjectManager<B, I> create() throws Exception;
+  public abstract InjectBuilder setFilter(BeanFilter filter);
+
+  public abstract <B, I> InjectManager<B, I> create() throws Exception;
 
 }

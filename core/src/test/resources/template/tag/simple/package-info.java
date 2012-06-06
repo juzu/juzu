@@ -17,6 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package template.tag.simple;
+@Application package template.tag.simple;
+
 import juzu.Application;

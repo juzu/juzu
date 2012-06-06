@@ -10,9 +10,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Qualifier
 @Retention(RUNTIME)
-public @interface Manager
-{
+public @interface Manager {
 
-   AssetType value();
+  AssetType value();
 
 }

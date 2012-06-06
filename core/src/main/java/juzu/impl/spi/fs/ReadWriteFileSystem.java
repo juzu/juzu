@@ -24,69 +24,56 @@ import juzu.impl.utils.Content;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P>
-{
+public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P> {
 
-   public final P makeFile(Iterable<String> path, String name) throws IOException
-   {
-      return makeFile(getRoot(), path, name);
-   }
+  public final P makeFile(Iterable<String> path, String name) throws IOException {
+    return makeFile(getRoot(), path, name);
+  }
 
-   public final P makeFile(P dir, Iterable<String> path, String name) throws IllegalArgumentException, IOException
-   {
-      dir = makeDir(dir, path);
+  public final P makeFile(P dir, Iterable<String> path, String name) throws IllegalArgumentException, IOException {
+    dir = makeDir(dir, path);
+    P child = getChild(dir, name);
+    if (child == null) {
+      return addFile(dir, name);
+    }
+    else if (isFile(child)) {
+      return child;
+    }
+    else {
+      throw new UnsupportedOperationException("handle me gracefully");
+    }
+  }
+
+  public final P makeDir(Iterable<String> path) throws IOException {
+    return makeDir(getRoot(), path);
+  }
+
+  public final P makeDir(P dir, Iterable<String> path) throws IllegalArgumentException, IOException {
+    if (!isDir(dir)) {
+      throw new IllegalArgumentException("Dir is not an effective dir");
+    }
+    for (String name : path) {
       P child = getChild(dir, name);
-      if (child == null)
-      {
-         return addFile(dir, name);
+      if (child == null) {
+        dir = addDir(dir, name);
       }
-      else if (isFile(child))
-      {
-         return child;
+      else if (isDir(child)) {
+        dir = child;
       }
-      else
-      {
-         throw new UnsupportedOperationException("handle me gracefully");
+      else {
+        throw new UnsupportedOperationException("handle me gracefully");
       }
-   }
+    }
+    return dir;
+  }
 
-   public final P makeDir(Iterable<String> path) throws IOException
-   {
-      return makeDir(getRoot(), path);
-   }
+  public abstract P addDir(P parent, String name) throws IOException;
 
-   public final P makeDir(P dir, Iterable<String> path) throws IllegalArgumentException, IOException
-   {
-      if (!isDir(dir))
-      {
-         throw new IllegalArgumentException("Dir is not an effective dir");
-      }
-      for (String name : path)
-      {
-         P child = getChild(dir, name);
-         if (child == null)
-         {
-            dir = addDir(dir, name);
-         }
-         else if (isDir(child))
-         {
-            dir = child;
-         }
-         else
-         {
-            throw new UnsupportedOperationException("handle me gracefully");
-         }
-      }
-      return dir;
-   }
+  public abstract P addFile(P parent, String name) throws IOException;
 
-   public abstract P addDir(P parent, String name) throws IOException;
+  public abstract void setContent(P file, Content content) throws IOException;
 
-   public abstract P addFile(P parent, String name) throws IOException;
-
-   public abstract void setContent(P file, Content content) throws IOException;
-   
-   public abstract void removePath(P path) throws IOException;
+  public abstract void removePath(P path) throws IOException;
 
 
 }

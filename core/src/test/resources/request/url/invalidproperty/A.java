@@ -25,24 +25,21 @@ import juzu.URLBuilder;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   static class MyPropertyType extends PropertyType<String> {}
+  static class MyPropertyType extends PropertyType<String> {
+  }
 
-   @View
-   public Response index()
-   {
-      URLBuilder builder = A_.indexURL();
-      try
-      {
-         builder.setProperty(new MyPropertyType(), "foo");
-         return Response.render("fail");
-      }
-      catch (IllegalArgumentException e)
-      {
-         // OK
-         return Response.render("pass");
-      }
-   }
+  @View
+  public Response index() {
+    URLBuilder builder = A_.indexURL();
+    try {
+      builder.setProperty(new MyPropertyType(), "foo");
+      return Response.render("fail");
+    }
+    catch (IllegalArgumentException e) {
+      // OK
+      return Response.render("pass");
+    }
+  }
 }

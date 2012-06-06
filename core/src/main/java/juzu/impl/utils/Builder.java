@@ -22,34 +22,28 @@ package juzu.impl.utils;
 import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Builder
-{
+public class Builder {
 
-   public static <K, V> Map<K, V> map(K key, V value)
-   {
-      return new Map<K, V>().map(key, value);
-   }
-   
-   public static class Map<K, V>
-   {
+  public static <K, V> Map<K, V> map(K key, V value) {
+    return new Map<K, V>().map(key, value);
+  }
 
-      /** . */
-      private HashMap<K, V> map;
+  public static class Map<K, V> {
 
-      private Map()
-      {
-         this.map = new HashMap<K, V>();
-      }
+    /** . */
+    private HashMap<K, V> map;
 
-      public Map<K, V> map(K key, V value)
-      {
-         map.put(key, value);
-         return this;
-      }
+    private Map() {
+      this.map = new HashMap<K, V>();
+    }
 
-      public java.util.Map<K, V> build()
-      {
-         return map;
-      }
-   }
+    public Map<K, V> map(K key, V value) {
+      map.put(key, value);
+      return this;
+    }
+
+    public java.util.Map<K, V> build() {
+      return map;
+    }
+  }
 }

@@ -38,389 +38,318 @@ import java.util.Collection;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ElementHandle<E extends Element> implements Serializable
-{
+public abstract class ElementHandle<E extends Element> implements Serializable {
 
-   public static ElementHandle<?> create(Element elt)
-   {
-      ElementKind kind = elt.getKind();
-      switch (kind)
-      {
-         case FIELD:
-         {
-            VariableElement variableElt = (VariableElement)elt;
-            return Field.create(variableElt);
-         }
-         case CLASS:
-         {
-            TypeElement typeElt = (TypeElement)elt;
-            return Class.create(typeElt);
-         }
-         case PACKAGE:
-         {
-            PackageElement packageElt = (PackageElement)elt;
-            return Package.create(packageElt);
-         }
-         case METHOD:
-         {
-            ExecutableElement packageElt = (ExecutableElement)elt;
-            return Method.create(packageElt);
-         }
-         default:
-            throw new UnsupportedOperationException("Element " + elt + " with kind " + kind + " not supported");
+  public static ElementHandle<?> create(Element elt) {
+    ElementKind kind = elt.getKind();
+    switch (kind) {
+      case FIELD: {
+        VariableElement variableElt = (VariableElement)elt;
+        return Field.create(variableElt);
       }
-   }
-
-   public final E get(ProcessingEnvironment env)
-   {
-      try
-      {
-         return doGet(env);
+      case CLASS: {
+        TypeElement typeElt = (TypeElement)elt;
+        return Class.create(typeElt);
       }
-      catch (RuntimeException e)
-      {
-         if (e.getClass().getName().equals("org.eclipse.jdt.internal.compiler.problem.AbortCompilation"))
-         {
-            // In case of eclipse we catch it and return null instead
-            return null;
-         }
-         else
-         {
-            // Rethrow
-            throw e;
-         }
+      case PACKAGE: {
+        PackageElement packageElt = (PackageElement)elt;
+        return Package.create(packageElt);
       }
-   }
-
-   protected abstract E doGet(ProcessingEnvironment env);
-
-   public abstract boolean equals(Object obj);
-
-   public abstract int hashCode();
-
-   public abstract String toString();
-
-   public static class Package extends ElementHandle<PackageElement>
-   {
-
-      public static Package create(QN packageName)
-      {
-         return new Package(packageName);
+      case METHOD: {
+        ExecutableElement packageElt = (ExecutableElement)elt;
+        return Method.create(packageElt);
       }
+      default:
+        throw new UnsupportedOperationException("Element " + elt + " with kind " + kind + " not supported");
+    }
+  }
 
-      public static Package create(PackageElement elt)
-      {
-         return new Package(QN.parse(elt.getQualifiedName()));
+  public final E get(ProcessingEnvironment env) {
+    try {
+      return doGet(env);
+    }
+    catch (RuntimeException e) {
+      if (e.getClass().getName().equals("org.eclipse.jdt.internal.compiler.problem.AbortCompilation")) {
+        // In case of eclipse we catch it and return null instead
+        return null;
       }
-
-      /** . */
-      private final QN qn;
-
-      private Package(QN qn)
-      {
-         this.qn = qn;
+      else {
+        // Rethrow
+        throw e;
       }
+    }
+  }
 
-      public QN getQN()
-      {
-         return qn;
+  protected abstract E doGet(ProcessingEnvironment env);
+
+  public abstract boolean equals(Object obj);
+
+  public abstract int hashCode();
+
+  public abstract String toString();
+
+  public static class Package extends ElementHandle<PackageElement> {
+
+    public static Package create(QN packageName) {
+      return new Package(packageName);
+    }
+
+    public static Package create(PackageElement elt) {
+      return new Package(QN.parse(elt.getQualifiedName()));
+    }
+
+    /** . */
+    private final QN qn;
+
+    private Package(QN qn) {
+      this.qn = qn;
+    }
+
+    public QN getQN() {
+      return qn;
+    }
+
+    @Override
+    protected PackageElement doGet(ProcessingEnvironment env) {
+      return env.getElementUtils().getPackageElement(qn);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
       }
-
-      @Override
-      protected PackageElement doGet(ProcessingEnvironment env)
-      {
-         return env.getElementUtils().getPackageElement(qn);
+      else if (obj instanceof Package) {
+        Package that = (Package)obj;
+        return qn.equals(that.qn);
       }
+      return false;
+    }
 
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         else if (obj instanceof Package)
-         {
-            Package that = (Package)obj;
-            return qn.equals(that.qn);
-         }
-         return false;
+    @Override
+    public int hashCode() {
+      return qn.hashCode();
+    }
+
+    @Override
+    public String toString() {
+      return "ElementHandle.Package[qn=" + qn + "]";
+    }
+  }
+
+  public static class Class extends ElementHandle<TypeElement> {
+
+    public static Class create(FQN fqn) {
+      return new Class(fqn);
+    }
+
+    public static Class create(TypeElement elt) {
+      return new Class(new FQN(elt.getQualifiedName().toString()));
+    }
+
+    /** . */
+    private final FQN fqn;
+
+    private Class(FQN fqn) {
+      this.fqn = fqn;
+    }
+
+    public FQN getFQN() {
+      return fqn;
+    }
+
+    @Override
+    protected TypeElement doGet(ProcessingEnvironment env) {
+      return env.getElementUtils().getTypeElement(fqn.getName());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
       }
-
-      @Override
-      public int hashCode()
-      {
-         return qn.hashCode();
+      else if (obj instanceof Class) {
+        Class that = (Class)obj;
+        return fqn.equals(that.fqn);
       }
+      return false;
+    }
 
-      @Override
-      public String toString()
-      {
-         return "ElementHandle.Package[qn=" + qn + "]";
-      }
-   }
+    @Override
+    public int hashCode() {
+      return fqn.hashCode();
+    }
 
-   public static class Class extends ElementHandle<TypeElement>
-   {
+    @Override
+    public String toString() {
+      return "ElementHandle.Class[fqn=" + fqn + "]";
+    }
+  }
 
-      public static Class create(FQN fqn)
-      {
-         return new Class(fqn);
-      }
+  public static class Method extends ElementHandle<ExecutableElement> {
 
-      public static Class create(TypeElement elt)
-      {
-         return new Class(new FQN(elt.getQualifiedName().toString()));
-      }
+    public static Method create(FQN fqn, String name, Collection<String> parameterTypes) {
+      return new Method(fqn, name, new ArrayList<String>(parameterTypes));
+    }
 
-      /** . */
-      private final FQN fqn;
-
-      private Class(FQN fqn)
-      {
-         this.fqn = fqn;
-      }
-
-      public FQN getFQN()
-      {
-         return fqn;
-      }
-
-      @Override
-      protected TypeElement doGet(ProcessingEnvironment env)
-      {
-         return env.getElementUtils().getTypeElement(fqn.getName());
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         else if (obj instanceof Class)
-         {
-            Class that = (Class)obj;
-            return fqn.equals(that.fqn);
-         }
-         return false;
+    public static Method create(ExecutableElement elt) {
+      TypeElement typeElt = (TypeElement)elt.getEnclosingElement();
+      String name = elt.getSimpleName().toString();
+      FQN fqn = new FQN(typeElt.getQualifiedName().toString());
+      ArrayList<String> parameterTypes = new ArrayList<String>();
+      for (TypeMirror parameterType : ((ExecutableType)elt.asType()).getParameterTypes()) {
+        parameterTypes.add(parameterType.toString());
       }
 
-      @Override
-      public int hashCode()
-      {
-         return fqn.hashCode();
-      }
+      return new Method(fqn, name, parameterTypes);
+    }
 
-      @Override
-      public String toString()
-      {
-         return "ElementHandle.Class[fqn=" + fqn + "]";
-      }
-   }
+    private Method(FQN fqn, String name, ArrayList<String> parameterTypes) {
+      this.fqn = fqn;
+      this.name = name;
+      this.parameterTypes = parameterTypes;
+    }
 
-   public static class Method extends ElementHandle<ExecutableElement>
-   {
+    /** . */
+    private final FQN fqn;
 
-      public static Method create(FQN fqn, String name, Collection<String> parameterTypes)
-      {
-         return new Method(fqn, name, new ArrayList<String>(parameterTypes));
-      }
+    /** . */
+    private final String name;
 
-      public static Method create(ExecutableElement elt)
-      {
-         TypeElement typeElt = (TypeElement)elt.getEnclosingElement();
-         String name = elt.getSimpleName().toString();
-         FQN fqn = new FQN(typeElt.getQualifiedName().toString());
-         ArrayList<String> parameterTypes = new ArrayList<String>();
-         for (TypeMirror parameterType : ((ExecutableType)elt.asType()).getParameterTypes())
-         {
-            parameterTypes.add(parameterType.toString());
-         }
+    /** . */
+    private final ArrayList<String> parameterTypes;
 
-         return new Method(fqn, name, parameterTypes);
-      }
+    public FQN getFQN() {
+      return fqn;
+    }
 
-      private Method(FQN fqn, String name, ArrayList<String> parameterTypes)
-      {
-         this.fqn = fqn;
-         this.name = name;
-         this.parameterTypes = parameterTypes;
-      }
+    public String getName() {
+      return name;
+    }
 
-      /** . */
-      private final FQN fqn;
+    public List<String> getParameterTypes() {
+      return parameterTypes;
+    }
 
-      /** . */
-      private final String name;
-
-      /** . */
-      private final ArrayList<String> parameterTypes;
-
-      public FQN getFQN()
-      {
-         return fqn;
-      }
-
-      public String getName()
-      {
-         return name;
-      }
-
-      public List<String> getParameterTypes()
-      {
-         return parameterTypes;
-      }
-
-      @Override
-      protected ExecutableElement doGet(ProcessingEnvironment env)
-      {
-         TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
-         if (typeElt != null)
-         {
-            next:
-            for (ExecutableElement executableElement : ElementFilter.methodsIn(typeElt.getEnclosedElements()))
-            {
-               if (executableElement.getSimpleName().toString().equals(name))
-               {
-                  List<? extends TypeMirror> parameterTypes = ((ExecutableType)executableElement.asType()).getParameterTypes();
-                  int len = parameterTypes.size();
-                  if (len == this.parameterTypes.size())
-                  {
-                     for (int i = 0;i < len;i++)
-                     {
-                        if (!parameterTypes.get(i).toString().equals(this.parameterTypes.get(i)))
-                        {
-                           continue next;
-                        }
-                     }
-                     return executableElement;
-                  }
-               }
+    @Override
+    protected ExecutableElement doGet(ProcessingEnvironment env) {
+      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
+      if (typeElt != null) {
+        next:
+        for (ExecutableElement executableElement : ElementFilter.methodsIn(typeElt.getEnclosedElements())) {
+          if (executableElement.getSimpleName().toString().equals(name)) {
+            List<? extends TypeMirror> parameterTypes = ((ExecutableType)executableElement.asType()).getParameterTypes();
+            int len = parameterTypes.size();
+            if (len == this.parameterTypes.size()) {
+              for (int i = 0;i < len;i++) {
+                if (!parameterTypes.get(i).toString().equals(this.parameterTypes.get(i))) {
+                  continue next;
+                }
+              }
+              return executableElement;
             }
-         }
-         return null;
+          }
+        }
       }
+      return null;
+    }
 
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         else if (obj instanceof Method)
-         {
-            Method that = (Method)obj;
-            return fqn.equals(that.fqn) && name.equals(that.name) && parameterTypes.equals(that.parameterTypes);
-         }
-         return false;
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
       }
-
-      @Override
-      public int hashCode()
-      {
-         int hashCode = fqn.hashCode() ^ name.hashCode();
-         for (String parameterType : parameterTypes)
-         {
-            hashCode = hashCode * 41 + parameterType.hashCode();
-         }
-         return hashCode;
+      else if (obj instanceof Method) {
+        Method that = (Method)obj;
+        return fqn.equals(that.fqn) && name.equals(that.name) && parameterTypes.equals(that.parameterTypes);
       }
+      return false;
+    }
 
-      @Override
-      public String toString()
-      {
-         return "ElementHandle.Method[fqn=" + fqn + ",name=" + name + ",parameterTypes" + parameterTypes + "]";
+    @Override
+    public int hashCode() {
+      int hashCode = fqn.hashCode() ^ name.hashCode();
+      for (String parameterType : parameterTypes) {
+        hashCode = hashCode * 41 + parameterType.hashCode();
       }
-   }
+      return hashCode;
+    }
 
-   public static class Field extends ElementHandle<VariableElement>
-   {
+    @Override
+    public String toString() {
+      return "ElementHandle.Method[fqn=" + fqn + ",name=" + name + ",parameterTypes" + parameterTypes + "]";
+    }
+  }
 
-      public static Field create(VariableElement elt)
-      {
-         TypeElement typeElt = (TypeElement)elt.getEnclosingElement();
-         String name = elt.getSimpleName().toString();
-         FQN fqn = new FQN(typeElt.getQualifiedName().toString());
-         return new Field(fqn, name);
+  public static class Field extends ElementHandle<VariableElement> {
+
+    public static Field create(VariableElement elt) {
+      TypeElement typeElt = (TypeElement)elt.getEnclosingElement();
+      String name = elt.getSimpleName().toString();
+      FQN fqn = new FQN(typeElt.getQualifiedName().toString());
+      return new Field(fqn, name);
+    }
+
+    public static Field create(String fqn, String name) {
+      return new Field(new FQN(fqn), name);
+    }
+
+    public static Field create(FQN fqn, String name) {
+      return new Field(fqn, name);
+    }
+
+    /** . */
+    private final FQN fqn;
+
+    /** . */
+    private final String name;
+
+    private Field(FQN fqn, String name) {
+      this.fqn = fqn;
+      this.name = name;
+    }
+
+    public FQN getFQN() {
+      return fqn;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    protected VariableElement doGet(ProcessingEnvironment env) {
+      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
+      if (typeElt != null) {
+        for (VariableElement variableElt : ElementFilter.fieldsIn(typeElt.getEnclosedElements())) {
+          if (variableElt.getSimpleName().contentEquals(name)) {
+            return variableElt;
+          }
+        }
       }
+      return null;
+    }
 
-      public static Field create(String fqn, String name)
-      {
-         return new Field(new FQN(fqn), name);
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
       }
-
-      public static Field create(FQN fqn, String name)
-      {
-         return new Field(fqn, name);
+      else if (obj instanceof Field) {
+        Field that = (Field)obj;
+        return fqn.equals(that.fqn) && name.equals(that.name);
       }
+      return false;
+    }
 
-      /** . */
-      private final FQN fqn;
+    @Override
+    public int hashCode() {
+      return fqn.hashCode() ^ name.hashCode();
+    }
 
-      /** . */
-      private final String name;
-
-      private Field(FQN fqn, String name)
-      {
-         this.fqn = fqn;
-         this.name = name;
-      }
-
-      public FQN getFQN()
-      {
-         return fqn;
-      }
-
-      public String getName()
-      {
-         return name;
-      }
-
-      @Override
-      protected VariableElement doGet(ProcessingEnvironment env)
-      {
-         TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
-         if (typeElt != null)
-         {
-            for (VariableElement variableElt : ElementFilter.fieldsIn(typeElt.getEnclosedElements()))
-            {
-               if (variableElt.getSimpleName().contentEquals(name))
-               {
-                  return variableElt;
-               }
-            }
-         }
-         return null;
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj == this)
-         {
-            return true;
-         }
-         else if (obj instanceof Field)
-         {
-            Field that = (Field)obj;
-            return fqn.equals(that.fqn) && name.equals(that.name);
-         }
-         return false;
-      }
-
-      @Override
-      public int hashCode()
-      {
-         return fqn.hashCode() ^ name.hashCode();
-      }
-
-      @Override
-      public String toString()
-      {
-         return "ElementHandle.Field[fqn=" + fqn + ",name=" + name + "]";
-      }
-   }
+    @Override
+    public String toString() {
+      return "ElementHandle.Field[fqn=" + fqn + ",name=" + name + "]";
+    }
+  }
 }

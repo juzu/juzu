@@ -19,32 +19,30 @@
 
 package juzu.impl.template.ast;
 
-import org.junit.Test;
+import juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
+import juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
 import juzu.impl.template.compiler.EmitContext;
 import juzu.impl.template.compiler.EmitPhase;
-import juzu.impl.spi.template.gtmpl.GroovyTemplateStub;
-import juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
 import juzu.io.AppendableStream;
 import juzu.template.TemplateRenderContext;
 import juzu.test.AbstractTestCase;
+import org.junit.Test;
 
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Random;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateBuilderTestCase extends AbstractTestCase
-{
+public class TemplateBuilderTestCase extends AbstractTestCase {
 
-   @Test
-public void testFoo() throws Exception
-   {
-      GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
-      new EmitPhase(new EmitContext()).emit(generator, ASTNode.Template.parse("a<%=foo%>c"));
-      GroovyTemplateStub s = generator.build("template_" + Math.abs(new Random().nextLong()));
-      StringWriter out = new StringWriter();
-      new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(new AppendableStream(out));
-      assertEquals("abc", out.toString());
-   }
+  @Test
+  public void testFoo() throws Exception {
+    GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
+    new EmitPhase(new EmitContext()).emit(generator, ASTNode.Template.parse("a<%=foo%>c"));
+    GroovyTemplateStub s = generator.build("template_" + Math.abs(new Random().nextLong()));
+    StringWriter out = new StringWriter();
+    new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(new AppendableStream(out));
+    assertEquals("abc", out.toString());
+  }
 
 }

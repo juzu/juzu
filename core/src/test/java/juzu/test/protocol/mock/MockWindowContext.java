@@ -22,48 +22,41 @@ package juzu.test.protocol.mock;
 import juzu.request.WindowContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockWindowContext implements WindowContext
-{
+public class MockWindowContext implements WindowContext {
 
-   /** . */
-   private String id;
+  /** . */
+  private String id;
 
-   /** . */
-   private String ns;
+  /** . */
+  private String ns;
 
-   /** . */
-   private String baseValue;
+  /** . */
+  private String baseValue;
 
-   public MockWindowContext()
-   {
-      setBaseValue("window");
-   }
+  public MockWindowContext() {
+    setBaseValue("window");
+  }
 
-   public String getBaseValue()
-   {
-      return baseValue;
-   }
+  public String getBaseValue() {
+    return baseValue;
+  }
 
-   public void setBaseValue(String baseValue) throws NullPointerException
-   {
-      if (baseValue == null)
-      {
-         throw new NullPointerException();
-      }
+  public void setBaseValue(String baseValue) throws NullPointerException {
+    if (baseValue == null) {
+      throw new NullPointerException();
+    }
 
-      //
-      this.baseValue = baseValue;
-      this.id = baseValue + "_id";
-      this.ns = baseValue + "_ns";
-   }
+    //
+    this.baseValue = baseValue;
+    this.id = baseValue + "_id";
+    this.ns = baseValue + "_ns";
+  }
 
-   public String getId()
-   {
-      return id;
-   }
+  public String getId() {
+    return id;
+  }
 
-   public String getNamespace()
-   {
-      return ns;
-   }
+  public String getNamespace() {
+    return ns;
+  }
 }

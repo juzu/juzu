@@ -29,28 +29,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Weather
-{
+public class Weather {
 
-   @Inject
-   WeatherService weatherService;
+  @Inject
+  WeatherService weatherService;
 
-   @Inject
-   @Path("index.gtmpl")
-   Template index;
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
 
-   @View
-   public void index()
-   {
-      index("marseille");
-   }
+  @View
+  public void index() {
+    index("marseille");
+  }
 
-   @View
-   public void index(String location)
-   {
-      Map<String, Object> parameters = new HashMap<String, Object>();
-      parameters.put("location", location);
-      parameters.put("temperature", weatherService.getTemperature("marseille"));
-      index.render(parameters);
-   }
+  @View
+  public void index(String location) {
+    Map<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("location", location);
+    parameters.put("temperature", weatherService.getTemperature("marseille"));
+    index.render(parameters);
+  }
 }

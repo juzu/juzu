@@ -21,26 +21,21 @@ package plugin.impl.failure;
 
 import juzu.Response;
 import juzu.impl.application.ApplicationException;
-import juzu.impl.request.RequestLifeCycle;
 import juzu.impl.request.Request;
+import juzu.impl.request.RequestLifeCycle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FailureLifeCycle extends RequestLifeCycle
-{
-   public FailureLifeCycle()
-   {
-   }
+public class FailureLifeCycle extends RequestLifeCycle {
+  public FailureLifeCycle() {
+  }
 
-   @Override
-   public void invoke(Request request) throws ApplicationException
-   {
-      try
-      {
-         super.invoke(request);
-      }
-      catch (ApplicationException e)
-      {
-         request.setResponse(Response.content("pass"));
-      }
-   }
+  @Override
+  public void invoke(Request request) throws ApplicationException {
+    try {
+      super.invoke(request);
+    }
+    catch (ApplicationException e) {
+      request.setResponse(Response.content("pass"));
+    }
+  }
 }

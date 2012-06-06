@@ -20,17 +20,16 @@
 package juzu.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface HttpContext
-{
+public interface HttpContext {
 
-   javax.servlet.http.Cookie[] getCookies();
+  javax.servlet.http.Cookie[] getCookies();
 
-   String getScheme();
-   
-   int getServerPort();
-   
-   String getServerName();
-   
-   String getContextPath();
-   
+  String getScheme();
+
+  int getServerPort();
+
+  String getServerName();
+
+  String getContextPath();
+
 }

@@ -9,49 +9,41 @@ import org.springframework.context.annotation.ScopeMetadata;
 import java.lang.annotation.Annotation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class DeclaredBean extends AbstractBean
-{
+class DeclaredBean extends AbstractBean {
 
-   /** . */
-   private final Scope scope;
-   
-   DeclaredBean(Class<?> type, Scope scope, Iterable<Annotation> qualifiers)
-   {
-      super(type, qualifiers);
-      
-      //
-      this.scope = scope;
-   }
+  /** . */
+  private final Scope scope;
 
-   @Override
-   void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory)
-   {
-      AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
+  DeclaredBean(Class<?> type, Scope scope, Iterable<Annotation> qualifiers) {
+    super(type, qualifiers);
 
-      //
-      if (scope != null)
-      {
-         definition.setScope(scope.name().toLowerCase());
+    //
+    this.scope = scope;
+  }
+
+  @Override
+  void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory) {
+    AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
+
+    //
+    if (scope != null) {
+      definition.setScope(scope.name().toLowerCase());
+    }
+    else {
+      ScopeMetadata scopeMD = builder.scopeResolver.resolveScopeMetadata(definition);
+      if (scopeMD != null) {
+        definition.setScope(scopeMD.getScopeName());
       }
-      else
-      {
-         ScopeMetadata scopeMD = builder.scopeResolver.resolveScopeMetadata(definition);
-         if (scopeMD != null)
-         {
-            definition.setScope(scopeMD.getScopeName());
-         }
-      }
+    }
 
-      //
-      if (qualifiers != null)
-      {
-         for (AutowireCandidateQualifier qualifier : qualifiers)
-         {
-            definition.addQualifier(qualifier);
-         }
+    //
+    if (qualifiers != null) {
+      for (AutowireCandidateQualifier qualifier : qualifiers) {
+        definition.addQualifier(qualifier);
       }
+    }
 
-      //
-      factory.registerBeanDefinition(name, definition);
-   }
+    //
+    factory.registerBeanDefinition(name, definition);
+  }
 }

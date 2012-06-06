@@ -13,56 +13,48 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletBridgeContext
-{
+public class PortletBridgeContext {
 
-   /** . */
-   final ApplicationRuntime runtime;
+  /** . */
+  final ApplicationRuntime runtime;
 
-   /** . */
-   final AssetManager assetManager;
+  /** . */
+  final AssetManager assetManager;
 
-   /** . */
-   final Logger log;
+  /** . */
+  final Logger log;
 
-   /** . */
-   final boolean prod;
+  /** . */
+  final boolean prod;
 
-   public PortletBridgeContext(ApplicationRuntime runtime, AssetManager assetManager, Logger log, boolean prod)
-   {
-      this.runtime = runtime;
-      this.assetManager = assetManager;
-      this.log = log;
-      this.prod = prod;
-   }
+  public PortletBridgeContext(ApplicationRuntime runtime, AssetManager assetManager, Logger log, boolean prod) {
+    this.runtime = runtime;
+    this.assetManager = assetManager;
+    this.log = log;
+    this.prod = prod;
+  }
 
-   public ApplicationContext getApplication()
-   {
-      return runtime.getContext();
-   }
+  public ApplicationContext getApplication() {
+    return runtime.getContext();
+  }
 
-   public AssetManager getAssetManager()
-   {
-      return assetManager;
-   }
+  public AssetManager getAssetManager() {
+    return assetManager;
+  }
 
-   public Logger getLog()
-   {
-      return log;
-   }
+  public Logger getLog() {
+    return log;
+  }
 
-   public PortletActionBridge create(ActionRequest req, ActionResponse resp)
-   {
-      return new PortletActionBridge(this, req, resp, prod);
-   }
+  public PortletActionBridge create(ActionRequest req, ActionResponse resp) {
+    return new PortletActionBridge(this, req, resp, prod);
+  }
 
-   public PortletRenderBridge create(RenderRequest req, RenderResponse resp, boolean buffer)
-   {
-      return new PortletRenderBridge(this, req, resp, buffer, prod);
-   }
+  public PortletRenderBridge create(RenderRequest req, RenderResponse resp, boolean buffer) {
+    return new PortletRenderBridge(this, req, resp, buffer, prod);
+  }
 
-   public PortletResourceBridge create(ResourceRequest req, ResourceResponse resp, boolean buffer)
-   {
-      return new PortletResourceBridge(this, req, resp, buffer, prod);
-   }
+  public PortletResourceBridge create(ResourceRequest req, ResourceResponse resp, boolean buffer) {
+    return new PortletResourceBridge(this, req, resp, buffer, prod);
+  }
 }

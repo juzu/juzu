@@ -19,29 +19,26 @@
 
 package juzu.impl.template;
 
-import org.junit.Test;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateTestCase extends AbstractInjectTestCase
-{
+public class TemplateTestCase extends AbstractInjectTestCase {
 
-   public TemplateTestCase(InjectImplementation di)
-   {
-      super(di);
-   }
+  public TemplateTestCase(InjectImplementation di) {
+    super(di);
+  }
 
-   public void _testSimple() throws Exception
-   {
-      CompilerAssert<?, ?> helper = compiler("template", "simple");
-      Compiler compiler = helper.assertCompile();
+  public void _testSimple() throws Exception {
+    CompilerAssert<?, ?> helper = compiler("template", "simple");
+    Compiler compiler = helper.assertCompile();
 
-      //
+    //
 /*
       Content content = compiler.getClassOutput(FileKey.newResourceName("template.simple.templates", "index.groovy"));
       assertNotNull(content);
@@ -63,33 +60,29 @@ public class TemplateTestCase extends AbstractInjectTestCase
       template.render(new TemplateRenderContext(new WriterPrinter(out)));
       assertEquals("hello", out.toString());
 */
-   }
+  }
 
-   @Test
-   public void testRelativePath() throws Exception
-   {
-      MockApplication<?> app = application("template", "relativepath").init();
+  @Test
+  public void testRelativePath() throws Exception {
+    MockApplication<?> app = application("template", "relativepath").init();
+    MockClient client = app.client();
+    assertEquals("relative_path_template", client.render().assertStringResult());
+  }
+
+  @Test
+  public void testTyped() throws Exception {
+    // Does not work with Guice at the moment
+    if (getDI() != InjectImplementation.INJECT_GUICE) {
+      MockApplication<?> app = application("template", "typed").init();
       MockClient client = app.client();
-      assertEquals("relative_path_template", client.render().assertStringResult());
-   }
+      assertEquals("typed_template", client.render().assertStringResult());
+    }
+  }
 
-   @Test
-   public void testTyped() throws Exception
-   {
-      // Does not work with Guice at the moment
-      if (getDI() != InjectImplementation.INJECT_GUICE)
-      {
-         MockApplication<?> app = application("template", "typed").init();
-         MockClient client = app.client();
-         assertEquals("typed_template", client.render().assertStringResult());
-      }
-   }
-
-   @Test
-   public void testUndeclaredIOE() throws Exception
-   {
-      MockApplication<?> app = application("template", "ioe").init();
-      MockClient client = app.client();
-      assertEquals("pass", client.render().assertStringResult());
-   }
+  @Test
+  public void testUndeclaredIOE() throws Exception {
+    MockApplication<?> app = application("template", "ioe").init();
+    MockClient client = app.client();
+    assertEquals("pass", client.render().assertStringResult());
+  }
 }

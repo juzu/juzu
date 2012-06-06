@@ -19,45 +19,40 @@
 
 package juzu.test;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import juzu.impl.spi.inject.InjectImplementation;
 import juzu.test.protocol.mock.MockApplication;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(value = Parameterized.class)
-public abstract class AbstractInjectTestCase extends AbstractTestCase
-{
+public abstract class AbstractInjectTestCase extends AbstractTestCase {
 
-   /** . */
-   protected final InjectImplementation di;
+  /** . */
+  protected final InjectImplementation di;
 
-   protected AbstractInjectTestCase(InjectImplementation di)
-   {
-      this.di = di;
-   }
+  protected AbstractInjectTestCase(InjectImplementation di) {
+    this.di = di;
+  }
 
-   @Parameterized.Parameters
-   public static Collection<Object[]> data()
-   {
-      Object[][] data = new Object[][] {
-         { InjectImplementation.CDI_WELD },
-         { InjectImplementation.INJECT_SPRING },
-         { InjectImplementation.INJECT_GUICE }
-      };
-      return Arrays.asList(data);
-   }
+  @Parameterized.Parameters
+  public static Collection<Object[]> data() {
+    Object[][] data = new Object[][]{
+      {InjectImplementation.CDI_WELD},
+      {InjectImplementation.INJECT_SPRING},
+      {InjectImplementation.INJECT_GUICE}
+    };
+    return Arrays.asList(data);
+  }
 
-   public InjectImplementation getDI()
-   {
-      return di;
-   }
+  public InjectImplementation getDI() {
+    return di;
+  }
 
-   public MockApplication<?> application(String... packageName)
-   {
-      return application(di, packageName);
-   }
+  public MockApplication<?> application(String... packageName) {
+    return application(di, packageName);
+  }
 }

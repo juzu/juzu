@@ -25,70 +25,61 @@ import java.io.File;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilationError
-{
+public class CompilationError {
 
-   /** . */
-   private final MessageCode code;
+  /** . */
+  private final MessageCode code;
 
-   /** . */
-   private final List<String> arguments;
+  /** . */
+  private final List<String> arguments;
 
-   /** . */
-   private final String source;
+  /** . */
+  private final String source;
 
-   /** The optional source file. */
-   private final File sourceFile;
+  /** The optional source file. */
+  private final File sourceFile;
 
-   /** . */
-   private final Location location;
+  /** . */
+  private final Location location;
 
-   /** . */
-   private final String message;
+  /** . */
+  private final String message;
 
-   public CompilationError(MessageCode code, List<String> arguments, String source, File sourceFile, Location location, String message)
-   {
-      this.code = code;
-      this.arguments = arguments;
-      this.source = source;
-      this.sourceFile = sourceFile;
-      this.location = location;
-      this.message = message;
-   }
+  public CompilationError(MessageCode code, List<String> arguments, String source, File sourceFile, Location location, String message) {
+    this.code = code;
+    this.arguments = arguments;
+    this.source = source;
+    this.sourceFile = sourceFile;
+    this.location = location;
+    this.message = message;
+  }
 
-   public MessageCode getCode()
-   {
-      return code;
-   }
+  public MessageCode getCode() {
+    return code;
+  }
 
-   public List<String> getArguments()
-   {
-      return arguments;
-   }
+  public List<String> getArguments() {
+    return arguments;
+  }
 
-   public String getSource()
-   {
-      return source;
-   }
+  public String getSource() {
+    return source;
+  }
 
-   public Location getLocation()
-   {
-      return location;
-   }
+  public Location getLocation() {
+    return location;
+  }
 
-   public String getMessage()
-   {
-      return message;
-   }
+  public String getMessage() {
+    return message;
+  }
 
-   public File getSourceFile()
-   {
-      return sourceFile;
-   }
+  public File getSourceFile() {
+    return sourceFile;
+  }
 
-   @Override
-   public String toString()
-   {
-      return "CompilationError[source=" + source +  ",message=" + message + ",location=" + location + "]";
-   }
+  @Override
+  public String toString() {
+    return "CompilationError[source=" + source + ",message=" + message + ",location=" + location + "]";
+  }
 }

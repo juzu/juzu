@@ -25,13 +25,14 @@ import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
-public class Injected
-{
+public class Injected {
 
-   public @Inject
-   Bean1 productExt1;
+  public
+  @Inject
+  Bean1 productExt1;
 
-   public @Inject
-   Bean2 productExt2;
+  public
+  @Inject
+  Bean2 productExt2;
 
 }

@@ -36,329 +36,273 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ReadFileSystem<P> extends SimpleFileSystem<P>
-{
-   
-   public final void dump(Appendable appendable) throws IOException
-   {
-      dump(getRoot(), appendable);
-   }
+public abstract class ReadFileSystem<P> extends SimpleFileSystem<P> {
 
-   public final void dump(P path, final Appendable appendable) throws IOException
-   {
-      final StringBuilder prefix = new StringBuilder();
-      traverse(path, new Visitor<P>()
-      {
-         public void enterDir(P dir, String name) throws IOException
-         {
-            prefix.append(name).append('/');
-         }
+  public final void dump(Appendable appendable) throws IOException {
+    dump(getRoot(), appendable);
+  }
 
-         public void file(P file, String name) throws IOException
-         {
-            appendable.append(prefix).append(name).append("\n");
-         }
-
-         public void leaveDir(P dir, String name) throws IOException
-         {
-            prefix.setLength(prefix.length() - 1 - name.length());
-         }
-      });
-   }
-
-   @Override
-   public void packageOf(P path, Collection<String> to) throws IOException
-   {
-      if (equals(getRoot(), path))
-      {
-         // Do nothing
+  public final void dump(P path, final Appendable appendable) throws IOException {
+    final StringBuilder prefix = new StringBuilder();
+    traverse(path, new Visitor<P>() {
+      public void enterDir(P dir, String name) throws IOException {
+        prefix.append(name).append('/');
       }
-      else
-      {
-         P parent = getParent(path);
-         packageOf(parent, to);
-         if (isDir(path))
-         {
-            String name = getName(path);
-            to.add(name);
-         }
-      }
-   }
 
-   public final Content getContent(String... names) throws IOException
-   {
-      return getContent(Arrays.<String>asList(names));
-   }
-
-   public final Content getContent(Iterable<String> names) throws IOException
-   {
-      P path = getPath(names);
-      if (path != null && isFile(path))
-      {
-         return getContent(path);
+      public void file(P file, String name) throws IOException {
+        appendable.append(prefix).append(name).append("\n");
       }
-      else
-      {
-         return null;
-      }
-   }
 
-   public final P getPath(Iterable<String> names) throws IOException
-   {
-      P current = getRoot();
-      for (String name : names)
-      {
-         if (isDir(current))
-         {
-            P child = getChild(current, name);
-            if (child != null)
-            {
-               current = child;
+      public void leaveDir(P dir, String name) throws IOException {
+        prefix.setLength(prefix.length() - 1 - name.length());
+      }
+    });
+  }
+
+  @Override
+  public void packageOf(P path, Collection<String> to) throws IOException {
+    if (equals(getRoot(), path)) {
+      // Do nothing
+    }
+    else {
+      P parent = getParent(path);
+      packageOf(parent, to);
+      if (isDir(path)) {
+        String name = getName(path);
+        to.add(name);
+      }
+    }
+  }
+
+  public final Content getContent(String... names) throws IOException {
+    return getContent(Arrays.<String>asList(names));
+  }
+
+  public final Content getContent(Iterable<String> names) throws IOException {
+    P path = getPath(names);
+    if (path != null && isFile(path)) {
+      return getContent(path);
+    }
+    else {
+      return null;
+    }
+  }
+
+  public final P getPath(Iterable<String> names) throws IOException {
+    P current = getRoot();
+    for (String name : names) {
+      if (isDir(current)) {
+        P child = getChild(current, name);
+        if (child != null) {
+          current = child;
+        }
+        else {
+          return null;
+        }
+      }
+      else {
+        throw new UnsupportedOperationException("handle me gracefully");
+      }
+    }
+    return current;
+  }
+
+  public static final int DIR = 0;
+
+  public static final int FILE = 1;
+
+  public static final int PATH = 2;
+
+  public final int size(final int mode) throws IOException {
+    switch (mode) {
+      case DIR:
+      case PATH:
+      case FILE:
+        break;
+      default:
+        throw new IllegalArgumentException("Illegal mode " + mode);
+    }
+    final AtomicInteger size = new AtomicInteger();
+    traverse(new Visitor.Default<P>() {
+      @Override
+      public void enterDir(P dir, String name) throws IOException {
+        if (mode == PATH || mode == DIR) {
+          size.incrementAndGet();
+        }
+      }
+
+      @Override
+      public void file(P file, String name) throws IOException {
+        if (mode == PATH || mode == FILE) {
+          size.incrementAndGet();
+        }
+      }
+    });
+    return size.get();
+  }
+
+  /** . */
+  private static final Filter NULL = new Filter.Default();
+
+  public final void traverse(Filter<P> filter, Visitor<P> visitor) throws IOException {
+    traverse(getRoot(), filter, visitor);
+  }
+
+  public final void traverse(Visitor<P> visitor) throws IOException {
+    traverse(getRoot(), visitor);
+  }
+
+  public final void traverse(P path, Visitor<P> visitor) throws IOException {
+    // This is OK as it always return true
+    @SuppressWarnings("unchecked")
+    Filter<P> filter = NULL;
+    traverse(path, filter, visitor);
+  }
+
+  public final void traverse(P path, Filter<P> filter, Visitor<P> visitor) throws IOException {
+    String name = getName(path);
+    if (isDir(path)) {
+      if (filter.acceptDir(path, name)) {
+        visitor.enterDir(path, name);
+        for (Iterator<P> i = getChildren(path);i.hasNext();) {
+          P child = i.next();
+          traverse(child, filter, visitor);
+        }
+        visitor.leaveDir(path, name);
+      }
+    }
+    else if (filter.acceptFile(path, name)) {
+      visitor.file(path, name);
+    }
+  }
+
+  public <D> void copy(ReadWriteFileSystem<D> dst) throws IOException {
+    copy(new Filter.Default<P>(), dst);
+  }
+
+  public <D> void copy(Filter<P> filter, ReadWriteFileSystem<D> dst) throws IOException {
+    copy(getRoot(), filter, dst, dst.getRoot());
+  }
+
+  public <D> void copy(P srcPath, Filter<P> filter, ReadWriteFileSystem<D> dst, D dstPath) throws IOException {
+    int kind = kind(srcPath, dst, dstPath);
+    String srcName = getName(srcPath);
+
+    //
+    switch (kind) {
+      case 0: {
+        if (filter.acceptFile(srcPath, srcName)) {
+          dst.setContent(dstPath, getContent(srcPath));
+        }
+        break;
+      }
+      case 3: {
+        // Inspect destination
+        for (Iterator<D> i = dst.getChildren(dstPath);i.hasNext();) {
+          D next = i.next();
+          String name = dst.getName(next);
+          P a = getChild(srcPath, name);
+
+          //
+          boolean remove;
+          if (a == null) {
+            remove = true;
+          }
+          else {
+            switch (kind(a, dst, next)) {
+              default:
+                remove = true;
+                break;
+              case 0:
+                remove = !filter.acceptFile(a, name);
+                break;
+              case 3:
+                remove = !filter.acceptDir(a, name);
+                break;
             }
-            else
-            {
-               return null;
+          }
+
+          // Remove or copy
+          if (remove) {
+            i.remove();
+          }
+          else {
+            copy(a, filter, dst, next);
+          }
+        }
+
+        //
+        for (Iterator<P> i = getChildren(srcPath);i.hasNext();) {
+          P next = i.next();
+          String name = getName(next);
+          D a = dst.getChild(dstPath, name);
+          if (a == null) {
+            boolean dir = isDir(next);
+            boolean accept = dir ? filter.acceptDir(next, name) : filter.acceptFile(next, name);
+            if (accept) {
+              a = dir ? dst.addDir(dstPath, name) : dst.addFile(dstPath, name);
+              copy(next, filter, dst, a);
             }
-         }
-         else
-         {
-            throw new UnsupportedOperationException("handle me gracefully");
-         }
+          }
+          else {
+            // We should not go in this case as the previous loop
+            // took care of synchronizing everthing that was existing in the destination
+          }
+        }
+        break;
       }
-      return current;
-   }
+      default:
+        throw new UnsupportedOperationException("Todo " + kind);
+    }
+  }
 
-   public static final int DIR = 0;
+  private <D> int kind(P srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException {
+    return (isDir(srcPath) ? 1 : 0) + (dst.isDir(dstPath) ? 2 : 0);
+  }
 
-   public static final int FILE = 1;
+  public final URL getURL() throws IOException {
+    P root = getRoot();
+    return getURL(root);
+  }
 
-   public static final int PATH = 2;
+  /** . */
+  private final Charset encoding;
 
-   public final int size(final int mode) throws IOException
-   {
-      switch (mode)
-      {
-         case DIR:
-         case PATH:
-         case FILE:
-            break;
-         default:
-            throw new IllegalArgumentException("Illegal mode " + mode);
-      }
-      final AtomicInteger size = new AtomicInteger();
-      traverse(new Visitor.Default<P>()
-      {
-         @Override
-         public void enterDir(P dir, String name) throws IOException
-         {
-            if (mode == PATH || mode == DIR)
-            {
-               size.incrementAndGet();
-            }
-         }
-         @Override
-         public void file(P file, String name) throws IOException
-         {
-            if (mode == PATH || mode == FILE)
-            {
-               size.incrementAndGet();
-            }
-         }
-      });
-      return size.get();
-   }
+  protected ReadFileSystem() {
+    // For now it's hardcoded
+    this.encoding = Charset.defaultCharset();
+  }
 
-   /** . */
-   private static final Filter NULL = new Filter.Default();
+  public final Charset getEncoding() {
+    return encoding;
+  }
 
-   public final void traverse(Filter<P> filter, Visitor<P> visitor) throws IOException
-   {
-      traverse(getRoot(), filter, visitor);
-   }
+  public abstract boolean equals(P left, P right);
 
-   public final void traverse(Visitor<P> visitor) throws IOException
-   {
-      traverse(getRoot(), visitor);
-   }
+  public abstract String getName(P path) throws IOException;
 
-   public final void traverse(P path, Visitor<P> visitor) throws IOException
-   {
-      // This is OK as it always return true
-      @SuppressWarnings("unchecked")
-      Filter<P> filter = NULL;
-      traverse(path, filter, visitor);
-   }
+  public abstract P getRoot() throws IOException;
 
-   public final void traverse(P path, Filter<P> filter, Visitor<P> visitor) throws IOException
-   {
-      String name = getName(path);
-      if (isDir(path))
-      {
-         if (filter.acceptDir(path, name))
-         {
-            visitor.enterDir(path, name);
-            for (Iterator<P> i = getChildren(path);i.hasNext();)
-            {
-               P child = i.next();
-               traverse(child, filter, visitor);
-            }
-            visitor.leaveDir(path, name);
-         }
-      }
-      else if (filter.acceptFile(path, name))
-      {
-         visitor.file(path, name);
-      }
-   }
+  public abstract P getParent(P path) throws IOException;
 
-   public <D> void copy(ReadWriteFileSystem<D> dst) throws IOException
-   {
-      copy(new Filter.Default<P>(), dst);
-   }
+  public abstract Iterator<P> getChildren(P dir) throws IOException;
 
-   public <D> void copy(Filter<P> filter, ReadWriteFileSystem<D> dst) throws IOException
-   {
-      copy(getRoot(), filter, dst, dst.getRoot());
-   }
+  public abstract P getChild(P dir, String name) throws IOException;
 
-   public <D> void copy(P srcPath, Filter<P> filter, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
-   {
-      int kind = kind(srcPath, dst, dstPath);
-      String srcName = getName(srcPath);
+  public abstract boolean isDir(P path) throws IOException;
 
-      //
-      switch (kind)
-      {
-         case 0:
-         {
-            if (filter.acceptFile(srcPath, srcName))
-            {
-               dst.setContent(dstPath, getContent(srcPath));
-            }
-            break;
-         }
-         case 3:
-         {
-            // Inspect destination
-            for (Iterator<D> i =  dst.getChildren(dstPath);i.hasNext();)
-            {
-               D next = i.next();
-               String name = dst.getName(next);
-               P a = getChild(srcPath, name);
+  public abstract boolean isFile(P path) throws IOException;
 
-               //
-               boolean remove;
-               if (a == null)
-               {
-                  remove = true;
-               }
-               else
-               {
-                  switch (kind(a, dst, next))
-                  {
-                     default:
-                        remove = true;
-                        break;
-                     case 0:
-                        remove = !filter.acceptFile(a, name);
-                        break;
-                     case 3:
-                        remove = !filter.acceptDir(a, name);
-                        break;
-                  }
-               }
+  public abstract long getLastModified(P path) throws IOException;
 
-               // Remove or copy
-               if (remove)
-               {
-                  i.remove();
-               }
-               else
-               {
-                  copy(a, filter, dst, next);
-               }
-            }
-
-            //
-            for (Iterator<P> i = getChildren(srcPath);i.hasNext();)
-            {
-               P next = i.next();
-               String name = getName(next);
-               D a = dst.getChild(dstPath, name);
-               if (a == null)
-               {
-                  boolean dir = isDir(next);
-                  boolean accept = dir ? filter.acceptDir(next, name) : filter.acceptFile(next, name);
-                  if (accept)
-                  {
-                     a = dir ? dst.addDir(dstPath, name) : dst.addFile(dstPath, name);
-                     copy(next, filter, dst, a);
-                  }
-               }
-               else
-               {
-                  // We should not go in this case as the previous loop
-                  // took care of synchronizing everthing that was existing in the destination
-               }
-            }
-            break;
-         }
-         default:
-            throw new UnsupportedOperationException("Todo " + kind);
-      }
-   }
-
-   private <D> int kind(P srcPath, ReadWriteFileSystem<D> dst, D dstPath) throws IOException
-   {
-      return (isDir(srcPath) ? 1 : 0) + (dst.isDir(dstPath) ? 2 : 0);
-   }
-
-   public final URL getURL() throws IOException
-   {
-      P root = getRoot();
-      return getURL(root);
-   }
-
-   /** . */
-   private final Charset encoding;
-
-   protected ReadFileSystem()
-   {
-      // For now it's hardcoded
-      this.encoding = Charset.defaultCharset();
-   }
-
-   public final Charset getEncoding()
-   {
-      return encoding;
-   }
-
-   public abstract boolean equals(P left, P right);
-
-   public abstract String getName(P path) throws IOException;
-
-   public abstract P getRoot() throws IOException;
-
-   public abstract P getParent(P path) throws IOException;
-
-   public abstract Iterator<P> getChildren(P dir) throws IOException;
-
-   public abstract P getChild(P dir, String name) throws IOException;
-
-   public abstract boolean isDir(P path) throws IOException;
-
-   public abstract boolean isFile(P path) throws IOException;
-
-   public abstract long getLastModified(P path) throws IOException;
-
-   /**
-    * Get an URL for the provided path or return null if no such URL can be found.
-    *
-    * @param path the path
-    * @return the URL for this path
-    * @throws NullPointerException if the path is null
-    * @throws IOException any io exception
-    */
-   public abstract URL getURL(P path) throws NullPointerException, IOException;
+  /**
+   * Get an URL for the provided path or return null if no such URL can be found.
+   *
+   * @param path the path
+   * @return the URL for this path
+   * @throws NullPointerException if the path is null
+   * @throws IOException          any io exception
+   */
+  public abstract URL getURL(P path) throws NullPointerException, IOException;
 
 }

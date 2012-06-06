@@ -19,67 +19,64 @@
 
 package juzu.impl.spi.fs.ram;
 
-import org.junit.Test;
 import juzu.impl.utils.Tools;
 import juzu.test.AbstractTestCase;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMFileSystemTestCase extends AbstractTestCase
-{
+public class RAMFileSystemTestCase extends AbstractTestCase {
 
-   @Test
-   public void testLastModified() throws IOException
-   {
-      RAMFileSystem fs = new RAMFileSystem();
-      RAMFile fooTxt = fs.addFile(fs.getRoot(), "foo.txt").update("abc");
-      long now = waitForOneMillis();
-      assertTrue(fs.getLastModified(fooTxt) < now);
-      waitForOneMillis();
-      fooTxt.update("def");
-      assertTrue(now < fs.getLastModified(fooTxt));
-   }
+  @Test
+  public void testLastModified() throws IOException {
+    RAMFileSystem fs = new RAMFileSystem();
+    RAMFile fooTxt = fs.addFile(fs.getRoot(), "foo.txt").update("abc");
+    long now = waitForOneMillis();
+    assertTrue(fs.getLastModified(fooTxt) < now);
+    waitForOneMillis();
+    fooTxt.update("def");
+    assertTrue(now < fs.getLastModified(fooTxt));
+  }
 
-   @Test
-   public void testCopy() throws IOException
-   {
-      RAMFileSystem src = new RAMFileSystem();
-      src.addFile(src.getRoot(), "foo").update("foo1");
-      src.addDir(src.getRoot(), "bar");
-      src.addFile(src.getRoot(), "juu").update("juu1");
-      src.addDir(src.getRoot(), "bii");
-      src.addFile(src.getRoot(), "baa");
-      RAMFileSystem dst = new RAMFileSystem();
+  @Test
+  public void testCopy() throws IOException {
+    RAMFileSystem src = new RAMFileSystem();
+    src.addFile(src.getRoot(), "foo").update("foo1");
+    src.addDir(src.getRoot(), "bar");
+    src.addFile(src.getRoot(), "juu").update("juu1");
+    src.addDir(src.getRoot(), "bii");
+    src.addFile(src.getRoot(), "baa");
+    RAMFileSystem dst = new RAMFileSystem();
 
-      //
-      RAMPath dstRoot = dst.getRoot();
-      dstRoot.addFile("juu").update("juu2");
-      dstRoot.addDir("daa");
-      dstRoot.addFile("bii");
-      dstRoot.addDir("baa");
+    //
+    RAMPath dstRoot = dst.getRoot();
+    dstRoot.addFile("juu").update("juu2");
+    dstRoot.addDir("daa");
+    dstRoot.addFile("bii");
+    dstRoot.addDir("baa");
 
-      //
-      src.copy(dst);
+    //
+    src.copy(dst);
 
-      //
-      RAMPath bar = dstRoot.getChild("bar");
-      assertNotNull(bar);
-      assertTrue(dst.isDir(bar));
-      RAMPath foo = dstRoot.getChild("foo");
-      assertNotNull(foo);
-      assertTrue(dst.isFile(foo));
-      List<RAMPath> children = Tools.list(dstRoot.getChildren());
-      assertEquals(5, children.size());
-      RAMFile juu = (RAMFile)dstRoot.getChild("juu");
-      assertEquals("juu1", juu.getContent().getCharSequence().toString());
-      assertEquals(src.getContent(src.getChild(src.getRoot(), "juu")).getLastModified(), juu.getContent().getLastModified());
-      RAMPath bii = dstRoot.getChild("bii");
-      assertNotNull(bii);
-      assertTrue(bii instanceof RAMDir);
-      RAMPath baa = dstRoot.getChild("baa");
-      assertNotNull(baa);
-      assertTrue(baa instanceof RAMFile);
-   }
+    //
+    RAMPath bar = dstRoot.getChild("bar");
+    assertNotNull(bar);
+    assertTrue(dst.isDir(bar));
+    RAMPath foo = dstRoot.getChild("foo");
+    assertNotNull(foo);
+    assertTrue(dst.isFile(foo));
+    List<RAMPath> children = Tools.list(dstRoot.getChildren());
+    assertEquals(5, children.size());
+    RAMFile juu = (RAMFile)dstRoot.getChild("juu");
+    assertEquals("juu1", juu.getContent().getCharSequence().toString());
+    assertEquals(src.getContent(src.getChild(src.getRoot(), "juu")).getLastModified(), juu.getContent().getLastModified());
+    RAMPath bii = dstRoot.getChild("bii");
+    assertNotNull(bii);
+    assertTrue(bii instanceof RAMDir);
+    RAMPath baa = dstRoot.getChild("baa");
+    assertNotNull(baa);
+    assertTrue(baa instanceof RAMFile);
+  }
 }

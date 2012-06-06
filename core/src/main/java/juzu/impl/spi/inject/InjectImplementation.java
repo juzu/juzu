@@ -24,49 +24,40 @@ import juzu.impl.spi.inject.guice.GuiceBuilder;
 import juzu.impl.spi.inject.spring.SpringBuilder;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum InjectImplementation
-{
+public enum InjectImplementation {
 
-   CDI_WELD("cdi/weld")
-   {
-      @Override
-      public InjectBuilder bootstrap()
-      {
-         return new CDIBuilder();
-      }
-   },
+  CDI_WELD("cdi/weld") {
+    @Override
+    public InjectBuilder bootstrap() {
+      return new CDIBuilder();
+    }
+  },
 
-   INJECT_GUICE("inject/guice")
-   {
-      @Override
-      public InjectBuilder bootstrap()
-      {
-         return new GuiceBuilder();
-      }
-   },
+  INJECT_GUICE("inject/guice") {
+    @Override
+    public InjectBuilder bootstrap() {
+      return new GuiceBuilder();
+    }
+  },
 
-   INJECT_SPRING("inject/spring")
-   {
-      @Override
-      public InjectBuilder bootstrap()
-      {
-         return new SpringBuilder();
-      }
-   };
+  INJECT_SPRING("inject/spring") {
+    @Override
+    public InjectBuilder bootstrap() {
+      return new SpringBuilder();
+    }
+  };
 
-   /** . */
-   final String value;
+  /** . */
+  final String value;
 
-   private InjectImplementation(String value)
-   {
-      this.value = value;
-   }
+  private InjectImplementation(String value) {
+    this.value = value;
+  }
 
-   public String getValue()
-   {
-      return value;
-   }
+  public String getValue() {
+    return value;
+  }
 
-   public abstract InjectBuilder bootstrap();
+  public abstract InjectBuilder bootstrap();
 
 }

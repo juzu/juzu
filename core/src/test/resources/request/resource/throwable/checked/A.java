@@ -28,22 +28,18 @@ import javax.naming.AuthenticationException;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller
-{
+public class A extends Controller {
 
-   public A()
-   {
-   }
+  public A() {
+  }
 
-   @Resource
-   public void resource() throws AuthenticationException
-   {
-      throw new AuthenticationException();
-   }
+  @Resource
+  public void resource() throws AuthenticationException {
+    throw new AuthenticationException();
+  }
 
-   @View
-   public Response.Content index() throws IOException
-   {
-      return Response.content(A_.resourceURL().toString());
-   }
+  @View
+  public Response.Content index() throws IOException {
+    return Response.content(A_.resourceURL().toString());
+  }
 }

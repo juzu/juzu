@@ -21,9 +21,9 @@ package juzu.test.protocol.mock;
 
 import juzu.Response;
 import juzu.impl.spi.request.MimeBridge;
-import juzu.io.Stream;
-import juzu.io.BinaryOutputStream;
 import juzu.io.AppendableStream;
+import juzu.io.BinaryOutputStream;
+import juzu.io.Stream;
 import juzu.test.AbstractTestCase;
 
 import java.io.ByteArrayOutputStream;
@@ -31,54 +31,45 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge
-{
+public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge {
 
-   /** . */
-   private Object result;
+  /** . */
+  private Object result;
 
-   /** . */
-   private String mimeType;
+  /** . */
+  private String mimeType;
 
-   public MockMimeBridge(MockClient client, String methodId, Map<String, String[]> parameters)
-   {
-      super(client, methodId, parameters);
-   }
+  public MockMimeBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
+    super(client, methodId, parameters);
+  }
 
-   public String assertStringResult()
-   {
-      return AbstractTestCase.assertInstanceOf(String.class, result);
-   }
+  public String assertStringResult() {
+    return AbstractTestCase.assertInstanceOf(String.class, result);
+  }
 
-   public byte[] assertBinaryResult()
-   {
-      return AbstractTestCase.assertInstanceOf(byte[].class, result);
-   }
+  public byte[] assertBinaryResult() {
+    return AbstractTestCase.assertInstanceOf(byte[].class, result);
+  }
 
-   public String getMimeType()
-   {
-      return mimeType;
-   }
+  public String getMimeType() {
+    return mimeType;
+  }
 
-   public void end(Response response) throws IllegalStateException, IOException
-   {
-      if (response instanceof Response.Content<?>)
-      {
-         Response.Content content = (Response.Content)response;
-         if (content.getKind() == Stream.Binary.class)
-         {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            BinaryOutputStream bos = new BinaryOutputStream(baos);
-            content.send(bos);
-            result = baos.toByteArray();
-         }
-         else 
-         {
-            StringBuilder builder = new StringBuilder();
-            content.send(new AppendableStream(builder));
-            result = builder.toString();
-         }
-         mimeType = content.getMimeType();
+  public void end(Response response) throws IllegalStateException, IOException {
+    if (response instanceof Response.Content<?>) {
+      Response.Content content = (Response.Content)response;
+      if (content.getKind() == Stream.Binary.class) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BinaryOutputStream bos = new BinaryOutputStream(baos);
+        content.send(bos);
+        result = baos.toByteArray();
       }
-   }
+      else {
+        StringBuilder builder = new StringBuilder();
+        content.send(new AppendableStream(builder));
+        result = builder.toString();
+      }
+      mimeType = content.getMimeType();
+    }
+  }
 }

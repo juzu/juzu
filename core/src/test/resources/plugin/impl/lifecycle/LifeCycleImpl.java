@@ -20,23 +20,20 @@
 package plugin.impl.lifecycle;
 
 import juzu.impl.application.ApplicationException;
-import juzu.impl.request.RequestLifeCycle;
 import juzu.impl.request.Request;
+import juzu.impl.request.RequestLifeCycle;
 import juzu.test.Registry;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LifeCycleImpl extends RequestLifeCycle
-{
-   public LifeCycleImpl()
-   {
-      Registry.compareAndSet("plugin.impl.lifecycle", null, "created");
-   }
+public class LifeCycleImpl extends RequestLifeCycle {
+  public LifeCycleImpl() {
+    Registry.compareAndSet("plugin.impl.lifecycle", null, "created");
+  }
 
-   @Override
-   public void invoke(Request request) throws ApplicationException
-   {
-      Registry.compareAndSet("plugin.impl.lifecycle", "created", "before");
-      super.invoke(request);
-      Registry.compareAndSet("plugin.impl.lifecycle", "before", "after");
-   }
+  @Override
+  public void invoke(Request request) throws ApplicationException {
+    Registry.compareAndSet("plugin.impl.lifecycle", "created", "before");
+    super.invoke(request);
+    Registry.compareAndSet("plugin.impl.lifecycle", "before", "after");
+  }
 }

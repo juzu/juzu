@@ -24,18 +24,15 @@ import juzu.impl.spi.inject.Color;
 import juzu.impl.spi.inject.Colorized;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean
-{
+public class Bean {
 
-   @Export
-   @Colorized(Color.RED)
-   public static class Red extends Bean
-   {
-   }
+  @Export
+  @Colorized(Color.RED)
+  public static class Red extends Bean {
+  }
 
-   @Export
-   @Colorized(Color.GREEN)
-   public static class Green extends Bean
-   {
-   }
+  @Export
+  @Colorized(Color.GREEN)
+  public static class Green extends Bean {
+  }
 }

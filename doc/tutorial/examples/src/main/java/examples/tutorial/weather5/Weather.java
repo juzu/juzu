@@ -33,44 +33,39 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Weather
-{
+public class Weather {
 
-   static Set<String> locations = new HashSet<String>();
+  static Set<String> locations = new HashSet<String>();
 
-   static
-   {
-      locations.add("marseille");
-      locations.add("paris");
-   }
+  static {
+    locations.add("marseille");
+    locations.add("paris");
+  }
 
-   @Inject
-   WeatherService weatherService;
+  @Inject
+  WeatherService weatherService;
 
-   @Inject
-   @Path("index.gtmpl")
-   Template index;
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
 
-   @View
-   public void index()
-   {
-      index("marseille");
-   }
+  @View
+  public void index() {
+    index("marseille");
+  }
 
-   @View
-   public void index(String location)
-   {
-      Map<String, Object> parameters = new HashMap<String, Object>();
-      parameters.put("location", location);
-      parameters.put("temperature", weatherService.getTemperature(location));
-      parameters.put("locations", locations);
-      index.render(parameters);
-   }
+  @View
+  public void index(String location) {
+    Map<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("location", location);
+    parameters.put("temperature", weatherService.getTemperature(location));
+    parameters.put("locations", locations);
+    index.render(parameters);
+  }
 
-   @Action
-   public Response add(String location)
-   {
-      locations.add(location);
-      return Weather_.index(location);
-   }
+  @Action
+  public Response add(String location) {
+    locations.add(location);
+    return Weather_.index(location);
+  }
 }

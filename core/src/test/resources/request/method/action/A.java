@@ -22,13 +22,14 @@ package request.method.action;
 import juzu.Action;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A
-{
+public class A {
 
-   @Action
-   public void noArg() { }
+  @Action
+  public void noArg() {
+  }
 
-   @Action
-   public void oneArg(String foo) { }
+  @Action
+  public void oneArg(String foo) {
+  }
 
 }

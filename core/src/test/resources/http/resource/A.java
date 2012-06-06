@@ -25,15 +25,13 @@ import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
 
 /** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
-public class A
-{
-   
-   @View
-   public Response.Content index(String p)
-   {
-      return Response.render("foo")
-          .addScript(Asset.uri(AssetLocation.SERVER, "/assets/jquery-1.7.1.js"))
-          .addStylesheet(Asset.uri(AssetLocation.SERVER, "/assets/main.css"))
-          .addStylesheet(Asset.uri(AssetLocation.SERVER, "/assets/main.less"));
-   }
+public class A {
+
+  @View
+  public Response.Content index(String p) {
+    return Response.render("foo")
+      .addScript(Asset.uri(AssetLocation.SERVER, "/assets/jquery-1.7.1.js"))
+      .addStylesheet(Asset.uri(AssetLocation.SERVER, "/assets/main.css"))
+      .addStylesheet(Asset.uri(AssetLocation.SERVER, "/assets/main.less"));
+  }
 }

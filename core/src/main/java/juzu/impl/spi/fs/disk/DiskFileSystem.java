@@ -36,198 +36,162 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DiskFileSystem extends ReadWriteFileSystem<File>
-{
+public class DiskFileSystem extends ReadWriteFileSystem<File> {
 
-   /** . */
-   private final File root;
+  /** . */
+  private final File root;
 
-   /** . */
-   private FilenameFilter filter;
+  /** . */
+  private FilenameFilter filter;
 
-   /** . */
-   private Charset encoding;
+  /** . */
+  private Charset encoding;
 
-   public DiskFileSystem(File root)
-   {
-      this(root, new FilenameFilter()
-      {
-         public boolean accept(File dir, String name)
-         {
-            return true;
-         }
-      });
-   }
-
-   public DiskFileSystem(File root, FilenameFilter filter)
-   {
-      this.root = root;
-      this.filter = filter;
-      this.encoding = Charset.defaultCharset();
-   }
-
-   public DiskFileSystem(final File root, final String... path)
-   {
-      this(root, new FilterImpl(root, path));
-   }
-
-   public void applyFilter(String... path)
-   {
-      filter = new FilterImpl(root, path);
-   }
-
-   @Override
-   public String getDescription()
-   {
-      return "disk[" + root.getAbsolutePath() + "]";
-   }
-
-   @Override
-   public boolean equals(File left, File right)
-   {
-      return left.equals(right);
-   }
-
-   @Override
-   public File getRoot() throws IOException
-   {
-      return root;
-   }
-
-   @Override
-   public File getParent(File path) throws IOException
-   {
-      if (path.equals(root))
-      {
-         return null;
+  public DiskFileSystem(File root) {
+    this(root, new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return true;
       }
-      else
-      {
-         return path.getParentFile();
-      }
-   }
+    });
+  }
 
-   @Override
-   public boolean isDir(File path) throws IOException
-   {
-      return path.isDirectory();
-   }
+  public DiskFileSystem(File root, FilenameFilter filter) {
+    this.root = root;
+    this.filter = filter;
+    this.encoding = Charset.defaultCharset();
+  }
 
-   @Override
-   public boolean isFile(File path) throws IOException
-   {
-      return path.isFile();
-   }
+  public DiskFileSystem(final File root, final String... path) {
+    this(root, new FilterImpl(root, path));
+  }
 
-   @Override
-   public String getName(File path) throws IOException
-   {
-      if (path.equals(root))
-      {
-         return "";
-      }
-      else
-      {
-         return path.getName();
-      }
-   }
+  public void applyFilter(String... path) {
+    filter = new FilterImpl(root, path);
+  }
 
-   @Override
-   public Iterator<File> getChildren(File dir) throws IOException
-   {
-      return Arrays.asList(dir.listFiles(filter)).iterator();
-   }
+  @Override
+  public String getDescription() {
+    return "disk[" + root.getAbsolutePath() + "]";
+  }
 
-   @Override
-   public File getChild(File dir, String name) throws IOException
-   {
-      if (filter.accept(dir, name))
-      {
-         File child = new File(dir, name);
-         if (child.exists())
-         {
-            return child;
-         }
-      }
+  @Override
+  public boolean equals(File left, File right) {
+    return left.equals(right);
+  }
+
+  @Override
+  public File getRoot() throws IOException {
+    return root;
+  }
+
+  @Override
+  public File getParent(File path) throws IOException {
+    if (path.equals(root)) {
       return null;
-   }
+    }
+    else {
+      return path.getParentFile();
+    }
+  }
 
-   @Override
-   public Content getContent(File file) throws IOException
-   {
-      FileInputStream in = new FileInputStream(file);
-      try
-      {
-         ByteArrayOutputStream content = new ByteArrayOutputStream();
-         byte[] buffer = new byte[256];
-         for (int l = in.read(buffer);l != -1;l = in.read(buffer))
-         {
-            content.write(buffer, 0, l);
-         }
-         return new Content(file.lastModified(), content.toByteArray(), encoding);
+  @Override
+  public boolean isDir(File path) throws IOException {
+    return path.isDirectory();
+  }
+
+  @Override
+  public boolean isFile(File path) throws IOException {
+    return path.isFile();
+  }
+
+  @Override
+  public String getName(File path) throws IOException {
+    if (path.equals(root)) {
+      return "";
+    }
+    else {
+      return path.getName();
+    }
+  }
+
+  @Override
+  public Iterator<File> getChildren(File dir) throws IOException {
+    return Arrays.asList(dir.listFiles(filter)).iterator();
+  }
+
+  @Override
+  public File getChild(File dir, String name) throws IOException {
+    if (filter.accept(dir, name)) {
+      File child = new File(dir, name);
+      if (child.exists()) {
+        return child;
       }
-      finally
-      {
-         Tools.safeClose(in);
+    }
+    return null;
+  }
+
+  @Override
+  public Content getContent(File file) throws IOException {
+    FileInputStream in = new FileInputStream(file);
+    try {
+      ByteArrayOutputStream content = new ByteArrayOutputStream();
+      byte[] buffer = new byte[256];
+      for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
+        content.write(buffer, 0, l);
       }
-   }
+      return new Content(file.lastModified(), content.toByteArray(), encoding);
+    }
+    finally {
+      Tools.safeClose(in);
+    }
+  }
 
-   @Override
-   public long getLastModified(File path) throws IOException
-   {
-      return path.lastModified();
-   }
+  @Override
+  public long getLastModified(File path) throws IOException {
+    return path.lastModified();
+  }
 
-   @Override
-   public URL getURL(File path) throws IOException
-   {
-      return path.toURI().toURL();
-   }
+  @Override
+  public URL getURL(File path) throws IOException {
+    return path.toURI().toURL();
+  }
 
-   @Override
-   public File getFile(File path) throws IOException
-   {
-      return path;
-   }
+  @Override
+  public File getFile(File path) throws IOException {
+    return path;
+  }
 
-   @Override
-   public File addDir(File parent, String name) throws IOException
-   {
-      File dir = new File(parent, name);
-      dir.mkdir();
-      return dir;
-   }
+  @Override
+  public File addDir(File parent, String name) throws IOException {
+    File dir = new File(parent, name);
+    dir.mkdir();
+    return dir;
+  }
 
-   @Override
-   public File addFile(File parent, String name) throws IOException
-   {
-      return new File(parent, name);
-   }
+  @Override
+  public File addFile(File parent, String name) throws IOException {
+    return new File(parent, name);
+  }
 
-   @Override
-   public void setContent(File file, Content content) throws IOException
-   {
-      InputStream in = content.getInputStream();
-      FileOutputStream out = new FileOutputStream(file);
-      try
-      {
-         Tools.copy(in, out);
-      }
-      finally
-      {
-         Tools.safeClose(out);
-      }
-   }
+  @Override
+  public void setContent(File file, Content content) throws IOException {
+    InputStream in = content.getInputStream();
+    FileOutputStream out = new FileOutputStream(file);
+    try {
+      Tools.copy(in, out);
+    }
+    finally {
+      Tools.safeClose(out);
+    }
+  }
 
-   @Override
-   public void removePath(File path) throws IOException
-   {
-      path.delete();
-   }
+  @Override
+  public void removePath(File path) throws IOException {
+    path.delete();
+  }
 
-   @Override
-   public String toString()
-   {
-      return "DiskFileSystem[root=" + root.getAbsolutePath() + "]";
-   }
+  @Override
+  public String toString() {
+    return "DiskFileSystem[root=" + root.getAbsolutePath() + "]";
+  }
 }
