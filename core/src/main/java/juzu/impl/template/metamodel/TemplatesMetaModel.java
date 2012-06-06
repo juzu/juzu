@@ -25,6 +25,9 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
   /** . */
   TemplateResolver resolver;
 
+  /** . */
+  TemplateMetaModelPlugin plugin;
+
   @Override
   public JSON toJSON() {
     JSON json = new JSON();

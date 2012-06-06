@@ -9,7 +9,7 @@ import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.spi.template.TemplateProvider;
-import juzu.impl.template.compiler.Template;
+import juzu.impl.spi.template.Template;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Path;
 
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -28,11 +27,6 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   public static final Pattern PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
-
-  /** . */
-  private static final Pattern PROVIDER_PKG_PATTERN = Pattern.compile(
-    "juzu\\.impl\\.spi\\.template\\.([^.]+)(?:\\..+)?"
-  );
 
   /** . */
   Map<String, TemplateProvider> providers;
@@ -47,15 +41,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, TemplateProvider.class.getClassLoader());
     Map<String, TemplateProvider> providers = new HashMap<String, TemplateProvider>();
     for (TemplateProvider provider : loader) {
-      // Get extension
-      String pkgName = provider.getClass().getPackage().getName();
-
-      //
-      Matcher matcher = PROVIDER_PKG_PATTERN.matcher(pkgName);
-      if (matcher.matches()) {
-        String extension = matcher.group(1);
-        providers.put(extension, provider);
-      }
+      providers.put(provider.getSourceExtension(), provider);
     }
 
     //
@@ -64,7 +50,9 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postConstruct(ApplicationMetaModel application) {
-    application.addChild(TemplatesMetaModel.KEY, new TemplatesMetaModel());
+    TemplatesMetaModel templates = new TemplatesMetaModel();
+    templates.plugin = this;
+    application.addChild(TemplatesMetaModel.KEY, templates);
   }
 
   @Override
@@ -92,9 +80,16 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
+  public void postActivate(ApplicationMetaModel application) {
+    application.getTemplates().plugin = this;
+  }
+
+  @Override
   public void prePassivate(ApplicationMetaModel model) {
     MetaModel.log.log("Passivating template resolver for " + model.getHandle());
-    model.getTemplates().resolver.prePassivate();
+    TemplatesMetaModel templates = model.getTemplates();
+    templates.resolver.prePassivate();
+    templates.plugin = null;
   }
 
   @Override

@@ -17,28 +17,32 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.spi.template;
+package juzu.impl.spi.template.juzu.dialect.gtmpl;
 
-import java.io.IOException;
-import java.io.Serializable;
+import juzu.impl.spi.template.TemplateStub;
+import juzu.impl.spi.template.juzu.DialectTemplateEmitter;
+import juzu.impl.spi.template.juzu.DialectTemplateProvider;
 
-/**
- * A provider for templating system.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class TemplateProvider<A extends Serializable> {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class GroovyTemplateProvider extends DialectTemplateProvider {
 
-  public abstract Class<? extends TemplateStub> getTemplateStubType();
+  @Override
+  public Class<? extends TemplateStub> getTemplateStubType() {
+    return GroovyTemplateLiteral.class;
+  }
 
-  public abstract A parse(CharSequence s) throws juzu.impl.spi.template.juzu.ast.ParseException;
+  @Override
+  protected DialectTemplateEmitter createEmitter() {
+    return new GroovyTemplateEmitter();
+  }
 
-  public abstract void process(ProcessContext context, Template<A> template);
+  @Override
+  public String getSourceExtension() {
+    return "gtmpl";
+  }
 
-  public abstract CharSequence emit(EmitContext context, A ast) throws IOException;
-
-  public abstract String getSourceExtension();
-
-  public abstract String getTargetExtension();
-
+  @Override
+  public String getTargetExtension() {
+    return "groovy";
+  }
 }

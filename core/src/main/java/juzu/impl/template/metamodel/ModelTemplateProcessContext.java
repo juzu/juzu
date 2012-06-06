@@ -21,10 +21,9 @@ package juzu.impl.template.metamodel;
 
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.template.ast.ASTNode;
-import juzu.impl.template.compiler.ProcessContext;
-import juzu.impl.template.compiler.ProcessPhase;
-import juzu.impl.template.compiler.Template;
+import juzu.impl.spi.template.TemplateProvider;
+import juzu.impl.spi.template.ProcessContext;
+import juzu.impl.spi.template.Template;
 import juzu.impl.utils.Content;
 import juzu.impl.utils.Path;
 
@@ -44,66 +43,36 @@ class ModelTemplateProcessContext extends ProcessContext {
   /** . */
   private final ProcessingContext env;
 
-  /** . */
-  private final Map<Path, Template> templates;
-
   ModelTemplateProcessContext(
     TemplateMetaModel templateMetaModel,
-    Map<Path, Template> templates,
+    Map<Path, Template<?>> templates,
     ProcessingContext env) {
+    super(templates);
     this.templateMetaModel = templateMetaModel;
     this.env = env;
-    this.templates = templates;
-
   }
 
-  Collection<Template> resolve(final TemplateMetaModel metaModel) {
+  Collection<Template<?>> resolve(final TemplateMetaModel metaModel) {
     ElementHandle.Field handle = templateMetaModel.getRefs().iterator().next().getHandle();
-    return env.executeWithin(handle, new Callable<Collection<Template>>() {
-      public Collection<Template> call() throws Exception {
+    return env.executeWithin(handle, new Callable<Collection<Template<?>>>() {
+      public Collection<Template<?>> call() throws Exception {
         Set<Path> keys = new HashSet<Path>(templates.keySet());
-        ProcessPhase phase = new ProcessPhase(ModelTemplateProcessContext.this, templates);
-        phase.resolveTemplate(metaModel.getPath());
-        Map<Path, Template> copy = new HashMap<Path, Template>(templates);
+        resolveTemplate(metaModel.getPath());
+        Map<Path, Template<?>> copy = new HashMap<Path, Template<?>>(templates);
         copy.keySet().removeAll(keys);
         return copy.values();
       }
     });
   }
 
+  @Override
+  protected TemplateProvider resolverProvider(String ext) {
+    return templateMetaModel.getTemplates().plugin.providers.get(ext);
+  }
+
   protected Content resolveResource(Path path) {
     TemplatesMetaModel tmm = templateMetaModel.getTemplates();
     ElementHandle.Package context = tmm.getApplication().getHandle();
     return env.resolveResource(context, tmm.resolve(path));
-  }
-
-  @Override
-  protected Template resolveTemplate(Path originPath, Path path) {
-//      throw new CompilationException(MetaModelError.TEMPLATE_ILLEGAL_PATH, path);
-
-    // Resolve the template fqn and the template name
-    String fqn = templateMetaModel.getTemplates().getQN().getValue();
-
-    // Get source
-    Content content = resolveResource(path);
-    if (content == null) {
-      throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(fqn);
-    }
-
-    // Parse to AST
-    ASTNode.Template templateAST;
-    try {
-      templateAST = ASTNode.Template.parse(content.getCharSequence());
-    }
-    catch (juzu.impl.template.ast.ParseException e) {
-      throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path);
-    }
-
-    // Add template to application
-    return new Template(
-      originPath,
-      templateAST,
-      path,
-      content.getLastModified());
   }
 }

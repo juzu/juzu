@@ -17,28 +17,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.spi.template;
+package juzu.impl.spi.template.juzu.dialect.gtmpl;
 
-import java.io.IOException;
-import java.io.Serializable;
+import juzu.impl.utils.Location;
 
-/**
- * A provider for templating system.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class TemplateProvider<A extends Serializable> {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class Foo {
 
-  public abstract Class<? extends TemplateStub> getTemplateStubType();
+  /** . */
+  private final Location position;
 
-  public abstract A parse(CharSequence s) throws juzu.impl.spi.template.juzu.ast.ParseException;
+  /** . */
+  private final String value;
 
-  public abstract void process(ProcessContext context, Template<A> template);
+  public Foo(Location position, String value) {
+    this.position = position;
+    this.value = value;
+  }
 
-  public abstract CharSequence emit(EmitContext context, A ast) throws IOException;
+  public Location getPosition() {
+    return position;
+  }
 
-  public abstract String getSourceExtension();
-
-  public abstract String getTargetExtension();
-
+  public String getValue() {
+    return value;
+  }
 }

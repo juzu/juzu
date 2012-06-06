@@ -29,12 +29,9 @@ import juzu.impl.controller.metamodel.ControllerMetaModel;
 import juzu.impl.controller.metamodel.ControllerMethodMetaModel;
 import juzu.impl.controller.metamodel.ParameterMetaModel;
 import juzu.impl.inject.Export;
-import juzu.impl.spi.template.TemplateEmitter;
+import juzu.impl.spi.template.EmitContext;
 import juzu.impl.spi.template.TemplateProvider;
-import juzu.impl.template.ast.ASTNode;
-import juzu.impl.template.compiler.EmitContext;
-import juzu.impl.template.compiler.EmitPhase;
-import juzu.impl.template.compiler.Template;
+import juzu.impl.spi.template.Template;
 import juzu.impl.template.metadata.TemplateDescriptor;
 import juzu.impl.utils.Content;
 import juzu.impl.utils.FQN;
@@ -76,7 +73,7 @@ public class TemplateResolver implements Serializable {
   private final ApplicationMetaModel application;
 
   /** . */
-  private Map<Path, Template> templates;
+  private Map<Path, Template<?>> templates;
 
   /** . */
   private Map<Path, FileObject> resourceCache;
@@ -94,13 +91,13 @@ public class TemplateResolver implements Serializable {
 
     //
     this.application = application;
-    this.templates = new HashMap<Path, Template>();
+    this.templates = new HashMap<Path, Template<?>>();
     this.resourceCache = new HashMap<Path, FileObject>();
     this.stubCache = new HashMap<FQN, FileObject>();
     this.classCache = new HashMap<FQN, FileObject>();
   }
 
-  public Collection<Template> getTemplates() {
+  public Collection<Template<?>> getTemplates() {
     return templates.values();
   }
 
@@ -119,8 +116,8 @@ public class TemplateResolver implements Serializable {
   public void process(TemplateMetaModelPlugin plugin, ProcessingContext context) throws CompilationException {
     // Evict templates that are out of date
     log.log("Synchronizing existing templates " + templates.keySet());
-    for (Iterator<Template> i = templates.values().iterator();i.hasNext();) {
-      Template template = i.next();
+    for (Iterator<Template<?>> i = templates.values().iterator();i.hasNext();) {
+      Template<?> template = i.next();
       Path.Absolute absolute = application.getTemplates().resolve(template.getPath());
       Content content = context.resolveResource(application.getHandle(), absolute);
       if (content == null) {
@@ -140,14 +137,14 @@ public class TemplateResolver implements Serializable {
 
     // Build missing templates
     log.log("Building missing templates");
-    Map<Path, Template> copy = new HashMap<Path, Template>(templates);
+    Map<Path, Template<?>> copy = new HashMap<Path, Template<?>>(templates);
     for (TemplateMetaModel templateMeta : application.getTemplates()) {
-      Template template = copy.get(templateMeta.getPath());
+      Template<?> template = copy.get(templateMeta.getPath());
       if (template == null) {
         log.log("Compiling template " + templateMeta.getPath());
-        ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<Path, Template>(copy), context);
-        Collection<Template> resolved = compiler.resolve(templateMeta);
-        for (Template added : resolved) {
+        ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<Path, Template<?>>(copy), context);
+        Collection<Template<?>> resolved = compiler.resolve(templateMeta);
+        for (Template<?> added : resolved) {
           copy.put(added.getPath(), added);
         }
       }
@@ -155,7 +152,7 @@ public class TemplateResolver implements Serializable {
     templates = copy;
 
     // Generate missing files from template
-    for (Template template : templates.values()) {
+    for (Template<?> template : templates.values()) {
       //
       Path originPath = template.getOriginPath();
       TemplateMetaModel templateMeta = application.getTemplates().get(originPath);
@@ -184,19 +181,20 @@ public class TemplateResolver implements Serializable {
     }
   }
 
-  private void resolveScript(final Template template, final TemplateMetaModelPlugin plugin, final ProcessingContext context, final Element[] elements) {
+  private <A extends Serializable> void resolveScript(final Template<A> template, final TemplateMetaModelPlugin plugin, final ProcessingContext context, final Element[] elements) {
     context.executeWithin(elements[0], new Callable<Void>() {
       public Void call() throws Exception {
-        TemplateProvider provider = plugin.providers.get(template.getPath().getExt());
+
+        // If CCE that would mean there is an internal bug
+        TemplateProvider<A> provider = (TemplateProvider<A>)plugin.providers.get(template.getPath().getExt());
 
         // If it's the cache we do nothing
         if (!resourceCache.containsKey(template.getPath())) {
           //
           Writer writer = null;
           try {
-            TemplateEmitter generator = provider.createEmitter();
-            ASTNode.Template ast = template.getAST();
-            EmitPhase tcc = new EmitPhase(new EmitContext() {
+            A ast = template.getAST();
+            EmitContext emitCtx = new EmitContext() {
               @Override
               public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException {
                 ControllerMethodMetaModel method = application.getControllers().resolve(typeName, methodName, parameterMap.keySet());
@@ -214,16 +212,16 @@ public class TemplateResolver implements Serializable {
                 }
                 return new MethodInvocation(method.getController().getHandle().getFQN().getName() + "_", method.getName() + "URL", args);
               }
-            });
+            };
 
             //
-            tcc.emit(generator, ast);
+            CharSequence res = provider.emit(emitCtx, ast);
 
             //
             Path.Absolute absolute = application.getTemplates().resolve(template.getPath());
             FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, absolute.as(provider.getTargetExtension()), elements);
             writer = scriptFile.openWriter();
-            writer.write(generator.toString());
+            writer.write(res.toString());
 
             // Put it in cache
             resourceCache.put(template.getPath(), scriptFile);
@@ -249,7 +247,7 @@ public class TemplateResolver implements Serializable {
     });
   }
 
-  private void resolvedQualified(Template template, ProcessingContext context, Element[] elements) {
+  private <A extends Serializable> void resolvedQualified(Template<A> template, ProcessingContext context, Element[] elements) {
     Path path = template.getPath();
     Path.Absolute absolute = application.getTemplates().resolve(path);
     if (classCache.containsKey(path.getFQN())) {
@@ -330,7 +328,7 @@ public class TemplateResolver implements Serializable {
     }
   }
 
-  private void resolveStub(Template template, TemplateMetaModelPlugin plugin, ProcessingContext context, Element[] elements) {
+  private void resolveStub(Template<?> template, TemplateMetaModelPlugin plugin, ProcessingContext context, Element[] elements) {
     if (stubCache.containsKey(template.getPath().getFQN())) {
       log.log("Template strub " + template.getPath().getFQN() + " was found in cache");
       return;

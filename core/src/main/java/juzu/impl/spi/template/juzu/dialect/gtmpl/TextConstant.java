@@ -17,28 +17,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.spi.template;
+package juzu.impl.spi.template.juzu.dialect.gtmpl;
 
-import java.io.IOException;
-import java.io.Serializable;
+import juzu.io.CharArray;
 
 /**
- * A provider for templating system.
+ * This object encapsulate the generation of a method that outputs the specified text.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class TemplateProvider<A extends Serializable> {
+class TextConstant {
 
-  public abstract Class<? extends TemplateStub> getTemplateStubType();
+  /** . */
+  final String name;
 
-  public abstract A parse(CharSequence s) throws juzu.impl.spi.template.juzu.ast.ParseException;
+  /** . */
+  final String text;
 
-  public abstract void process(ProcessContext context, Template<A> template);
+  TextConstant(String name, String text) {
+    this.name = name;
+    this.text = text;
+  }
 
-  public abstract CharSequence emit(EmitContext context, A ast) throws IOException;
-
-  public abstract String getSourceExtension();
-
-  public abstract String getTargetExtension();
-
+  String getDeclaration() {
+    StringBuilder sb = new StringBuilder("");
+    juzu.impl.utils.Tools.escape(text, sb);
+    return "public static final " + CharArray.Simple.class.getName() + " " + name + " = new " + CharArray.Simple.class.getName() + "('" + sb + "');";
+  }
 }

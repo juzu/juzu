@@ -17,28 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.spi.template;
+package juzu.impl.spi.template.juzu.ast;
 
-import java.io.IOException;
-import java.io.Serializable;
+import juzu.impl.utils.Coordinate;
 
-/**
- * A provider for templating system.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class TemplateProvider<A extends Serializable> {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class OffsetToken {
 
-  public abstract Class<? extends TemplateStub> getTemplateStubType();
+  /** . */
+  public int beginOffset;
 
-  public abstract A parse(CharSequence s) throws juzu.impl.spi.template.juzu.ast.ParseException;
+  /** . */
+  public int endOffset;
 
-  public abstract void process(ProcessContext context, Template<A> template);
+  public Coordinate getBegin() {
+    return new Coordinate(beginOffset, ((Token)this).beginColumn, ((Token)this).beginLine);
+  }
 
-  public abstract CharSequence emit(EmitContext context, A ast) throws IOException;
-
-  public abstract String getSourceExtension();
-
-  public abstract String getTargetExtension();
-
+  public Coordinate getEnd() {
+    return new Coordinate(endOffset, ((Token)this).endColumn, ((Token)this).endLine);
+  }
 }

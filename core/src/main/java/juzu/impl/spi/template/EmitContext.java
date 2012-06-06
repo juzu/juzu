@@ -19,26 +19,18 @@
 
 package juzu.impl.spi.template;
 
-import java.io.IOException;
-import java.io.Serializable;
+import juzu.impl.compiler.CompilationException;
+import juzu.impl.utils.MethodInvocation;
 
-/**
- * A provider for templating system.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class TemplateProvider<A extends Serializable> {
+import java.util.Map;
 
-  public abstract Class<? extends TemplateStub> getTemplateStubType();
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class EmitContext {
 
-  public abstract A parse(CharSequence s) throws juzu.impl.spi.template.juzu.ast.ParseException;
-
-  public abstract void process(ProcessContext context, Template<A> template);
-
-  public abstract CharSequence emit(EmitContext context, A ast) throws IOException;
-
-  public abstract String getSourceExtension();
-
-  public abstract String getTargetExtension();
-
+  public MethodInvocation resolveMethodInvocation(
+    String typeName,
+    String methodName,
+    Map<String, String> parameterMap) throws CompilationException {
+    return null;
+  }
 }

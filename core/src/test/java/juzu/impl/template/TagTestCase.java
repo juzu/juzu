@@ -20,13 +20,13 @@
 package juzu.impl.template;
 
 import juzu.impl.spi.inject.InjectImplementation;
-import juzu.impl.spi.template.gtmpl.GroovyTemplateEmitter;
-import juzu.impl.template.ast.ASTNode;
-import juzu.impl.template.compiler.EmitContext;
-import juzu.impl.template.compiler.EmitPhase;
-import juzu.impl.template.compiler.ProcessContext;
-import juzu.impl.template.compiler.ProcessPhase;
-import juzu.impl.template.compiler.Template;
+import juzu.impl.spi.template.EmitContext;
+import juzu.impl.spi.template.juzu.dialect.gtmpl.GroovyTemplateEmitter;
+import juzu.impl.spi.template.juzu.ast.ASTNode;
+import juzu.impl.spi.template.juzu.compiler.EmitPhase;
+import juzu.impl.spi.template.ProcessContext;
+import juzu.impl.spi.template.juzu.compiler.ProcessPhase;
+import juzu.impl.spi.template.Template;
 import juzu.impl.template.metadata.TemplateDescriptor;
 import juzu.impl.utils.Path;
 import juzu.test.AbstractInjectTestCase;
@@ -35,6 +35,7 @@ import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -112,28 +113,28 @@ public class TagTestCase extends AbstractInjectTestCase {
     // but for now it will be enough
     TemplateDescriptor desc = app.getContext().getDescriptor().getTemplates().getTemplate("foo.gtmpl");
     assertNotNull(desc);
-    Template foo = new Template(
+    Template<?> foo = new Template<ASTNode.Template>(
       Path.parse("index.gtmpl"),
       new ASTNode.Template(),
       Path.parse(desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
       System.currentTimeMillis());
 
     //
-    HashMap<Path, Template> templates = new HashMap<Path, Template>();
+    HashMap<Path, Template<?>> templates = new HashMap<Path, Template<?>>();
     templates.put(Path.parse("foo.gtmpl"), foo);
-    ProcessPhase process = new ProcessPhase(new ProcessContext() {
+    ProcessPhase process = new ProcessPhase(new ProcessContext(templates) {
       @Override
-      protected Template resolveTemplate(Path originPath, Path path) {
+      public <A extends Serializable> Template<A> resolveTemplate(Path originPath, Path path) {
         if (path.equals(Path.parse("index.gtmpl"))) {
           try {
-            return new Template(
+            return (Template<A>)new Template<ASTNode.Template>(
               Path.parse("index.gtmpl"),
               ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
               Path.parse("template/tag/decorate/templates/index.gtmpl"),
               System.currentTimeMillis()
             );
           }
-          catch (juzu.impl.template.ast.ParseException e) {
+          catch (juzu.impl.spi.template.juzu.ast.ParseException e) {
             throw failure(e);
           }
         }
@@ -141,8 +142,8 @@ public class TagTestCase extends AbstractInjectTestCase {
           return null;
         }
       }
-    }, templates);
-    Template template = process.resolveTemplate(Path.parse("index.gtmpl"));
+    });
+    Template<ASTNode.Template> template = (Template<ASTNode.Template>)process.resolveTemplate(Path.parse("index.gtmpl"));
     assertNotNull(template);
 
     // Now emit the template

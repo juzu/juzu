@@ -17,28 +17,41 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.spi.template;
+package juzu.impl.spi.template.juzu.ast;
 
 import java.io.IOException;
-import java.io.Serializable;
 
-/**
- * A provider for templating system.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class TemplateProvider<A extends Serializable> {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class OffsetCharStream extends SimpleCharStream {
 
-  public abstract Class<? extends TemplateStub> getTemplateStubType();
+  /** . */
+  public int beginOffset;
 
-  public abstract A parse(CharSequence s) throws juzu.impl.spi.template.juzu.ast.ParseException;
+  /** . */
+  public int currentOffset;
 
-  public abstract void process(ProcessContext context, Template<A> template);
+  public OffsetCharStream(OffsetReader r) {
+    super(r);
+  }
 
-  public abstract CharSequence emit(EmitContext context, A ast) throws IOException;
+  public char BeginToken() throws IOException {
+    char c = super.BeginToken();
+    beginOffset = currentOffset;
+    return c;
+  }
 
-  public abstract String getSourceExtension();
+  public char readChar() throws IOException {
+    char c = super.readChar();
+    currentOffset++;
+    return c;
+  }
 
-  public abstract String getTargetExtension();
+  public void backup(int amount) {
+    super.backup(amount);
+    currentOffset -= amount;
+  }
 
+  public CharSequence getData() {
+    return ((OffsetReader)inputStream).getData();
+  }
 }

@@ -19,10 +19,10 @@
 
 package juzu.impl.tags;
 
-import juzu.impl.template.ast.ASTNode;
-import juzu.impl.template.compiler.ExtendedTagHandler;
-import juzu.impl.template.compiler.ProcessPhase;
-import juzu.impl.template.compiler.Template;
+import juzu.impl.spi.template.juzu.ast.ASTNode;
+import juzu.impl.spi.template.juzu.compiler.ExtendedTagHandler;
+import juzu.impl.spi.template.juzu.compiler.ProcessPhase;
+import juzu.impl.spi.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ParamTag extends ExtendedTagHandler {

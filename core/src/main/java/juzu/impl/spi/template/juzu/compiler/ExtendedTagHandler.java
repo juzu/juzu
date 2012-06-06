@@ -17,28 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.spi.template;
+package juzu.impl.spi.template.juzu.compiler;
 
-import java.io.IOException;
-import java.io.Serializable;
+import juzu.impl.compiler.CompilationException;
+import juzu.impl.spi.template.Template;
+import juzu.impl.spi.template.juzu.ast.ASTNode;
+import juzu.template.TagHandler;
 
-/**
- * A provider for templating system.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class TemplateProvider<A extends Serializable> {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public abstract class ExtendedTagHandler extends TagHandler {
 
-  public abstract Class<? extends TemplateStub> getTemplateStubType();
+  public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException {
+  }
 
-  public abstract A parse(CharSequence s) throws juzu.impl.spi.template.juzu.ast.ParseException;
-
-  public abstract void process(ProcessContext context, Template<A> template);
-
-  public abstract CharSequence emit(EmitContext context, A ast) throws IOException;
-
-  public abstract String getSourceExtension();
-
-  public abstract String getTargetExtension();
-
+  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException {
+  }
 }

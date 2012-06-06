@@ -37,7 +37,33 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * <p></p>A template as seen by an application. A template is identified by its {@link #path} and can used to produce markup.
+ * Templates perform rendering using a parameter map and a locale as inputs and produces a markup response.</p>
+ *
+ * <p>Template can be rendered with many methods that will affect the current execution. Those methods will implicitly set
+ * the produced markup response on the {@link MimeContext} using the {@link MimeContext#setResponse(juzu.Response.Content)}
+ * method: {@link #render()}, {@link #render(java.util.Locale)}, {@link #render(java.util.Map)}, {@link #render(java.util.Map, java.util.Locale)},
+ * {@link #notFound()}, {@link #notFound(java.util.Locale)}, {@link #notFound(java.util.Map)}, {@link #notFound(java.util.Map, java.util.Locale)},
+ * {@link #ok()}, {@link #ok(java.util.Locale)}, {@link #ok(java.util.Map)}, {@link #ok(java.util.Map, java.util.Locale)}.</p>
+ *
+ * <p>Template can be parameterized using a fluent API with the {@link Builder} object provided by the {@link #with()}
+ * method:
+ * <br/>
+ * <br/>
+ * <code>template.with().set("date", new java.util.Date()).render()</code>
+ * <br/>
+ * <br/>
+ * The template compiler produces also a subclass of the template that can be used instead of this base template class.
+ * This sub class overrides the {@link #with()} method to return a builder that provides typed methods when the
+ * template declares parameters:
+ * <br/>
+ * <br/>
+ * <code>template.with().date(new java.util.Date()).render()</code>
+ * </p>
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 public abstract class Template {
 
   /** . */
@@ -55,22 +81,56 @@ public abstract class Template {
     this.path = path;
   }
 
-  public Path getPath() {
+  /**
+   * Returns the template path.
+   *
+   * @return the temlate path
+   */
+  public final Path getPath() {
     return path;
   }
 
+  @Override
+  public final String toString() {
+    return getClass().getSimpleName() + "[path=" + path + "]";
+  }
+
+  /**
+   * Renders the template and returns a render response.
+   *
+   * @return the render response
+   */
   public Response.Render render() throws TemplateExecutionException, UndeclaredIOException {
-    return render(Collections.<String, Object>emptyMap(), null);
+    return render(null, null);
   }
 
+  /**
+   * Renders the template and set a the response on the current {@link MimeContext}.
+   *
+   * @param locale     the locale
+   * @return the render response
+   */
   public Response.Render render(Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    return render(Collections.<String, Object>emptyMap(), locale);
+    return render(null, locale);
   }
 
+  /**
+   * Renders the template and set a the response on the current {@link MimeContext}.
+   *
+   * @param parameters the parameters
+   * @return the render response
+   */
   public Response.Render render(Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
     return render(parameters, null);
   }
 
+  /**
+   * Renders the template and set a the response on the current {@link MimeContext}.
+   *
+   * @param parameters the parameters
+   * @param locale     the locale
+   * @return the render response
+   */
   public Response.Render render(final Map<String, ?> parameters, final Locale locale) throws TemplateExecutionException, UndeclaredIOException {
     try {
       RequestContext context = Request.getCurrent().getContext();
@@ -93,46 +153,187 @@ public abstract class Template {
     }
   }
 
+  /**
+   * Renders the template and set the response on the current {@link MimeContext}.
+   *
+   * @return the ok resource response
+   */
+  public final Response.Content.Resource ok() {
+    return ok(null, null);
+  }
+
+  /**
+   * Renders the template and set the response on the current {@link MimeContext}.
+   *
+   * @param locale     the locale
+   * @return the ok resource response
+   */
+  public final Response.Content.Resource ok(Locale locale) {
+    return ok(null, locale);
+  }
+
+  /**
+   * Renders the template and set the response on the current {@link MimeContext}.
+   *
+   * @param parameters the parameters
+   * @return the ok resource response
+   */
+  public final Response.Content.Resource ok(Map<String, ?> parameters) {
+    return ok(parameters, null);
+  }
+
+  /**
+   * Renders the template and set the response on the current {@link MimeContext}.
+   *
+   * @param parameters the parameters
+   * @param locale     the locale
+   * @return the ok resource response
+   */
+  public final Response.Content.Resource<Stream.Char> ok(Map<String, ?> parameters, Locale locale) {
+    StringBuilder sb = new StringBuilder();
+    renderTo(new AppendableStream(sb), parameters, locale);
+    return Response.ok(sb.toString());
+  }
+
+  /**
+   * Renders the template and set a 404 response on the current {@link MimeContext}.
+   *
+   * @return the not found resource response
+   */
   public final Response.Content.Resource notFound() {
     return notFound(null, null);
   }
 
+  /**
+   * Renders the template and set a 404 response on the current {@link MimeContext}.
+   *
+   * @param locale     the locale
+   * @return the not found resource response
+   */
   public final Response.Content.Resource notFound(Locale locale) {
     return notFound(null, locale);
   }
 
+  /**
+   * Renders the template and set a 404 response on the current {@link MimeContext}.
+   *
+   * @param parameters the parameters
+   * @return the not found resource response
+   */
   public final Response.Content.Resource notFound(Map<String, ?> parameters) {
     return notFound(parameters, null);
   }
 
+  /**
+   * Renders the template and set a 404 response on the current {@link MimeContext}.
+   *
+   * @param parameters the parameters
+   * @param locale     the locale
+   * @return the not found resource response
+   */
   public final Response.Content.Resource<Stream.Char> notFound(Map<String, ?> parameters, Locale locale) {
     StringBuilder sb = new StringBuilder();
     renderTo(new AppendableStream(sb), parameters, locale);
     return Response.status(404, sb.toString());
   }
 
-  public abstract Builder with();
-
-  public Builder with(Locale locale) {
-    Builder builder = with();
-    builder.locale = locale;
-    return builder;
+  /**
+   * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+   *
+   * @param appendable the appendable
+   * @throws TemplateExecutionException any execution exception
+   * @throws UndeclaredIOException      any io exception
+   */
+  public <A extends Appendable> A renderTo(A appendable) throws TemplateExecutionException, UndeclaredIOException {
+    return renderTo(appendable, Collections.<String, Object>emptyMap(), null);
   }
 
+  /**
+   * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+   *
+   * @param appendable the appendable
+   * @param locale     the locale
+   * @throws TemplateExecutionException any execution exception
+   * @throws UndeclaredIOException      any io exception
+   */
+  public <A extends Appendable> A renderTo(A appendable, Locale locale) throws TemplateExecutionException, UndeclaredIOException {
+    return renderTo(appendable, Collections.<String, Object>emptyMap(), locale);
+  }
+
+  /**
+   * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+   *
+   * @param appendable the appendable
+   * @param parameters the attributes
+   * @throws TemplateExecutionException any execution exception
+   * @throws UndeclaredIOException      any io exception
+   */
+  public <A extends Appendable> A renderTo(A appendable, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
+    return renderTo(appendable, parameters, null);
+  }
+
+  /**
+   * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+   *
+   * @param appendable the appendable
+   * @param parameters the attributes
+   * @param locale     the locale
+   * @throws TemplateExecutionException any execution exception
+   * @throws UndeclaredIOException      any io exception
+   */
+  public <A extends Appendable> A renderTo(
+    A appendable,
+    Map<String, ?> parameters,
+    Locale locale) throws TemplateExecutionException, UndeclaredIOException {
+    if (appendable == null) {
+      throw new NullPointerException("No null appendable can be provided");
+    }
+
+    // Delegate rendering
+    renderTo(new AppendableStream(appendable), parameters, locale);
+
+    //
+    return appendable;
+  }
+
+  /**
+   * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
+   *
+   * @param printer    the printer
+   * @throws TemplateExecutionException any execution exception
+   * @throws UndeclaredIOException      any io exception
+   */
   public void renderTo(Stream.Char printer) throws TemplateExecutionException, UndeclaredIOException {
     renderTo(printer, Collections.<String, Object>emptyMap(), null);
   }
 
+  /**
+   * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
+   *
+   * @param printer    the printer
+   * @param locale     the locale
+   * @throws TemplateExecutionException any execution exception
+   * @throws UndeclaredIOException      any io exception
+
+   */
   public void renderTo(Stream.Char printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException {
     renderTo(printer, Collections.<String, Object>emptyMap(), locale);
   }
 
+  /**
+   * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
+   *
+   * @param printer    the printer
+   * @param parameters the attributes
+   * @throws TemplateExecutionException any execution exception
+   * @throws UndeclaredIOException      any io exception
+   */
   public void renderTo(Stream.Char printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
     renderTo(printer, parameters, null);
   }
 
   /**
-   * Renders the template.
+   * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
    *
    * @param printer    the printer
    * @param parameters the attributes
@@ -156,11 +357,27 @@ public abstract class Template {
     }
   }
 
-  @Override
-  public String toString() {
-    return getClass().getSimpleName() + "[path=" + path + "]";
+  /**
+   * Returns a builder to further customize the template rendering.
+   *
+   * @return a new builder instance
+   */
+  public abstract Builder with();
+
+  /**
+   * Returns a builder to further customize the template rendering.
+   *
+   * @return a new builder instance
+   */
+  public Builder with(Locale locale) {
+    Builder builder = with();
+    builder.locale = locale;
+    return builder;
   }
 
+  /**
+   * A builder providing a fluent syntax for rendering a template.
+   */
   public class Builder {
 
     /** The parameters. */
@@ -168,14 +385,6 @@ public abstract class Template {
 
     /** The locale. */
     private Locale locale;
-
-    public final Response.Render render() {
-      return Template.this.render(parameters, locale);
-    }
-
-    public final Response.Content notFound() {
-      return Template.this.notFound(parameters, locale);
-    }
 
     /**
      * Update a parameter, if the value is not null the parameter with the specified name is set, otherwise the
@@ -201,6 +410,55 @@ public abstract class Template {
         parameters.remove(name);
       }
       return this;
+    }
+
+    /**
+     * Renders the template and returns a render response.
+     *
+     * @return the render response
+     */
+    public Response.Render render() throws TemplateExecutionException, UndeclaredIOException {
+      return Template.this.render(parameters, locale);
+    }
+
+    /**
+     * Renders the template and set the response on the current {@link MimeContext}.
+     *
+     * @return the ok resource response
+     */
+    public final Response.Content.Resource ok() {
+      return Template.this.ok(parameters, locale);
+    }
+
+    /**
+     * Renders the template and set a 404 response on the current {@link MimeContext}.
+     *
+     * @return the not found resource response
+     */
+    public final Response.Content.Resource notFound() {
+      return Template.this.notFound(parameters, locale);
+    }
+
+    /**
+     * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+     *
+     * @param appendable the appendable
+     * @throws TemplateExecutionException any execution exception
+     * @throws UndeclaredIOException      any io exception
+     */
+    public <A extends Appendable> A renderTo(A appendable) throws TemplateExecutionException, UndeclaredIOException {
+      return Template.this.renderTo(appendable, parameters, locale);
+    }
+
+    /**
+     * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
+     *
+     * @param printer    the printer
+     * @throws TemplateExecutionException any execution exception
+     * @throws UndeclaredIOException      any io exception
+     */
+    public void renderTo(Stream.Char printer) throws TemplateExecutionException, UndeclaredIOException {
+      Template.this.renderTo(printer, parameters, locale);
     }
   }
 }
