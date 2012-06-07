@@ -22,6 +22,7 @@ package juzu.impl.spi.fs;
 import juzu.impl.fs.Filter;
 import juzu.impl.fs.Visitor;
 import juzu.impl.utils.Content;
+import juzu.impl.utils.Tools;
 
 import java.io.IOException;
 import java.net.URL;
@@ -101,7 +102,7 @@ public abstract class ReadFileSystem<P> extends SimpleFileSystem<P> {
         }
       }
       else {
-        throw new UnsupportedOperationException("handle me gracefully");
+        throw new UnsupportedOperationException("handle me gracefully : was expecting " + Tools.list(names) + " to resolve");
       }
     }
     return current;

@@ -25,6 +25,7 @@ import juzu.impl.application.ApplicationException;
 import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.spi.fs.ReadFileSystem;
 import juzu.impl.spi.fs.disk.DiskFileSystem;
+import juzu.impl.spi.fs.jar.JarFileSystem;
 import juzu.impl.spi.inject.InjectBuilder;
 import juzu.impl.spi.request.RequestBridge;
 import juzu.impl.utils.JSON;
@@ -36,6 +37,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockApplication<P> {
@@ -77,7 +79,21 @@ public class MockApplication<P> {
     String fqn = props.getString(name);
 
     //
-    DiskFileSystem libs = new DiskFileSystem(new File(ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
+    URL location = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
+    String protocol = location.getProtocol();
+    ReadFileSystem<?> libs;
+    if ("file".equals(protocol)) {
+      File file = new File(location.toURI());
+      if (file.isDirectory()) {
+        libs = new DiskFileSystem(file);
+      } else if (file.isFile() && file.getName().endsWith(".jar")) {
+        libs = new JarFileSystem(new JarFile(file));
+      } else {
+        throw AbstractTestCase.failure("Could not create file system from location " + location);
+      }
+    } else {
+      throw AbstractTestCase.failure("Could not create file system from location " + location);
+    }
 
     //
     Class<?> clazz = classLoader.loadClass(fqn);

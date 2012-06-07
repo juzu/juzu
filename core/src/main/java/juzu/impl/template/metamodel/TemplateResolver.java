@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -76,7 +77,7 @@ public class TemplateResolver implements Serializable {
   private Map<Path, Template<?>> templates;
 
   /** . */
-  private Map<Path, FileObject> resourceCache;
+  private Set<Path> emitted;
 
   /** . */
   private Map<FQN, FileObject> stubCache;
@@ -92,7 +93,7 @@ public class TemplateResolver implements Serializable {
     //
     this.application = application;
     this.templates = new HashMap<Path, Template<?>>();
-    this.resourceCache = new HashMap<Path, FileObject>();
+    this.emitted = new HashSet<Path>();
     this.stubCache = new HashMap<FQN, FileObject>();
     this.classCache = new HashMap<FQN, FileObject>();
   }
@@ -107,8 +108,8 @@ public class TemplateResolver implements Serializable {
   }
 
   public void prePassivate() {
-    log.log("Evicting cache " + resourceCache.keySet());
-    resourceCache.clear();
+    log.log("Evicting cache " + emitted);
+    emitted.clear();
     stubCache.clear();
     classCache.clear();
   }
@@ -189,9 +190,8 @@ public class TemplateResolver implements Serializable {
         TemplateProvider<A> provider = (TemplateProvider<A>)plugin.providers.get(template.getPath().getExt());
 
         // If it's the cache we do nothing
-        if (!resourceCache.containsKey(template.getPath())) {
+        if (!emitted.contains(template.getPath())) {
           //
-          Writer writer = null;
           try {
             A ast = template.getAST();
             EmitContext emitCtx = new EmitContext() {
@@ -218,23 +218,29 @@ public class TemplateResolver implements Serializable {
             CharSequence res = provider.emit(emitCtx, ast);
 
             //
-            Path.Absolute absolute = application.getTemplates().resolve(template.getPath());
-            FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, absolute.as(provider.getTargetExtension()), elements);
-            writer = scriptFile.openWriter();
-            writer.write(res.toString());
+            if (res != null) {
+              //
+              Path.Absolute absolute = application.getTemplates().resolve(template.getPath());
+              FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, absolute.as(provider.getTargetExtension()), elements);
+              Writer writer = null;
+              try {
+                writer = scriptFile.openWriter();
+                writer.write(res.toString());
+              }
+              finally {
+                Tools.safeClose(writer);
+              }
+
+              //
+              log.log("Generated template script " + template.getPath() + " as " + scriptFile.toUri() +
+                " with originating elements " + Arrays.asList(elements));
+            }
 
             // Put it in cache
-            resourceCache.put(template.getPath(), scriptFile);
-
-            //
-            log.log("Generated template script " + template.getPath() + " as " + scriptFile.toUri() +
-              " with originating elements " + Arrays.asList(elements));
+            emitted.add(template.getPath());
           }
           catch (IOException e) {
             throw TemplateMetaModel.CANNOT_WRITE_TEMPLATE_SCRIPT.failure(e, template.getPath());
-          }
-          finally {
-            Tools.safeClose(writer);
           }
         }
         else {

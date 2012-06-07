@@ -48,7 +48,7 @@ public class ProcessContext {
     return resolveTemplate(path, path);
   }
 
-  public <A extends Serializable> Template<A> resolveTemplate(Path originPath, Path path) {
+  public <A extends Serializable> Template<? extends A> resolveTemplate(Path originPath, Path path) {
 
     // A class cast here would mean a terrible issue
     Template<A> template = (Template<A>)templates.get(path);
