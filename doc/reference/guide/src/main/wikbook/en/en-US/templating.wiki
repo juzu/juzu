@@ -1,0 +1,244 @@
+Templating is the //View// part of a Model View Controlle architecture. We will study in this chapter how
+the templating system interacts with the Juzu, at compilation time and at runtime, both aspects are very
+important.
+
+= The templating engines =
+
+Juzu can use several templating engines, it provides a native template engine as well as the Mustache templating engine.
+Those engines are not competing, instead they should be seen as alternatives: the native Groovy engine provides the
+goodness of the Groovy languages, however sometimes some people prefer logic-less templates and
+[[Mustache>>http://mustache.github.com/]] is a template engine they should use. Let's introduce them briefly.
+
+== The native template engine ==
+
+The native template engine extends the [[Groovy templating system>>http://groovy.codehaus.org/Groovy+Templates]]:
+it can include snippet of Groovy code or resolve Groovy expressions:
+
+=== Expressions ===
+
+Expressions are simply Groovy expressions wrapped with the ##${...}## syntax:
+
+{{code}}
+The sky is ${color}
+{{/code}}
+
+=== Scriplets ===
+
+Groovy code can also literaly be used with the //scriplet// syntax: ##<% ... %>##. Within a scriptlet the ##out## implicit object
+can be used for outputting markup:
+
+{{code}}
+<ul>
+<% ["red","green","blue"].each({ color -> out.print("<li>The sky is " + color + "</li>") }) %>
+</ul>
+{{/code}}
+
+The scriplet syntax ##<%= ... %>## can also be used:
+
+{{code}}
+The sky is <%= color %>
+{{/code}}
+
+=== Controller urls ===
+
+Controller urls is natively supported by the engine, it allows to create controller URL with a short and compact syntax
+##@{...}##:
+
+{{example title="Controller URL syntax"}}
+{{code}}
+<a href="@{index()}">Home</a>
+{{/code}}
+{{/example}}
+
+URL expressions can contain parameters and they must be named:
+
+{{example title="Controller URL with parameters"}}
+{{code}}
+<a href="@{purchase(product=1)}">Purchase</a>
+{{/code}}
+{{/example}}
+
+The //purchase// method refers to a controller method, when the application has several controllers, the controller name
+can be used to prefix the url expression and remove the ambiguity:
+
+{{example title="Explicit controller URL"}}
+{{code}}
+<a href="@{Controller.purchase(product=1)}">Purchase</a>
+{{/code}}
+{{/example}}
+
+Under the hood the controller URL syntax uses the controller compagnion for creating the URL: the ##Controller.purchase(product=1)##
+will uses the controller compagnion ##Controller_#purchase(String product)##.
+
+=== Taglib ===
+
+The native engine provides taglib support using the ###{tag}...#{/tag}} ## or ###{tag/}## syntax:
+
+{{code}}
+#{title value=Hello/}
+{{/code}}
+
+Available tags are explained in the [[taglib chapter>>#taglib]].
+
+== The Mustache template engine ==
+
+The Mustache template engine uses //logic-less// templates based on [[Mustache.java>>https://github.com/spullara/mustache.java]]
+the Java port of Mustache. Mustache is very easy to use, you can read the [[documentation>>http://mustache.github.com/mustache.5.html]],
+however we will have a quick overview of how it can be used in Juzu:
+
+=== Variables ===
+
+Variables uses the ##{{...}}## syntax, they are resolved against template parameters or beans.
+
+{{code}}
+The sky is {{color}}
+{{/code}}
+
+=== Sections ===
+
+Mustache sections allows to iterate expressions that are multivalued.
+
+{{code}}
+todo
+{{/code}}
+
+= Using templates =
+
+A template as seen by an application is a bean managed by the IOC container.
+
+== Template declaration ==
+
+Applications use a template by injecting a ##juzu.template.Template## object in its controllers qualified by the
+##juzu.Path## annotation:
+
+{{example title="Using a template"}}
+{{java}}
+public class Controller {
+
+  @Inject
+  @Path("index.gtmpl") // <1> Declares the template path
+  Template index;
+
+  @View
+  public void index() {
+    index.render(); // <2> Renders the template and send the markup to the response
+  }
+}
+{{/java}}
+{{/example}}
+
+The ##juzu.Path## annotation is a qualifier annotation managed by the IOC container. It is very similar to the
+##@javax.inject.Named## qualifier, but it has a special meaning for Juzu for declaring the template.
+
+== Type safe parameters ==
+
+Template type safe parameters brings more type safety in your applications. Templates can declare parameters and they
+are made available on a subclass of the ##juzu.template.Template## class.
+
+Parameters are declared using the taglib support of the native template engine
+
+{{example title="Native template parameter declaration"}}
+{{code}}
+#{param name=color/}
+The sky is ${color}.
+{{/code}}
+{{/example}}
+
+or the pragma support of the Mustache engine
+
+{{example title="Mustache template parameter declaration"}}
+{{code}}
+{{%param color}}
+The sky is {{color}}.
+{{/code}}
+{{/example}}
+
+When the template is declared in a controller, a subclass of ##juzu.template.Template## can be used:
+
+{{java}}
+package weather;
+
+public class Controller {
+
+  @Inject
+  @Path("sky.gtmpl")
+  weather.templates.sky sky; // <1> The ##weather.templates.sky## typed template class
+
+  @View
+  public void index() {
+    sky.with().color("blue").render(); // <2> Use the ##sky## template ##color## parameter
+  }
+}
+{{/java}}
+
+The ##weather.templates.sky## class does not exist in the original source but it is available when the application
+is compiled because it will be generated by Juzu compiler integration. The ##sky## templates provides a //fluent//
+syntax to bind parameters: ##sky.with().color("blue").render()##.
+
+== Expression resolution ==
+
+When we studied the templating engine syntax but we did not mentioned exactly how expression are resolved.
+
+=== Single name expressions ===
+
+Both templating system provides a syntax for resolving single name expressions:
+
+* ##${...}## for Groovy
+* ##{{...}}## for Mustache
+
+Resolution is performed against template parameters or bean named with the ##javax.inject.Named## qualifier.
+
+{{example title="Named bean"}}
+{{java}}
+@javax.inject.Named("color")
+public class Color {
+  public String toString() {
+    return "red";
+  }
+}
+{{/java}}
+{{/example}}
+
+{{example title="Template parameters"}}
+{{java}}
+index.with().set("color", "red").render(); // <1> Detyped version
+index.with().color("red").render(); // <2> Type safe version
+{{/java}}
+{{/example}}
+
+=== Compound expressions ===
+
+Compound expressions are resolved the same way for the first name and the expression resolve will attempt to
+navigate the rest of the expressions from this object:
+
+* ##${weather.color}## for Groovy
+* ##{{#weather}}{\{color}}{{/weather}}## for Mustache
+
+{{example title="Named bean"}}
+{{java}}
+@javax.inject.Named("weather")
+public class Weather {
+
+  private String color;
+
+  public Weather(String color) {
+    this.color = color;
+  }
+
+  public Weather() {
+    this.color = "red";
+  }
+
+  public String getColor() {
+    return color;
+  }
+}
+{{/java}}
+{{/example}}
+
+{{example title="Template parameters"}}
+{{java}}
+index.with().set("weather", new Weather("blue")).render(); // <1> Detyped version
+index.with().color(new Weather("blue")).render(); // <2> Type safe version
+{{/java}}
+{{/example}}

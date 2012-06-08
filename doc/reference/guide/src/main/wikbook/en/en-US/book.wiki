@@ -15,3 +15,15 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 = Inversion of Control {{anchor id=ioc /}} =
 
 {{include document=ioc.wiki/}}
+
+= Templating {{anchor id=templating /}} =
+
+{{include document=templating.wiki/}}
+
+= Templating SPI {{anchor id=templatespi /}} =
+
+{{include document=templatespi.wiki/}}
+
+= Taglib {{anchor id=taglib /}} =
+
+{{include document=taglib.wiki/}}

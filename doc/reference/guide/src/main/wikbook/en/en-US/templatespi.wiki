@@ -1,0 +1,211 @@
+This chapter dives into the template life cycle from compilation time to run time. We will describe the
+template Service Provider Interface (SPI), the SPI is designed to make Juzu templating extensible and integrating
+new template engines in Juzu. This chapter is optional is you are writing application with Juzu, however it is a must
+read if you want to know more Juzu internals or if you want to understand how to integrate a template engine in Juzu.
+
+When a Juzu application is compiled, the Juzu annotation processor detects the ##@Path## annotations and triggers
+the compilation of the related templates. The template compilation can be split in two parts:
+
+* Generating the template companion class that inherits the ##juzu.template.Template## class. This part is generic
+ and works with any templating system, it is entirely managed by Juzu.
+* Compiling the template file, this task is delegated to the ##TemplateProvider## and is extensible. The provider
+allows to have several templating system in Juzu and decouples the template compilation process from the details
+of the templating engine.
+
+= Compiling a Groovy template =
+
+Let's study an example with the Groovy template at compilation time.
+
+[[image:images/templatespi/lifecycle1.png||title="Compiling a Groovy template" align="center" html:scale="99" fo:width="100mm]]
+
+When the Java compiler is invoked, the following steps are executed
+
+1. The Java compiler triggers the Juzu annotation processor when it finds the ##@Path## annotation
+1. Juzu resolves the relative path to the ##templates## package of the application
+11. When the template cannot be resolved a compilation error is triggered
+11. Otherwise the template is loaded
+1. The template provider is looked up according to the file name extension, it will generate the //index.groovy// source file
+1. Juzu creates the ##index## class that extends the ##juzu.template.Template## class annotated by the ##@Path("index.gtmpl")## annotation
+
+After that the only remaining part is to compile the //index.groovy// source to a class. It can be achieved either at build time
+using the //groovyc// compiler or at load time when the ##index## template is loaded using a ##GroovyClassLoader##. The former
+approach makes the build a bit more complex (but not much as Groovy compilation is fairly well supported in build systems or IDEs)
+as it requires to run a Groovy compilation but it will perform additional validation of the template as well as reduce the load
+time of the template. The later approach will detect any compilation error (such as Groovy syntax error) at runtime
+and the //index.groovy// compilation will take a few milliseconds.
+
+This flexibility allows to use the lazy approach during development and when the application is released then the Groovy compiler
+can be used to compile the //index.groovy// once and for all.
+
+= Type safe URL resolution =
+
+Groovy templates provides the ##@{...}## syntax for generating URL from the application controllers. This section gives
+an overview of the underlying resolution mechanism.
+
+[[image:images/templatespi/lifecycle2.png||title="Template URL resolution during compilation" align="center" html:scale="99" fo:width="100mm]]
+
+* Parse: the template is parsed into its model representation
+* Resolve: the ##index## link is resolved againt the controller meta model
+* Validate: the ##index## link is validated
+* Emit: the corresponding //index.groovy// file is emitted and save on the class output
+* Compile: the Groovy source is compiled into a class by the //groovyc// compiler (this part is done after //javac//)
+
+= Template Service Provider Interface =
+
+Juzu provides a Service Provider Interface (SPI) for integrating thirdparty template engine. Actually all template
+system are integrated with the SPI. We will study briefly the integration points so you can integrate a template engine
+of your choice in Juzu.
+
+== Template providers ==
+
+The ##juzu.impl.template.spi.TemplateProvider## is the main entry point when a templating system is integrated. The
+provider is triggered during the compilation phase by the APT system built into the Java compiler.
+
+{{java}}
+{@javadoc juzu.impl.template.spi.TemplateProvider}
+public abstract class TemplateProvider<M extends Serializable> {
+  ...
+}
+{{/java}}
+
+The provider must declare the template model ##<M>## generic type. It must be a serializable type because Juzu will sometimes
+write template models on the disk during the compilation this usually happens only in Eclipse due its incremental
+compiler architecture. The type specified by the provider is privately managed (i.e it is opaque for Juzu) and it
+symbolizes an internal representation of the parsed source (usually an Abstract Syntax Tree), it will be used in
+various methods of the provider.
+
+Let's have a review of the methods of this class to have a better understanding.
+
+{{java}}
+{@include juzu.impl.template.spi.TemplateProvider#getSourceExtension()}
+
+{@include juzu.impl.template.spi.TemplateProvider#getTargetExtension()}
+{{/java}}
+
+The ##getSourceExtension()## method is used to determine what file extension the provider can compile. The implementation
+ should return a constant value, for instance the Groovy provide simply returns the ##gtmpl## value.
+
+The ##getTargetExtension()## method returns a file extension of the file that is generated by the provider. This extension
+is optional and it can return null if the provider will not generate a target file. For instance the Groovy provider returns
+the ##groovy## value because it will emit a a Groovy file, however the Mustache provider will return null because it won't
+emit any file.
+
+{{java}}
+{@include juzu.impl.template.spi.TemplateProvider#parse(juzu.impl.template.spi.ParseContext,java.lang.CharSequence)}
+
+{@include juzu.impl.template.spi.TemplateProvider#process(juzu.impl.template.spi.ProcessContext,juzu.impl.template.spi.Template)}
+
+{@include juzu.impl.template.spi.TemplateProvider#emit(juzu.impl.template.spi.EmitContext,java.io.Serializable)}
+{{/java}}
+
+The ##parse##, ##process## and ##emit## methods care about transforming the template source to its final representation : the
+template stub.
+
+* The ##parse## method is invoked with the content of the template and returns a template model. The representation returned
+by the parse method is a parsed representation of the template source. If a parsing error occurs the method can throw
+a ##TemplateException##.
+* The ##process## method is invoked after the template is parsed with the necessary context for performing further
+processing of the template, for instance the Groovy templating engine performs the resolution of type safe URLs or type
+safe parameters declaration at this moment. During the process:
+** The provider can resolve other templates using the ##ProcessContext##, if the template to resolve is not
+  yet loaded it will trigger the ##parse##/##process##/##emit## lifecycle, it if was already processed the template
+  is simply returned
+** The implementation can resolve controller methods and translate them into method invocation, this is used for
+  checking type safe URL and translating them into controller companion invocation
+** The ##juzu.impl.template.spi.Template## argument represents the template, it has several fields such as the template
+model or the template path
+** The implementation can declare type safe parameters using the ##Template#addParameter(String)## method. The declared
+parameters will be generated on the ##juzu.template.Template## subclass
+* The ##emit## method is invoked when the template processing is over. The implementation can return null or a ##CharSequence##
+that will be saved in a file named after the origin template file but with the extension returned by the ##getTargetExtension()##
+method.
+
+{{java}}
+{@include juzu.impl.template.spi.TemplateProvider#getTemplateStubType()}
+{{/java}}
+
+Finally the ##getTemplateStubType()## returns the type of a java class that will be used for creating a template stub.
+For each template, a stub is created, the stub is responsible for loading the template at runtime.
+
+== Template stub  ==
+
+Template stubs are java class created by the template compiler for managing the template at runtime on behalf of the provider.
+Each provider provides its own stub implementation as a ##juzu.impl.template.spi.TemplateStub## subclass, when Juzu
+finalizes the compilation of a template it will create a subclass of the stub for the compiled template. A stub
+must implement two abstract methods:
+
+{{java}}
+{@include juzu.impl.template.spi.TemplateStub#doInit(java.lang.ClassLoader)}
+
+{@include juzu.impl.template.spi.TemplateStub#doRender(juzu.template.TemplateRenderContext)}
+{{/java}}
+
+The ##doInit## method loads the template using the provided ##ClassLoader##, it will be call only once before the
+template is rendered.
+
+The ##doRender## method renders the template using the provided ##TemplateRenderContext##. The render context
+provides the necessary hooks such as:
+
+* Producing markup
+* Setting the title
+* Obtaining the locale
+* Accessing parameters or application beans for resolving expressions
+
+= Template at work =
+
+After having described the various pieces of the templating SPI, let's look at how the template generated stubs
+ are used by Juzu templating system at runtime.
+
+[[image:images/templatespi/lifecycle3.png||title="index groovy at work" align="center" html:scale="99" fo:width="100mm]]
+
+When the controller declares the //index.gtmpl// template the compiler produces three artifacts
+* the ##index## class template inherits ##juzu.template.Template##: it is the only class visible from the
+controller and the whole application
+* the //index.groovy// Groovy template is the effective template code: it produces the markup, resolve expressions, etc...
+* the ##index_## template stub inherits ##GroovyTemplateStub##: it is the bridge between the ##index## class and the //index.groovy//
+file, it loads the Groovy template and runs it when the ##Template## need to render the template
+
+When a controller is instantiated, the ##index## template instance is injected into the controller, the ##@Path## annotation
+plays an essential role because it's a qualifier and that qualifier is used to distinguish the correct subclass to inject
+in the controller.
+
+Instead of using the qualified template injection, the controller could declare directly the template //index// subclass
+it will still work. Actually this approach should be used when type safe parameters are used as only the ##index## type
+declares the fluent API.
+
+For instance if the //index.gtmpl// declares the //color// parameter the ##index## class will look like:
+
+{{java}}
+@Path("index.gtmpl")
+public class index extends Template {
+
+  ...
+
+  public index with() {
+    return new index.Builder();
+  }
+
+  public class Builder extends Template.Builder {
+
+    public Builder color(String color) {
+      // Generated code
+    }
+  }
+}
+{{/java}}
+
+The controller can then use the fluent API:
+
+{{java}}
+public class Controller {
+
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
+
+  @View
+  public void index() {
+    index.with().color("red").render();
+  }
+}
+{{/java}}
