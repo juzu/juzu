@@ -73,10 +73,7 @@ public class EmitPhase extends CompilationPhase {
       }
       else if (block instanceof ASTNode.URL) {
         ASTNode.URL url = (ASTNode.URL)block;
-        MethodInvocation mi = context.resolveMethodInvocation(url.getTypeName(), url.getMethodName(), url.getArgs());
-        if (mi == null) {
-          throw new UnsupportedOperationException("handle me gracefully");
-        }
+        MethodInvocation mi = url.getInvocation();
         ctx.writer.url(mi.getClassName(), mi.getMethodName(), mi.getMethodArguments());
       }
       else if (block instanceof ASTNode.Tag) {

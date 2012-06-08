@@ -1,6 +1,7 @@
 package juzu.impl.spi.template.juzu;
 
 import juzu.impl.spi.template.EmitContext;
+import juzu.impl.spi.template.ParseContext;
 import juzu.impl.spi.template.ProcessContext;
 import juzu.impl.spi.template.Template;
 import juzu.impl.spi.template.TemplateException;
@@ -16,9 +17,9 @@ public abstract class DialectTemplateProvider extends TemplateProvider<ASTNode.T
   protected abstract DialectTemplateEmitter createEmitter();
 
   @Override
-  public final ASTNode.Template parse(CharSequence s) throws TemplateException {
+  public final ASTNode.Template parse(ParseContext context, CharSequence source) throws TemplateException {
     try {
-      return ASTNode.Template.parse(s);
+      return ASTNode.Template.parse(source);
     }
     catch (ParseException e) {
       throw new TemplateException(e);
@@ -26,10 +27,10 @@ public abstract class DialectTemplateProvider extends TemplateProvider<ASTNode.T
   }
 
   @Override
-  public final CharSequence emit(EmitContext context, ASTNode.Template ast) {
+  public final CharSequence emit(EmitContext context, ASTNode.Template templateModel) {
     DialectTemplateEmitter emitter = createEmitter();
     EmitPhase tcc = new EmitPhase(context);
-    tcc.emit(emitter, ast);
+    tcc.emit(emitter, templateModel);
     return emitter.toString();
   }
 

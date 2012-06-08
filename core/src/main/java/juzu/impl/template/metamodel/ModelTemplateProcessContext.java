@@ -19,17 +19,24 @@
 
 package juzu.impl.template.metamodel;
 
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
+import juzu.impl.controller.metamodel.ControllerMetaModel;
+import juzu.impl.controller.metamodel.ControllerMethodMetaModel;
+import juzu.impl.controller.metamodel.ParameterMetaModel;
 import juzu.impl.spi.template.TemplateProvider;
 import juzu.impl.spi.template.ProcessContext;
 import juzu.impl.spi.template.Template;
 import juzu.impl.utils.Content;
+import juzu.impl.utils.MethodInvocation;
 import juzu.impl.utils.Path;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -68,6 +75,24 @@ class ModelTemplateProcessContext extends ProcessContext {
   @Override
   protected TemplateProvider resolverProvider(String ext) {
     return templateMetaModel.getTemplates().plugin.providers.get(ext);
+  }
+
+  @Override
+  public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException {
+    ControllerMethodMetaModel method = templateMetaModel.getTemplates().getApplication().getControllers().resolve(typeName, methodName, parameterMap.keySet());
+
+    //
+    if (method == null) {
+      throw ControllerMetaModel.CONTROLLER_METHOD_NOT_RESOLVED.failure(methodName + "(" + parameterMap + ")");
+    }
+
+    //
+    List<String> args = new ArrayList<String>();
+    for (ParameterMetaModel param : method.getParameters()) {
+      String value = parameterMap.get(param.getName());
+      args.add(value);
+    }
+    return new MethodInvocation(method.getController().getHandle().getFQN().getName() + "_", method.getName() + "URL", args);
   }
 
   protected Content resolveResource(Path path) {

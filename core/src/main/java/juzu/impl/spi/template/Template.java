@@ -28,14 +28,15 @@ import java.util.LinkedHashSet;
  * The representation of a compilable template in a context.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ * @param <M> the template model
  */
-public class Template<A extends Serializable> implements Serializable {
+public class Template<M extends Serializable> implements Serializable {
 
   /** The origin path. */
   private final Path originPath;
 
   /** . */
-  private final A ast;
+  private final M model;
 
   /** . */
   private final Path path;
@@ -48,11 +49,11 @@ public class Template<A extends Serializable> implements Serializable {
 
   public Template(
     Path originPath,
-    A ast,
+    M model,
     Path path,
     long lastModified) {
     this.originPath = originPath;
-    this.ast = ast;
+    this.model = model;
     this.path = path;
     this.parameters = new LinkedHashSet<String>();
     this.lastModified = lastModified;
@@ -66,8 +67,8 @@ public class Template<A extends Serializable> implements Serializable {
     return path;
   }
 
-  public A getAST() {
-    return ast;
+  public M getModel() {
+    return model;
   }
 
   public long getLastModified() {

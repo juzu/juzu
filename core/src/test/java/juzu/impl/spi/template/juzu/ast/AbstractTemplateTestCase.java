@@ -19,11 +19,16 @@
 
 package juzu.impl.spi.template.juzu.ast;
 
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.spi.template.EmitContext;
+import juzu.impl.spi.template.ProcessContext;
+import juzu.impl.spi.template.Template;
+import juzu.impl.spi.template.juzu.compiler.ProcessPhase;
 import juzu.impl.spi.template.juzu.dialect.gtmpl.GroovyTemplateEmitter;
 import juzu.impl.spi.template.juzu.dialect.gtmpl.GroovyTemplateStub;
 import juzu.impl.spi.template.juzu.compiler.EmitPhase;
 import juzu.impl.utils.MethodInvocation;
+import juzu.impl.utils.Path;
 import juzu.io.AppendableStream;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
@@ -43,9 +48,9 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
   public GroovyTemplateStub template(final String text) throws IOException {
     GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
     try {
-      EmitPhase tcc = new EmitPhase(new EmitContext() {
+      ProcessPhase processPhase = new ProcessPhase(new ProcessContext(Collections.<Path, Template<?>>emptyMap()) {
         @Override
-        public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) {
+        public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException {
           if (parameterMap.size() > 0) {
             throw failure("Unexpected non empty parameter map");
           }
@@ -60,7 +65,12 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
           }
         }
       });
-      tcc.emit(generator, ASTNode.Template.parse(text));
+      Template<ASTNode.Template> template = new Template<ASTNode.Template>(Path.parse("index.gtmpl"), ASTNode.Template.parse(text), Path.parse("index.gtmpl"), 0);
+      processPhase.process(template);
+
+      // Emit
+      EmitPhase emitPhase = new EmitPhase(new EmitContext());
+      emitPhase.emit(generator, template.getModel());
     }
     catch (juzu.impl.spi.template.juzu.ast.ParseException e) {
       throw failure(e);

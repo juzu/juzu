@@ -19,8 +19,10 @@
 
 package juzu.impl.spi.template;
 
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.template.metamodel.TemplateMetaModel;
 import juzu.impl.utils.Content;
+import juzu.impl.utils.MethodInvocation;
 import juzu.impl.utils.Path;
 
 import java.io.Serializable;
@@ -48,10 +50,10 @@ public class ProcessContext {
     return resolveTemplate(path, path);
   }
 
-  public <A extends Serializable> Template<? extends A> resolveTemplate(Path originPath, Path path) {
+  public <M extends Serializable> Template<? extends M> resolveTemplate(Path originPath, Path path) {
 
     // A class cast here would mean a terrible issue
-    Template<A> template = (Template<A>)templates.get(path);
+    Template<M> template = (Template<M>)templates.get(path);
 
     //
     if (template == null) {
@@ -62,19 +64,19 @@ public class ProcessContext {
       }
 
       //
-      TemplateProvider<A> provider = (TemplateProvider<A>)resolverProvider(path.getExt());
+      TemplateProvider<M> provider = (TemplateProvider<M>)resolverProvider(path.getExt());
 
       // Parse to AST
-      A templateAST;
+      M templateAST;
       try {
-        templateAST = provider.parse(content.getCharSequence());
+        templateAST = provider.parse(new ParseContext(), content.getCharSequence());
       }
       catch (TemplateException e) {
         throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path);
       }
 
       // Add template to application
-      template =  new Template<A>(
+      template =  new Template<M>(
         originPath,
         templateAST,
         path,
@@ -94,5 +96,12 @@ public class ProcessContext {
 
     //
     return template;
+  }
+
+  public MethodInvocation resolveMethodInvocation(
+    String typeName,
+    String methodName,
+    Map<String, String> parameterMap) throws CompilationException {
+    return null;
   }
 }

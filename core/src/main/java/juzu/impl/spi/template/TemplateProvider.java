@@ -25,9 +25,9 @@ import java.io.Serializable;
  * A provider for templating system.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- * @param <A> the template abstract syntax tree
+ * @param <M> the template model
  */
-public abstract class TemplateProvider<A extends Serializable> {
+public abstract class TemplateProvider<M extends Serializable> {
 
   /**
    * Returns the template source extension without the dot recognised by
@@ -55,14 +55,16 @@ public abstract class TemplateProvider<A extends Serializable> {
   public abstract Class<? extends TemplateStub> getTemplateStubType();
 
   /**
-   * Parse the provided char sequence and return the corresponding Abstract
-   * Syntax Tree.
+   * Parse the provided char sequence and return the corresponding template model.
    *
-   * @param s the sequence t parse
-   * @return the corresponding Abstract Syntax Tree
+   * @param context the parse context
+   * @param source the source to parse
+   * @return the corresponding template model
    * @throws TemplateException any template related exception
    */
-  public abstract A parse(CharSequence s) throws TemplateException;
+  public abstract M parse(
+      ParseContext context,
+      CharSequence source) throws TemplateException;
 
   /**
    * Process the template.
@@ -71,8 +73,9 @@ public abstract class TemplateProvider<A extends Serializable> {
    * @param template  the template to process
    * @throws TemplateException any template related exception
    */
-  public abstract void process(ProcessContext context,
-                               Template<A> template) throws TemplateException;
+  public abstract void process(
+      ProcessContext context,
+      Template<M> template) throws TemplateException;
 
   /**
    * Provide an opportunity for emitting a file on the disk for the
@@ -80,9 +83,12 @@ public abstract class TemplateProvider<A extends Serializable> {
    * null must be returned.
    *
    * @param context the emit context
-   * @param ast the Abstract Syntax Tree
+   * @param templateModel the template model
    * @return the emitted char sequence
+   * @throws TemplateException any template related exception
    */
-  public abstract CharSequence emit(EmitContext context, A ast);
+  public abstract CharSequence emit(
+      EmitContext context,
+      M templateModel) throws TemplateException;
 
 }

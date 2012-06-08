@@ -21,6 +21,7 @@ package juzu.impl.spi.template.juzu.ast;
 
 import juzu.impl.utils.Coordinate;
 import juzu.impl.utils.Location;
+import juzu.impl.utils.MethodInvocation;
 import juzu.impl.utils.Tools;
 import juzu.template.TagHandler;
 
@@ -225,6 +226,9 @@ public abstract class ASTNode<N extends ASTNode<N>> implements Serializable {
     /** . */
     private final Map<String, String> args;
 
+    /** . */
+    private MethodInvocation invocation;
+
     public URL(String typeName, String methodName, Map<String, String> args) {
       this(DUMB, DUMB, typeName, methodName, args);
     }
@@ -236,6 +240,7 @@ public abstract class ASTNode<N extends ASTNode<N>> implements Serializable {
       this.typeName = typeName;
       this.methodName = methodName;
       this.args = args;
+      this.invocation = null;
     }
 
     public String getTypeName() {
@@ -248,6 +253,14 @@ public abstract class ASTNode<N extends ASTNode<N>> implements Serializable {
 
     public Map<String, String> getArgs() {
       return args;
+    }
+
+    public MethodInvocation getInvocation() {
+      return invocation;
+    }
+
+    public void setInvocation(MethodInvocation invocation) {
+      this.invocation = invocation;
     }
 
     @Override

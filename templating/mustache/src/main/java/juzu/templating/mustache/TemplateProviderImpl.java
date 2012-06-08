@@ -6,6 +6,7 @@ import com.github.mustachejava.MustacheFactory;
 import com.github.mustachejava.MustacheVisitor;
 import com.github.mustachejava.TemplateContext;
 import juzu.impl.spi.template.EmitContext;
+import juzu.impl.spi.template.ParseContext;
 import juzu.impl.spi.template.ProcessContext;
 import juzu.impl.spi.template.Template;
 import juzu.impl.spi.template.TemplateProvider;
@@ -24,8 +25,8 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
   }
 
   @Override
-  public MustacheContext parse(CharSequence s) {
-    return new MustacheContext(s.toString());
+  public MustacheContext parse(ParseContext context, CharSequence source) {
+    return new MustacheContext(source.toString());
   }
 
   @Override
@@ -40,7 +41,7 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
         Path partialPath = Path.parse(resourceName);
         Template<MustacheContext> partial = (Template<MustacheContext>)context.resolveTemplate(mustacheTemplate.getOriginPath(), partialPath);
         if (partial != null) {
-          return new StringReader(partial.getAST().source);
+          return new StringReader(partial.getModel().source);
         } else {
           return null;
         }
@@ -61,11 +62,11 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
     };
 
     // Does the name count ?
-    factory.compile(new StringReader(mustacheTemplate.getAST().source), mustacheTemplate.getPath().getName());
+    factory.compile(new StringReader(mustacheTemplate.getModel().source), mustacheTemplate.getPath().getName());
   }
 
   @Override
-  public CharSequence emit(EmitContext context, MustacheContext ast) {
+  public CharSequence emit(EmitContext context, MustacheContext templateModel) {
     return null;
   }
 
@@ -76,6 +77,6 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
 
   @Override
   public String getTargetExtension() {
-    return "mustache";
+    return null;
   }
 }

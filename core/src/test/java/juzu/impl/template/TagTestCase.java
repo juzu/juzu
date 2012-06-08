@@ -148,6 +148,6 @@ public class TagTestCase extends AbstractInjectTestCase {
 
     // Now emit the template
     EmitPhase emit = new EmitPhase(new EmitContext());
-    emit.emit(new GroovyTemplateEmitter(), template.getAST());
+    emit.emit(new GroovyTemplateEmitter(), template.getModel());
   }
 }

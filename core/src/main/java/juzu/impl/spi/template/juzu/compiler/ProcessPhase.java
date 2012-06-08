@@ -23,6 +23,7 @@ import juzu.impl.compiler.CompilationException;
 import juzu.impl.spi.template.ProcessContext;
 import juzu.impl.spi.template.Template;
 import juzu.impl.spi.template.juzu.ast.ASTNode;
+import juzu.impl.utils.MethodInvocation;
 import juzu.impl.utils.Path;
 import juzu.template.TagHandler;
 
@@ -51,10 +52,10 @@ public class ProcessPhase extends CompilationPhase {
     }
 
     try {
-      doAttribute(template.getAST());
-      doProcess(template, template.getAST());
-      doResolve(template, template.getAST());
-      doUnattribute(template.getAST());
+      doAttribute(template.getModel());
+      doProcess(template, template.getModel());
+      doResolve(template, template.getModel());
+      doUnattribute(template.getModel());
     }
     finally {
       if (initial) {
@@ -77,7 +78,13 @@ public class ProcessPhase extends CompilationPhase {
       // Do nothing
     }
     else if (node instanceof ASTNode.URL) {
-      // Do nothing
+      ASTNode.URL url = (ASTNode.URL)node;
+      MethodInvocation mi = context.resolveMethodInvocation(url.getTypeName(), url.getMethodName(), url.getArgs());
+      if (mi == null) {
+        throw new UnsupportedOperationException("handle me gracefully");
+      } else {
+        url.setInvocation(mi);
+      }
     }
     else if (node instanceof ASTNode.Tag) {
       ASTNode.Tag nodeTag = (ASTNode.Tag)node;

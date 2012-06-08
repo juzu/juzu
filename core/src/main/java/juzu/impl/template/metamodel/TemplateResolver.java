@@ -25,9 +25,6 @@ import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.controller.metamodel.ControllerMetaModel;
-import juzu.impl.controller.metamodel.ControllerMethodMetaModel;
-import juzu.impl.controller.metamodel.ParameterMetaModel;
 import juzu.impl.inject.Export;
 import juzu.impl.spi.template.EmitContext;
 import juzu.impl.spi.template.TemplateProvider;
@@ -36,7 +33,6 @@ import juzu.impl.template.metadata.TemplateDescriptor;
 import juzu.impl.utils.Content;
 import juzu.impl.utils.FQN;
 import juzu.impl.utils.Logger;
-import juzu.impl.utils.MethodInvocation;
 import juzu.impl.utils.Path;
 import juzu.impl.utils.Tools;
 
@@ -48,14 +44,12 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -182,40 +176,22 @@ public class TemplateResolver implements Serializable {
     }
   }
 
-  private <A extends Serializable> void resolveScript(final Template<A> template, final TemplateMetaModelPlugin plugin, final ProcessingContext context, final Element[] elements) {
+  private <M extends Serializable> void resolveScript(final Template<M> template, final TemplateMetaModelPlugin plugin, final ProcessingContext context, final Element[] elements) {
     context.executeWithin(elements[0], new Callable<Void>() {
       public Void call() throws Exception {
 
         // If CCE that would mean there is an internal bug
-        TemplateProvider<A> provider = (TemplateProvider<A>)plugin.providers.get(template.getPath().getExt());
+        TemplateProvider<M> provider = (TemplateProvider<M>)plugin.providers.get(template.getPath().getExt());
 
         // If it's the cache we do nothing
         if (!emitted.contains(template.getPath())) {
           //
           try {
-            A ast = template.getAST();
-            EmitContext emitCtx = new EmitContext() {
-              @Override
-              public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException {
-                ControllerMethodMetaModel method = application.getControllers().resolve(typeName, methodName, parameterMap.keySet());
-
-                //
-                if (method == null) {
-                  throw ControllerMetaModel.CONTROLLER_METHOD_NOT_RESOLVED.failure(methodName + "(" + parameterMap + ")");
-                }
-
-                //
-                List<String> args = new ArrayList<String>();
-                for (ParameterMetaModel param : method.getParameters()) {
-                  String value = parameterMap.get(param.getName());
-                  args.add(value);
-                }
-                return new MethodInvocation(method.getController().getHandle().getFQN().getName() + "_", method.getName() + "URL", args);
-              }
-            };
+            M model = template.getModel();
+            EmitContext emitCtx = new EmitContext();
 
             //
-            CharSequence res = provider.emit(emitCtx, ast);
+            CharSequence res = provider.emit(emitCtx, model);
 
             //
             if (res != null) {
@@ -253,7 +229,7 @@ public class TemplateResolver implements Serializable {
     });
   }
 
-  private <A extends Serializable> void resolvedQualified(Template<A> template, ProcessingContext context, Element[] elements) {
+  private <M extends Serializable> void resolvedQualified(Template<M> template, ProcessingContext context, Element[] elements) {
     Path path = template.getPath();
     Path.Absolute absolute = application.getTemplates().resolve(path);
     if (classCache.containsKey(path.getFQN())) {
