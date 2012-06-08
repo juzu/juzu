@@ -69,7 +69,7 @@ public class ProcessContext {
       try {
         templateAST = provider.parse(content.getCharSequence());
       }
-      catch (juzu.impl.spi.template.juzu.ast.ParseException e) {
+      catch (TemplateException e) {
         throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path);
       }
 
@@ -84,7 +84,12 @@ public class ProcessContext {
       templates.put(path, template);
 
       // Process template
-      provider.process(this, template);
+      try {
+        provider.process(this, template);
+      }
+      catch (TemplateException e) {
+        throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(path);
+      }
     }
 
     //

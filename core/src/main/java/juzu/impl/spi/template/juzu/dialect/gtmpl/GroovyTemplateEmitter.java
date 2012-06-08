@@ -196,13 +196,13 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
   }
 
   @Override
-  public void openTag(String className, Map<String, String> args) throws IOException {
+  public void openTag(String className, Map<String, String> args) {
     int count = closureCountStack[++closureCountIndex] = closureCount++;
     out.append("; def closure").append(count).append(" = { ");
   }
 
   @Override
-  public void closeTag(String className, Map<String, String> args) throws IOException {
+  public void closeTag(String className, Map<String, String> args) {
     int count = closureCountStack[closureCountIndex--];
     out.append("; } as juzu.template.Renderable;");
     out.append("; new ").append(className).append("().render(out.renderContext, closure").append(count).append(",");

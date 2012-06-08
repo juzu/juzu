@@ -10,13 +10,10 @@ import juzu.impl.spi.template.ProcessContext;
 import juzu.impl.spi.template.Template;
 import juzu.impl.spi.template.TemplateProvider;
 import juzu.impl.spi.template.TemplateStub;
-import juzu.impl.spi.template.juzu.ast.ParseException;
 import juzu.impl.utils.Path;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
@@ -27,7 +24,7 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
   }
 
   @Override
-  public MustacheContext parse(CharSequence s) throws ParseException {
+  public MustacheContext parse(CharSequence s) {
     return new MustacheContext(s.toString());
   }
 
@@ -68,7 +65,7 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
   }
 
   @Override
-  public CharSequence emit(EmitContext context, MustacheContext ast) throws IOException {
+  public CharSequence emit(EmitContext context, MustacheContext ast) {
     return null;
   }
 

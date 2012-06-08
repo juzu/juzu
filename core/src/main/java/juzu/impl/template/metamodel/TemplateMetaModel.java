@@ -53,6 +53,9 @@ public class TemplateMetaModel extends MetaModelObject {
   public static final MessageCode TEMPLATE_SYNTAX_ERROR = new MessageCode("TEMPLATE_SYNTAX_ERROR", "Template syntax error");
 
   /** . */
+  public static final MessageCode TEMPLATE_VALIDATION_ERROR = new MessageCode("TEMPLATE_VALIDATION_ERROR", "Template validation error");
+
+  /** . */
   public static final MessageCode TEMPLATE_ILLEGAL_PATH = new MessageCode("TEMPLATE_ILLEGAL_PATH", "The reference to the template %1$s is malformed");
 
   /** . */

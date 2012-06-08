@@ -26,7 +26,6 @@ import juzu.impl.utils.Location;
 import juzu.impl.utils.MethodInvocation;
 import juzu.template.TagHandler;
 
-import java.io.IOException;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -39,13 +38,13 @@ public class EmitPhase extends CompilationPhase {
     this.context = context;
   }
 
-  public void emit(DialectTemplateEmitter generator, ASTNode<?> node) throws IOException {
+  public void emit(DialectTemplateEmitter generator, ASTNode<?> node) {
     doAttribute(node);
     doEmit(new EmitterContext(generator), node.getChildren());
     doUnattribute(node);
   }
 
-  private void doEmit(EmitterContext ctx, List<ASTNode.Block<?>> blocks) throws IOException {
+  private void doEmit(EmitterContext ctx, List<ASTNode.Block<?>> blocks) {
     for (ASTNode.Block block : blocks) {
       if (block instanceof ASTNode.Section) {
         ASTNode.Section section = (ASTNode.Section)block;
