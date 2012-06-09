@@ -22,8 +22,6 @@ package juzu.impl.request;
 import juzu.impl.application.ApplicationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestLifeCycle {
-  public void invoke(Request request) throws ApplicationException {
-    request.invoke();
-  }
+public interface RequestLifeCycle {
+  void invoke(Request request) throws ApplicationException;
 }

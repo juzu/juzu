@@ -45,7 +45,7 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Singleton
-public class AjaxLifeCycle extends RequestLifeCycle {
+public class AjaxLifeCycle implements RequestLifeCycle {
 
   /** . */
   final ApplicationDescriptor desc;
@@ -73,9 +73,8 @@ public class AjaxLifeCycle extends RequestLifeCycle {
     this.table = table;
   }
 
-  @Override
   public void invoke(final Request request) throws ApplicationException {
-    super.invoke(request);
+    request.invoke();
 
     //
     if (request.getContext() instanceof RenderContext) {

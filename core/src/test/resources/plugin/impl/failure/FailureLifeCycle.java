@@ -25,14 +25,13 @@ import juzu.impl.request.Request;
 import juzu.impl.request.RequestLifeCycle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FailureLifeCycle extends RequestLifeCycle {
+public class FailureLifeCycle implements RequestLifeCycle {
   public FailureLifeCycle() {
   }
 
-  @Override
   public void invoke(Request request) throws ApplicationException {
     try {
-      super.invoke(request);
+      request.invoke();
     }
     catch (ApplicationException e) {
       request.setResponse(Response.content("pass"));

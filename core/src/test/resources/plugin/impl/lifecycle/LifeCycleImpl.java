@@ -25,15 +25,14 @@ import juzu.impl.request.RequestLifeCycle;
 import juzu.test.Registry;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LifeCycleImpl extends RequestLifeCycle {
+public class LifeCycleImpl implements RequestLifeCycle {
   public LifeCycleImpl() {
     Registry.compareAndSet("plugin.impl.lifecycle", null, "created");
   }
 
-  @Override
   public void invoke(Request request) throws ApplicationException {
     Registry.compareAndSet("plugin.impl.lifecycle", "created", "before");
-    super.invoke(request);
+    request.invoke();
     Registry.compareAndSet("plugin.impl.lifecycle", "before", "after");
   }
 }

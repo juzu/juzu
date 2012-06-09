@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetLifeCycle extends RequestLifeCycle {
+public class AssetLifeCycle implements RequestLifeCycle {
 
   /** . */
   private final Asset[] scripts;
@@ -62,7 +62,6 @@ public class AssetLifeCycle extends RequestLifeCycle {
     this.stylesheets = stylesheets.toArray(new Asset[stylesheets.size()]);
   }
 
-  @Override
   public void invoke(Request request) throws ApplicationException {
     request.invoke();
 
