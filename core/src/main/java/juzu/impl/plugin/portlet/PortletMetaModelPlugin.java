@@ -19,8 +19,11 @@ import javax.lang.model.element.PackageElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
@@ -33,6 +36,15 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   private HashSet<ElementHandle.Package> toEmit = new HashSet<ElementHandle.Package>();
+
+  public PortletMetaModelPlugin() {
+    super("portlet");
+  }
+
+  @Override
+  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends Annotation>>singleton(Portlet.class);
+  }
 
   @Override
   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {

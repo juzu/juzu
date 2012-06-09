@@ -6,13 +6,31 @@ import juzu.impl.utils.JSON;
 
 import javax.lang.model.element.Element;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * A plugin for meta model processing.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ApplicationMetaModelPlugin implements Serializable {
+public abstract class ApplicationMetaModelPlugin implements Serializable {
+
+  /** . */
+  private final String name;
+
+  protected ApplicationMetaModelPlugin(String name) {
+    this.name = name;
+  }
+
+  public final String getName() {
+    return name;
+  }
+
+  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+    return Collections.emptySet();
+  }
 
   public void init(ApplicationsMetaModel applications) {
   }

@@ -16,10 +16,13 @@ import juzu.impl.utils.Path;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -30,6 +33,15 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   Map<String, TemplateProvider> providers;
+
+  public TemplateMetaModelPlugin() {
+    super("template");
+  }
+
+  @Override
+  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends Annotation>>singleton(juzu.Path.class);
+  }
 
   @Override
   public void init(ApplicationsMetaModel applications) {

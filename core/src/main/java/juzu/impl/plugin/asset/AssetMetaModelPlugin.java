@@ -8,17 +8,28 @@ import juzu.impl.utils.JSON;
 import juzu.plugin.asset.Assets;
 
 import javax.lang.model.element.Element;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   private final HashMap<ElementHandle.Package, JSON> enabledMap = new HashMap<ElementHandle.Package, JSON>();
+
+  public AssetMetaModelPlugin() {
+    super("asset");
+  }
+
+  @Override
+  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends Annotation>>singleton(Assets.class);
+  }
 
   @Override
   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {

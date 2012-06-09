@@ -7,7 +7,10 @@ import java.util.Collections;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Descriptor {
+public class Descriptor {
+
+  /** . */
+  public static Descriptor EMPTY = new Descriptor();
 
   /**
    * Returns the associated plugin class.

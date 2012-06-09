@@ -365,7 +365,8 @@ public abstract class ApplicationRuntime<P, R, L> {
 
     // Add additional plugins when available
     if (plugins != null) {
-      descriptor = descriptor.addPlugins(plugins);
+      // descriptor = descriptor.addPlugins(plugins);
+      // Disabled for now
     }
 
     // Find the juzu jar

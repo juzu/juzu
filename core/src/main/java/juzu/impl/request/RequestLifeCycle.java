@@ -21,7 +21,18 @@ package juzu.impl.request;
 
 import juzu.impl.application.ApplicationException;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * The request life cycle should be implemented by beans that want to be aware of the request life cycle.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 public interface RequestLifeCycle {
+
+  /**
+   * Invoke the request.
+   *
+   * @param request the request
+   * @throws ApplicationException any application exception
+   */
   void invoke(Request request) throws ApplicationException;
 }

@@ -1,9 +1,12 @@
 package juzu.impl.controller.metamodel;
 
+import juzu.Action;
 import juzu.Application;
 import juzu.Param;
+import juzu.Resource;
 import juzu.Response;
 import juzu.URLBuilder;
+import juzu.View;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
@@ -37,11 +40,13 @@ import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
@@ -69,6 +74,14 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   private HashSet<ControllerMetaModel> written = new HashSet<ControllerMetaModel>();
+
+  public ControllerMetaModelPlugin() {
+    super("controller");
+  }
+
+  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+    return Tools.<Class<? extends Annotation>>set(View.class, Action.class, Resource.class);
+  }
 
   @Override
   public void postConstruct(ApplicationMetaModel application) {

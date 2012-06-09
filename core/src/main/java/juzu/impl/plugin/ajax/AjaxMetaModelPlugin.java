@@ -8,7 +8,10 @@ import juzu.impl.utils.JSON;
 import juzu.plugin.ajax.Ajax;
 
 import javax.lang.model.element.Element;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -16,6 +19,15 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   private final HashMap<ElementHandle.Package, AtomicBoolean> enabledMap = new HashMap<ElementHandle.Package, AtomicBoolean>();
+
+  public AjaxMetaModelPlugin() {
+    super("ajax");
+  }
+
+  @Override
+  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends Annotation>>singleton(Ajax.class);
+  }
 
   @Override
   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {

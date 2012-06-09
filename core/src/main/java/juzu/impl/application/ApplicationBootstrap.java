@@ -27,6 +27,7 @@ import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.Export;
 import juzu.impl.metadata.BeanDescriptor;
+import juzu.impl.plugin.Plugin;
 import juzu.impl.spi.inject.InjectBuilder;
 import juzu.impl.spi.inject.InjectManager;
 import juzu.inject.ProviderFactory;
@@ -90,6 +91,13 @@ public class ApplicationBootstrap {
     // Bind the scopes
     for (Scope scope : Scope.values()) {
       bootstrap.addScope(scope);
+    }
+
+    // Bind the plugins
+    for (Plugin plugin : descriptor.getFoo().values()) {
+      Class aClass = plugin.getClass();
+      Object o = plugin;
+      bootstrap.bindBean(aClass, null, o);
     }
 
     // Bind the beans

@@ -1,10 +1,8 @@
 package juzu.impl.plugin.asset;
 
 import juzu.impl.asset.AssetMetaData;
-import juzu.impl.metadata.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 
-import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -23,11 +21,6 @@ public class AssetDescriptor extends Descriptor {
     this.packageName = packageName;
     this.scripts = scripts;
     this.stylesheets = stylesheets;
-  }
-
-  @Override
-  public Iterable<BeanDescriptor> getBeans() {
-    return Collections.singletonList(new BeanDescriptor(AssetLifeCycle.class, null, null, null));
   }
 
   public String getPackageName() {

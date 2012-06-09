@@ -5,7 +5,6 @@ import juzu.impl.compiler.AnnotationData;
 import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelPlugin;
-import juzu.impl.plugin.Plugin;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
 
@@ -34,10 +33,10 @@ public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
     annotationTypes.add(Application.class);
     LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
     StringBuilder msg = new StringBuilder("Using plugins:");
-    for (Plugin plugin : Tools.list(ServiceLoader.load(Plugin.class, Plugin.class.getClassLoader()))) {
+    for (ApplicationMetaModelPlugin plugin : Tools.list(ServiceLoader.load(ApplicationMetaModelPlugin.class, ApplicationMetaModelPlugin.class.getClassLoader()))) {
       annotationTypes.addAll(plugin.getAnnotationTypes());
       msg.append(" ").append(plugin.getName());
-      plugins.put(plugin.getName(), plugin.newApplicationMetaModelPlugin());
+      plugins.put(plugin.getName(), plugin);
     }
     MetaModel.log.log(msg);
 

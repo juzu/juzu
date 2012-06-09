@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -57,6 +58,9 @@ public class ApplicationDescriptor extends Descriptor {
 
   /** . */
   private final Map<String, Descriptor> plugins;
+
+  /** . */
+  private final Map<String, Plugin> foo;
 
   public ApplicationDescriptor(Class<?> applicationClass) {
     // Load config
@@ -86,13 +90,13 @@ public class ApplicationDescriptor extends Descriptor {
     }
 
     //
-    HashMap<String, Descriptor> pluginDescriptors = new HashMap<String, Descriptor>();
     HashMap<String, Plugin> pluginMap = new HashMap<String, Plugin>();
     for (Plugin plugin : ServiceLoader.load(Plugin.class)) {
       pluginMap.put(plugin.getName(), plugin);
     }
 
     //
+    HashMap<String, Descriptor> pluginDescriptors = new HashMap<String, Descriptor>();
     for (String name : config.names()) {
       Plugin plugin = pluginMap.get(name);
       if (plugin == null) {
@@ -100,13 +104,21 @@ public class ApplicationDescriptor extends Descriptor {
       }
       JSON pluginConfig = config.getJSON(name);
       try {
-        Descriptor pluginDescriptor = plugin.loadDescriptor(applicationClass.getClassLoader(), pluginConfig);
+        Descriptor pluginDescriptor = plugin.init(applicationClass.getClassLoader(), pluginConfig);
         pluginDescriptors.put(name, pluginDescriptor);
       }
       catch (Exception e) {
         AssertionError ae = new AssertionError("Cannot load config");
         ae.initCause(e);
         throw ae;
+      }
+    }
+
+    //
+    for (Iterator<String> i = pluginMap.keySet().iterator();i.hasNext();) {
+      String name = i.next();
+      if (!pluginDescriptors.containsKey(name)) {
+        i.remove();
       }
     }
 
@@ -118,16 +130,11 @@ public class ApplicationDescriptor extends Descriptor {
     this.packageClass = packageClass;
     this.controller = (ControllerDescriptor)pluginDescriptors.get("controller");
     this.plugins = pluginDescriptors;
+    this.foo = pluginMap;
   }
 
-  private ApplicationDescriptor(ApplicationDescriptor that, Map<String, Descriptor> plugins) {
-    this.applicationClass = that.applicationClass;
-    this.name = that.applicationClass.getSimpleName();
-    this.packageName = that.applicationClass.getPackage().getName();
-    this.templates = that.templates;
-    this.packageClass = that.packageClass;
-    this.controller = that.controller;
-    this.plugins = plugins;
+  public Map<String, Plugin> getFoo() {
+    return foo;
   }
 
   @Override
@@ -139,10 +146,10 @@ public class ApplicationDescriptor extends Descriptor {
     return beans;
   }
 
-  public ApplicationDescriptor addPlugins(Map<String, Descriptor> plugins) {
-    Map<String, Descriptor> tmp = new HashMap<String, Descriptor>(this.plugins);
+  public ApplicationDescriptor addPlugins(Map<String, Plugin> plugins) {
+    Map<String, Plugin> tmp = new HashMap<String, Plugin>(this.foo);
     tmp.putAll(plugins);
-    return new ApplicationDescriptor(this, tmp);
+    throw new UnsupportedOperationException("disabled for now");
   }
 
   public Descriptor getPlugin(String name) {
