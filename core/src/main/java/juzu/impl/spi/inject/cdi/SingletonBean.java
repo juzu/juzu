@@ -22,22 +22,80 @@ package juzu.impl.spi.inject.cdi;
 import juzu.Scope;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
 import java.lang.annotation.Annotation;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class SingletonBean extends AbstractSingletonBean {
 
+  /** . */
   private final Object instance;
+
+  /** . */
+  private final Lock lock;
+
+  /** . */
+  private boolean initialized;
+
+  /** . */
+  private AnnotatedType at;
+
+  /** . */
+  private InjectionTarget it;
 
   SingletonBean(Class type, Iterable<Annotation> qualifiers, Object instance) {
     super(type, Scope.SINGLETON, qualifiers);
 
     //
     this.instance = instance;
+    this.initialized = false;
+    this.lock = new ReentrantLock();
+  }
+
+  @Override
+  void register(BeanManager manager) {
+    super.register(manager);
+
+    //
+    this.at = manager.createAnnotatedType(instance.getClass());
+    this.it = manager.createInjectionTarget(at);
   }
 
   public Object create(CreationalContext creationalContext) {
+    lock.lock();
+    try {
+      if (!initialized) {
+        if (it != null) {
+          it.inject(instance, creationalContext);
+          it.postConstruct(instance);
+        }
+        initialized = true;
+      }
+    } finally {
+      lock.unlock();
+    }
     return instance;
+  }
+
+  @Override
+  public void destroy(Object instance, CreationalContext ctx) {
+    lock.lock();
+    try {
+      if (initialized) {
+        if (it != null) {
+          it.preDestroy(instance);
+          it.dispose(instance);
+        }
+        initialized = false;
+      }
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Override
