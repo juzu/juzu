@@ -29,6 +29,7 @@ import juzu.impl.inject.Export;
 import juzu.impl.spi.template.EmitContext;
 import juzu.impl.spi.template.TemplateProvider;
 import juzu.impl.spi.template.Template;
+import juzu.impl.template.TemplatePlugin;
 import juzu.impl.template.metadata.TemplateDescriptor;
 import juzu.impl.utils.Content;
 import juzu.impl.utils.FQN;
@@ -249,7 +250,7 @@ public class TemplateResolver implements Serializable {
       writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(TemplateDescriptor.class)).append(";\n");
       writer.append("import javax.inject.Inject;\n");
-      writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
+      writer.append("import ").append(Tools.getImport(TemplatePlugin.class)).append(";\n");
       writer.append("@Generated({})\n");
       writer.append("@Export\n");
       writer.append("@Path(\"").append(path.getValue()).append("\")\n");
@@ -257,10 +258,10 @@ public class TemplateResolver implements Serializable {
       writer.append("{\n");
       writer.append("@Inject\n");
       writer.append("public ").append(path.getRawName()).append("(").
-        append(ApplicationContext.class.getSimpleName()).append(" applicationContext").
+        append(TemplatePlugin.class.getSimpleName()).append(" templatePlugin").
         append(")\n");
       writer.append("{\n");
-      writer.append("super(applicationContext, \"").append(path.getValue()).append("\");\n");
+      writer.append("super(templatePlugin, \"").append(path.getValue()).append("\");\n");
       writer.append("}\n");
 
       //

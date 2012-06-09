@@ -17,35 +17,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.application;
+package juzu.impl.template;
 
 import juzu.PropertyMap;
+import juzu.impl.application.ApplicationException;
 import juzu.impl.spi.template.TemplateStub;
+import juzu.impl.template.TemplatePlugin;
 import juzu.template.TemplateRenderContext;
 
 import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationTemplateRenderContext extends TemplateRenderContext {
+public class TemplateRenderContextImpl extends TemplateRenderContext {
 
   /** . */
-  private final ApplicationContext applicationContext;
+  private final TemplatePlugin plugin;
 
-  public ApplicationTemplateRenderContext(ApplicationContext applicationContext, PropertyMap properties, TemplateStub stub, Map<String, ?> attributes, Locale locale) {
+  public TemplateRenderContextImpl(TemplatePlugin plugin, PropertyMap properties, TemplateStub stub, Map<String, ?> attributes, Locale locale) {
     super(stub, properties, attributes, locale);
 
     //
-    this.applicationContext = applicationContext;
+    this.plugin = plugin;
   }
 
   @Override
   public TemplateStub resolveTemplate(String path) {
-    return applicationContext.resolveTemplateStub(path);
+    return plugin.resolveTemplateStub(path);
   }
 
   @Override
   public Object resolveBean(String name) throws ApplicationException {
-    return applicationContext.resolveBean(name);
+    return plugin.application.resolveBean(name);
   }
 }

@@ -39,6 +39,9 @@ public class PluginTestCase extends AbstractInjectTestCase {
     Registry.unset("plugin.impl.lifecycle");
 
     MockApplication<?> app = application("plugin", "impl", "lifecycle").declareBean("plugin.impl.lifecycle.LifeCycleImpl").init();
+
+    //
+    app.getContext().getLifecycles();
     assertEquals("created", Registry.get("plugin.impl.lifecycle"));
 
     //

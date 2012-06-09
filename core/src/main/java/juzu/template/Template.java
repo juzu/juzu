@@ -22,8 +22,8 @@ package juzu.template;
 import juzu.PropertyMap;
 import juzu.Response;
 import juzu.UndeclaredIOException;
-import juzu.impl.application.ApplicationContext;
 import juzu.impl.request.Request;
+import juzu.impl.template.TemplatePlugin;
 import juzu.impl.utils.Path;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;
@@ -70,13 +70,13 @@ public abstract class Template {
   private final Path path;
 
   /** . */
-  private final ApplicationContext applicationContext;
+  private final TemplatePlugin applicationContext;
 
-  public Template(ApplicationContext applicationContext, String path) {
+  public Template(TemplatePlugin applicationContext, String path) {
     this(applicationContext, Path.parse(path));
   }
 
-  public Template(ApplicationContext applicationContext, Path path) {
+  public Template(TemplatePlugin applicationContext, Path path) {
     this.applicationContext = applicationContext;
     this.path = path;
   }

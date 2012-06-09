@@ -185,7 +185,8 @@ public class GuiceManager implements InjectManager<GuiceBean, Object> {
 
   public Iterable<GuiceBean> resolveBeans(Class<?> type) {
     List<GuiceBean> beans = new ArrayList<GuiceBean>();
-    Collection<Binding<?>> bindings = injector.getAllBindings().values();
+    Map<Key<?>, Binding<?>> allBindings = injector.getAllBindings();
+    Collection<Binding<?>> bindings = allBindings.values();
     for (Binding<?> binding : bindings) {
       Class bindingType = binding.getKey().getTypeLiteral().getRawType();
       if (type.isAssignableFrom(bindingType)) {

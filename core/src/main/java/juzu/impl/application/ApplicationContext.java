@@ -19,7 +19,6 @@
 
 package juzu.impl.application;
 
-import juzu.PropertyMap;
 import juzu.UndeclaredIOException;
 import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.controller.descriptor.ControllerMethod;
@@ -33,12 +32,8 @@ import juzu.impl.spi.request.ActionBridge;
 import juzu.impl.spi.request.RenderBridge;
 import juzu.impl.spi.request.RequestBridge;
 import juzu.impl.spi.request.ResourceBridge;
-import juzu.impl.spi.template.TemplateStub;
-import juzu.impl.utils.Path;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
-import juzu.template.Template;
-import juzu.template.TemplateRenderContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -48,9 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Export
@@ -67,36 +60,40 @@ public class ApplicationContext {
   private final ControllerMethodResolver controllerResolver;
 
   /** . */
-  public ArrayList<RequestLifeCycle> plugins;
-
-  /** . */
-  private final ConcurrentHashMap<Path, TemplateStub> stubs;
+  public ArrayList<RequestLifeCycle> lifecycles;
 
   @Inject
   public ApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor) throws Exception {
     this.descriptor = descriptor;
     this.injectManager = injectManager;
     this.controllerResolver = new ControllerMethodResolver(descriptor.getController());
-    this.plugins = getPlugins((InjectManager<?,?>)injectManager);
-    this.stubs = new ConcurrentHashMap<Path, TemplateStub>();
   }
 
-  private <B, I> ArrayList<RequestLifeCycle> getPlugins(InjectManager<B, I> manager) throws Exception {
-    ArrayList<RequestLifeCycle> lifeCycles = new ArrayList<RequestLifeCycle>();
-    for (B lifeCycleBean : manager.resolveBeans(RequestLifeCycle.class)) {
-      I lifeCycleInstance = manager.create(lifeCycleBean);
-      RequestLifeCycle lifeCycle = (RequestLifeCycle)manager.get(lifeCycleBean, lifeCycleInstance);
-      lifeCycles.add(lifeCycle);
+  // This is done lazyly to avoid circular references issues
+  private <B, I> ArrayList<RequestLifeCycle> getLifecycles(InjectManager<B, I> manager) throws Exception {
+    if (lifecycles == null) {
+      ArrayList<RequestLifeCycle> lifeCycles = new ArrayList<RequestLifeCycle>();
+      for (B lifeCycleBean : manager.resolveBeans(RequestLifeCycle.class)) {
+        I lifeCycleInstance = manager.create(lifeCycleBean);
+        RequestLifeCycle lifeCycle = (RequestLifeCycle)manager.get(lifeCycleBean, lifeCycleInstance);
+        lifeCycles.add(lifeCycle);
+      }
+      lifecycles = lifeCycles;
     }
-    return lifeCycles;
+    return lifecycles;
   }
 
   public String getName() {
     return descriptor.getName();
   }
 
-  public List<RequestLifeCycle> getPlugins() {
-    return plugins;
+  public List<RequestLifeCycle> getLifecycles() {
+    try {
+      return getLifecycles(injectManager);
+    }
+    catch (Exception e) {
+      throw new UnsupportedOperationException("handle me cracefully", e);
+    }
   }
 
   public ClassLoader getClassLoader() {
@@ -211,57 +208,5 @@ public class ApplicationContext {
     else {
       return null;
     }
-  }
-
-  public TemplateStub resolveTemplateStub(String path) {
-    return resolveTemplateStub(juzu.impl.utils.Path.parse(path));
-  }
-
-  public TemplateStub resolveTemplateStub(juzu.impl.utils.Path path) {
-    TemplateStub stub = stubs.get(path);
-    if (stub == null) {
-
-      //
-      try {
-        StringBuilder id = new StringBuilder(descriptor.getTemplates().getPackageName());
-        for (String name : path) {
-          if (id.length() > 0) {
-            id.append('.');
-          }
-          id.append(name);
-        }
-        id.append("_");
-        ClassLoader cl = injectManager.getClassLoader();
-        Class<?> stubClass = cl.loadClass(id.toString());
-        stub = (TemplateStub)stubClass.newInstance();
-      }
-      catch (Exception e) {
-        throw new UnsupportedOperationException("handle me gracefully", e);
-      }
-
-      //
-      TemplateStub phantom = stubs.putIfAbsent(path, stub);
-      if (phantom != null) {
-        stub = phantom;
-      } else {
-        stub.init(getClassLoader());
-      }
-    }
-
-    //
-    return stub;
-  }
-
-  public TemplateRenderContext render(Template template, PropertyMap properties, Map<String, ?> parameters, Locale locale) {
-    //
-    TemplateStub stub = resolveTemplateStub(template.getPath());
-
-    //
-    return new ApplicationTemplateRenderContext(
-      ApplicationContext.this,
-      properties,
-      stub,
-      parameters,
-      locale);
   }
 }

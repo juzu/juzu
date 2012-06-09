@@ -173,8 +173,8 @@ public class Request implements ScopingContext {
         current.set(this);
       }
 
-      if (index >= 0 && index < application.getPlugins().size()) {
-        RequestLifeCycle plugin = application.getPlugins().get(index);
+      if (index >= 0 && index < application.getLifecycles().size()) {
+        RequestLifeCycle plugin = application.getLifecycles().get(index);
         try {
           index++;
           plugin.invoke(this);
@@ -183,7 +183,7 @@ public class Request implements ScopingContext {
           index--;
         }
       }
-      else if (index == application.getPlugins().size()) {
+      else if (index == application.getLifecycles().size()) {
         //
         Object ret = doInvoke(this, args, application.getInjectManager());
 
