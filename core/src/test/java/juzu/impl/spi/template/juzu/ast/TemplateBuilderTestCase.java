@@ -40,6 +40,7 @@ public class TemplateBuilderTestCase extends AbstractTestCase {
     GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
     new EmitPhase(new EmitContext()).emit(generator, ASTNode.Template.parse("a<%=foo%>c"));
     GroovyTemplateStub s = generator.build("template_" + Math.abs(new Random().nextLong()));
+    s.init(Thread.currentThread().getContextClassLoader());
     StringWriter out = new StringWriter();
     new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(new AppendableStream(out));
     assertEquals("abc", out.toString());

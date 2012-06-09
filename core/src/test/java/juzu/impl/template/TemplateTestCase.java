@@ -85,4 +85,10 @@ public class TemplateTestCase extends AbstractInjectTestCase {
     MockClient client = app.client();
     assertEquals("pass", client.render().assertStringResult());
   }
+
+  @Test
+  public void testSyntaxError() throws Exception {
+    MockApplication<?> app = application("template", "syntaxerror").init();
+
+  }
 }

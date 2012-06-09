@@ -67,5 +67,4 @@ public abstract class Plugin {
   public Class<? extends RequestLifeCycle> getLifeCycleClass() {
     return null;
   }
-
 }

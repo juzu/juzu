@@ -75,7 +75,9 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     catch (juzu.impl.spi.template.juzu.ast.ParseException e) {
       throw failure(e);
     }
-    return generator.build("template_" + Math.abs(new Random().nextLong()));
+    GroovyTemplateStub stub = generator.build("template_" + Math.abs(new Random().nextLong()));
+    stub.init(Thread.currentThread().getContextClassLoader());
+    return stub;
   }
 
   public String render(String template) throws IOException, TemplateExecutionException {

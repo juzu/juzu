@@ -16,15 +16,16 @@ import java.io.StringWriter;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateStubImpl extends TemplateStub {
 
-
   /** . */
   private Mustache mustache;
 
   @Override
-  public void render(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException {
-    if (mustache == null) {
-      String name = getClass().getSimpleName();
-      String mustacheName = name.substring(0, name.length() - 1).replace('.', '/') + ".mustache";
+  protected void doInit(ClassLoader loader) {
+    String name = getClass().getSimpleName();
+    String mustacheName = name.substring(0, name.length() - 1).replace('.', '/') + ".mustache";
+    ClassLoader previous = Thread.currentThread().getContextClassLoader();
+    try {
+      Thread.currentThread().setContextClassLoader(loader);
       DefaultMustacheFactory factory = new DefaultMustacheFactory(getClass().getPackage().getName().replace('.', '/')) {
         @Override
         public MustacheVisitor createMustacheVisitor() {
@@ -42,6 +43,13 @@ public class TemplateStubImpl extends TemplateStub {
       };
       mustache = factory.compile(mustacheName);
     }
+    finally {
+      Thread.currentThread().setContextClassLoader(previous);
+    }
+  }
+
+  @Override
+  protected void doRender(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException {
     StringWriter buffer = new StringWriter();
     mustache.execute(buffer, new Object[]{new ContextMap(renderContext)});
     Stream.Char stream = renderContext.getPrinter();

@@ -55,34 +55,31 @@ public abstract class GroovyTemplateStub extends TemplateStub {
     this.locationTable = null;
   }
 
-  private Class<?> getScriptClass() {
-    if (scriptClass == null) {
-      CompilerConfiguration config = new CompilerConfiguration();
-      config.setScriptBaseClass(BaseScript.class.getName());
-      String script = getScript();
-      GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
-      GroovyClassLoader loader = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), config);
-      try {
-        scriptClass = loader.parseClass(gcs, false);
-        Class<?> constants = scriptClass.getClassLoader().loadClass("Constants");
-        locationTable = (HashMap<Integer, Foo>)constants.getField("TABLE").get(null);
-      }
-      catch (Exception e) {
-        throw new UnsupportedOperationException("handle me gracefully", e);
-      }
+  @Override
+  public void doInit(ClassLoader loader) {
+    CompilerConfiguration config = new CompilerConfiguration();
+    config.setScriptBaseClass(BaseScript.class.getName());
+    String script = getScript();
+    GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
+    GroovyClassLoader gcl = new GroovyClassLoader(loader, config);
+    try {
+      scriptClass = gcl.parseClass(gcs, false);
+      Class<?> constants = scriptClass.getClassLoader().loadClass("Constants");
+      locationTable = (HashMap<Integer, Foo>)constants.getField("TABLE").get(null);
     }
-    return scriptClass;
+    catch (Exception e) {
+      throw new UnsupportedOperationException("handle me gracefully", e);
+    }
   }
 
   public abstract String getScript();
 
   public String getClassName() {
-    return getScriptClass().getName();
+    return scriptClass != null ? scriptClass.getName() : null;
   }
 
   @Override
-  public void render(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException {
-    Class<?> scriptClass = getScriptClass();
+  public void doRender(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException {
     BaseScript script = (BaseScript)InvokerHelper.createScript(scriptClass, renderContext.getAttributes() != null ? new Binding(renderContext.getAttributes()) : new Binding());
     script.init(renderContext);
 
