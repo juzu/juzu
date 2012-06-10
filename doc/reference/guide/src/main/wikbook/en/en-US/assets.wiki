@@ -1,0 +1,161 @@
+Web assets are resources used over the web such as stylesheet and script files. Juzu provides a few facilities for
+managing applications assets.
+
+= Asset serving =
+
+The class ##juzu.asset.Asset## represents an asset in Juzu, assets can be of two types:
+
+* ##Asset.Value## is the coordinate of an asset, i.e how Juzu can resolve and create a valid URL to an asset. An asset value
+ is determined by a //location// and an //uri//. The location determines where the asset can be resolved for instance
+ the //server// location means that the asset is served by the web server. The uri is simply the absolute or relative
+ asset path that resolves in the location.
+
+* ##Asset.Ref## is a reference to an asset value. Asset reference are useful because they decouple the application
+ of the value and allow external configuration to determine the asset. For example, an application will add to
+ a response an asset reference to //jquery// instead of adding the //https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js//
+ jquery asset address to a response.
+
+When an application is deployed, the plugin can configure assets in the //asset manager//. The asset manager has several
+ responsibilities:
+
+* manage asset dependencies: the order in which assets are literaly declared when they are served. For instance
+the //jquery-ui// asset depends on the //jquery// asset because the jquery script must be loaded before the //jquery-ui//
+script.
+* resolve asset references: each asset reference must be resolved and produce a final web url that will produce the resource
+ when it is resolved by the web browsers
+
+During a request, assets of both kind can be added to the response. At the end of the request, the runtime uses the
+asset manager to translate the response assets into a list of uri to add to the page:
+
+[[image:images/assets/assets1.png||title="Compiling a Groovy template" align="center" html:scale="100" fo:width="100mm]]
+
+An asset reference is a link to an asset value that is configured externally, thus an asset of any kind will always resolve
+to a location and an uri. Let's examine the different possible asset location:
+
+* external: the value is opaque to Juzu, for instance the a CDN hosted script such as //https:\/\/ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js//.
+* server: the asset is served by the same web server in which Juzu is deployed. If the asset value is relative, the final uri will
+resolve relatively to the web archive context address.
+* classpath: the asset is served by Juzu //asset server// (a servlet configured in the web application) and the resource is located
+ on the classpath.
+
+= Declaring assets programmatically =
+
+When an application requires an asset, it adds the asset to the ##Response.Render## object:
+
+{{java}}
+@Inject
+@Path("index.gtmpl")
+Template index;
+
+@View
+public Response.Render index() {
+  Response.Render render = index.render();
+  render.addScript(Asset.uri("https://ajax.googleapis" +
+    ".com/ajax/libs/jquery/1.7.2/jquery.min.js"));
+  return render;
+}
+{{/java}}
+
+The same with a fluent syntax:
+
+{{java}}
+@Inject
+@Path("index.gtmpl")
+Template index;
+
+@View
+public Response.Render index() {
+  return index.render().addScript(Asset.uri("https://ajax.googleapis.com" +
+    "/ajax/libs/jquery/1.7.2/jquery.min.js"));
+}
+{{/java}}
+
+
+= Asset plugin =
+
+The asset plugin provides declarative asset configuration. The ##@Assets## annotation declares a list of assets used
+by the an application.
+
+{{example title="JQuery UI declarative asset configuration"}}
+{{java}}
+@Assets(
+  scripts = {
+    @Script(id = "jquery",
+            src = "public/javascripts/jquery-1.7.1.min.js"), // <1> Declares the jquery asset
+    @Script(src = "public/javascripts/jquery-ui-1.7.2.custom.min.js", // <2> Declares the jquery-ui asset
+            depends = "jquery") // <3> Make jquery-ui depend on jquery
+  },
+  stylesheets = {
+    @Stylesheet(src = "public/ui-lightness/jquery-ui-1.7.2.custom.css")
+  }
+)
+package my.application;
+{{/java}}
+{{/example}}
+
+The assets will be served from the war file because the server location is configured by default. The first ##@Script##
+annotation declares the JQuery asset reference identified by the ##id## member  as being //jquery//. The second ##@Script##
+annotation declares the JQuery-UI plugin, it does not need an //id// member because nothing refers to it, however it
+declares a dependency with the //depends// member that declares it depending on the //jquery// asset.
+
+JQuery-UI requires also a stylesheet to be served along with the script, it is achieved thanks to the  ##@Stylesheet## annotation.
+
+== Server assets ==
+
+Server assets are served by the webserver in which the application is deployed. Relative server assets are served from
+the war file containing the application.
+
+{{example title="Declarative relative server asset configuration"}}
+{{java}}
+@Assets(scripts = @Script(src = "myscript.js"))
+package my.application;
+{{/java}}
+{{/example}}
+
+== Classpath assets ==
+
+Classpath assets can be located anywhere on the application classpath, they can be either absolute or relatives. Relative
+classpath assets declared by the asset plugin must be located in the ##assets## package of the application, for instance
+an application packaged under ##my.application## will have its relative assets located under ##my.application.assets##.
+
+{{example title="Declarative relative classpath asset configuration"}}
+{{java}}
+@Assets(scripts = @Script(
+  src = "myscript.js",
+  location = AssetLocation.CLASSPATH))
+package my.application;
+{{/java}}
+{{/example}}
+
+== External assets ==
+
+External assets declares an opaque URL for Juzu.
+
+{{example title="External classpath asset configuration"}}
+{{java}}
+@Assets(scripts = @Script(
+  src = "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js",
+  location = AssetLocation.CLASSPATH))
+package my.application;
+{{/java}}
+{{/example}}
+
+= Less plugin =
+
+The Less plugin transform Less source files into regular CSS files. This plugin operates during compile phase to
+transform Less sources into css assets that can be the served by the asset plugin.
+
+The Less plugin declares a set of //.less// files to be compiled via the ##@Less## package annotation. However unlike
+the asset plugin, the Less plugin is not related to a specific application, it means that the ##@Less## annotation can
+be used on any package. The ##.less## files will be resolved from the ##assets## child package of the annotated package:
+
+* When an application package is annotated the ##assets## package will coincide with the application asset package
+* When a regular package is annotated, application can refer to it via an absolute uri
+
+{{example title="Transforming and declaring Less assets"}}
+{{java}}
+@Less(value = "bootstrap.less", minify = true) // <1> Transform ##my.application.assets.bootstrap.less## to ##my.application.assets.bootstrap.css##
+@Assets(stylesheets = "bootstrap.css") // <2> Declare ##my.application.assets.bootstrap.css## to be served by the application
+package my.application;
+{{/java}}
+{{/example}}

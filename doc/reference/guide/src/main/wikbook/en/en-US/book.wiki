@@ -27,3 +27,7 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 = Taglib {{anchor id=taglib /}} =
 
 {{include document=taglib.wiki/}}
+
+= Assets {{anchor id=assets /}} =
+
+{{include document=assets.wiki/}}
