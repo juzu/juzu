@@ -19,7 +19,7 @@
 
 package juzu.impl.request;
 
-import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;

@@ -21,7 +21,7 @@ package juzu.impl.plugin.binding;
 
 import juzu.impl.application.ApplicationException;
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;

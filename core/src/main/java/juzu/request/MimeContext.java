@@ -25,7 +25,7 @@ import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.request.Request;
-import juzu.impl.spi.request.MimeBridge;
+import juzu.impl.request.spi.MimeBridge;
 import juzu.io.AppendableStream;
 
 import java.io.IOException;

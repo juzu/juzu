@@ -19,7 +19,7 @@
 
 package juzu.impl.compiler.file;
 
-import juzu.impl.spi.fs.ReadWriteFileSystem;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.utils.Content;
 
 import javax.tools.SimpleJavaFileObject;

@@ -21,8 +21,7 @@ package juzu.impl.template;
 
 import juzu.PropertyMap;
 import juzu.impl.application.ApplicationException;
-import juzu.impl.spi.template.TemplateStub;
-import juzu.impl.template.TemplatePlugin;
+import juzu.impl.template.spi.TemplateStub;
 import juzu.template.TemplateRenderContext;
 
 import java.util.Locale;

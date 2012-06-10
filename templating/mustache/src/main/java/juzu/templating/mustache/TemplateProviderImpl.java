@@ -5,12 +5,12 @@ import com.github.mustachejava.DefaultMustacheVisitor;
 import com.github.mustachejava.MustacheFactory;
 import com.github.mustachejava.MustacheVisitor;
 import com.github.mustachejava.TemplateContext;
-import juzu.impl.spi.template.EmitContext;
-import juzu.impl.spi.template.ParseContext;
-import juzu.impl.spi.template.ProcessContext;
-import juzu.impl.spi.template.Template;
-import juzu.impl.spi.template.TemplateProvider;
-import juzu.impl.spi.template.TemplateStub;
+import juzu.impl.template.spi.EmitContext;
+import juzu.impl.template.spi.ParseContext;
+import juzu.impl.template.spi.ProcessContext;
+import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateProvider;
+import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.utils.Path;
 
 import java.io.Reader;

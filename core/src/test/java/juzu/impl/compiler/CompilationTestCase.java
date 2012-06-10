@@ -20,12 +20,12 @@
 package juzu.impl.compiler;
 
 import junit.framework.AssertionFailedError;
-import juzu.impl.spi.fs.ReadFileSystem;
-import juzu.impl.spi.fs.disk.DiskFileSystem;
-import juzu.impl.spi.fs.ram.RAMDir;
-import juzu.impl.spi.fs.ram.RAMFile;
-import juzu.impl.spi.fs.ram.RAMFileSystem;
-import juzu.impl.spi.fs.ram.RAMPath;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.ram.RAMDir;
+import juzu.impl.fs.spi.ram.RAMFile;
+import juzu.impl.fs.spi.ram.RAMFileSystem;
+import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.impl.utils.Content;
 import juzu.impl.utils.Tools;
 import juzu.test.AbstractTestCase;

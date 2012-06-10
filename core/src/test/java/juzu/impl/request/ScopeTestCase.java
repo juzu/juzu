@@ -20,7 +20,7 @@
 package juzu.impl.request;
 
 import juzu.impl.inject.Scoped;
-import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.Identifiable;
 import juzu.test.Registry;

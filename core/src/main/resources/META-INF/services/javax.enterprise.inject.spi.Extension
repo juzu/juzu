@@ -1,1 +1,1 @@
-juzu.impl.spi.inject.cdi.ExtensionImpl
+juzu.impl.inject.spi.cdi.ExtensionImpl

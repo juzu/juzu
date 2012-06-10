@@ -22,7 +22,7 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
-import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.protocol.http.InvocationServlet;
 import juzu.test.protocol.mock.MockApplication;
 import org.jboss.arquillian.container.test.api.Deployment;

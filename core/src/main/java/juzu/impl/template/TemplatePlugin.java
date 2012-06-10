@@ -4,7 +4,7 @@ import juzu.PropertyMap;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
-import juzu.impl.spi.template.TemplateStub;
+import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.metadata.TemplatesDescriptor;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Path;

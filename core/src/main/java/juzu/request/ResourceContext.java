@@ -22,7 +22,7 @@ package juzu.request;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.request.Request;
-import juzu.impl.spi.request.ResourceBridge;
+import juzu.impl.request.spi.ResourceBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ResourceContext extends MimeContext {

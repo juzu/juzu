@@ -23,7 +23,7 @@ import juzu.Response;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.request.Request;
-import juzu.impl.spi.request.ActionBridge;
+import juzu.impl.request.spi.ActionBridge;
 import juzu.impl.utils.ParameterMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

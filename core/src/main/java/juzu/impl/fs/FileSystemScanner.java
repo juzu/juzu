@@ -19,7 +19,7 @@
 
 package juzu.impl.fs;
 
-import juzu.impl.spi.fs.ReadFileSystem;
+import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.utils.Content;
 import juzu.impl.utils.Tools;
 

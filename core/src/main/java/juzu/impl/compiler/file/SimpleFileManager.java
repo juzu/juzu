@@ -19,8 +19,8 @@
 
 package juzu.impl.compiler.file;
 
-import juzu.impl.spi.fs.ReadWriteFileSystem;
-import juzu.impl.spi.fs.SimpleFileSystem;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
+import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.utils.Spliterator;
 
 import javax.tools.JavaFileObject;

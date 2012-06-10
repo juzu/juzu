@@ -28,8 +28,8 @@ import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.Export;
 import juzu.impl.metadata.BeanDescriptor;
 import juzu.impl.plugin.Plugin;
-import juzu.impl.spi.inject.InjectBuilder;
-import juzu.impl.spi.inject.InjectManager;
+import juzu.impl.inject.spi.InjectBuilder;
+import juzu.impl.inject.spi.InjectManager;
 import juzu.inject.ProviderFactory;
 
 import javax.inject.Provider;

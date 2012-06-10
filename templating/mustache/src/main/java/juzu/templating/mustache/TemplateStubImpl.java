@@ -5,7 +5,7 @@ import com.github.mustachejava.DefaultMustacheVisitor;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheVisitor;
 import com.github.mustachejava.TemplateContext;
-import juzu.impl.spi.template.TemplateStub;
+import juzu.impl.template.spi.TemplateStub;
 import juzu.io.Stream;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;

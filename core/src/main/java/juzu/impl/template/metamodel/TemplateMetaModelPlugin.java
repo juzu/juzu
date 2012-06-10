@@ -8,8 +8,8 @@ import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelProcessor;
-import juzu.impl.spi.template.TemplateProvider;
-import juzu.impl.spi.template.Template;
+import juzu.impl.template.spi.TemplateProvider;
+import juzu.impl.template.spi.Template;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Path;
 
@@ -33,9 +33,6 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   Map<String, TemplateProvider> providers;
-
-  /** . */
-  TemplatesMetaModel templates;
 
   public TemplateMetaModelPlugin() {
     super("template");
@@ -65,7 +62,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postConstruct(ApplicationMetaModel application) {
-    templates = new TemplatesMetaModel();
+    TemplatesMetaModel templates = new TemplatesMetaModel();
     templates.plugin = this;
     application.addChild(TemplatesMetaModel.KEY, templates);
   }
@@ -96,14 +93,15 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postActivate(ApplicationMetaModel application) {
-    templates.plugin = this;
+    application.getChild(TemplatesMetaModel.KEY).plugin = this;
   }
 
   @Override
-  public void prePassivate(ApplicationMetaModel model) {
-    MetaModel.log.log("Passivating template resolver for " + model.getHandle());
-    templates.resolver.prePassivate();
-    templates.plugin = null;
+  public void prePassivate(ApplicationMetaModel application) {
+    MetaModel.log.log("Passivating template resolver for " + application.getHandle());
+    TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
+    metaModel.resolver.prePassivate();
+    metaModel.plugin = null;
   }
 
   @Override
@@ -115,19 +113,20 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     MetaModel.log.log("Processing templates of " + application.getHandle());
-    templates.resolver.process(this, application.model.env);
+    application.getChild(TemplatesMetaModel.KEY).resolver.process(this, application.model.env);
   }
 
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
     JSON config = new JSON();
     ArrayList<String> list = new ArrayList<String>();
-    for (Template template : templates.resolver.getTemplates()) {
-      Path resolved = templates.resolve(template.getPath());
+    TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
+    for (Template template : metaModel.resolver.getTemplates()) {
+      Path resolved = metaModel.resolve(template.getPath());
       list.add(resolved.getFQN().getName());
     }
     config.map("templates", list);
-    config.set("package", templates.getQN().toString());
+    config.set("package", metaModel.getQN().toString());
     return config;
   }
 }

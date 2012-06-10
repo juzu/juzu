@@ -20,10 +20,10 @@
 package juzu.impl.metamodel;
 
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.spi.fs.ReadFileSystem;
-import juzu.impl.spi.fs.disk.DiskFileSystem;
-import juzu.impl.spi.fs.ram.RAMFileSystem;
-import juzu.impl.spi.fs.ram.RAMPath;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.ram.RAMFileSystem;
+import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.impl.template.metamodel.TemplateMetaModel;
 import juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import juzu.impl.utils.Content;

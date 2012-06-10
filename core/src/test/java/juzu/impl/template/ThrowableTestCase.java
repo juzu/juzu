@@ -20,7 +20,7 @@
 package juzu.impl.template;
 
 import juzu.impl.application.ApplicationException;
-import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.template.TemplateExecutionException;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;

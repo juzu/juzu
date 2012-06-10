@@ -19,14 +19,14 @@
 
 package juzu.impl.template;
 
-import juzu.impl.spi.inject.InjectImplementation;
-import juzu.impl.spi.template.EmitContext;
-import juzu.impl.spi.template.juzu.dialect.gtmpl.GroovyTemplateEmitter;
-import juzu.impl.spi.template.juzu.ast.ASTNode;
-import juzu.impl.spi.template.juzu.compiler.EmitPhase;
-import juzu.impl.spi.template.ProcessContext;
-import juzu.impl.spi.template.juzu.compiler.ProcessPhase;
-import juzu.impl.spi.template.Template;
+import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.template.spi.EmitContext;
+import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
+import juzu.impl.template.spi.juzu.ast.ASTNode;
+import juzu.impl.template.spi.juzu.compiler.EmitPhase;
+import juzu.impl.template.spi.ProcessContext;
+import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
+import juzu.impl.template.spi.Template;
 import juzu.impl.template.metadata.TemplateDescriptor;
 import juzu.impl.utils.Path;
 import juzu.test.AbstractInjectTestCase;
@@ -134,7 +134,7 @@ public class TagTestCase extends AbstractInjectTestCase {
               System.currentTimeMillis()
             );
           }
-          catch (juzu.impl.spi.template.juzu.ast.ParseException e) {
+          catch (juzu.impl.template.spi.juzu.ast.ParseException e) {
             throw failure(e);
           }
         }

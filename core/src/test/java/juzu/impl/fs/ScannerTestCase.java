@@ -19,9 +19,9 @@
 
 package juzu.impl.fs;
 
-import juzu.impl.spi.fs.ram.RAMFile;
-import juzu.impl.spi.fs.ram.RAMFileSystem;
-import juzu.impl.spi.fs.ram.RAMPath;
+import juzu.impl.fs.spi.ram.RAMFile;
+import juzu.impl.fs.spi.ram.RAMFileSystem;
+import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 

@@ -4,7 +4,7 @@ import japa.parser.JavaParser;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
-import juzu.impl.spi.fs.ReadWriteFileSystem;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.utils.Content;
 
 import java.io.InputStream;

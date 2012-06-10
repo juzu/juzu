@@ -24,10 +24,10 @@ import juzu.impl.compiler.file.JavaFileObjectImpl;
 import juzu.impl.compiler.file.SimpleFileManager;
 import juzu.impl.fs.Filter;
 import juzu.impl.fs.Visitor;
-import juzu.impl.spi.fs.ReadFileSystem;
-import juzu.impl.spi.fs.ReadWriteFileSystem;
-import juzu.impl.spi.fs.SimpleFileSystem;
-import juzu.impl.spi.fs.ram.RAMFileSystem;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
+import juzu.impl.fs.spi.SimpleFileSystem;
+import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.utils.Location;
 import juzu.impl.utils.Spliterator;
 

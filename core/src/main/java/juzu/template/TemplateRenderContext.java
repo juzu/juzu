@@ -22,7 +22,7 @@ package juzu.template;
 import juzu.PropertyMap;
 import juzu.Response;
 import juzu.impl.application.ApplicationException;
-import juzu.impl.spi.template.TemplateStub;
+import juzu.impl.template.spi.TemplateStub;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;
 

@@ -19,8 +19,8 @@
 
 package juzu.impl.compiler;
 
-import juzu.impl.spi.fs.ReadFileSystem;
-import juzu.impl.spi.fs.disk.DiskFileSystem;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.utils.Content;
 import juzu.impl.utils.FQN;
 import juzu.impl.utils.Logger;

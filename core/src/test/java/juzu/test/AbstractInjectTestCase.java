@@ -19,7 +19,7 @@
 
 package juzu.test;
 
-import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

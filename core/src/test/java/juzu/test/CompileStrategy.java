@@ -6,9 +6,9 @@ import juzu.impl.compiler.Compiler;
 import juzu.impl.compiler.CompilerConfig;
 import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
-import juzu.impl.spi.fs.ReadFileSystem;
-import juzu.impl.spi.fs.ReadWriteFileSystem;
-import juzu.impl.spi.fs.SimpleFileSystem;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
+import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.utils.Tools;
 
 import javax.annotation.processing.Processor;

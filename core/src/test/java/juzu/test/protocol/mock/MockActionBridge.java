@@ -20,7 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.spi.request.ActionBridge;
+import juzu.impl.request.spi.ActionBridge;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.test.AbstractTestCase;

@@ -20,7 +20,7 @@
 package juzu.impl.request;
 
 import juzu.URLBuilder;
-import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.utils.JSON;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;

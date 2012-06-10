@@ -24,9 +24,9 @@ import juzu.impl.compiler.file.FileKey;
 import juzu.impl.compiler.file.FileManager;
 import juzu.impl.compiler.file.JavaFileObjectImpl;
 import juzu.impl.compiler.file.SimpleFileManager;
-import juzu.impl.spi.fs.ReadFileSystem;
-import juzu.impl.spi.fs.ReadWriteFileSystem;
-import juzu.impl.spi.fs.SimpleFileSystem;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
+import juzu.impl.fs.spi.SimpleFileSystem;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;

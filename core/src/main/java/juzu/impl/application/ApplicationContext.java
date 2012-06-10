@@ -27,11 +27,11 @@ import juzu.impl.inject.Export;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestLifeCycle;
-import juzu.impl.spi.inject.InjectManager;
-import juzu.impl.spi.request.ActionBridge;
-import juzu.impl.spi.request.RenderBridge;
-import juzu.impl.spi.request.RequestBridge;
-import juzu.impl.spi.request.ResourceBridge;
+import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.request.spi.ActionBridge;
+import juzu.impl.request.spi.RenderBridge;
+import juzu.impl.request.spi.RequestBridge;
+import juzu.impl.request.spi.ResourceBridge;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 

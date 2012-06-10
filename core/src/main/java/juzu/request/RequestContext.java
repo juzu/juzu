@@ -23,7 +23,7 @@ import juzu.PropertyType;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.request.Request;
-import juzu.impl.spi.request.RequestBridge;
+import juzu.impl.request.spi.RequestBridge;
 
 import java.util.Map;
 

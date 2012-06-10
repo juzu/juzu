@@ -21,8 +21,8 @@ package juzu.test;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
-import juzu.impl.spi.fs.disk.DiskFileSystem;
-import juzu.impl.spi.inject.InjectImplementation;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
 import juzu.test.protocol.mock.MockApplication;

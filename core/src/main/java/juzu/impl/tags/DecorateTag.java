@@ -19,11 +19,11 @@
 
 package juzu.impl.tags;
 
-import juzu.impl.spi.template.TemplateStub;
-import juzu.impl.spi.template.juzu.ast.ASTNode;
-import juzu.impl.spi.template.juzu.compiler.ExtendedTagHandler;
-import juzu.impl.spi.template.juzu.compiler.ProcessPhase;
-import juzu.impl.spi.template.Template;
+import juzu.impl.template.spi.TemplateStub;
+import juzu.impl.template.spi.juzu.ast.ASTNode;
+import juzu.impl.template.spi.juzu.compiler.ExtendedTagHandler;
+import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
+import juzu.impl.template.spi.Template;
 import juzu.impl.template.metamodel.TemplateMetaModel;
 import juzu.impl.utils.Path;
 import juzu.template.Renderable;

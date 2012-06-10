@@ -19,7 +19,7 @@
 
 package juzu.impl.compiler.file;
 
-import juzu.impl.spi.fs.SimpleFileSystem;
+import juzu.impl.fs.spi.SimpleFileSystem;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;
