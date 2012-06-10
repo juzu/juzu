@@ -90,14 +90,6 @@ public class ApplicationMetaModel extends MetaModelObject {
     this.processed = new HashMap<BufKey, AnnotationData>();
   }
 
-  public ControllersMetaModel getControllers() {
-    return getChild(ControllersMetaModel.KEY);
-  }
-
-  public TemplatesMetaModel getTemplates() {
-    return getChild(TemplatesMetaModel.KEY);
-  }
-
   public FQN getFQN() {
     return fqn;
   }
@@ -114,8 +106,8 @@ public class ApplicationMetaModel extends MetaModelObject {
     JSON json = new JSON();
     json.set("handle", handle);
     json.set("fqn", fqn.getName());
-    json.map("templates", getTemplates());
-    json.map("controllers", getControllers());
+    json.map("templates", getChild(TemplatesMetaModel.KEY));
+    json.map("controllers", getChild(ControllersMetaModel.KEY));
     return json;
   }
 

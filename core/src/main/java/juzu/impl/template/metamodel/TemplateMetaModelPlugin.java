@@ -34,6 +34,9 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   /** . */
   Map<String, TemplateProvider> providers;
 
+  /** . */
+  TemplatesMetaModel templates;
+
   public TemplateMetaModelPlugin() {
     super("template");
   }
@@ -62,7 +65,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postConstruct(ApplicationMetaModel application) {
-    TemplatesMetaModel templates = new TemplatesMetaModel();
+    templates = new TemplatesMetaModel();
     templates.plugin = this;
     application.addChild(TemplatesMetaModel.KEY, templates);
   }
@@ -93,13 +96,12 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postActivate(ApplicationMetaModel application) {
-    application.getTemplates().plugin = this;
+    templates.plugin = this;
   }
 
   @Override
   public void prePassivate(ApplicationMetaModel model) {
     MetaModel.log.log("Passivating template resolver for " + model.getHandle());
-    TemplatesMetaModel templates = model.getTemplates();
     templates.resolver.prePassivate();
     templates.plugin = null;
   }
@@ -113,20 +115,19 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     MetaModel.log.log("Processing templates of " + application.getHandle());
-    application.getTemplates().resolver.process(this, application.model.env);
+    templates.resolver.process(this, application.model.env);
   }
 
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
     JSON config = new JSON();
-    ArrayList<String> templates = new ArrayList<String>();
-    TemplatesMetaModel a = application.getTemplates();
-    for (Template template : a.resolver.getTemplates()) {
-      Path resolved = a.resolve(template.getPath());
-      templates.add(resolved.getFQN().getName());
+    ArrayList<String> list = new ArrayList<String>();
+    for (Template template : templates.resolver.getTemplates()) {
+      Path resolved = templates.resolve(template.getPath());
+      list.add(resolved.getFQN().getName());
     }
-    config.map("templates", templates);
-    config.set("package", a.getQN().toString());
+    config.map("templates", list);
+    config.set("package", templates.getQN().toString());
     return config;
   }
 }

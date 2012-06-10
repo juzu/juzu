@@ -119,7 +119,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postProcessAnnotations(ApplicationMetaModel application) {
-    for (ControllerMetaModel controller : application.getControllers()) {
+    for (ControllerMetaModel controller : application.getChild(ControllersMetaModel.KEY)) {
       if (controller.modified) {
         controller.modified = false;
         controller.queue(MetaModelEvent.createUpdated(controller));
@@ -167,7 +167,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     // Check everything is OK here
-    for (ControllerMetaModel controller : application.getControllers()) {
+    for (ControllerMetaModel controller : application.getChild(ControllersMetaModel.KEY)) {
       for (ControllerMethodMetaModel method : controller.getMethods()) {
         ExecutableElement executableElt = application.model.env.get(method.handle);
         Iterator<? extends VariableElement> i = executableElt.getParameters().iterator();

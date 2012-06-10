@@ -33,6 +33,7 @@ import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.controller.metamodel.ControllerMetaModel;
+import juzu.impl.controller.metamodel.ControllersMetaModel;
 import juzu.impl.utils.FQN;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
@@ -84,7 +85,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     List<MetaModelEvent> events = mm.getQueue().clear();
     ApplicationMetaModel application = mm.getChild(ApplicationsMetaModel.KEY).iterator().next();
-    ControllerMetaModel controller = application.getControllers().iterator().next();
+    ControllerMetaModel controller = application.getChild(ControllersMetaModel.KEY).iterator().next();
     assertEquals(Arrays.asList(
       MetaModelEvent.createAdded(application),
       MetaModelEvent.createAdded(controller),
