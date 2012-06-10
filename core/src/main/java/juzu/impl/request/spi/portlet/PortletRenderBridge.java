@@ -52,11 +52,11 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
       // For now only in gatein since liferay won't support it very well
       if (req.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container") || true) {
-        Iterable<Asset.Literal> scripts = context.assetManager.resolveAssets(render.getScripts());
-        Iterable<Asset.Literal> stylesheets = context.assetManager.resolveAssets(render.getStylesheets());
+        Iterable<Asset.Value> scripts = context.assetManager.resolveAssets(render.getScripts());
+        Iterable<Asset.Value> stylesheets = context.assetManager.resolveAssets(render.getStylesheets());
 
         //
-        for (Asset.Literal stylesheet : stylesheets) {
+        for (Asset.Value stylesheet : stylesheets) {
           int pos = stylesheet.getURI().lastIndexOf('.');
           String ext = pos == -1 ? "css" : stylesheet.getURI().substring(pos + 1);
           Element elt = this.resp.createElement("link");
@@ -68,7 +68,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
         }
 
         //
-        for (Asset.Literal script : scripts) {
+        for (Asset.Value script : scripts) {
           String url = getAssetURL(script);
           Element elt = this.resp.createElement("script");
           elt.setAttribute("type", "text/javascript");
@@ -92,7 +92,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     super.end(response);
   }
 
-  private String getAssetURL(Asset.Literal asset) {
+  private String getAssetURL(Asset.Value asset) {
     StringBuilder sb;
     String url;
     String uri = asset.getURI();

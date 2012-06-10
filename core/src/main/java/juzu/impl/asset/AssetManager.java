@@ -77,12 +77,12 @@ public class AssetManager {
    * @throws NullPointerException     if the asset id argument is null
    * @throws IllegalArgumentException when script dependencies cannot be resolved
    */
-  public Iterable<Asset.Literal> resolveAssets(Iterable<juzu.asset.Asset> scripts) throws
+  public Iterable<Asset.Value> resolveAssets(Iterable<juzu.asset.Asset> scripts) throws
     NullPointerException,
     IllegalArgumentException {
     LinkedHashMap<String, HashSet<String>> sub = new LinkedHashMap<String, HashSet<String>>();
     for (juzu.asset.Asset script : scripts) {
-      if (script instanceof juzu.asset.Asset.Literal) {
+      if (script instanceof Asset.Value) {
         // resolved.addLast(script);
       }
       else {
@@ -97,7 +97,7 @@ public class AssetManager {
     }
 
     //
-    LinkedList<Asset.Literal> resolved = new LinkedList<juzu.asset.Asset.Literal>();
+    LinkedList<Asset.Value> resolved = new LinkedList<Asset.Value>();
     while (sub.size() > 0) {
       boolean found = false;
       for (Iterator<Map.Entry<String, HashSet<String>>> i = sub.entrySet().iterator();i.hasNext();) {
@@ -127,8 +127,8 @@ public class AssetManager {
 
     //
     for (juzu.asset.Asset script : scripts) {
-      if (script instanceof juzu.asset.Asset.Literal) {
-        juzu.asset.Asset.Literal script1 = (juzu.asset.Asset.Literal)script;
+      if (script instanceof Asset.Value) {
+        Asset.Value script1 = (Asset.Value)script;
         String uri = script1.getURI();
         resolved.addLast(Asset.uri(script1.getLocation(), uri));
       }

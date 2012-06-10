@@ -49,8 +49,8 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
   public void end(Response response) throws IllegalStateException, IOException {
     if (response instanceof Response.Render) {
       Response.Content.Render render = (Response.Render)response;
-      Iterable<Asset.Literal> scripts;
-      Iterable<Asset.Literal> stylesheets;
+      Iterable<Asset.Value> scripts;
+      Iterable<Asset.Value> stylesheets;
       try {
         scripts = context.scriptManager.resolveAssets(render.getScripts());
         stylesheets = context.scriptManager.resolveAssets(render.getStylesheets());
@@ -71,7 +71,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       writer.println("<html>");
 
       writer.println("<head>");
-      for (Asset.Literal stylesheet : stylesheets) {
+      for (Asset.Value stylesheet : stylesheets) {
         String path = stylesheet.getURI();
         int pos = path.lastIndexOf('.');
         String ext = pos == -1 ? "css" : path.substring(pos + 1);
@@ -83,7 +83,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       }
 
       //
-      for (Asset.Literal script : scripts) {
+      for (Asset.Value script : scripts) {
         writer.print("<script type=\"text/javascript\" src=\"");
         renderAssetURL(script, writer);
         writer.println("\"></script>");
@@ -102,7 +102,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
     }
   }
 
-  private void renderAssetURL(Asset.Literal asset, Appendable appendable) throws IOException {
+  private void renderAssetURL(Asset.Value asset, Appendable appendable) throws IOException {
     String uri = asset.getURI();
     switch (asset.getLocation()) {
       case SERVER:
