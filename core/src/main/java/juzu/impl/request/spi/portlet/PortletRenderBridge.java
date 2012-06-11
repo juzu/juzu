@@ -99,8 +99,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     switch (asset.getLocation()) {
       case SERVER:
         sb = new StringBuilder();
-        sb.append(req.getContextPath());
         if (!uri.startsWith("/")) {
+          sb.append(req.getContextPath());
           sb.append('/');
         }
         sb.append(uri);

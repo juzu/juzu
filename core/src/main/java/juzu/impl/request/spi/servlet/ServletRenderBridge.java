@@ -106,8 +106,8 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
     String uri = asset.getURI();
     switch (asset.getLocation()) {
       case SERVER:
-        appendable.append(req.getContextPath());
         if (!uri.startsWith("/")) {
+          appendable.append(req.getContextPath());
           appendable.append('/');
         }
         appendable.append(uri);

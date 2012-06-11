@@ -21,13 +21,13 @@
 @Portlet
 @Assets(
   scripts = {
-    @Script(id = "jquery", src = "/public/javascripts/jquery-1.7.1.min.js"),
-    @Script(src = "/public/javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
-    @Script(src = "/public/javascripts/booking.js", depends = "juzu.ajax")
+    @Script(id = "jquery", src = "public/javascripts/jquery-1.7.1.min.js"),
+    @Script(src = "public/javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
+    @Script(src = "public/javascripts/booking.js", depends = "juzu.ajax")
   },
   stylesheets = {
-    @Stylesheet(src = "/public/stylesheets/main.css"),
-    @Stylesheet(src = "/public/ui-lightness/jquery-ui-1.7.2.custom.css")
+    @Stylesheet(src = "public/stylesheets/main.css"),
+    @Stylesheet(src = "public/ui-lightness/jquery-ui-1.7.2.custom.css")
   }
 ) package org.sample.booking;
 

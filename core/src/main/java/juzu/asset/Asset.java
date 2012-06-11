@@ -17,7 +17,7 @@ public abstract class Asset {
   }
 
   public static Value uri(String uri) {
-    return uri(AssetLocation.EXTERNAL, uri);
+    return uri(AssetLocation.SERVER, uri);
   }
 
   public static Value uri(AssetLocation location, String uri) {

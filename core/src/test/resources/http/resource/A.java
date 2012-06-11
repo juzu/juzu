@@ -30,8 +30,8 @@ public class A {
   @View
   public Response.Content index(String p) {
     return Response.render("foo")
-      .addScript(Asset.uri(AssetLocation.SERVER, "/assets/jquery-1.7.1.js"))
-      .addStylesheet(Asset.uri(AssetLocation.SERVER, "/assets/main.css"))
-      .addStylesheet(Asset.uri(AssetLocation.SERVER, "/assets/main.less"));
+      .addScript(Asset.uri("assets/jquery-1.7.1.js"))
+      .addStylesheet(Asset.uri("assets/main.css"))
+      .addStylesheet(Asset.uri("assets/main.less"));
   }
 }
