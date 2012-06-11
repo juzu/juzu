@@ -85,6 +85,7 @@ public class QN2TestCase extends AbstractTestCase {
   @Test
   public void testAppend() {
     assertAppend("a.b", "a", "b");
+    assertAppend("a.b.c", "a.b", "c");
     try {
       QN.parse("a").append("");
       fail();
@@ -112,7 +113,10 @@ public class QN2TestCase extends AbstractTestCase {
   }
 
   private void assertAppend(String expected, String qn, String simpleName) {
-    assertEquals(expected, QN.parse(qn).append(simpleName).getValue());
+    QN parsed = QN.parse(qn);
+    QN appended = parsed.append(simpleName);
+    assertEquals(expected, appended.getValue());
+    assertEquals(appended.size(), parsed.size() + 1);
   }
 
   @Test

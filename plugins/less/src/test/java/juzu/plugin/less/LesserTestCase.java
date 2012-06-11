@@ -126,4 +126,13 @@ public class LesserTestCase {
     Assert.assertEquals("a { width: + 1px }", extract[1]);
     Assert.assertEquals("// comment 2", extract[2]);
   }
+
+  @Test
+  public void testImportRelative() throws Exception {
+    URLLessContext context = new URLLessContext(LesserTestCase.class.getClassLoader().getResource("lesser/test/"));
+    Compilation compilation = (Compilation)lesser.compile(context, "relative.less");
+    Assert.assertEquals("a {\n" +
+        "  width: 2px;\n" +
+        "}\n", compilation.getValue());
+  }
 }

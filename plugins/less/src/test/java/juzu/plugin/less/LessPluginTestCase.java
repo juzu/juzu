@@ -90,4 +90,13 @@ public class LessPluginTestCase extends AbstractInjectTestCase {
     File f = ca.getClassOutput().getPath("plugin", "less", "malformedpath", "assets", "stylesheet.css");
     assertNull(f);
   }
+
+  @Test
+  public void testAncestor() throws Exception {
+    CompilerAssert<File, File> ca = compiler("plugin", "less", "ancestor");
+    ca.assertCompile();
+    File f = ca.getClassOutput().getPath("plugin", "less", "ancestor", "assets", "folder", "stylesheet.css");
+    assertNotNull(f);
+    assertTrue(f.exists());
+  }
 }

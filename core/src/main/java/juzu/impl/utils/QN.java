@@ -49,12 +49,10 @@ public class QN implements CharSequence, Serializable, Iterable<String> {
   private final String[] names;
 
   /** . */
-  private final int size;
+  private int size;
 
   QN(String value, String[] names) {
-    this.value = value;
-    this.names = names;
-    this.size = names.length;
+    this(value, names, names.length);
   }
 
   QN(String value, String[] names, int size) {
@@ -154,9 +152,9 @@ public class QN implements CharSequence, Serializable, Iterable<String> {
         sb.append('.');
         sb.append(s);
       }
-      String[] foo = new String[size + suffix.length];
-      System.arraycopy(names, 0, foo, 0, size);
-      System.arraycopy(suffix, 0, foo, size, suffix.length);
+      String[] foo = new String[this.size + suffix.length];
+      System.arraycopy(names, 0, foo, 0, this.size);
+      System.arraycopy(suffix, 0, foo, this.size, suffix.length);
       return new QN(sb.toString(), foo, foo.length);
     }
   }
@@ -180,6 +178,17 @@ public class QN implements CharSequence, Serializable, Iterable<String> {
     }
     else {
       return false;
+    }
+  }
+
+  /**
+   * Merge the package names to the strings array until the end of the array or the first non value.
+   *
+   * @param strings the string array
+   */
+  public void mergeTo(String[] strings) {
+    for (int i = 0;i < strings.length && strings[i] == null;i++) {
+      strings[i] = names[i];
     }
   }
 

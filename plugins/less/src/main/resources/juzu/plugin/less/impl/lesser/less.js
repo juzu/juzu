@@ -3123,8 +3123,9 @@ parse = (function (window, undefined) {
 
     //
     function loadStyleSheet(stylesheet, callback) {
-        var data = load(stylesheet.href);
-        var parser = new(less.Parser);
+        var href = stylesheet.href;
+        var data = load(href);
+        var parser = new(less.Parser)({paths:[href.replace(/[\w\.-]+$/, '')]});
         try {
             parser.parse(data, function(err, tree) {
                 if (err) { return invokeFailure(stylesheet.href, err); }
@@ -3141,8 +3142,8 @@ parse = (function (window, undefined) {
     }
 
     //
-    function parse(s, compress) {
-        loadStyleSheet({href:s}, function(err, tree) {
+    function parse(path, compress) {
+        loadStyleSheet({href:path}, function(err, tree) {
             compilation(tree.toCSS({compress:compress}));
         });
     }
