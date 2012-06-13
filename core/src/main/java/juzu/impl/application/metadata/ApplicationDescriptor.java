@@ -146,14 +146,12 @@ public class ApplicationDescriptor extends Descriptor {
     return beans;
   }
 
-  public ApplicationDescriptor addPlugins(Map<String, Plugin> plugins) {
-    Map<String, Plugin> tmp = new HashMap<String, Plugin>(this.foo);
-    tmp.putAll(plugins);
-    throw new UnsupportedOperationException("disabled for now");
-  }
-
   public Descriptor getPlugin(String name) {
     return plugins.get(name);
+  }
+
+  public void addPlugin(String name, Descriptor plugin) {
+    plugins.put(name, plugin);
   }
 
   public Class<?> getPackageClass() {

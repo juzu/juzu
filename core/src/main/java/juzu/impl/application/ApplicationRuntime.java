@@ -365,8 +365,9 @@ public abstract class ApplicationRuntime<P, R, L> {
 
     // Add additional plugins when available
     if (plugins != null) {
-      // descriptor = descriptor.addPlugins(plugins);
-      // Disabled for now
+      for (Map.Entry<String, Descriptor> entry : plugins.entrySet()) {
+        descriptor.addPlugin(entry.getKey(), entry.getValue());
+      }
     }
 
     // Find the juzu jar
