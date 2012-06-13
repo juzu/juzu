@@ -17,6 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application() package request.filter.failure;
+@Bindings(@Binding(FailureFilter.class))
+@Application
+package request.filter.failure;
 
 import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

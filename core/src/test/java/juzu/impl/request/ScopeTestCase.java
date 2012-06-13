@@ -40,9 +40,7 @@ public class ScopeTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRequestScope() throws Exception {
-    MockApplication<?> app = application("request", "scope", "request");
-    app.declareBean("request.scope.request.Car");
-    app.init();
+    MockApplication<?> app = application("request", "scope", "request").init();
 
     //
     MockClient client = app.client();
@@ -89,9 +87,7 @@ public class ScopeTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testFlashScope() throws Exception {
-    MockApplication<?> app = application("request", "scope", "flash");
-    app.declareBean("request.scope.flash.Car");
-    app.init();
+    MockApplication<?> app = application("request", "scope", "flash").init();
 
     //
     MockClient client = app.client();
@@ -131,9 +127,7 @@ public class ScopeTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testSessionScope() throws Exception {
-    MockApplication<?> app = application("request", "scope", "session");
-    app.declareBean("request.scope.session.Car");
-    app.init();
+    MockApplication<?> app = application("request", "scope", "session").init();
 
     //
     MockClient client = app.client();

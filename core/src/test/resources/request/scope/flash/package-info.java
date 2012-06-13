@@ -17,6 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+@Bindings(@Binding(Car.class))
 @Application package request.scope.flash;
 
 import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

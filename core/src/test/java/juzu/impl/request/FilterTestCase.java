@@ -38,7 +38,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
   public void testLifeCycle() throws Exception {
     Registry.unset("request.filter.lifecycle");
 
-    MockApplication<?> app = application("request", "filter", "lifecycle").declareBean("request.filter.lifecycle.LifeCycleFilter").init();
+    MockApplication<?> app = application("request", "filter", "lifecycle").init();
 
     //
     app.getContext().getLifecycles();
@@ -52,7 +52,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testFailure() throws Exception {
-    MockApplication<?> app = application("request", "filter", "failure").declareBean("request.filter.failure.FailureFilter").init();
+    MockApplication<?> app = application("request", "filter", "failure").init();
 
     //
     MockClient client = app.client();

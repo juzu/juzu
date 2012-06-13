@@ -17,6 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application() package request.filter.lifecycle;
+@Bindings(@Binding(LifeCycleFilter.class))
+@Application
+package request.filter.lifecycle;
 
 import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;
