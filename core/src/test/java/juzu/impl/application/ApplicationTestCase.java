@@ -19,7 +19,6 @@
 
 package juzu.impl.application;
 
-import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.test.AbstractTestCase;

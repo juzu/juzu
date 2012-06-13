@@ -23,7 +23,6 @@ import juzu.Action;
 import juzu.Resource;
 import juzu.Scope;
 import juzu.View;
-import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.Export;
 import juzu.impl.inject.BeanDescriptor;

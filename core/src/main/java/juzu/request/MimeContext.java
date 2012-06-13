@@ -22,7 +22,7 @@ package juzu.request;
 import juzu.Response;
 import juzu.URLBuilder;
 import juzu.impl.application.ApplicationContext;
-import juzu.impl.application.metadata.ApplicationDescriptor;
+import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.request.Request;
 import juzu.impl.request.spi.MimeBridge;

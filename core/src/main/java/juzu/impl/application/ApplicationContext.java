@@ -20,7 +20,6 @@
 package juzu.impl.application;
 
 import juzu.UndeclaredIOException;
-import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.controller.descriptor.ControllerMethodResolver;
 import juzu.impl.inject.Export;

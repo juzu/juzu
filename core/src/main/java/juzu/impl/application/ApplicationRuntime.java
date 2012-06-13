@@ -20,7 +20,6 @@
 package juzu.impl.application;
 
 import juzu.asset.AssetType;
-import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.asset.ManagerQualifier;

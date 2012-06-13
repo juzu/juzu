@@ -22,7 +22,7 @@ package juzu.test.protocol.mock;
 import juzu.impl.application.ApplicationBootstrap;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationException;
-import juzu.impl.application.metadata.ApplicationDescriptor;
+import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;

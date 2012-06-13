@@ -6,7 +6,7 @@ import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.asset.AssetType;
 import juzu.impl.application.ApplicationException;
-import juzu.impl.application.metadata.ApplicationDescriptor;
+import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.asset.Manager;

@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.application.metadata;
+package juzu.impl.application;
 
 import juzu.impl.controller.descriptor.ControllerDescriptor;
 import juzu.impl.inject.BeanDescriptor;

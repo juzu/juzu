@@ -1,7 +1,7 @@
 package juzu.impl.application.metamodel;
 
 import juzu.Application;
-import juzu.impl.application.metadata.ApplicationDescriptor;
+import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ElementHandle;

@@ -19,7 +19,7 @@
 
 package juzu.impl.request;
 
-import juzu.impl.application.metadata.ApplicationDescriptor;
+import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.controller.descriptor.ControllerParameter;
 import juzu.impl.utils.Cardinality;
