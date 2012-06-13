@@ -30,16 +30,9 @@ import juzu.impl.metadata.BeanDescriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectManager;
-import juzu.inject.ProviderFactory;
 
-import javax.inject.Provider;
-import javax.inject.Qualifier;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationBootstrap {
@@ -102,57 +95,7 @@ public class ApplicationBootstrap {
 
     // Bind the beans
     for (BeanDescriptor bean : descriptor.getBeans()) {
-      Class<?> type = bean.getDeclaredType();
-      Class<?> implementation = bean.getImplementationType();
-      if (implementation == null) {
-        // Direct declaration
-        bootstrap.declareBean(type, bean.getScope(), bean.getQualifiers(), null);
-      }
-      else if (ProviderFactory.class.isAssignableFrom(implementation)) {
-        // Instantiate provider factory
-        ProviderFactory mp;
-        try {
-          mp = (ProviderFactory)implementation.newInstance();
-        }
-        catch (InstantiationException e) {
-          throw new ApplicationException(e);
-        }
-        catch (IllegalAccessException e) {
-          throw new UndeclaredThrowableException(e);
-        }
-
-        // Get provider from factory
-        Provider provider;
-        try {
-          provider = mp.getProvider(type);
-        }
-        catch (Exception e) {
-          throw new ApplicationException(e);
-        }
-
-        // Bind provider instance
-        bootstrap.bindProvider(
-          type,
-          bean.getScope(),
-          determineQualifiers(type, bean.getQualifiers(), provider.getClass()),
-          provider);
-      }
-      else if (Provider.class.isAssignableFrom(implementation)) {
-        // Bind provider
-        bootstrap.declareProvider(
-          type,
-          bean.getScope(),
-          determineQualifiers(type, bean.getQualifiers(), implementation),
-          (Class)implementation);
-      }
-      else {
-        // Bean implementation declaration
-        bootstrap.declareBean(
-          (Class)type,
-          bean.getScope(),
-          bean.getQualifiers(),
-          (Class)implementation);
-      }
+      bean.install(bootstrap);
     }
 
     //
@@ -177,32 +120,6 @@ public class ApplicationBootstrap {
 
     //
     this.context = context;
-  }
-
-  private Collection<Annotation> determineQualifiers(Class<?> type, Collection<Annotation> qualifiers, Class<?> implementation) {
-    Collection<Annotation> overridenQualifiers = null;
-    try {
-      Method get = implementation.getMethod("get");
-      for (Annotation annotation : get.getAnnotations()) {
-        if (annotation.annotationType().getAnnotation(Qualifier.class) != null) {
-          if (overridenQualifiers == null) {
-            overridenQualifiers = new ArrayList<Annotation>();
-          }
-          overridenQualifiers.add(annotation);
-        }
-      }
-    }
-    catch (NoSuchMethodException e) {
-      throw new UndeclaredThrowableException(e);
-    }
-
-    // Override all qualifiers
-    if (overridenQualifiers != null) {
-      qualifiers = overridenQualifiers;
-    }
-
-    //
-    return qualifiers;
   }
 
   public ApplicationContext getContext() {

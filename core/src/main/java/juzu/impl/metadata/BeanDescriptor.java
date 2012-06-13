@@ -1,9 +1,17 @@
 package juzu.impl.metadata;
 
 import juzu.Scope;
+import juzu.impl.application.ApplicationException;
+import juzu.impl.inject.spi.InjectBuilder;
+import juzu.inject.ProviderFactory;
 
+import javax.inject.Provider;
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -66,5 +74,85 @@ public final class BeanDescriptor {
 
   public Class<?> getImplementationType() {
     return implementationType;
+  }
+
+  public void install(InjectBuilder builder) {
+    Class<?> type = getDeclaredType();
+    Class<?> implementation = getImplementationType();
+    if (implementation == null) {
+      // Direct declaration
+      builder.declareBean(type, getScope(), getQualifiers(), null);
+    }
+    else if (ProviderFactory.class.isAssignableFrom(implementation)) {
+      // Instantiate provider factory
+      ProviderFactory mp;
+      try {
+        mp = (ProviderFactory)implementation.newInstance();
+      }
+      catch (InstantiationException e) {
+        throw new ApplicationException(e);
+      }
+      catch (IllegalAccessException e) {
+        throw new UndeclaredThrowableException(e);
+      }
+
+      // Get provider from factory
+      Provider provider;
+      try {
+        provider = mp.getProvider(type);
+      }
+      catch (Exception e) {
+        throw new ApplicationException(e);
+      }
+
+      // Bind provider instance
+      builder.bindProvider(
+        type,
+        getScope(),
+        determineQualifiers(getQualifiers(), provider.getClass()),
+        provider);
+    }
+    else if (Provider.class.isAssignableFrom(implementation)) {
+      // Bind provider
+      builder.declareProvider(
+        type,
+        getScope(),
+        determineQualifiers(getQualifiers(), implementation),
+        (Class)implementation);
+    }
+    else {
+      // Bean implementation declaration
+      builder.declareBean(
+        (Class)type,
+        getScope(),
+        getQualifiers(),
+        (Class)implementation);
+    }
+  }
+
+  private static Collection<Annotation> determineQualifiers(Collection<Annotation> qualifiers, Class<?> implementation) {
+    Collection<Annotation> overridenQualifiers = null;
+    try {
+      Method get = implementation.getMethod("get");
+      for (Annotation annotation : get.getAnnotations()) {
+        if (annotation.annotationType().getAnnotation(Qualifier.class) != null) {
+          if (overridenQualifiers == null) {
+            overridenQualifiers = new ArrayList<Annotation>();
+          }
+          overridenQualifiers.add(annotation);
+        }
+      }
+    }
+    catch (NoSuchMethodException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+
+    // Override all qualifiers
+    if (overridenQualifiers != null) {
+      qualifiers = overridenQualifiers;
+    }
+
+    //
+    return qualifiers;
   }
 }
