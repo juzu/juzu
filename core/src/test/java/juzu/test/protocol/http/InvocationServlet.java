@@ -31,7 +31,6 @@ import juzu.impl.utils.Tools;
 import juzu.test.AbstractHttpTestCase;
 import juzu.test.protocol.mock.MockApplication;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,20 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class InvocationServlet extends HttpServlet {
-
-  /**
-   * Returns an asset server associated with the specified context or null if it does not exist.
-   *
-   * @param context the related context
-   * @return the related server
-   * @throws NullPointerException if the context argument is null
-   */
-  public static AssetServer getServer(ServletContext context) throws NullPointerException {
-    if (context == null) {
-      throw new NullPointerException("No null context accepted");
-    }
-    return registry.get(context.getContextPath());
-  }
 
   /** . */
   private static final ConcurrentHashMap<String, AssetServer> registry = new ConcurrentHashMap<String, AssetServer>();
