@@ -20,8 +20,8 @@
 package juzu.impl.application;
 
 import juzu.UndeclaredIOException;
+import juzu.impl.controller.ControllerPlugin;
 import juzu.impl.controller.descriptor.ControllerMethod;
-import juzu.impl.controller.descriptor.ControllerMethodResolver;
 import juzu.impl.inject.Export;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.request.Request;
@@ -56,16 +56,16 @@ public class ApplicationContext {
   final InjectManager<?, ?> injectManager;
 
   /** . */
-  private final ControllerMethodResolver controllerResolver;
+  private final ControllerPlugin controller;
 
   /** . */
   public ArrayList<RequestFilter> lifecycles;
 
   @Inject
-  public ApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor) throws Exception {
+  public ApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor, ControllerPlugin controller) throws Exception {
     this.descriptor = descriptor;
     this.injectManager = injectManager;
-    this.controllerResolver = new ControllerMethodResolver(descriptor.getController());
+    this.controller = controller;
   }
 
   // This is done lazyly to avoid circular references issues
@@ -143,10 +143,10 @@ public class ApplicationContext {
     //
     ControllerMethod method;
     if (methodId == null) {
-      method = controllerResolver.resolve(parameters.keySet());
+      method = controller.getResolver().resolve(parameters.keySet());
     }
     else {
-      method = controllerResolver.resolve(phase, methodId, parameters.keySet());
+      method = controller.getResolver().resolve(phase, methodId, parameters.keySet());
     }
 
     //
