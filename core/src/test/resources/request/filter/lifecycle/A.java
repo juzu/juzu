@@ -17,22 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request;
+package request.filter.lifecycle;
 
-import juzu.impl.application.ApplicationException;
+import juzu.View;
 
-/**
- * The request life cycle should be implemented by beans that want to be aware of the request life cycle.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public interface RequestLifeCycle {
-
-  /**
-   * Invoke the request.
-   *
-   * @param request the request
-   * @throws ApplicationException any application exception
-   */
-  void invoke(Request request) throws ApplicationException;
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+  @View
+  public void index() {
+  }
 }

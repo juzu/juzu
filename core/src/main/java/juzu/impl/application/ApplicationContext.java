@@ -26,7 +26,7 @@ import juzu.impl.controller.descriptor.ControllerMethodResolver;
 import juzu.impl.inject.Export;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.request.Request;
-import juzu.impl.request.RequestLifeCycle;
+import juzu.impl.request.RequestFilter;
 import juzu.impl.inject.spi.InjectManager;
 import juzu.impl.request.spi.ActionBridge;
 import juzu.impl.request.spi.RenderBridge;
@@ -60,7 +60,7 @@ public class ApplicationContext {
   private final ControllerMethodResolver controllerResolver;
 
   /** . */
-  public ArrayList<RequestLifeCycle> lifecycles;
+  public ArrayList<RequestFilter> lifecycles;
 
   @Inject
   public ApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor) throws Exception {
@@ -70,12 +70,12 @@ public class ApplicationContext {
   }
 
   // This is done lazyly to avoid circular references issues
-  private <B, I> ArrayList<RequestLifeCycle> getLifecycles(InjectManager<B, I> manager) throws Exception {
+  private <B, I> ArrayList<RequestFilter> getLifecycles(InjectManager<B, I> manager) throws Exception {
     if (lifecycles == null) {
-      ArrayList<RequestLifeCycle> lifeCycles = new ArrayList<RequestLifeCycle>();
-      for (B lifeCycleBean : manager.resolveBeans(RequestLifeCycle.class)) {
+      ArrayList<RequestFilter> lifeCycles = new ArrayList<RequestFilter>();
+      for (B lifeCycleBean : manager.resolveBeans(RequestFilter.class)) {
         I lifeCycleInstance = manager.create(lifeCycleBean);
-        RequestLifeCycle lifeCycle = (RequestLifeCycle)manager.get(lifeCycleBean, lifeCycleInstance);
+        RequestFilter lifeCycle = (RequestFilter)manager.get(lifeCycleBean, lifeCycleInstance);
         lifeCycles.add(lifeCycle);
       }
       lifecycles = lifeCycles;
@@ -87,7 +87,7 @@ public class ApplicationContext {
     return descriptor.getName();
   }
 
-  public List<RequestLifeCycle> getLifecycles() {
+  public List<RequestFilter> getLifecycles() {
     try {
       return getLifecycles(injectManager);
     }

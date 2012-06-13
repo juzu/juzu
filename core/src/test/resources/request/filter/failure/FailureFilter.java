@@ -17,14 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.impl.failure;
+package request.filter.failure;
 
-import juzu.View;
+import juzu.Response;
+import juzu.impl.application.ApplicationException;
+import juzu.impl.request.Request;
+import juzu.impl.request.RequestFilter;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public void index() {
-    throw new RuntimeException();
+public class FailureFilter implements RequestFilter {
+  public FailureFilter() {
+  }
+
+  public void invoke(Request request) throws ApplicationException {
+    try {
+      request.invoke();
+    }
+    catch (ApplicationException e) {
+      request.setResponse(Response.content("pass"));
+    }
   }
 }

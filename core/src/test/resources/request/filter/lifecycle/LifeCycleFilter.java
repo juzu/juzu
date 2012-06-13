@@ -17,24 +17,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.impl.failure;
+package request.filter.lifecycle;
 
-import juzu.Response;
 import juzu.impl.application.ApplicationException;
 import juzu.impl.request.Request;
-import juzu.impl.request.RequestLifeCycle;
+import juzu.impl.request.RequestFilter;
+import juzu.test.Registry;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FailureLifeCycle implements RequestLifeCycle {
-  public FailureLifeCycle() {
+public class LifeCycleFilter implements RequestFilter {
+  public LifeCycleFilter() {
+    Registry.compareAndSet("request.filter.lifecycle", null, "created");
   }
 
   public void invoke(Request request) throws ApplicationException {
-    try {
-      request.invoke();
-    }
-    catch (ApplicationException e) {
-      request.setResponse(Response.content("pass"));
-    }
+    Registry.compareAndSet("request.filter.lifecycle", "created", "before");
+    request.invoke();
+    Registry.compareAndSet("request.filter.lifecycle", "before", "after");
   }
 }

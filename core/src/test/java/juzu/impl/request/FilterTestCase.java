@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin;
+package juzu.impl.request;
 
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
@@ -28,31 +28,31 @@ import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PluginTestCase extends AbstractInjectTestCase {
+public class FilterTestCase extends AbstractInjectTestCase {
 
-  public PluginTestCase(InjectImplementation di) {
+  public FilterTestCase(InjectImplementation di) {
     super(di);
   }
 
   @Test
   public void testLifeCycle() throws Exception {
-    Registry.unset("plugin.impl.lifecycle");
+    Registry.unset("request.filter.lifecycle");
 
-    MockApplication<?> app = application("plugin", "impl", "lifecycle").declareBean("plugin.impl.lifecycle.LifeCycleImpl").init();
+    MockApplication<?> app = application("request", "filter", "lifecycle").declareBean("request.filter.lifecycle.LifeCycleFilter").init();
 
     //
     app.getContext().getLifecycles();
-    assertEquals("created", Registry.get("plugin.impl.lifecycle"));
+    assertEquals("created", Registry.get("request.filter.lifecycle"));
 
     //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
-    assertEquals("after", Registry.get("plugin.impl.lifecycle"));
+    assertEquals("after", Registry.get("request.filter.lifecycle"));
   }
 
   @Test
   public void testFailure() throws Exception {
-    MockApplication<?> app = application("plugin", "impl", "failure").declareBean("plugin.impl.failure.FailureLifeCycle").init();
+    MockApplication<?> app = application("request", "filter", "failure").declareBean("request.filter.failure.FailureFilter").init();
 
     //
     MockClient client = app.client();

@@ -11,7 +11,7 @@ import juzu.impl.asset.AssetMetaData;
 import juzu.impl.asset.Manager;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.request.Request;
-import juzu.impl.request.RequestLifeCycle;
+import juzu.impl.request.RequestFilter;
 import juzu.impl.utils.JSON;
 import juzu.request.Phase;
 
@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetPlugin extends Plugin implements RequestLifeCycle {
+public class AssetPlugin extends Plugin implements RequestFilter {
 
   /** . */
   private Asset[] scripts;

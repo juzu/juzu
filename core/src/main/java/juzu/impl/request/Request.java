@@ -174,7 +174,7 @@ public class Request implements ScopingContext {
       }
 
       if (index >= 0 && index < application.getLifecycles().size()) {
-        RequestLifeCycle plugin = application.getLifecycles().get(index);
+        RequestFilter plugin = application.getLifecycles().get(index);
         try {
           index++;
           plugin.invoke(this);

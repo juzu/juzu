@@ -13,7 +13,7 @@ import juzu.impl.asset.Manager;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.request.Request;
-import juzu.impl.request.RequestLifeCycle;
+import juzu.impl.request.RequestFilter;
 import juzu.io.Stream;
 import juzu.io.Streamable;
 import juzu.plugin.ajax.Ajax;
@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxPlugin extends Plugin implements RequestLifeCycle {
+public class AjaxPlugin extends Plugin implements RequestFilter {
 
   /** . */
   Map<String, ControllerMethod> table;
