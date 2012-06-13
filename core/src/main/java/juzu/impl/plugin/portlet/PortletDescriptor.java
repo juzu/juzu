@@ -1,7 +1,7 @@
 package juzu.impl.plugin.portlet;
 
 import juzu.Scope;
-import juzu.impl.metadata.BeanDescriptor;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.request.spi.portlet.PortletPreferencesProvider;
 import juzu.impl.utils.Tools;

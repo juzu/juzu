@@ -1,6 +1,6 @@
 package juzu.impl.plugin.binding;
 
-import juzu.impl.metadata.BeanDescriptor;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.utils.JSON;

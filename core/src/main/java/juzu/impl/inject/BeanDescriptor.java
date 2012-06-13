@@ -1,4 +1,4 @@
-package juzu.impl.metadata;
+package juzu.impl.inject;
 
 import juzu.Scope;
 import juzu.impl.application.ApplicationException;

@@ -1,6 +1,6 @@
 package juzu.impl.template.metadata;
 
-import juzu.impl.metadata.BeanDescriptor;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.utils.JSON;
 import juzu.template.Template;

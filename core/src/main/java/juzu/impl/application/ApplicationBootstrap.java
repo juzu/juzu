@@ -26,7 +26,7 @@ import juzu.View;
 import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.Export;
-import juzu.impl.metadata.BeanDescriptor;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectManager;

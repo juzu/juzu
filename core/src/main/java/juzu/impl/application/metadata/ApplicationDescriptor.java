@@ -20,7 +20,7 @@
 package juzu.impl.application.metadata;
 
 import juzu.impl.controller.descriptor.ControllerDescriptor;
-import juzu.impl.metadata.BeanDescriptor;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.template.metadata.TemplatesDescriptor;

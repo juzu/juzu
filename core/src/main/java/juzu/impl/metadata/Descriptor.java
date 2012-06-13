@@ -1,5 +1,7 @@
 package juzu.impl.metadata;
 
+import juzu.impl.inject.BeanDescriptor;
+
 import java.util.Collections;
 
 /**
