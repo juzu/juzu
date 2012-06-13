@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceManager implements InjectManager<GuiceBean, Object> {
+public class GuiceManager extends InjectManager<GuiceBean, Object> {
 
   /** . */
   private Injector injector;

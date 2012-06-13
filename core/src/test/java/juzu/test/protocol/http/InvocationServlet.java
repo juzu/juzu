@@ -87,12 +87,12 @@ public class InvocationServlet extends HttpServlet {
       MockApplication<?> application = AbstractHttpTestCase.getApplication();
 
       // Bind the asset manager
-      AssetManager scriptManager = new AssetManager(AssetType.SCRIPT);
+      AssetManager scriptManager = new AssetManager();
       application.bindBean(
         AssetManager.class,
         Collections.<Annotation>singleton(new ManagerQualifier(AssetType.SCRIPT)),
         scriptManager);
-      AssetManager stylesheetManager = new AssetManager(AssetType.STYLESHEET);
+      AssetManager stylesheetManager = new AssetManager();
       application.bindBean(
         AssetManager.class,
         Collections.<Annotation>singleton(new ManagerQualifier(AssetType.STYLESHEET)),

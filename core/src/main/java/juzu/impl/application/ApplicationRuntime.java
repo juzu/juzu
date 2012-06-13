@@ -408,8 +408,8 @@ public abstract class ApplicationRuntime<P, R, L> {
     );
 
     //
-    AssetManager scriptManager = new AssetManager(AssetType.SCRIPT);
-    AssetManager stylesheetManager = new AssetManager(AssetType.STYLESHEET);
+    AssetManager scriptManager = new AssetManager();
+    AssetManager stylesheetManager = new AssetManager();
     injectBootstrap.bindBean(
       AssetManager.class,
       Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.SCRIPT)),

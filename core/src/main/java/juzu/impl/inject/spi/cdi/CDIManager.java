@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIManager implements InjectManager<Bean<?>, CreationalContext<?>> {
+public class CDIManager extends InjectManager<Bean<?>, CreationalContext<?>> {
 
   /** . */
   static final ThreadLocal<CDIManager> boot = new ThreadLocal<CDIManager>();

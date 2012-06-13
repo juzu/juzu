@@ -26,6 +26,7 @@ import juzu.impl.application.ApplicationException;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
+import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.inject.spi.InjectManager;
 import juzu.impl.request.spi.ActionBridge;
 import juzu.impl.request.spi.RenderBridge;
@@ -211,31 +212,29 @@ public class Request implements ScopingContext {
   private static <B, I> Object doInvoke(Request request, Object[] args, InjectManager<B, I> manager) throws ApplicationException {
     RequestContext context = request.getContext();
     Class<?> type = context.getMethod().getType();
-    B bean = manager.resolveBean(type);
 
-    if (bean != null) {
-      I instance = null;
+    BeanLifeCycle lifeCycle = manager.get(type);
+
+    if (lifeCycle != null) {
       try {
-        Object o;
-        try {
-          // Get the bean
-          instance = manager.create(bean);
 
-          // Get a reference
-          o = manager.get(bean, instance);
+        // Get controller
+        Object controller;
+        try {
+          controller = lifeCycle.get();
         }
         catch (InvocationTargetException e) {
           throw new ApplicationException(e.getCause());
         }
 
         // Begin request callback
-        if (o instanceof juzu.request.RequestLifeCycle) {
-          ((juzu.request.RequestLifeCycle)o).beginRequest(context);
+        if (controller instanceof juzu.request.RequestLifeCycle) {
+          ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
         }
 
         // Invoke method on controller
         try {
-          return context.getMethod().getMethod().invoke(o, args);
+          return context.getMethod().getMethod().invoke(controller, args);
         }
         catch (InvocationTargetException e) {
           throw new ApplicationException(e.getCause());
@@ -244,9 +243,9 @@ public class Request implements ScopingContext {
           throw new UnsupportedOperationException("hanle me gracefully", e);
         }
         finally {
-          if (o instanceof juzu.request.RequestLifeCycle) {
+          if (controller instanceof juzu.request.RequestLifeCycle) {
             try {
-              ((juzu.request.RequestLifeCycle)o).endRequest(context);
+              ((juzu.request.RequestLifeCycle)controller).endRequest(context);
             }
             catch (Exception e) {
               // Log me
@@ -255,9 +254,7 @@ public class Request implements ScopingContext {
         }
       }
       finally {
-        if (instance != null) {
-          manager.release(bean, instance);
-        }
+        lifeCycle.release();
       }
     }
     else {

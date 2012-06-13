@@ -38,7 +38,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class SpringManager implements InjectManager<String, Object> {
+public class SpringManager extends InjectManager<String, Object> {
 
   /** . */
   private final DefaultListableBeanFactory factory;

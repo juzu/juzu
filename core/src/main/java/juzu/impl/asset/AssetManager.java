@@ -14,17 +14,10 @@ import java.util.Map;
 public class AssetManager {
 
   /** . */
-  private final AssetType type;
-
-  /** . */
   private final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
 
   /** . */
   private final HashSet<String> classPathAssets = new HashSet<String>();
-
-  public AssetManager(AssetType type) {
-    this.type = type;
-  }
 
   /**
    * Attempt to add an asset to the manager.

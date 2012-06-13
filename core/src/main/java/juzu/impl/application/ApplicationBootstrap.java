@@ -27,6 +27,7 @@ import juzu.impl.application.metadata.ApplicationDescriptor;
 import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.Export;
 import juzu.impl.inject.BeanDescriptor;
+import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectManager;
@@ -44,7 +45,7 @@ public class ApplicationBootstrap {
   public final ApplicationDescriptor descriptor;
 
   /** . */
-  private ApplicationContext context;
+  private BeanLifeCycle<ApplicationContext> contextLifeCycle;
 
   public ApplicationBootstrap(InjectBuilder bootstrap, ApplicationDescriptor descriptor) {
     this.bootstrap = bootstrap;
@@ -108,25 +109,24 @@ public class ApplicationBootstrap {
     }
 
     // Let the container create the application context bean
-    ApplicationContext context = null;
+    BeanLifeCycle<ApplicationContext> contextLifeCycle = manager.get(ApplicationContext.class);
     try {
-      B contextBean = manager.resolveBean(ApplicationContext.class);
-      I contextInstance = manager.create(contextBean);
-      context = (ApplicationContext)manager.get(contextBean, contextInstance);
+      contextLifeCycle.get();
     }
     catch (InvocationTargetException e) {
       throw new UnsupportedOperationException("handle me gracefully", e);
     }
 
     //
-    this.context = context;
+    this.contextLifeCycle = contextLifeCycle;
   }
 
   public ApplicationContext getContext() {
-    return context;
+    return contextLifeCycle.peek();
   }
 
   public void stop() {
+    contextLifeCycle.release();
     // container.stop();
   }
 }
