@@ -1,16 +1,8 @@
 package juzu.impl.plugin.asset;
 
-import juzu.Scope;
-import juzu.asset.AssetType;
-import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
-import juzu.impl.asset.ManagerQualifier;
-import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.utils.Tools;
 
-import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
