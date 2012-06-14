@@ -19,10 +19,11 @@
 
 package juzu.impl.utils;
 
+import java.io.Serializable;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MethodInvocation {
+public class MethodInvocation implements Serializable {
 
   /** . */
   private final String className;
