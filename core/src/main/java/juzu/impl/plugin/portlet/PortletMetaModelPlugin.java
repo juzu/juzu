@@ -8,6 +8,7 @@ import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.utils.FQN;
+import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
 import juzu.plugin.portlet.Portlet;
 import juzu.portlet.JuzuPortlet;
@@ -111,8 +112,10 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
     finally {
       Tools.safeClose(writer);
     }
-
-
   }
 
+  @Override
+  public JSON getDescriptor(ApplicationMetaModel application) {
+    return new JSON();
+  }
 }

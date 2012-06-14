@@ -24,7 +24,6 @@ import juzu.impl.application.ApplicationException;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.plugin.portlet.PortletDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
@@ -221,7 +220,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       runtime.setInjectImplementation(injectImpl);
       runtime.setName(appName);
       runtime.setAssetServer(server);
-      runtime.addPlugin("portlet", PortletDescriptor.INSTANCE);
     }
 
     //

@@ -19,7 +19,9 @@
 
 package juzu.impl.plugin.portlet;
 
+import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
+import juzu.impl.utils.JSON;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -29,5 +31,10 @@ public class PortletPlugin extends Plugin {
 
   public PortletPlugin() {
     super("portlet");
+  }
+
+  @Override
+  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
+    return PortletDescriptor.INSTANCE;
   }
 }
