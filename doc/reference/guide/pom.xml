@@ -16,6 +16,7 @@
   <description>The reference guide</description>
 
   <properties>
+    <juzu.version>${project.version}</juzu.version>
     <wikbook.source>${pom.basedir}/src/main/wikbook</wikbook.source>
     <wikbook.target>${project.build.directory}/wikbook</wikbook.target>
   </properties>

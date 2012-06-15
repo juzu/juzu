@@ -1,0 +1,165 @@
+We will see in this chapter how to build and deploy a Juzu application.
+
+= Build =
+
+Building a Juzu application is usually done in two steps
+
+* Compile the application to its binary representation
+* Package the application as a war file
+
+Compiling an application requires a few jars to be present on the compilation classpath:
+
+* The Juzu core jar for the Juzu API
+* The JSR-330 jar for the @Inject API
+* Any Juzu extension jar such as plugins or additinal template engines
+
+After compilation, classes need to be packaged as a web application archive (//war//) and then deployed in a server. We
+will show several ways to package a Juzu application.
+
+{{note}}
+At the moment Juzu focuses on Maven because it is built with Maven, however that does not mean that Juzu is coupled
+to Maven, in the future we will provide additional examples or quickstart for alternative build systems.
+{{/note}}
+
+== With Maven ==
+
+Juzu libraries are deployed in the [[Maven Central repository>>http://search.maven.org/]], compiling an application
+ with require a few dependencies to find the correct jars.
+
+=== Using the Juzu Maven //builder// ===
+
+The //builder// is a Juzu artifact that serves the purpose of building and packaging an application:
+
+1. provide a set of dependencies that will be sufficient for compiling the application using its Maven transitive dependencies
+1. provide a predefined assembly descriptor that creates a war file containing the application classes, resources and libraries
+
+To achieve the first step, we simply declare the following dependency in a Maven artifact:
+
+{{xml}}
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-packager</artifactId>
+  <version>$[juzu.version]</version>
+</dependency>
+{{/xml}}
+
+Assembling the application requires more XML but is very straightforward:
+
+{{xml}}
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.3</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.juzu</groupId>
+            <artifactId>juzu-packager</artifactId>
+            <version>$[juzu.version]</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>gatein</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <classifier>gatein</classifier>
+              <descriptorRefs>
+                <descriptorRef>gatein</descriptorRef>
+              </descriptorRefs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+{{/xml}}
+
+The //assembly// plugin takes care of packaging the application:
+
+1. The plugin dependency declares on the //juzu-packager// artifact because it contains the predefined descriptors such
+ as the ##gatein## descriptor
+1. The goal //single// of the assembly plugin is executed on the //package// phase
+1. The predefined descriptor //gatein// packages the application
+11. Any dependency on the application is packaged in //WEB-INF/lib//
+11. The application classes are copied in //WEB-INF/classes//
+11. The web application //src/main/webapp// files are copied to the root of the archive
+11. Specific deployment descriptors may be copied in the war file depending on the predefined descriptor
+
+In this example we used the //gatein// predefined descriptor, the same descriptor for the Liferay Portal server can
+also be used with the name //liferay//.
+
+The builder relies p, the [[Maven Assembly plugin>>http://maven.apache.org/plugins/maven-assembly-plugin/]]: Juzu
+provides the [[predefined assembly descriptors>>http://maven.apache.org/plugins/maven-assembly-plugin/descriptor-refs.html]]
+ //gatein// and //liferay// that makes easy to package a Juzu application.
+
+{{note}}
+The predefined assembly descriptor does a similar job to the Maven //war// packaging but with more flexibility. To achieve
+the same result, the usage of a war packaging with the overlay feature.
+{{/note}}
+
+=== Juzu archetype ===
+
+The following produces a base Juzu application:
+
+{{screen}}
+mvn archetype:generate \\
+   -DarchetypeGroupId=org.juzu \\
+   -DarchetypeArtifactId=juzu-archetype \\
+   -DarchetypeVersion=$[juzu.version] \\
+   -DgroupId=org.example \\
+   -DartifactId=myapp \\
+   -DpackageName=org.example.myapp \\
+   -Dversion=1.0.0-SNAPSHOT
+{{/screen}}
+
+The generated application is a quickstart ready to can be customzed for developing more complex applications. The archetype
+uses the packager described in the previous section.
+
+== Using a prepackaged application ==
+
+The Juzu distribution contains the Booking and Tutorial applications for GateIn and Liferay servers. They can be used
+as basis to create applications.
+
+= Deploy =
+
+At the moment the supported (i.e tested) portal servers are
+
+* GateIn 3.2 / GateIn 3.3
+* Liferay 6.1
+
+Other server may work but we are not aware of that as it was not tested in other environments.
+
+== GateIn ==
+
+=== GateIn on Tomcat 6/7===
+
+No specific deployment instruction.
+
+=== GateIn on JBoss AS 7 ===
+
+GateIn on JBoss AS7 requires a little modification to do:
+
+Open the file //modules/javax/api/main/module.xml// and add **//<path name="javax/annotation/processing"/>//** among the //paths// declaration:
+
+{{xml}}
+<module xmlns="urn:jboss:module:1.1" name="javax.api">
+  <dependencies>
+    <system export="true">
+      <paths>
+        <path name="javax/annotation/processing"/>
+        ...
+      </paths>
+    </system>
+  </dependencies>
+</module>
+{{/xml}}
+
+This configuration exposes the ##javax.annotation.processing## package to the classes seen by Juzu.
+
+== Liferay ==
+
+Liferay has been tested extensively with the Tomcat version, no specific deployment instruction is required.
