@@ -20,37 +20,8 @@
   <dependencies>
 
     <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-overlay-gatein</artifactId>
-      <type>war</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-overlay-liferay</artifactId>
-      <type>war</type>
-      <scope>provided</scope>
+      <artifactId>juzu-builder</artifactId>
     </dependency>
 
   </dependencies>
@@ -60,56 +31,48 @@
     <plugins>
 
       <plugin>
-        <artifactId>maven-war-plugin</artifactId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.juzu</groupId>
+            <artifactId>juzu-builder</artifactId>
+            <version>0.5-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
         <configuration>
-          <webResources>
-            <resource>
-              <targetPath>WEB-INF/src</targetPath>
-              <directory>src/main/java</directory>
-              <excludes>
-                <exclude>org/sample/booking/portlet/HeaderFilter.java</exclude>
-              </excludes>
-            </resource>
-          </webResources>
+          <attach>true</attach>
         </configuration>
         <executions>
           <execution>
             <id>gatein</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
             <configuration>
               <classifier>gatein</classifier>
-              <webappDirectory>${project.build.directory}/gatein</webappDirectory>
-              <overlays>
-                <overlay>
-                  <groupId>org.juzu</groupId>
-                  <artifactId>juzu-overlay-gatein</artifactId>
-                </overlay>
-              </overlays>
+              <descriptorRefs>
+                <descriptorRef>gatein</descriptorRef>
+              </descriptorRefs>
             </configuration>
-            <goals>
-              <goal>war</goal>
-            </goals>
           </execution>
           <execution>
             <id>liferay</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
             <configuration>
               <classifier>liferay</classifier>
-              <webappDirectory>${project.build.directory}/liferay</webappDirectory>
-              <overlays>
-                <overlay>
-                  <groupId>org.juzu</groupId>
-                  <artifactId>juzu-overlay-liferay</artifactId>
-                  <excludes>
-                    <!-- Empty to have /META-INF/context.xml copied -->
-                  </excludes>
-                </overlay>
-              </overlays>
+              <descriptorRefs>
+                <descriptorRef>liferay</descriptorRef>
+              </descriptorRefs>
             </configuration>
-            <goals>
-              <goal>war</goal>
-            </goals>
           </execution>
         </executions>
+
       </plugin>
+
     </plugins>
   </build>
 

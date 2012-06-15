@@ -20,43 +20,8 @@
 
     <!-- Application dependencies-->
     <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
-      <scope>provided</scope>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
-      <version>2.5</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <scope>provided</scope>
-      <version>1</version>
-    </dependency>
-    <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
-      <scope>provided</scope>
-      <version>${pom.version}</version>
-    </dependency>
-
-    <!-- Dependencies for war overlay -->
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-overlay-gatein</artifactId>
-      <type>war</type>
-      <scope>provided</scope>
-      <version>${pom.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-overlay-liferay</artifactId>
-      <type>war</type>
-      <scope>provided</scope>
+      <artifactId>juzu-builder</artifactId>
       <version>${pom.version}</version>
     </dependency>
 
@@ -77,45 +42,36 @@
       </plugin>
 
       <plugin>
-        <artifactId>maven-war-plugin</artifactId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.3</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.juzu</groupId>
+            <artifactId>juzu-builder</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <attach>true</attach>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
         <executions>
           <execution>
-            <id>gatein</id>
-            <configuration>
-              <classifier>gatein</classifier>
-              <webappDirectory>\${project.build.directory}/gatein</webappDirectory>
-              <overlays>
-                <overlay>
-                  <groupId>juzu</groupId>
-                  <artifactId>juzu-overlay-gatein</artifactId>
-                </overlay>
-              </overlays>
-            </configuration>
+            <id>${target}</id>
             <goals>
-              <goal>war</goal>
+              <goal>single</goal>
             </goals>
-          </execution>
-          <execution>
-            <id>liferay</id>
+            <phase>package</phase>
             <configuration>
-              <classifier>liferay</classifier>
-              <webappDirectory>\${project.build.directory}/liferay</webappDirectory>
-              <overlays>
-                <overlay>
-                  <groupId>juzu</groupId>
-                  <artifactId>juzu-overlay-liferay</artifactId>
-                  <excludes>
-                    <!-- Empty to have /META-INF/context.xml copied -->
-                  </excludes>
-                </overlay>
-              </overlays>
+              <finalName>\${project.build.finalName}</finalName>
+              <descriptorRefs>
+                <descriptorRef>${target}</descriptorRef>
+              </descriptorRefs>
             </configuration>
-            <goals>
-              <goal>war</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
 

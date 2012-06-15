@@ -16,6 +16,28 @@
   <name>Juzu Plugins Aggregator</name>
   <description>The plugins aggregator</description>
 
+  <dependencies>
+
+    <!-- For testing -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-core</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
   <modules>
     <module>less</module>
   </modules>

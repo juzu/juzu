@@ -1,4 +1,15 @@
-<archetype-descriptor name=">juzu.archetype">
+<archetype-descriptor name="juzu.archetype">
+
+  <requiredProperties>
+    <requiredProperty key="target">
+      <defaultValue>gatein</defaultValue>
+    </requiredProperty>
+<!--
+    <requiredProperty key="server">
+      <defaultValue/>
+    </requiredProperty>
+-->
+  </requiredProperties>
 
   <fileSets>
     <fileSet filtered="true">

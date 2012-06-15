@@ -24,57 +24,51 @@
   <formats>
     <format>war</format>
   </formats>
+
   <includeBaseDirectory>false</includeBaseDirectory>
+
   <fileSets>
     <fileSet>
-      <directory>target/juzu-booking</directory>
-      <outputDirectory>/</outputDirectory>
-      <excludes>
-        <exclude>WEB-INF/lib/**</exclude>
-      </excludes>
+      <directory>${project.build.outputDirectory}</directory>
+      <outputDirectory>/WEB-INF/classes</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/main/resources</directory>
-      <outputDirectory>/META-INF</outputDirectory>
-      <includes>
-        <include>context.xml</include>
-      </includes>
+      <directory> ${project.build.sourceDirectory}</directory>
+      <outputDirectory>/WEB-INF/src</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/webapp</directory>
+      <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>
+
   <dependencySets>
+
     <dependencySet>
-      <includes>
-
-        <!-- -->
-        <include>org.juzu:*</include>
-
-        <!-- -->
-        <include>org.codehaus.groovy:groovy-all</include>
-
-        <!-- -->
-        <include>ch.qos.cal10n:cal10n-api</include>
-        <include>org.slf4j:slf4j-api</include>
-        <include>org.slf4j:slf4j-simple</include>
-        <include>org.slf4j:slf4j-ext</include>
-
-        <!-- -->
-        <include>javax.inject:javax.inject</include>
-
-        <!-- Spring -->
-        <include>org.springframework:*</include>
-        <include>commons-logging:commons-logging:*</include>
-
-        <!-- CDI -->
-        <include>javax.enterprise:cdi-api</include>
-        <include>org.jboss.spec.javax.interceptor:jboss-interceptors-api_1.1_spec</include>
-        <include>org.jboss.weld:*</include>
-        <include>org.jboss.interceptor:*</include>
-        <include>org.javassist:javassist</include>
-        <include>com.google.guava:guava</include>
-
-      </includes>
+      <excludes>
+        <exclude>javax.portlet:portlet-api</exclude>
+      </excludes>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>/WEB-INF/lib</outputDirectory>
     </dependencySet>
+
+    <dependencySet>
+      <includes>
+        <include>org.juzu:juzu-builder</include>
+      </includes>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <includes>
+          <include>context.xml</include>
+        </includes>
+      </unpackOptions>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>/META-INF</outputDirectory>
+    </dependencySet>
+
   </dependencySets>
+
 </assembly>

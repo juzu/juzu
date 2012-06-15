@@ -6,17 +6,10 @@ import juzu.impl.metadata.Descriptor;
 import juzu.impl.request.spi.portlet.PortletPreferencesProvider;
 import juzu.impl.utils.Tools;
 
-import javax.portlet.PortletPreferences;
 import java.util.Collections;
-import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletDescriptor extends Descriptor {
-
-  /** . */
-  private static List<BeanDescriptor> DESCRIPTORS = Collections.unmodifiableList(Tools.list(
-    new BeanDescriptor(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class))
-  );
 
   /** . */
   public static PortletDescriptor INSTANCE = new PortletDescriptor();
@@ -26,6 +19,13 @@ public class PortletDescriptor extends Descriptor {
 
   @Override
   public Iterable<BeanDescriptor> getBeans() {
-    return DESCRIPTORS;
+    try {
+      Class portletPreferencesClass = Thread.currentThread().getContextClassLoader().loadClass("javax.portlet.PortletPreferences");
+      return Tools.list(new BeanDescriptor(portletPreferencesClass, Scope.REQUEST, null, PortletPreferencesProvider.class));
+    }
+    catch (ClassNotFoundException e) {
+      // Not available
+      return Collections.emptyList();
+    }
   }
 }
