@@ -1,0 +1,10 @@
+<jboss-deployment-structure>
+  <deployment>
+    <exclusions>
+      <module name="org.slf4j"/>
+    </exclusions>
+    <dependencies>
+      <module name="org.slf4j" slot="gatein"/>
+    </dependencies>
+  </deployment>
+</jboss-deployment-structure>

@@ -53,4 +53,12 @@
       <outputDirectory>/WEB-INF/lib</outputDirectory>
     </dependencySet>
   </dependencySets>
+
+  <files>
+    <file>
+      <source>src/main/resources/jboss-deployment-structure.xml</source>
+      <outputDirectory>WEB-INF/</outputDirectory>
+    </file>
+  </files>
+
 </assembly>
