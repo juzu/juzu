@@ -1,0 +1,78 @@
+The portlet plugin enhance Juzu portlet applications.
+
+= Portlet class generation =
+
+A Juzu portlet application is managed by a ##JuzuPortlet## configured with the application name. The
+##@juzu.plugin.portlet.Portlet## annotation can be used to generate a subclass of the ##JuzuPortlet## that configures
+the application name for you, easing the configuration of the //portlet.xml// corresponding section.
+
+{{java}}
+@Portlet
+package my;
+{{/java}}
+
+{{xml}}
+<portlet>
+  <portlet-name>MyApplication</portlet-name>
+  <display-name xml:lang="EN">My Application</display-name>
+  <portlet-class>myapp.MyPortlet</portlet-class>
+  <supports>
+    <mime-type>text/html</mime-type>
+  </supports>
+  <portlet-info>
+    <title>My Application</title>
+  </portlet-info>
+</portlet>
+{{/xml}}
+
+The plugin will generate the portlet using the application name with the first letter capitalized and the //Portlet// suffix.
+In our example the //my// application generates the ##MyPortlet## class. If you don't like it you can change the name of the
+generated class in the application:
+
+{{java}}
+@Portlet(name "MyGreatPortlet")
+package my;
+{{/java}}
+
+{{xml}}
+<portlet>
+  <portlet-name>MyApplication</portlet-name>
+  <display-name xml:lang="EN">My Application</display-name>
+  <portlet-class>myapp.MyGreatPortlet</portlet-class>
+  <supports>
+    <mime-type>text/html</mime-type>
+  </supports>
+  <portlet-info>
+    <title>My Application</title>
+  </portlet-info>
+</portlet>
+{{/xml}}
+
+= Portlet preferences injection =
+
+During the various phase of an application, the current portlet preferences can be injected in a controller:
+
+{{example title="Injecting portlet preferences"}}
+{{java}}
+@Inject javax.portlet.PortletPreferences preferences;
+{{/java}}
+{{/example}}
+
+{{note}}
+The same restriction defined in the portlet specification applies to the provided preferences object: i.e saving preferences
+can only be performed during an action phase.
+{{/note}}
+
+= Building =
+
+Add the Portlet plugin jar to your compilation classpath.
+
+In Maven it can achieved by adding the Less plugin dependency to your POM:
+
+{{xml}}
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugins-portlet</artifactId>
+  <version>$[juzu.version]</version>
+</dependency>
+{{/xml}}

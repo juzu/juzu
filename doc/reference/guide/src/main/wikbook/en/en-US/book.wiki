@@ -38,3 +38,7 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 = Less plugin {{anchor id=plugins_less /}} =
 
 {{include document=plugins/less.wiki/}}
+
+= Portlet plugin {{anchor id=plugins_portlet /}} =
+
+{{include document=plugins/portlet.wiki/}}
