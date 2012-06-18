@@ -279,7 +279,7 @@ public abstract class Path implements Serializable, Iterable<String> {
 
   @Override
   public String toString() {
-    return "Path[absolute=" + isAbsolute() + ",fqn=" + fqn + ",extension" + ext + "]";
+    return "Path[absolute=" + isAbsolute() + ",fqn=" + fqn + ",extension=" + ext + "]";
   }
 
   public static class Absolute extends Path {
