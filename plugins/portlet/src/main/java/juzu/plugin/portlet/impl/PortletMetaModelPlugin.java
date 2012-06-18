@@ -33,7 +33,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final MessageCode CANNOT_WRITE_PORTLET_CLASS = new MessageCode("CANNOT_WRITE_PORTLET_CLASS", "The portlet class %1$s cannot be written");
 
   /** . */
-  private final HashMap<ElementHandle.Package, String> enabledMap = new HashMap<ElementHandle.Package, String>();
+  private final HashMap<ElementHandle.Package, String[]> enabledMap = new HashMap<ElementHandle.Package, String[]>();
 
   /** . */
   private HashSet<ElementHandle.Package> toEmit = new HashSet<ElementHandle.Package>();
@@ -51,7 +51,11 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {
     ElementHandle.Package pkg = application.getHandle();
     if (fqn.equals(Portlet.class.getName()) && ElementHandle.create(element).equals(pkg)) {
-      enabledMap.put(pkg, application.getBaseName());
+      String name = (String)data.get("name");
+      if (name == null) {
+        name = application.getBaseName() + "Portlet";
+      }
+      enabledMap.put(pkg, new String[]{name, application.getBaseName()});
       toEmit.add(pkg);
     }
     else {
@@ -68,8 +72,8 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void postProcessEvents(ApplicationMetaModel application) {
     // Do GC
     ElementHandle.Package pkg = application.getHandle();
-    String baseName = enabledMap.get(pkg);
-    if (baseName != null) {
+    String[] names = enabledMap.get(pkg);
+    if (names != null) {
       PackageElement pkgElt = application.model.env.get(pkg);
       AnnotationMirror am = Tools.getAnnotation(pkgElt, Portlet.class.getName());
       if (am == null) {
@@ -79,7 +83,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
       else {
         if (toEmit.contains(pkg)) {
           toEmit.remove(pkg);
-          emitPortlet(application.model.env, pkgElt, baseName);
+          emitPortlet(application.model.env, pkgElt, names);
         }
       }
     }
@@ -88,9 +92,9 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   private void emitPortlet(
     ProcessingContext env,
     PackageElement pkgElt,
-    String baseName) throws CompilationException {
+    String[] names) throws CompilationException {
     Writer writer = null;
-    FQN fqn = new FQN(pkgElt.getQualifiedName(), baseName + "Portlet");
+    FQN fqn = new FQN(pkgElt.getQualifiedName(), names[0]);
     try {
       JavaFileObject file = env.createSourceFile(fqn, pkgElt);
       writer = file.openWriter();
@@ -99,10 +103,10 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("package ").append(pkgElt.getQualifiedName()).append(";\n");
       writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
       writer.append("@Generated(value={})\n");
-      writer.append("public class ").append(baseName).append("Portlet extends ").append(JuzuPortlet.class.getName()).append(" {\n");
+      writer.append("public class ").append(names[0]).append(" extends ").append(JuzuPortlet.class.getName()).append(" {\n");
       writer.append("@Override\n");
       writer.append("protected String getApplicationName(javax.portlet.PortletConfig config) {\n");
-      writer.append("return \"").append(baseName).append("Application\";\n");
+      writer.append("return \"").append(names[1]).append("Application\";\n");
       writer.append("}\n");
       writer.append("}\n");
     }

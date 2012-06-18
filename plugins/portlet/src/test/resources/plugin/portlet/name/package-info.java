@@ -18,7 +18,7 @@
  */
 
 @Application
-@Portlet package plugin.portlet;
+@Portlet(name = "Foo") package plugin.portlet.name;
 
 import juzu.Application;
 import juzu.plugin.portlet.Portlet;

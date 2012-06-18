@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.portlet;
+package plugin.portlet.base;
 
 import juzu.View;
 
