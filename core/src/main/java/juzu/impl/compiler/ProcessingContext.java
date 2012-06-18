@@ -186,7 +186,11 @@ public class ProcessingContext implements Filer, Elements {
   /** . */
   private Map<ElementHandle<?>, ReadFileSystem<File>> sourcePathMap = new HashMap<ElementHandle<?>, ReadFileSystem<File>>();
 
-  private ReadFileSystem<File> getSourcePath(ElementHandle.Package context) {
+  private ReadFileSystem<File> getSourcePath(ElementHandle.Package context) throws IllegalArgumentException {
+    PackageElement element = context.get(env);
+    if (element == null) {
+      throw new IllegalArgumentException("Package element cannot be resolved " + context);
+    }
     if (sourcePath != null) {
       log.log("Found eclipse source path " + sourcePath + " for package " + context.getQN());
       return sourcePath;
@@ -195,7 +199,6 @@ public class ProcessingContext implements Filer, Elements {
       ReadFileSystem<File> sourcePath = sourcePathMap.get(context);
       if (sourcePath == null) {
         try {
-          PackageElement element = context.get(env);
           log.log("Trying to find a native file system for package " + context.getQN());
           List<? extends AnnotationMirror> annotations = element.getAnnotationMirrors();
           if (annotations.size() > 0) {
@@ -228,8 +231,8 @@ public class ProcessingContext implements Filer, Elements {
             log.log("Package " + context.getQN() + " is not annotated (does not make sense)");
           }
         }
-        catch (Exception ignore) {
-          log.log("Could not resolve package " + context);
+        catch (Exception e) {
+          log.log("Could not resolve package " + context, e);
         }
       }
       else {
@@ -239,37 +242,52 @@ public class ProcessingContext implements Filer, Elements {
     }
   }
 
-  public Content resolveResource(ElementHandle.Package context, Path.Absolute p) {
+  /**
+   * Resolve a resource from the provided context and path.
+   *
+   * @param context the context of the application that will help to resolve the path source code
+   * @param path the path of the resource to resolve
+   * @return the resolved resource or null if it cannot be determined
+   * @throws NullPointerException if any argument is null
+   * @throws IllegalArgumentException if the context package is not valid
+   */
+  public Content resolveResource(ElementHandle.Package context, Path.Absolute path) throws NullPointerException, IllegalArgumentException {
+    if (context == null) {
+      throw new NullPointerException("No null package accepted");
+    }
+    if (path == null) {
+      throw new NullPointerException("No null path accepted");
+    }
     ReadFileSystem<File> sourcePath = getSourcePath(context);
     if (sourcePath != null) {
-      log.log("Attempt to resolve " + p.getCanonical() + " from source path");
+      log.log("Attempt to resolve " + path.getCanonical() + " from source path");
       try {
         List<String> list = new ArrayList<String>();
-        Spliterator.split(p.getQN().getValue(), '.', list);
-        list.add(p.getName());
+        Spliterator.split(path.getQN().getValue(), '.', list);
+        list.add(path.getName());
         File f = sourcePath.getPath(list);
         if (f != null) {
-          log.log("Resolved " + p + " to " + f.getAbsolutePath());
+          log.log("Resolved " + path + " to " + f.getAbsolutePath());
           return sourcePath.getContent(f);
         }
         else {
-          log.log("Resolving " + p.getCanonical() + " from source path gave no result");
+          log.log("Resolving " + path.getCanonical() + " from source path gave no result");
         }
       }
       catch (IOException e) {
-        log.log("Could not resolve " + p.getCanonical() + " from source path", e);
+        log.log("Could not resolve " + path.getCanonical() + " from source path", e);
       }
     }
     else {
       for (StandardLocation location : RESOURCE_LOCATIONS) {
         try {
-          log.log("Attempt to resolve " + p.getCanonical() + " from " + location.getName());
-          FileObject resource = getResource(location, p);
+          log.log("Attempt to resolve " + path.getCanonical() + " from " + location.getName());
+          FileObject resource = getResource(location, path);
           byte[] bytes = Tools.bytes(resource.openInputStream());
           return new Content(resource.getLastModified(), bytes, Charset.defaultCharset());
         }
         catch (Exception e) {
-          log.log("Could not resolve resource " + p.getCanonical() + " from " + location.getName(), e);
+          log.log("Could not resolve resource " + path.getCanonical() + " from " + location.getName(), e);
         }
       }
     }
