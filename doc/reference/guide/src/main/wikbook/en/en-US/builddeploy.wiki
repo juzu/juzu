@@ -124,6 +124,27 @@ uses the packager described in the previous section.
 The Juzu distribution contains the Booking and Tutorial applications for GateIn and Liferay servers. They can be used
 as basis to create applications.
 
+== Using an IDE ==
+
+Juzu uses Annotation Processing Tool to perform many tasks at compilation time. APT is a standard extension of a Java compiler.
+All Java IDE (Eclipse, Intellij and Netbeans) provide good support for APT, we will show in the section how to configure
+and uses APT within those IDEs.
+
+IDEs provide also Maven support, we will focus in this section on using APT without the Maven support. Indeed the APT support
+may work differently when using Maven in your project, the Maven and APT support within IDEs has a dedicated section.
+
+=== Intellij support ===
+
+todo
+
+=== Eclipse support ===
+
+todo
+
+=== Netbeans support ===
+
+todo
+
 = Deploy =
 
 At the moment the supported (i.e tested) portal servers are
