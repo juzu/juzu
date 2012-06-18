@@ -78,6 +78,11 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
   }
 
   @Override
+  public void postActivate(MetaModel metaModel) {
+    annotations = new HashMap<ElementHandle.Package, AnnotationData>();
+  }
+
+  @Override
   public void prePassivate(MetaModel metaModel) {
     // First clear annotation map
     HashMap<ElementHandle.Package, AnnotationData> clone = annotations;
