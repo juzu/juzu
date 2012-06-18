@@ -1,0 +1,62 @@
+LESS is a dynamic stylesheet language which extends CSS with dynamic behavior such as variables, mixins, operations
+and functions. LESS is easy to learn thanks to the [[online documentation>>http://lesscss.org/]].
+
+Juzu provides a LESS plugin that takes care of compiling a LESS stylesheet into a CSS stylesheet which
+are then served by the Asset plugin. This chapter explains how to use LESS and combine it with the [[Asset plugin>>#assets]].
+
+= Usage =
+
+The LESS plugin operates at compilation time only because the only task he has to do is to transform a LESS
+source code into a CSS stylesheet. The runtime part is usually done by the Asset plugin.
+
+The ##@Less## annotation annotates a package containing an ##assets## package. This ##assets## package should contain
+ the LESS files to be compiled.
+
+{{example title="Annotating an application package for processing LESS files"}}
+{{java}}
+@Less("stylesheet.less")
+@Application
+package myapp;
+
+import juzu.plugin.less.Less;
+{{/java}}
+{{/example}}
+
+The //stylesheet.less// file will be located in the ##myapp.assets## package. The ##assets## child package of the
+annotated package should contain the stylesheet, this is done on purpose to coincide exactly with the
+##assets## package used by the Asset plugin. During the compilation phase the //stylesheet.less// will be compiled
+to the //stylesheet.css//. If we want this file to be served with the application we simply add the corresponding
+##@Asset## annotation:
+
+{{example title="LESS and Asset plugins in action"}}
+{{java}}
+@Less("stylesheet.less")
+@Assets(stylesheets = @Stylesheet(
+  src = "stylesheet.css",
+  location = AssetLocation.CLASSPATH)
+)
+@Application
+package myapp;
+
+import juzu.plugin.less.Less;
+import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Stylesheet;
+{{/java}}
+{{/example}}
+
+By default LESS will use a default formatting for the generated CSS. To achieve smaller CSS size, a //minify// option
+can be used, this option will trim the whitespace when processing the file : ##@Less(value = "stylesheet.less", minify = true)##.
+
+= Building =
+
+Add the Less plugin jar to your compilation classpath.
+
+In Maven it can achieved by adding the Less plugin dependency to your POM:
+
+{{xml}}
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugins-less</artifactId>
+  <version>$[juzu.version]</version>
+</dependency>
+{{/xml}}

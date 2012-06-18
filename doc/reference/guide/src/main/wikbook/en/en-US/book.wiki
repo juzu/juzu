@@ -35,4 +35,6 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 
 {{include document=assets.wiki/}}
 
+= Less plugin {{anchor id=plugins_less /}} =
 
+{{include document=plugins/less.wiki/}}
