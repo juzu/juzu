@@ -7,9 +7,9 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 
 {{include document=builddeploy.wiki/}}
 
-= Concepts {{anchor id=concepts /}} =
+= Request {{anchor id=request /}} =
 
-{{include document=concepts.wiki/}}
+{{include document=request.wiki/}}
 
 = Controllers {{anchor id=controllers /}} =
 

@@ -1,18 +1,8 @@
-In this chapter we will study important concepts used by Juzu:
+Applications are build to process request, this concept deserves an entire chapter that explains how Juzu process
+http request. Request life cycle is the most important concept to get right when developping a web application,
+whether it is a Juzu application or not.
 
- * Request life cycles: the various phases composing an application
- * anyting else ???
-
-= Request Life Cycle =
-
-Request life cycle is the most important concept to get right when developping a web application, whether it is
-a Juzu application or not.
-
-Juzu is born from the need of a great framework for building Portlet applications, therefore Juzu reuses the phase
- concepts defined by the Portlet specification. The various phases of a Portlet have a natural mapping on HTTP
- requests, it means that this abstraction can work very well with both a Portlet or standalone application.
-
-== Phases ==
+= Phases =
 
 Juzu request life cycle is composed of four phases, we will explain three of them in this chapter, the last one
 will be explained in another chapter of this guide.
@@ -25,7 +15,7 @@ During the execution of a phase, parameters are provided by Juzu to execute the 
 by the application itself, for instance when it creates a link. The scope of the parameters (i.e when the validity
 of the parameters) depends on the phase.
 
-=== View phase ===
+== View phase ==
 
 The view phase invokes the application for the purpose of creating markup. This phase is indempotent, it means that
 repeated invocation of the same phase with the same parameters should produce the same markup (supposing than the
@@ -36,7 +26,7 @@ you interact with an application to change its view parameters on each request a
 application on the same page: the view parameters will remain the same accross the invocation of the view phase of the
 application when the second application is used.
 
-=== Action phase ===
+== Action phase ==
 
 The action phase invokes the application for processing an action. During the invocation, action parameters are provided
 and their validity is limited to the current action phase being executed, after they will not be anymore available.
@@ -47,27 +37,27 @@ several times the same data in a database.
 Juzu does not expect markup returned during this phase, however it provides the opportunity to configure the view
 parameters of the next view phase.
 
-=== Resource phase ===
+== Resource phase ==
 
 The resource phase allows the application to produce a web resource such as an image or a full page. When this phase
 is invoked, a set of resources parameters are provided in the URL producing the resource.
 
-== Interactions ==
+= Interactions =
 
 Now that we have an overview of the phase, it is time to connect them and explain the interactions between the phases.
 
-[[image:images/concepts/phases.png||title="Interaction between phases" align="center" html:scale="70" fo:width="70mm]]
+[[image:images/request/phases.png||title="Interaction between phases" align="center" html:scale="70" fo:width="70mm]]
 
 1. An action phase is invoked by an URL produced during a view phase, this URL contains the action parameters
 1. After an action phase a view phase is executed and the view parameters are updated
 1. A resource phase is invoked by anURL produced during a view phase, this URL contains the resource parameters
 
-== Mapping onto HTTP ==
+= Mapping onto HTTP =
 
 As said before, phases and interactions have a natural mapping with the HTTP protocol. It is worthy to explain it because it will
  help you to understand fully the interations managed by Juzu.
 
-=== View phase ===
+== View phase ==
 
 View phases are mapped on //GET// requests:
 
@@ -77,11 +67,11 @@ View phases are mapped on //GET// requests:
 
 During a view phase, the application produces URL which can invoke any application phase.
 
-[[image:images/concepts/interaction1.png||title="View phase" align="center" html:scale="30" fo:width="30mm]]
+[[image:images/request/interaction1.png||title="View phase" align="center" html:scale="30" fo:width="30mm]]
 
 In this example the view phase produce markup parameterized by the ##color## parameter having the //red// value.
 
-=== Action phase ===
+== Action phase ==
 
 Action phase are created from view phase by processing a link that was found in the markup response. The action phase
 is mapped on //POST// requests:
@@ -90,13 +80,13 @@ is mapped on //POST// requests:
 * Action parameters are identified to form parameters
 * Action phase and POST requests should not be invoked more than one time
 
-[[image:images/concepts/interaction2.png||title="Action phase" align="center" html:scale="30" fo:width="30mm]]
+[[image:images/request/interaction2.png||title="Action phase" align="center" html:scale="30" fo:width="30mm]]
 
 Now let's update our example and suppose that the application returns markup with a form that invokes an action phase.
 When the user submits the form it triggers the action phase, which in returns updates the ##color## view parameter of the next
  view phase to the value //blue//.
 
-[[image:images/concepts/interaction3.png||title="View phase after action phase" align="center" html:scale="30" fo:width="30mm]]
+[[image:images/request/interaction3.png||title="View phase after action phase" align="center" html:scale="30" fo:width="30mm]]
 
 The HTTP redirection will update the browser to show the next view phase with the expected view parameters.
 
@@ -106,7 +96,7 @@ is over, the server redirects the browser (with an HTTP temporary redirection) t
  pattern and is often used to ensure that a POST request is not triggered several times when the refresh button of the
  browser is used.
 
-=== Resource phase ===
+== Resource phase ==
 
 Resource phases are trivially mapped on //GET// request pretty much like a view phase. The main difference is that
 the resource phase is responsible for managing the entire response instead of just a fragment of the response.
