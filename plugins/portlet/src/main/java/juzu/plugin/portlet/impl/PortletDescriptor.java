@@ -1,4 +1,4 @@
-package juzu.impl.plugin.portlet;
+package juzu.plugin.portlet.impl;
 
 import juzu.Scope;
 import juzu.impl.inject.BeanDescriptor;

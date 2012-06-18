@@ -1,4 +1,4 @@
-package juzu.impl.plugin.portlet;
+package juzu.plugin.portlet.impl;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;

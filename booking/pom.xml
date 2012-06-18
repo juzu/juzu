@@ -23,6 +23,10 @@
       <groupId>org.juzu</groupId>
       <artifactId>juzu-builder</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-portlet</artifactId>
+    </dependency>
 
   </dependencies>
 

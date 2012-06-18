@@ -1,4 +1,4 @@
-package juzu.impl.plugin;
+package juzu.plugin.portlet;
 
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;

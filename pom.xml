@@ -139,6 +139,18 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-portlet</artifactId>
+        <version>0.5-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-portlet</artifactId>
+        <classifier>source</classifier>
+        <version>0.5-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
         <artifactId>juzu-templating-mustache</artifactId>
         <version>0.5-SNAPSHOT</version>
       </dependency>

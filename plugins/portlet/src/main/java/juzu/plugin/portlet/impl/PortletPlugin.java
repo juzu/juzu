@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.portlet;
+package juzu.plugin.portlet.impl;
 
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
