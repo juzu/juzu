@@ -110,7 +110,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
         QN assetPkg = pkg.getQN().append("assets");
 
         //
-        CompilerLessContext clc = new CompilerLessContext(env, assetPkg);
+        CompilerLessContext clc = new CompilerLessContext(env, entry.getKey(), assetPkg);
 
         //
         for (String resource : resources) {

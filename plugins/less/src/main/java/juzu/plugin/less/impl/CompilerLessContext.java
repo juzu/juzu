@@ -14,25 +14,28 @@ class CompilerLessContext implements LessContext {
   final ProcessingContext processingContext;
 
   /** . */
+  final ElementHandle.Package context;
+
+  /** . */
   final QN pkg;
 
   /** . */
   final Path.Absolute pkgPath;
 
-  /** . */
-  final ElementHandle.Package pkgElt;
-
-  CompilerLessContext(ProcessingContext processingContext, QN pkg) {
+  CompilerLessContext(
+    ProcessingContext processingContext,
+    ElementHandle.Package context,
+    QN pkg ) {
     this.processingContext = processingContext;
+    this.context = context;
     this.pkg = pkg;
     this.pkgPath = Path.Absolute.create(pkg, "", "");
-    this.pkgElt = ElementHandle.Package.create(pkg);
   }
 
   public String load(String ref) {
     try {
       Path.Absolute path = pkgPath.append(ref);
-      Content c = processingContext.resolveResource(pkgElt, path);
+      Content c = processingContext.resolveResource(context, path);
       if (c != null) {
         return c.getCharSequence().toString();
       }
