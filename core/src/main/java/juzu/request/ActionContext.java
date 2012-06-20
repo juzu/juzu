@@ -51,7 +51,7 @@ public class ActionContext extends RequestContext {
 
   public Response.Update createResponse(ControllerMethod method) throws IllegalStateException {
     Response.Update update = new Response.Update();
-    update.setProperty(RequestContext.METHOD_ID, method.getId());
+    update.with(RequestContext.METHOD_ID, method.getId());
     return update;
   }
 

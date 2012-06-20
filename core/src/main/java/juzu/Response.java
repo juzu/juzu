@@ -120,7 +120,7 @@ public abstract class Response {
    * @param propertyValue the property value
    * @throws NullPointerException if the property type is null
    */
-  public <T> Response setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+  public <T> Response with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
     if (propertyType == null) {
       throw new NullPointerException("No null property type allowed");
     }
@@ -164,8 +164,8 @@ public abstract class Response {
     }
 
     @Override
-    public <T> Update setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Update)super.setProperty(propertyType, propertyValue);
+    public <T> Update with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (Update)super.with(propertyType, propertyValue);
     }
 
     @Override
@@ -203,8 +203,8 @@ public abstract class Response {
     }
 
     @Override
-    public <T> Redirect setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Redirect)super.setProperty(propertyType, propertyValue);
+    public <T> Redirect with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (Redirect)super.with(propertyType, propertyValue);
     }
 
     @Override
@@ -300,8 +300,8 @@ public abstract class Response {
     }
 
     @Override
-    public <T> Content setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Content)super.setProperty(propertyType, propertyValue);
+    public <T> Content with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (Content)super.with(propertyType, propertyValue);
     }
 
     /**
@@ -332,8 +332,8 @@ public abstract class Response {
     public static STYLESHEET STYLESHEET = new STYLESHEET();
 
     @Override
-    public <T> Render setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Render)super.setProperty(propertyType, propertyValue);
+    public <T> Render with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (Render)super.with(propertyType, propertyValue);
     }
 
     /** Stylesheet type literal. */

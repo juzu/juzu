@@ -59,7 +59,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
 
   public void assertRender(String expectedMethodId, Map<String, String> expectedArguments) {
     Response.Update resp = new Response.Update();
-    resp.setProperty(RequestContext.METHOD_ID, expectedMethodId);
+    resp.with(RequestContext.METHOD_ID, expectedMethodId);
     for (Map.Entry<String, String> entry : expectedArguments.entrySet()) {
       resp.setParameter(entry.getKey(), entry.getValue());
     }
