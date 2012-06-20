@@ -231,15 +231,11 @@ public abstract class Response {
     public static class MIME_TYPE extends PropertyType<String> {
     }
 
-    /** Mime type type literal. */
-    public static class STATUS extends PropertyType<Integer> {
-    }
-
-    /** Mime type literal instance. */
-    public static STATUS STATUS = new STATUS();
-
     /** Mime type literal instance. */
     public static MIME_TYPE MIME_TYPE = new MIME_TYPE();
+
+    /** . */
+    private int status;
 
     /** . */
     private final Class<S> kind;
@@ -247,28 +243,32 @@ public abstract class Response {
     /** . */
     private Streamable<S> streamable;
 
-    protected Content(Class<S> kind) {
+    protected Content(int status, Class<S> kind) {
+      this.status = status;
       this.kind = kind;
       this.streamable = null;
     }
 
-    protected Content(Class<S> kind, PropertyMap properties) {
+    protected Content(int status, Class<S> kind, PropertyMap properties) {
       super(properties);
 
       //
+      this.status = status;
       this.kind = kind;
       this.streamable = null;
     }
 
-    protected Content(Class<S> kind, Streamable<S> streamable) {
+    protected Content(int status, Class<S> kind, Streamable<S> streamable) {
+      this.status = status;
       this.kind = kind;
       this.streamable = streamable;
     }
 
-    protected Content(Class<S> kind, PropertyMap properties, Streamable<S> streamable) {
+    protected Content(int status, Class<S> kind, PropertyMap properties, Streamable<S> streamable) {
       super(properties);
 
       //
+      this.status = status;
       this.kind = kind;
       this.streamable = streamable;
     }
@@ -291,12 +291,7 @@ public abstract class Response {
     }
 
     public Integer getStatus() {
-      return properties.getValue(STATUS);
-    }
-
-    public Content<S> withStatus(int status) {
-      properties.setValue(STATUS, status);
-      return this;
+      return status;
     }
 
     @Override
@@ -344,15 +339,15 @@ public abstract class Response {
     public static TITLE TITLE = new TITLE();
 
     public Render() {
-      super(Stream.Char.class);
+      super(200, Stream.Char.class);
     }
 
     public Render(PropertyMap properties, Streamable<Stream.Char> streamable) {
-      super(Stream.Char.class, properties, streamable);
+      super(200, Stream.Char.class, properties, streamable);
     }
 
     public Render(Streamable<Stream.Char> streamable) {
-      super(Stream.Char.class, streamable);
+      super(200, Stream.Char.class, streamable);
     }
 
     public String getTitle() {
@@ -362,11 +357,6 @@ public abstract class Response {
     public Render withTitle(String title) {
       properties.setValue(TITLE, title);
       return this;
-    }
-
-    @Override
-    public Content<Stream.Char> withStatus(int status) throws UnsupportedOperationException {
-      throw new UnsupportedOperationException("Not possible");
     }
 
     public Iterable<Asset> getScripts() {
@@ -434,7 +424,7 @@ public abstract class Response {
   }
 
   public static Content<Stream.Char> content(int code, Streamable<Stream.Char> content) {
-    return new Content<Stream.Char>(Stream.Char.class, content).withStatus(code).withMimeType("text/html");
+    return new Content<Stream.Char>(code, Stream.Char.class, content).withMimeType("text/html");
   }
 
   public static Content<Stream.Binary> content(int code, InputStream content) {
@@ -442,6 +432,6 @@ public abstract class Response {
   }
 
   public static Content<Stream.Binary> content(int code, String mimeType, InputStream content) {
-    return new Content<Stream.Binary>(Stream.Binary.class, new Streamable.InputStream(content)).withStatus(code).withMimeType(mimeType);
+    return new Content<Stream.Binary>(code, Stream.Binary.class, new Streamable.InputStream(content)).withMimeType(mimeType);
   }
 }
