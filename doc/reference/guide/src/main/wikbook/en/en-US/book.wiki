@@ -11,6 +11,10 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 
 {{include document=request.wiki/}}
 
+= Responses {{anchor id=responses /}} =
+
+{{include document=responses.wiki/}}
+
 = Controllers {{anchor id=controllers /}} =
 
 {{include document=controllers.wiki/}}

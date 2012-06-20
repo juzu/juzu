@@ -1,0 +1,54 @@
+Each request produces a response object: a subclass of the ##juzu.Response## class.
+
+Response objects are returned by method processing requests, the class of the object determines the kind of response
+sent to the client. A response object may carry a additional objects such as assets (css or script).
+
+Response object are created thanks to the static factory methods of the ##juzu.Response## class. The ##Response##
+class is abstract and it has several subclasses that form a possible hierarchy of response adapted to the phase
+being processed.
+
+= Content responses =
+
+A //content// response is a markup or binary data, it can be created with the ##ok## static method:
+
+{{java}}
+  public static Response.Content<Stream.Char> ok(CharSequence content) { ... }
+{{/java}}
+
+It can be used during a //view// or //resource// phase to return markup:
+
+{{java}}
+@View
+public Response.Content index() {
+  return Response.ok("Hello World");
+}
+{{/java}}
+
+= Render response =
+
+A //render// response extends a //content// response, it specializes it for aggregated markup, i.e a response where the
+ application manages only one portion of the full page such as a portal:
+
+{{java}}
+@View
+public Response.Render index() {
+  return Response.render("Hello World").withTitle("The Hello");
+}
+{{/java}}
+
+= Update response =
+
+//Update// responses are returned during an //action// phase to configure the next //view// phase. Usually update responses are not
+created using static methods, instead they are created using controller companion static methods, this will be [[explained>>#controller_action_update]]
+in the controller chapter.
+
+= Redirect response =
+
+//Redirect// responses are returned during an //action// phase to redirect the user agent to an URL, its usage is simple:
+
+{{java}}
+@Action
+public Response.Redirect process() {
+  return Response.redirect("http://www.host.com/");
+}
+{{/java}}
