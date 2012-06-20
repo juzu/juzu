@@ -34,7 +34,7 @@ public class FailureFilter implements RequestFilter {
       request.invoke();
     }
     catch (ApplicationException e) {
-      request.setResponse(Response.content("pass"));
+      request.setResponse(Response.ok("pass"));
     }
   }
 }

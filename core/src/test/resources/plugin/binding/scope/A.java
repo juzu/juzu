@@ -39,10 +39,10 @@ public class A extends Controller {
   public Response.Content index() throws IOException {
     if (bean != null) {
       serial = bean.getSerial();
-      return Response.content(A_.doneURL().toString());
+      return Response.ok(A_.doneURL().toString());
     }
     else {
-      return Response.content("");
+      return Response.ok("");
     }
   }
 
@@ -50,14 +50,14 @@ public class A extends Controller {
   public Response.Content done() throws IOException {
     if (bean != null) {
       if (serial + 1 == bean.getSerial()) {
-        return Response.content("pass");
+        return Response.ok("pass");
       }
       else {
-        return Response.content("failure: was expecting to have" + serial + " + 1 == " + bean.getSerial());
+        return Response.ok("failure: was expecting to have" + serial + " + 1 == " + bean.getSerial());
       }
     }
     else {
-      return Response.content("failure");
+      return Response.ok("failure");
     }
   }
 }

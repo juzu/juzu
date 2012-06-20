@@ -29,6 +29,6 @@ public class A {
 
   @View
   public Response.Content index() throws IOException {
-    return Response.content("foo");
+    return Response.ok("foo");
   }
 }

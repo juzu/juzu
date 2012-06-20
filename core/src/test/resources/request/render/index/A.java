@@ -30,6 +30,6 @@ public class A extends Controller {
 
   @View
   public Response.Content index() throws IOException {
-    return Response.content("index");
+    return Response.ok("index");
   }
 }

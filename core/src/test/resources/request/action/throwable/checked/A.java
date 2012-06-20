@@ -40,6 +40,6 @@ public class A extends Controller {
 
   @View
   public Response.Content index() throws IOException {
-    return Response.content(A_.actionURL().toString());
+    return Response.ok(A_.actionURL().toString());
   }
 }

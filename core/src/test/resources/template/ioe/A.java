@@ -59,6 +59,6 @@ public class A extends Controller {
     catch (UndeclaredIOException expected) {
       ret = "pass";
     }
-    return Response.content(ret);
+    return Response.ok(ret);
   }
 }

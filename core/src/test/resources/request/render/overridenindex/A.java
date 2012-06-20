@@ -30,16 +30,16 @@ public class A extends Controller {
 
   @View
   public Response.Content index() throws IOException {
-    return Response.content("0[" + A_.indexURL("foo").toString() + "]");
+    return Response.ok("0[" + A_.indexURL("foo").toString() + "]");
   }
 
   @View
   public Response.Content index(String param) throws IOException {
     if (param != null) {
-      return Response.content("1[" + A_.indexURL(null).toString() + "]");
+      return Response.ok("1[" + A_.indexURL(null).toString() + "]");
     }
     else {
-      return Response.content("fail]");
+      return Response.ok("fail]");
     }
   }
 }

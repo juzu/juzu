@@ -50,12 +50,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mA(B foo) throws IOException {
-    return Response.content(foo.getA());
+    return Response.ok(foo.getA());
   }
 
   @View(id = "aAction")
   public Response.Content aAction() {
-    return Response.content(A_.mAActionURL(bean).toString());
+    return Response.ok(A_.mAActionURL(bean).toString());
   }
 
   @Action
@@ -73,12 +73,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mB(B foo) throws IOException {
-    return Response.content(Arrays.<String>asList((String[])foo.getB()).toString());
+    return Response.ok(Arrays.<String>asList((String[])foo.getB()).toString());
   }
 
   @View(id = "bAction")
   public Response.Content bAction() {
-    return Response.content(A_.mBActionURL(bean).toString());
+    return Response.ok(A_.mBActionURL(bean).toString());
   }
 
   @Action
@@ -96,12 +96,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mC(B foo) throws IOException {
-    return Response.content(foo.getC().toString());
+    return Response.ok(foo.getC().toString());
   }
 
   @View(id = "cAction")
   public Response.Content cAction() {
-    return Response.content(A_.mCActionURL(bean).toString());
+    return Response.ok(A_.mCActionURL(bean).toString());
   }
 
   @Action
@@ -119,12 +119,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mD(B foo) throws IOException {
-    return Response.content(foo.d);
+    return Response.ok(foo.d);
   }
 
   @View(id = "dAction")
   public Response.Content dAction() {
-    return Response.content(A_.mDActionURL(bean).toString());
+    return Response.ok(A_.mDActionURL(bean).toString());
   }
 
   @Action
@@ -142,12 +142,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mE(B foo) throws IOException {
-    return Response.content(Arrays.<String>asList((String[])foo.e).toString());
+    return Response.ok(Arrays.<String>asList((String[])foo.e).toString());
   }
 
   @View(id = "eAction")
   public Response.Content eAction() {
-    return Response.content(A_.mEActionURL(bean).toString());
+    return Response.ok(A_.mEActionURL(bean).toString());
   }
 
   @Action
@@ -165,12 +165,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mF(B foo) throws IOException {
-    return Response.content(foo.f.toString());
+    return Response.ok(foo.f.toString());
   }
 
   @View(id = "fAction")
   public Response.Content fAction() {
-    return Response.content(A_.mFActionURL(bean).toString());
+    return Response.ok(A_.mFActionURL(bean).toString());
   }
 
   @Action
@@ -188,12 +188,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mG(String s, B foo) throws IOException {
-    return Response.content(s + foo.getA());
+    return Response.ok(s + foo.getA());
   }
 
   @View(id = "gAction")
   public Response.Content gAction() {
-    return Response.content(A_.mGActionURL("s_value", bean).toString());
+    return Response.ok(A_.mGActionURL("s_value", bean).toString());
   }
 
   @Action
@@ -211,12 +211,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mH(String a, B foo) throws IOException {
-    return Response.content(a + foo.getA());
+    return Response.ok(a + foo.getA());
   }
 
   @View(id = "hAction")
   public Response.Content hAction() {
-    return Response.content(A_.mHActionURL("s_value", bean).toString());
+    return Response.ok(A_.mHActionURL("s_value", bean).toString());
   }
 
   @Action
@@ -234,12 +234,12 @@ public class A extends Controller {
 
   @View
   public Response.Content mI(String d, B foo) throws IOException {
-    return Response.content(d + foo.d);
+    return Response.ok(d + foo.d);
   }
 
   @View(id = "iAction")
   public Response.Content iAction() {
-    return Response.content(A_.mIActionURL("s_value", bean).toString());
+    return Response.ok(A_.mIActionURL("s_value", bean).toString());
   }
 
   @Action

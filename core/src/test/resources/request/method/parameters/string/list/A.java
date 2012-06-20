@@ -33,26 +33,26 @@ public class A extends Controller {
 
   @View(id = "none")
   public Response.Content none() throws IOException {
-    return Response.content(A_.mvURL(null).toString());
+    return Response.ok(A_.mvURL(null).toString());
   }
 
   @View(id = "0")
   public Response.Content zero() throws IOException {
-    return Response.content(A_.mvURL(Collections.emptyList()).toString());
+    return Response.ok(A_.mvURL(Collections.emptyList()).toString());
   }
 
   @View(id = "1")
   public Response.Content one() throws IOException {
-    return Response.content(A_.mvURL(Arrays.asList("bar")).toString());
+    return Response.ok(A_.mvURL(Arrays.asList("bar")).toString());
   }
 
   @View(id = "2")
   public Response.Content two() throws IOException {
-    return Response.content(A_.mvURL(Arrays.asList("bar_1", "bar_2")).toString());
+    return Response.ok(A_.mvURL(Arrays.asList("bar_1", "bar_2")).toString());
   }
 
   @View
   public Response.Content mv(List<String> foo) throws IOException {
-    return Response.content(foo != null ? foo.toString() : "");
+    return Response.ok(foo != null ? foo.toString() : "");
   }
 }

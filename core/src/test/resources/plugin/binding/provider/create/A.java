@@ -34,6 +34,6 @@ public class A extends Controller {
 
   @View
   public Response.Content index() throws IOException {
-    return Response.content(service != null ? "pass" : "");
+    return Response.ok(service != null ? "pass" : "");
   }
 }

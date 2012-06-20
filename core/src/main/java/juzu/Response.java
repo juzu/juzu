@@ -64,7 +64,7 @@ import java.util.Map;
  * work well for the two phases. However the {@link juzu.request.Phase#RENDER} can specify an optional title and the
  * {@link juzu.request.Phase#RESOURCE} can specify an optional status code for the user agent response.</p> <p/>
  * <p>Responses are created using the {@link Response} factory methods such as</p> <p/> <ul> <li>{@link
- * Response#content} creates an ok response</li> <li>{@link Response#notFound} creates a not found response</li> </ul>
+ * Response#ok} creates an ok response</li> <li>{@link Response#notFound} creates a not found response</li> </ul>
  * <p/> <p>Response can also created from {@link juzu.template.Template} directly:</p> <p/>
  * <code><pre>
  *    public class MyController {
@@ -403,10 +403,6 @@ public abstract class Response {
 
   public static Response.Redirect redirect(String location) {
     return new Response.Redirect(location);
-  }
-
-  public static Content<Stream.Char> content(CharSequence content) {
-    return new Content<Stream.Char>(Stream.Char.class, new Streamable.CharSequence(content));
   }
 
   public static Render render(CharSequence content) {

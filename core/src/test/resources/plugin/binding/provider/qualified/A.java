@@ -63,6 +63,6 @@ public class A {
         resp = "failed: wrong foo name " + name;
       }
     }
-    return Response.content(resp);
+    return Response.ok(resp);
   }
 }

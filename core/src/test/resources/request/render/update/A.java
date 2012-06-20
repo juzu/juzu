@@ -36,11 +36,11 @@ public class A extends Controller {
 
   @View
   public Response.Content index() throws IOException {
-    return Response.content(A_.processURL().toString());
+    return Response.ok(A_.processURL().toString());
   }
 
   @View
   public Response.Content done() throws IOException {
-    return Response.content("done");
+    return Response.ok("done");
   }
 }
