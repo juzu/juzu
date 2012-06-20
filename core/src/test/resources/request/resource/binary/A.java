@@ -35,7 +35,7 @@ public class A extends Controller {
   }
 
   @Resource
-  public Response.Content.Resource resource() throws AuthenticationException {
+  public Response.Content resource() throws AuthenticationException {
     return Response.ok("application/octet-stream", new ByteArrayInputStream("hello".getBytes()));
   }
 

@@ -35,8 +35,8 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
 
   @Override
   public void end(Response response) throws IllegalStateException, IOException {
-    if (response instanceof Response.Content.Resource) {
-      Response.Content.Resource resource = (Response.Content.Resource)response;
+    if (response instanceof Response.Content) {
+      Response.Content resource = (Response.Content)response;
       int status = resource.getStatus();
       if (status != 200) {
         this.resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));

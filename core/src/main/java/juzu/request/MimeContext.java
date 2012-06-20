@@ -78,7 +78,7 @@ public abstract class MimeContext extends RequestContext {
       response = Response.render(((Response.Content.Render)response).getTitle(), buffer.toString());
     }
     else {
-      response = Response.status(((Response.Content.Resource)response).getStatus(), buffer.toString());
+      response = Response.status(response.getStatus(), buffer.toString());
     }
 
     //

@@ -34,7 +34,7 @@ public class A extends Controller {
   }
 
   @Resource
-  public Response.Content.Resource resource() throws AuthenticationException {
+  public Response.Content resource() throws AuthenticationException {
     return Response.notFound("not_found");
   }
 

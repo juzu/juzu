@@ -79,7 +79,7 @@ import java.util.Map;
  *       &#064;Inject &#064;Path("error.gtmpl")  {@link juzu.template.Template} error;
  * <p/>
  *       &#064;Resource
- *       public {@link juzu.Response.Resource} myView() {
+ *       public {@link juzu.Response.Content} myView() {
  *          return error.notFound();
  *       }
  *    }
@@ -231,6 +231,13 @@ public abstract class Response {
     public static class MIME_TYPE extends PropertyType<String> {
     }
 
+    /** Mime type type literal. */
+    public static class STATUS extends PropertyType<Integer> {
+    }
+
+    /** Mime type literal instance. */
+    public static STATUS STATUS = new STATUS();
+
     /** Mime type literal instance. */
     public static MIME_TYPE MIME_TYPE = new MIME_TYPE();
 
@@ -280,6 +287,15 @@ public abstract class Response {
 
     public Content<S> withMimeType(String mimeType) {
       properties.setValue(MIME_TYPE, mimeType);
+      return this;
+    }
+
+    public Integer getStatus() {
+      return properties.getValue(STATUS);
+    }
+
+    public Content<S> withStatus(int status) {
+      properties.setValue(STATUS, status);
       return this;
     }
 
@@ -348,6 +364,11 @@ public abstract class Response {
       return this;
     }
 
+    @Override
+    public Content<Stream.Char> withStatus(int status) throws UnsupportedOperationException {
+      throw new UnsupportedOperationException("Not possible");
+    }
+
     public Iterable<Asset> getScripts() {
       Iterable<Asset> scripts = properties.getValues(SCRIPT);
       return scripts != null ? scripts : Tools.<Asset>emptyIterable();
@@ -380,48 +401,6 @@ public abstract class Response {
     }
   }
 
-  public static class Resource<S extends Stream> extends Content<S> {
-
-    /** Mime type type literal. */
-    public static class STATUS extends PropertyType<Integer> {
-    }
-
-    /** Mime type literal instance. */
-    public static STATUS STATUS = new STATUS();
-
-    public Resource(Class<S> kind) {
-      super(kind);
-    }
-
-    public Resource(Class<S> kind, Streamable<S> streamable) {
-      super(kind, streamable);
-    }
-
-    public Integer getStatus() {
-      return properties.getValue(STATUS);
-    }
-
-    public Resource<S> withStatus(int status) {
-      properties.setValue(STATUS, status);
-      return this;
-    }
-
-    @Override
-    public Resource<S> withMimeType(String mimeType) {
-      return (Resource<S>)super.withMimeType(mimeType);
-    }
-
-    @Override
-    public <T> Resource<S> setProperty(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Resource<S>)super.setProperty(propertyType, propertyValue);
-    }
-
-    @Override
-    public String toString() {
-      return "Response.Resource[]";
-    }
-  }
-
   public static Response.Redirect redirect(String location) {
     return new Response.Redirect(location);
   }
@@ -438,47 +417,35 @@ public abstract class Response {
     return new Render(new Streamable.CharSequence(content)).withTitle(title);
   }
 
-  public static Resource<?> ok() {
-    return ok((String)null);
-  }
-
-  public static Resource<Stream.Char> ok(CharSequence content) {
+  public static Content<Stream.Char> ok(CharSequence content) {
     return status(200, content);
   }
 
-  public static Resource<Stream.Binary> ok(String mimeType, InputStream content) {
+  public static Content<Stream.Binary> ok(String mimeType, InputStream content) {
     return status(200, mimeType, content);
   }
 
-  public static Resource<Stream.Binary> ok(InputStream content) {
+  public static Content<Stream.Binary> ok(InputStream content) {
     return ok(null, content);
   }
 
-  public static Resource<?> notFound() {
-    return notFound(null);
-  }
-
-  public static Resource<Stream.Char> notFound(CharSequence content) {
+  public static Content<Stream.Char> notFound(CharSequence content) {
     return status(404, content);
   }
 
-  public static Resource<?> status(int code) {
-    return status(code, (String)null);
-  }
-
-  public static Resource<Stream.Char> status(int code, CharSequence content) {
+  public static Content<Stream.Char> status(int code, CharSequence content) {
     return status(code, new Streamable.CharSequence(content));
   }
 
-  public static Resource<Stream.Char> status(int code, Streamable<Stream.Char> content) {
-    return new Resource<Stream.Char>(Stream.Char.class, content).withStatus(code).withMimeType("text/html");
+  public static Content<Stream.Char> status(int code, Streamable<Stream.Char> content) {
+    return new Content<Stream.Char>(Stream.Char.class, content).withStatus(code).withMimeType("text/html");
   }
 
-  public static Resource<Stream.Binary> status(int code, InputStream content) {
+  public static Content<Stream.Binary> status(int code, InputStream content) {
     return status(code, null, content);
   }
 
-  public static Resource<Stream.Binary> status(int code, String mimeType, InputStream content) {
-    return new Resource<Stream.Binary>(Stream.Binary.class, new Streamable.InputStream(content)).withStatus(code).withMimeType(mimeType);
+  public static Content<Stream.Binary> status(int code, String mimeType, InputStream content) {
+    return new Content<Stream.Binary>(Stream.Binary.class, new Streamable.InputStream(content)).withStatus(code).withMimeType(mimeType);
   }
 }

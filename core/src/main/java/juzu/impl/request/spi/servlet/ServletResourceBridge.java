@@ -49,12 +49,9 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
       Response.Content content = (Response.Content)response;
 
       //
-      if (content instanceof Response.Content.Resource) {
-        Response.Content.Resource resource = (Response.Content.Resource)content;
-        int status = resource.getStatus();
-        if (status != 200) {
-          resp.setStatus(status);
-        }
+      int status = content.getStatus();
+      if (status != 200) {
+        resp.setStatus(status);
       }
 
       // Set mime type
@@ -67,7 +64,7 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
       if (content.getKind() == Stream.Char.class) {
         PrintWriter writer = resp.getWriter();
         try {
-          ((Response.Resource)response).send(new AppendableStream(writer));
+          content.send(new AppendableStream(writer));
         }
         finally {
           Tools.safeClose(writer);
@@ -76,7 +73,7 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
       else {
         OutputStream out = resp.getOutputStream();
         try {
-          ((Response.Resource)response).send(new BinaryOutputStream(out));
+          content.send(new BinaryOutputStream(out));
         }
         finally {
           Tools.safeClose(out);

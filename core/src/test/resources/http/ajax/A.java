@@ -51,7 +51,7 @@ public class A extends Controller {
   }
 
   @Resource
-  public Response.Content.Resource resource() {
+  public Response.Content resource() {
     return Response.ok("bar");
   }
 }

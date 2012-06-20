@@ -53,9 +53,9 @@ public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
     super.end(response);
 
     //
-    if (response instanceof Response.Content.Resource) {
-      Response.Content.Resource resource = (Response.Content.Resource)response;
-      status = resource.getStatus();
+    if (response instanceof Response.Content) {
+      Response.Content content = (Response.Content)response;
+      status = content.getStatus();
     }
     else {
       status = 200;

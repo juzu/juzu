@@ -158,7 +158,7 @@ public abstract class Template {
    *
    * @return the ok resource response
    */
-  public final Response.Content.Resource ok() {
+  public final Response.Content ok() {
     return ok(null, null);
   }
 
@@ -168,7 +168,7 @@ public abstract class Template {
    * @param locale     the locale
    * @return the ok resource response
    */
-  public final Response.Content.Resource ok(Locale locale) {
+  public final Response.Content ok(Locale locale) {
     return ok(null, locale);
   }
 
@@ -178,7 +178,7 @@ public abstract class Template {
    * @param parameters the parameters
    * @return the ok resource response
    */
-  public final Response.Content.Resource ok(Map<String, ?> parameters) {
+  public final Response.Content ok(Map<String, ?> parameters) {
     return ok(parameters, null);
   }
 
@@ -189,7 +189,7 @@ public abstract class Template {
    * @param locale     the locale
    * @return the ok resource response
    */
-  public final Response.Content.Resource<Stream.Char> ok(Map<String, ?> parameters, Locale locale) {
+  public final Response.Content<Stream.Char> ok(Map<String, ?> parameters, Locale locale) {
     StringBuilder sb = new StringBuilder();
     renderTo(new AppendableStream(sb), parameters, locale);
     return Response.ok(sb.toString());
@@ -200,7 +200,7 @@ public abstract class Template {
    *
    * @return the not found resource response
    */
-  public final Response.Content.Resource notFound() {
+  public final Response.Content notFound() {
     return notFound(null, null);
   }
 
@@ -210,7 +210,7 @@ public abstract class Template {
    * @param locale     the locale
    * @return the not found resource response
    */
-  public final Response.Content.Resource notFound(Locale locale) {
+  public final Response.Content notFound(Locale locale) {
     return notFound(null, locale);
   }
 
@@ -220,7 +220,7 @@ public abstract class Template {
    * @param parameters the parameters
    * @return the not found resource response
    */
-  public final Response.Content.Resource notFound(Map<String, ?> parameters) {
+  public final Response.Content notFound(Map<String, ?> parameters) {
     return notFound(parameters, null);
   }
 
@@ -231,7 +231,7 @@ public abstract class Template {
    * @param locale     the locale
    * @return the not found resource response
    */
-  public final Response.Content.Resource<Stream.Char> notFound(Map<String, ?> parameters, Locale locale) {
+  public final Response.Content<Stream.Char> notFound(Map<String, ?> parameters, Locale locale) {
     StringBuilder sb = new StringBuilder();
     renderTo(new AppendableStream(sb), parameters, locale);
     return Response.status(404, sb.toString());
@@ -426,7 +426,7 @@ public abstract class Template {
      *
      * @return the ok resource response
      */
-    public final Response.Content.Resource ok() {
+    public final Response.Content ok() {
       return Template.this.ok(parameters, locale);
     }
 
@@ -435,7 +435,7 @@ public abstract class Template {
      *
      * @return the not found resource response
      */
-    public final Response.Content.Resource notFound() {
+    public final Response.Content notFound() {
       return Template.this.notFound(parameters, locale);
     }
 
