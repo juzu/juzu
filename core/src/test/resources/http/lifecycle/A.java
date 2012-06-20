@@ -49,6 +49,6 @@ public class A {
 
   @Resource
   public Response.Content resource() {
-    return Response.status(200, "<html><body>done</body></html>");
+    return Response.content(200, "<html><body>done</body></html>");
   }
 }

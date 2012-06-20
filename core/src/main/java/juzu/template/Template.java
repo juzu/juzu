@@ -234,7 +234,7 @@ public abstract class Template {
   public final Response.Content<Stream.Char> notFound(Map<String, ?> parameters, Locale locale) {
     StringBuilder sb = new StringBuilder();
     renderTo(new AppendableStream(sb), parameters, locale);
-    return Response.status(404, sb.toString());
+    return Response.content(404, sb.toString());
   }
 
   /**

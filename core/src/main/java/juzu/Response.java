@@ -418,11 +418,11 @@ public abstract class Response {
   }
 
   public static Content<Stream.Char> ok(CharSequence content) {
-    return status(200, content);
+    return content(200, content);
   }
 
   public static Content<Stream.Binary> ok(String mimeType, InputStream content) {
-    return status(200, mimeType, content);
+    return content(200, mimeType, content);
   }
 
   public static Content<Stream.Binary> ok(InputStream content) {
@@ -430,22 +430,22 @@ public abstract class Response {
   }
 
   public static Content<Stream.Char> notFound(CharSequence content) {
-    return status(404, content);
+    return content(404, content);
   }
 
-  public static Content<Stream.Char> status(int code, CharSequence content) {
-    return status(code, new Streamable.CharSequence(content));
+  public static Content<Stream.Char> content(int code, CharSequence content) {
+    return content(code, new Streamable.CharSequence(content));
   }
 
-  public static Content<Stream.Char> status(int code, Streamable<Stream.Char> content) {
+  public static Content<Stream.Char> content(int code, Streamable<Stream.Char> content) {
     return new Content<Stream.Char>(Stream.Char.class, content).withStatus(code).withMimeType("text/html");
   }
 
-  public static Content<Stream.Binary> status(int code, InputStream content) {
-    return status(code, null, content);
+  public static Content<Stream.Binary> content(int code, InputStream content) {
+    return content(code, null, content);
   }
 
-  public static Content<Stream.Binary> status(int code, String mimeType, InputStream content) {
+  public static Content<Stream.Binary> content(int code, String mimeType, InputStream content) {
     return new Content<Stream.Binary>(Stream.Binary.class, new Streamable.InputStream(content)).withStatus(code).withMimeType(mimeType);
   }
 }

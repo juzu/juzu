@@ -82,12 +82,12 @@ public class A extends Controller {
   @Ajax
   @Resource
   public Response.Content resource() {
-    return Response.status(200, "OK MEN");
+    return Response.content(200, "OK MEN");
   }
 
   @Ajax
   @Resource
   public Response.Content resource2() {
-    return Response.status(200, "OK MEN 2");
+    return Response.content(200, "OK MEN 2");
   }
 }
