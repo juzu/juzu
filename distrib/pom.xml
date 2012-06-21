@@ -63,7 +63,7 @@
     <!-- Doc -->
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
+      <artifactId>juzu-doc-api</artifactId>
       <classifier>javadoc</classifier>
     </dependency>
 

@@ -51,7 +51,7 @@
 
     <dependencySet>
       <includes>
-        <include>org.juzu:juzu-core:jar:javadoc</include>
+        <include>org.juzu:juzu-doc-api:jar:javadoc</include>
       </includes>
       <unpack>true</unpack>
       <outputDirectory>/api/</outputDirectory>

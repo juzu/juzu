@@ -71,7 +71,7 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
-        <classifier>source</classifier>
+        <classifier>sources</classifier>
         <version>0.5-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -107,7 +107,7 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
-        <classifier>source</classifier>
+        <classifier>sources</classifier>
         <version>0.5-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -133,7 +133,7 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less</artifactId>
-        <classifier>source</classifier>
+        <classifier>sources</classifier>
         <version>0.5-SNAPSHOT</version>
       </dependency>
 
@@ -145,7 +145,7 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-portlet</artifactId>
-        <classifier>source</classifier>
+        <classifier>sources</classifier>
         <version>0.5-SNAPSHOT</version>
       </dependency>
 
@@ -157,7 +157,7 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-templating-mustache</artifactId>
-        <classifier>source</classifier>
+        <classifier>sources</classifier>
         <version>0.5-SNAPSHOT</version>
       </dependency>
 
@@ -211,6 +211,13 @@
         <groupId>org.juzu</groupId>
         <artifactId>juzu-reference-guide</artifactId>
         <type>pdf</type>
+        <version>0.5-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-doc-api</artifactId>
+        <classifier>javadoc</classifier>
         <version>0.5-SNAPSHOT</version>
       </dependency>
 

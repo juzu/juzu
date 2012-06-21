@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.juzu</groupId>
+    <artifactId>juzu-doc-parent</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-doc-api</artifactId>
+  <version>0.5-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Juzu API documentation</name>
+  <description>The API documentation</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-core</artifactId>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-portlet</artifactId>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-less</artifactId>
+      <classifier>sources</classifier>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <includeGroupIds>org.juzu</includeGroupIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <show>public</show>
+              <quiet>true</quiet>
+              <maxmemory>512M</maxmemory>
+              <sourcepath>${project.build.directory}/dependency</sourcepath>
+              <excludePackageNames>juzu.impl:juzu.plugin.portlet.impl:juzu.plugin.less.impl</excludePackageNames>
+              <links>
+                <link>http://atinject.googlecode.com/svn/trunk/javadoc/</link>
+                <link>http://docs.oracle.com/javaee/6/api/</link>
+                <link>http://www.bluesunrise.com/portlet-api/</link>
+              </links>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

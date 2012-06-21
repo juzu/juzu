@@ -19,6 +19,7 @@
   <modules>
     <module>tutorial</module>
     <module>reference</module>
+    <module>api</module>
   </modules>
 
 </project>
