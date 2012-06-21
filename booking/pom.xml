@@ -40,7 +40,7 @@
           <dependency>
             <groupId>org.juzu</groupId>
             <artifactId>juzu-builder</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <version>${project.version}</version>
           </dependency>
         </dependencies>
         <configuration>
