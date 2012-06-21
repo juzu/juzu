@@ -73,4 +73,12 @@
     </dependencySet>
 
   </dependencySets>
+
+  <files>
+    <file>
+      <source>${basedir}/../README.md</source>
+      <destName>README.txt</destName>
+    </file>
+  </files>
+
 </assembly>
