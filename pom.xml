@@ -202,14 +202,14 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-reference-guide</artifactId>
+        <artifactId>juzu-doc-reference-guide</artifactId>
         <classifier>html</classifier>
         <type>zip</type>
         <version>0.5-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-reference-guide</artifactId>
+        <artifactId>juzu-doc-reference-guide</artifactId>
         <type>pdf</type>
         <version>0.5-SNAPSHOT</version>
       </dependency>

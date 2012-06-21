@@ -4,12 +4,12 @@
 
   <parent>
     <groupId>org.juzu</groupId>
-    <artifactId>juzu-reference-parent</artifactId>
+    <artifactId>juzu-doc-reference-parent</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
-  <artifactId>juzu-reference-guide</artifactId>
+  <artifactId>juzu-doc-reference-guide</artifactId>
   <version>0.5-SNAPSHOT</version>
 
   <name>Juzu Reference Guide</name>
