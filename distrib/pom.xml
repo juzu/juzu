@@ -60,11 +60,22 @@
       <type>pdf</type>
     </dependency>
 
-    <!-- Doc -->
+    <!-- Reference -->
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-doc-api</artifactId>
+      <artifactId>juzu-doc-reference-api</artifactId>
       <classifier>javadoc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-doc-reference-guide</artifactId>
+      <classifier>html</classifier>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-doc-reference-guide</artifactId>
+      <type>pdf</type>
     </dependency>
 
 

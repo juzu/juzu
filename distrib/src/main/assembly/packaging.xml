@@ -46,15 +46,30 @@
         <include>org.juzu:juzu-doc-tutorial-guide:pdf</include>
       </includes>
       <outputDirectory>/tutorial/</outputDirectory>
-      <outputFileNameMapping>tutorial.pdf</outputFileNameMapping>
+      <outputFileNameMapping>tutorial-guide.pdf</outputFileNameMapping>
     </dependencySet>
 
+    <!-- Reference -->
     <dependencySet>
       <includes>
-        <include>org.juzu:juzu-doc-api:jar:javadoc</include>
+        <include>org.juzu:juzu-doc-reference-guide:zip:html</include>
       </includes>
       <unpack>true</unpack>
-      <outputDirectory>/api/</outputDirectory>
+      <outputDirectory>/reference/html/</outputDirectory>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.juzu:juzu-doc-reference-guide:pdf</include>
+      </includes>
+      <outputDirectory>/reference/</outputDirectory>
+      <outputFileNameMapping>reference-guide.pdf</outputFileNameMapping>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>org.juzu:juzu-doc-reference-api:jar:javadoc</include>
+      </includes>
+      <unpack>true</unpack>
+      <outputDirectory>/reference/api</outputDirectory>
     </dependencySet>
 
   </dependencySets>

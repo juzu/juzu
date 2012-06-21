@@ -17,6 +17,7 @@
   <description>The reference aggregator</description>
 
   <modules>
+    <module>api</module>
     <module>guide</module>
   </modules>
 
