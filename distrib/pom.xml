@@ -33,30 +33,30 @@
     <!-- Tutorial -->
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-tutorial-examples</artifactId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
       <classifier>sources</classifier>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-tutorial-examples</artifactId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
       <type>war</type>
       <classifier>liferay</classifier>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-tutorial-examples</artifactId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
       <type>war</type>
       <classifier>gatein</classifier>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-tutorial-guide</artifactId>
+      <artifactId>juzu-doc-tutorial-guide</artifactId>
       <classifier>html</classifier>
       <type>zip</type>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-tutorial-guide</artifactId>
+      <artifactId>juzu-doc-tutorial-guide</artifactId>
       <type>pdf</type>
     </dependency>
 

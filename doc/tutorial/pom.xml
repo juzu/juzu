@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>org.juzu</groupId>
-  <artifactId>juzu-tutorial-parent</artifactId>
+  <artifactId>juzu-doc-tutorial-parent</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 

@@ -4,12 +4,12 @@
 
   <parent>
     <groupId>org.juzu</groupId>
-    <artifactId>juzu-tutorial-parent</artifactId>
+    <artifactId>juzu-doc-tutorial-parent</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
-  <artifactId>juzu-tutorial-guide</artifactId>
+  <artifactId>juzu-doc-tutorial-guide</artifactId>
   <version>0.5-SNAPSHOT</version>
 
   <name>Juzu Guide</name>
@@ -23,11 +23,11 @@
   <dependencies>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-tutorial-examples</artifactId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-tutorial-examples</artifactId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
       <classifier>sources</classifier>
     </dependency>
 

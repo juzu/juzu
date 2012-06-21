@@ -163,39 +163,39 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-tutorial-examples</artifactId>
+        <artifactId>juzu-doc-tutorial-examples</artifactId>
         <version>0.5-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-tutorial-examples</artifactId>
+        <artifactId>juzu-doc-tutorial-examples</artifactId>
         <version>0.5-SNAPSHOT</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-tutorial-examples</artifactId>
+        <artifactId>juzu-doc-tutorial-examples</artifactId>
         <classifier>gatein</classifier>
         <type>war</type>
         <version>0.5-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-tutorial-examples</artifactId>
+        <artifactId>juzu-doc-tutorial-examples</artifactId>
         <type>war</type>
         <classifier>liferay</classifier>
         <version>0.5-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-tutorial-guide</artifactId>
+        <artifactId>juzu-doc-tutorial-guide</artifactId>
         <classifier>html</classifier>
         <type>zip</type>
         <version>0.5-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-tutorial-guide</artifactId>
+        <artifactId>juzu-doc-tutorial-guide</artifactId>
         <type>pdf</type>
         <version>0.5-SNAPSHOT</version>
       </dependency>
