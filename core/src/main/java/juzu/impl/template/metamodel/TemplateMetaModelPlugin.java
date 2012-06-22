@@ -50,7 +50,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postActivateApplicationsMetaModel(ApplicationsMetaModel applications) {
     // Discover the template providers
-    ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, TemplateProvider.class.getClassLoader());
+    Iterable<TemplateProvider> loader = applications.model.env.loadServices(TemplateProvider.class);
     Map<String, TemplateProvider> providers = new HashMap<String, TemplateProvider>();
     for (TemplateProvider provider : loader) {
       providers.put(provider.getSourceExtension(), provider);

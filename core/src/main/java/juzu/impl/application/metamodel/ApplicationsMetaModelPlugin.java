@@ -6,43 +6,22 @@ import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelPlugin;
 import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
 
   /** . */
-  private final LinkedHashMap<String, ApplicationMetaModelPlugin> plugins;
-
-  /** . */
-  private final HashSet<Class<? extends Annotation>> annotationTypes;
+  private HashSet<Class<? extends Annotation>> annotationTypes;
 
   public ApplicationsMetaModelPlugin() {
     super("applications");
-
-    //
-    HashSet<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
-    annotationTypes.add(Application.class);
-    LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
-    StringBuilder msg = new StringBuilder("Using plugins:");
-    for (ApplicationMetaModelPlugin plugin : Tools.list(ServiceLoader.load(ApplicationMetaModelPlugin.class, ApplicationMetaModelPlugin.class.getClassLoader()))) {
-      annotationTypes.addAll(plugin.getAnnotationTypes());
-      msg.append(" ").append(plugin.getName());
-      plugins.put(plugin.getName(), plugin);
-    }
-    MetaModel.log.log(msg);
-
-    //
-    this.plugins = plugins;
-    this.annotationTypes = annotationTypes;
   }
 
   @Override
@@ -57,15 +36,39 @@ public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
 
   @Override
   public void init(MetaModel metaModel) {
+    // Discover plugins
+    LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
+    StringBuilder msg = new StringBuilder("Using application plugins:");
+    for (ApplicationMetaModelPlugin plugin : metaModel.env.loadServices(ApplicationMetaModelPlugin.class)) {
+      msg.append(" ").append(plugin.getName());
+      plugins.put(plugin.getName(), plugin);
+    }
+    MetaModel.log.log(msg);
+
+    // We are interested by the Application annotation
+    HashSet<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
+    annotationTypes.add(Application.class);
+
+    // Add the plugin annotations
+    for (ApplicationMetaModelPlugin plugin : plugins.values()) {
+      Set<Class<? extends Annotation>> processed = plugin.getAnnotationTypes();
+      MetaModel.log.log("Application plugin " + plugin.getName() + " wants to process " + processed);
+      annotationTypes.addAll(processed);
+    }
+
+    // Create application
     ApplicationsMetaModel application = new ApplicationsMetaModel();
 
-    //
+    // Add the applications container to the meta model
     metaModel.addChild(ApplicationsMetaModel.KEY, application);
 
     // Add plugins
     for (Map.Entry<String, ApplicationMetaModelPlugin> entry : plugins.entrySet()) {
       application.addPlugin(entry.getKey(), entry.getValue());
     }
+
+    //
+    this.annotationTypes = annotationTypes;
   }
 
   @Override
@@ -97,12 +100,4 @@ public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
   public void prePassivate(MetaModel metaModel) {
     metaModel.getChild(ApplicationsMetaModel.KEY).prePassivate(metaModel);
   }
-
-
-/*
-   public ApplicationMetaModel addApplication(String packageName, String applicationName)
-   {
-      return applications.add(ElementHandle.Package.create(QN.parse(packageName)), applicationName);
-   }
-*/
 }

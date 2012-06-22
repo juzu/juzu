@@ -27,8 +27,10 @@ import juzu.impl.utils.JSON;
 import juzu.impl.utils.Logger;
 
 import javax.lang.model.element.Element;
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public final class MetaModel extends MetaModelObject {
@@ -52,16 +54,51 @@ public final class MetaModel extends MetaModelObject {
   final LinkedHashMap<String, MetaModelPlugin> plugins = new LinkedHashMap<String, MetaModelPlugin>();
 
   /** . */
+  private Set<Class> supportedAnnotations;
+
+  /** . */
   private boolean queuing = false;
 
   public MetaModel() {
   }
 
-  public void addPlugin(String name, MetaModelPlugin plugin) {
-    plugins.put(name, plugin);
+  public Set<Class> getSupportedAnnotations() {
+    return supportedAnnotations;
+  }
 
-    //
-    plugin.init(this);
+  public void init(ProcessingContext env) {
+
+    this.env = env;
+
+    try {
+      LinkedHashMap<String, MetaModelPlugin> plugins = new LinkedHashMap<String, MetaModelPlugin>();
+      StringBuilder msg = new StringBuilder("Using plugins:");
+      for (MetaModelPlugin plugin : env.loadServices(MetaModelPlugin.class)) {
+        msg.append(" ").append(plugin.getName());
+        plugins.put(plugin.getName(), plugin);
+      }
+      log.log(msg);
+
+      // Initialize plugins
+      for (MetaModelPlugin plugin : plugins.values()) {
+        plugin.init(this);
+      }
+
+      // Collect processed annotations
+      HashSet<Class> supportedAnnotations = new HashSet<Class>();
+      for (MetaModelPlugin plugin : plugins.values()) {
+        Set<Class<? extends Annotation>> processed = plugin.getAnnotationTypes();
+        log.log("Plugin " + plugin.getName() + " wants to process " + processed);
+        supportedAnnotations.addAll(processed);
+      }
+
+      //
+      this.plugins.putAll(plugins);
+      this.supportedAnnotations = supportedAnnotations;
+    } finally {
+      this.env = null;
+    }
+
   }
 
   public JSON toJSON() {

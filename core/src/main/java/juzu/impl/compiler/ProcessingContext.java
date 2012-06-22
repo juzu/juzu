@@ -57,12 +57,17 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -90,6 +95,9 @@ public class ProcessingContext implements Filer, Elements {
   /** . */
   private final ProcessingTool tool;
 
+  /** The classloader for loading service via ServiceLoader. */
+  private final ClassLoader serviceCL;
+
   public ProcessingContext(ProcessingEnvironment env) {
     ProcessingTool tool;
     if (env.getMessager().getClass().getName().startsWith("org.eclipse.jdt")) {
@@ -98,6 +106,9 @@ public class ProcessingContext implements Filer, Elements {
     else {
       tool = ProcessingTool.JAVAC;
     }
+
+    // Use this classloader by default
+    ClassLoader serviceCL = ProcessingContext.class.getClassLoader();
 
     //
     ReadFileSystem<File> sourcePath = null;
@@ -116,6 +127,8 @@ public class ProcessingContext implements Filer, Elements {
         Method getProcessorOptionsMethod = aptConfigClass.getMethod("getProcessorOptions", javaProjectClass);
         Map<String, String> options = (Map<String, String>)getProcessorOptionsMethod.invoke(null, javaProject);
         log.log("Retrieved options " + options);
+
+        //
         String sp = options.get("-sourcepath");
         log.log("Found sourcepath " + sp);
         if (sp != null) {
@@ -127,6 +140,23 @@ public class ProcessingContext implements Filer, Elements {
               sourcePath = new DiskFileSystem(root);
             }
           }
+        }
+
+        // Building service class loader, this works better in eclipse specially with m2e and
+        // the externally loaded plugins
+        String cp = options.get("-classpath");
+        log.log("Found classpath " + cp);
+        if (cp != null) {
+          ArrayList<URL> urls = new ArrayList<URL>();
+          for (String s : Spliterator.split(cp, ':')) {
+            File f = new File(s);
+            if (f.exists()) {
+              if (f.isFile() && f.getName().endsWith(".jar") || f.isDirectory()) {
+                urls.add(f.toURI().toURL());
+              }
+            }
+          }
+          serviceCL = new URLClassLoader(urls.toArray(new URL[urls.size()]), serviceCL);
         }
       }
     }
@@ -142,6 +172,7 @@ public class ProcessingContext implements Filer, Elements {
     this.env = env;
     this.sourcePath = sourcePath;
     this.tool = tool;
+    this.serviceCL = serviceCL;
   }
 
   // Various stuff ****************************************************************************************************
@@ -294,6 +325,28 @@ public class ProcessingContext implements Filer, Elements {
 
     //
     return null;
+  }
+
+  /**
+   * Load a service, this is a replacement method for {@link ServiceLoader#load(Class, ClassLoader)}.
+   *
+   * @param service the service class to load
+   * @param <S> the service generic type
+   * @return an iterable of the loaded services
+   * @throws NullPointerException if the <code>service</code> argument is null
+   */
+  public <S> Iterable<S> loadServices(Class<S> service) throws NullPointerException {
+    if (service == null) {
+      throw new NullPointerException("No null service class accepted");
+    }
+    log.log("Loading services implementation of " + service.getName());
+    try {
+      return Tools.list(ServiceLoader.load(service, serviceCL));
+    }
+    catch (ServiceConfigurationError e) {
+      log.log("Could not load service for service " + service.getName(), e);
+      return Collections.emptyList();
+    }
   }
 
   // Types implementation *********************************************************************************************

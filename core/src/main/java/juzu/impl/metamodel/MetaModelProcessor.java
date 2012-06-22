@@ -37,11 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ServiceLoader;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -54,43 +49,17 @@ public abstract class MetaModelProcessor extends BaseProcessor {
   private MetaModel metaModel;
 
   /** . */
-  private Set<TypeElement> annotations;
-
-  /** . */
   private int index;
 
   /** . */
   private final Logger log = BaseProcessor.getLogger(getClass());
-
-  /** . */
-  private List<MetaModelPlugin> plugins;
 
   @Override
   protected void doInit(ProcessingContext context) {
     log.log("Using processing env " + context.getClass().getName());
 
     //
-    ArrayList<MetaModelPlugin> metaModelPlugins = Tools.list(ServiceLoader.load(MetaModelPlugin.class, MetaModelPlugin.class.getClassLoader()));
-    StringBuilder msg = new StringBuilder("Using plugins:");
-    for (MetaModelPlugin plugin : metaModelPlugins) {
-      msg.append(" ").append(plugin.getName());
-    }
-    log.log(msg);
-
-
-    //
-    HashSet<TypeElement> supportedAnnotationTypes = new HashSet<TypeElement>();
-    for (MetaModelPlugin plugin : metaModelPlugins) {
-      for (Class<? extends Annotation> type : plugin.getAnnotationTypes()) {
-        TypeElement supportedAnnotationType = context.getTypeElement(type.getName());
-        supportedAnnotationTypes.add(supportedAnnotationType);
-      }
-    }
-
-    //
-    this.annotations = supportedAnnotationTypes;
     this.index = 0;
-    this.plugins = metaModelPlugins;
   }
 
   @Override
@@ -136,11 +105,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
             MetaModel metaModel = new MetaModel();
 
             //
-            log.log("Adding meta model plugins");
-            for (MetaModelPlugin plugin : plugins) {
-              log.log("Adding meta model plugin: " + plugin.getName());
-              metaModel.addPlugin(plugin.getName(), plugin);
-            }
+            metaModel.init(getContext());
 
             //
             this.metaModel = metaModel;
@@ -155,7 +120,8 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         }
 
         //
-        for (TypeElement annotationElt : this.annotations) {
+        for (Class annotationType : this.metaModel.getSupportedAnnotations()) {
+          TypeElement annotationElt = getContext().getTypeElement(annotationType.getName());
           for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt)) {
             if (annotatedElt.getAnnotation(Generated.class) == null) {
               for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
