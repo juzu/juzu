@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>0.5.1</version>
+    <version>0.6.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-plugins-parent</artifactId>
-  <version>0.5.1</version>
+  <version>0.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Juzu Plugins Aggregator</name>
