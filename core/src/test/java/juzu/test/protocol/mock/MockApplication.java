@@ -22,19 +22,18 @@ package juzu.test.protocol.mock;
 import juzu.impl.application.ApplicationBootstrap;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationException;
-import juzu.impl.application.ApplicationDescriptor;
+import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;
-import juzu.impl.inject.spi.InjectBuilder;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.request.spi.RequestBridge;
 import juzu.impl.utils.JSON;
+import juzu.impl.utils.Logger;
 import juzu.impl.utils.Tools;
 import juzu.test.AbstractTestCase;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.jar.JarFile;
@@ -43,24 +42,12 @@ import java.util.jar.JarFile;
 public class MockApplication<P> {
 
   /** . */
-  private final InjectBuilder bootstrap;
-
-  /** . */
-  private final ReadFileSystem<P> classes;
-
-  /** . */
   final ClassLoader classLoader;
 
   /** . */
-  ApplicationContext context;
+  private final ApplicationRuntime<P, ?, ?> runtime;
 
-  /** . */
-  private ApplicationBootstrap boot;
-
-  /** . */
-  private final ApplicationDescriptor descriptor;
-
-  public MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectBuilder bootstrap) throws Exception {
+  public <L> MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectImplementation implementation) throws Exception {
     P f = classes.getPath(Arrays.asList("juzu", "config.json"));
     if (f == null) {
       throw new Exception("Cannot find config properties");
@@ -76,18 +63,17 @@ public class MockApplication<P> {
       throw AbstractTestCase.failure("Could not find an application to start " + props);
     }
     String name = props.names().iterator().next();
-    String fqn = props.getString(name);
 
     //
     URL location = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
     String protocol = location.getProtocol();
-    ReadFileSystem<?> libs;
+    ReadFileSystem<L> libs;
     if ("file".equals(protocol)) {
       File file = new File(location.toURI());
       if (file.isDirectory()) {
-        libs = new DiskFileSystem(file);
+        libs = (ReadFileSystem<L>)new DiskFileSystem(file);
       } else if (file.isFile() && file.getName().endsWith(".jar")) {
-        libs = new JarFileSystem(new JarFile(file));
+        libs = (ReadFileSystem<L>)new JarFileSystem(new JarFile(file));
       } else {
         throw AbstractTestCase.failure("Could not create file system from location " + location);
       }
@@ -95,61 +81,47 @@ public class MockApplication<P> {
       throw AbstractTestCase.failure("Could not create file system from location " + location);
     }
 
-    //
-    Class<?> clazz = classLoader.loadClass(fqn);
-    Field field = clazz.getDeclaredField("DESCRIPTOR");
-    ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
+    /** . */
+    Logger log = new Logger() {
+      public void log(CharSequence msg) {
+        System.out.print(msg);
+      }
+
+      public void log(CharSequence msg, Throwable t) {
+        System.err.println(msg);
+        t.printStackTrace(System.err);
+      }
+    };
 
     //
-    bootstrap.addFileSystem(classes);
-    bootstrap.addFileSystem(libs);
-    bootstrap.setClassLoader(classLoader);
+    ApplicationRuntime.Static<P, P, L> runtime = new ApplicationRuntime.Static<P, P, L>(log);
+    runtime.setClasses(classes);
+    runtime.setResources(classes);
+    runtime.setLibs(libs);
+    runtime.setClassLoader(classLoader);
+    runtime.setName(name);
+    runtime.setInjectImplementation(implementation);
 
     //
-    this.classes = classes;
     this.classLoader = classLoader;
-    this.bootstrap = bootstrap;
-    this.descriptor = descriptor;
+    this.runtime = runtime;
   }
 
   public MockApplication<P> init() throws Exception {
-    ApplicationBootstrap boot = new ApplicationBootstrap(bootstrap, descriptor);
-
-    //
-    boot.start();
-
-    //
-    this.context = boot.getContext();
-    this.boot = boot;
-
-    //
+    runtime.boot();
     return this;
   }
 
-  public ApplicationDescriptor getDescriptor() {
-    return descriptor;
-  }
-
-  public MockApplication<P> declareBean(Class<?> beanClass) throws ClassNotFoundException {
-    bootstrap.declareBean(beanClass, null, null, null);
-    return this;
-  }
-
-  public MockApplication<P> declareBean(String className) throws ClassNotFoundException {
-    return declareBean(classLoader.loadClass(className));
-  }
-
-  public <T> MockApplication<P> bindBean(Class<T> type, Iterable<Annotation> qualifiers, T bean) {
-    bootstrap.bindBean(type, qualifiers, bean);
-    return this;
+  public ApplicationRuntime<P, ?, ?> getRuntime() {
+    return runtime;
   }
 
   public ApplicationContext getContext() {
-    return context;
+    return runtime.getContext();
   }
 
   void invoke(RequestBridge bridge) throws ApplicationException {
-    this.context.invoke(bridge);
+    runtime.getContext().invoke(bridge);
   }
 
   public MockClient client() {

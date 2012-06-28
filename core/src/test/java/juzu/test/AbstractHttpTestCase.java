@@ -22,6 +22,7 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
+import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.protocol.http.InvocationServlet;
 import juzu.test.protocol.mock.MockApplication;
@@ -46,11 +47,11 @@ public abstract class AbstractHttpTestCase extends AbstractTestCase {
   /** The currently deployed application. */
   private MockApplication<?> application;
 
-  public static MockApplication<?> getApplication() throws IllegalStateException {
+  public static ApplicationRuntime<?, ?, ?> getApplication() throws IllegalStateException {
     if (currentTest == null) {
       throw new IllegalStateException("No deployed test");
     }
-    return currentTest.application;
+    return currentTest.application.getRuntime();
   }
 
   @Override

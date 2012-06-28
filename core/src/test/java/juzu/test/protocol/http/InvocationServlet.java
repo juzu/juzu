@@ -19,17 +19,13 @@
 
 package juzu.test.protocol.http;
 
-import juzu.asset.AssetType;
 import juzu.impl.application.ApplicationContext;
+import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
-import juzu.impl.asset.AssetServer;
-import juzu.impl.asset.ManagerQualifier;
 import juzu.impl.request.spi.servlet.ServletBridgeContext;
 import juzu.impl.request.spi.servlet.ServletRequestBridge;
-import juzu.impl.utils.Logger;
 import juzu.impl.utils.Tools;
 import juzu.test.AbstractHttpTestCase;
-import juzu.test.protocol.mock.MockApplication;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,30 +34,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class InvocationServlet extends HttpServlet {
 
-  /** . */
-  private static final ConcurrentHashMap<String, AssetServer> registry = new ConcurrentHashMap<String, AssetServer>();
 
   /** . */
-  private final Logger log = new Logger() {
-    public void log(CharSequence msg) {
-      System.out.print(msg);
-    }
-
-    public void log(CharSequence msg, Throwable t) {
-      System.err.println(msg);
-      t.printStackTrace(System.err);
-    }
-  };
-
-  /** . */
-  private MockApplication<?> application;
+  private ApplicationRuntime<?, ?, ?> application;
 
   /** . */
   private ServletBridgeContext bridge;
@@ -69,26 +48,22 @@ public class InvocationServlet extends HttpServlet {
   @Override
   public void init() throws ServletException {
     try {
-      MockApplication<?> application = AbstractHttpTestCase.getApplication();
-
-      // Bind the asset manager
-      AssetManager scriptManager = new AssetManager();
-      application.bindBean(
-        AssetManager.class,
-        Collections.<Annotation>singleton(new ManagerQualifier(AssetType.SCRIPT)),
-        scriptManager);
-      AssetManager stylesheetManager = new AssetManager();
-      application.bindBean(
-        AssetManager.class,
-        Collections.<Annotation>singleton(new ManagerQualifier(AssetType.STYLESHEET)),
-        stylesheetManager);
+      ApplicationRuntime<?, ?, ?> application = AbstractHttpTestCase.getApplication();
 
       //
-      application.init();
+      application.boot();
+
+      // Bind the asset managers
+      AssetManager scriptManager = application.getScriptManager();
+      AssetManager stylesheetManager = application.getStylesheetManager();
 
       //
       this.application = application;
-      this.bridge = new ServletBridgeContext(application.getContext(), scriptManager, stylesheetManager, log);
+      this.bridge = new ServletBridgeContext(
+          application.getContext(),
+          scriptManager,
+          stylesheetManager,
+          application.getLogger());
     }
     catch (Exception e) {
       throw new ServletException(e);

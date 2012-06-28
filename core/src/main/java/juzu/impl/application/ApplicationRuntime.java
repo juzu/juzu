@@ -28,6 +28,7 @@ import juzu.impl.compiler.Compiler;
 import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.Filter;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
@@ -100,6 +101,10 @@ public abstract class ApplicationRuntime<P, R, L> {
 
   ApplicationRuntime(Logger logger) {
     this.logger = logger;
+  }
+
+  public Logger getLogger() {
+    return logger;
   }
 
   public ReadFileSystem<L> getLibs() {
@@ -370,24 +375,23 @@ public abstract class ApplicationRuntime<P, R, L> {
     }
 
     // Find the juzu jar
-    URL mainURL = null;
-    for (URL jarURL : jarURLs) {
-      URL configURL = new URL("jar:" + jarURL.toString() + "!/juzu/impl/application/ApplicationBootstrap.class");
-      try {
-        configURL.openStream();
-        mainURL = jarURL;
-        break;
-      }
-      catch (IOException ignore) {
-      }
-    }
+    URL mainURL = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
     if (mainURL == null) {
       throw new PortletException("Cannot find juzu jar among " + jarURLs);
     }
-    JarFileSystem libs = new JarFileSystem(new JarFile(new File(mainURL.toURI())));
+    if (!mainURL.getProtocol().equals("file")) {
+      throw new PortletException("Cannot handle " + mainURL);
+    }
+    File file = new File(mainURL.toURI());
+    ReadFileSystem<?> libs;
+    if (file.isDirectory()) {
+      libs = new DiskFileSystem(file);
+    } else {
+      libs = new JarFileSystem(new JarFile(file));
+    }
 
     //
-    InjectBuilder injectBootstrap = injectImplementation.bootstrap();
+    InjectBuilder injectBootstrap = injectImplementation.builder();
     injectBootstrap.addFileSystem(getClasses());
     injectBootstrap.addFileSystem(libs);
     injectBootstrap.setClassLoader(getClassLoader());

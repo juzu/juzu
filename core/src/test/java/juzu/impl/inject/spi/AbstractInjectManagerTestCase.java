@@ -115,6 +115,6 @@ public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInject
   }
 
   protected final InjectBuilder getManager() throws Exception {
-    return getDI().bootstrap();
+    return getDI().builder();
   }
 }

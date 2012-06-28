@@ -164,7 +164,7 @@ public class CompilerAssert<I, O> {
 
   public MockApplication<?> application(InjectImplementation injectImplementation) {
     try {
-      return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation.bootstrap());
+      return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation);
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);
