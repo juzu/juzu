@@ -44,12 +44,15 @@ public class AssetServlet extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
-    if (server != null) {
-      server.doGet(req, resp);
-    }
-    else {
-      resp.sendError(500, "No asset server");
+    String path = req.getPathInfo();
+    if (path != null) {
+      AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
+      if (server != null) {
+        server.doGet(path, getServletContext(), resp);
+      }
+      else {
+        resp.sendError(500, "No asset server");
+      }
     }
   }
 }

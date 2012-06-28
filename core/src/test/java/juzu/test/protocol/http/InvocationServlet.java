@@ -22,9 +22,9 @@ package juzu.test.protocol.http;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.asset.AssetServer;
 import juzu.impl.request.spi.servlet.ServletBridgeContext;
 import juzu.impl.request.spi.servlet.ServletRequestBridge;
-import juzu.impl.utils.Tools;
 import juzu.test.AbstractHttpTestCase;
 
 import javax.servlet.ServletException;
@@ -32,8 +32,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class InvocationServlet extends HttpServlet {
@@ -44,6 +42,9 @@ public class InvocationServlet extends HttpServlet {
 
   /** . */
   private ServletBridgeContext bridge;
+
+  /** . */
+  private AssetServer assetServer = new AssetServer();
 
   @Override
   public void init() throws ServletException {
@@ -56,6 +57,9 @@ public class InvocationServlet extends HttpServlet {
       // Bind the asset managers
       AssetManager scriptManager = application.getScriptManager();
       AssetManager stylesheetManager = application.getStylesheetManager();
+
+      //
+      assetServer.register(application);
 
       //
       this.application = application;
@@ -72,7 +76,7 @@ public class InvocationServlet extends HttpServlet {
 
   @Override
   public void destroy() {
-    getServletContext().removeAttribute("asset.server");
+    assetServer.unregister(application);
   }
 
   @Override
@@ -89,19 +93,7 @@ public class InvocationServlet extends HttpServlet {
       contentType = null;
     }
     if (contentType != null) {
-      InputStream in;
-      if (bridge.getScriptManager().isClassPath(path)) {
-        in = application.getContext().getClassLoader().getResourceAsStream(path.substring(1));
-      }
-      else {
-        in = getServletContext().getResourceAsStream(path);
-      }
-      if (in != null) {
-        resp.setContentType(contentType);
-        OutputStream out = resp.getOutputStream();
-        Tools.copy(in, out);
-      }
-      else {
+      if (!assetServer.doGet(path, getServletContext(), resp)) {
         resp.sendError(404, "Path " + path + " could not be resolved");
       }
     }
