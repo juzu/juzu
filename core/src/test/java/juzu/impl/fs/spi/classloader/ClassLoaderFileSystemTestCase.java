@@ -163,11 +163,17 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase {
     P fooBar = fs.getPath("foo", "bar.txt");
     assertEquals("bar.txt", fs.getName(fooBar));
     assertEquals("foo", fs.packageOf(fooBar, '.', new StringBuilder()).toString());
+    URL fooBarURL = fs.getURL(fooBar);
+    String fooBarContent = Tools.read(fooBarURL);
+    assertEquals("foo/bar.txt_value", fooBarContent);
 
     //
     P fooBarJuu = fs.getPath("foo", "bar", "juu.txt");
     assertEquals("juu.txt", fs.getName(fooBarJuu));
     assertEquals("foo.bar", fs.packageOf(fooBarJuu, '.', new StringBuilder()).toString());
+    URL fooBarJuuURL = fs.getURL(fooBarJuu);
+    String fooBarJuuContent = Tools.read(fooBarJuuURL);
+    assertEquals("foo/bar/juu.txt_value", fooBarJuuContent);
 
     //
     assertEquals(null, fs.getPath("juu"));

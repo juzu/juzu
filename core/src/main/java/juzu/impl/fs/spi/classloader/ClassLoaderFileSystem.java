@@ -133,4 +133,9 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<Trie<String, URL>> {
   public File getFile(Trie<String, URL> path) throws IOException {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public URL getURL(Trie<String, URL> path) throws NullPointerException, IOException {
+    return path.value();
+  }
 }

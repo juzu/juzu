@@ -23,6 +23,7 @@ import juzu.impl.utils.Content;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -119,4 +120,14 @@ public abstract class SimpleFileSystem<P> {
    * @throws IOException any IO exception
    */
   public abstract File getFile(P path) throws IOException;
+
+  /**
+   * Get an URL for the provided path or return null if no such URL can be found.
+   *
+   * @param path the path
+   * @return the URL for this path
+   * @throws NullPointerException if the path is null
+   * @throws IOException          any io exception
+   */
+  public abstract URL getURL(P path) throws NullPointerException, IOException;
 }

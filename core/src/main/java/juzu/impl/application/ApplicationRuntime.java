@@ -28,6 +28,7 @@ import juzu.impl.compiler.Compiler;
 import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.Filter;
+import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -77,7 +78,7 @@ public abstract class ApplicationRuntime<P, R> {
   protected InjectImplementation injectImplementation;
 
   /** . */
-  protected ReadFileSystem<R> resources;
+  protected SimpleFileSystem<R> resources;
 
   /** . */
   protected ApplicationContext context;
@@ -118,11 +119,11 @@ public abstract class ApplicationRuntime<P, R> {
     this.injectImplementation = injectImplementation;
   }
 
-  public ReadFileSystem<R> getResources() {
+  public SimpleFileSystem<R> getResources() {
     return resources;
   }
 
-  public void setResources(ReadFileSystem<R> resources) {
+  public void setResources(SimpleFileSystem<R> resources) {
     this.resources = resources;
   }
 
