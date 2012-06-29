@@ -50,11 +50,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
@@ -64,16 +62,13 @@ import java.util.jar.JarFile;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ApplicationRuntime<P, R, L> {
+public abstract class ApplicationRuntime<P, R> {
 
   /** . */
   private static final String[] CONFIG_PATH = {"juzu", "config.json"};
 
   /** . */
   protected final Logger logger;
-
-  /** . */
-  protected ReadFileSystem<L> libs;
 
   /** . */
   protected String name;
@@ -105,14 +100,6 @@ public abstract class ApplicationRuntime<P, R, L> {
 
   public Logger getLogger() {
     return logger;
-  }
-
-  public ReadFileSystem<L> getLibs() {
-    return libs;
-  }
-
-  public void setLibs(ReadFileSystem<L> libs) {
-    this.libs = libs;
   }
 
   public String getName() {
@@ -178,7 +165,7 @@ public abstract class ApplicationRuntime<P, R, L> {
 
   public abstract Collection<CompilationError> boot() throws Exception;
 
-  public static class Static<P, R, L> extends ApplicationRuntime<P, R, L> {
+  public static class Static<P, R> extends ApplicationRuntime<P, R> {
 
     /** . */
     private ReadFileSystem<P> classes;
@@ -218,7 +205,7 @@ public abstract class ApplicationRuntime<P, R, L> {
     }
   }
 
-  public static class Dynamic<R, L, S> extends ApplicationRuntime<RAMPath, R, L> {
+  public static class Dynamic<R, S> extends ApplicationRuntime<RAMPath, R> {
 
     /** . */
     private FileSystemScanner<S> devScanner;
@@ -328,13 +315,6 @@ public abstract class ApplicationRuntime<P, R, L> {
   }
 
   protected final void doBoot() throws Exception {
-    List<URL> jarURLs = new ArrayList<URL>();
-    for (Iterator<L> i = libs.getChildren(libs.getRoot());i.hasNext();) {
-      L s = i.next();
-      URL url = libs.getURL(s);
-      jarURLs.add(url);
-    }
-
     // Find an application
     P f = getClasses().getPath(CONFIG_PATH);
     URL url = getClasses().getURL(f);
@@ -377,7 +357,7 @@ public abstract class ApplicationRuntime<P, R, L> {
     // Find the juzu jar
     URL mainURL = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
     if (mainURL == null) {
-      throw new PortletException("Cannot find juzu jar among " + jarURLs);
+      throw new PortletException("Cannot find juzu jar");
     }
     if (!mainURL.getProtocol().equals("file")) {
       throw new PortletException("Cannot handle " + mainURL);

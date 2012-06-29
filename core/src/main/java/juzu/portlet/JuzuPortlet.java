@@ -85,7 +85,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   private PortletConfig config;
 
   /** . */
-  private ApplicationRuntime<?, String, String> runtime;
+  private ApplicationRuntime<?, String> runtime;
 
   /** . */
   private boolean prod;
@@ -177,9 +177,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   private Collection<CompilationError> boot() throws PortletException {
     if (runtime == null) {
       if (prod) {
-        runtime = new ApplicationRuntime.Static<String, String, String>(log);
-        ((ApplicationRuntime.Static<String, String, String>)runtime).setClasses(WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/"));
-        ((ApplicationRuntime.Static<String, String, String>)runtime).setClassLoader(Thread.currentThread().getContextClassLoader());
+        runtime = new ApplicationRuntime.Static<String, String>(log);
+        ((ApplicationRuntime.Static<String, String>)runtime).setClasses(WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/"));
+        ((ApplicationRuntime.Static<String, String>)runtime).setClassLoader(Thread.currentThread().getContextClassLoader());
       }
       else {
         try {
@@ -192,14 +192,14 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
           }
 
           //
-          runtime = new ApplicationRuntime.Dynamic<String, String, String>(log);
+          runtime = new ApplicationRuntime.Dynamic<String, String>(log);
           if (srcPath != null) {
             ReadFileSystem<File> fss = new DiskFileSystem(new File(srcPath));
-            ((ApplicationRuntime.Dynamic<String, String, File>)runtime).init(classPath, fss);
+            ((ApplicationRuntime.Dynamic<String, File>)runtime).init(classPath, fss);
           }
           else {
             ReadFileSystem<String> fss = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
-            ((ApplicationRuntime.Dynamic<String, String, String>)runtime).init(classPath, fss);
+            ((ApplicationRuntime.Dynamic<String, String>)runtime).init(classPath, fss);
           }
         }
         catch (Exception e) {
@@ -215,7 +215,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       }
 
       // Configure the runtime
-      runtime.setLibs(libs);
       runtime.setResources(resources);
       runtime.setInjectImplementation(injectImpl);
       runtime.setName(appName);

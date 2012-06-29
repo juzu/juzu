@@ -19,13 +19,10 @@
 
 package juzu.test.protocol.mock;
 
-import juzu.impl.application.ApplicationBootstrap;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationException;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.disk.DiskFileSystem;
-import juzu.impl.fs.spi.jar.JarFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.request.spi.RequestBridge;
 import juzu.impl.utils.JSON;
@@ -33,10 +30,8 @@ import juzu.impl.utils.Logger;
 import juzu.impl.utils.Tools;
 import juzu.test.AbstractTestCase;
 
-import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockApplication<P> {
@@ -45,7 +40,7 @@ public class MockApplication<P> {
   final ClassLoader classLoader;
 
   /** . */
-  private final ApplicationRuntime<P, ?, ?> runtime;
+  private final ApplicationRuntime<P, ?> runtime;
 
   public <L> MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectImplementation implementation) throws Exception {
     P f = classes.getPath(Arrays.asList("juzu", "config.json"));
@@ -64,23 +59,6 @@ public class MockApplication<P> {
     }
     String name = props.names().iterator().next();
 
-    //
-    URL location = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
-    String protocol = location.getProtocol();
-    ReadFileSystem<L> libs;
-    if ("file".equals(protocol)) {
-      File file = new File(location.toURI());
-      if (file.isDirectory()) {
-        libs = (ReadFileSystem<L>)new DiskFileSystem(file);
-      } else if (file.isFile() && file.getName().endsWith(".jar")) {
-        libs = (ReadFileSystem<L>)new JarFileSystem(new JarFile(file));
-      } else {
-        throw AbstractTestCase.failure("Could not create file system from location " + location);
-      }
-    } else {
-      throw AbstractTestCase.failure("Could not create file system from location " + location);
-    }
-
     /** . */
     Logger log = new Logger() {
       public void log(CharSequence msg) {
@@ -94,10 +72,9 @@ public class MockApplication<P> {
     };
 
     //
-    ApplicationRuntime.Static<P, P, L> runtime = new ApplicationRuntime.Static<P, P, L>(log);
+    ApplicationRuntime.Static<P, P> runtime = new ApplicationRuntime.Static<P, P>(log);
     runtime.setClasses(classes);
     runtime.setResources(classes);
-    runtime.setLibs(libs);
     runtime.setClassLoader(classLoader);
     runtime.setName(name);
     runtime.setInjectImplementation(implementation);
@@ -112,7 +89,7 @@ public class MockApplication<P> {
     return this;
   }
 
-  public ApplicationRuntime<P, ?, ?> getRuntime() {
+  public ApplicationRuntime<P, ?> getRuntime() {
     return runtime;
   }
 

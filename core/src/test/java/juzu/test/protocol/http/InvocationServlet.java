@@ -38,7 +38,7 @@ public class InvocationServlet extends HttpServlet {
 
 
   /** . */
-  private ApplicationRuntime<?, ?, ?> application;
+  private ApplicationRuntime<?, ?> application;
 
   /** . */
   private ServletBridgeContext bridge;
@@ -49,7 +49,7 @@ public class InvocationServlet extends HttpServlet {
   @Override
   public void init() throws ServletException {
     try {
-      ApplicationRuntime<?, ?, ?> application = AbstractHttpTestCase.getApplication();
+      ApplicationRuntime<?, ?> application = AbstractHttpTestCase.getApplication();
 
       //
       application.boot();

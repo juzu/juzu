@@ -14,22 +14,22 @@ import java.util.HashSet;
 public class AssetServer {
 
   /** . */
-  HashSet<ApplicationRuntime<?, ?, ?>> runtimes = new HashSet<ApplicationRuntime<?, ?, ?>>();
+  HashSet<ApplicationRuntime<?, ?>> runtimes = new HashSet<ApplicationRuntime<?, ?>>();
 
   public AssetServer() {
   }
 
-  public void register(ApplicationRuntime<?, ?, ?> assetManager) {
+  public void register(ApplicationRuntime<?, ?> assetManager) {
     runtimes.add(assetManager);
   }
 
-  public void unregister(ApplicationRuntime<?, ?, ?> assetManager) {
+  public void unregister(ApplicationRuntime<?, ?> assetManager) {
     runtimes.remove(assetManager);
   }
 
   public boolean doGet(String path, ServletContext ctx, HttpServletResponse resp) throws ServletException, IOException {
     if (path != null && path.length() > 0) {
-      for (ApplicationRuntime<?, ?, ?> runtime : runtimes) {
+      for (ApplicationRuntime<?, ?> runtime : runtimes) {
         String contentType;
         InputStream in;
         if (runtime.getScriptManager().isClassPath(path)) {

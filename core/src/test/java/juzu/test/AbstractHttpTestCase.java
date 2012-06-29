@@ -47,7 +47,7 @@ public abstract class AbstractHttpTestCase extends AbstractTestCase {
   /** The currently deployed application. */
   private MockApplication<?> application;
 
-  public static ApplicationRuntime<?, ?, ?> getApplication() throws IllegalStateException {
+  public static ApplicationRuntime<?, ?> getApplication() throws IllegalStateException {
     if (currentTest == null) {
       throw new IllegalStateException("No deployed test");
     }
