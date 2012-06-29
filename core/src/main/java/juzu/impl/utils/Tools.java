@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -368,6 +369,20 @@ public class Tools {
     ArrayList<E> set = new ArrayList<E>(elements.length);
     Collections.addAll(set, elements);
     return set;
+  }
+
+  public static <E> Iterator<E> iterator(final Enumeration<E> elements) throws NullPointerException {
+    return new Iterator<E>() {
+      public boolean hasNext() {
+        return elements.hasMoreElements();
+      }
+      public E next() {
+        return elements.nextElement();
+      }
+      public void remove() {
+        throw new UnsupportedOperationException("Read only");
+      }
+    };
   }
 
   public static <E> Iterable<E> iterable(final E... elements) throws NullPointerException {
