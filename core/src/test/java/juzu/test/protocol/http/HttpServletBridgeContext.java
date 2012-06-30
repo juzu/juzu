@@ -1,4 +1,4 @@
-package juzu.impl.request.spi.servlet;
+package juzu.test.protocol.http;
 
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.asset.AssetManager;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletBridgeContext {
+public class HttpServletBridgeContext {
 
   /** . */
   final ApplicationContext application;
@@ -25,11 +25,11 @@ public class ServletBridgeContext {
   /** . */
   final Logger log;
 
-  public ServletBridgeContext(
-    ApplicationContext application,
-    AssetManager scriptManager,
-    AssetManager stylesheetManager,
-    Logger log) {
+  public HttpServletBridgeContext(
+      ApplicationContext application,
+      AssetManager scriptManager,
+      AssetManager stylesheetManager,
+      Logger log) {
     this.application = application;
     this.scriptManager = scriptManager;
     this.stylesheetManager = stylesheetManager;
@@ -52,7 +52,7 @@ public class ServletBridgeContext {
     return log;
   }
 
-  public ServletRequestBridge create(HttpServletRequest req, HttpServletResponse resp) {
+  public RequestBridgeImpl create(HttpServletRequest req, HttpServletResponse resp) {
     Phase phase = Phase.RENDER;
     Map<String, String[]> parameters = new HashMap<String, String[]>();
     String methodId = null;
@@ -73,11 +73,11 @@ public class ServletBridgeContext {
     //
     switch (phase) {
       case RENDER:
-        return new ServletRenderBridge(this, req, resp, methodId, parameters);
+        return new RenderBridgeImpl(this, req, resp, methodId, parameters);
       case ACTION:
-        return new ServletActionBridge(this, req, resp, methodId, parameters);
+        return new ActionBridgeImpl(this, req, resp, methodId, parameters);
       case RESOURCE:
-        return new ServletResourceBridge(this, req, resp, methodId, parameters);
+        return new ResourceBridgeImpl(this, req, resp, methodId, parameters);
       default:
         throw new UnsupportedOperationException("todo");
     }

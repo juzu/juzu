@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request.spi.servlet;
+package juzu.test.protocol.http;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
@@ -40,10 +40,10 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext {
+public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, WindowContext {
 
   /** . */
-  final ServletBridgeContext context;
+  final HttpServletBridgeContext context;
 
   /** . */
   final HttpServletRequest req;
@@ -60,12 +60,12 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   /** . */
   protected Request request;
 
-  ServletRequestBridge(
-    ServletBridgeContext context,
-    HttpServletRequest req,
-    HttpServletResponse resp,
-    String methodId,
-    Map<String, String[]> parameters) {
+  RequestBridgeImpl(
+      HttpServletBridgeContext context,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String methodId,
+      Map<String, String[]> parameters) {
     this.context = context;
     this.req = req;
     this.resp = resp;

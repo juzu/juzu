@@ -17,23 +17,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request.spi.servlet;
+package juzu.test.protocol.http;
 
-import juzu.impl.request.spi.MimeBridge;
+import juzu.Response;
+import juzu.impl.request.spi.ActionBridge;
+import juzu.request.Phase;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
-
-  ServletMimeBridge(
-    ServletBridgeContext context,
-    HttpServletRequest req,
-    HttpServletResponse resp,
-    String methodId,
-    Map<String, String[]> parameters) {
+public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge {
+  ActionBridgeImpl(
+      HttpServletBridgeContext context,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String methodId,
+      Map<String, String[]> parameters) {
     super(context, req, resp, methodId, parameters);
+  }
+
+  public void end(Response response) throws IllegalStateException, IOException {
+    if (response instanceof Response.Update) {
+      Response.Update update = (Response.Update)response;
+      String url = renderURL(Phase.RENDER, update.getParameters(), update.getProperties());
+      resp.sendRedirect(url);
+    }
+    else if (response instanceof Response.Redirect) {
+      Response.Redirect redirect = (Response.Redirect)response;
+      String url = redirect.getLocation();
+      resp.sendRedirect(url);
+    }
   }
 }

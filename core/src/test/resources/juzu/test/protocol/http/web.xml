@@ -4,7 +4,7 @@
 <web-app>
   <servlet>
     <servlet-name>InvocationServlet</servlet-name>
-    <servlet-class>juzu.test.protocol.http.InvocationServlet</servlet-class>
+    <servlet-class>juzu.test.protocol.http.HttpServletImpl</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>

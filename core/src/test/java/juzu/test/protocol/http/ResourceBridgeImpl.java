@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request.spi.servlet;
+package juzu.test.protocol.http;
 
 import juzu.Response;
 import juzu.impl.request.spi.ResourceBridge;
@@ -34,13 +34,13 @@ import java.io.PrintWriter;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletResourceBridge extends ServletMimeBridge implements ResourceBridge {
-  ServletResourceBridge(
-    ServletBridgeContext context,
-    HttpServletRequest req,
-    HttpServletResponse resp,
-    String methodId,
-    Map<String, String[]> parameters) {
+public class ResourceBridgeImpl extends MimeBridgeImpl implements ResourceBridge {
+  ResourceBridgeImpl(
+      HttpServletBridgeContext context,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String methodId,
+      Map<String, String[]> parameters) {
     super(context, req, resp, methodId, parameters);
   }
 

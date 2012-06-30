@@ -24,7 +24,7 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.test.protocol.http.InvocationServlet;
+import juzu.test.protocol.http.HttpServletImpl;
 import juzu.test.protocol.mock.MockApplication;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -67,10 +67,10 @@ public abstract class AbstractHttpTestCase extends AbstractTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    URL descriptor = InvocationServlet.class.getResource("web.xml");
-    URL jquery = InvocationServlet.class.getResource("jquery-1.7.1.js");
-    URL test = InvocationServlet.class.getResource("test.js");
-    URL stylesheet = InvocationServlet.class.getResource("main.css");
+    URL descriptor = HttpServletImpl.class.getResource("web.xml");
+    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
+    URL test = HttpServletImpl.class.getResource("test.js");
+    URL stylesheet = HttpServletImpl.class.getResource("main.css");
     return ShrinkWrap.create(WebArchive.class, "juzu.war").
       addAsWebResource(jquery, "jquery.js").
       addAsWebResource(test, "test.js").

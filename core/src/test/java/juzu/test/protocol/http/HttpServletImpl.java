@@ -23,8 +23,6 @@ import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
-import juzu.impl.request.spi.servlet.ServletBridgeContext;
-import juzu.impl.request.spi.servlet.ServletRequestBridge;
 import juzu.test.AbstractHttpTestCase;
 
 import javax.servlet.ServletException;
@@ -34,14 +32,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class InvocationServlet extends HttpServlet {
+public class HttpServletImpl extends HttpServlet {
 
 
   /** . */
   private ApplicationRuntime<?, ?> application;
 
   /** . */
-  private ServletBridgeContext bridge;
+  private HttpServletBridgeContext bridge;
 
   /** . */
   private AssetServer assetServer = new AssetServer();
@@ -63,7 +61,7 @@ public class InvocationServlet extends HttpServlet {
 
       //
       this.application = application;
-      this.bridge = new ServletBridgeContext(
+      this.bridge = new HttpServletBridgeContext(
           application.getContext(),
           scriptManager,
           stylesheetManager,
@@ -98,7 +96,7 @@ public class InvocationServlet extends HttpServlet {
       }
     }
     else {
-      ServletRequestBridge requestBridge = bridge.create(req, resp);
+      RequestBridgeImpl requestBridge = bridge.create(req, resp);
       ApplicationContext context = application.getContext();
       context.invoke(requestBridge);
     }

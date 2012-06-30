@@ -42,7 +42,6 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -100,9 +99,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   private InjectImplementation injectImpl;
 
   /** . */
-  private ReadFileSystem<String> libs;
-
-  /** . */
   private ReadFileSystem<String> resources;
 
   /** . */
@@ -110,6 +106,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
   /** . */
   private PortletBridgeContext bridge;
+
+  /** . */
+  private AssetServer server;
 
   public void init(final PortletConfig config) throws PortletException {
     this.config = config;
@@ -149,12 +148,19 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     log.log("Using injection " + injectImpl.name());
 
     //
+    AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
+    if (server == null) {
+      server = new AssetServer();
+      config.getPortletContext().setAttribute("asset.server", server);
+    }
+
+    //
     this.appName = getApplicationName(config);
     this.prod = !("dev".equals(runMode));
     this.srcPath = config.getInitParameter("juzu.src_path");
     this.injectImpl = injectImpl;
-    this.libs = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/lib/");
     this.resources = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/");
+    this.server = server;
 
     //
     Collection<CompilationError> errors = boot();
@@ -177,41 +183,26 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   private Collection<CompilationError> boot() throws PortletException {
     if (runtime == null) {
       if (prod) {
-        runtime = new ApplicationRuntime.Static<String, String>(log);
-        ((ApplicationRuntime.Static<String, String>)runtime).setClasses(WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/"));
-        ((ApplicationRuntime.Static<String, String>)runtime).setClassLoader(Thread.currentThread().getContextClassLoader());
+        ApplicationRuntime.Static<String, String> ss = new ApplicationRuntime.Static<String, String>(log);
+        ss.setClasses(WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/"));
+        ss.setClassLoader(Thread.currentThread().getContextClassLoader());
+
+        //
+        runtime = ss;
       }
       else {
         try {
-          // Share the same classpath for the whole application
-          PortletContext context = config.getPortletContext();
-          ClassLoaderFileSystem classPath = (ClassLoaderFileSystem)context.getAttribute("juzu.clfs");
-          if (classPath == null) {
-            ClassLoader devCL = new DevClassLoader(Thread.currentThread().getContextClassLoader());
-            context.setAttribute("juzu.clfs", classPath = new ClassLoaderFileSystem(devCL));
-          }
+          ClassLoaderFileSystem classPath = new ClassLoaderFileSystem(new DevClassLoader(Thread.currentThread().getContextClassLoader()));
+          ReadFileSystem<?> fss = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
+          ApplicationRuntime.Dynamic dynamic = new ApplicationRuntime.Dynamic<String, String>(log);
+          dynamic.init(classPath, fss);
 
           //
-          runtime = new ApplicationRuntime.Dynamic<String, String>(log);
-          if (srcPath != null) {
-            ReadFileSystem<File> fss = new DiskFileSystem(new File(srcPath));
-            ((ApplicationRuntime.Dynamic<String, File>)runtime).init(classPath, fss);
-          }
-          else {
-            ReadFileSystem<String> fss = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
-            ((ApplicationRuntime.Dynamic<String, String>)runtime).init(classPath, fss);
-          }
+          runtime = dynamic;
         }
         catch (Exception e) {
           throw e instanceof PortletException ? (PortletException)e : new PortletException(e);
         }
-      }
-
-      //
-      AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
-      if (server == null) {
-        server = new AssetServer();
-        config.getPortletContext().setAttribute("asset.server", server);
       }
 
       // Configure the runtime
