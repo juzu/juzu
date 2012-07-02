@@ -17,13 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request.spi.portlet;
+package juzu.impl.bridge.spi.portlet;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.URLBuilder;
-import juzu.impl.request.spi.MimeBridge;
+import juzu.impl.bridge.spi.MimeBridge;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;

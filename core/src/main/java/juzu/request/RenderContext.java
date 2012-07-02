@@ -22,7 +22,7 @@ package juzu.request;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.request.Request;
-import juzu.impl.request.spi.RenderBridge;
+import juzu.impl.bridge.spi.RenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RenderContext extends MimeContext {

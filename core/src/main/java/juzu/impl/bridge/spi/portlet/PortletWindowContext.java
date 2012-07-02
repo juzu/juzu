@@ -17,8 +17,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request.spi;
+package juzu.impl.bridge.spi.portlet;
+
+import juzu.request.WindowContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ResourceBridge extends MimeBridge {
+class PortletWindowContext implements WindowContext {
+
+  /** . */
+  private final PortletRequestBridge<?, ?> request;
+
+  PortletWindowContext(PortletRequestBridge<?, ?> request) {
+    this.request = request;
+  }
+
+  public String getId() {
+    return request.req.getWindowID();
+  }
+
+  public String getNamespace() {
+    return request.resp.getNamespace();
+  }
 }

@@ -1,4 +1,4 @@
-package juzu.impl.request.spi.portlet;
+package juzu.impl.bridge.spi.portlet;
 
 import juzu.impl.request.Request;
 

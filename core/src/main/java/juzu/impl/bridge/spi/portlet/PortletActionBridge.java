@@ -17,10 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request.spi.portlet;
+package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
-import juzu.impl.request.spi.ActionBridge;
+import juzu.impl.bridge.spi.ActionBridge;
 import juzu.portlet.JuzuPortlet;
 import juzu.request.RenderContext;
 

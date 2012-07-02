@@ -20,7 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.request.spi.ResourceBridge;
+import juzu.impl.bridge.spi.ResourceBridge;
 import org.junit.Assert;
 
 import java.io.IOException;

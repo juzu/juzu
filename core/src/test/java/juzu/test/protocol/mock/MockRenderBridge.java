@@ -20,7 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.request.spi.RenderBridge;
+import juzu.impl.bridge.spi.RenderBridge;
 
 import java.io.IOException;
 import java.util.Map;

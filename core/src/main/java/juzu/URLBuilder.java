@@ -20,7 +20,7 @@
 package juzu;
 
 import juzu.impl.controller.descriptor.ControllerMethod;
-import juzu.impl.request.spi.MimeBridge;
+import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.utils.ParameterHashMap;
 import juzu.impl.utils.ParameterMap;
 import juzu.request.RequestContext;

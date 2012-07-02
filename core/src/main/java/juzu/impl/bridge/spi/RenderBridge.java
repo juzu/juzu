@@ -17,32 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request.spi.portlet;
-
-import juzu.request.SecurityContext;
-
-import javax.portlet.PortletRequest;
-import java.security.Principal;
+package juzu.impl.bridge.spi;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletSecurityContext implements SecurityContext {
+public interface RenderBridge extends MimeBridge {
 
-  /** . */
-  private final PortletRequest request;
+  void setTitle(String title);
 
-  public PortletSecurityContext(PortletRequest request) {
-    this.request = request;
-  }
-
-  public String getRemoteUser() {
-    return request.getRemoteUser();
-  }
-
-  public Principal getUserPrincipal() {
-    return request.getUserPrincipal();
-  }
-
-  public boolean isUserInRole(String role) {
-    return request.isUserInRole(role);
-  }
 }

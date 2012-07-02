@@ -20,7 +20,7 @@
 package juzu.test.protocol.http;
 
 import juzu.Response;
-import juzu.impl.request.spi.ActionBridge;
+import juzu.impl.bridge.spi.ActionBridge;
 import juzu.request.Phase;
 
 import javax.servlet.http.HttpServletRequest;

@@ -24,7 +24,7 @@ import juzu.impl.application.ApplicationException;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.request.spi.RequestBridge;
+import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Logger;
 import juzu.impl.utils.Tools;

@@ -1,4 +1,4 @@
-package juzu.impl.request.spi.portlet;
+package juzu.impl.bridge.spi.portlet;
 
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationRuntime;

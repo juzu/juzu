@@ -24,7 +24,7 @@ import juzu.PropertyType;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
-import juzu.impl.request.spi.RequestBridge;
+import juzu.impl.bridge.spi.RequestBridge;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.RequestContext;

@@ -20,7 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.request.spi.MimeBridge;
+import juzu.impl.bridge.spi.MimeBridge;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;

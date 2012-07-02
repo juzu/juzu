@@ -25,7 +25,7 @@ import juzu.URLBuilder;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
-import juzu.impl.request.spi.RequestBridge;
+import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.utils.JSON;
 import juzu.impl.utils.Tools;
 import juzu.request.Phase;

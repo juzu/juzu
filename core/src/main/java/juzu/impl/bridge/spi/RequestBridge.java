@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.request.spi;
+package juzu.impl.bridge.spi;
 
 import juzu.PropertyType;
 import juzu.Response;

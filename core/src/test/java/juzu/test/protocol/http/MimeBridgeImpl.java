@@ -19,7 +19,7 @@
 
 package juzu.test.protocol.http;
 
-import juzu.impl.request.spi.MimeBridge;
+import juzu.impl.bridge.spi.MimeBridge;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

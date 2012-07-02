@@ -20,7 +20,7 @@
 package juzu.test.protocol.http;
 
 import juzu.Response;
-import juzu.impl.request.spi.ResourceBridge;
+import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.utils.Tools;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;

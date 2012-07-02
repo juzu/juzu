@@ -3,7 +3,7 @@ package juzu.plugin.portlet.impl;
 import juzu.Scope;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.request.spi.portlet.PortletPreferencesProvider;
+import juzu.impl.bridge.spi.portlet.PortletPreferencesProvider;
 import juzu.impl.utils.Tools;
 
 import java.util.Collections;
