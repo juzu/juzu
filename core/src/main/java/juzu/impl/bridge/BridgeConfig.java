@@ -1,6 +1,5 @@
 package juzu.impl.bridge;
 
-import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.utils.Tools;
 
