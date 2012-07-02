@@ -67,12 +67,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
   /** . */
-  public static final class PORTLET_MODE extends PropertyType<PortletMode> {
-  }
+  public static final class PORTLET_MODE extends PropertyType<PortletMode> {}
 
   /** . */
-  public static final class WINDOW_STATE extends PropertyType<WindowState> {
-  }
+  public static final class WINDOW_STATE extends PropertyType<WindowState> {}
 
   /** . */
   public static final PORTLET_MODE PORTLET_MODE = new PORTLET_MODE();
