@@ -24,7 +24,7 @@ import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
@@ -134,7 +134,7 @@ public class SpringBuilder extends InjectBuilder {
   }
 
   @Override
-  public <B, I> InjectManager<B, I> create() throws Exception {
+  public <B, I> InjectionContext<B, I> create() throws Exception {
     DefaultListableBeanFactory factory;
     if (configurationURL != null) {
       factory = new XmlBeanFactory(new UrlResource(configurationURL));
@@ -181,6 +181,6 @@ public class SpringBuilder extends InjectBuilder {
     configurer.postProcessBeanFactory(factory);
 
     //
-    return (InjectManager<B, I>)new SpringManager(factory, classLoader);
+    return (InjectionContext<B, I>)new SpringContext(factory, classLoader);
   }
 }

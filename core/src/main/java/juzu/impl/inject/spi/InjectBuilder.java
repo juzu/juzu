@@ -27,7 +27,7 @@ import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 
 /**
- * A builder for configuring an {@link InjectManager} implementation.
+ * A builder for configuring an {@link InjectionContext} implementation.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
@@ -96,6 +96,6 @@ public abstract class InjectBuilder {
 
   public abstract InjectBuilder setFilter(BeanFilter filter);
 
-  public abstract <B, I> InjectManager<B, I> create() throws Exception;
+  public abstract <B, I> InjectionContext<B, I> create() throws Exception;
 
 }

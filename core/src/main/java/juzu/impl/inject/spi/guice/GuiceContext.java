@@ -38,7 +38,7 @@ import com.google.inject.spi.TypeListener;
 import juzu.Scope;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 
 import javax.annotation.PreDestroy;
 import java.lang.annotation.Annotation;
@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceManager extends InjectManager<GuiceBean, Object> {
+public class GuiceContext extends InjectionContext<GuiceBean, Object> {
 
   /** . */
   private Injector injector;
@@ -64,7 +64,7 @@ public class GuiceManager extends InjectManager<GuiceBean, Object> {
   /** . */
   private final Map<String, Key<?>> nameMap;
 
-  public GuiceManager(final GuiceBuilder bootstrap) {
+  public GuiceContext(final GuiceBuilder bootstrap) {
 
     AbstractModule module = new AbstractModule() {
       @Override
@@ -145,7 +145,7 @@ public class GuiceManager extends InjectManager<GuiceBean, Object> {
         }
 
         // Bind the manager itself
-        bind(InjectManager.class).toInstance(GuiceManager.this);
+        bind(InjectionContext.class).toInstance(GuiceContext.this);
       }
 
       private <T> void bind(Class<T> clazz, T instance) {

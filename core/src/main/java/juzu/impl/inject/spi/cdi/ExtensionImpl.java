@@ -20,7 +20,7 @@
 package juzu.impl.inject.spi.cdi;
 
 import juzu.Scope;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.utils.Tools;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -51,13 +51,13 @@ public class ExtensionImpl implements Extension {
   };
 
   /** . */
-  private final CDIManager manager;
+  private final CDIContext manager;
 
   /** The singletons to shut down. */
   private List<Bean<?>> singletons;
 
   public ExtensionImpl() {
-    this.manager = CDIManager.boot.get();
+    this.manager = CDIContext.boot.get();
     this.singletons = new ArrayList<Bean<?>>();
   }
 
@@ -94,7 +94,7 @@ public class ExtensionImpl implements Extension {
     }
 
     // Add the manager
-    event.addBean(new SingletonBean(InjectManager.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), manager));
+    event.addBean(new SingletonBean(InjectionContext.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), manager));
 
     // Add bound beans
     for (AbstractBean bean : manager.boundBeans) {

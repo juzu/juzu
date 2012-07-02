@@ -29,7 +29,7 @@ import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.inject.spi.InjectBuilder;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -99,7 +99,7 @@ public class ApplicationBootstrap {
     }
 
     //
-    InjectManager<B, I> manager;
+    InjectionContext<B, I> manager;
     try {
       manager = bootstrap.create();
     }

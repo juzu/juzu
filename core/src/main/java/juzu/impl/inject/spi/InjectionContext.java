@@ -22,7 +22,7 @@ package juzu.impl.inject.spi;
 import java.lang.reflect.InvocationTargetException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class InjectManager<B, I> {
+public abstract class InjectionContext<B, I> {
 
   /**
    * Returns the implementation.
@@ -69,12 +69,12 @@ public abstract class InjectManager<B, I> {
   private static class BeanLifeCycleImpl<B,I,T> implements BeanLifeCycle<T> {
 
     final Class<T> type;
-    final InjectManager<B, I> manager;
+    final InjectionContext<B, I> manager;
     final B a;
     private I instance;
     private T o;
 
-    private BeanLifeCycleImpl(Class<T> type, InjectManager<B, I> manager, B a) {
+    private BeanLifeCycleImpl(Class<T> type, InjectionContext<B, I> manager, B a) {
       this.type = type;
       this.manager = manager;
       this.a = a;

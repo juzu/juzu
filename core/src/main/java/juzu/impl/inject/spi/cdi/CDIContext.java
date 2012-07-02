@@ -22,7 +22,7 @@ package juzu.impl.inject.spi.cdi;
 import juzu.AmbiguousResolutionException;
 import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.CreationException;
@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIManager extends InjectManager<Bean<?>, CreationalContext<?>> {
+public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> {
 
   /** . */
-  static final ThreadLocal<CDIManager> boot = new ThreadLocal<CDIManager>();
+  static final ThreadLocal<CDIContext> boot = new ThreadLocal<CDIContext>();
 
   /** . */
   private final Container container;
@@ -58,10 +58,10 @@ public class CDIManager extends InjectManager<Bean<?>, CreationalContext<?>> {
   /** . */
   final BeanFilter filter;
 
-  public CDIManager(
-    Container container,
-    BeanFilter filter,
-    ArrayList<AbstractBean> boundBeans) throws Exception {
+  public CDIContext(
+      Container container,
+      BeanFilter filter,
+      ArrayList<AbstractBean> boundBeans) throws Exception {
     this.filter = filter;
     this.boundBeans = boundBeans;
     this.beans = new ArrayList<Bean>();

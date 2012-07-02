@@ -27,7 +27,7 @@ import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -209,7 +209,7 @@ public class Request implements ScopingContext {
     }
   }
 
-  private static <B, I> Object doInvoke(Request request, Object[] args, InjectManager<B, I> manager) throws ApplicationException {
+  private static <B, I> Object doInvoke(Request request, Object[] args, InjectionContext<B, I> manager) throws ApplicationException {
     RequestContext context = request.getContext();
     Class<?> type = context.getMethod().getType();
 

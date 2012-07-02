@@ -20,7 +20,7 @@
 package juzu.impl.inject.spi.managerinjection;
 
 import juzu.impl.inject.Export;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 
 import javax.inject.Inject;
 
@@ -29,6 +29,6 @@ import javax.inject.Inject;
 public class Injected {
 
   @Inject
-  public InjectManager manager;
+  public InjectionContext manager;
 
 }

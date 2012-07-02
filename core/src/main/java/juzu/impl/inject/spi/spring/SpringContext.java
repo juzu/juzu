@@ -21,7 +21,7 @@ package juzu.impl.inject.spi.spring;
 
 import juzu.AmbiguousResolutionException;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -38,7 +38,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class SpringManager extends InjectManager<String, Object> {
+public class SpringContext extends InjectionContext<String, Object> {
 
   /** . */
   private final DefaultListableBeanFactory factory;
@@ -46,7 +46,7 @@ public class SpringManager extends InjectManager<String, Object> {
   /** . */
   private final ClassLoader classLoader;
 
-  public SpringManager(DefaultListableBeanFactory factory, ClassLoader classLoader) {
+  public SpringContext(DefaultListableBeanFactory factory, ClassLoader classLoader) {
     factory.registerSingleton("" + Math.random(), this);
 
     //

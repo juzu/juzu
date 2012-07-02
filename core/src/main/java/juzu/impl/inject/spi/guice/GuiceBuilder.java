@@ -23,7 +23,7 @@ import juzu.Scope;
 import juzu.impl.inject.BeanFilter;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
-import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.inject.spi.InjectionContext;
 
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
@@ -96,7 +96,7 @@ public class GuiceBuilder extends InjectBuilder {
   }
 
   @Override
-  public InjectManager<?, ?> create() {
-    return new GuiceManager(this);
+  public InjectionContext<?, ?> create() {
+    return new GuiceContext(this);
   }
 }

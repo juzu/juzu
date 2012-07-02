@@ -37,7 +37,7 @@ public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInject
   protected InjectBuilder bootstrap;
 
   /** . */
-  protected InjectManager<B, I> mgr;
+  protected InjectionContext<B, I> mgr;
 
   /** . */
   protected ReadFileSystem<?> fs;

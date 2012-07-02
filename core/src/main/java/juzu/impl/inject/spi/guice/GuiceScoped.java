@@ -17,6 +17,6 @@ class GuiceScoped implements Scoped {
   }
 
   public void destroy() {
-    GuiceManager.invokePreDestroy(o);
+    GuiceContext.invokePreDestroy(o);
   }
 }

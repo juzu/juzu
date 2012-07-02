@@ -24,9 +24,9 @@ import juzu.impl.controller.ControllerPlugin;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.inject.Export;
 import juzu.impl.inject.ScopeController;
+import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
-import juzu.impl.inject.spi.InjectManager;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -53,7 +53,7 @@ public class ApplicationContext {
   private final ApplicationDescriptor descriptor;
 
   /** . */
-  final InjectManager<?, ?> injectManager;
+  final InjectionContext<?, ?> injectManager;
 
   /** . */
   private final ControllerPlugin controller;
@@ -62,14 +62,14 @@ public class ApplicationContext {
   public ArrayList<RequestFilter> lifecycles;
 
   @Inject
-  public ApplicationContext(InjectManager injectManager, ApplicationDescriptor descriptor, ControllerPlugin controller) throws Exception {
+  public ApplicationContext(InjectionContext injectManager, ApplicationDescriptor descriptor, ControllerPlugin controller) throws Exception {
     this.descriptor = descriptor;
     this.injectManager = injectManager;
     this.controller = controller;
   }
 
   // This is done lazyly to avoid circular references issues
-  private <B, I> ArrayList<RequestFilter> getLifecycles(InjectManager<B, I> manager) throws Exception {
+  private <B, I> ArrayList<RequestFilter> getLifecycles(InjectionContext<B, I> manager) throws Exception {
     if (lifecycles == null) {
       ArrayList<RequestFilter> lifeCycles = new ArrayList<RequestFilter>();
       for (B lifeCycleBean : manager.resolveBeans(RequestFilter.class)) {
@@ -103,7 +103,7 @@ public class ApplicationContext {
     return descriptor;
   }
 
-  public InjectManager getInjectManager() {
+  public InjectionContext getInjectManager() {
     return injectManager;
   }
 
@@ -193,7 +193,7 @@ public class ApplicationContext {
     return resolveBean(injectManager, name);
   }
 
-  private <B, I> Object resolveBean(InjectManager<B, I> manager, String name) throws ApplicationException {
+  private <B, I> Object resolveBean(InjectionContext<B, I> manager, String name) throws ApplicationException {
     B bean = manager.resolveBean(name);
     if (bean != null) {
       try {
