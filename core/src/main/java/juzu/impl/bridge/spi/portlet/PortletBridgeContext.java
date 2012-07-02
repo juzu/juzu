@@ -1,8 +1,8 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.impl.application.ApplicationContext;
-import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.utils.Logger;
 
 import javax.portlet.ActionRequest;
@@ -16,45 +16,33 @@ import javax.portlet.ResourceResponse;
 public class PortletBridgeContext {
 
   /** . */
-  final ApplicationRuntime runtime;
+  final Bridge bridge;
 
-  /** . */
-  final AssetManager assetManager;
-
-  /** . */
-  final Logger log;
-
-  /** . */
-  final boolean prod;
-
-  public PortletBridgeContext(ApplicationRuntime runtime, AssetManager assetManager, Logger log, boolean prod) {
-    this.runtime = runtime;
-    this.assetManager = assetManager;
-    this.log = log;
-    this.prod = prod;
+  public PortletBridgeContext(Bridge bridge) {
+    this.bridge = bridge;
   }
 
   public ApplicationContext getApplication() {
-    return runtime.getContext();
+    return bridge.runtime.getContext();
   }
 
   public AssetManager getAssetManager() {
-    return assetManager;
+    return bridge.runtime.getScriptManager();
   }
 
   public Logger getLog() {
-    return log;
+    return bridge.runtime.getLogger();
   }
 
   public PortletActionBridge create(ActionRequest req, ActionResponse resp) {
-    return new PortletActionBridge(this, req, resp, prod);
+    return new PortletActionBridge(this, req, resp, bridge.config.prod);
   }
 
   public PortletRenderBridge create(RenderRequest req, RenderResponse resp, boolean buffer) {
-    return new PortletRenderBridge(this, req, resp, buffer, prod);
+    return new PortletRenderBridge(this, req, resp, buffer, bridge.config.prod);
   }
 
   public PortletResourceBridge create(ResourceRequest req, ResourceResponse resp, boolean buffer) {
-    return new PortletResourceBridge(this, req, resp, buffer, prod);
+    return new PortletResourceBridge(this, req, resp, buffer, bridge.config.prod);
   }
 }

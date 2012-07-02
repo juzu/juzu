@@ -52,8 +52,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
       // For now only in gatein since liferay won't support it very well
       if (req.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container") || true) {
-        Iterable<Asset.Value> scripts = context.assetManager.resolveAssets(render.getScripts());
-        Iterable<Asset.Value> stylesheets = context.assetManager.resolveAssets(render.getStylesheets());
+        Iterable<Asset.Value> scripts = context.bridge.runtime.getScriptManager().resolveAssets(render.getScripts());
+        Iterable<Asset.Value> stylesheets = context.bridge.runtime.getStylesheetManager().resolveAssets(render.getStylesheets());
 
         //
         for (Asset.Value stylesheet : stylesheets) {

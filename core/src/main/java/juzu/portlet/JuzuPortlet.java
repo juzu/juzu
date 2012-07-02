@@ -23,18 +23,20 @@ import juzu.PropertyType;
 import juzu.impl.application.ApplicationException;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetServer;
+import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.bridge.spi.portlet.PortletActionBridge;
 import juzu.impl.bridge.spi.portlet.PortletBridgeContext;
 import juzu.impl.bridge.spi.portlet.PortletRenderBridge;
 import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.utils.DevClassLoader;
 import juzu.impl.utils.Logger;
+import juzu.impl.utils.SimpleMap;
 import juzu.impl.utils.Tools;
 import juzu.impl.utils.TrimmingException;
 
@@ -61,6 +63,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -81,38 +84,25 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   public static final WINDOW_STATE WINDOW_STATE = new WINDOW_STATE();
 
   /** . */
-  private PortletConfig config;
-
-  /** . */
-  private ApplicationRuntime<?, String> runtime;
-
-  /** . */
-  private boolean prod;
+  private PortletConfig portletConfig;
 
   /** . */
   private String srcPath;
 
   /** . */
-  private String appName;
+  private BridgeConfig bridgeConfig;
 
   /** . */
-  private InjectImplementation injectImpl;
+  private PortletBridgeContext bridgeContext;
 
   /** . */
-  private ReadFileSystem<String> resources;
-
-  /** . */
-  private Logger log;
-
-  /** . */
-  private PortletBridgeContext bridge;
-
-  /** . */
-  private AssetServer server;
+  private Bridge bridge;
 
   public void init(final PortletConfig config) throws PortletException {
-    this.config = config;
-    this.log = new Logger() {
+    this.portletConfig = config;
+
+    //
+    Logger log = new Logger() {
       public void log(CharSequence msg) {
         System.out.println("[" + config.getPortletName() + "] " + msg);
       }
@@ -124,30 +114,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     };
 
     //
-    String runMode = config.getInitParameter("juzu.run_mode");
-    runMode = runMode == null ? "prod" : runMode.trim().toLowerCase();
-
-    //
-    String inject = config.getInitParameter("juzu.inject");
-    InjectImplementation injectImpl;
-    if (inject == null) {
-      injectImpl = InjectImplementation.CDI_WELD;
-    }
-    else {
-      inject = inject.trim().toLowerCase();
-      if ("weld".equals(inject)) {
-        injectImpl = InjectImplementation.CDI_WELD;
-      }
-      else if ("spring".equals(inject)) {
-        injectImpl = InjectImplementation.INJECT_SPRING;
-      }
-      else {
-        throw new PortletException("unrecognized inject vendor " + inject);
-      }
-    }
-    log.log("Using injection " + injectImpl.name());
-
-    //
     AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
     if (server == null) {
       server = new AssetServer();
@@ -155,12 +121,39 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     }
 
     //
-    this.appName = getApplicationName(config);
-    this.prod = !("dev".equals(runMode));
+    BridgeConfig bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
+      @Override
+      protected Iterator<String> keys() {
+        return BridgeConfig.NAMES.iterator();
+      }
+
+      @Override
+      public String get(Object key) {
+        if (BridgeConfig.APP_NAME.equals(key)) {
+          return getApplicationName(config);
+        } else if (BridgeConfig.NAMES.contains(key)) {
+          return config.getInitParameter((String)key);
+        } else {
+          return null;
+        }
+      }
+    });
+
+    //
+    ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(portletConfig.getPortletContext(), "/WEB-INF/src/");
+
+    //
+    Bridge bridge = new Bridge();
+    bridge.config = bridgeConfig;
+    bridge.resources = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/");
+    bridge.server = server;
+    bridge.log = log;
+    bridge.sourcePath = sourcePath;
+
+    //
+    this.bridgeConfig = bridgeConfig;
     this.srcPath = config.getInitParameter("juzu.src_path");
-    this.injectImpl = injectImpl;
-    this.resources = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/");
-    this.server = server;
+    this.bridge = bridge;
 
     //
     Collection<CompilationError> errors = boot();
@@ -181,61 +174,29 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   }
 
   private Collection<CompilationError> boot() throws PortletException {
-    if (runtime == null) {
-      if (prod) {
-        ApplicationRuntime.Static<String, String> ss = new ApplicationRuntime.Static<String, String>(log);
-        ss.setClasses(WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/"));
-        ss.setClassLoader(Thread.currentThread().getContextClassLoader());
-
-        //
-        runtime = ss;
-      }
-      else {
-        try {
-          ClassLoaderFileSystem classPath = new ClassLoaderFileSystem(new DevClassLoader(Thread.currentThread().getContextClassLoader()));
-          ReadFileSystem<?> fss = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
-          ApplicationRuntime.Dynamic dynamic = new ApplicationRuntime.Dynamic<String, String>(log);
-          dynamic.init(classPath, fss);
-
-          //
-          runtime = dynamic;
-        }
-        catch (Exception e) {
-          throw e instanceof PortletException ? (PortletException)e : new PortletException(e);
-        }
-      }
-
-      // Configure the runtime
-      runtime.setResources(resources);
-      runtime.setInjectImplementation(injectImpl);
-      runtime.setName(appName);
-      runtime.setAssetServer(server);
-    }
-
-    //
     try {
-      Collection<CompilationError> boot = runtime.boot();
+      Collection<CompilationError> boot = bridge.boot();
       if (boot == null || boot.isEmpty()) {
-        bridge = new PortletBridgeContext(runtime, runtime.getScriptManager(), log, prod);
+        bridgeContext = new PortletBridgeContext(bridge);
       }
       return boot;
     }
     catch (Exception e) {
-      throw new PortletException("Could not find an application to start", e);
+      throw e instanceof PortletException ? (PortletException)e : new PortletException("Could not find an application to start", e);
     }
   }
 
   public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException {
-    PortletActionBridge bridge = this.bridge.create(request, response);
+    PortletActionBridge requestBridge = this.bridgeContext.create(request, response);
     try {
-      runtime.getContext().invoke(bridge);
+      bridge.runtime.getContext().invoke(requestBridge);
     }
     catch (ApplicationException e) {
       // For now we do that until we find something better specially for the dev mode
       throw new PortletException(e.getCause());
     }
     finally {
-      bridge.close();
+      requestBridge.close();
     }
   }
 
@@ -264,22 +225,22 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       try {
         TrimmingException.invoke(new TrimmingException.Callback() {
           public void call() throws Throwable {
-            PortletRenderBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
+            PortletRenderBridge requestBridge = JuzuPortlet.this.bridgeContext.create(request, response, !bridgeConfig.prod);
             try {
-              runtime.getContext().invoke(bridge);
-              bridge.commit();
+              bridge.runtime.getContext().invoke(requestBridge);
+              requestBridge.commit();
             }
             catch (ApplicationException e) {
               throw e.getCause();
             }
             finally {
-              bridge.close();
+              requestBridge.close();
             }
           }
         });
       }
       catch (TrimmingException e) {
-        if (prod) {
+        if (bridgeConfig.prod) {
           throw new PortletException(e.getSource());
         }
         else {
@@ -296,17 +257,17 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     boolean assetRequest = "assets".equals(request.getParameter("juzu.request"));
 
     //
-    if (assetRequest && !prod) {
+    if (assetRequest && !bridgeConfig.prod) {
       String path = request.getResourceID();
       String contentType;
       InputStream in;
-      if (runtime.getScriptManager().isClassPath(path)) {
+      if (bridge.runtime.getScriptManager().isClassPath(path)) {
         contentType = "text/javascript";
-        in = runtime.getClassLoader().getResourceAsStream(path.substring(1));
+        in = bridge.runtime.getClassLoader().getResourceAsStream(path.substring(1));
       }
-      else if (runtime.getStylesheetManager().isClassPath(path)) {
+      else if (bridge.runtime.getStylesheetManager().isClassPath(path)) {
         contentType = "text/css";
-        in = runtime.getClassLoader().getResourceAsStream(path.substring(1));
+        in = bridge.runtime.getClassLoader().getResourceAsStream(path.substring(1));
       }
       else {
         contentType = null;
@@ -321,16 +282,16 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       try {
         TrimmingException.invoke(new TrimmingException.Callback() {
           public void call() throws Throwable {
-            PortletResourceBridge bridge = JuzuPortlet.this.bridge.create(request, response, !prod);
+            PortletResourceBridge resourceBridge = JuzuPortlet.this.bridgeContext.create(request, response, !bridgeConfig.prod);
             try {
-              runtime.getContext().invoke(bridge);
-              bridge.commit();
+              bridge.runtime.getContext().invoke(resourceBridge);
+              resourceBridge.commit();
             }
             catch (ApplicationException e) {
               throw e.getCause();
             }
             finally {
-              bridge.close();
+              resourceBridge.close();
             }
           }
         });
@@ -343,7 +304,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
         logThrowable(e);
 
         //
-        if (!prod) {
+        if (!bridgeConfig.prod) {
           PrintWriter writer = response.getWriter();
           writer.print("<html>\n");
           writer.print("<head>\n");
@@ -381,7 +342,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   }
 
   private void logThrowable(Throwable t) {
-    log.log(t.getMessage(), t);
+    bridge.log.log(t.getMessage(), t);
   }
 
   private void logErrors(Collection<CompilationError> errors) {
@@ -396,7 +357,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       }
       sb.append(':').append(error.getLocation().getLine()).append(':').append(error.getMessage()).append('\n');
     }
-    log.log(sb.toString());
+    bridge.log.log(sb.toString());
   }
 
   private void renderThrowable(PrintWriter writer, Throwable t) throws PortletException, IOException {
