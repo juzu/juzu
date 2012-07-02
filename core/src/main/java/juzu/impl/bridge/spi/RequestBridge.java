@@ -65,16 +65,30 @@ public interface RequestBridge {
   WindowContext getWindowContext();
 
   /**
-   * End the request with the specified response. The response argument may be null if no response was explictly
-   * provided by the application.
+   * Set the specified response on the bridge.
    *
    * @param response the response
    * @throws IllegalArgumentException if the response cannot be honoured
-   * @throws IllegalStateException    if the request bridge is already associated with a response
    * @throws IOException              any io exception
    */
-  void end(Response response) throws IllegalArgumentException, IllegalStateException, IOException;
+  void setResponse(Response response) throws IllegalArgumentException, IOException;
 
+  /**
+   * Signals the beginning of a request.
+   *
+   * @param request the request
+   */
   void begin(Request request);
+
+  /**
+   * Signals the end of a request. During this time, the request bridge should terminate any activity
+   * in relation with the request (such as closing opened scoped context).
+   */
+  void end();
+
+  /**
+   * Terminates the life cycle of the request bridge.
+   */
+  void close();
 
 }

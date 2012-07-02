@@ -35,6 +35,10 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ResourceBridgeImpl extends MimeBridgeImpl implements ResourceBridge {
+
+  /** . */
+  private Response.Content response;
+
   ResourceBridgeImpl(
       HttpServletBridgeContext context,
       HttpServletRequest req,
@@ -44,40 +48,51 @@ public class ResourceBridgeImpl extends MimeBridgeImpl implements ResourceBridge
     super(context, req, resp, methodId, parameters);
   }
 
-  public void end(Response response) throws IllegalStateException, IOException {
+  public void setResponse(Response response) throws IllegalStateException, IOException {
     if (response instanceof Response.Content) {
-      Response.Content content = (Response.Content)response;
+      this.response = (Response.Content)response;
+    } else {
+      throw new IllegalArgumentException();
+    }
+  }
 
+  public void close() {
+    if (response != null) {
       //
-      int status = content.getStatus();
+      int status = response.getStatus();
       if (status != 200) {
         resp.setStatus(status);
       }
 
       // Set mime type
-      String mimeType = content.getMimeType();
+      String mimeType = response.getMimeType();
       if (mimeType != null) {
         resp.setContentType(mimeType);
       }
 
       // Send response
-      if (content.getKind() == Stream.Char.class) {
-        PrintWriter writer = resp.getWriter();
-        try {
-          content.send(new AppendableStream(writer));
+      try {
+        if (response.getKind() == Stream.Char.class) {
+          PrintWriter writer = resp.getWriter();
+          try {
+            response.send(new AppendableStream(writer));
+          }
+          finally {
+            Tools.safeClose(writer);
+          }
         }
-        finally {
-          Tools.safeClose(writer);
+        else {
+          OutputStream out = resp.getOutputStream();
+          try {
+            response.send(new BinaryOutputStream(out));
+          }
+          finally {
+            Tools.safeClose(out);
+          }
         }
       }
-      else {
-        OutputStream out = resp.getOutputStream();
-        try {
-          content.send(new BinaryOutputStream(out));
-        }
-        finally {
-          Tools.safeClose(out);
-        }
+      catch (IOException e) {
+        e.printStackTrace();
       }
     }
   }

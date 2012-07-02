@@ -19,6 +19,7 @@
 
 package juzu.impl.application;
 
+import juzu.Response;
 import juzu.UndeclaredIOException;
 import juzu.impl.controller.ControllerPlugin;
 import juzu.impl.controller.descriptor.ControllerMethod;
@@ -176,14 +177,18 @@ public class ApplicationContext {
       ScopeController.begin(request);
       bridge.begin(request);
       request.invoke();
-      try {
-        bridge.end(request.getResponse());
-      }
-      catch (IOException e) {
-        throw new UndeclaredIOException(e);
+      Response response = request.getResponse();
+      if (response != null) {
+        try {
+          bridge.setResponse(response);
+        }
+        catch (IOException e) {
+          throw new UndeclaredIOException(e);
+        }
       }
     }
     finally {
+      bridge.end();
       ScopeController.end();
       Thread.currentThread().setContextClassLoader(oldCL);
     }

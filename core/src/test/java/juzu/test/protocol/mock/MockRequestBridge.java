@@ -141,9 +141,7 @@ public abstract class MockRequestBridge implements RequestBridge {
     return windowContext;
   }
 
-  void close() {
-    attributesHistory.addAll(Tools.list(attributes));
-    attributes.close();
+  public void close() {
   }
 
   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
@@ -188,5 +186,10 @@ public abstract class MockRequestBridge implements RequestBridge {
   }
 
   public void begin(Request request) {
+  }
+
+  public void end() {
+    attributesHistory.addAll(Tools.list(attributes));
+    attributes.close();
   }
 }

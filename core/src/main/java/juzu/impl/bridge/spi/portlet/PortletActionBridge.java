@@ -36,20 +36,11 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge {
 
-  /** . */
-  private boolean done;
-
   public PortletActionBridge(PortletBridgeContext context, ActionRequest actionRequest, ActionResponse actionResponse, boolean prod) {
     super(context, actionRequest, actionResponse, prod);
-
-    //
-    this.done = false;
   }
 
-  public void end(Response response) throws IllegalStateException, IOException {
-    if (done) {
-      throw new IllegalStateException();
-    }
+  public void setResponse(Response response) throws IllegalStateException, IOException {
     if (response instanceof Response.Update) {
       Response.Update update = (Response.Update)response;
 
@@ -89,7 +80,8 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
     else if (response instanceof Response.Redirect) {
       Response.Redirect redirect = (Response.Redirect)response;
       super.resp.sendRedirect(redirect.getLocation());
+    } else {
+      throw new IllegalArgumentException();
     }
-    done = true;
   }
 }

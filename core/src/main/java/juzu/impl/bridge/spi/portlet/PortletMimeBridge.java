@@ -64,20 +64,6 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
     this.buffer = buffer;
   }
 
-  public void commit() throws IOException {
-    if (result != null) {
-      if (mimeType != null) {
-        resp.setContentType(mimeType);
-      }
-      if (result instanceof String) {
-        resp.getWriter().write((String)result);
-      }
-      else {
-        resp.getPortletOutputStream().write((byte[])result);
-      }
-    }
-  }
-
   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
     if (propertyType == JuzuPortlet.PORTLET_MODE) {
       if (phase == Phase.RESOURCE) {
@@ -194,7 +180,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
     }
   }
 
-  public void end(Response response) throws IllegalStateException, IOException {
+  public void setResponse(Response response) throws IllegalStateException, IOException {
     if (response instanceof Response.Content<?>) {
       Response.Content<?> content = (Response.Content<?>)response;
 
@@ -234,6 +220,32 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
           ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
         }
       }
+    } else {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  @Override
+  public void close() {
+    super.close();
+
+    //
+    try {
+      if (result != null) {
+        if (mimeType != null) {
+          resp.setContentType(mimeType);
+        }
+        if (result instanceof String) {
+          resp.getWriter().write((String)result);
+        }
+        else {
+          resp.getPortletOutputStream().write((byte[])result);
+        }
+      }
+    }
+    catch (IOException e) {
+      // ????
+      e.printStackTrace();
     }
   }
 }

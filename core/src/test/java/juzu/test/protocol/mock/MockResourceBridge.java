@@ -30,7 +30,7 @@ import java.util.Map;
 public class MockResourceBridge extends MockMimeBridge implements ResourceBridge {
 
   /** . */
-  private int status;
+  private int status = 200;
 
   public MockResourceBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
     super(client, methodId, parameters);
@@ -49,16 +49,13 @@ public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
   }
 
   @Override
-  public void end(Response response) throws IllegalStateException, IOException {
-    super.end(response);
-
-    //
+  public void setResponse(Response response) throws IllegalStateException, IOException {
     if (response instanceof Response.Content) {
       Response.Content content = (Response.Content)response;
       status = content.getStatus();
-    }
-    else {
-      status = 200;
+      super.setResponse(response);
+    } else {
+      throw new IllegalArgumentException();
     }
   }
 }

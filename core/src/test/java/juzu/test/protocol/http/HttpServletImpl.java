@@ -97,8 +97,13 @@ public class HttpServletImpl extends HttpServlet {
     }
     else {
       RequestBridgeImpl requestBridge = bridge.create(req, resp);
-      ApplicationContext context = application.getContext();
-      context.invoke(requestBridge);
+      try {
+        ApplicationContext context = application.getContext();
+        context.invoke(requestBridge);
+      }
+      finally {
+        requestBridge.close();
+      }
     }
   }
 }

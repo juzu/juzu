@@ -55,7 +55,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
     return mimeType;
   }
 
-  public void end(Response response) throws IllegalStateException, IOException {
+  public void setResponse(Response response) throws IllegalStateException, IOException {
     if (response instanceof Response.Content<?>) {
       Response.Content content = (Response.Content)response;
       if (content.getKind() == Stream.Binary.class) {
@@ -70,6 +70,8 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
         result = builder.toString();
       }
       mimeType = content.getMimeType();
+    } else {
+      throw new IllegalArgumentException();
     }
   }
 }

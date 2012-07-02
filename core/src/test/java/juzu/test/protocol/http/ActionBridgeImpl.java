@@ -30,6 +30,10 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge {
+
+  /** . */
+  private Response response;
+
   ActionBridgeImpl(
       HttpServletBridgeContext context,
       HttpServletRequest req,
@@ -39,16 +43,30 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
     super(context, req, resp, methodId, parameters);
   }
 
-  public void end(Response response) throws IllegalStateException, IOException {
-    if (response instanceof Response.Update) {
-      Response.Update update = (Response.Update)response;
-      String url = renderURL(Phase.RENDER, update.getParameters(), update.getProperties());
-      resp.sendRedirect(url);
+  public void setResponse(Response response) throws IllegalStateException, IOException {
+    if (response instanceof Response.Update || response instanceof Response.Redirect) {
+      this.response = response;
+    } else {
+      throw new IllegalArgumentException();
     }
-    else if (response instanceof Response.Redirect) {
-      Response.Redirect redirect = (Response.Redirect)response;
-      String url = redirect.getLocation();
-      resp.sendRedirect(url);
+  }
+
+  public void close() {
+    try {
+      if (response instanceof Response.Update) {
+        Response.Update update = (Response.Update)response;
+        String url = renderURL(Phase.RENDER, update.getParameters(), update.getProperties());
+        resp.sendRedirect(url);
+      }
+      else if (response instanceof Response.Redirect) {
+        Response.Redirect redirect = (Response.Redirect)response;
+        String url = redirect.getLocation();
+        resp.sendRedirect(url);
+      }
+    }
+    catch (IOException e) {
+      // ?????
+      e.printStackTrace();
     }
   }
 }

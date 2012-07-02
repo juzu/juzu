@@ -21,20 +21,17 @@ package juzu.portlet;
 
 import juzu.PropertyType;
 import juzu.impl.application.ApplicationException;
-import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.bridge.spi.portlet.PortletActionBridge;
 import juzu.impl.bridge.spi.portlet.PortletBridgeContext;
 import juzu.impl.bridge.spi.portlet.PortletRenderBridge;
 import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
-import juzu.impl.utils.DevClassLoader;
 import juzu.impl.utils.Logger;
 import juzu.impl.utils.SimpleMap;
 import juzu.impl.utils.Tools;
@@ -84,9 +81,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   public static final WINDOW_STATE WINDOW_STATE = new WINDOW_STATE();
 
   /** . */
-  private PortletConfig portletConfig;
-
-  /** . */
   private String srcPath;
 
   /** . */
@@ -99,9 +93,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   private Bridge bridge;
 
   public void init(final PortletConfig config) throws PortletException {
-    this.portletConfig = config;
-
-    //
     Logger log = new Logger() {
       public void log(CharSequence msg) {
         System.out.println("[" + config.getPortletName() + "] " + msg);
@@ -140,7 +131,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     });
 
     //
-    ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(portletConfig.getPortletContext(), "/WEB-INF/src/");
+    ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
 
     //
     Bridge bridge = new Bridge();
@@ -222,19 +213,17 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       }
 
       //
+      final PortletRenderBridge requestBridge = JuzuPortlet.this.bridgeContext.create(request, response, !bridgeConfig.prod);
+
+      //
       try {
         TrimmingException.invoke(new TrimmingException.Callback() {
           public void call() throws Throwable {
-            PortletRenderBridge requestBridge = JuzuPortlet.this.bridgeContext.create(request, response, !bridgeConfig.prod);
             try {
               bridge.runtime.getContext().invoke(requestBridge);
-              requestBridge.commit();
             }
             catch (ApplicationException e) {
               throw e.getCause();
-            }
-            finally {
-              requestBridge.close();
             }
           }
         });
@@ -246,6 +235,8 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
         else {
           renderThrowable(response.getWriter(), e);
         }
+      } finally {
+        requestBridge.close();
       }
     }
     else {
@@ -279,19 +270,17 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       }
     }
     else {
+      final PortletResourceBridge requestBridge = JuzuPortlet.this.bridgeContext.create(request, response, !bridgeConfig.prod);
+
+      //
       try {
         TrimmingException.invoke(new TrimmingException.Callback() {
           public void call() throws Throwable {
-            PortletResourceBridge resourceBridge = JuzuPortlet.this.bridgeContext.create(request, response, !bridgeConfig.prod);
             try {
-              bridge.runtime.getContext().invoke(resourceBridge);
-              resourceBridge.commit();
+              bridge.runtime.getContext().invoke(requestBridge);
             }
             catch (ApplicationException e) {
               throw e.getCause();
-            }
-            finally {
-              resourceBridge.close();
             }
           }
         });
@@ -313,6 +302,8 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
           renderThrowable(writer, e);
           writer.print("</body>\n");
         }
+      } finally {
+        requestBridge.close();
       }
     }
   }

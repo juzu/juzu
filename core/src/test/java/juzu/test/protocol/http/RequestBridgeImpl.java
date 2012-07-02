@@ -230,13 +230,6 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     return buffer.toString();
   }
 
-  public void close() {
-    ScopedContext context = getRequestContext(false);
-    if (context != null) {
-      context.close();
-    }
-  }
-
   protected final ScopedContext getRequestContext(boolean create) {
     ScopedContext context = (ScopedContext)req.getAttribute("juzu.request_scope");
     if (context == null && create) {
@@ -271,5 +264,15 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
 
   public final void begin(Request request) {
     this.request = request;
+  }
+
+  public void end() {
+    this.request = null;
+
+    //
+    ScopedContext context = getRequestContext(false);
+    if (context != null) {
+      context.close();
+    }
   }
 }

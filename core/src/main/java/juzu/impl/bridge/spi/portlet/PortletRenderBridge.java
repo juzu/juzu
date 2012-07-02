@@ -31,27 +31,33 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
 import java.io.IOException;
+import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge {
+
+  /** . */
+  private String title;
+
+  /** . */
+  private LinkedList<Element> headers = new LinkedList<Element>();
 
   public PortletRenderBridge(PortletBridgeContext context, RenderRequest request, RenderResponse response, boolean buffer, boolean prod) {
     super(context, request, response, buffer, prod);
   }
 
   public void setTitle(String title) {
-    resp.setTitle(title);
+    this.title = title;
   }
 
   @Override
-  public void end(Response response) throws IllegalStateException, IOException {
-    // Improve that because it will not work on streaming portals...
-    // for now it's OK
-    if (response instanceof Response.Content.Render) {
-      Response.Content.Render render = (Response.Content.Render)response;
+  public void setResponse(Response response) throws IllegalStateException, IOException {
+    if (response instanceof Response.Content) {
+      Response.Content content = (Response.Content)response;
 
-      // For now only in gatein since liferay won't support it very well
-      if (req.getPortalContext().getPortalInfo().startsWith("GateIn Portlet Container") || true) {
+      //
+      if (content instanceof Response.Render) {
+        Response.Render render = (Response.Render)response;
         Iterable<Asset.Value> scripts = context.bridge.runtime.getScriptManager().resolveAssets(render.getScripts());
         Iterable<Asset.Value> stylesheets = context.bridge.runtime.getStylesheetManager().resolveAssets(render.getStylesheets());
 
@@ -64,6 +70,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           elt.setAttribute("rel", "stylesheet");
           elt.setAttribute("type", "text/" + ext);
           elt.setAttribute("href", getAssetURL(stylesheet));
+          headers.add(elt);
           this.resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
         }
 
@@ -77,19 +84,21 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           // it forces to have a <script></script> tag
           Comment comment = elt.getOwnerDocument().createComment(request.getApplication().getName() + " script ");
           elt.appendChild(comment);
-          this.resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+          headers.add(elt);
+        }
+
+        //
+        String title = render.getTitle();
+        if (title != null) {
+          this.title = title;
         }
       }
 
       //
-      String title = render.getTitle();
-      if (title != null) {
-        setTitle(title);
-      }
+      super.setResponse(response);
+    } else {
+      throw new IllegalArgumentException();
     }
-
-    //
-    super.end(response);
   }
 
   private String getAssetURL(Asset.Value asset) {
@@ -134,6 +143,26 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
   @Override
   public void close() {
+
+    // Set title
+    if (title != null) {
+      resp.setTitle(title);
+    }
+
+    // Add elements
+    for (Element elt : headers) {
+      resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+    }
+
+    //
+    super.close();
+  }
+
+  @Override
+  public void end() {
+    super.end();
+
+    //
     ScopedContext context = getFlashContext(false);
     if (context != null) {
       context.close();

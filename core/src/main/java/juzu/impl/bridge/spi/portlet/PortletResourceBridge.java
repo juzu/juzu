@@ -29,21 +29,31 @@ import java.io.IOException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge {
 
+  /** . */
+  private int status = 200;
+
   public PortletResourceBridge(PortletBridgeContext context, ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod) {
     super(context, request, response, buffer, prod);
   }
 
   @Override
-  public void end(Response response) throws IllegalStateException, IOException {
+  public void setResponse(Response response) throws IllegalStateException, IOException {
     if (response instanceof Response.Content) {
       Response.Content resource = (Response.Content)response;
-      int status = resource.getStatus();
-      if (status != 200) {
-        this.resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
-      }
+      status = resource.getStatus();
+      super.setResponse(response);
+    } else {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  @Override
+  public void close() {
+    if (status != 200) {
+      this.resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
     }
 
     //
-    super.end(response);
+    super.close();
   }
 }

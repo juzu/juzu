@@ -185,10 +185,6 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   }
 
   public void close() {
-    ScopedContext context = getRequestContext(false);
-    if (context != null) {
-      context.close();
-    }
   }
 
   protected final ScopedContext getRequestContext(boolean create) {
@@ -225,5 +221,15 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
 
   public void begin(Request request) {
     this.request = request;
+  }
+
+  public void end() {
+    this.request = null;
+
+    //
+    ScopedContext context = getRequestContext(false);
+    if (context != null) {
+      context.close();
+    }
   }
 }
