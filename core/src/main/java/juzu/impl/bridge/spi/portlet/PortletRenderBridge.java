@@ -21,6 +21,7 @@ package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
 import juzu.asset.Asset;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import org.w3c.dom.Comment;
@@ -37,13 +38,19 @@ import java.util.LinkedList;
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge {
 
   /** . */
+  private final Bridge bridge;
+
+  /** . */
   private String title;
 
   /** . */
   private LinkedList<Element> headers = new LinkedList<Element>();
 
-  public PortletRenderBridge(PortletBridgeContext context, RenderRequest request, RenderResponse response, boolean buffer, boolean prod) {
-    super(context, request, response, buffer, prod);
+  public PortletRenderBridge(Bridge bridge, RenderRequest request, RenderResponse response, boolean buffer, boolean prod) {
+    super(request, response, buffer, prod);
+
+    //
+    this.bridge = bridge;
   }
 
   public void setTitle(String title) {
@@ -58,8 +65,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       //
       if (content instanceof Response.Render) {
         Response.Render render = (Response.Render)response;
-        Iterable<Asset.Value> scripts = context.bridge.runtime.getScriptManager().resolveAssets(render.getScripts());
-        Iterable<Asset.Value> stylesheets = context.bridge.runtime.getStylesheetManager().resolveAssets(render.getStylesheets());
+        Iterable<Asset.Value> scripts = bridge.runtime.getScriptManager().resolveAssets(render.getScripts());
+        Iterable<Asset.Value> stylesheets = bridge.runtime.getStylesheetManager().resolveAssets(render.getStylesheets());
 
         //
         for (Asset.Value stylesheet : stylesheets) {

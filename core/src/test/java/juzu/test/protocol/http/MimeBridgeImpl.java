@@ -29,11 +29,10 @@ import java.util.Map;
 public abstract class MimeBridgeImpl extends RequestBridgeImpl implements MimeBridge {
 
   MimeBridgeImpl(
-      HttpServletBridgeContext context,
       HttpServletRequest req,
       HttpServletResponse resp,
       String methodId,
       Map<String, String[]> parameters) {
-    super(context, req, resp, methodId, parameters);
+    super(req, resp, methodId, parameters);
   }
 }

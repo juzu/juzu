@@ -40,12 +40,11 @@ public class ResourceBridgeImpl extends MimeBridgeImpl implements ResourceBridge
   private Response.Content response;
 
   ResourceBridgeImpl(
-      HttpServletBridgeContext context,
       HttpServletRequest req,
       HttpServletResponse resp,
       String methodId,
       Map<String, String[]> parameters) {
-    super(context, req, resp, methodId, parameters);
+    super(req, resp, methodId, parameters);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

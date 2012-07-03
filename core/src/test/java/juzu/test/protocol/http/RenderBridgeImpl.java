@@ -36,6 +36,9 @@ import java.util.Map;
 public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
 
   /** . */
+  private final HttpServletImpl servlet;
+
+  /** . */
   private Response.Content response;
 
   /** . */
@@ -48,12 +51,15 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
   private String title;
 
   RenderBridgeImpl(
-      HttpServletBridgeContext context,
+      HttpServletImpl servlet,
       HttpServletRequest req,
       HttpServletResponse resp,
       String methodId,
       Map<String, String[]> parameters) {
-    super(context, req, resp, methodId, parameters);
+    super(req, resp, methodId, parameters);
+
+    //
+    this.servlet = servlet;
   }
 
   public void setTitle(String title) {
@@ -65,8 +71,8 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
       if (response instanceof Response.Render) {
         Response.Render render = (Response.Render)response;
         try {
-          Iterable<Asset.Value> scripts = context.scriptManager.resolveAssets(render.getScripts());
-          Iterable<Asset.Value> stylesheets = context.scriptManager.resolveAssets(render.getStylesheets());
+          Iterable<Asset.Value> scripts = servlet.scriptManager.resolveAssets(render.getScripts());
+          Iterable<Asset.Value> stylesheets = servlet.stylesheetManager.resolveAssets(render.getStylesheets());
           this.scripts = scripts;
           this.stylesheets = stylesheets;
         }

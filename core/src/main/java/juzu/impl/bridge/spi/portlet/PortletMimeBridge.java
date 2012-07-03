@@ -57,8 +57,8 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
   /** . */
   private final boolean buffer;
 
-  PortletMimeBridge(PortletBridgeContext context, Rq request, Rs response, boolean buffer, boolean prod) {
-    super(context, request, response, prod);
+  PortletMimeBridge(Rq request, Rs response, boolean buffer, boolean prod) {
+    super(request, response, prod);
 
     //
     this.buffer = buffer;

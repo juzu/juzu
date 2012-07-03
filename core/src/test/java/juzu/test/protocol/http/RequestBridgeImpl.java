@@ -43,9 +43,6 @@ import java.util.Map;
 public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, WindowContext {
 
   /** . */
-  final HttpServletBridgeContext context;
-
-  /** . */
   final HttpServletRequest req;
 
   /** . */
@@ -61,12 +58,10 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   protected Request request;
 
   RequestBridgeImpl(
-      HttpServletBridgeContext context,
       HttpServletRequest req,
       HttpServletResponse resp,
       String methodId,
       Map<String, String[]> parameters) {
-    this.context = context;
     this.req = req;
     this.resp = resp;
     this.methodId = methodId;

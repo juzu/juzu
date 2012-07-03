@@ -36,8 +36,8 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge {
 
-  public PortletActionBridge(PortletBridgeContext context, ActionRequest actionRequest, ActionResponse actionResponse, boolean prod) {
-    super(context, actionRequest, actionResponse, prod);
+  public PortletActionBridge(ActionRequest actionRequest, ActionResponse actionResponse, boolean prod) {
+    super(actionRequest, actionResponse, prod);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

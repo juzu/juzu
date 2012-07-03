@@ -35,12 +35,11 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
   private Response response;
 
   ActionBridgeImpl(
-      HttpServletBridgeContext context,
       HttpServletRequest req,
       HttpServletResponse resp,
       String methodId,
       Map<String, String[]> parameters) {
-    super(context, req, resp, methodId, parameters);
+    super(req, resp, methodId, parameters);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

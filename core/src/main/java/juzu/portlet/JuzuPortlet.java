@@ -29,7 +29,6 @@ import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.bridge.spi.portlet.PortletActionBridge;
-import juzu.impl.bridge.spi.portlet.PortletBridgeContext;
 import juzu.impl.bridge.spi.portlet.PortletRenderBridge;
 import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.utils.Logger;
@@ -83,9 +82,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
   /** . */
   private BridgeConfig bridgeConfig;
-
-  /** . */
-  private PortletBridgeContext bridgeContext;
 
   /** . */
   private Bridge bridge;
@@ -165,9 +161,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   private Collection<CompilationError> boot() throws PortletException {
     try {
       Collection<CompilationError> boot = bridge.boot();
-      if (boot == null || boot.isEmpty()) {
-        bridgeContext = new PortletBridgeContext(bridge);
-      }
       return boot;
     }
     catch (Exception e) {
@@ -175,8 +168,8 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     }
   }
 
-  public void processAction(ActionRequest request, ActionResponse response) throws PortletException, IOException {
-    PortletActionBridge requestBridge = this.bridgeContext.create(request, response);
+  public void processAction(ActionRequest req, ActionResponse resp) throws PortletException, IOException {
+    PortletActionBridge requestBridge = new PortletActionBridge(req, resp, bridge.config.prod);
     try {
       bridge.runtime.getContext().invoke(requestBridge);
     }
@@ -201,17 +194,17 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     }
   }
 
-  public void render(final RenderRequest request, final RenderResponse response) throws PortletException, IOException {
+  public void render(final RenderRequest req, final RenderResponse resp) throws PortletException, IOException {
     Collection<CompilationError> errors = boot();
 
     //
     if (errors == null || errors.isEmpty()) {
       if (errors != null) {
-        purgeSession(request);
+        purgeSession(req);
       }
 
       //
-      final PortletRenderBridge requestBridge = JuzuPortlet.this.bridgeContext.create(request, response, !bridgeConfig.prod);
+      final PortletRenderBridge requestBridge = new PortletRenderBridge(bridge, req, resp, !bridgeConfig.prod, bridge.config.prod);
 
       //
       try {
@@ -231,23 +224,23 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
           throw new PortletException(e.getSource());
         }
         else {
-          renderThrowable(response.getWriter(), e);
+          renderThrowable(resp.getWriter(), e);
         }
       } finally {
         requestBridge.close();
       }
     }
     else {
-      renderErrors(response.getWriter(), errors);
+      renderErrors(resp.getWriter(), errors);
     }
   }
 
-  public void serveResource(final ResourceRequest request, final ResourceResponse response) throws PortletException, IOException {
-    boolean assetRequest = "assets".equals(request.getParameter("juzu.request"));
+  public void serveResource(final ResourceRequest req, final ResourceResponse resp) throws PortletException, IOException {
+    boolean assetRequest = "assets".equals(req.getParameter("juzu.request"));
 
     //
     if (assetRequest && !bridgeConfig.prod) {
-      String path = request.getResourceID();
+      String path = req.getResourceID();
       String contentType;
       InputStream in;
       if (bridge.runtime.getScriptManager().isClassPath(path)) {
@@ -263,12 +256,12 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
         in = null;
       }
       if (in != null) {
-        response.setContentType(contentType);
-        Tools.copy(in, response.getPortletOutputStream());
+        resp.setContentType(contentType);
+        Tools.copy(in, resp.getPortletOutputStream());
       }
     }
     else {
-      final PortletResourceBridge requestBridge = JuzuPortlet.this.bridgeContext.create(request, response, !bridgeConfig.prod);
+      final PortletResourceBridge requestBridge = new PortletResourceBridge(req, resp, !bridgeConfig.prod, bridge.config.prod);
 
       //
       try {
@@ -285,14 +278,14 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       }
       catch (TrimmingException e) {
         // Internal server error
-        response.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
+        resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
 
         //
         logThrowable(e);
 
         //
         if (!bridgeConfig.prod) {
-          PrintWriter writer = response.getWriter();
+          PrintWriter writer = resp.getWriter();
           writer.print("<html>\n");
           writer.print("<head>\n");
           writer.print("</head>\n");

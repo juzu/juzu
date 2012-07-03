@@ -41,9 +41,6 @@ import java.util.Map;
 abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge {
 
   /** . */
-  protected final PortletBridgeContext context;
-
-  /** . */
   protected final Rq req;
 
   /** . */
@@ -70,7 +67,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   /** . */
   protected final boolean prod;
 
-  PortletRequestBridge(PortletBridgeContext context, Rq req, Rs resp, boolean prod) {
+  PortletRequestBridge(Rq req, Rs resp, boolean prod) {
     String methodId = null;
     Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
     for (Iterator<Map.Entry<String, String[]>> i = parameters.entrySet().iterator();i.hasNext();) {
@@ -85,7 +82,6 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     }
 
     //
-    this.context = context;
     this.req = req;
     this.resp = resp;
     this.methodId = methodId;

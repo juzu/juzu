@@ -32,8 +32,8 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
   /** . */
   private int status = 200;
 
-  public PortletResourceBridge(PortletBridgeContext context, ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod) {
-    super(context, request, response, buffer, prod);
+  public PortletResourceBridge(ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod) {
+    super(request, response, buffer, prod);
   }
 
   @Override
