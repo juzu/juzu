@@ -1,0 +1,201 @@
+/*
+ * Copyright (C) 2011 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+package juzu.impl.bridge.spi.standalone;
+
+import juzu.impl.asset.AssetManager;
+import juzu.impl.asset.AssetServer;
+import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.bridge.spi.RequestBridge;
+import juzu.impl.compiler.CompilationError;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.war.WarFileSystem;
+import juzu.impl.utils.Logger;
+import juzu.impl.utils.SimpleMap;
+import juzu.request.Phase;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ServletBridge extends HttpServlet {
+
+  /** . */
+  Bridge bridge;
+
+  @Override
+  public void init() throws ServletException {
+
+    //
+    final ServletConfig config = getServletConfig();
+
+    //
+    Logger log = new Logger() {
+      public void log(CharSequence msg) {
+        System.out.println("[" + config.getServletName() + "] " + msg);
+      }
+
+      public void log(CharSequence msg, Throwable t) {
+        System.err.println("[" + config.getServletName() + "] " + msg);
+        t.printStackTrace();
+      }
+    };
+
+    //
+    AssetServer server = (AssetServer)config.getServletContext().getAttribute("asset.server");
+    if (server == null) {
+      server = new AssetServer();
+      config.getServletContext().setAttribute("asset.server", server);
+    }
+
+    //
+    BridgeConfig bridgeConfig;
+    try {
+      bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
+        @Override
+        protected Iterator<String> keys() {
+          return BridgeConfig.NAMES.iterator();
+        }
+
+        @Override
+        public String get(Object key) {
+          if (BridgeConfig.APP_NAME.equals(key)) {
+            return getApplicationName(config);
+          } else if (BridgeConfig.NAMES.contains(key)) {
+            return config.getInitParameter((String)key);
+          } else {
+            return null;
+          }
+        }
+      });
+    }
+    catch (Exception e) {
+      throw wrap(e);
+    }
+
+    //
+    String srcPath = config.getInitParameter("juzu.src_path");
+    ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getServletContext(), "/WEB-INF/src/");
+
+    //
+    Bridge bridge = new Bridge();
+    bridge.config = bridgeConfig;
+    bridge.resources = WarFileSystem.create(config.getServletContext(), "/WEB-INF/");
+    bridge.server = server;
+    bridge.log = log;
+    bridge.sourcePath = sourcePath;
+    bridge.classes = WarFileSystem.create(config.getServletContext(), "/WEB-INF/classes/");
+
+    //
+    this.bridge = bridge;
+
+    //
+    Collection<CompilationError> errors;
+    try {
+      errors = bridge.boot();
+    }
+    catch (Exception e) {
+      throw wrap(e);
+    }
+    if (errors != null && errors.size() > 0) {
+      log.log("Error when compiling application " + errors);
+    }
+  }
+
+  /**
+   * Returns the application name to use using the <code>juzu.app_name</code> init parameter of the portlet deployment
+   * descriptor. Subclass can override it to provide a custom application name.
+   *
+   * @param config the portlet config
+   * @return the application name
+   */
+  protected String getApplicationName(ServletConfig config) {
+    return config.getInitParameter("juzu.app_name");
+  }
+
+  private ServletException wrap(Throwable e) {
+    return e instanceof ServletException ? (ServletException)e : new ServletException("Could not find an application to start", e);
+  }
+
+  /** . */
+  private static final Pattern PATTERN = Pattern.compile("^" + "(?:/(render|action|resource))?" + "/([^/]+)?" + "$");
+
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    doGet(req, resp);
+  }
+
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    Phase phase = Phase.RENDER;
+    String op = null;
+
+    //
+    String path = req.getPathInfo();
+    if (path != null) {
+      Matcher matcher = PATTERN.matcher(path);
+      if (matcher.matches()) {
+        String phaseSegment = matcher.group(1);
+        if (phaseSegment != null) {
+          phase = Phase.valueOf(phaseSegment.toUpperCase());
+        }
+        op = matcher.group(2);
+      }
+    }
+
+    //
+    Map<String, String[]> parameters = (Map<String, String[]>)req.getParameterMap();
+
+    //
+    RequestBridge requestBridge;
+    switch (phase) {
+      case RENDER:
+        requestBridge = new ServletRenderBridge(this, req, resp, op, parameters);
+        break;
+      case ACTION:
+        requestBridge = new ServletActionBridge(req, resp, op, parameters);
+        break;
+      case RESOURCE:
+        requestBridge = new ServletResourceBridge(req, resp, op, parameters);
+        break;
+      default:
+        throw new ServletException("Cannot decode phase");
+    }
+
+    //
+    try {
+      bridge.invoke(requestBridge);
+    }
+    catch (Throwable throwable) {
+      throw wrap(throwable);
+    }
+  }
+}

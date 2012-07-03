@@ -6,6 +6,7 @@ import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.RenderBridge;
+import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -81,6 +82,18 @@ public class Bridge {
     }
 
     return runtime.boot();
+  }
+
+  public void invoke(RequestBridge requestBridge) throws Throwable {
+    if (requestBridge instanceof  ActionBridge) {
+      processAction((ActionBridge)requestBridge);
+    } else if (requestBridge instanceof RenderBridge) {
+      render((RenderBridge)requestBridge);
+    } else if (requestBridge instanceof ResourceBridge) {
+      serveResource((ResourceBridge)requestBridge);
+    } else {
+      throw new AssertionError();
+    }
   }
 
   public void processAction(final ActionBridge requestBridge) throws Throwable {

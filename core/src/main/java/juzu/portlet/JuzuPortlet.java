@@ -68,9 +68,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   public static final WINDOW_STATE WINDOW_STATE = new WINDOW_STATE();
 
   /** . */
-  private String srcPath;
-
-  /** . */
   private BridgeConfig bridgeConfig;
 
   /** . */
@@ -96,25 +93,32 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     }
 
     //
-    BridgeConfig bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
-      @Override
-      protected Iterator<String> keys() {
-        return BridgeConfig.NAMES.iterator();
-      }
-
-      @Override
-      public String get(Object key) {
-        if (BridgeConfig.APP_NAME.equals(key)) {
-          return getApplicationName(config);
-        } else if (BridgeConfig.NAMES.contains(key)) {
-          return config.getInitParameter((String)key);
-        } else {
-          return null;
+    BridgeConfig bridgeConfig;
+    try {
+      bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
+        @Override
+        protected Iterator<String> keys() {
+          return BridgeConfig.NAMES.iterator();
         }
-      }
-    });
+
+        @Override
+        public String get(Object key) {
+          if (BridgeConfig.APP_NAME.equals(key)) {
+            return getApplicationName(config);
+          } else if (BridgeConfig.NAMES.contains(key)) {
+            return config.getInitParameter((String)key);
+          } else {
+            return null;
+          }
+        }
+      });
+    }
+    catch (Exception e) {
+      throw wrap(e);
+    }
 
     //
+    String srcPath = config.getInitParameter("juzu.src_path");
     ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
 
     //
@@ -128,7 +132,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
     //
     this.bridgeConfig = bridgeConfig;
-    this.srcPath = config.getInitParameter("juzu.src_path");
     this.bridge = bridge;
 
     //

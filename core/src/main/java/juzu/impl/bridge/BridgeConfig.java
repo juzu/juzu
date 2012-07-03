@@ -3,7 +3,6 @@ package juzu.impl.bridge;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.utils.Tools;
 
-import javax.portlet.PortletException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +37,7 @@ public class BridgeConfig {
     this.injectImpl = injectImpl;
   }
 
-  public BridgeConfig(Map<String, String> config) throws PortletException {
+  public BridgeConfig(Map<String, String> config) throws Exception {
 
     //
     String runMode = config.get("juzu.run_mode");
@@ -59,7 +58,7 @@ public class BridgeConfig {
         injectImpl = InjectImplementation.INJECT_SPRING;
       }
       else {
-        throw new PortletException("unrecognized inject vendor " + inject);
+        throw new Exception("unrecognized inject vendor " + inject);
       }
     }
 
