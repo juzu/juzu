@@ -141,7 +141,13 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     this.bridge = bridge;
 
     //
-    Collection<CompilationError> errors = boot();
+    Collection<CompilationError> errors;
+    try {
+      errors = bridge.boot();
+    }
+    catch (Exception e) {
+      throw wrap(e);
+    }
     if (errors != null && errors.size() > 0) {
       log.log("Error when compiling application " + errors);
     }
@@ -158,14 +164,8 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     return config.getInitParameter("juzu.app_name");
   }
 
-  private Collection<CompilationError> boot() throws PortletException {
-    try {
-      Collection<CompilationError> boot = bridge.boot();
-      return boot;
-    }
-    catch (Exception e) {
-      throw e instanceof PortletException ? (PortletException)e : new PortletException("Could not find an application to start", e);
-    }
+  private PortletException wrap(Exception e) {
+    return e instanceof PortletException ? (PortletException)e : new PortletException("Could not find an application to start", e);
   }
 
   public void processAction(ActionRequest req, ActionResponse resp) throws PortletException, IOException {
@@ -195,7 +195,15 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   }
 
   public void render(final RenderRequest req, final RenderResponse resp) throws PortletException, IOException {
-    Collection<CompilationError> errors = boot();
+
+    //
+    Collection<CompilationError> errors;
+    try {
+      errors = bridge.boot();
+    }
+    catch (Exception e) {
+      throw wrap(e);
+    }
 
     //
     if (errors == null || errors.isEmpty()) {
