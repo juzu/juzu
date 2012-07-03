@@ -34,6 +34,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -503,6 +504,40 @@ public class Tools {
         throw new UnsupportedOperationException();
       }
     };
+  }
+
+  /**
+   * Append an object to an array of objects. The original array is not modified. The returned array will be of the
+   * same component type of the provided array and its first n elements where n is the size of the provided array will
+   * be the elements of the provided array. The last element of the array will be the provided object to append.
+   *
+   * @param array the array to augment
+   * @param o     the object to append
+   * @return a new array
+   * @throws IllegalArgumentException if the array is null
+   * @throws ClassCastException       if the appended object class prevents it from being added to the array
+   */
+  public static <E> E[] appendTo(E[] array, E o) throws IllegalArgumentException, ClassCastException
+  {
+    if (array == null)
+    {
+      throw new IllegalArgumentException();
+    }
+
+    //
+    Class componentType = array.getClass().getComponentType();
+    if (o != null && !componentType.isAssignableFrom(o.getClass()))
+    {
+      throw new ClassCastException("Object with class " + o.getClass().getName() + " cannot be casted to class " + componentType.getName());
+    }
+
+    //
+    E[] copy = (E[])Array.newInstance(componentType, array.length + 1);
+    System.arraycopy(array, 0, copy, 0, array.length);
+    copy[array.length] = o;
+
+    //
+    return copy;
   }
 
   public static <S extends Serializable> S unserialize(Class<S> expectedType, File f) throws IOException, ClassNotFoundException {

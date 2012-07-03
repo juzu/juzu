@@ -108,6 +108,14 @@
 
     <!-- -->
     <dependency>
+      <groupId>net.sourceforge.jregex</groupId>
+      <artifactId>jregex</artifactId>
+      <version>1.2_01</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- -->
+    <dependency>
       <groupId>com.google.code.javaparser</groupId>
       <artifactId>javaparser</artifactId>
       <version>1.0.8</version>
