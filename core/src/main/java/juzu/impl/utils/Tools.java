@@ -365,6 +365,14 @@ public class Tools {
     return list;
   }
 
+  public static <E> ArrayList<E> list(Enumeration<E> elements) {
+    ArrayList<E> list = new ArrayList<E>();
+    while (elements.hasMoreElements()) {
+      list.add(elements.nextElement());
+    }
+    return list;
+  }
+
   public static <E> ArrayList<E> list(E... elements) {
     ArrayList<E> set = new ArrayList<E>(elements.length);
     Collections.addAll(set, elements);

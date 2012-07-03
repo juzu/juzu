@@ -122,6 +122,10 @@ public abstract class MockRequestBridge implements RequestBridge {
     }
   }
 
+  public void purgeSession() {
+    throw new UnsupportedOperationException();
+  }
+
   public Scoped getIdentityValue(Object key) {
     return null;
   }

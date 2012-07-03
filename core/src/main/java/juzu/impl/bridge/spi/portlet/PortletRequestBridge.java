@@ -34,6 +34,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -178,6 +179,15 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   }
 
   public final void setIdentityValue(Object key, Scoped value) {
+  }
+
+  public void purgeSession() {
+    PortletSession session = req.getPortletSession(false);
+    if (session != null) {
+      for (String key : new HashSet<String>(session.getAttributeMap().keySet())) {
+        session.removeAttribute(key);
+      }
+    }
   }
 
   public void close() {

@@ -25,18 +25,22 @@ import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
+import juzu.impl.utils.Tools;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 
+import javax.portlet.PortletSession;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -181,6 +185,15 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   }
 
   public final void setIdentityValue(Object key, Scoped value) {
+  }
+
+  public void purgeSession() {
+    HttpSession session = req.getSession(false);
+    if (session != null) {
+      for (String key : Tools.list((Enumeration<String>)session.getAttributeNames())) {
+        session.removeAttribute(key);
+      }
+    }
   }
 
   public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {

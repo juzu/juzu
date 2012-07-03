@@ -64,6 +64,8 @@ public interface RequestBridge {
 
   WindowContext getWindowContext();
 
+  void purgeSession();
+
   /**
    * Set the specified response on the bridge.
    *
