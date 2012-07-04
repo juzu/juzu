@@ -1087,9 +1087,7 @@ class Route {
 
   private void findParams(List<Param> params) {
     Collections.addAll(params, routeParamArray);
-    for (RequestParam param : requestParamArray) {
-      params.add(param);
-    }
+    Collections.addAll(params, requestParamArray);
     if (this instanceof PatternRoute) {
       Collections.addAll(params, ((PatternRoute)this).params);
     }
