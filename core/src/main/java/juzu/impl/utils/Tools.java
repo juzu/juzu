@@ -605,6 +605,22 @@ public class Tools {
     return hash;
   }
 
+  public static int indexOf(CharSequence s, char c, int fromIndex) {
+    int len = s.length();
+    if (fromIndex < len) {
+      if (fromIndex < 0) {
+        fromIndex = 0;
+      }
+      while (fromIndex < len) {
+        if (s.charAt(fromIndex) == c) {
+          return fromIndex;
+        }
+        fromIndex++;
+      }
+    }
+    return -1;
+  }
+
   public static String[] split(CharSequence s, char separator) {
     return foo(s, separator, 0, 0, 0);
   }

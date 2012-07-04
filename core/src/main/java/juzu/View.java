@@ -42,5 +42,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface View {
+
+  /**
+   * The controller method id.
+   *
+   * @return the route id
+   */
   String id() default "";
+
+  /**
+   * The controller method route.
+   *
+   * @return the method route
+   */
+  String value() default "";
+
 }

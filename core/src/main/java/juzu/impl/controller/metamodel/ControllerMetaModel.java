@@ -193,12 +193,16 @@ public class ControllerMetaModel extends MetaModelObject {
           }
 
           //
+          String route = (String)annotationValues.get("value");
+
+          //
           ControllerMethodMetaModel method = new ControllerMethodMetaModel(
             origin,
             id,
             phase,
             methodElt.getSimpleName().toString(),
-            parameters);
+            parameters,
+            route);
           addChild(key, method);
           modified = true;
         }

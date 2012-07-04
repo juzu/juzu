@@ -33,8 +33,10 @@ import org.junit.rules.TestName;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -217,8 +219,8 @@ public abstract class AbstractTestCase extends Assert {
       if (test == null) {
         throw failure("Was expected " + expected + " to be not null");
       }
-      else if (!expected.equals(test)) {
-        StringBuilder sb = null;
+      else if (!equalsIgnoreNull(expected, test)) {
+        StringBuilder sb;
         try {
           sb = new StringBuilder("expected <");
           expected.toString(sb, 2);
@@ -235,6 +237,44 @@ public abstract class AbstractTestCase extends Assert {
     else {
       if (test != null) {
         throw failure("Was expected " + test + " to be null");
+      }
+    }
+  }
+
+  private static boolean equalsIgnoreNull(Object o1, Object o2) {
+    if (o1 == null || o2 == null) {
+      return true;
+    } else if (o1 instanceof List && o2 instanceof List) {
+      Iterator i1 = ((List)o1).iterator();
+      Iterator i2 = ((List)o2).iterator();
+      while (true) {
+        boolean n1 = i1.hasNext();
+        boolean n2 = i2.hasNext();
+        if (n1 && n2) {
+          if (!equalsIgnoreNull(i1.next(), i2.next())) {
+            return false;
+          }
+        } else {
+          return n1 == n2;
+        }
+      }
+    } else {
+      if (o1 instanceof JSON && o2 instanceof JSON) {
+        JSON js1 = (JSON)o1;
+        JSON js2 = (JSON)o2;
+        HashSet<String> names = new HashSet<String>(js1.names());
+        names.addAll(js2.names());
+        for (String name : names) {
+          js1.getArray("", Object.class);
+          Object v1 = js1.get(name);
+          Object v2 = js2.get(name);
+          if (!equalsIgnoreNull(v1, v2)) {
+            return false;
+          }
+        }
+        return true;
+      } else {
+        return o1.equals(o2);
       }
     }
   }

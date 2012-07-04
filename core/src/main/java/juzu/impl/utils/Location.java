@@ -24,6 +24,14 @@ import java.io.Serializable;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Location implements Serializable {
 
+  public static Location at(int col, int line) {
+    return new Location(col, line);
+  }
+
+  public static Location at(int index) {
+    return new Location(index, 1);
+  }
+
   /** . */
   private final int col;
 

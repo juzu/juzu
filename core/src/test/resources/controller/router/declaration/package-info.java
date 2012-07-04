@@ -17,43 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu;
+@Application package controller.router.declaration;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * Annotate a method for declaring a view controller method.
- * <p/>
- * <code><pre>
- *    public void MyController {
- * <p/>
- *       &#064;Action
- *       public void myAction() {
- *          ...
- *       }
- *    }
- * </pre></code>
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Action {
-
-  /**
-   * The controller method id.
-   *
-   * @return the controller method id
-   */
-  String id() default "";
-
-  /**
-   * The controller method route.
-   *
-   * @return the method route
-   */
-  String value() default "";
-}
+import juzu.Application;

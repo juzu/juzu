@@ -148,16 +148,35 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   public JSON getDescriptor(ApplicationMetaModel application) {
     ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
 
-    //
+    // Build routes configuration
     ArrayList<String> controllers = new ArrayList<String>();
+    ArrayList<JSON> routes = new ArrayList<JSON>();
     for (ControllerMetaModel controller : ac) {
       controllers.add(controller.getHandle().getFQN().getName() + "_");
+      for (ControllerMethodMetaModel method : controller.getMethods()) {
+        if (method.route != null) {
+          String id = method.id;
+          if (id == null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(controller.getHandle().getFQN().getSimpleName());
+            sb.append(".");
+            sb.append(method.getName());
+            id = sb.toString();
+          }
+          routes.add(new JSON().
+              set("path", method.route).
+              set("id", id).
+              set("parameters", method.getParameters())
+          );
+        }
+      }
     }
 
     //
     JSON config = new JSON();
     config.set("default", ac.defaultController != null ? ac.defaultController.getName() : null);
     config.set("escapeXML", ac.escapeXML);
+    config.set("routes", routes);
     config.map("controllers", controllers);
 
     //

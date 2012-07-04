@@ -17,43 +17,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu;
+package controller.router.declaration;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import juzu.Action;
+import juzu.Controller;
+import juzu.Resource;
+import juzu.Response;
+import juzu.View;
+import juzu.asset.Asset;
+import juzu.asset.AssetLocation;
 
-/**
- * Annotate a method for declaring a resource serving controller method.
- * <p/>
- * <code><pre>
- *    public void MyController {
- * <p/>
- *       &#064;Resource
- *       public void myResource() {
- *          ...
- *       }
- *    }
- * </pre></code>
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Resource {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A extends Controller {
 
-  /**
-   * The controller method id.
-   *
-   * @return the controller method id
-   */
-  String id() default "";
+  @View("/view")
+  public Response view() {
+    throw new UnsupportedOperationException();
+  }
 
-  /**
-   * The controller method route.
-   *
-   * @return the method route
-   */
-  String value() default "";
+  @Action("/action")
+  public Response action() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Resource("/resource")
+  public Response resource() {
+    throw new UnsupportedOperationException();
+  }
 }

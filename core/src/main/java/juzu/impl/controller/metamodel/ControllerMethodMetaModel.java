@@ -54,17 +54,22 @@ public class ControllerMethodMetaModel extends MetaModelObject {
   /** . */
   final ArrayList<ParameterMetaModel> parameters;
 
+  /** The route. */
+  final String route;
+
   ControllerMethodMetaModel(
     ElementHandle.Method handle,
     String id,
     Phase phase,
     String name,
-    ArrayList<ParameterMetaModel> parameters) {
+    ArrayList<ParameterMetaModel> parameters,
+    String route) {
     this.handle = handle;
     this.id = id;
     this.phase = phase;
     this.name = name;
     this.parameters = parameters;
+    this.route = route;
   }
 
   public JSON toJSON() {
@@ -74,6 +79,7 @@ public class ControllerMethodMetaModel extends MetaModelObject {
     json.set("phase", phase);
     json.set("name", name);
     json.map("parameters", new ArrayList<ParameterMetaModel>(parameters));
+    json.set("route", route);
     return json;
   }
 

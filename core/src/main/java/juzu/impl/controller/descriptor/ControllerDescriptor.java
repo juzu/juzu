@@ -3,10 +3,13 @@ package juzu.impl.controller.descriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.utils.JSON;
+import juzu.impl.utils.Tools;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -26,6 +29,9 @@ public class ControllerDescriptor extends Descriptor {
 
   /** . */
   private final Boolean escapeXML;
+
+  /** . */
+  private final List<ControllerRoute> routes;
 
   public ControllerDescriptor(ClassLoader loader, JSON config) throws Exception {
     List<ControllerBean> controllers = new ArrayList<ControllerBean>();
@@ -52,12 +58,30 @@ public class ControllerDescriptor extends Descriptor {
       defaultController = loader.loadClass(defaultControllerName);
     }
 
+    // Routes
+    List<ControllerRoute> routes = new ArrayList<ControllerRoute>();
+    List<? extends JSON> abc = config.getList("routes", JSON.class);
+    if (abc != null) {
+      for (JSON route : abc) {
+        String id = route.getString("id");
+        List<? extends String> parameters = route.getList("parameters", String.class);
+        String path = route.getString("path");
+        ControllerRoute r = new ControllerRoute(
+            id,
+            Collections.unmodifiableSet(new HashSet<String>(parameters)),
+            path
+        );
+        routes.add(r);
+      }
+    }
+
     //
     this.escapeXML = escapeXML;
     this.defaultController = defaultController;
     this.controllers = controllers;
     this.methods = controllerMethods;
     this.beans = beans;
+    this.routes = Collections.unmodifiableList(routes);
   }
 
   public Iterable<BeanDescriptor> getBeans() {
@@ -78,6 +102,10 @@ public class ControllerDescriptor extends Descriptor {
 
   public List<ControllerMethod> getMethods() {
     return methods;
+  }
+
+  public List<ControllerRoute> getRoutes() {
+    return routes;
   }
 
   public ControllerMethod getMethod(Class<?> type, String name, Class<?>... parameterTypes) {
