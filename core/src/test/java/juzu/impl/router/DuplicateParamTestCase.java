@@ -21,7 +21,7 @@ package juzu.impl.router;
 
 import org.junit.Test;
 
-import static juzu.impl.router.metadata.DescriptorBuilder.*;
+import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class DuplicateParamTestCase extends AbstractControllerTestCase {
@@ -29,9 +29,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testPathParamDuplicatesRequestParam() throws Exception {
     try {
-      router().add(
-          route("/").with(requestParam("foo").named("a")).
-              sub(route("/{foo}"))).build();
+      new Router().
+          append("?a={foo}").
+          append("/{foo}");
       fail();
     }
     catch (MalformedRouteException e) {
@@ -39,9 +39,10 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/").with(requestParam("foo").named("a")).
-              sub(route("/bar").sub(route("/{foo}")))).build();
+      new Router().
+          append("?a={foo}").
+          append("/bar").
+          append("/{foo}");
       fail();
     }
     catch (MalformedRouteException e) {
@@ -51,9 +52,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testPathParamDuplicatesRouteParam() throws Exception {
     try {
-      router().add(
-          route("/").with(routeParam("foo").withValue("bar")).
-              sub(route("/{foo}"))).build();
+      new Router().
+          append("/", Collections.singletonMap(Names.FOO, "bar")).
+          append("/{foo}");
       fail();
     }
     catch (MalformedRouteException e) {
@@ -61,9 +62,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/").with(routeParam("foo").withValue("bar")).
-              sub(route("/bar").sub(route("/{foo}")))).build();
+      new Router().
+          append("/", Collections.singletonMap(Names.FOO, "bar")).
+          append("/bar").append("/{foo}");
       fail();
     }
     catch (MalformedRouteException e) {
@@ -73,9 +74,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testPathParamDuplicatesPathParam() throws Exception {
     try {
-      router().add(
-          route("/{foo}").
-              sub(route("/{foo}"))).build();
+      new Router().
+          append("/{foo}").
+          append("/{foo}");
       fail();
     }
     catch (MalformedRouteException e) {
@@ -83,9 +84,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/{foo}").
-              sub(route("/bar").sub(route("/{foo}")))).build();
+      new Router().
+          append("/{foo}").
+          append("/bar").append("/{foo}");
       fail();
     }
     catch (MalformedRouteException e) {
@@ -95,9 +96,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testRequestParamDuplicatesRequestParam() throws Exception {
     try {
-      router().add(
-          route("/").with(requestParam("foo").named("a")).
-              sub(route("/bar").with(routeParam("foo").withValue("b")))).build();
+      new Router().
+          append("?a={foo}").
+          append("/bar", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -105,9 +106,10 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/").with(requestParam("foo").named("a")).
-              sub(route("/bar").sub(route("/foo").with(routeParam("foo").withValue("b"))))).build();
+      new Router().
+          append("?a={foo}").
+          append("/bar").
+          append("/foo", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -117,9 +119,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testRequestParamDuplicatesRouteParam() throws Exception {
     try {
-      router().add(
-          route("/").with(routeParam("foo").withValue("bar")).
-              sub(route("/bar").with(routeParam("foo").withValue("b")))).build();
+      new Router().
+          append("/", Collections.singletonMap(Names.FOO, "bar")).
+          append("/bar", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -127,9 +129,10 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/").with(routeParam("foo").withValue("bar")).
-              sub(route("/bar").sub(route("/foo").with(routeParam("foo").withValue("b"))))).build();
+      new Router().
+          append("/", Collections.singletonMap(Names.FOO, "bar")).
+          append("/bar").
+          append("/foo", Collections.singletonMap(Names.FOO, "bar"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -139,9 +142,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testRequestParamDuplicatesPathParam() throws Exception {
     try {
-      router().add(
-          route("/{foo}").
-              sub(route("/bar").with(routeParam("foo").withValue("b")))).build();
+      new Router().
+          append("/{foo}").
+          append("/bar", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -149,9 +152,10 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/{foo}").
-              sub(route("/bar").sub(route("/foo").with(routeParam("foo").withValue("b"))))).build();
+      new Router().
+          append("/{foo}").
+          append("/bar").
+          append("/foo", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -161,9 +165,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testRouteParamDuplicatesRequestParam() throws Exception {
     try {
-      router().add(
-          route("/").with(requestParam("foo").named("a")).
-              sub(route("/bar").with(routeParam("foo").withValue("b")))).build();
+      new Router().
+          append("?a={foo}").
+          append("/bar", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -171,9 +175,10 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/").with(requestParam("foo").named("a")).
-              sub(route("/bar").sub(route("/foo").with(routeParam("foo").withValue("b"))))).build();
+      new Router().
+          append("?a={foo}").
+          append("/bar").
+          append("/foo", Collections.singletonMap(Names.FOO, "bar"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -183,9 +188,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testRouteParamDuplicatesRouteParam() throws Exception {
     try {
-      router().add(
-          route("/").with(routeParam("foo").withValue("bar")).
-              sub(route("/bar").with(routeParam("foo").withValue("b")))).build();
+      new Router().
+          append("/", Collections.singletonMap(Names.FOO, "bar")).
+          append("/bar", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -193,9 +198,10 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/").with(routeParam("foo").withValue("bar")).
-              sub(route("/bar").sub(route("/foo").with(routeParam("foo").withValue("b"))))).build();
+      new Router().
+          append("/", Collections.singletonMap(Names.FOO, "bar")).
+          append("/bar").
+          append("/foo", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -205,9 +211,9 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testRouteParamDuplicatesPathParam() throws Exception {
     try {
-      router().add(
-          route("/{foo}").
-              sub(route("/bar").with(routeParam("foo").withValue("b")))).build();
+      new Router().
+          append("/{foo}").
+          append("/bar", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {
@@ -215,9 +221,10 @@ public class DuplicateParamTestCase extends AbstractControllerTestCase {
 
     //
     try {
-      router().add(
-          route("/{foo}").
-              sub(route("/bar").sub(route("/foo").with(routeParam("foo").withValue("b"))))).build();
+      new Router().
+          append("/{foo}").
+          append("/bar").
+          append("/foo", Collections.singletonMap(Names.FOO, "b"));
       fail();
     }
     catch (MalformedRouteException e) {

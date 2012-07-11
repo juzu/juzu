@@ -2,14 +2,14 @@
  * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
+ * under the terms of the GNU Lesser General License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
  *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * Lesser General License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
@@ -19,7 +19,6 @@
 
 package juzu.impl.router;
 
-import juzu.impl.router.metadata.PathParamDescriptor;
 import juzu.impl.router.regexp.RENode;
 import juzu.impl.router.regexp.REParser;
 import juzu.impl.router.regexp.RERenderer;
@@ -34,91 +33,6 @@ import java.util.List;
  * @version $Revision$
  */
 class PathParam extends Param {
-
-  static PathParam create(QualifiedName name, Router router) {
-    return create(new PathParamDescriptor(name), router);
-  }
-
-  static PathParam create(PathParamDescriptor descriptor, Router router) {
-    if (descriptor == null) {
-      throw new NullPointerException("No null descriptor accepted");
-    }
-
-    //
-    String regex = null;
-    EncodingMode encodingMode = EncodingMode.FORM;
-    if (descriptor != null) {
-      regex = descriptor.getPattern();
-      encodingMode = descriptor.getEncodingMode();
-    }
-
-    //
-    if (regex == null) {
-      if (encodingMode == EncodingMode.FORM) {
-        regex = ".+";
-      }
-      else {
-        regex = "[^/]+";
-      }
-    }
-
-    // Now work on the regex
-    StringBuilder routingRegex = new StringBuilder();
-    Regex[] renderingRegexes;
-    String[] templatePrefixes;
-    String[] templateSuffixes;
-    try {
-      REVisitor<RuntimeException> transformer = descriptor.getCaptureGroup() ?
-          new CaptureGroupTransformation() : new NonCaptureGroupTransformation();
-      REParser parser = new REParser(regex);
-
-      //
-      RENode.Disjunction routingDisjunction = parser.parseDisjunction();
-      if (encodingMode == EncodingMode.FORM) {
-        CharEscapeTransformation escaper = new CharEscapeTransformation('/', '_');
-        routingDisjunction.accept(escaper);
-      }
-      routingDisjunction.accept(transformer);
-      RERenderer.render(routingDisjunction, routingRegex);
-
-      //
-      parser.reset();
-      RENode.Disjunction renderingDisjunction = parser.parseDisjunction();
-      ValueResolverFactory factory = new ValueResolverFactory();
-      renderingDisjunction.accept(transformer);
-      List<ValueResolverFactory.Alternative> alt = factory.foo(renderingDisjunction);
-      renderingRegexes = new Regex[alt.size()];
-      templatePrefixes = new String[alt.size()];
-      templateSuffixes = new String[alt.size()];
-      for (int i = 0;i < alt.size();i++) {
-        ValueResolverFactory.Alternative v = alt.get(i);
-        StringBuilder valueMatcher = v.getValueMatcher();
-        valueMatcher.insert(0, '^');
-        valueMatcher.append("$");
-        renderingRegexes[i] = router.compile(valueMatcher.toString());
-        templatePrefixes[i] = v.getPrefix();
-        templateSuffixes[i] = v.getSuffix();
-      }
-    }
-    catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    catch (SyntaxException e) {
-      throw new RuntimeException(e);
-    }
-    catch (MalformedRouteException e) {
-      throw new RuntimeException(e);
-    }
-
-    //
-    return new PathParam(
-        descriptor.getQualifiedName(),
-        encodingMode,
-        routingRegex.toString(),
-        renderingRegexes,
-        templatePrefixes,
-        templateSuffixes);
-  }
 
   /** . */
   final EncodingMode encodingMode;
@@ -160,5 +74,158 @@ class PathParam extends Param {
   @Override
   public String toString() {
     return "PathParam[name=" + name + ",encodingMode=" + encodingMode + ",pattern=" + matchingRegex + "]";
+  }
+
+  static Builder builder() {
+    return new Builder();
+  }
+
+  static class Builder extends AbstractBuilder {
+
+    /** . */
+    private String pattern;
+
+    /** . */
+    private EncodingMode encodingMode;
+
+    /** . */
+    private boolean captureGroup;
+
+    private Builder() {
+      this.encodingMode = EncodingMode.FORM;
+      this.captureGroup = false;
+    }
+
+    PathParam build(Router router) {
+
+      Builder descriptor = this;
+
+      //
+      if (descriptor == null) {
+        throw new NullPointerException("No null descriptor accepted");
+      }
+
+      //
+      String regex = null;
+      EncodingMode encodingMode = EncodingMode.FORM;
+      if (descriptor != null) {
+        regex = descriptor.getPattern();
+        encodingMode = descriptor.getEncodingMode();
+      }
+
+      //
+      if (regex == null) {
+        if (encodingMode == EncodingMode.FORM) {
+          regex = ".+";
+        }
+        else {
+          regex = "[^/]+";
+        }
+      }
+
+      // Now work on the regex
+      StringBuilder routingRegex = new StringBuilder();
+      Regex[] renderingRegexes;
+      String[] templatePrefixes;
+      String[] templateSuffixes;
+      try {
+        REVisitor<RuntimeException> transformer = descriptor.getCaptureGroup() ?
+            new CaptureGroupTransformation() : new NonCaptureGroupTransformation();
+        REParser parser = new REParser(regex);
+
+        //
+        RENode.Disjunction routingDisjunction = parser.parseDisjunction();
+        if (encodingMode == EncodingMode.FORM) {
+          CharEscapeTransformation escaper = new CharEscapeTransformation('/', '_');
+          routingDisjunction.accept(escaper);
+        }
+        routingDisjunction.accept(transformer);
+        RERenderer.render(routingDisjunction, routingRegex);
+
+        //
+        parser.reset();
+        RENode.Disjunction renderingDisjunction = parser.parseDisjunction();
+        ValueResolverFactory factory = new ValueResolverFactory();
+        renderingDisjunction.accept(transformer);
+        List<ValueResolverFactory.Alternative> alt = factory.foo(renderingDisjunction);
+        renderingRegexes = new Regex[alt.size()];
+        templatePrefixes = new String[alt.size()];
+        templateSuffixes = new String[alt.size()];
+        for (int i = 0;i < alt.size();i++) {
+          ValueResolverFactory.Alternative v = alt.get(i);
+          StringBuilder valueMatcher = v.getValueMatcher();
+          valueMatcher.insert(0, '^');
+          valueMatcher.append("$");
+          renderingRegexes[i] = router.compile(valueMatcher.toString());
+          templatePrefixes[i] = v.getPrefix();
+          templateSuffixes[i] = v.getSuffix();
+        }
+      }
+      catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      catch (SyntaxException e) {
+        throw new RuntimeException(e);
+      }
+      catch (MalformedRouteException e) {
+        throw new RuntimeException(e);
+      }
+
+      //
+      return new PathParam(
+          descriptor.getQualifiedName(),
+          encodingMode,
+          routingRegex.toString(),
+          renderingRegexes,
+          templatePrefixes,
+          templateSuffixes);
+    }
+
+    Builder matchedBy(String pattern) {
+      this.pattern = pattern;
+      return this;
+    }
+
+    Builder encodedBy(EncodingMode encodingMode) {
+      this.encodingMode = encodingMode;
+      return this;
+    }
+
+    Builder captureGroup(boolean capture) {
+      this.captureGroup = capture;
+      return this;
+    }
+
+    Builder preservePath() {
+      return encodedBy(EncodingMode.PRESERVE_PATH);
+    }
+
+    Builder form() {
+      return encodedBy(EncodingMode.FORM);
+    }
+
+    String getPattern() {
+      return pattern;
+    }
+
+    void setPattern(String pattern) {
+      this.pattern = pattern;
+    }
+
+    EncodingMode getEncodingMode() {
+      return encodingMode;
+    }
+
+    void setEncodingMode(EncodingMode encodingMode) {
+      this.encodingMode = encodingMode;
+    }
+
+    boolean getCaptureGroup() {
+      return captureGroup;
+    }
+
+    void setCaptureGroup(boolean captureGroup) {
+      this.captureGroup = captureGroup;
+    }
   }
 }

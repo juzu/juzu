@@ -48,7 +48,7 @@ class PatternRoute extends Route {
 
     //
     if (chunks.size() != params.size() + 1) {
-      throw new AssertionError("Was expecting chunk size " + chunks.size() + " to be equals to " + params.size() + 1);
+      throw new AssertionError("Was expecting chunk size " + chunks.size() + " to be equals to " + (params.size() + 1));
     }
 
     //

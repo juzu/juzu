@@ -23,18 +23,14 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static juzu.impl.router.metadata.DescriptorBuilder.*;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RoutePriorityTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testExactMatchingAfterWildcard() throws Exception {
-
-    Router router = router().
-        add(route("/{foo}")).
-        add(route("/foo").with(routeParam("foo").withValue("b"))).
-        build();
+    Router router = new Router();
+    router.append("/{foo}");
+    router.append("/foo").addParam("foo", "b");
 
     assertEquals(Collections.singletonMap(Names.FOO, "foo"), router.route("/foo"));
     assertEquals("/foo", router.render(Collections.singletonMap(Names.FOO, "foo")));
@@ -43,11 +39,9 @@ public class RoutePriorityTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testExactMatchingBeforeWildcard() throws Exception {
-
-    Router router = router().
-        add(route("/foo").with(routeParam("foo").withValue("b"))).
-        add(route("/{foo}")).
-        build();
+    Router router = new Router();
+    router.append("/foo").addParam("foo", "b");
+    router.append("/{foo}");
 
     assertEquals(Collections.singletonMap(Names.FOO, "b"), router.route("/foo"));
     assertEquals("/foo", router.render(Collections.singletonMap(Names.FOO, "b")));

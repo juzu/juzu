@@ -25,8 +25,6 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static juzu.impl.router.metadata.DescriptorBuilder.*;
-
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -38,19 +36,10 @@ public class LegacyPortalTestCase extends AbstractTestCase {
 
   @Override
   public void setUp() throws Exception {
-    this.router = router().
-        add(route("/").
-            with(
-                routeParam("gtn:handler").withValue("portal")).
-            sub(route("/public/{gtn:sitename}{gtn:path}").
-                with(
-                    routeParam("gtn:access").withValue("public"),
-                    pathParam("gtn:path").matchedBy(".*").preservePath())).
-            sub(route("/private/{gtn:sitename}{gtn:path}").
-                with(
-                    routeParam("gtn:access").withValue("private"),
-                    pathParam("gtn:path").matchedBy(".*").preservePath()))).
-        build();
+    router = new Router();
+    Route portal = router.append("/").addParam("gtn:handler", "portal");
+    portal.append("/public/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:access", "public");
+    portal.append("/private/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:access", "private");
   }
 
   @Test

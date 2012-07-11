@@ -26,8 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static juzu.impl.router.metadata.DescriptorBuilder.*;
-
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -36,7 +34,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testRoot() throws Exception {
-    Router router = router().add(route("/").with(requestParam("foo").named("a").matchedByLiteral("a").required())).build();
+    Router router = new Router();
+    router.append("?a={<a>[r]foo}");
 
     //
     assertNull(router.route("/"));
@@ -52,7 +51,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testSegment() throws Exception {
-    Router router = router().add(route("/a").with(requestParam("foo").named("a").matchedByLiteral("a").required())).build();
+    Router router = new Router();
+    router.append("/a?a={<a>[r]foo}");
 
     //
     assertNull(router.route("/a"));
@@ -68,7 +68,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testValuePattern() throws Exception {
-    Router router = router().add(route("/a").with(requestParam("foo").named("a").matchedByPattern("[0-9]+").required())).build();
+    Router router = new Router();
+    router.append("/a?a={<[0-9]+>[r]foo}");
 
     //
     assertNull(router.route("/a"));
@@ -86,10 +87,9 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testPrecedence() throws Exception {
-    Router router = router().
-        add(route("/a").with(requestParam("foo").named("a").matchedByLiteral("a").required())).
-        add(route("/a").with(requestParam("bar").named("b").matchedByLiteral("b").required())).
-        build();
+    Router router = new Router();
+    router.append("/a?a={<a>[r]foo}");
+    router.append("/a?b={<b>[r]bar}");
 
     //
     assertNull(router.route("/a"));
@@ -110,10 +110,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testInheritance() throws Exception {
-    Router router = router().
-        add(route("/a").with(requestParam("foo").named("a").matchedByLiteral("a").required()).
-            sub(route("/b").with(requestParam("bar").named("b").matchedByLiteral("b").required()))).
-        build();
+    Router router = new Router();
+    router.append("/a?a={<a>[r]foo}").append("/b?b={<b>[r]bar}");
 
     //
     assertNull(router.route("/a"));
@@ -146,8 +144,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testOptional() throws Exception {
-    Router router = router().add(route("/").
-        with(requestParam("foo").named("a").matchedByLiteral("a"))).build();
+    Router router = new Router();
+    router.append("?a={<a>foo}");
 
     //
     assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/", Collections.<String, String[]>emptyMap()));
@@ -166,10 +164,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testMatchDescendantOfRootParameters() throws Exception {
-    Router router = router().
-        add(route("/").with(requestParam("foo").named("a").matchedByLiteral("a")).
-            sub(route("/a").with(requestParam("bar").named("b").matchedByLiteral("b")))).
-        build();
+    Router router = new Router();
+    router.append("?a={<a>foo}").append("/a?b={<b>bar}");
 
     //
     URIHelper renderContext = new URIHelper();
@@ -186,9 +182,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testLiteralMatch() throws Exception {
-    Router router = router().
-        add(route("/").with(requestParam("foo").canonical().optional().named("a").matchedByLiteral("foo_value"))).
-        build();
+    Router router = new Router();
+    router.append("?a={<foo_value>[oc]foo}");
 
     //
     Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
@@ -216,9 +211,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testCanonical() throws Exception {
-    Router router = router().
-        add(route("/").with(requestParam("foo").canonical().optional().named("a"))).
-        build();
+    Router router = new Router();
+    router.append("?a={[oc]foo}");
 
     //
     Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
@@ -256,9 +250,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testNeverEmpty() throws Exception {
-    Router router = router().
-        add(route("/").with(requestParam("foo").neverEmpty().optional().named("a"))).
-        build();
+    Router router = new Router();
+    router.append("?a={[fo]foo}");
 
     //
     Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
@@ -294,9 +287,8 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testNeverNull() throws Exception {
-    Router router = router().
-        add(route("/").with(requestParam("foo").neverNull().optional().named("a"))).
-        build();
+    Router router = new Router();
+    router.append("?a={[no]foo}");
 
     //
     Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();

@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static juzu.impl.router.metadata.DescriptorBuilder.*;
-
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -38,10 +36,8 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testLanguage1() throws Exception {
-    Router router = router().add(
-        route("/public/{gtn:lang}").
-            with(pathParam("gtn:lang").matchedBy(LANG_PATTERN).preservePath())).
-        build();
+    Router router = new Router();
+    router.append("/public/{<" + LANG_PATTERN + ">[p]gtn:lang}");
 
     //
     assertEquals(Collections.singletonMap(Names.GTN_LANG, ""), router.route("/public"));
@@ -51,10 +47,8 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testLanguage2() throws Exception {
-    Router router = router().
-        add(route("/{gtn:lang}/public").
-            with(pathParam("gtn:lang").matchedBy(LANG_PATTERN))).
-        build();
+    Router router = new Router();
+    router.append("/{<" + LANG_PATTERN + ">gtn:lang}/public");
 
     //
     assertEquals(Collections.singletonMap(Names.GTN_LANG, ""), router.route("/public"));
@@ -68,11 +62,8 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testLanguage3() throws Exception {
-    Router router = router().
-        add(route("/public/{gtn:lang}/{gtn:sitename}{gtn:path}")
-            .with(pathParam("gtn:lang").matchedBy(LANG_PATTERN).preservePath())
-            .with(pathParam("gtn:path").matchedBy(".*").preservePath())).
-        build();
+    Router router = new Router();
+    router.append("/public/{<" + LANG_PATTERN + ">[p]gtn:lang}").append("{gtn:sitename}{<.*>[p]gtn:path}");
 
     Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
     expectedParameters.put(Names.GTN_LANG, "fr");
@@ -93,10 +84,9 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testDuplicateRouteWithDifferentRouteParam() throws Exception {
-    Router router = router().add(
-        route("/").with(routeParam("foo").withValue("foo_1")).with(requestParam("bar").named("bar").matchedByLiteral("bar_value")),
-        route("/").with(routeParam("foo").withValue("foo_2"))
-    ).build();
+    Router router = new Router();
+    router.append("?bar={<bar_value>bar}").addParam("foo", "foo_1");
+    router.append("/").addParam("foo", "foo_2");
 
     //
     Map<QualifiedName, String> expected = new HashMap<QualifiedName, String>();
@@ -120,9 +110,8 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testJSMin() throws Exception {
-    Router router = router().add(
-        route("/foo{gtn:min}.js").with(pathParam("gtn:min").matchedBy("-(min)|").captureGroup(true))
-    ).build();
+    Router router = new Router();
+    router.append("/foo{<-(min)|>[c]gtn:min}.js");
 
     //
     assertEquals(Collections.singletonMap(Names.GTN_MIN, "min"), router.route("/foo-min.js"));

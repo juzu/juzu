@@ -20,7 +20,7 @@
 package juzu.impl.router;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouterConfigException extends Exception {
+public class RouterConfigException extends RuntimeException {
 
   public RouterConfigException() {
   }

@@ -20,8 +20,6 @@
 package juzu.impl.router;
 
 import juzu.UndeclaredIOException;
-import juzu.impl.router.metadata.ControllerDescriptor;
-import juzu.impl.router.metadata.RouteDescriptor;
 import juzu.impl.utils.MimeType;
 import juzu.impl.utils.Tools;
 
@@ -78,35 +76,40 @@ public class Router {
   /** . */
   private Regex[] regexes;
 
-  public Router(ControllerDescriptor metaData) throws RouterConfigException {
-    this(metaData, RegexFactory.JAVA);
+  public Router() throws RouterConfigException {
+    this('_', RegexFactory.JAVA);
   }
 
-  public Router(ControllerDescriptor metaData, RegexFactory regexFactory) throws RouterConfigException {
-    char separtorEscape = metaData.getSeparatorEscape();
+  public Router(char separatorEscape) throws RouterConfigException {
+    this(separatorEscape, RegexFactory.JAVA);
+  }
 
-    //
-    int i = separtorEscape & ~0x7F;
-    if (i > 0 || !escapeSet.get(separtorEscape)) {
-      throw new RouterConfigException("Char " + (int)separtorEscape + " cannot be used a separator escape");
+  public Router(char separatorEscape, RegexFactory regexFactory) throws RouterConfigException {
+    int i = separatorEscape & ~0x7F;
+    if (i > 0 || !escapeSet.get(separatorEscape)) {
+      throw new RouterConfigException("Char " + (int)separatorEscape + " cannot be used a separator escape");
     }
 
     //
-    String s = Integer.toString(separtorEscape, 16).toUpperCase();
+    String s = Integer.toString(separatorEscape, 16).toUpperCase();
     separatorEscapeNible1 = s.charAt(0);
     separatorEscapeNible2 = s.charAt(1);
 
     //
     this.regexFactory = regexFactory;
     this.root = new Route(this);
-    this.separatorEscape = separtorEscape;
+    this.separatorEscape = separatorEscape;
     this.regexes = new Regex[0];
-
-    //
-    for (RouteDescriptor routeMetaData : metaData.getRoutes()) {
-      root.append(routeMetaData);
-    }
   }
+
+  public Route append(String path) {
+    return root.append(path);
+  }
+
+  public Route append(String path, Map<QualifiedName, String> params) {
+    return root.append(path, params);
+  }
+
 
   Regex compile(String pattern) {
     for (Regex regex : regexes) {

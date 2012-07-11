@@ -24,8 +24,6 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static juzu.impl.router.metadata.DescriptorBuilder.*;
-
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -37,26 +35,11 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
 
   @Override
   public void setUp() throws Exception {
-    this.router = router().
-        add(
-            route("/private/{gtn:sitetype}/{gtn:sitename}{gtn:path}").
-                with(
-                    routeParam("gtn:handler").withValue("site"),
-                    routeParam("gtn:handler").withValue("site"),
-                    pathParam("gtn:path").matchedBy(".*").preservePath()),
-            route("/private/{gtn:sitetype}/{gtn:sitename}{gtn:path}").
-                with(
-                    routeParam("gtn:handler").withValue("site"),
-                    pathParam("gtn:path").matchedBy(".*").preservePath()),
-            route("/groups/{gtn:sitetype}/{gtn:sitename}{gtn:path}").
-                with(
-                    routeParam("gtn:handler").withValue("site"),
-                    pathParam("gtn:path").matchedBy(".*").preservePath()),
-            route("/users/{gtn:sitetype}/{gtn:sitename}{gtn:path}").
-                with(
-                    routeParam("gtn:handler").withValue("site"),
-                    pathParam("gtn:path").matchedBy(".*").preservePath())).
-        build();
+    this.router = new Router();
+
+    router.append("/private/{gtn:sitetype}/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:handler", "site");
+    router.append("/groups/{gtn:sitetype}/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:handler", "site");
+    router.append("/users/{gtn:sitetype}/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:handler", "site");
   }
 
   @Test

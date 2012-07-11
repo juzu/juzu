@@ -47,7 +47,7 @@ class PatternBuilder {
     return this;
   }
 
-  public PatternBuilder litteral(String s, int from, int to) {
+  public PatternBuilder litteral(CharSequence s, int from, int to) {
     if (from < 0) {
       throw new IllegalArgumentException("No negative from argument");
     }
@@ -69,16 +69,21 @@ class PatternBuilder {
     return this;
   }
 
-  public PatternBuilder literal(String s, int from) {
+  public PatternBuilder literal(CharSequence s, int from) {
     return litteral(s, from, s.length());
   }
 
-  public PatternBuilder literal(String s) {
+  public PatternBuilder literal(CharSequence s) {
     return litteral(s, 0, s.length());
   }
 
   public PatternBuilder literal(char c) {
     return literal(Character.toString(c));
+  }
+
+  public PatternBuilder clear() {
+    buffer.setLength(0);
+    return this;
   }
 
   public String build() {

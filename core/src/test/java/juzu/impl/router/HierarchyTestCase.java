@@ -24,8 +24,6 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static juzu.impl.router.metadata.DescriptorBuilder.*;
-
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -34,10 +32,8 @@ public class HierarchyTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testFoo() throws Exception {
-    Router router = router().
-        add(route("/a").with(routeParam("foo").withValue("bar")).
-            sub(route("/b").with(routeParam("juu").withValue("daa")))).
-        build();
+    Router router = new Router();
+    router.append("/a").addParam("foo", "bar").append("/b").addParam("juu", "daa");
 
     //
     // assertEquals(Collections.singletonMap(QualifiedName.create("foo"), "bar"), router.route("/a"));

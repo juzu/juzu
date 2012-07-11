@@ -22,8 +22,6 @@ package juzu.impl.router;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
-import static juzu.impl.router.metadata.DescriptorBuilder.*;
-
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -32,7 +30,8 @@ public class BuildRouteTestCase extends AbstractTestCase {
 
   @Test
   public void testParameterSegment() throws Exception {
-    Router router = router().add(route("/{a}")).build();
+    Router router = new Router();
+    router.append("/{a}");
 
     //
     assertEquals(0, router.root.getSegmentNames().size());
@@ -50,7 +49,8 @@ public class BuildRouteTestCase extends AbstractTestCase {
 
   @Test
   public void testQualifiedParameterSegment() throws Exception {
-    Router router = router().add(route("/{q:a}")).build();
+    Router router = new Router();
+    router.append("/{q:a}");
 
     //
     assertEquals(0, router.root.getSegmentNames().size());
@@ -68,7 +68,8 @@ public class BuildRouteTestCase extends AbstractTestCase {
 
   @Test
   public void testPatternSegment() throws Exception {
-    Router router = router().add(route("/{a}").with(pathParam("a").matchedBy(".*"))).build();
+    Router router = new Router();
+    router.append("/{<.*>a}");
 
     //
     assertEquals(0, router.root.getSegmentNames().size());
@@ -86,7 +87,10 @@ public class BuildRouteTestCase extends AbstractTestCase {
 
   @Test
   public void testSamePrefix() throws Exception {
-    Router router = router().add(route("/public/foo")).add(route("/public/bar")).build();
+    Router router = new Router();
+    router.append("/public/foo");
+    router.append("/public/bar");
+
     assertEquals(2, router.root.getSegmentSize("public"));
     Route publicRoute1 = router.root.getSegment("public", 0);
     assertEquals(1, publicRoute1.getSegmentSize("foo"));

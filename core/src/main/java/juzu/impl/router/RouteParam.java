@@ -19,22 +19,11 @@
 
 package juzu.impl.router;
 
-import juzu.impl.router.metadata.RouteParamDescriptor;
-
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
 class RouteParam extends Param {
-
-  static RouteParam create(RouteParamDescriptor descriptor) {
-    if (descriptor == null) {
-      throw new NullPointerException("No null descriptor accepted");
-    }
-
-    //
-    return new RouteParam(descriptor.getQualifiedName(), descriptor.getValue());
-  }
 
   /** . */
   final String value;

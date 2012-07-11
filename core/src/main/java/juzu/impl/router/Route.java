@@ -21,10 +21,9 @@ package juzu.impl.router;
 
 //import javanet.staxutils.IndentingXMLStreamWriter;
 
-import juzu.impl.router.metadata.PathParamDescriptor;
-import juzu.impl.router.metadata.RequestParamDescriptor;
-import juzu.impl.router.metadata.RouteDescriptor;
-import juzu.impl.router.metadata.RouteParamDescriptor;
+import juzu.impl.controller.RouteBuilder;
+import juzu.impl.controller.RouteParser;
+import juzu.impl.router.regexp.SyntaxException;
 import juzu.impl.utils.Tools;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -892,28 +891,6 @@ class Route {
     return null;
   }
 
-  final Route append(RouteDescriptor descriptor) throws MalformedRouteException {
-    Route route = append(descriptor.getPathParams(), descriptor.getPath());
-
-    //
-    for (RouteParamDescriptor routeParamDesc : descriptor.getRouteParams()) {
-      route.add(RouteParam.create(routeParamDesc));
-    }
-
-    //
-    for (RequestParamDescriptor requestParamDesc : descriptor.getRequestParams()) {
-      route.add(RequestParam.create(requestParamDesc, router));
-    }
-
-    //
-    for (RouteDescriptor childDescriptor : descriptor.getChildren()) {
-      route.append(childDescriptor);
-    }
-
-    //
-    return route;
-  }
-
   final Route add(RouteParam param) throws MalformedRouteException {
     Param existing = findParam(param.name);
     if (existing != null) {
@@ -940,120 +917,184 @@ class Route {
     return this;
   }
 
-  /**
-   * Append a path, creates the necessary routes and returns the last route added.
-   *
-   * @param pathParamDescriptors the path param descriptors
-   * @param path                 the path to append
-   * @return the last route added
-   */
-  private Route append(Map<QualifiedName, PathParamDescriptor> pathParamDescriptors, String path) throws MalformedRouteException {
-    if (path.length() == 0 || path.charAt(0) != '/') {
-      throw new MalformedRouteException();
-    }
+  public Route append(String path) {
+    return append(path, Collections.<QualifiedName, String>emptyMap());
+  }
+
+  public Route append(String path, Map<QualifiedName, String> params) {
 
     //
-    int pos = path.length();
-    int level = 0;
-    List<Integer> start = new ArrayList<Integer>();
-    List<Integer> end = new ArrayList<Integer>();
-    for (int i = 1;i < path.length();i++) {
-      char c = path.charAt(i);
-      if (c == '{') {
-        if (level++ == 0) {
-          start.add(i);
-        }
+    class Assembler implements RouteBuilder {
+      Route current = Route.this;
+      boolean path = true;
+      PatternBuilder builder = new PatternBuilder();
+      List<String> chunks = new ArrayList<String>();
+      List<PathParam> parameterPatterns = new ArrayList<PathParam>();
+      PathParam.Builder paramDesc;
+      RequestParam.Builder requestParam;
+      boolean lastSegment;
+      public void openSegment() {
+        builder.clear().expr("^/");
+        chunks.clear();
+        parameterPatterns.clear();
+        lastSegment = false;
       }
-      else if (c == '}') {
-        if (--level == 0) {
-          end.add(i);
-        }
+      public void segmentChunk(CharSequence s, int from, int to) {
+        builder.litteral(s, from, to);
+        chunks.add(s.subSequence(from, to).toString());
+        lastSegment = true;
       }
-      else if (c == '/') {
-        if (level == 0) {
-          pos = i;
-          break;
+      public void closeSegment() {
+        if (!lastSegment) {
+          chunks.add("");
         }
-      }
-    }
 
-    //
-    Route next;
-    if (start.isEmpty()) {
-      String segment = path.substring(1, pos);
-      SegmentRoute route = new SegmentRoute(router, segment);
-      add(route);
-      next = route;
-    }
-    else {
-      if (start.size() == end.size()) {
-        PatternBuilder builder = new PatternBuilder();
-        builder.expr("^").expr('/');
-        List<String> chunks = new ArrayList<String>();
-        List<PathParam> parameterPatterns = new ArrayList<PathParam>();
+        Route next;
+        if (parameterPatterns.isEmpty()) {
+          next = new SegmentRoute(router, chunks.get(0));
+        } else {
+          // We want to satisfy one of the following conditions
+          // - the next char after the matched expression is '/'
+          // - the expression matched until the end
+          // - the match expression is the '/' expression
+          builder.expr("(?:(?<=^/)|(?=/)|$)");
+          next = new PatternRoute(router, router.compile(builder.build()), parameterPatterns, chunks);
+        }
 
         //
-        int previous = 1;
-        for (int i = 0;i < start.size();i++) {
-          builder.litteral(path, previous, start.get(i));
-          chunks.add(path.substring(previous, start.get(i)));
-          String parameterName = path.substring(start.get(i) + 1, end.get(i));
+        current = current.add(next);
+      }
+
+      public void closePath() {
+        if (Route.this == current) {
+          // Generate a route if no path segment was parsed
+          current = current.add(new SegmentRoute(router, ""));
+        }
+      }
+
+      public void query() {
+        path = false;
+      }
+      public void queryParamLHS(CharSequence s, int from, int to) {
+        String name = s.subSequence(from, to).toString();
+        requestParam = RequestParam.builder().setName(name);
+      }
+      public void endQueryParam() {
+        current.add(requestParam.build(router));
+      }
+      public void queryParamRHS() {
+      }
+      public void queryParamRHS(CharSequence s, int from, int to) {
+        requestParam.setValue(s.subSequence(from, to).toString());
+      }
+      public void openExpr() {
+        if (path) {
+          paramDesc = PathParam.builder();
+          if (!lastSegment) {
+            chunks.add("");
+          }
+        }
+      }
+      public void pattern(CharSequence s, int from, int to) {
+        if (path) {
+          paramDesc.setPattern(s.subSequence(from, to).toString());
+        } else {
+          requestParam.setValue(s.subSequence(from, to).toString());
+          requestParam.setValueType(ValueType.PATTERN);
+        }
+      }
+      public void modifiers(CharSequence s, int from, int to) {
+        while (from < to) {
+          char modifier = s.charAt(from++);
+          if (path) {
+            switch (modifier) {
+              // Capture group
+              case 'c':
+                paramDesc.setCaptureGroup(true);
+                break;
+              // Preserve path
+              case 'p':
+                paramDesc.setEncodingMode(EncodingMode.PRESERVE_PATH);
+                break;
+              default:
+                throw new MalformedRouteException("Unrecognized modifier " + modifier);
+            }
+          } else {
+            switch (modifier) {
+              // Required
+              case 'r':
+                requestParam.setControlMode(ControlMode.REQUIRED);
+                break;
+              // Canonical
+              case 'c':
+                requestParam.setValueMapping(ValueMapping.CANONICAL);
+                break;
+              // Optional
+              case 'o':
+                requestParam.setControlMode(ControlMode.OPTIONAL);
+                break;
+              // Filled
+              case 'f':
+                requestParam.setValueMapping(ValueMapping.NEVER_EMPTY);
+                break;
+              // Never null
+              case 'n':
+                requestParam.setValueMapping(ValueMapping.NEVER_NULL);
+                break;
+              default:
+                throw new MalformedRouteException("Unrecognized modifier " + modifier);
+            }
+          }
+        }
+      }
+      public void ident(CharSequence s, int from, int to) {
+        String parameterName = s.subSequence(from, to).toString();
+        QualifiedName qn = QualifiedName.parse(parameterName);
+        if (path) {
+          paramDesc.setQualifiedName(qn);
+        } else {
+          requestParam.setQualifiedName(qn);
+        }
+      }
+      public void closeExpr() {
+        if (path) {
+          lastSegment = false;
 
           //
-          QualifiedName parameterQName = QualifiedName.parse(parameterName);
-
-          // Now get path param metadata
-          PathParamDescriptor parameterDescriptor = pathParamDescriptors.get(parameterQName);
-
-          //
-          PathParam param;
-          if (parameterDescriptor != null) {
-            param = PathParam.create(parameterDescriptor, router);
-          }
-          else {
-            param = PathParam.create(parameterQName, router);
-          }
-
+          PathParam param = paramDesc.build(router);
           // Append routing regex to the route regex surrounded by a non capturing regex
           // to isolate routingRegex like a|b or a(.)b
           builder.expr("(?:").expr(param.routingRegex).expr(")");
-
-          // Add the path param with the rendering regex
           parameterPatterns.add(param);
-          previous = end.get(i) + 1;
         }
-
-        //
-        builder.litteral(path, previous, pos);
-
-        // We want to satisfy one of the following conditions
-        // - the next char after the matched expression is '/'
-        // - the expression matched until the end
-        // - the match expression is the '/' expression
-        builder.expr("(?:(?<=^/)|(?=/)|$)");
-
-        //
-        chunks.add(path.substring(previous, pos));
-        PatternRoute route = new PatternRoute(router, router.compile(builder.build()), parameterPatterns, chunks);
-
-        // Wire
-        add(route);
-
-        //
-        next = route;
-      }
-      else {
-        throw new UnsupportedOperationException("Report error");
       }
     }
 
     //
-    if (pos < path.length()) {
-      return next.append(pathParamDescriptors, path.substring(pos));
+    Assembler asm = new Assembler();
+    try {
+      RouteParser.parse(path, asm);
     }
-    else {
-      return next;
+    catch (SyntaxException e) {
+      throw new MalformedRouteException(e);
     }
+
+    // Add params
+    for (Map.Entry<QualifiedName, String> entry : params.entrySet()) {
+      asm.current.add(new RouteParam(entry.getKey(), entry.getValue()));
+    }
+
+    //
+    return asm.current;
+  }
+
+  public Route addParam(String name, String value) {
+    return addParam(QualifiedName.parse(name), value);
+  }
+
+  public Route addParam(QualifiedName name, String value) {
+    add(new RouteParam(name, value));
+    return this;
   }
 
   private Param getParam(QualifiedName name) {
