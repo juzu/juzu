@@ -32,7 +32,7 @@ class RequestParam extends Param {
   final String matchName;
 
   /** . */
-  final Regex matchPattern;
+  final RERef matchPattern;
 
   /** . */
   final ControlMode controlMode;
@@ -40,7 +40,7 @@ class RequestParam extends Param {
   /** . */
   final ValueMapping valueMapping;
 
-  RequestParam(QualifiedName name, String matchName, Regex matchPattern, ControlMode controlMode, ValueMapping valueMapping) {
+  RequestParam(QualifiedName name, String matchName, RERef matchPattern, ControlMode controlMode, ValueMapping valueMapping) {
     super(name);
 
     //
@@ -63,7 +63,7 @@ class RequestParam extends Param {
   }
 
   boolean matchValue(String value) {
-    return matchPattern == null || matchPattern.matcher().matches(value);
+    return matchPattern == null || matchPattern.re.matcher().matches(value);
   }
 
   static Builder builder() {
@@ -98,7 +98,7 @@ class RequestParam extends Param {
       Builder descriptor = this;
 
       //
-      Regex matchValue = null;
+      RERef matchValue = null;
       if (descriptor.getValue() != null) {
         PatternBuilder matchValueBuilder = new PatternBuilder();
         matchValueBuilder.expr("^");

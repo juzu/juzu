@@ -19,6 +19,8 @@
 
 package juzu.impl.router;
 
+import juzu.impl.router.regex.RE;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +78,7 @@ public class RenderContext {
   private BitStack stack = new BitStack();
 
   /** . */
-  Regex.Matcher[] matchers;
+  RE.Matcher[] matchers;
 
   public RenderContext(Map<QualifiedName, String> map) {
     this();
@@ -91,10 +93,10 @@ public class RenderContext {
     this.matchers = null;
   }
 
-  Regex.Matcher matcher(Regex regex) {
-    Regex.Matcher matcher = matchers[regex.index];
+  RE.Matcher matcher(RERef regex) {
+    RE.Matcher matcher = matchers[regex.index];
     if (matcher == null) {
-      matcher = matchers[regex.index] = regex.matcher();
+      matcher = matchers[regex.index] = regex.re.matcher();
     }
     return matcher;
   }

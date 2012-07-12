@@ -19,6 +19,8 @@
 
 package juzu.impl.router;
 
+import juzu.impl.router.regex.JRegexFactory;
+import juzu.impl.router.regex.RE;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
@@ -27,8 +29,8 @@ public class RegexTestCase extends AbstractTestCase {
 
   @Test
   public void testLiteral() {
-    Regex regex = JRegexFactory.INSTANCE.compile("abc");
-    Regex.Match[] matches = regex.matcher().find("abc");
+    RE regex = JRegexFactory.INSTANCE.compile("abc");
+    RE.Match[] matches = regex.matcher().find("abc");
     assertEquals(1, matches.length);
     assertEquals(0, matches[0].getStart());
     assertEquals(3, matches[0].getEnd());
@@ -37,8 +39,8 @@ public class RegexTestCase extends AbstractTestCase {
 
   @Test
   public void testSimpleGroup1() {
-    Regex regex = JRegexFactory.INSTANCE.compile("(abc)");
-    Regex.Match[] matches = regex.matcher().find("abc");
+    RE regex = JRegexFactory.INSTANCE.compile("(abc)");
+    RE.Match[] matches = regex.matcher().find("abc");
     assertEquals(2, matches.length);
     assertEquals(0, matches[0].getStart());
     assertEquals(3, matches[0].getEnd());
@@ -50,8 +52,8 @@ public class RegexTestCase extends AbstractTestCase {
 
   @Test
   public void testSimpleGroup2() {
-    Regex regex = JRegexFactory.INSTANCE.compile("a(b)c");
-    Regex.Match[] matches = regex.matcher().find("abc");
+    RE regex = JRegexFactory.INSTANCE.compile("a(b)c");
+    RE.Match[] matches = regex.matcher().find("abc");
     assertEquals(2, matches.length);
     assertEquals(0, matches[0].getStart());
     assertEquals(3, matches[0].getEnd());
@@ -63,8 +65,8 @@ public class RegexTestCase extends AbstractTestCase {
 
   @Test
   public void testNonCapturingGroup() {
-    Regex regex = JRegexFactory.INSTANCE.compile("a(?:b)c");
-    Regex.Match[] matches = regex.matcher().find("abc");
+    RE regex = JRegexFactory.INSTANCE.compile("a(?:b)c");
+    RE.Match[] matches = regex.matcher().find("abc");
     assertEquals(1, matches.length);
     assertEquals(0, matches[0].getStart());
     assertEquals(3, matches[0].getEnd());

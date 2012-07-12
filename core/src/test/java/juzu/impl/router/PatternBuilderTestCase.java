@@ -19,6 +19,8 @@
 
 package juzu.impl.router;
 
+import juzu.impl.router.regex.RE;
+import juzu.impl.router.regex.REFactory;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
@@ -48,7 +50,7 @@ public class PatternBuilderTestCase extends AbstractTestCase {
     pb.expr("^");
     pb.literal(c);
     pb.expr("$");
-    Regex pattern = RegexFactory.JAVA.compile(pb.build());
+    RE pattern = REFactory.JAVA.compile(pb.build());
     assertTrue(pattern.matcher().matches(Character.toString(c)));
   }
 }

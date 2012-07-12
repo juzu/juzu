@@ -20,6 +20,8 @@
 package juzu.impl.router;
 
 import juzu.UndeclaredIOException;
+import juzu.impl.router.regex.RE;
+import juzu.impl.router.regex.REFactory;
 import juzu.impl.utils.MimeType;
 import juzu.impl.utils.Tools;
 
@@ -59,7 +61,10 @@ public class Router {
   }
 
   /** . */
-  private final RegexFactory regexFactory;
+  private final REFactory factory;
+
+  /** . */
+  private RERef[] regexes;
 
   /** The root route. */
   final Route root;
@@ -73,18 +78,15 @@ public class Router {
   /** . */
   final char separatorEscapeNible2;
 
-  /** . */
-  private Regex[] regexes;
-
   public Router() throws RouterConfigException {
-    this('_', RegexFactory.JAVA);
+    this('_', REFactory.JAVA);
   }
 
   public Router(char separatorEscape) throws RouterConfigException {
-    this(separatorEscape, RegexFactory.JAVA);
+    this(separatorEscape, REFactory.JAVA);
   }
 
-  public Router(char separatorEscape, RegexFactory regexFactory) throws RouterConfigException {
+  public Router(char separatorEscape, REFactory regexFactory) throws RouterConfigException {
     int i = separatorEscape & ~0x7F;
     if (i > 0 || !escapeSet.get(separatorEscape)) {
       throw new RouterConfigException("Char " + (int)separatorEscape + " cannot be used a separator escape");
@@ -96,10 +98,23 @@ public class Router {
     separatorEscapeNible2 = s.charAt(1);
 
     //
-    this.regexFactory = regexFactory;
     this.root = new Route(this);
     this.separatorEscape = separatorEscape;
-    this.regexes = new Regex[0];
+    this.regexes = new RERef[0];
+    this.factory = regexFactory;
+  }
+
+  RERef compile(String pattern) {
+    for (RERef regex : regexes) {
+      if (regex.re.getPattern().equals(pattern)) {
+        return regex;
+      }
+    }
+    //
+    RE regex = factory.compile(pattern);
+    RERef holder = new RERef(regexes.length, regex);
+    regexes = Tools.appendTo(regexes, holder);
+    return holder;
   }
 
   public Route append(String path) {
@@ -108,19 +123,6 @@ public class Router {
 
   public Route append(String path, Map<QualifiedName, String> params) {
     return root.append(path, params);
-  }
-
-
-  Regex compile(String pattern) {
-    for (Regex regex : regexes) {
-      if (regex.getPattern().equals(pattern)) {
-        return regex;
-      }
-    }
-    Regex regex = regexFactory.compile(pattern);
-    regex.index = regexes.length;
-    regexes = Tools.appendTo(regexes, regex);
-    return regex;
   }
 
   public void render(Map<QualifiedName, String> parameters, URIWriter writer) throws IOException {
@@ -133,7 +135,7 @@ public class Router {
 
   public void render(RenderContext context, URIWriter writer) throws IOException {
     if (context.matchers == null) {
-      context.matchers = new Regex.Matcher[regexes.length];
+      context.matchers = new RE.Matcher[regexes.length];
     }
     root.render(context, writer);
   }

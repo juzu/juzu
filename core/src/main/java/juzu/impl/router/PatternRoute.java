@@ -28,7 +28,7 @@ import java.util.List;
 class PatternRoute extends Route {
 
   /** . */
-  final Regex pattern;
+  final RERef pattern;
 
   /** . */
   final PathParam[] params;
@@ -41,7 +41,7 @@ class PatternRoute extends Route {
 
   PatternRoute(
       Router router,
-      Regex pattern,
+      RERef pattern,
       List<PathParam> params,
       List<String> chunks) {
     super(router);

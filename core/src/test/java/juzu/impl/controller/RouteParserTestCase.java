@@ -1,12 +1,11 @@
 package juzu.impl.controller;
 
-import juzu.impl.router.regexp.SyntaxException;
+import juzu.impl.router.regex.SyntaxException;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

@@ -17,19 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router;
+package juzu.impl.router.regex;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JRegexFactory extends RegexFactory {
+public class JRegexFactory extends REFactory {
 
   /** . */
-  public static final RegexFactory INSTANCE = new JRegexFactory();
+  public static final REFactory INSTANCE = new JRegexFactory();
 
   private JRegexFactory() {
   }
 
   @Override
-  public Regex compile(String pattern) {
+  public RE compile(String pattern) {
     return new JRegex(pattern);
   }
 
@@ -38,7 +38,7 @@ public class JRegexFactory extends RegexFactory {
     return "jregex";
   }
 
-  public static class JRegex extends Regex {
+  public static class JRegex extends RE {
 
     /** . */
     private final jregex.Pattern pattern;

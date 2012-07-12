@@ -23,7 +23,8 @@ package juzu.impl.router;
 
 import juzu.impl.controller.RouteBuilder;
 import juzu.impl.controller.RouteParser;
-import juzu.impl.router.regexp.SyntaxException;
+import juzu.impl.router.regex.RE;
+import juzu.impl.router.regex.SyntaxException;
 import juzu.impl.utils.Tools;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -92,7 +93,7 @@ class Route {
       writer.writeAttribute("qname", requestParam.name.getValue());
       writer.writeAttribute("name", requestParam.matchName);
       if (requestParam.matchPattern != null) {
-        writer.writeAttribute("value", requestParam.matchPattern.getPattern());
+        writer.writeAttribute("value", requestParam.matchPattern.re.getPattern());
       }
       writer.writeEndElement();
     }
@@ -387,7 +388,7 @@ class Route {
             case FORM:
             case PRESERVE_PATH:
               for (int j = 0;j < param.matchingRegex.length;j++) {
-                Regex renderingRegex = param.matchingRegex[j];
+                RERef renderingRegex = param.matchingRegex[j];
                 if (context.matcher(renderingRegex).matches(s.getValue())) {
                   matched = param.templatePrefixes[j] + s.getValue() + param.templateSuffixes[j];
                   break;
@@ -695,7 +696,7 @@ class Route {
             PatternRoute patternRoute = (PatternRoute)child;
 
             //
-            Regex.Match[] matches = patternRoute.pattern.matcher().find(current.path.getValue());
+            RE.Match[] matches = patternRoute.pattern.re.matcher().find(current.path.getValue());
 
             // We match
             if (matches.length > 0) {
@@ -723,7 +724,7 @@ class Route {
               for (int i = 0;i < patternRoute.params.length;i++) {
                 PathParam param = patternRoute.params[i];
                 for (int j = 0;j < param.matchingRegex.length;j++) {
-                  Regex.Match match = matches[index + j];
+                  RE.Match match = matches[index + j];
                   if (match.getEnd() != -1) {
                     String value;
                     if (param.encodingMode == EncodingMode.FORM) {

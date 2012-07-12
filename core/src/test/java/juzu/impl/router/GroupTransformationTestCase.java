@@ -19,11 +19,11 @@
 
 package juzu.impl.router;
 
-import juzu.impl.router.regexp.RENode;
-import juzu.impl.router.regexp.REParser;
-import juzu.impl.router.regexp.RERenderer;
-import juzu.impl.router.regexp.REVisitor;
-import juzu.impl.router.regexp.SyntaxException;
+import juzu.impl.router.regex.RENode;
+import juzu.impl.router.regex.REParser;
+import juzu.impl.router.regex.RERenderer;
+import juzu.impl.router.regex.REVisitor;
+import juzu.impl.router.regex.SyntaxException;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 

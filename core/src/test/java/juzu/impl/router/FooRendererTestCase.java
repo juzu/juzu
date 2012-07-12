@@ -19,8 +19,8 @@
 
 package juzu.impl.router;
 
-import juzu.impl.router.regexp.RENode;
-import juzu.impl.router.regexp.REParser;
+import juzu.impl.router.regex.RENode;
+import juzu.impl.router.regex.REParser;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 

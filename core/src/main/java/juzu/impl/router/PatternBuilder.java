@@ -19,7 +19,7 @@
 
 package juzu.impl.router;
 
-import juzu.impl.router.regexp.Literal;
+import juzu.impl.router.regex.Literal;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>

@@ -17,10 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router.regexp;
+package juzu.impl.router.regex;
 
 /**
- * Renders a {@link juzu.impl.router.regexp.RENode} to its pattern representation.
+ * Renders a {@link juzu.impl.router.regex.RENode} to its pattern representation.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$

@@ -17,35 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router.regexp;
+package juzu.impl.router.regex;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-enum Kind {
+public abstract class REFactory implements Cloneable {
 
-  BEGIN,
+  public static REFactory JAVA = new REFactory() {
+    @Override
+    public RE compile(String pattern) {
+      return new RE.Java(pattern);
+    }
 
-  END,
+    @Override
+    public String getName() {
+      return "java";
+    }
+  };
 
-  ANY,
+  protected REFactory() {
+  }
 
-  HYPHEN,
+  public abstract RE compile(String pattern);
 
-  OR,
-
-  LITERAL,
-
-  GROUP_OPEN,
-
-  GROUP_CLOSE,
-
-  QUANTIFIER,
-
-  QUANTIFIER_MODE,
-
-  CC_OPEN,
-
-  CC_CLOSE,
-
-  CC_AND
-
+  public abstract String getName();
 }

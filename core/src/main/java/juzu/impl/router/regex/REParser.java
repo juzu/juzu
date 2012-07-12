@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router.regexp;
+package juzu.impl.router.regex;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

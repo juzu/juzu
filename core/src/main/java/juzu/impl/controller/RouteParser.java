@@ -1,6 +1,6 @@
 package juzu.impl.controller;
 
-import juzu.impl.router.regexp.SyntaxException;
+import juzu.impl.router.regex.SyntaxException;
 import juzu.impl.utils.Location;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

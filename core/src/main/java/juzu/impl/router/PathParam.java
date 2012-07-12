@@ -19,11 +19,11 @@
 
 package juzu.impl.router;
 
-import juzu.impl.router.regexp.RENode;
-import juzu.impl.router.regexp.REParser;
-import juzu.impl.router.regexp.RERenderer;
-import juzu.impl.router.regexp.REVisitor;
-import juzu.impl.router.regexp.SyntaxException;
+import juzu.impl.router.regex.RENode;
+import juzu.impl.router.regex.REParser;
+import juzu.impl.router.regex.RERenderer;
+import juzu.impl.router.regex.REVisitor;
+import juzu.impl.router.regex.SyntaxException;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,7 +41,7 @@ class PathParam extends Param {
   final String routingRegex;
 
   /** . */
-  final Regex[] matchingRegex;
+  final RERef[] matchingRegex;
 
   /** . */
   final String[] templatePrefixes;
@@ -53,7 +53,7 @@ class PathParam extends Param {
       QualifiedName name,
       EncodingMode encodingMode,
       String routingRegex,
-      Regex[] matchingRegex,
+      RERef[] matchingRegex,
       String[] templatePrefixes,
       String[] templateSuffixes) {
     super(name);
@@ -125,7 +125,7 @@ class PathParam extends Param {
 
       // Now work on the regex
       StringBuilder routingRegex = new StringBuilder();
-      Regex[] renderingRegexes;
+      RERef[] renderingRegexes;
       String[] templatePrefixes;
       String[] templateSuffixes;
       try {
@@ -148,7 +148,7 @@ class PathParam extends Param {
         ValueResolverFactory factory = new ValueResolverFactory();
         renderingDisjunction.accept(transformer);
         List<ValueResolverFactory.Alternative> alt = factory.foo(renderingDisjunction);
-        renderingRegexes = new Regex[alt.size()];
+        renderingRegexes = new RERef[alt.size()];
         templatePrefixes = new String[alt.size()];
         templateSuffixes = new String[alt.size()];
         for (int i = 0;i < alt.size();i++) {

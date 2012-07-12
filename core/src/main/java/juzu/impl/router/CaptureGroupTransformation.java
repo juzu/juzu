@@ -19,9 +19,9 @@
 
 package juzu.impl.router;
 
-import juzu.impl.router.regexp.GroupType;
-import juzu.impl.router.regexp.RENode;
-import juzu.impl.router.regexp.REVisitor;
+import juzu.impl.router.regex.GroupType;
+import juzu.impl.router.regex.RENode;
+import juzu.impl.router.regex.REVisitor;
 
 import java.util.LinkedList;
 

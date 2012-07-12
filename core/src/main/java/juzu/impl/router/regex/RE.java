@@ -16,19 +16,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package juzu.impl.router;
+package juzu.impl.router.regex;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Regex {
+public abstract class RE {
 
   /** . */
   public static final Match[] NO_MATCHES = new Match[0];
 
   /** . */
   public static final Match NULL_MATCH = new Match(-1, -1, null);
-
-  /** An index set by the router to do matcher reuse easily, the regex implementation should not care about it. */
-  int index = -1;
 
   public abstract String getPattern();
 
@@ -72,7 +69,7 @@ public abstract class Regex {
     }
   }
 
-  public static class Java extends Regex {
+  public static class Java extends RE {
 
     /** . */
     private final java.util.regex.Pattern pattern;
