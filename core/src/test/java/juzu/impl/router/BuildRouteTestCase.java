@@ -41,7 +41,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.A, patternRoute.params[0].name);
     assertEquals("^(.+)$", patternRoute.params[0].matchingRegex[0].re.getPattern());
-    assertEquals(EncodingMode.FORM, patternRoute.params[0].encodingMode);
+    assertFalse(patternRoute.params[0].preservePath);
     assertEquals(2, patternRoute.chunks.length);
     assertEquals("", patternRoute.chunks[0]);
     assertEquals("", patternRoute.chunks[1]);
@@ -60,7 +60,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.Q_A, patternRoute.params[0].name);
     assertEquals("^(.+)$", patternRoute.params[0].matchingRegex[0].re.getPattern());
-    assertEquals(EncodingMode.FORM, patternRoute.params[0].encodingMode);
+    assertFalse(patternRoute.params[0].preservePath);
     assertEquals(2, patternRoute.chunks.length);
     assertEquals("", patternRoute.chunks[0]);
     assertEquals("", patternRoute.chunks[1]);
@@ -79,7 +79,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.A, patternRoute.params[0].name);
     assertEquals("^(.*)$", patternRoute.params[0].matchingRegex[0].re.getPattern());
-    assertEquals(EncodingMode.FORM, patternRoute.params[0].encodingMode);
+    assertFalse(patternRoute.params[0].preservePath);
     assertEquals(2, patternRoute.chunks.length);
     assertEquals("", patternRoute.chunks[0]);
     assertEquals("", patternRoute.chunks[1]);
@@ -124,7 +124,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
         for (int j = 0;j < expectedParam.matchingRegex.length;j++) {
           assertEquals(expectedParam.matchingRegex[j].toString(), param.matchingRegex[j].toString());
         }
-        assertEquals(expectedParam.encodingMode, param.encodingMode);
+        assertEquals(expectedParam.preservePath, param.preservePath);
       }
     }
     else if (route instanceof SegmentRoute) {

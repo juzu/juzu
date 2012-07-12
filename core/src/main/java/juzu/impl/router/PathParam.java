@@ -36,7 +36,7 @@ import java.util.List;
 class PathParam extends Param {
 
   /** . */
-  final EncodingMode encodingMode;
+  final boolean preservePath;
 
   /** . */
   final String routingRegex;
@@ -52,7 +52,7 @@ class PathParam extends Param {
 
   private PathParam(
       QualifiedName name,
-      EncodingMode encodingMode,
+      boolean preservePath,
       String routingRegex,
       RERef[] matchingRegex,
       String[] templatePrefixes,
@@ -65,7 +65,7 @@ class PathParam extends Param {
     }
 
     //
-    this.encodingMode = encodingMode;
+    this.preservePath = preservePath;
     this.routingRegex = routingRegex;
     this.matchingRegex = matchingRegex;
     this.templatePrefixes = templatePrefixes;
@@ -74,7 +74,7 @@ class PathParam extends Param {
 
   @Override
   public String toString() {
-    return "PathParam[name=" + name + ",encodingMode=" + encodingMode + ",pattern=" + matchingRegex + "]";
+    return "PathParam[name=" + name + ",preservePath=" + preservePath + ",pattern=" + matchingRegex + "]";
   }
 
   static Builder builder() {
@@ -87,13 +87,13 @@ class PathParam extends Param {
     private String pattern;
 
     /** . */
-    private EncodingMode encodingMode;
+    private boolean preservePath;
 
     /** . */
     private boolean captureGroup;
 
     private Builder() {
-      this.encodingMode = EncodingMode.FORM;
+      this.preservePath = false;
       this.captureGroup = false;
     }
 
@@ -107,21 +107,18 @@ class PathParam extends Param {
       }
 
       //
-      String regex = null;
-      EncodingMode encodingMode = EncodingMode.FORM;
+      String regex;
+      boolean preservePath = false;
       if (descriptor != null) {
         regex = descriptor.getPattern();
-        encodingMode = descriptor.getEncodingMode();
+        preservePath = descriptor.preservePath;
+      } else {
+        regex = null;
       }
 
       //
       if (regex == null) {
-        if (encodingMode == EncodingMode.FORM) {
-          regex = ".+";
-        }
-        else {
-          regex = "[^/]+";
-        }
+        regex = preservePath ? "[^/]+" : ".+";
       }
 
       // Now work on the regex
@@ -136,7 +133,7 @@ class PathParam extends Param {
 
         //
         RENode.Disjunction routingDisjunction = parser.parseDisjunction();
-        if (encodingMode == EncodingMode.FORM) {
+        if (!preservePath) {
           CharEscapeTransformation escaper = new CharEscapeTransformation('/', '_');
           routingDisjunction.accept(escaper);
         }
@@ -175,7 +172,7 @@ class PathParam extends Param {
       //
       return new PathParam(
           descriptor.getQualifiedName(),
-          encodingMode,
+          preservePath,
           routingRegex.toString(),
           renderingRegexes,
           templatePrefixes,
@@ -187,22 +184,14 @@ class PathParam extends Param {
       return this;
     }
 
-    Builder encodedBy(EncodingMode encodingMode) {
-      this.encodingMode = encodingMode;
-      return this;
-    }
-
     Builder captureGroup(boolean capture) {
       this.captureGroup = capture;
       return this;
     }
 
-    Builder preservePath() {
-      return encodedBy(EncodingMode.PRESERVE_PATH);
-    }
-
-    Builder form() {
-      return encodedBy(EncodingMode.FORM);
+    Builder preservePath(boolean preservePath) {
+      this.preservePath = preservePath;
+      return this;
     }
 
     String getPattern() {
@@ -211,14 +200,6 @@ class PathParam extends Param {
 
     void setPattern(String pattern) {
       this.pattern = pattern;
-    }
-
-    EncodingMode getEncodingMode() {
-      return encodingMode;
-    }
-
-    void setEncodingMode(EncodingMode encodingMode) {
-      this.encodingMode = encodingMode;
     }
 
     boolean getCaptureGroup() {

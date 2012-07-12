@@ -71,7 +71,7 @@ class Route {
       for (PathParam param : pr.params) {
         writer.writeStartElement("path-param");
         writer.writeAttribute("qname", param.name.getValue());
-        writer.writeAttribute("encodingMode", param.encodingMode.toString());
+        writer.writeAttribute("preservePath", "" + param.preservePath);
         writer.writeAttribute("pattern", param.matchingRegex.toString());
         writer.writeEndElement();
       }
@@ -267,7 +267,7 @@ class Route {
           for (int len = value.length(), j = 0;j < len;j++) {
             char c = value.charAt(j);
             if (c == route.router.separatorEscape) {
-              if (def.encodingMode == EncodingMode.PRESERVE_PATH) {
+              if (def.preservePath) {
                 writer.append('_');
               }
               else {
@@ -277,7 +277,7 @@ class Route {
               }
             }
             else if (c == '/') {
-              writer.append(def.encodingMode == EncodingMode.PRESERVE_PATH ? '/' : route.router.separatorEscape);
+              writer.append(def.preservePath ? '/' : route.router.separatorEscape);
             }
             else {
               writer.appendSegment(c);
@@ -365,19 +365,12 @@ class Route {
         RenderContext.Parameter s = context.getParameter(param.name);
         String matched = null;
         if (s != null && !s.isMatched()) {
-          switch (param.encodingMode) {
-            case FORM:
-            case PRESERVE_PATH:
-              for (int j = 0;j < param.matchingRegex.length;j++) {
-                RERef renderingRegex = param.matchingRegex[j];
-                if (context.matcher(renderingRegex).matches(s.getValue())) {
-                  matched = param.templatePrefixes[j] + s.getValue() + param.templateSuffixes[j];
-                  break;
-                }
-              }
+          for (int j = 0;j < param.matchingRegex.length;j++) {
+            RERef renderingRegex = param.matchingRegex[j];
+            if (context.matcher(renderingRegex).matches(s.getValue())) {
+              matched = param.templatePrefixes[j] + s.getValue() + param.templateSuffixes[j];
               break;
-            default:
-              throw new AssertionError();
+            }
           }
         }
         if (matched != null) {
@@ -689,7 +682,7 @@ class Route {
                   RE.Match match = matches[index + j];
                   if (match.getEnd() != -1) {
                     String value;
-                    if (param.encodingMode == EncodingMode.FORM) {
+                    if (!param.preservePath) {
                       StringBuilder sb = new StringBuilder();
                       for (int from = match.getStart();from < match.getEnd();from++) {
                         char c = current.path.charAt(from);
@@ -976,7 +969,7 @@ class Route {
                 break;
               // Preserve path
               case 'p':
-                paramDesc.setEncodingMode(EncodingMode.PRESERVE_PATH);
+                paramDesc.preservePath(true);
                 break;
               default:
                 throw new MalformedRouteException("Unrecognized modifier " + modifier);
