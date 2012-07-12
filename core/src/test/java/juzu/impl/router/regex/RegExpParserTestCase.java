@@ -20,6 +20,7 @@
 package juzu.impl.router.regex;
 
 import junit.framework.AssertionFailedError;
+import juzu.impl.utils.CharStream;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
@@ -266,7 +267,7 @@ public class RegExpParserTestCase extends AbstractTestCase {
       }
     }
     try {
-      Stream stream = new Stream(s);
+      CharStream stream = new CharStream(s);
       Lexer lexer = new Lexer(stream);
       REParser parser = new REParser(lexer);
       parser.parse();

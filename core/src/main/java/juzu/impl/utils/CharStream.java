@@ -17,21 +17,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router.regex;
+package juzu.impl.utils;
 
 import java.util.NoSuchElementException;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Stream {
+/**
+ * Wraps a {@link CharSequence} to become a stream of chars.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public class CharStream {
 
   /** . */
-  private final CharSequence stream;
+  private final CharSequence s;
 
   /** . */
   private int index;
 
-  public Stream(CharSequence stream) {
-    this.stream = stream;
+  /**
+   * Create a new stream of the provided sequence.
+   *
+   * @param s the sequence
+   * @throws NullPointerException if the sequence is null
+   */
+  public CharStream(CharSequence s) throws NullPointerException {
+    if (s == null) {
+      throw new NullPointerException("No null sequence accepted");
+    }
+
+    //
+    this.s = s;
     this.index = 0;
   }
 
@@ -44,24 +59,24 @@ public class Stream {
   }
 
   public boolean hasNext() {
-    return hasNext(0);
-  }
-
-  public boolean hasNext(int delta) {
-    return index + delta < stream.length();
+    return has(0);
   }
 
   public boolean hasNext(char c) {
-    return hasNext(0, c);
+    return has(0, c);
   }
 
-  public boolean hasNext(int delta, char c) {
+  public boolean has(int delta) {
+    return index + delta < s.length();
+  }
+
+  public boolean has(int delta, char c) {
     int offset = index + delta;
-    return offset < stream.length() && stream.charAt(offset) == c;
+    return offset < s.length() && s.charAt(offset) == c;
   }
 
   public boolean next(char c) {
-    boolean a = index < stream.length() && stream.charAt(index) == c;
+    boolean a = index < s.length() && s.charAt(index) == c;
     if (a) {
       index++;
     }
@@ -74,17 +89,17 @@ public class Stream {
 
   public Character peek(int delta) {
     int offset = index + delta;
-    if (offset < stream.length()) {
-      return stream.charAt(offset);
+    if (offset < s.length()) {
+      return s.charAt(offset);
     }
     else {
       return null;
     }
   }
 
-  public char next() {
+  public char next() throws NoSuchElementException {
     if (hasNext()) {
-      return stream.charAt(index++);
+      return s.charAt(index++);
     }
     else {
       throw new NoSuchElementException();

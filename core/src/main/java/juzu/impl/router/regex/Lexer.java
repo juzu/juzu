@@ -19,6 +19,8 @@
 
 package juzu.impl.router.regex;
 
+import juzu.impl.utils.CharStream;
+
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +35,7 @@ class Lexer {
   private static final Pattern OCTAL_PATTERN = Pattern.compile("^[0-7]|[0-7][0-7]|[0-3][0-7][0-7]$");
 
   /** /. */
-  private final Stream stream;
+  private final CharStream stream;
 
   /** /. */
   private int ccDepth;
@@ -47,7 +49,7 @@ class Lexer {
   /** /. */
   private Kind previous;
 
-  Lexer(Stream stream) {
+  Lexer(CharStream stream) {
     this.stream = stream;
     this.ccDepth = 0;
     this.next = null;
@@ -56,7 +58,7 @@ class Lexer {
   }
 
   Lexer(CharSequence seq) {
-    this(new Stream(seq));
+    this(new CharStream(seq));
   }
 
   int getIndex() {
@@ -196,7 +198,7 @@ class Lexer {
               }
               else if (c == 'x') {
                 stream.next();
-                if (stream.hasNext(1)) {
+                if (stream.has(1)) {
                   String s = "" + stream.next() + stream.next();
                   try {
                     kind = Kind.LITERAL;
@@ -212,7 +214,7 @@ class Lexer {
               }
               else if (c == 'u') {
                 stream.next();
-                if (stream.hasNext(3)) {
+                if (stream.has(3)) {
                   String s = "" + stream.next() + stream.next() + stream.next() + stream.next();
                   try {
                     kind = Kind.LITERAL;
@@ -244,7 +246,7 @@ class Lexer {
             if (ccDepth == 0) {
               StringBuilder sb = new StringBuilder("(");
               if (stream.hasNext('?')) {
-                if (stream.hasNext(1, ')')) {
+                if (stream.has(1, ')')) {
                   // Do nothing
                 }
                 else {
