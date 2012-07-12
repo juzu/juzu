@@ -19,6 +19,8 @@
 
 package juzu.impl.router;
 
+import juzu.impl.utils.QualifiedName;
+
 /**
  * Various predefined names for testing purpose.
  *

@@ -20,6 +20,7 @@
 package juzu.impl.router;
 
 import juzu.impl.router.regex.RE;
+import juzu.impl.utils.QualifiedName;
 
 import java.util.HashMap;
 import java.util.Map;

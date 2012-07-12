@@ -19,6 +19,7 @@
 
 package juzu.impl.router;
 
+import juzu.impl.utils.QualifiedName;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 

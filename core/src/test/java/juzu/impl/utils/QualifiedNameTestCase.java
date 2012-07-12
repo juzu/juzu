@@ -17,8 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router;
+package juzu.impl.utils;
 
+import juzu.impl.utils.QualifiedName;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 

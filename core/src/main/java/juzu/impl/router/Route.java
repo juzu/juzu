@@ -25,6 +25,7 @@ import juzu.impl.controller.RouteBuilder;
 import juzu.impl.controller.RouteParser;
 import juzu.impl.router.regex.RE;
 import juzu.impl.router.regex.SyntaxException;
+import juzu.impl.utils.QualifiedName;
 import juzu.impl.utils.Tools;
 
 import javax.xml.stream.XMLOutputFactory;

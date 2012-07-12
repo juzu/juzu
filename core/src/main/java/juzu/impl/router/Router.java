@@ -23,6 +23,7 @@ import juzu.UndeclaredIOException;
 import juzu.impl.router.regex.RE;
 import juzu.impl.router.regex.REFactory;
 import juzu.impl.utils.MimeType;
+import juzu.impl.utils.QualifiedName;
 import juzu.impl.utils.Tools;
 
 import java.io.IOException;

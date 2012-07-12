@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router;
+package juzu.impl.utils;
 
 /**
  * <p>A qualified name that is a qualifier and a name. It can be seen as a simplified version of an XML QName that
