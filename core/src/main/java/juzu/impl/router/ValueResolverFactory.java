@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ValueResolverFactory extends REVisitor<RuntimeException> {
+class ValueResolverFactory extends REVisitor<RuntimeException> {
 
   static class Alternative {
 
@@ -50,19 +50,19 @@ public class ValueResolverFactory extends REVisitor<RuntimeException> {
     /** . */
     private StringBuilder valueMatcher = new StringBuilder();
 
-    public StringBuilder getResolvingExpression() {
+    StringBuilder getResolvingExpression() {
       return resolvingExpression;
     }
 
-    public String getPrefix() {
+    String getPrefix() {
       return prefix;
     }
 
-    public String getSuffix() {
+    String getSuffix() {
       return suffix;
     }
 
-    public StringBuilder getValueMatcher() {
+    StringBuilder getValueMatcher() {
       return valueMatcher;
     }
 
@@ -78,7 +78,7 @@ public class ValueResolverFactory extends REVisitor<RuntimeException> {
   /** . */
   private Alternative current = null;
 
-  public List<Alternative> foo(RENode root) {
+  List<Alternative> foo(RENode root) {
     alternatives.clear();
     root.accept(this);
     return alternatives;

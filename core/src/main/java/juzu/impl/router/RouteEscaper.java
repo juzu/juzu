@@ -41,7 +41,7 @@ import juzu.impl.router.regex.REVisitor;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class RouteEscaper extends REVisitor<MalformedRouteException> {
+class RouteEscaper extends REVisitor<MalformedRouteException> {
 
   /** . */
   private final char src;
@@ -49,7 +49,7 @@ public class RouteEscaper extends REVisitor<MalformedRouteException> {
   /** . */
   private final char dst;
 
-  public RouteEscaper(char src, char dst) {
+  RouteEscaper(char src, char dst) {
     this.src = src;
     this.dst = dst;
   }
