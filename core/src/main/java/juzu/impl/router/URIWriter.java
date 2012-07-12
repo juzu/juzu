@@ -22,8 +22,6 @@ package juzu.impl.router;
 import juzu.impl.utils.MimeType;
 
 import java.io.IOException;
-import java.util.EnumMap;
-import java.util.Map;
 
 /**
  * An uri writer.
@@ -33,14 +31,6 @@ import java.util.Map;
 public final class URIWriter {
 
   /** . */
-  private static final Map<MimeType, String> AMP_MAP = new EnumMap<MimeType, String>(MimeType.class);
-
-  static {
-    AMP_MAP.put(MimeType.XHTML, "&amp;");
-    AMP_MAP.put(MimeType.PLAIN, "&");
-  }
-
-  /** . */
   private MimeType mimeType;
 
   /** . */
@@ -48,9 +38,6 @@ public final class URIWriter {
 
   /** . */
   private boolean questionMarkDone;
-
-  /** . */
-  private String amp;
 
   /**
    * Create a new URI writer.
@@ -146,16 +133,13 @@ public final class URIWriter {
     }
 
     //
-    if (amp == null) {
-      MimeType mt = mimeType;
-      if (mt == null) {
-        mt = MimeType.XHTML;
-      }
-      amp = AMP_MAP.get(mt);
+    MimeType mt = mimeType;
+    if (mt == null) {
+      mt = MimeType.XHTML;
     }
 
     //
-    appendable.append(questionMarkDone ? amp : "?");
+    appendable.append(questionMarkDone ? mt.amp : "?");
     PercentEncoding.QUERY_PARAM.encode(parameterName, appendable);
     appendable.append('=');
     PercentEncoding.QUERY_PARAM.encode(paramaterValue, appendable);

@@ -9,6 +9,11 @@ package juzu.impl.utils;
 public enum MimeType
 {
 
-  XHTML, PLAIN
+  XHTML("&amp;"), PLAIN("&");
 
+  public final String amp;
+
+  private MimeType(String amp) {
+    this.amp = amp;
+  }
 }
