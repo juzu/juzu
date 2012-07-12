@@ -35,24 +35,21 @@ class RequestParam extends Param {
   final RERef matchPattern;
 
   /** . */
-  final ControlMode controlMode;
+  final boolean required;
 
-  RequestParam(QualifiedName name, String matchName, RERef matchPattern, ControlMode controlMode) {
+  RequestParam(QualifiedName name, String matchName, RERef matchPattern, boolean required) {
     super(name);
 
     //
     if (matchName == null) {
       throw new NullPointerException("No null match name accepted");
     }
-    if (controlMode == null) {
-      throw new NullPointerException("No null control mode accepted");
-    }
 
     //
     this.name = name;
     this.matchName = matchName;
     this.matchPattern = matchPattern;
-    this.controlMode = controlMode;
+    this.required = required;
   }
 
   boolean matchValue(String value) {
@@ -75,11 +72,11 @@ class RequestParam extends Param {
     private boolean literal;
 
     /** . */
-    private ControlMode controlMode;
+    private boolean required;
 
     Builder() {
       this.value = null;
-      this.controlMode = ControlMode.OPTIONAL;
+      this.required = false;
       this.literal = true;
     }
 
@@ -106,7 +103,7 @@ class RequestParam extends Param {
           descriptor.getQualifiedName(),
           descriptor.getName(),
           matchValue,
-          descriptor.getControlMode());
+          required);
     }
 
     Builder named(String name) {
@@ -115,12 +112,12 @@ class RequestParam extends Param {
     }
 
     Builder required() {
-      this.controlMode = ControlMode.REQUIRED;
+      this.required = true;
       return this;
     }
 
     Builder optional() {
-      this.controlMode = ControlMode.OPTIONAL;
+      this.required = false;
       return this;
     }
 
@@ -143,14 +140,6 @@ class RequestParam extends Param {
     Builder setName(String name) {
       this.name = name;
       return this;
-    }
-
-    ControlMode getControlMode() {
-      return controlMode;
-    }
-
-    void setControlMode(ControlMode controlMode) {
-      this.controlMode = controlMode;
     }
   }
 }

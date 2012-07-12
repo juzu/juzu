@@ -350,14 +350,8 @@ class Route {
         entry.remove(entry.getValue());
       }
       else {
-        switch (requestParamDef.controlMode) {
-          case OPTIONAL:
-            // Do nothing
-            break;
-          case REQUIRED:
-            return null;
-          default:
-            throw new AssertionError();
+        if (requestParamDef.required) {
+          return null;
         }
       }
     }
@@ -568,13 +562,8 @@ class Route {
             value = values[0];
           }
           if (value == null) {
-            switch (requestParamDef.controlMode) {
-              case OPTIONAL:
-                // Do nothing
-                break;
-              case REQUIRED:
-                matched = false;
-                break;
+            if (requestParamDef.required) {
+              matched = false;
             }
           }
           else if (!requestParamDef.matchValue(value)) {
@@ -995,11 +984,11 @@ class Route {
             switch (modifier) {
               // Required
               case 'r':
-                requestParam.setControlMode(ControlMode.REQUIRED);
+                requestParam.required();
                 break;
               // Optional
               case 'o':
-                requestParam.setControlMode(ControlMode.OPTIONAL);
+                requestParam.optional();
                 break;
               default:
                 throw new MalformedRouteException("Unrecognized modifier " + modifier);
