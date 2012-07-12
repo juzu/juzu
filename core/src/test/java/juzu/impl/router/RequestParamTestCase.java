@@ -183,7 +183,7 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testLiteralMatch() throws Exception {
     Router router = new Router();
-    router.append("?a={<foo_value>[oc]foo}");
+    router.append("?a={<foo_value>[o]foo}");
 
     //
     Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
@@ -212,7 +212,7 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testCanonical() throws Exception {
     Router router = new Router();
-    router.append("?a={[oc]foo}");
+    router.append("?a={[o]foo}");
 
     //
     Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
@@ -246,83 +246,5 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
     a = router.route("/");
     assertNotNull(a);
     assertEquals(Collections.<QualifiedName>emptySet(), a.keySet());
-  }
-
-  @Test
-  public void testNeverEmpty() throws Exception {
-    Router router = new Router();
-    router.append("?a={[fo]foo}");
-
-    //
-    Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
-    parameters.put(Names.FOO, "bar");
-    URIHelper rc = new URIHelper();
-    router.render(parameters, rc.writer);
-    assertEquals(Collections.singleton("a"), rc.getQueryParams().keySet());
-    assertEquals(Collections.singletonList("bar"), Arrays.asList(rc.getQueryParams().get("a")));
-    Map<QualifiedName, String> a = router.route("/", Collections.singletonMap("a", new String[]{"bar"}));
-    assertNotNull(a);
-    assertEquals(Collections.singleton(Names.FOO), a.keySet());
-    assertEquals("bar", a.get(Names.FOO));
-
-    //
-    parameters = new HashMap<QualifiedName, String>();
-    parameters.put(Names.FOO, "");
-    rc.reset();
-    router.render(parameters, rc.writer);
-    assertEquals(null, rc.getQueryParams());
-    a = router.route("/", Collections.singletonMap("a", new String[]{""}));
-    assertNotNull(a);
-    assertEquals(Collections.<QualifiedName>emptySet(), a.keySet());
-
-    //
-    parameters = new HashMap<QualifiedName, String>();
-    rc.reset();
-    router.render(parameters, rc.writer);
-    assertEquals(null, rc.getQueryParams());
-    a = router.route("/");
-    assertNotNull(a);
-    assertEquals(Collections.<QualifiedName>emptySet(), a.keySet());
-  }
-
-  @Test
-  public void testNeverNull() throws Exception {
-    Router router = new Router();
-    router.append("?a={[no]foo}");
-
-    //
-    Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
-    parameters.put(Names.FOO, "bar");
-    URIHelper rc = new URIHelper();
-    router.render(parameters, rc.writer);
-    assertEquals(Collections.singleton("a"), rc.getQueryParams().keySet());
-    assertEquals(Collections.singletonList("bar"), Arrays.asList(rc.getQueryParams().get("a")));
-    Map<QualifiedName, String> a = router.route("/", Collections.singletonMap("a", new String[]{"bar"}));
-    assertNotNull(a);
-    assertEquals(Collections.singleton(Names.FOO), a.keySet());
-    assertEquals("bar", a.get(Names.FOO));
-
-    //
-    parameters = new HashMap<QualifiedName, String>();
-    parameters.put(Names.FOO, "");
-    rc.reset();
-    router.render(parameters, rc.writer);
-    assertEquals(Collections.singleton("a"), rc.getQueryParams().keySet());
-    assertEquals(Collections.singletonList(""), Arrays.asList(rc.getQueryParams().get("a")));
-    a = router.route("/", Collections.singletonMap("a", new String[]{""}));
-    assertNotNull(a);
-    assertEquals(Collections.singleton(Names.FOO), a.keySet());
-    assertEquals("", a.get(Names.FOO));
-
-    //
-    parameters = new HashMap<QualifiedName, String>();
-    rc.reset();
-    router.render(parameters, rc.writer);
-    assertEquals(Collections.singleton("a"), rc.getQueryParams().keySet());
-    assertEquals(Collections.singletonList(""), Arrays.asList(rc.getQueryParams().get("a")));
-    a = router.route("/");
-    assertNotNull(a);
-    assertEquals(Collections.singleton(Names.FOO), a.keySet());
-    assertEquals("", a.get(Names.FOO));
   }
 }

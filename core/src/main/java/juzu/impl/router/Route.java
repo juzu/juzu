@@ -311,20 +311,6 @@ class Route {
       //
       for (RequestParam requestParamDef : route.requestParamArray) {
         String s = matches.get(requestParamDef.name);
-        switch (requestParamDef.valueMapping) {
-          case CANONICAL:
-            break;
-          case NEVER_EMPTY:
-            if (s != null && s.length() == 0) {
-              s = null;
-            }
-            break;
-          case NEVER_NULL:
-            if (s == null) {
-              s = "";
-            }
-            break;
-        }
         if (s != null) {
           writer.appendQueryParameter(requestParamDef.matchName, s);
         }
@@ -594,20 +580,6 @@ class Route {
           else if (!requestParamDef.matchValue(value)) {
             matched = false;
             break;
-          }
-          switch (requestParamDef.valueMapping) {
-            case CANONICAL:
-              break;
-            case NEVER_EMPTY:
-              if (value != null && value.length() == 0) {
-                value = null;
-              }
-              break;
-            case NEVER_NULL:
-              if (value == null) {
-                value = "";
-              }
-              break;
           }
           if (value != null) {
             if (current.matches == null) {
@@ -1026,21 +998,9 @@ class Route {
               case 'r':
                 requestParam.setControlMode(ControlMode.REQUIRED);
                 break;
-              // Canonical
-              case 'c':
-                requestParam.setValueMapping(ValueMapping.CANONICAL);
-                break;
               // Optional
               case 'o':
                 requestParam.setControlMode(ControlMode.OPTIONAL);
-                break;
-              // Filled
-              case 'f':
-                requestParam.setValueMapping(ValueMapping.NEVER_EMPTY);
-                break;
-              // Never null
-              case 'n':
-                requestParam.setValueMapping(ValueMapping.NEVER_NULL);
                 break;
               default:
                 throw new MalformedRouteException("Unrecognized modifier " + modifier);

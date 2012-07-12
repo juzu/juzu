@@ -37,10 +37,7 @@ class RequestParam extends Param {
   /** . */
   final ControlMode controlMode;
 
-  /** . */
-  final ValueMapping valueMapping;
-
-  RequestParam(QualifiedName name, String matchName, RERef matchPattern, ControlMode controlMode, ValueMapping valueMapping) {
+  RequestParam(QualifiedName name, String matchName, RERef matchPattern, ControlMode controlMode) {
     super(name);
 
     //
@@ -50,16 +47,12 @@ class RequestParam extends Param {
     if (controlMode == null) {
       throw new NullPointerException("No null control mode accepted");
     }
-    if (valueMapping == null) {
-      throw new NullPointerException("No null value mapping accepted");
-    }
 
     //
     this.name = name;
     this.matchName = matchName;
     this.matchPattern = matchPattern;
     this.controlMode = controlMode;
-    this.valueMapping = valueMapping;
   }
 
   boolean matchValue(String value) {
@@ -84,14 +77,10 @@ class RequestParam extends Param {
     /** . */
     private ControlMode controlMode;
 
-    /** . */
-    private ValueMapping valueMapping;
-
     Builder() {
       this.value = null;
       this.controlMode = ControlMode.OPTIONAL;
       this.valueType = ValueType.LITERAL;
-      this.valueMapping = ValueMapping.CANONICAL;
     }
 
     RequestParam build(Router router) {
@@ -117,8 +106,7 @@ class RequestParam extends Param {
           descriptor.getQualifiedName(),
           descriptor.getName(),
           matchValue,
-          descriptor.getControlMode(),
-          descriptor.getValueMapping());
+          descriptor.getControlMode());
     }
 
     Builder named(String name) {
@@ -145,21 +133,6 @@ class RequestParam extends Param {
 
     Builder optional() {
       this.controlMode = ControlMode.OPTIONAL;
-      return this;
-    }
-
-    Builder neverEmpty() {
-      this.valueMapping = ValueMapping.NEVER_EMPTY;
-      return this;
-    }
-
-    Builder neverNull() {
-      this.valueMapping = ValueMapping.NEVER_NULL;
-      return this;
-    }
-
-    Builder canonical() {
-      this.valueMapping = ValueMapping.CANONICAL;
       return this;
     }
 
@@ -194,14 +167,6 @@ class RequestParam extends Param {
 
     void setControlMode(ControlMode controlMode) {
       this.controlMode = controlMode;
-    }
-
-    ValueMapping getValueMapping() {
-      return valueMapping;
-    }
-
-    void setValueMapping(ValueMapping valueMapping) {
-      this.valueMapping = valueMapping;
     }
   }
 }
