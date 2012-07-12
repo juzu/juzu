@@ -958,7 +958,7 @@ class Route {
       public void queryParamRHS() {
       }
       public void queryParamRHS(CharSequence s, int from, int to) {
-        requestParam.setValue(s.subSequence(from, to).toString());
+        requestParam.matchByValue(s.subSequence(from, to).toString());
       }
       public void openExpr() {
         if (path) {
@@ -972,8 +972,7 @@ class Route {
         if (path) {
           paramDesc.setPattern(s.subSequence(from, to).toString());
         } else {
-          requestParam.setValue(s.subSequence(from, to).toString());
-          requestParam.setValueType(ValueType.PATTERN);
+          requestParam.matchByPattern(s.subSequence(from, to).toString());
         }
       }
       public void modifiers(CharSequence s, int from, int to) {

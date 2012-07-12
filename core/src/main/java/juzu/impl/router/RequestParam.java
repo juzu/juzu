@@ -72,7 +72,7 @@ class RequestParam extends Param {
     private String value;
 
     /** . */
-    private ValueType valueType;
+    private boolean literal;
 
     /** . */
     private ControlMode controlMode;
@@ -80,7 +80,7 @@ class RequestParam extends Param {
     Builder() {
       this.value = null;
       this.controlMode = ControlMode.OPTIONAL;
-      this.valueType = ValueType.LITERAL;
+      this.literal = true;
     }
 
     RequestParam build(Router router) {
@@ -88,14 +88,14 @@ class RequestParam extends Param {
 
       //
       RERef matchValue = null;
-      if (descriptor.getValue() != null) {
+      if (descriptor.value != null) {
         PatternBuilder matchValueBuilder = new PatternBuilder();
         matchValueBuilder.expr("^");
-        if (descriptor.getValueType() == ValueType.PATTERN) {
-          matchValueBuilder.expr(descriptor.getValue());
+        if (!descriptor.literal) {
+          matchValueBuilder.expr(descriptor.value);
         }
         else {
-          matchValueBuilder.literal(descriptor.getValue());
+          matchValueBuilder.literal(descriptor.value);
         }
         matchValueBuilder.expr("$");
         matchValue = router.compile(matchValueBuilder.build());
@@ -114,18 +114,6 @@ class RequestParam extends Param {
       return this;
     }
 
-    Builder matchedByLiteral(String value) {
-      this.value = value;
-      this.valueType = ValueType.LITERAL;
-      return this;
-    }
-
-    Builder matchedByPattern(String value) {
-      this.value = value;
-      this.valueType = ValueType.PATTERN;
-      return this;
-    }
-
     Builder required() {
       this.controlMode = ControlMode.REQUIRED;
       return this;
@@ -136,6 +124,18 @@ class RequestParam extends Param {
       return this;
     }
 
+    Builder matchByValue(String value) {
+      this.value = value;
+      this.literal = true;
+      return this;
+    }
+
+    Builder matchByPattern(String pattern) {
+      this.value = pattern;
+      this.literal = false;
+      return this;
+    }
+
     String getName() {
       return name;
     }
@@ -143,22 +143,6 @@ class RequestParam extends Param {
     Builder setName(String name) {
       this.name = name;
       return this;
-    }
-
-    String getValue() {
-      return value;
-    }
-
-    void setValue(String value) {
-      this.value = value;
-    }
-
-    ValueType getValueType() {
-      return valueType;
-    }
-
-    void setValueType(ValueType valueType) {
-      this.valueType = valueType;
     }
 
     ControlMode getControlMode() {
