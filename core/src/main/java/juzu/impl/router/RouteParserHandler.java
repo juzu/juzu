@@ -1,7 +1,11 @@
-package juzu.impl.controller;
+package juzu.impl.router;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RouteBuilder {
+/**
+ * Handles {@link RouteParser} callbacks.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public interface RouteParserHandler {
 
   void openSegment();
 
@@ -30,6 +34,5 @@ public interface RouteBuilder {
   void ident(CharSequence s, int from, int to);
 
   void closeExpr();
-
 
 }

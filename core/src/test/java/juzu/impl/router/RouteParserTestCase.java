@@ -1,5 +1,7 @@
-package juzu.impl.controller;
+package juzu.impl.router;
 
+import juzu.impl.router.RouteParser;
+import juzu.impl.router.RouteParserHandler;
 import juzu.impl.router.regex.SyntaxException;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
@@ -12,7 +14,7 @@ import java.util.List;
 public class RouteParserTestCase extends AbstractTestCase {
 
   
-  static class Collector implements RouteBuilder {
+  static class Collector implements RouteParserHandler {
 
     /** . */
     private final List<String> chunks = new ArrayList<String>();

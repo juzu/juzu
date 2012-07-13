@@ -1,9 +1,12 @@
-package juzu.impl.controller;
+package juzu.impl.router;
 
 import juzu.impl.router.regex.SyntaxException;
 import juzu.impl.common.Location;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * An hand crafted parser for the compact route syntax.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteParser {
 
   /** . */
@@ -66,11 +69,11 @@ public class RouteParser {
   /** . */
   private static final int EXPR_MODIFIERS = 4;
 
-  public static void parse(CharSequence s, RouteBuilder builder) throws SyntaxException {
-    parse(s, 0, s.length(), builder);
+  public static void parse(CharSequence s, RouteParserHandler handler) throws SyntaxException {
+    parse(s, 0, s.length(), handler);
   }
 
-  private static void parse(CharSequence s, int from, final int to, RouteBuilder builder) throws SyntaxException {
+  private static void parse(CharSequence s, int from, final int to, RouteParserHandler handler) throws SyntaxException {
 
     int status = READ_PATH;
 
@@ -86,15 +89,15 @@ public class RouteParser {
             if (c == '/') {
               from++;
             } else if (c == '?') {
-              builder.closePath();
+              handler.closePath();
               status = READ_QUESTION_MARK;
             } else {
-              builder.openSegment();
+              handler.openSegment();
               status = READ_SEGMENT;
               pos = from;
             }
           } else {
-            builder.closePath();
+            handler.closePath();
             status = READ_DONE;
           }
           break;
@@ -104,39 +107,39 @@ public class RouteParser {
             char c = s.charAt(from);
             if (c == '{') {
               if (from - pos > 0) {
-                builder.segmentChunk(s, pos, from);
+                handler.segmentChunk(s, pos, from);
               }
-              builder.openExpr();
-              from = pos = parseExpr(s, from + 1, to, builder);
-              builder.closeExpr();
+              handler.openExpr();
+              from = pos = parseExpr(s, from + 1, to, handler);
+              handler.closeExpr();
             } else if (c == '/') {
               status = READ_PATH;
               if (from - pos > 0) {
-                builder.segmentChunk(s, pos, from);
+                handler.segmentChunk(s, pos, from);
               }
-              builder.closeSegment();
+              handler.closeSegment();
             } else if (c == '?') {
               if (from - pos > 0) {
-                builder.segmentChunk(s, pos, from);
+                handler.segmentChunk(s, pos, from);
               }
-              builder.closeSegment();
-              builder.closePath();
+              handler.closeSegment();
+              handler.closePath();
               status = READ_QUESTION_MARK;
             } else {
               ++from;
             }
           } else {
             if (from - pos > 0) {
-              builder.segmentChunk(s, pos, from);
+              handler.segmentChunk(s, pos, from);
             }
-            builder.closeSegment();
+            handler.closeSegment();
             status = READ_PATH;
             from++;
           }
           break;
         }
         case READ_QUESTION_MARK: {
-          builder.query();
+          handler.query();
           pos = ++from;
           status = READ_QUERY_LHS;
           break;
@@ -146,8 +149,8 @@ public class RouteParser {
             char c = s.charAt(from);
             if (c == '=') {
               if (from - pos > 0) {
-                builder.queryParamLHS(s, pos, from);
-                builder.queryParamRHS();
+                handler.queryParamLHS(s, pos, from);
+                handler.queryParamRHS();
                 pos = ++from;
                 status = READ_QUERY_RHS;
               } else {
@@ -157,8 +160,8 @@ public class RouteParser {
               throw new SyntaxException(CODE_INVALID_QUESTION_MARK_CHAR, "Invalid char ? at index " + from, Location.at(1 + from));
             } else if (c == '&') {
               if (from - pos > 0) {
-                builder.queryParamLHS(s, pos, from);
-                builder.endQueryParam();
+                handler.queryParamLHS(s, pos, from);
+                handler.endQueryParam();
                 pos = ++from;
               } else {
                 throw new SyntaxException(CODE_INVALID_AMPERSAND_CHAR, "Invalid char & at index " + from, Location.at(1 + from));
@@ -168,8 +171,8 @@ public class RouteParser {
             }
           } else {
             if (from - pos > 0) {
-              builder.queryParamLHS(s, pos, from);
-              builder.endQueryParam();
+              handler.queryParamLHS(s, pos, from);
+              handler.endQueryParam();
             }
             status = READ_DONE;
           }
@@ -180,17 +183,17 @@ public class RouteParser {
             char c = s.charAt(from);
             if (c == '&') {
               if (from - pos > 0) {
-                builder.queryParamRHS(s, pos, from);
+                handler.queryParamRHS(s, pos, from);
               }
-              builder.endQueryParam();
+              handler.endQueryParam();
               pos = ++from;
               status = READ_QUERY_LHS;
             } else if (c == '{') {
               if (from - pos == 0) {
-                builder.openExpr();
-                from = pos = parseExpr(s, ++from, to, builder);
-                builder.closeExpr();
-                builder.endQueryParam();
+                handler.openExpr();
+                from = pos = parseExpr(s, ++from, to, handler);
+                handler.closeExpr();
+                handler.endQueryParam();
                 status = READ_QUERY_LHS;
               } else {
                 from++;
@@ -199,8 +202,8 @@ public class RouteParser {
               from++;
             }
           } else {
-            builder.queryParamRHS(s, pos, from);
-            builder.endQueryParam();
+            handler.queryParamRHS(s, pos, from);
+            handler.endQueryParam();
             status = READ_DONE;
           }
           break;
@@ -222,7 +225,7 @@ public class RouteParser {
     }
   }
 
-  private static int parseExpr(CharSequence s, int from, int to, RouteBuilder builder) throws SyntaxException {
+  private static int parseExpr(CharSequence s, int from, int to, RouteParserHandler handler) throws SyntaxException {
 
     int status = EXPR_BEGIN;
     int pos = from;
@@ -233,7 +236,7 @@ public class RouteParser {
           if (from < to) {
             char c = s.charAt(from);
             if (c == '}') {
-              builder.ident(s, pos, from);
+              handler.ident(s, pos, from);
               return ++from;
             } else {
               if (c == '<') {
@@ -255,7 +258,7 @@ public class RouteParser {
           if (from < to) {
             char c = s.charAt(from);
             if (c == '}') {
-              builder.ident(s, pos, from);
+              handler.ident(s, pos, from);
               return ++from;
             } else {
               ++from;
@@ -270,7 +273,7 @@ public class RouteParser {
             char c = s.charAt(from);
             if (c == '>') {
               if (from - pos > 0) {
-                builder.pattern(s, pos, from);
+                handler.pattern(s, pos, from);
                 pos = ++from;
                 status = EXPR_AFTER_REGEX;
                 break;
@@ -308,7 +311,7 @@ public class RouteParser {
           if (from < to) {
             char c = s.charAt(from);
             if (c == ']') {
-              builder.modifiers(s, pos, from);
+              handler.modifiers(s, pos, from);
               status = EXPR_IDENT;
               pos = ++from;
               break;

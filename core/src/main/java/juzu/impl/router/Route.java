@@ -21,8 +21,6 @@ package juzu.impl.router;
 
 //import javanet.staxutils.IndentingXMLStreamWriter;
 
-import juzu.impl.controller.RouteBuilder;
-import juzu.impl.controller.RouteParser;
 import juzu.impl.router.regex.RE;
 import juzu.impl.router.regex.SyntaxException;
 import juzu.impl.common.QualifiedName;
@@ -880,7 +878,7 @@ class Route {
   public Route append(String path, Map<QualifiedName, String> params) {
 
     //
-    class Assembler implements RouteBuilder {
+    class Assembler implements RouteParserHandler {
       Route current = Route.this;
       boolean path = true;
       PatternBuilder builder = new PatternBuilder();
