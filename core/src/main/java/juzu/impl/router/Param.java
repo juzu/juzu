@@ -19,7 +19,7 @@
 
 package juzu.impl.router;
 
-import juzu.impl.utils.QualifiedName;
+import juzu.impl.common.QualifiedName;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class Param {

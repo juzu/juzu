@@ -19,10 +19,10 @@
 
 package juzu.impl.template.spi.juzu.ast;
 
-import juzu.impl.utils.Coordinate;
-import juzu.impl.utils.Location;
-import juzu.impl.utils.MethodInvocation;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Coordinate;
+import juzu.impl.common.Location;
+import juzu.impl.common.MethodInvocation;
+import juzu.impl.common.Tools;
 import juzu.template.TagHandler;
 
 import java.io.Serializable;

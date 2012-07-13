@@ -19,7 +19,7 @@
 
 package juzu.impl.fs.spi;
 
-import juzu.impl.utils.Content;
+import juzu.impl.common.Content;
 
 import java.io.File;
 import java.io.IOException;

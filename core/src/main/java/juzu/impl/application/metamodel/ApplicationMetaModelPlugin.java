@@ -2,7 +2,7 @@ package juzu.impl.application.metamodel;
 
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.metamodel.MetaModelEvent;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 
 import javax.lang.model.element.Element;
 import java.io.Serializable;

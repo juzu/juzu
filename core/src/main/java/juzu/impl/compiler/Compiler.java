@@ -28,8 +28,8 @@ import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
-import juzu.impl.utils.Location;
-import juzu.impl.utils.Spliterator;
+import juzu.impl.common.Location;
+import juzu.impl.common.Spliterator;
 
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;

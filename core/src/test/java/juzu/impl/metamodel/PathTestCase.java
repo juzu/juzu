@@ -19,8 +19,8 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import org.junit.Test;
@@ -28,7 +28,7 @@ import org.junit.Test;
 import java.io.File;
 import java.util.List;
 
-import static juzu.impl.utils.JSON.json;
+import static juzu.impl.common.JSON.json;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PathTestCase extends AbstractTestCase {

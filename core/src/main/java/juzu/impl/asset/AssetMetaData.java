@@ -1,7 +1,7 @@
 package juzu.impl.asset;
 
 import juzu.asset.AssetLocation;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -21,9 +21,9 @@ package juzu.impl.template.spi;
 
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.template.metamodel.TemplateMetaModel;
-import juzu.impl.utils.Content;
-import juzu.impl.utils.MethodInvocation;
-import juzu.impl.utils.Path;
+import juzu.impl.common.Content;
+import juzu.impl.common.MethodInvocation;
+import juzu.impl.common.Path;
 
 import java.io.Serializable;
 import java.util.Map;

@@ -20,7 +20,7 @@
 package juzu.impl.compiler.file;
 
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.utils.Content;
+import juzu.impl.common.Content;
 
 import javax.tools.SimpleJavaFileObject;
 import java.io.ByteArrayOutputStream;

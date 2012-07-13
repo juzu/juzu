@@ -19,7 +19,7 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 

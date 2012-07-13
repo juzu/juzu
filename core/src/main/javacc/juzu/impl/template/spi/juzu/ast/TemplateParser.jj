@@ -8,9 +8,9 @@ PARSER_BEGIN(TemplateParser)
 package juzu.impl.template.spi.juzu.ast;
 
 import java.util.ArrayList;
-import juzu.impl.utils.Location;
-import juzu.impl.utils.Coordinate;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Location;
+import juzu.impl.common.Coordinate;
+import juzu.impl.common.Tools;
 import java.util.HashMap;
 import java.util.LinkedList;
 

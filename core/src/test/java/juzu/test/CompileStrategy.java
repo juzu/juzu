@@ -9,7 +9,7 @@ import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.fs.spi.SimpleFileSystem;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 
 import javax.annotation.processing.Processor;
 import javax.inject.Provider;

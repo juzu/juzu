@@ -19,7 +19,7 @@
 
 package juzu.impl.compiler;
 
-import juzu.impl.utils.Location;
+import juzu.impl.common.Location;
 
 import java.io.File;
 import java.util.List;

@@ -20,7 +20,7 @@
 package juzu.impl.router.regex;
 
 import junit.framework.AssertionFailedError;
-import juzu.impl.utils.CharStream;
+import juzu.impl.common.CharStream;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 

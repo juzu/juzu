@@ -19,9 +19,9 @@
 
 package juzu.impl.controller.descriptor;
 
-import juzu.impl.utils.Cardinality;
-import juzu.impl.utils.ParameterMap;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Cardinality;
+import juzu.impl.common.ParameterMap;
+import juzu.impl.common.Tools;
 
 /**
  * A parameter of a controller

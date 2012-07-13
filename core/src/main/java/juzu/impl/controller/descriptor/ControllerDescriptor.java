@@ -2,8 +2,7 @@ package juzu.impl.controller.descriptor;
 
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.JSON;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

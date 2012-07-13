@@ -19,7 +19,7 @@
 
 package juzu.impl.template.spi.juzu.ast;
 
-import juzu.impl.utils.Coordinate;
+import juzu.impl.common.Coordinate;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class OffsetToken {

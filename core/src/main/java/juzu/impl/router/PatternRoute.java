@@ -19,7 +19,7 @@
 
 package juzu.impl.router;
 
-import juzu.impl.utils.PercentCodec;
+import juzu.impl.common.PercentCodec;
 
 import java.util.List;
 

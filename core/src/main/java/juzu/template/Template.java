@@ -24,7 +24,7 @@ import juzu.Response;
 import juzu.UndeclaredIOException;
 import juzu.impl.request.Request;
 import juzu.impl.template.TemplatePlugin;
-import juzu.impl.utils.Path;
+import juzu.impl.common.Path;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;
 import juzu.io.Streamable;

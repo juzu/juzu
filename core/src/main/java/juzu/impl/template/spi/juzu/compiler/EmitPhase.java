@@ -22,8 +22,8 @@ package juzu.impl.template.spi.juzu.compiler;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.juzu.DialectTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
-import juzu.impl.utils.Location;
-import juzu.impl.utils.MethodInvocation;
+import juzu.impl.common.Location;
+import juzu.impl.common.MethodInvocation;
 import juzu.template.TagHandler;
 
 import java.util.List;

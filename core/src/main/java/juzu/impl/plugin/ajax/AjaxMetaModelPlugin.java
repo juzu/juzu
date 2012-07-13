@@ -4,7 +4,7 @@ import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 import juzu.plugin.ajax.Ajax;
 
 import javax.lang.model.element.Element;

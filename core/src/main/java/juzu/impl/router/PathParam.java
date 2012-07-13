@@ -24,7 +24,7 @@ import juzu.impl.router.regex.REParser;
 import juzu.impl.router.regex.RERenderer;
 import juzu.impl.router.regex.REVisitor;
 import juzu.impl.router.regex.SyntaxException;
-import juzu.impl.utils.QualifiedName;
+import juzu.impl.common.QualifiedName;
 
 import java.io.IOException;
 import java.util.List;

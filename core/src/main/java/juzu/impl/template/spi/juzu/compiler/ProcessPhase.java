@@ -23,8 +23,8 @@ import juzu.impl.compiler.CompilationException;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
-import juzu.impl.utils.MethodInvocation;
-import juzu.impl.utils.Path;
+import juzu.impl.common.MethodInvocation;
+import juzu.impl.common.Path;
 import juzu.template.TagHandler;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

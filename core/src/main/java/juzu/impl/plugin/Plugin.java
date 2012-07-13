@@ -1,7 +1,7 @@
 package juzu.impl.plugin;
 
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 
 /**
  * Base class for a plugin.

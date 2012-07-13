@@ -6,8 +6,8 @@ import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.metadata.TemplatesDescriptor;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Path;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Path;
 import juzu.template.Template;
 import juzu.template.TemplateRenderContext;
 
@@ -41,10 +41,10 @@ public class TemplatePlugin extends Plugin {
   }
 
   public TemplateStub resolveTemplateStub(String path) {
-    return resolveTemplateStub(juzu.impl.utils.Path.parse(path));
+    return resolveTemplateStub(juzu.impl.common.Path.parse(path));
   }
 
-  public TemplateStub resolveTemplateStub(juzu.impl.utils.Path path) {
+  public TemplateStub resolveTemplateStub(juzu.impl.common.Path path) {
     TemplateStub stub = stubs.get(path);
     if (stub == null) {
 

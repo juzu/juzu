@@ -19,7 +19,7 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.utils.Content;
+import juzu.impl.common.Content;
 
 import java.util.LinkedHashMap;
 

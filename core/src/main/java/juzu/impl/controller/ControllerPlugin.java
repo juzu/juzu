@@ -4,7 +4,7 @@ import juzu.impl.controller.descriptor.ControllerDescriptor;
 import juzu.impl.controller.descriptor.ControllerMethodResolver;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerPlugin extends Plugin {

@@ -19,8 +19,8 @@
 
 package juzu.impl.router;
 
-import juzu.impl.utils.MimeType;
-import juzu.impl.utils.PercentCodec;
+import juzu.impl.common.MimeType;
+import juzu.impl.common.PercentCodec;
 
 import java.io.IOException;
 

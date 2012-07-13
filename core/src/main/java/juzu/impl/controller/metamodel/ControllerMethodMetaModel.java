@@ -23,8 +23,8 @@ import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Tools;
 import juzu.request.Phase;
 
 import javax.lang.model.element.AnnotationMirror;

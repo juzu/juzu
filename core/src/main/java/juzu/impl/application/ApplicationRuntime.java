@@ -39,9 +39,9 @@ import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.spring.SpringBuilder;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Logger;
+import juzu.impl.common.Tools;
 import juzu.processor.MainProcessor;
 
 import javax.portlet.PortletException;

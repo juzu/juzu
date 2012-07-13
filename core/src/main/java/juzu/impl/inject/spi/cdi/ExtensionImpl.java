@@ -21,7 +21,7 @@ package juzu.impl.inject.spi.cdi;
 
 import juzu.Scope;
 import juzu.impl.inject.spi.InjectionContext;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;

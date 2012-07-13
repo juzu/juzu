@@ -19,8 +19,8 @@
 
 package juzu.impl.compiler.file;
 
-import juzu.impl.utils.IterableArray;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.IterableArray;
+import juzu.impl.common.Tools;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;

@@ -24,8 +24,8 @@ import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Path;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Path;
 
 import java.util.ArrayList;
 import java.util.Collection;

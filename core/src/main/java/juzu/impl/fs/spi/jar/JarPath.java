@@ -19,9 +19,9 @@
 
 package juzu.impl.fs.spi.jar;
 
-import juzu.impl.utils.Content;
-import juzu.impl.utils.Spliterator;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Content;
+import juzu.impl.common.Spliterator;
+import juzu.impl.common.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;

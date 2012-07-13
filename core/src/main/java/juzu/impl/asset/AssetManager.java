@@ -1,8 +1,7 @@
 package juzu.impl.asset;
 
 import juzu.asset.Asset;
-import juzu.asset.AssetType;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 
 import java.util.HashSet;
 import java.util.Iterator;

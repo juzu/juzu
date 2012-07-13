@@ -34,9 +34,9 @@ import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.controller.metamodel.ControllerMetaModel;
 import juzu.impl.controller.metamodel.ControllersMetaModel;
-import juzu.impl.utils.FQN;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.FQN;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.JavaFile;
@@ -48,7 +48,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static juzu.impl.utils.JSON.json;
+import static juzu.impl.common.JSON.json;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerTestCase extends AbstractTestCase {

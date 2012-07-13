@@ -28,8 +28,8 @@ import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.template.metamodel.TemplatesMetaModel;
-import juzu.impl.utils.FQN;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.FQN;
+import juzu.impl.common.JSON;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.PackageElement;

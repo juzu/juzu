@@ -21,7 +21,7 @@ package juzu.plugin.portlet.impl;
 
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>

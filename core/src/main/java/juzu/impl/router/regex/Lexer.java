@@ -19,7 +19,7 @@
 
 package juzu.impl.router.regex;
 
-import juzu.impl.utils.CharStream;
+import juzu.impl.common.CharStream;
 
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;

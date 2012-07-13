@@ -1,6 +1,6 @@
 package juzu.impl.metamodel;
 
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 
 import java.io.Serializable;
 

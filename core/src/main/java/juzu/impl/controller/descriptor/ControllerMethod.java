@@ -20,8 +20,8 @@
 package juzu.impl.controller.descriptor;
 
 import juzu.Param;
-import juzu.impl.utils.ParameterMap;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.ParameterMap;
+import juzu.impl.common.Tools;
 import juzu.request.Phase;
 
 import java.lang.reflect.Array;

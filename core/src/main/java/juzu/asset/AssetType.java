@@ -1,6 +1,6 @@
 package juzu.asset;
 
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 
 import java.util.Collections;
 import java.util.Set;

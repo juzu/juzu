@@ -19,8 +19,8 @@
 
 package juzu.impl.compiler;
 
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Logger;
+import juzu.impl.common.Tools;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;

@@ -6,7 +6,7 @@ import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 import juzu.inject.ProviderFactory;
 import juzu.plugin.binding.Bindings;
 

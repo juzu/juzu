@@ -1,7 +1,7 @@
 package juzu.impl.fs.spi.classloader;
 
-import juzu.impl.utils.Tools;
-import juzu.impl.utils.Trie;
+import juzu.impl.common.Tools;
+import juzu.impl.common.Trie;
 
 import java.io.File;
 import java.io.IOException;

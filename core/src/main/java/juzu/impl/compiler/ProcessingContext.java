@@ -21,12 +21,12 @@ package juzu.impl.compiler;
 
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
-import juzu.impl.utils.Content;
-import juzu.impl.utils.FQN;
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.Path;
-import juzu.impl.utils.Spliterator;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Content;
+import juzu.impl.common.FQN;
+import juzu.impl.common.Logger;
+import juzu.impl.common.Path;
+import juzu.impl.common.Spliterator;
+import juzu.impl.common.Tools;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;

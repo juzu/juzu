@@ -7,9 +7,9 @@ import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.utils.FQN;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.FQN;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Tools;
 import juzu.plugin.portlet.Portlet;
 import juzu.portlet.JuzuPortlet;
 

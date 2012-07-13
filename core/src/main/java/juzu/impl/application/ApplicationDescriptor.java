@@ -24,8 +24,8 @@ import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.template.metadata.TemplatesDescriptor;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;

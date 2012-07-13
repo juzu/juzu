@@ -20,7 +20,7 @@
 package juzu.impl.fs.spi.classloader;
 
 import juzu.impl.fs.spi.SimpleFileSystem;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;

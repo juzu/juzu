@@ -2,7 +2,7 @@ package juzu.impl.application.metamodel;
 
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.utils.QN;
+import juzu.impl.common.QN;
 
 import javax.lang.model.element.Element;
 import java.io.Serializable;

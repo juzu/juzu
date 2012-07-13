@@ -23,8 +23,8 @@ import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Logger;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Logger;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;

@@ -20,7 +20,7 @@
 package juzu.impl.fs.spi.ram;
 
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.utils.Content;
+import juzu.impl.common.Content;
 
 import java.io.File;
 import java.io.IOException;

@@ -21,8 +21,8 @@ package juzu;
 
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.bridge.spi.MimeBridge;
-import juzu.impl.utils.ParameterHashMap;
-import juzu.impl.utils.ParameterMap;
+import juzu.impl.common.ParameterHashMap;
+import juzu.impl.common.ParameterMap;
 import juzu.request.RequestContext;
 
 import java.util.Map;

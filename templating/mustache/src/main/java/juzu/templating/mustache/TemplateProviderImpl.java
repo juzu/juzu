@@ -11,7 +11,7 @@ import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.TemplateStub;
-import juzu.impl.utils.Path;
+import juzu.impl.common.Path;
 
 import java.io.Reader;
 import java.io.StringReader;

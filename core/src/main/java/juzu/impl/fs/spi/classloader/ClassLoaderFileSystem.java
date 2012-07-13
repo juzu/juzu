@@ -1,9 +1,9 @@
 package juzu.impl.fs.spi.classloader;
 
 import juzu.impl.fs.spi.SimpleFileSystem;
-import juzu.impl.utils.Content;
-import juzu.impl.utils.Tools;
-import juzu.impl.utils.Trie;
+import juzu.impl.common.Content;
+import juzu.impl.common.Tools;
+import juzu.impl.common.Trie;
 
 import javax.inject.Inject;
 import java.io.File;

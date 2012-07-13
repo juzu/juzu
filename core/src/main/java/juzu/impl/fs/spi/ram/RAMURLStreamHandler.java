@@ -19,8 +19,8 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.utils.Content;
-import juzu.impl.utils.Spliterator;
+import juzu.impl.common.Content;
+import juzu.impl.common.Spliterator;
 
 import java.io.IOException;
 import java.net.URL;

@@ -19,7 +19,7 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.utils.Content;
+import juzu.impl.common.Content;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RAMFile extends RAMPath {

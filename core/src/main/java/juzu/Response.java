@@ -20,9 +20,9 @@
 package juzu;
 
 import juzu.asset.Asset;
-import juzu.impl.utils.ParameterHashMap;
-import juzu.impl.utils.ParameterMap;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.ParameterHashMap;
+import juzu.impl.common.ParameterMap;
+import juzu.impl.common.Tools;
 import juzu.io.Stream;
 import juzu.io.Streamable;
 

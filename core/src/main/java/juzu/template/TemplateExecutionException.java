@@ -20,7 +20,7 @@
 package juzu.template;
 
 import juzu.impl.application.ApplicationException;
-import juzu.impl.utils.Location;
+import juzu.impl.common.Location;
 
 /**
  * An exception that denotes a template execution exception.

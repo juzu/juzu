@@ -4,9 +4,9 @@ import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Path;
-import juzu.impl.utils.QN;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Path;
+import juzu.impl.common.QN;
 
 import java.util.Iterator;
 

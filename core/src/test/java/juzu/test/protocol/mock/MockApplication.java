@@ -25,9 +25,9 @@ import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.bridge.spi.RequestBridge;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Logger;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 
 import java.net.URL;

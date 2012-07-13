@@ -12,7 +12,7 @@ import juzu.impl.asset.Manager;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;

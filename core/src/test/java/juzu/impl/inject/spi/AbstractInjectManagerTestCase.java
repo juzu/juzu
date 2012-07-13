@@ -25,7 +25,7 @@ import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.Scoped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractInjectTestCase;
 
 import java.io.File;

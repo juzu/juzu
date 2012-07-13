@@ -22,7 +22,7 @@ package juzu.impl.application;
 import juzu.AmbiguousResolutionException;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.controller.descriptor.ControllerMethodResolver;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.request.Phase;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;

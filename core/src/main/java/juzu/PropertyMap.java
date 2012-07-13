@@ -1,6 +1,6 @@
 package juzu;
 
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 
 import java.util.HashMap;
 import java.util.Iterator;

@@ -29,9 +29,9 @@ import juzu.impl.controller.metamodel.ParameterMetaModel;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
-import juzu.impl.utils.Content;
-import juzu.impl.utils.MethodInvocation;
-import juzu.impl.utils.Path;
+import juzu.impl.common.Content;
+import juzu.impl.common.MethodInvocation;
+import juzu.impl.common.Path;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -25,14 +25,13 @@ import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 
-import javax.portlet.PortletSession;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +39,6 @@ import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

@@ -21,7 +21,7 @@ package juzu.impl.compiler.file;
 
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.fs.spi.SimpleFileSystem;
-import juzu.impl.utils.Spliterator;
+import juzu.impl.common.Spliterator;
 
 import javax.tools.JavaFileObject;
 import java.io.IOException;

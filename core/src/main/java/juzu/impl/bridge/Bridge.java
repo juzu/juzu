@@ -11,10 +11,10 @@ import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
-import juzu.impl.utils.DevClassLoader;
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.Tools;
-import juzu.impl.utils.TrimmingException;
+import juzu.impl.common.DevClassLoader;
+import juzu.impl.common.Logger;
+import juzu.impl.common.Tools;
+import juzu.impl.common.TrimmingException;
 import juzu.portlet.JuzuPortlet;
 
 import java.io.BufferedReader;

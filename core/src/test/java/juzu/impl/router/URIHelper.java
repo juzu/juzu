@@ -19,7 +19,7 @@
 
 package juzu.impl.router;
 
-import juzu.impl.utils.MimeType;
+import juzu.impl.common.MimeType;
 
 import javax.servlet.http.HttpUtils;
 import java.io.IOException;

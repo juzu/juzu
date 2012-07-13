@@ -23,8 +23,8 @@ import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Logger;
+import juzu.impl.common.Tools;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.RoundEnvironment;

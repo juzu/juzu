@@ -26,7 +26,7 @@ import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.processor.MainProcessor;
 import juzu.test.protocol.mock.MockApplication;
 

@@ -1,7 +1,7 @@
 package juzu.impl.bridge;
 
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 
 import java.util.Collections;
 import java.util.Map;

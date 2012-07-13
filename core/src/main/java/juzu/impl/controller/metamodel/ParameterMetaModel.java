@@ -2,8 +2,8 @@ package juzu.impl.controller.metamodel;
 
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.utils.Cardinality;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.Cardinality;
+import juzu.impl.common.JSON;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ParameterMetaModel extends MetaModelObject {

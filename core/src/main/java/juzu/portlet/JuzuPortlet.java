@@ -30,9 +30,9 @@ import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.bridge.spi.portlet.PortletActionBridge;
 import juzu.impl.bridge.spi.portlet.PortletRenderBridge;
 import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.SimpleMap;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Logger;
+import juzu.impl.common.SimpleMap;
+import juzu.impl.common.Tools;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;

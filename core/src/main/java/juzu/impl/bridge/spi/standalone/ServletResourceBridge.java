@@ -21,7 +21,7 @@ package juzu.impl.bridge.spi.standalone;
 
 import juzu.Response;
 import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;

@@ -2,7 +2,7 @@ package juzu.plugin.less;
 
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.plugin.less.impl.LessMetaModelPlugin;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;

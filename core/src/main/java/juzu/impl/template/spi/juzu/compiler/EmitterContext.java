@@ -21,7 +21,7 @@ package juzu.impl.template.spi.juzu.compiler;
 
 import juzu.impl.template.spi.juzu.DialectTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.SectionType;
-import juzu.impl.utils.Location;
+import juzu.impl.common.Location;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class EmitterContext {

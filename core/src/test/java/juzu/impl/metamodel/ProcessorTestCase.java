@@ -26,7 +26,7 @@ import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.impl.template.metamodel.TemplateMetaModel;
 import juzu.impl.template.metamodel.TemplateMetaModelPlugin;
-import juzu.impl.utils.Content;
+import juzu.impl.common.Content;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import org.junit.Test;

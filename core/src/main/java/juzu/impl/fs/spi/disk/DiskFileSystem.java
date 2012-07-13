@@ -20,8 +20,8 @@
 package juzu.impl.fs.spi.disk;
 
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.utils.Content;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Content;
+import juzu.impl.common.Tools;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

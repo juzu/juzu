@@ -24,7 +24,7 @@ import juzu.impl.application.ApplicationContext;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.ActionBridge;
-import juzu.impl.utils.ParameterMap;
+import juzu.impl.common.ParameterMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ActionContext extends RequestContext {

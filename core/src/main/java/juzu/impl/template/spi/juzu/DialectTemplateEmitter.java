@@ -20,7 +20,7 @@
 package juzu.impl.template.spi.juzu;
 
 import juzu.impl.template.spi.juzu.ast.SectionType;
-import juzu.impl.utils.Location;
+import juzu.impl.common.Location;
 
 import java.util.List;
 import java.util.Map;

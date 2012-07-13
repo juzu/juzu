@@ -25,8 +25,8 @@ import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.utils.Cardinality;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.Cardinality;
+import juzu.impl.common.JSON;
 import juzu.request.Phase;
 
 import javax.lang.model.element.ExecutableElement;

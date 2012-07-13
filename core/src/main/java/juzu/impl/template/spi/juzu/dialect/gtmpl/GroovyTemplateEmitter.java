@@ -21,8 +21,8 @@ package juzu.impl.template.spi.juzu.dialect.gtmpl;
 
 import juzu.impl.template.spi.juzu.DialectTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.SectionType;
-import juzu.impl.utils.Location;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Location;
+import juzu.impl.common.Tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;

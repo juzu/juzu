@@ -2,7 +2,7 @@ package juzu.impl.inject.spi.resolvebeans;
 
 import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import org.junit.Test;
 
 import java.util.ArrayList;

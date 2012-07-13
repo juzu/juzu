@@ -3,7 +3,7 @@ package juzu.impl.plugin.binding;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 
 import java.util.ArrayList;
 import java.util.List;

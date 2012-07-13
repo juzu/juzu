@@ -22,7 +22,7 @@ package juzu.impl.request;
 import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.controller.descriptor.ControllerMethod;
 import juzu.impl.controller.descriptor.ControllerParameter;
-import juzu.impl.utils.Cardinality;
+import juzu.impl.common.Cardinality;
 import juzu.request.Phase;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;

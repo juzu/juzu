@@ -20,7 +20,7 @@
 package juzu.impl.router;
 
 import junit.framework.Assert;
-import juzu.impl.utils.QualifiedName;
+import juzu.impl.common.QualifiedName;
 import juzu.test.AbstractTestCase;
 
 import java.util.Arrays;

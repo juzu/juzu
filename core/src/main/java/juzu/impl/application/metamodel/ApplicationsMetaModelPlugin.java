@@ -5,7 +5,7 @@ import juzu.impl.compiler.AnnotationData;
 import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelPlugin;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;

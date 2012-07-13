@@ -22,9 +22,9 @@ package juzu.impl.router;
 import juzu.UndeclaredIOException;
 import juzu.impl.router.regex.RE;
 import juzu.impl.router.regex.REFactory;
-import juzu.impl.utils.MimeType;
-import juzu.impl.utils.QualifiedName;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.MimeType;
+import juzu.impl.common.QualifiedName;
+import juzu.impl.common.Tools;
 
 import java.io.IOException;
 import java.util.BitSet;

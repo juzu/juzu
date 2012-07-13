@@ -20,8 +20,8 @@
 package juzu.impl.fs.spi.war;
 
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.utils.Content;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Content;
+import juzu.impl.common.Tools;
 
 import javax.portlet.PortletContext;
 import javax.servlet.ServletContext;

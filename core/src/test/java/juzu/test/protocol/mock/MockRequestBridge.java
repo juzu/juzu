@@ -26,8 +26,8 @@ import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Tools;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 

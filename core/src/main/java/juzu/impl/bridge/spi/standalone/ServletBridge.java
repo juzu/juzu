@@ -19,7 +19,6 @@
 
 package juzu.impl.bridge.spi.standalone;
 
-import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
@@ -28,8 +27,8 @@ import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.SimpleMap;
+import juzu.impl.common.Logger;
+import juzu.impl.common.SimpleMap;
 import juzu.request.Phase;
 
 import javax.servlet.ServletConfig;

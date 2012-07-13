@@ -19,7 +19,7 @@
 
 package juzu.impl.template.spi.juzu.ast;
 
-import juzu.impl.utils.Builder;
+import juzu.impl.common.Builder;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 

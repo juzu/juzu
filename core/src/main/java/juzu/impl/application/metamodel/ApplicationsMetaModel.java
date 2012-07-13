@@ -12,10 +12,10 @@ import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.template.metamodel.TemplateMetaModel;
-import juzu.impl.utils.FQN;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.QN;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.FQN;
+import juzu.impl.common.JSON;
+import juzu.impl.common.QN;
+import juzu.impl.common.Tools;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;

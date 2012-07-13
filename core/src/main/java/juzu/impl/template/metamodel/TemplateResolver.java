@@ -30,11 +30,11 @@ import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.TemplatePlugin;
 import juzu.impl.template.metadata.TemplateDescriptor;
-import juzu.impl.utils.Content;
-import juzu.impl.utils.FQN;
-import juzu.impl.utils.Logger;
-import juzu.impl.utils.Path;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Content;
+import juzu.impl.common.FQN;
+import juzu.impl.common.Logger;
+import juzu.impl.common.Path;
+import juzu.impl.common.Tools;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.Element;

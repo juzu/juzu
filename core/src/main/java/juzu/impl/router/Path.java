@@ -20,7 +20,7 @@
 package juzu.impl.router;
 
 import juzu.UndeclaredIOException;
-import juzu.impl.utils.PercentCodec;
+import juzu.impl.common.PercentCodec;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

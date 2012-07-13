@@ -3,7 +3,7 @@ package juzu.impl.inject.spi.configuration;
 import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.spring.SpringBuilder;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import org.junit.Test;
 
 import java.io.InputStream;

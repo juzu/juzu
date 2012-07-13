@@ -19,7 +19,7 @@
 
 package juzu.impl.template.spi;
 
-import juzu.impl.utils.Path;
+import juzu.impl.common.Path;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;

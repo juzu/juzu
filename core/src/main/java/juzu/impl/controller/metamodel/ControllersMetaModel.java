@@ -5,8 +5,8 @@ import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.utils.FQN;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.FQN;
+import juzu.impl.common.JSON;
 
 import java.util.Iterator;
 import java.util.Set;

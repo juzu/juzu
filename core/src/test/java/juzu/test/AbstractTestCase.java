@@ -23,8 +23,8 @@ import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Tools;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

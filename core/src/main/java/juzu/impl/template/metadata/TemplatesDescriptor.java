@@ -2,7 +2,7 @@ package juzu.impl.template.metadata;
 
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.utils.JSON;
+import juzu.impl.common.JSON;
 import juzu.template.Template;
 
 import java.lang.reflect.Field;

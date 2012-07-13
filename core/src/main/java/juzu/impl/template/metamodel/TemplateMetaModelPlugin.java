@@ -10,8 +10,8 @@ import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.Template;
-import juzu.impl.utils.JSON;
-import juzu.impl.utils.Path;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Path;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.regex.Pattern;
 

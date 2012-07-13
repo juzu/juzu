@@ -1,7 +1,7 @@
 package juzu.impl.asset;
 
 import juzu.impl.application.ApplicationRuntime;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;

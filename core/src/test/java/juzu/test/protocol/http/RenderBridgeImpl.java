@@ -23,7 +23,7 @@ import juzu.Response;
 import juzu.asset.Asset;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Tools;
 import juzu.io.AppendableStream;
 
 import javax.servlet.http.HttpServletRequest;

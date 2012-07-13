@@ -19,7 +19,7 @@
 
 package juzu.impl.compiler;
 
-import juzu.impl.utils.Logger;
+import juzu.impl.common.Logger;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;

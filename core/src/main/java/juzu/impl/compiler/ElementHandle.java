@@ -19,8 +19,8 @@
 
 package juzu.impl.compiler;
 
-import juzu.impl.utils.FQN;
-import juzu.impl.utils.QN;
+import juzu.impl.common.FQN;
+import juzu.impl.common.QN;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;

@@ -21,8 +21,8 @@ package juzu.impl.fs.spi;
 
 import juzu.impl.fs.Filter;
 import juzu.impl.fs.Visitor;
-import juzu.impl.utils.Content;
-import juzu.impl.utils.Tools;
+import juzu.impl.common.Content;
+import juzu.impl.common.Tools;
 
 import java.io.IOException;
 import java.net.URL;
