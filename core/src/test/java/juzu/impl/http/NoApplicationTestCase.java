@@ -19,7 +19,7 @@
 
 package juzu.impl.http;
 
-import juzu.test.AbstractHttpTestCase;
+import juzu.test.protocol.http.AbstractHttpTestCase;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

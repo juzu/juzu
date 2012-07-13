@@ -20,7 +20,7 @@
 package juzu.impl.http;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import juzu.test.AbstractHttpTestCase;
+import juzu.test.protocol.http.AbstractHttpTestCase;
 import juzu.test.UserAgent;
 import org.junit.Test;
 

@@ -21,7 +21,7 @@ package juzu.impl.plugin;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import juzu.test.AbstractHttpTestCase;
+import juzu.test.protocol.http.AbstractHttpTestCase;
 import juzu.test.UserAgent;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.Test;

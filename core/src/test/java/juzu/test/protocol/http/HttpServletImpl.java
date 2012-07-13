@@ -24,7 +24,6 @@ import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.request.Phase;
-import juzu.test.AbstractHttpTestCase;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -84,7 +83,7 @@ public class HttpServletImpl extends HttpServlet {
   @Override
   public void init() throws ServletException {
     try {
-      ApplicationRuntime<?, ?> application = AbstractHttpTestCase.getApplication();
+      ApplicationRuntime<?, ?> application = AbstractHttpTestCase.getCurrentApplication();
 
       //
       application.boot();

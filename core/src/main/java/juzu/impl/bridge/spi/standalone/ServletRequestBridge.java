@@ -31,6 +31,7 @@ import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
+import juzu.standalone.JuzuServlet;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -96,6 +97,8 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   public <T> T getProperty(PropertyType<T> propertyType) {
     if (RequestContext.METHOD_ID.equals(propertyType)) {
       return propertyType.getType().cast(methodId);
+    } else if (JuzuServlet.PATH.equals(propertyType)) {
+      return propertyType.getType().cast(req.getRequestURI());
     }
     return null;
   }

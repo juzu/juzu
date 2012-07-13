@@ -57,21 +57,21 @@ public class Bridge {
   public Collection<CompilationError> boot() throws Exception {
 
     if (runtime == null) {
-      if (config.prod) {
-        ApplicationRuntime.Static<String, String> ss = new ApplicationRuntime.Static<String, String>(log);
-        ss.setClasses(classes);
-        ss.setClassLoader(Thread.currentThread().getContextClassLoader());
-
-        //
-        runtime = ss;
-      }
-      else {
-        ClassLoaderFileSystem classPath = new ClassLoaderFileSystem(new DevClassLoader(Thread.currentThread().getContextClassLoader()));
-        ApplicationRuntime.Dynamic dynamic = new ApplicationRuntime.Dynamic<String, String>(log);
-        dynamic.init(classPath, sourcePath);
-
-        //
-        runtime = dynamic;
+      switch (config.mode) {
+        case BridgeConfig.DYNAMIC_MODE:
+          ClassLoaderFileSystem classPath = new ClassLoaderFileSystem(new DevClassLoader(Thread.currentThread().getContextClassLoader()));
+          ApplicationRuntime.Dynamic dynamic = new ApplicationRuntime.Dynamic<String, String>(log);
+          dynamic.init(classPath, sourcePath);
+          runtime = dynamic;
+          break;
+        case BridgeConfig.PROVIDED_MODE:
+          runtime = new ApplicationRuntime.Provided<String, String>(log);
+          break;
+        default:
+          ApplicationRuntime.Static<String, String> ss = new ApplicationRuntime.Static<String, String>(log);
+          ss.setClasses(classes);
+          ss.setClassLoader(Thread.currentThread().getContextClassLoader());
+          runtime = ss;
       }
 
       // Configure the runtime
@@ -146,7 +146,7 @@ public class Bridge {
         });
       }
       catch (TrimmingException e) {
-        if (config.prod) {
+        if (config.isProd()) {
           throw e.getSource();
         }
         else {
@@ -192,7 +192,7 @@ public class Bridge {
 
       // Internal server error
       Response response;
-      if (!config.prod) {
+      if (!config.isProd()) {
         StringWriter writer = new StringWriter();
         PrintWriter printer = new PrintWriter(writer);
         printer.print("<html>\n");

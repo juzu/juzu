@@ -21,7 +21,7 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import junit.framework.AssertionFailedError;
-import juzu.test.AbstractHttpTestCase;
+import juzu.test.protocol.http.AbstractHttpTestCase;
 import juzu.test.UserAgent;
 import org.junit.Test;
 

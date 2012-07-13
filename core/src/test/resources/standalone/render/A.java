@@ -17,19 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.asset;
+package standalone.render;
 
-import juzu.test.protocol.http.AbstractHttpTestCase;
-import juzu.test.protocol.mock.MockApplication;
-import org.junit.Test;
+import juzu.Controller;
+import juzu.Response;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class UnsatisfiedTestCase extends AbstractHttpTestCase {
-  @Test
-  public void testRequestFail() {
-    MockApplication<?> app = assertDeploy("plugin", "asset", "unsatisfied");
+public class A extends Controller {
 
-    //
-    assertInternalError();
+  /** . */
+  private static int count = 0;
+
+  @View()
+  public Response.Content index() {
+    if (count == 0) {
+      count = 1;
+      String url = A_.indexURL().toString();
+      return Response.render("<a id='trigger' href='" + url + "'>click</div>");
+    } else {
+      return Response.render("ok");
+    }
   }
 }

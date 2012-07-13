@@ -22,73 +22,22 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
-import juzu.impl.application.ApplicationRuntime;
-import juzu.impl.inject.spi.InjectImplementation;
-import juzu.test.protocol.http.HttpServletImpl;
 import juzu.test.protocol.mock.MockApplication;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
-public abstract class AbstractHttpTestCase extends AbstractTestCase {
-
-  /** . */
-  private static AbstractHttpTestCase currentTest;
-
-  /** The currently deployed application. */
-  private MockApplication<?> application;
-
-  public static ApplicationRuntime<?, ?> getApplication() throws IllegalStateException {
-    if (currentTest == null) {
-      throw new IllegalStateException("No deployed test");
-    }
-    return currentTest.application.getRuntime();
-  }
-
-  @Override
-  public void setUp() {
-    currentTest = this;
-  }
-
-  @Override
-  public void tearDown() {
-    application = null;
-    currentTest = null;
-  }
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    URL descriptor = HttpServletImpl.class.getResource("web.xml");
-    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
-    URL test = HttpServletImpl.class.getResource("test.js");
-    URL stylesheet = HttpServletImpl.class.getResource("main.css");
-    return ShrinkWrap.create(WebArchive.class, "juzu.war").
-      addAsWebResource(jquery, "jquery.js").
-      addAsWebResource(test, "test.js").
-      addAsWebResource(stylesheet, "main.css").
-      setWebXML(descriptor);
-  }
+public abstract class AbstractWebTestCase extends AbstractTestCase {
 
   @ArquillianResource
   protected URL deploymentURL;
 
-  public MockApplication<?> assertDeploy(String... packageName) {
-    try {
-      return application = application(InjectImplementation.CDI_WELD, packageName);
-    }
-    catch (Exception e) {
-      throw failure("Could not deploy application " + Arrays.asList(packageName), e);
-    }
-  }
+  public abstract MockApplication<?> assertDeploy(String... packageName);
 
   public void assertInternalError() {
     WebClient client = new WebClient();

@@ -11,6 +11,15 @@ import java.util.Set;
 public class BridgeConfig {
 
   /** . */
+  public static final int STATIC_MODE = 0;
+
+  /** . */
+  public static final int DYNAMIC_MODE = 1;
+
+  /** . */
+  public static final int PROVIDED_MODE = 2;
+
+  /** . */
   public static final String RUN_MODE = "juzu.run_mode";
 
   /** . */
@@ -23,7 +32,7 @@ public class BridgeConfig {
   public static final Set<String> NAMES = Collections.unmodifiableSet(Tools.set(RUN_MODE, INJECT, APP_NAME));
 
   /** . */
-  public final boolean prod;
+  public final int mode;
 
   /** . */
   public final String appName;
@@ -31,8 +40,8 @@ public class BridgeConfig {
   /** . */
   public final InjectImplementation injectImpl;
 
-  public BridgeConfig(boolean prod, String appName, InjectImplementation injectImpl) {
-    this.prod = prod;
+  public BridgeConfig(int mode, String appName, InjectImplementation injectImpl) {
+    this.mode = mode;
     this.appName = appName;
     this.injectImpl = injectImpl;
   }
@@ -62,10 +71,23 @@ public class BridgeConfig {
       }
     }
 
+    //
+    int mode;
+    if ("dev".equals(runMode)) {
+      mode = DYNAMIC_MODE;
+    } else if ("provided".equals(runMode)) {
+      mode = PROVIDED_MODE;
+    } else {
+      mode = STATIC_MODE;
+    }
 
     //
     this.appName = config.get("juzu.app_name");
-    this.prod = !("dev".equals(runMode));
+    this.mode = mode;
     this.injectImpl = injectImpl;
+  }
+
+  public boolean isProd() {
+    return mode == STATIC_MODE;
   }
 }

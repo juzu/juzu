@@ -315,10 +315,47 @@ public abstract class ApplicationRuntime<P, R> {
     }
   }
 
+  public static class Provided<R, S> extends ApplicationRuntime<R, S> {
+
+    public static void set(ApplicationRuntime<?, ?> runtime) {
+      System.getProperties().put("abc", runtime);
+    }
+
+    private ApplicationRuntime<?, ?> get() {
+      return (ApplicationRuntime<?, ?>)System.getProperties().get("abc");
+    }
+
+    public Provided(Logger logger) {
+      super(logger);
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+      return get().getClassLoader();
+    }
+
+    @Override
+    protected ReadFileSystem<R> getClasses() {
+      return (ReadFileSystem<R>)get().getClasses();
+    }
+
+    @Override
+    public Collection<CompilationError> boot() throws Exception {
+      if (context == null) {
+        doBoot();
+      }
+
+      //
+      return null;
+    }
+  }
+
   protected final void doBoot() throws Exception {
+    ReadFileSystem<P> classes = getClasses();
+
     // Find an application
-    P f = getClasses().getPath(CONFIG_PATH);
-    URL url = getClasses().getURL(f);
+    P f = classes.getPath(CONFIG_PATH);
+    URL url = classes.getURL(f);
     String s = Tools.read(url);
     JSON json = (JSON)JSON.parse(s);
 
@@ -373,7 +410,7 @@ public abstract class ApplicationRuntime<P, R> {
 
     //
     InjectBuilder injectBootstrap = injectImplementation.builder();
-    injectBootstrap.addFileSystem(getClasses());
+    injectBootstrap.addFileSystem(classes);
     injectBootstrap.addFileSystem(libs);
     injectBootstrap.setClassLoader(getClassLoader());
 
