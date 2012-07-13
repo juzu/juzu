@@ -90,6 +90,9 @@ public abstract class ApplicationRuntime<P, R> {
   /** . */
   protected AssetManager scriptManager;
 
+  /** . */
+  protected ApplicationDescriptor descriptor;
+
   ApplicationRuntime(Logger logger) {
     this.logger = logger;
   }
@@ -146,6 +149,10 @@ public abstract class ApplicationRuntime<P, R> {
       this.assetServer.unregister(this);
     }
     this.assetServer = assetServer;
+  }
+
+  public ApplicationDescriptor getDescriptor() {
+    return descriptor;
   }
 
   public abstract ClassLoader getClassLoader();
@@ -431,6 +438,7 @@ public abstract class ApplicationRuntime<P, R> {
     this.context = bootstrap.getContext();
     this.scriptManager = scriptManager;
     this.stylesheetManager = stylesheetManager;
+    this.descriptor = descriptor;
   }
 
   public void shutdown() {
