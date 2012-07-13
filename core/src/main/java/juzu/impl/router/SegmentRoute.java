@@ -19,6 +19,8 @@
 
 package juzu.impl.router;
 
+import juzu.impl.utils.PercentCodec;
+
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -36,6 +38,6 @@ class SegmentRoute extends Route {
 
     //
     this.name = name;
-    this.encodedName = PercentEncoding.PATH_SEGMENT.encode(name);
+    this.encodedName = PercentCodec.PATH_SEGMENT.encode(name);
   }
 }

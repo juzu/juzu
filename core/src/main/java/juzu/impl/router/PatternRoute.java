@@ -19,6 +19,8 @@
 
 package juzu.impl.router;
 
+import juzu.impl.utils.PercentCodec;
+
 import java.util.List;
 
 /**
@@ -54,7 +56,7 @@ class PatternRoute extends Route {
     //
     String[] encodedChunks = new String[chunks.size()];
     for (int i = 0;i < chunks.size();i++) {
-      encodedChunks[i] = PercentEncoding.PATH_SEGMENT.encode(chunks.get(i));
+      encodedChunks[i] = PercentCodec.PATH_SEGMENT.encode(chunks.get(i));
     }
 
     //

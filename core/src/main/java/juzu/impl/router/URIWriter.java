@@ -20,6 +20,7 @@
 package juzu.impl.router;
 
 import juzu.impl.utils.MimeType;
+import juzu.impl.utils.PercentCodec;
 
 import java.io.IOException;
 
@@ -93,7 +94,7 @@ public final class URIWriter {
     if (questionMarkDone) {
       throw new IllegalStateException("Query separator already written");
     }
-    PercentEncoding.PATH_SEGMENT.encode(c, appendable);
+    PercentCodec.PATH_SEGMENT.encode(c, appendable);
   }
 
   /**
@@ -140,9 +141,9 @@ public final class URIWriter {
 
     //
     appendable.append(questionMarkDone ? mt.amp : "?");
-    PercentEncoding.QUERY_PARAM.encode(parameterName, appendable);
+    PercentCodec.QUERY_PARAM.encode(parameterName, appendable);
     appendable.append('=');
-    PercentEncoding.QUERY_PARAM.encode(paramaterValue, appendable);
+    PercentCodec.QUERY_PARAM.encode(paramaterValue, appendable);
     questionMarkDone = true;
   }
 

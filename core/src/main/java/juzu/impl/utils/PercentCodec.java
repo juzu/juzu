@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router;
+package juzu.impl.utils;
 
 import juzu.UndeclaredIOException;
 
@@ -28,8 +28,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.BitSet;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class PercentEncoding {
+/**
+ * Utility class for performing percent encoding / decoding.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public final class PercentCodec {
 
   /** . */
   private static final byte[] codes;
@@ -82,12 +86,6 @@ public final class PercentEncoding {
     indices = _indices;
   }
 
-  /** . */
-  private static final char[] ALPHABET = "0123456789ABCDEF".toCharArray();
-
-  /** Path segment. */
-  public static final PercentEncoding PATH_SEGMENT;
-
   static {
     BitSet allowed = new BitSet();
 
@@ -124,11 +122,8 @@ public final class PercentEncoding {
     allowed.set('@');
 
     //
-    PATH_SEGMENT = new PercentEncoding(allowed);
+    PATH_SEGMENT = new PercentCodec(allowed);
   }
-
-  /** Query params name or value. */
-  public static final PercentEncoding QUERY_PARAM;
 
   static {
     BitSet allowed = new BitSet(128);
@@ -166,17 +161,26 @@ public final class PercentEncoding {
     allowed.set('/');
 
     //
-    QUERY_PARAM = new PercentEncoding(allowed);
+    QUERY_PARAM = new PercentCodec(allowed);
   }
+
+  /** . */
+  private static final char[] ALPHABET = "0123456789ABCDEF".toCharArray();
+
+  /** Path segment. */
+  public static final PercentCodec PATH_SEGMENT;
+
+  /** Query params name or value. */
+  public static final PercentCodec QUERY_PARAM;
 
   /** . */
   private final BitSet allowed;
 
-  private PercentEncoding(BitSet allowed) {
+  private PercentCodec(BitSet allowed) {
     this.allowed = allowed;
   }
 
-  boolean accept(char c) {
+  public boolean accept(char c) {
     return c < allowed.length() && allowed.get(c);
   }
 
@@ -214,7 +218,7 @@ public final class PercentEncoding {
         }
       }
       else {
-        throw new AssertionError("Not handled yet");
+        throw new UnsupportedOperationException("Not handled yet");
       }
     }
   }

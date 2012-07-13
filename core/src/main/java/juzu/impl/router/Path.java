@@ -20,6 +20,7 @@
 package juzu.impl.router;
 
 import juzu.UndeclaredIOException;
+import juzu.impl.utils.PercentCodec;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -82,7 +83,7 @@ class Path {
         mapping[count++] = i;
 
         //
-        if (PercentEncoding.PATH_SEGMENT.accept(c)) {
+        if (PercentCodec.PATH_SEGMENT.accept(c)) {
           baos.write((int)c);
           i++;
         }
