@@ -30,7 +30,6 @@ import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.Filter;
 import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
-import juzu.impl.metadata.Descriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;
@@ -53,7 +52,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
@@ -91,9 +89,6 @@ public abstract class ApplicationRuntime<P, R> {
 
   /** . */
   protected AssetManager scriptManager;
-
-  /** Additional plugins. */
-  protected Map<String, Descriptor> plugins;
 
   ApplicationRuntime(Logger logger) {
     this.logger = logger;
@@ -151,13 +146,6 @@ public abstract class ApplicationRuntime<P, R> {
       this.assetServer.unregister(this);
     }
     this.assetServer = assetServer;
-  }
-
-  public void addPlugin(String name, Descriptor plugin) {
-    if (plugins == null) {
-      plugins = new HashMap<String, Descriptor>();
-    }
-    plugins.put(name, plugin);
   }
 
   public abstract ClassLoader getClassLoader();
@@ -384,13 +372,6 @@ public abstract class ApplicationRuntime<P, R> {
     Class<?> clazz = getClassLoader().loadClass(fqn);
     Field field = clazz.getDeclaredField("DESCRIPTOR");
     ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
-
-    // Add additional plugins when available
-    if (plugins != null) {
-      for (Map.Entry<String, Descriptor> entry : plugins.entrySet()) {
-        descriptor.addPlugin(entry.getKey(), entry.getValue());
-      }
-    }
 
     // Find the juzu jar
     URL mainURL = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
