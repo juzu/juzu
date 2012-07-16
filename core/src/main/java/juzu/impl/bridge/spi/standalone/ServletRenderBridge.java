@@ -36,9 +36,6 @@ import java.util.Map;
 public class ServletRenderBridge extends ServletMimeBridge implements RenderBridge {
 
   /** . */
-  private final ServletBridge servlet;
-
-  /** . */
   private Response.Content response;
 
   /** . */
@@ -56,10 +53,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       HttpServletResponse resp,
       String methodId,
       Map<String, String[]> parameters) {
-    super(req, resp, methodId, parameters);
-
-    //
-    this.servlet = servlet;
+    super(servlet, req, resp, methodId, parameters);
   }
 
   public void setTitle(String title) {

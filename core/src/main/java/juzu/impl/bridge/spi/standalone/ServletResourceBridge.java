@@ -40,11 +40,12 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
   private Response.Content response;
 
   ServletResourceBridge(
+      ServletBridge servlet,
       HttpServletRequest req,
       HttpServletResponse resp,
       String methodId,
       Map<String, String[]> parameters) {
-    super(req, resp, methodId, parameters);
+    super(servlet, req, resp, methodId, parameters);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

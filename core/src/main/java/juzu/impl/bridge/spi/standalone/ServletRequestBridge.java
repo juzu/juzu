@@ -26,6 +26,7 @@ import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
+import juzu.impl.router.RenderContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
@@ -39,11 +40,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext {
+
+  /** . */
+  final ServletBridge servlet;
 
   /** . */
   final HttpServletRequest req;
@@ -61,10 +66,14 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   protected Request request;
 
   ServletRequestBridge(
+      ServletBridge servlet,
       HttpServletRequest req,
       HttpServletResponse resp,
       String methodId,
       Map<String, String[]> parameters) {
+
+    //
+    this.servlet = servlet;
     this.req = req;
     this.resp = resp;
     this.methodId = methodId;
@@ -211,19 +220,31 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     if (port != 80) {
       buffer.append(':').append(port);
     }
-    buffer.append(req.getContextPath());
-    buffer.append(req.getServletPath());
 
-    //
-    buffer.append("/").append(phase.name().toLowerCase());
+    // Add context path
+    buffer.append(req.getContextPath());
+
+    // Add servlet path
+    if (!req.getServletPath().equals("/")) {
+      buffer.append(req.getServletPath());
+    }
 
     //
     String methodId = properties != null ? properties.getValue(RequestContext.METHOD_ID) : null;
     if (methodId != null) {
-      buffer.append("/").append(methodId);
+      RenderContext ctx = new RenderContext(Collections.singletonMap(ServletBridge.abc, methodId));
+      String s = servlet.router.render(ctx);
+      if (s != null) {
+        buffer.append(s);
+      } else {
+        throw new UnsupportedOperationException("handle me gracefully");
+      }
+    } else {
+      throw new UnsupportedOperationException("handle me gracefully");
     }
 
     //
+/*
     boolean first = true;
     for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
       String name = parameter.getKey();
@@ -240,6 +261,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
         throw new AssertionError(e);
       }
     }
+*/
     return buffer.toString();
   }
 

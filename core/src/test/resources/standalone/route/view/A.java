@@ -17,23 +17,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.standalone;
+package standalone.route.view;
 
-import juzu.impl.bridge.spi.MimeBridge;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import juzu.Controller;
+import juzu.Response;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
+public class A extends Controller {
 
-  ServletMimeBridge(
-      ServletBridge servlet,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      String methodId,
-      Map<String, String[]> parameters) {
-    super(servlet, req, resp, methodId, parameters);
+  @View
+  public Response.Content index() {
+    return Response.render("<a id='trigger' href='" + A_.fooURL() + "'>click</div>");
+  }
+
+  @View("/foo")
+  public Response.Content foo() {
+    return Response.ok("pass");
   }
 }

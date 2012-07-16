@@ -29,7 +29,7 @@ public class A extends Controller {
   /** . */
   private static int count = 0;
 
-  @View()
+  @View("/foo")
   public Response.Content index() {
     if (count == 0) {
       count = 1;

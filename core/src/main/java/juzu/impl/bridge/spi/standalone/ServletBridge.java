@@ -23,12 +23,17 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.spi.RequestBridge;
+import juzu.impl.common.QualifiedName;
 import juzu.impl.compiler.CompilationError;
+import juzu.impl.controller.descriptor.ControllerDescriptor;
+import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.ControllerRoute;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
+import juzu.impl.router.Router;
 import juzu.request.Phase;
 
 import javax.servlet.ServletConfig;
@@ -39,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -49,6 +55,9 @@ public class ServletBridge extends HttpServlet {
 
   /** . */
   Bridge bridge;
+
+  /** . */
+  Router router;
 
   @Override
   public void init() throws ServletException {
@@ -127,7 +136,17 @@ public class ServletBridge extends HttpServlet {
     if (errors != null && errors.size() > 0) {
       log.log("Error when compiling application " + errors);
     }
+
+    //
+    Router router = new Router();
+    ControllerDescriptor desc = bridge.runtime.getDescriptor().getController();
+    for (ControllerRoute routeDesc : desc.getRoutes()) {
+      router.append(routeDesc.getPath(), Collections.singletonMap(abc, routeDesc.getId()));
+    }
+    this.router = router;
   }
+
+  public static final QualifiedName abc = QualifiedName.create("abc", "def");
 
   /**
    * Returns the application name to use using the <code>juzu.app_name</code> init parameter of the portlet deployment
@@ -154,19 +173,20 @@ public class ServletBridge extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+    //
     Phase phase = Phase.RENDER;
     String op = null;
 
     //
-    String path = req.getPathInfo();
+    String path = req.getRequestURI().substring(req.getContextPath().length());
     if (path != null) {
-      Matcher matcher = PATTERN.matcher(path);
-      if (matcher.matches()) {
-        String phaseSegment = matcher.group(1);
-        if (phaseSegment != null) {
-          phase = Phase.valueOf(phaseSegment.toUpperCase());
-        }
-        op = matcher.group(2);
+      Map<QualifiedName, String> params = router.route(path);
+      if (params != null) {
+        String methodId = params.get(abc);
+        ControllerMethod m = bridge.runtime.getDescriptor().getController().getMethodById(methodId);
+        phase = m.getPhase();
+        op = methodId;
       }
     }
 
@@ -180,10 +200,10 @@ public class ServletBridge extends HttpServlet {
         requestBridge = new ServletRenderBridge(this, req, resp, op, parameters);
         break;
       case ACTION:
-        requestBridge = new ServletActionBridge(req, resp, op, parameters);
+        requestBridge = new ServletActionBridge(this, req, resp, op, parameters);
         break;
       case RESOURCE:
-        requestBridge = new ServletResourceBridge(req, resp, op, parameters);
+        requestBridge = new ServletResourceBridge(this, req, resp, op, parameters);
         break;
       default:
         throw new ServletException("Cannot decode phase");
