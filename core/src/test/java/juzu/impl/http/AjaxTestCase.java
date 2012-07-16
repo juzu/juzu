@@ -19,22 +19,26 @@
 
 package juzu.impl.http;
 
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.protocol.http.AbstractHttpTestCase;
-import juzu.test.UserAgent;
+import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AjaxTestCase extends AbstractHttpTestCase {
 
+  @Drone
+  WebDriver driver;
+
   @Test
   public void testAjax() throws Exception {
     assertDeploy("http", "ajax");
-    UserAgent ua = assertInitialPage();
-    HtmlPage page = ua.getHomePage();
-    HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
+    driver.get(deploymentURL.toString());
+    WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
-    assertEquals("bar", page.getElementById("foo").asText());
+    String bar = driver.findElement(By.id("foo")).getText();
+    assertEquals("bar", bar);
   }
 }

@@ -19,24 +19,29 @@
 
 package juzu.impl.http;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.protocol.http.AbstractHttpTestCase;
-import juzu.test.UserAgent;
+import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LifeCycleTestCase extends AbstractHttpTestCase {
 
+  @Drone
+  WebDriver driver;
+
   @Test
   public void testLifeCycle() throws Exception {
     assertDeploy("http", "lifecycle");
-    UserAgent ua = assertInitialPage();
-    HtmlPage page = ua.getHomePage();
-    String actionURL = page.asText();
+    driver.get(deploymentURL.toString());
+    String actionURL = driver.findElement(By.tagName("body")).getText();
     assertTrue(actionURL.length() > 0);
-    String resourceURL = ((HtmlPage)page.getWebClient().getPage(actionURL)).asText();
+    driver.get(actionURL);
+    String resourceURL = driver.findElement(By.tagName("body")).getText();
     assertTrue(resourceURL.length() > 0);
-    String done = ((HtmlPage)page.getWebClient().getPage(resourceURL)).asText();
+    driver.get(resourceURL);
+    String done = driver.findElement(By.tagName("body")).getText();
     assertEquals("done", done);
   }
 }

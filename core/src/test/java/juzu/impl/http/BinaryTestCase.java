@@ -19,25 +19,33 @@
 
 package juzu.impl.http;
 
-import com.gargoylesoftware.htmlunit.UnexpectedPage;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import juzu.impl.common.Tools;
 import juzu.test.protocol.http.AbstractHttpTestCase;
-import juzu.test.UserAgent;
+import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BinaryTestCase extends AbstractHttpTestCase {
 
+  @Drone
+  WebDriver driver;
+
   @Test
   public void testBinary() throws Exception {
     assertDeploy("http", "binary");
-    UserAgent ua = assertInitialPage();
-    HtmlPage page = ua.getHomePage();
-    String url = page.asText();
-    UnexpectedPage resource = ua.getPage(UnexpectedPage.class, url);
-    WebResponse resp = resource.getWebResponse();
-    assertEquals("application/octet-stream", resp.getContentType());
-    assertEquals("hello", resp.getContentAsString());
+    driver.get(deploymentURL.toString());
+    String url = driver.findElement(By.tagName("body")).getText();
+    URLConnection conn = new URL(url).openConnection();
+    conn.connect();
+    InputStream in = conn.getInputStream();
+    String s = Tools.read(in);
+    assertEquals("hello", s);
+    assertEquals("application/octet-stream", conn.getContentType());
   }
 }

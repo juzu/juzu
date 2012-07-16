@@ -17,39 +17,38 @@
 
 package juzu.impl.http;
 
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.DomNodeList;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import junit.framework.AssertionFailedError;
 import juzu.test.protocol.http.AbstractHttpTestCase;
-import juzu.test.UserAgent;
+import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
 public class ResourceOrderTestCase extends AbstractHttpTestCase {
+
+  @Drone
+  WebDriver driver;
+
   @Test
   public void testResourceOrder() throws Exception {
     assertDeploy("http", "resource");
-    UserAgent ua = assertInitialPage();
-    HtmlPage page = ua.getHomePage();
-    DomNode head = page.getElementsByTagName("head").get(0);
-    DomNodeList<DomNode> headChildren = head.getChildNodes();
-
+    driver.get(deploymentURL.toString());
+    List<WebElement> elts = driver.findElements(By.xpath("//head/*"));
     List<String> previous = new ArrayList<String>();
-    for (DomNode node : headChildren) {
-      assertOrder(previous, node);
-      previous.add(node.getNodeName());
+    for (WebElement elt : elts) {
+      assertOrder(previous, elt);
+      previous.add(elt.getTagName());
     }
   }
 
-  private void assertOrder(List<String> previous, DomNode current) {
-
-    if ("link".equals(current.getNodeName()) && previous.contains("script")) {
+  private void assertOrder(List<String> previous, WebElement current) {
+    if ("link".equals(current.getTagName()) && previous.contains("script")) {
       throw new AssertionFailedError("js must be set before css resource");
     }
-
   }
 }

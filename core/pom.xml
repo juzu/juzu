@@ -15,10 +15,6 @@
   <name>Juzu Core</name>
   <description>Where all the magic happens</description>
 
-  <properties>
-    <version.selenium>2.19.0</version.selenium>
-    <version.selenium.server>2.19.0</version.selenium.server>
-  </properties>
 
   <dependencies>
 
@@ -95,6 +91,32 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-drone-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-drone-selenium</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-drone-webdriver</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-htmlunit-driver</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -168,12 +190,14 @@
     </dependency>
 -->
 
+<!--
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
       <artifactId>htmlunit</artifactId>
       <version>2.9</version>
       <scope>test</scope>
     </dependency>
+-->
   </dependencies>
 
   <build>

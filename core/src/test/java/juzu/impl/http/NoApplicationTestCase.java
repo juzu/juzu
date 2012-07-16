@@ -22,11 +22,15 @@ package juzu.impl.http;
 import juzu.test.protocol.http.AbstractHttpTestCase;
 import org.junit.Test;
 
+import java.net.HttpURLConnection;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class NoApplicationTestCase extends AbstractHttpTestCase {
 
   @Test
-  public void testNoApplication() {
-    assertInternalError();
+  public void testNoApplication() throws Exception {
+    HttpURLConnection conn = (HttpURLConnection)deploymentURL.openConnection();
+    conn.connect();
+    assertEquals(500, conn.getResponseCode());
   }
 }

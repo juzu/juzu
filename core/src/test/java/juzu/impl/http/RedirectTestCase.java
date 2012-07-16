@@ -19,21 +19,32 @@
 
 package juzu.impl.http;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.protocol.http.AbstractHttpTestCase;
-import juzu.test.UserAgent;
+import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RedirectTestCase extends AbstractHttpTestCase {
 
+  @Drone
+  WebDriver driver;
+
   @Test
   public void testRedirect() throws Exception {
     assertDeploy("http", "redirect");
-    UserAgent ua = assertInitialPage();
-    HtmlPage page = ua.getHomePage();
-    String actionURL = page.asText();
+    driver.get(deploymentURL.toString());
+    String actionURL = driver.findElement(By.tagName("body")).getText();
     assertTrue(actionURL.length() > 0);
-    ua.assertRedirect("http://www.foo.org", actionURL);
+    URL url = new URL(actionURL);
+    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+    conn.setInstanceFollowRedirects(false);
+    conn.connect();
+    assertEquals(302, conn.getResponseCode());
+    assertEquals("http://www.foo.org", conn.getHeaderField("Location"));
   }
 }
