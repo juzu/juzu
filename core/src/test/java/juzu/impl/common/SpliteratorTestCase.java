@@ -28,6 +28,16 @@ public class SpliteratorTestCase extends AbstractTestCase {
   @Test
   public void testEmptyString() {
     Spliterator i = new Spliterator("", '.');
+    assertTrue(i.hasNext());
+    assertEquals("", i.next());
+    assertFalse(i.hasNext());
+  }
+
+  @Test
+  public void testSimpleString() {
+    Spliterator i = new Spliterator("a", '.');
+    assertTrue(i.hasNext());
+    assertEquals("a", i.next());
     assertFalse(i.hasNext());
   }
 
@@ -57,5 +67,17 @@ public class SpliteratorTestCase extends AbstractTestCase {
     assertTrue(i.hasNext());
     assertEquals("b", i.next());
     assertFalse(i.hasNext());
+  }
+
+  @Test
+  public void testBounds() {
+    for (int[] range : new int[][]{{0,2},{-1,1},{1,0}}) {
+      try {
+        new Spliterator("a", range[0], range[1], '.');
+        fail();
+      }
+      catch (IndexOutOfBoundsException e) {
+      }
+    }
   }
 }

@@ -34,7 +34,9 @@ import java.util.NoSuchElementException;
  */
 public class Spliterator implements Iterator<String> {
 
-  public static Iterable<String> split(final String s, final char separator) throws NullPointerException {
+  public static Iterable<String> split(
+      final String s,
+      final char separator) throws NullPointerException {
     return new Iterable<String>() {
       public Iterator<String> iterator() {
         return new Spliterator(s, separator);
@@ -42,15 +44,41 @@ public class Spliterator implements Iterator<String> {
     };
   }
 
-  public static <C extends Collection<String>> C split(final String s, final char separator, C to) throws NullPointerException {
+  public static Iterable<String> split(
+      final String s,
+      final int from,
+      final int to,
+      final char separator) throws NullPointerException, IndexOutOfBoundsException {
+    return new Iterable<String>() {
+      public Iterator<String> iterator() {
+        return new Spliterator(s, from, to, separator);
+      }
+    };
+  }
+
+  public static <C extends Collection<String>> C split(
+      final String s,
+      final char separator,
+      C collection) throws NullPointerException {
     for (Spliterator i = new Spliterator(s, separator);i.hasNext();) {
-      to.add(i.next());
+      collection.add(i.next());
     }
-    return to;
+    return collection;
+  }
+
+  public static <C extends Collection<String>> C split(
+      final String s,
+      final int from,
+      final int to,
+      final char separator, C collection) throws NullPointerException {
+    for (Spliterator i = new Spliterator(s, from, to, separator);i.hasNext();) {
+      collection.add(i.next());
+    }
+    return collection;
   }
 
   /** . */
-  private final String s;
+  private final CharSequence s;
 
   /** . */
   private final char separator;
@@ -59,7 +87,10 @@ public class Spliterator implements Iterator<String> {
   private int from;
 
   /** . */
-  private Integer to;
+  private int current;
+
+  /** . */
+  private int to;
 
   /**
    * Creates a spliterator.
@@ -69,41 +100,62 @@ public class Spliterator implements Iterator<String> {
    * @throws NullPointerException if the string is null
    */
   public Spliterator(String s, char separator) throws NullPointerException {
+    this(s, 0, s.length(), separator);
+  }
+
+  /**
+   * Creates a spliterator.
+   *
+   * @param s         the string to split
+   * @param from      the lower bound
+   * @param to        the upper bound
+   * @param separator the separator
+   * @throws NullPointerException if the string is null
+   * @throws IndexOutOfBoundsException if any bound is incorrect
+   */
+  public Spliterator(CharSequence s, int from, int to, char separator) throws NullPointerException, IndexOutOfBoundsException {
     if (s == null) {
       throw new NullPointerException();
     }
+    if (from < 0) {
+      throw new IndexOutOfBoundsException("Lower bound cannot be negative");
+    }
+    if (to > s.length()) {
+      throw new IndexOutOfBoundsException("Upper bound cannot be greater than sequence length");
+    }
+    if (from > to) {
+      throw new IndexOutOfBoundsException("Upper bound cannot be greater than lower bound");
+    }
+
+    //
+    int pos = Tools.indexOf(s, separator, from);
 
     //
     this.s = s;
     this.separator = separator;
-    this.from = s.length() == 0 ? -1 : 0;
-    this.to = null;
+    this.from = from;
+    this.current = pos == -1 ? to : pos;
+    this.to = to;
   }
 
   public boolean hasNext() {
-    if (from == -1) {
-      return false;
-    }
-    else {
-      if (to == null) {
-        to = s.indexOf(separator, from);
-      }
-      return true;
-    }
+    return current != -1;
   }
 
   public String next() {
     if (hasNext()) {
-      String next;
-      if (to == -1) {
-        next = s.substring(from);
-        from = -1;
+      String next = s.subSequence(from, current).toString();
+      if (current < to) {
+        from = current + 1;
+        int pos = Tools.indexOf(s, separator, current + 1);
+        if (pos == -1) {
+          current = to;
+        } else {
+          current = pos;
+        }
+      } else {
+        current = -1;
       }
-      else {
-        next = s.substring(from, to);
-        from = to + 1;
-      }
-      to = null;
       return next;
     }
     else {
