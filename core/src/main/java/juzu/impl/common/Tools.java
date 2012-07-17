@@ -19,6 +19,8 @@
 
 package juzu.impl.common;
 
+import juzu.UndeclaredIOException;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.DatatypeConverter;
@@ -229,21 +231,39 @@ public class Tools {
   }
 
   public static String join(char separator, String... names) {
-    switch (names.length) {
-      case 0:
-        return "";
-      case 1:
-        return names[0];
-      default:
-        StringBuilder sb = new StringBuilder();
-        for (String name : names) {
-          if (sb.length() > 0) {
-            sb.append(separator);
-          }
-          sb.append(name);
-        }
-        return sb.toString();
+    StringBuilder sb = new StringBuilder();
+    join(sb, separator, names);
+    return sb.toString();
+  }
+
+  public static StringBuilder join(StringBuilder sb, char separator, String... names) {
+    try {
+      join((Appendable)sb, separator, names);
+      return sb;
     }
+    catch (IOException e) {
+      throw new UndeclaredIOException(e);
+    }
+  }
+
+  public static <A extends Appendable> Appendable join(A appendable, char separator, String... names) throws IOException {
+    int length = names.length;
+    switch (length) {
+      case 0:
+        break;
+      case 1:
+        appendable.append(names[0]);
+        break;
+      default:
+        for (int i = 0;i < length;i++) {
+          if (i > 0) {
+            appendable.append(separator);
+          }
+          appendable.append(names[i]);
+        }
+        break;
+    }
+    return appendable;
   }
 
   public static String getImport(Class<?> clazz) {
