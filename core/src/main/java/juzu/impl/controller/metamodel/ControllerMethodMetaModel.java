@@ -43,7 +43,7 @@ public class ControllerMethodMetaModel extends MetaModelObject {
   final ElementHandle.Method handle;
 
   /** . */
-  final String id;
+  final String declaredId;
 
   /** . */
   final Phase phase;
@@ -57,25 +57,38 @@ public class ControllerMethodMetaModel extends MetaModelObject {
   /** The route. */
   final String route;
 
+  /** . */
+  final String id;
+
   ControllerMethodMetaModel(
     ElementHandle.Method handle,
-    String id,
+    String declaredId,
     Phase phase,
     String name,
     ArrayList<ParameterMetaModel> parameters,
     String route) {
+
+    String id;
+    if (declaredId == null) {
+      id = handle.getFQN().getSimpleName() + "." + handle.getName();
+    } else {
+      id = declaredId;
+    }
+
+    //
     this.handle = handle;
-    this.id = id;
+    this.declaredId = declaredId;
     this.phase = phase;
     this.name = name;
     this.parameters = parameters;
     this.route = route;
+    this.id = id;
   }
 
   public JSON toJSON() {
     JSON json = new JSON();
     json.set("handle", handle);
-    json.set("id", id);
+    json.set("id", declaredId);
     json.set("phase", phase);
     json.set("name", name);
     json.map("parameters", new ArrayList<ParameterMetaModel>(parameters));
@@ -132,7 +145,7 @@ public class ControllerMethodMetaModel extends MetaModelObject {
       if (am != null) {
         AnnotationData values = AnnotationData.create(am);
         String id = (String)values.get("id");
-        return Tools.safeEquals(id, this.id);
+        return Tools.safeEquals(id, this.declaredId);
       }
     }
     return false;

@@ -53,9 +53,6 @@ public class ControllerMetaModel extends MetaModelObject {
   public static final MessageCode CONTROLLER_METHOD_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_NOT_RESOLVED", "The controller method cannot be resolved %1$s");
 
   /** . */
-  public static final MessageCode CONTROLLER_METHOD_DUPLICATE_ID = new MessageCode("CONTROLLER_METHOD_DUPLICATE_ID", "Duplicate method controller id %1$s");
-
-  /** . */
   public static final MessageCode CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED", "The method parameter type %1s should be a string or annotated with @juzu.Param");
 
   /** A flag for handling modified event. */
@@ -118,6 +115,8 @@ public class ControllerMetaModel extends MetaModelObject {
     ExecutableElement methodElt,
     String annotationFQN,
     Map<String, Serializable> annotationValues) {
+
+    //
     String id = (String)annotationValues.get("id");
 
     //
@@ -128,13 +127,6 @@ public class ControllerMetaModel extends MetaModelObject {
         // First remove the previous method
         Key<ControllerMethodMetaModel> key = Key.of(origin, ControllerMethodMetaModel.class);
         if (getChild(key) == null) {
-          // Validate duplicate id within the same controller
-          for (ControllerMethodMetaModel existing : getChildren(ControllerMethodMetaModel.class)) {
-            if (existing.id != null && existing.id.equals(id)) {
-              throw CONTROLLER_METHOD_DUPLICATE_ID.failure(methodElt, id);
-            }
-          }
-
           // Parameters
           ArrayList<ParameterMetaModel> parameters = new ArrayList<ParameterMetaModel>();
           List<? extends TypeMirror> parameterTypeMirrors = ((ExecutableType)methodElt.asType()).getParameterTypes();

@@ -73,13 +73,6 @@ public final class ControllerMethod {
     Class<?> type,
     Method method,
     List<ControllerParameter> argumentList) {
-    if (id == null) {
-      StringBuilder sb = new StringBuilder();
-      sb.append(method.getDeclaringClass().getSimpleName());
-      sb.append(".");
-      sb.append(method.getName());
-      id = sb.toString();
-    }
 
     //
     LinkedHashMap<String, ControllerParameter> argumentMap = new LinkedHashMap<String, ControllerParameter>();

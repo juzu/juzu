@@ -49,6 +49,16 @@ public class JavaFile<I> {
     return AbstractTestCase.assertInstanceOf(ClassOrInterfaceDeclaration.class, decl);
   }
 
+  public void assertTouch() {
+    try {
+      Content content = sourcePath.getContent(path);
+      sourcePath.setContent(path, content);
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
+
   public void assertSave() {
     try {
       String s = cu.toString();

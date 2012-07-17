@@ -155,7 +155,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       controllers.add(controller.getHandle().getFQN().getName() + "_");
       for (ControllerMethodMetaModel method : controller.getMethods()) {
         if (method.route != null) {
-          String id = method.id;
+          String id = method.declaredId;
           if (id == null) {
             StringBuilder sb = new StringBuilder();
             sb.append(controller.getHandle().getFQN().getSimpleName());

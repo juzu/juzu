@@ -42,15 +42,7 @@ public class ControllerMethodMetaModelResolver extends ControllerResolver<Contro
 
   @Override
   public String getId(ControllerMethodMetaModel method) {
-    String id = method.getId();
-    if (id == null) {
-      StringBuilder sb = new StringBuilder();
-      sb.append(method.getController().getHandle().getFQN().getSimpleName());
-      sb.append(".");
-      sb.append(method.getName());
-      id = sb.toString();
-    }
-    return id;
+    return method.getId();
   }
 
   @Override
