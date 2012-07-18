@@ -168,7 +168,7 @@ public class Router {
   }
 
   public Iterator<Map<Param, String>> matcher(String path, Map<String, String[]> queryParams) {
-    return root.route(path, queryParams);
+    return root.matcher(path, queryParams);
   }
 
   @Override

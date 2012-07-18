@@ -48,7 +48,7 @@ import java.util.Set;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-class Route {
+public class Route {
 
   void writeTo(XMLStreamWriter writer) throws XMLStreamException {
     if (this instanceof SegmentRoute) {
@@ -413,7 +413,7 @@ class Route {
    * @param requestParams the query parameters
    * @return the route matcher
    */
-  final RouteMatcher route(String path, Map<String, String[]> requestParams) {
+  public final Iterator<Map<Param, String>> matcher(String path, Map<String, String[]> requestParams) {
     return new RouteMatcher(this, Path.parse(path), requestParams);
   }
 
