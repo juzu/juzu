@@ -22,7 +22,7 @@ package juzu.impl.application;
 import juzu.Response;
 import juzu.UndeclaredIOException;
 import juzu.impl.controller.ControllerPlugin;
-import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Export;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.spi.InjectionContext;
@@ -142,7 +142,7 @@ public class ApplicationContext {
     }
 
     //
-    ControllerMethod method;
+    MethodDescriptor method;
     if (methodId == null) {
       method = controller.getResolver().resolve(parameters.keySet());
     }

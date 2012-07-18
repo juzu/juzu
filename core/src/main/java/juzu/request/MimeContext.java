@@ -23,7 +23,7 @@ import juzu.Response;
 import juzu.URLBuilder;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationDescriptor;
-import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.io.AppendableStream;
@@ -36,7 +36,7 @@ public abstract class MimeContext extends RequestContext {
   /** . */
   private final ApplicationContext application;
 
-  protected MimeContext(Request request, ApplicationContext application, ControllerMethod method) {
+  protected MimeContext(Request request, ApplicationContext application, MethodDescriptor method) {
     super(request, application, method);
 
     //
@@ -46,24 +46,24 @@ public abstract class MimeContext extends RequestContext {
   @Override
   protected abstract MimeBridge getBridge();
 
-  public URLBuilder createURLBuilder(ControllerMethod method) {
+  public URLBuilder createURLBuilder(MethodDescriptor method) {
     URLBuilder builder = new URLBuilder(getBridge(), method);
 
     // Bridge escape XML value
     ApplicationDescriptor desc = application.getDescriptor();
-    builder.escapeXML(desc.getController().getEscapeXML());
+    builder.escapeXML(desc.getControllers().getEscapeXML());
 
     //
     return builder;
   }
 
-  public URLBuilder createURLBuilder(ControllerMethod method, Object arg) {
+  public URLBuilder createURLBuilder(MethodDescriptor method, Object arg) {
     URLBuilder builder = createURLBuilder(method);
     method.setArgs(new Object[]{arg}, builder.getParameters());
     return builder;
   }
 
-  public URLBuilder createURLBuilder(ControllerMethod method, Object[] args) {
+  public URLBuilder createURLBuilder(MethodDescriptor method, Object[] args) {
     URLBuilder builder = createURLBuilder(method);
     method.setArgs(args, builder.getParameters());
     return builder;

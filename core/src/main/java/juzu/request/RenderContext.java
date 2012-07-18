@@ -20,7 +20,7 @@
 package juzu.request;
 
 import juzu.impl.application.ApplicationContext;
-import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RenderBridge;
 
@@ -30,7 +30,7 @@ public class RenderContext extends MimeContext {
   /** . */
   private RenderBridge bridge;
 
-  public RenderContext(Request request, ApplicationContext application, ControllerMethod method, RenderBridge bridge) {
+  public RenderContext(Request request, ApplicationContext application, MethodDescriptor method, RenderBridge bridge) {
     super(request, application, method);
 
     //

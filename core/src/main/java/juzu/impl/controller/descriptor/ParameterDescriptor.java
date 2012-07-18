@@ -28,7 +28,7 @@ import juzu.impl.common.Tools;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ControllerParameter {
+public class ParameterDescriptor {
 
   /** . */
   private final String name;
@@ -42,15 +42,15 @@ public class ControllerParameter {
   /** . */
   private final Class<?> type;
 
-  public ControllerParameter(String name, Cardinality cardinality) throws NullPointerException {
+  public ParameterDescriptor(String name, Cardinality cardinality) throws NullPointerException {
     this(name, cardinality, null);
   }
 
-  public ControllerParameter(String name, Cardinality cardinality, String value) throws NullPointerException {
+  public ParameterDescriptor(String name, Cardinality cardinality, String value) throws NullPointerException {
     this(name, cardinality, value, null);
   }
 
-  public ControllerParameter(String name, Cardinality cardinality, String value, Class<?> type) throws NullPointerException {
+  public ParameterDescriptor(String name, Cardinality cardinality, String value, Class<?> type) throws NullPointerException {
     if (name == null) {
       throw new NullPointerException("No null parameter name accepted");
     }
@@ -104,8 +104,8 @@ public class ControllerParameter {
     if (obj == this) {
       return true;
     }
-    else if (obj instanceof ControllerParameter) {
-      ControllerParameter that = (ControllerParameter)obj;
+    else if (obj instanceof ParameterDescriptor) {
+      ParameterDescriptor that = (ParameterDescriptor)obj;
       return name.equals(that.name) && Tools.safeEquals(value, that.value);
     }
     else {
@@ -115,6 +115,6 @@ public class ControllerParameter {
 
   @Override
   public String toString() {
-    return "ControllerParameter[name=" + name + ",value=" + value + "]";
+    return getClass().getSimpleName() + "[name=" + name + ",value=" + value + "]";
   }
 }

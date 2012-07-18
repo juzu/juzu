@@ -19,7 +19,7 @@
 
 package juzu.impl.application;
 
-import juzu.impl.controller.descriptor.ControllerDescriptor;
+import juzu.impl.controller.descriptor.ControllersDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
@@ -51,7 +51,7 @@ public class ApplicationDescriptor extends Descriptor {
   private final Class<?> packageClass;
 
   /** . */
-  private final ControllerDescriptor controller;
+  private final ControllersDescriptor controllers;
 
   /** . */
   private final TemplatesDescriptor templates;
@@ -128,7 +128,7 @@ public class ApplicationDescriptor extends Descriptor {
     this.packageName = applicationClass.getPackage().getName();
     this.templates = (TemplatesDescriptor)pluginDescriptors.get("template");
     this.packageClass = packageClass;
-    this.controller = (ControllerDescriptor)pluginDescriptors.get("controller");
+    this.controllers = (ControllersDescriptor)pluginDescriptors.get("controller");
     this.plugins = pluginDescriptors;
     this.foo = pluginMap;
   }
@@ -174,8 +174,8 @@ public class ApplicationDescriptor extends Descriptor {
     return name;
   }
 
-  public ControllerDescriptor getController() {
-    return controller;
+  public ControllersDescriptor getControllers() {
+    return controllers;
   }
 
   public TemplatesDescriptor getTemplates() {

@@ -1,8 +1,8 @@
 package juzu.impl.controller;
 
 import juzu.impl.application.ApplicationDescriptor;
-import juzu.impl.controller.descriptor.ControllerDescriptor;
-import juzu.impl.controller.descriptor.ControllerRoute;
+import juzu.impl.controller.descriptor.ControllersDescriptor;
+import juzu.impl.controller.descriptor.RouteDescriptor;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
@@ -24,9 +24,9 @@ public class RouterTestCase extends AbstractInjectTestCase {
     //
     ApplicationDescriptor descriptor = application.getContext().getDescriptor();
 
-    ControllerDescriptor controller = descriptor.getController();
+    ControllersDescriptor controller = descriptor.getControllers();
 
-    List<ControllerRoute> routes = controller.getRoutes();
+    List<RouteDescriptor> routes = controller.getRoutes();
     assertEquals(3, routes.size());
 
 

@@ -3,7 +3,7 @@ package juzu.impl.controller.descriptor;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerRoute {
+public class RouteDescriptor {
 
   /** . */
   private final String id;
@@ -14,7 +14,7 @@ public class ControllerRoute {
   /** . */
   private final String path;
 
-  ControllerRoute(String id, Set<String> names, String path) {
+  RouteDescriptor(String id, Set<String> names, String path) {
     this.id = id;
     this.names = names;
     this.path = path;
@@ -34,6 +34,6 @@ public class ControllerRoute {
 
   @Override
   public String toString() {
-    return "ControllerRoute[path=" + path + ",id=" + id + ",names=" + names + "]";
+    return getClass().getSimpleName() + "[path=" + path + ",id=" + id + ",names=" + names + "]";
   }
 }

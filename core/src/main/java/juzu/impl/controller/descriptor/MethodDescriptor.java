@@ -44,7 +44,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class ControllerMethod {
+public final class MethodDescriptor {
 
   /** . */
   private final String id;
@@ -59,31 +59,31 @@ public final class ControllerMethod {
   private final Method method;
 
   /** . */
-  private final List<ControllerParameter> argumentList;
+  private final List<ParameterDescriptor> argumentList;
 
   /** . */
-  private final Map<String, ControllerParameter> argumentMap;
+  private final Map<String, ParameterDescriptor> argumentMap;
 
   /** . */
   private final boolean requiresPrefix;
 
-  public ControllerMethod(
-    String id,
-    Phase phase,
-    Class<?> type,
-    Method method,
-    List<ControllerParameter> argumentList) {
+  public MethodDescriptor(
+      String id,
+      Phase phase,
+      Class<?> type,
+      Method method,
+      List<ParameterDescriptor> argumentList) {
 
     //
-    LinkedHashMap<String, ControllerParameter> argumentMap = new LinkedHashMap<String, ControllerParameter>();
-    for (ControllerParameter argument : argumentList) {
+    LinkedHashMap<String, ParameterDescriptor> argumentMap = new LinkedHashMap<String, ParameterDescriptor>();
+    for (ParameterDescriptor argument : argumentList) {
       argumentMap.put(argument.getName(), argument);
     }
 
     //
     boolean requiresPrefix = false;
     HashSet<String> set = new HashSet<String>();
-    for (ControllerParameter argument : argumentList) {
+    for (ParameterDescriptor argument : argumentList) {
       if (argument.getType() == String.class) {
         if (!set.add(argument.getName())) {
           requiresPrefix = true;
@@ -144,11 +144,11 @@ public final class ControllerMethod {
     return method.getName();
   }
 
-  public ControllerParameter getArgument(String name) {
+  public ParameterDescriptor getArgument(String name) {
     return argumentMap.get(name);
   }
 
-  public List<ControllerParameter> getArguments() {
+  public List<ParameterDescriptor> getArguments() {
     return argumentList;
   }
 
@@ -160,7 +160,7 @@ public final class ControllerMethod {
     for (int j = 0;j < argumentList.size();j++) {
       Object value = args[j];
       if (value != null) {
-        ControllerParameter parameter = argumentList.get(j);
+        ParameterDescriptor parameter = argumentList.get(j);
         String name = parameter.getName();
         switch (parameter.getCardinality()) {
           case SINGLE: {
@@ -256,7 +256,7 @@ public final class ControllerMethod {
     Class<?>[] paramsType = method.getParameterTypes();
     Object[] args = new Object[argumentList.size()];
     for (int i = 0;i < args.length;i++) {
-      ControllerParameter parameter = argumentList.get(i);
+      ParameterDescriptor parameter = argumentList.get(i);
       Object[] values;
       if (paramsType[i].isAnnotationPresent(Param.class)) {
         // build bean parameter

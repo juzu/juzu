@@ -21,7 +21,7 @@ package juzu.request;
 
 import juzu.Response;
 import juzu.impl.application.ApplicationContext;
-import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.ParameterMap;
@@ -32,7 +32,7 @@ public class ActionContext extends RequestContext {
   /** . */
   private ActionBridge bridge;
 
-  public ActionContext(Request request, ApplicationContext application, ControllerMethod method, ActionBridge bridge) {
+  public ActionContext(Request request, ApplicationContext application, MethodDescriptor method, ActionBridge bridge) {
     super(request, application, method);
 
     //
@@ -49,13 +49,13 @@ public class ActionContext extends RequestContext {
     return Phase.ACTION;
   }
 
-  public Response.Update createResponse(ControllerMethod method) throws IllegalStateException {
+  public Response.Update createResponse(MethodDescriptor method) throws IllegalStateException {
     Response.Update update = new Response.Update();
     update.with(RequestContext.METHOD_ID, method.getId());
     return update;
   }
 
-  public Response.Update createResponse(ControllerMethod method, Object arg) throws IllegalStateException {
+  public Response.Update createResponse(MethodDescriptor method, Object arg) throws IllegalStateException {
     Response.Update response = createResponse(method);
     if (arg != null) {
       // Yeah OK nasty cast, we'll see later
@@ -64,7 +64,7 @@ public class ActionContext extends RequestContext {
     return response;
   }
 
-  public Response.Update createResponse(ControllerMethod method, Object[] args) throws IllegalStateException {
+  public Response.Update createResponse(MethodDescriptor method, Object[] args) throws IllegalStateException {
     Response.Update response = createResponse(method);
     // Yeah OK nasty cast, we'll see later
     method.setArgs(args, (ParameterMap)response.getParameters());

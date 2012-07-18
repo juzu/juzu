@@ -51,7 +51,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
 
   public ControllerMethodMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException {
     try {
-      ControllerMethodMetaModelResolver resolver = new ControllerMethodMetaModelResolver(this);
+      ControllerMetaModelResolver resolver = new ControllerMetaModelResolver(this);
       return resolver.resolve(typeName, methodName, parameterNames);
     }
     catch (AmbiguousResolutionException e) {

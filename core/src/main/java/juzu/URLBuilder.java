@@ -19,7 +19,7 @@
 
 package juzu;
 
-import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;
@@ -67,7 +67,7 @@ public final class URLBuilder {
   private final MimeBridge bridge;
 
   /** . */
-  private final ControllerMethod method;
+  private final MethodDescriptor method;
 
   /** . */
   private ParameterMap parameterMap;
@@ -75,7 +75,7 @@ public final class URLBuilder {
   /** . */
   private PropertyMap properties;
 
-  public URLBuilder(MimeBridge bridge, ControllerMethod method) {
+  public URLBuilder(MimeBridge bridge, MethodDescriptor method) {
     PropertyMap properties = new PropertyMap();
     properties.setValue(RequestContext.METHOD_ID, method.getId());
 

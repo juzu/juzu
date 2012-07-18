@@ -15,9 +15,9 @@ import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.controller.descriptor.ControllerBean;
-import juzu.impl.controller.descriptor.ControllerMethod;
-import juzu.impl.controller.descriptor.ControllerParameter;
+import juzu.impl.controller.descriptor.ControllerDescriptor;
+import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.controller.descriptor.ParameterDescriptor;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
@@ -52,13 +52,13 @@ import java.util.Set;
 public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private static final String CONTROLLER_METHOD = ControllerMethod.class.getSimpleName();
+  private static final String CONTROLLER_METHOD = MethodDescriptor.class.getSimpleName();
 
   /** . */
-  private static final String CONTROLLER_DESCRIPTOR = ControllerBean.class.getSimpleName();
+  private static final String CONTROLLER_DESCRIPTOR = ControllerDescriptor.class.getSimpleName();
 
   /** . */
-  private static final String CONTROLLER_PARAMETER = ControllerParameter.class.getSimpleName();
+  private static final String CONTROLLER_PARAMETER = ParameterDescriptor.class.getSimpleName();
 
   /** . */
   private static final String PHASE = Phase.class.getSimpleName();
@@ -221,8 +221,8 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("package ").append(fqn.getPackageName()).append(";\n");
 
       // Imports
-      writer.append("import ").append(Tools.getImport(ControllerMethod.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(ControllerParameter.class)).append(";\n");
+      writer.append("import ").append(Tools.getImport(MethodDescriptor.class)).append(";\n");
+      writer.append("import ").append(Tools.getImport(ParameterDescriptor.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Tools.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
@@ -231,7 +231,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Response.Update.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(ControllerBean.class)).append(";\n");
+      writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Cardinality.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Request.class)).append(";\n");

@@ -20,7 +20,7 @@
 package juzu.impl.application;
 
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-    assertSame(aClass, desc.getController().getDefault());
+    assertSame(aClass, desc.getControllers().getDefault());
   }
 
   public void _testMethodId() throws Exception {
@@ -50,9 +50,9 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
-    ControllerMethod a = desc.getController().getMethod(aClass, "a");
-    ControllerMethod b = desc.getController().getMethod(aClass, "b");
-    ControllerMethod c = desc.getController().getMethod(aClass, "c");
+    MethodDescriptor a = desc.getControllers().getMethod(aClass, "a");
+    MethodDescriptor b = desc.getControllers().getMethod(aClass, "b");
+    MethodDescriptor c = desc.getControllers().getMethod(aClass, "c");
 
     //
     assertEquals("foo", a.getId());
@@ -60,9 +60,9 @@ public class ApplicationTestCase extends AbstractTestCase {
     assertEquals("juu", c.getId());
 
     //
-    assertSame(a, desc.getController().getMethodById("foo"));
-    assertSame(b, desc.getController().getMethodById("bar"));
-    assertSame(c, desc.getController().getMethodById("juu"));
+    assertSame(a, desc.getControllers().getMethodById("foo"));
+    assertSame(b, desc.getControllers().getMethodById("bar"));
+    assertSame(c, desc.getControllers().getMethodById("juu"));
   }
 
   public void _testDuplicateMethod() throws Exception {

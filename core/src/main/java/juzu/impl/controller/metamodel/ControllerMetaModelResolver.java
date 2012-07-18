@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerMethodMetaModelResolver extends ControllerResolver<ControllerMethodMetaModel> {
+class ControllerMetaModelResolver extends ControllerResolver<ControllerMethodMetaModel> {
 
   /** . */
   private final ControllersMetaModel controllers;
@@ -19,7 +19,7 @@ public class ControllerMethodMetaModelResolver extends ControllerResolver<Contro
   /** . */
   private final int size;
 
-  public ControllerMethodMetaModelResolver(ControllersMetaModel controllers) throws NullPointerException {
+  ControllerMetaModelResolver(ControllersMetaModel controllers) throws NullPointerException {
     int size = 0;
     List<ControllerMethodMetaModel> methods = new ArrayList<ControllerMethodMetaModel>();
     for (ControllerMetaModel controller : controllers.getChildren(ControllerMetaModel.class)) {

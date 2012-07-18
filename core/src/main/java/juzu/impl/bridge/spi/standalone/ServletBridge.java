@@ -25,9 +25,9 @@ import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.QualifiedName;
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.controller.descriptor.ControllerDescriptor;
-import juzu.impl.controller.descriptor.ControllerMethod;
-import juzu.impl.controller.descriptor.ControllerRoute;
+import juzu.impl.controller.descriptor.ControllersDescriptor;
+import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.controller.descriptor.RouteDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
@@ -48,7 +48,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -140,8 +139,8 @@ public class ServletBridge extends HttpServlet {
 
     //
     Router router = new Router();
-    ControllerDescriptor desc = bridge.runtime.getDescriptor().getController();
-    for (ControllerRoute routeDesc : desc.getRoutes()) {
+    ControllersDescriptor desc = bridge.runtime.getDescriptor().getControllers();
+    for (RouteDescriptor routeDesc : desc.getRoutes()) {
       router.append(routeDesc.getPath(), Collections.singletonMap(abc, routeDesc.getId()));
     }
     this.router = router;
@@ -187,7 +186,7 @@ public class ServletBridge extends HttpServlet {
         for (Map.Entry<Param, String> entry : params.entrySet()) {
           if (entry.getKey().getName().equals(abc)) {
             String methodId = entry.getValue();
-            ControllerMethod m = bridge.runtime.getDescriptor().getController().getMethodById(methodId);
+            MethodDescriptor m = bridge.runtime.getDescriptor().getControllers().getMethodById(methodId);
             phase = m.getPhase();
             op = methodId;
             break;

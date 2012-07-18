@@ -20,6 +20,8 @@
 package juzu.impl.controller.descriptor;
 
 import juzu.impl.controller.ControllerResolver;
+import juzu.impl.controller.descriptor.ControllersDescriptor;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.request.Phase;
 
 import java.util.Collection;
@@ -29,46 +31,46 @@ import java.util.Collection;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ControllerMethodResolver extends ControllerResolver<ControllerMethod> {
+class ControllerDescriptorResolver extends ControllerResolver<MethodDescriptor> {
 
   /** . */
-  private final ControllerDescriptor desc;
+  private final ControllersDescriptor desc;
 
   /** . */
-  private final ControllerMethod[] methods;
+  private final MethodDescriptor[] methods;
 
-  public ControllerMethodResolver(ControllerDescriptor desc) throws NullPointerException {
-    this.methods = desc.getMethods().toArray(new ControllerMethod[desc.getMethods().size()]);
+  ControllerDescriptorResolver(ControllersDescriptor desc) throws NullPointerException {
+    this.methods = desc.getMethods().toArray(new MethodDescriptor[desc.getMethods().size()]);
     this.desc = desc;
   }
 
   @Override
-  public ControllerMethod[] getMethods() {
+  public MethodDescriptor[] getMethods() {
     return methods;
   }
 
   @Override
-  public String getId(ControllerMethod method) {
+  public String getId(MethodDescriptor method) {
     return method.getId();
   }
 
   @Override
-  public Phase getPhase(ControllerMethod method) {
+  public Phase getPhase(MethodDescriptor method) {
     return method.getPhase();
   }
 
   @Override
-  public String getName(ControllerMethod method) {
+  public String getName(MethodDescriptor method) {
     return method.getName();
   }
 
   @Override
-  public boolean isDefault(ControllerMethod method) {
+  public boolean isDefault(MethodDescriptor method) {
     return method.getType() == desc.getDefault();
   }
 
   @Override
-  public Collection<String> getParameterNames(ControllerMethod method) {
+  public Collection<String> getParameterNames(MethodDescriptor method) {
     return method.getArgumentNames();
   }
 }

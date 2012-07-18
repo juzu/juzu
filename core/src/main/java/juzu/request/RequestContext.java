@@ -21,7 +21,7 @@ package juzu.request;
 
 import juzu.PropertyType;
 import juzu.impl.application.ApplicationContext;
-import juzu.impl.controller.descriptor.ControllerMethod;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 
@@ -41,12 +41,12 @@ public abstract class RequestContext {
   protected final ApplicationContext application;
 
   /** . */
-  protected final ControllerMethod method;
+  protected final MethodDescriptor method;
 
   /** . */
   protected final Request request;
 
-  public RequestContext(Request request, ApplicationContext application, ControllerMethod method) {
+  public RequestContext(Request request, ApplicationContext application, MethodDescriptor method) {
     this.request = request;
     this.application = application;
     this.method = method;
@@ -56,7 +56,7 @@ public abstract class RequestContext {
     return application;
   }
 
-  public ControllerMethod getMethod() {
+  public MethodDescriptor getMethod() {
     return method;
   }
 
