@@ -37,24 +37,24 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testLanguage1() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/public/{<" + LANG_PATTERN + ">[p]gtn:lang}");
 
     //
-    assertEquals(Collections.singletonMap(Names.GTN_LANG, ""), router.route("/public"));
-    assertEquals(Collections.singletonMap(Names.GTN_LANG, "fr"), router.route("/public/fr"));
-    assertEquals(Collections.singletonMap(Names.GTN_LANG, "fr-FR"), router.route("/public/fr-FR"));
+    router.assertRoute(Collections.singletonMap(Names.GTN_LANG, ""), "/public");
+    router.assertRoute(Collections.singletonMap(Names.GTN_LANG, "fr"), "/public/fr");
+    router.assertRoute(Collections.singletonMap(Names.GTN_LANG, "fr-FR"), "/public/fr-FR");
   }
 
   @Test
   public void testLanguage2() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<" + LANG_PATTERN + ">gtn:lang}/public");
 
     //
-    assertEquals(Collections.singletonMap(Names.GTN_LANG, ""), router.route("/public"));
+    router.assertRoute(Collections.singletonMap(Names.GTN_LANG, ""), "/public");
     assertNull(router.route("/f/public"));
-    assertEquals(Collections.singletonMap(Names.GTN_LANG, "fr"), router.route("/fr/public"));
+    router.assertRoute(Collections.singletonMap(Names.GTN_LANG, "fr"), "/fr/public");
     assertEquals("/public", router.render(Collections.singletonMap(Names.GTN_LANG, "")));
     assertEquals("", router.render(Collections.singletonMap(Names.GTN_LANG, "f")));
     assertEquals("/fr/public", router.render(Collections.singletonMap(Names.GTN_LANG, "fr")));
@@ -63,7 +63,7 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testLanguage3() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/public/{<" + LANG_PATTERN + ">[p]gtn:lang}").append("{gtn:sitename}{<.*>[p]gtn:path}");
 
     Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
@@ -73,19 +73,19 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
     //
 //      assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/public"));
-    assertEquals(expectedParameters, router.route("/public/fr/classic/home"));
+    router.assertRoute(expectedParameters, "/public/fr/classic/home");
 
     expectedParameters.put(Names.GTN_PATH, "");
-    assertEquals(expectedParameters, router.route("/public/fr/classic"));
+    router.assertRoute(expectedParameters, "/public/fr/classic");
 
     expectedParameters.put(Names.GTN_LANG, "");
     expectedParameters.put(Names.GTN_PATH, "/home");
-    assertEquals(expectedParameters, router.route("/public/classic/home"));
+    router.assertRoute(expectedParameters, "/public/classic/home");
   }
 
   @Test
   public void testDuplicateRouteWithDifferentRouteParam() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("?bar={<bar_value>bar}").addParam("foo", "foo_1");
     router.append("/").addParam("foo", "foo_2");
 
@@ -93,7 +93,7 @@ public class PortalTestCase extends AbstractControllerTestCase {
     Map<QualifiedName, String> expected = new HashMap<QualifiedName, String>();
     expected.put(Names.FOO, "foo_1");
     expected.put(Names.BAR, "bar_value");
-    assertEquals(expected, router.route("/", Collections.singletonMap("bar", new String[]{"bar_value"})));
+    router.assertRoute(expected, "/", Collections.singletonMap("bar", "bar_value"));
     URIHelper rc = new URIHelper();
     router.render(expected, rc.writer);
     assertEquals("/", rc.getPath());
@@ -102,7 +102,7 @@ public class PortalTestCase extends AbstractControllerTestCase {
     //
     expected = new HashMap<QualifiedName, String>();
     expected.put(Names.FOO, "foo_2");
-    assertEquals(expected, router.route("/", Collections.singletonMap("bar", new String[]{"flabbergast"})));
+    router.assertRoute(expected, "/", Collections.singletonMap("bar", "flabbergast"));
     rc = new URIHelper();
     router.render(expected, rc.writer);
     assertEquals("/", rc.getPath());
@@ -111,12 +111,12 @@ public class PortalTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testJSMin() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/foo{<-(min)|>[c]gtn:min}.js");
 
     //
-    assertEquals(Collections.singletonMap(Names.GTN_MIN, "min"), router.route("/foo-min.js"));
-    assertEquals(Collections.singletonMap(Names.GTN_MIN, ""), router.route("/foo.js"));
+    router.assertRoute(Collections.singletonMap(Names.GTN_MIN, "min"), "/foo-min.js");
+    router.assertRoute(Collections.singletonMap(Names.GTN_MIN, ""), "/foo.js");
     assertNull(router.route("/foo-max.js"));
 
     //

@@ -25,7 +25,7 @@ import juzu.impl.common.QualifiedName;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-class RouteParam extends Param {
+public class RouteParam extends Param {
 
   /** . */
   final String value;

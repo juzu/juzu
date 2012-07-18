@@ -17,7 +17,7 @@ public class RouteViewTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testRender() throws Exception {
-    assertDeploy("standalone", "route", "view");
+    assertDeploy("standalone", "route", "view", "mapping");
     driver.get(deploymentURL.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     String href = trigger.getAttribute("href");

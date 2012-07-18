@@ -33,6 +33,7 @@ import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
+import juzu.impl.router.Param;
 import juzu.impl.router.Router;
 import juzu.request.Phase;
 
@@ -181,12 +182,17 @@ public class ServletBridge extends HttpServlet {
     //
     String path = req.getRequestURI().substring(req.getContextPath().length());
     if (path != null) {
-      Map<QualifiedName, String> params = router.route(path);
+      Map<Param, String> params = router.route(path);
       if (params != null) {
-        String methodId = params.get(abc);
-        ControllerMethod m = bridge.runtime.getDescriptor().getController().getMethodById(methodId);
-        phase = m.getPhase();
-        op = methodId;
+        for (Map.Entry<Param, String> entry : params.entrySet()) {
+          if (entry.getKey().getName().equals(abc)) {
+            String methodId = entry.getValue();
+            ControllerMethod m = bridge.runtime.getDescriptor().getController().getMethodById(methodId);
+            phase = m.getPhase();
+            op = methodId;
+            break;
+          }
+        }
       }
     }
 

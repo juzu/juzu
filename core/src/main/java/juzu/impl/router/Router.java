@@ -153,12 +153,12 @@ public class Router {
     }
   }
 
-  public Map<QualifiedName, String> route(String path) throws IOException {
+  public Map<Param, String> route(String path) throws IOException {
     return route(path, Collections.<String, String[]>emptyMap());
   }
 
-  public Map<QualifiedName, String> route(String path, Map<String, String[]> queryParams) {
-    Iterator<Map<QualifiedName, String>> matcher = matcher(path, queryParams);
+  public Map<Param, String> route(String path, Map<String, String[]> queryParams) {
+    Iterator<Map<Param, String>> matcher = matcher(path, queryParams);
     if (matcher.hasNext()) {
       return matcher.next();
     }
@@ -167,7 +167,7 @@ public class Router {
     }
   }
 
-  public Iterator<Map<QualifiedName, String>> matcher(String path, Map<String, String[]> queryParams) {
+  public Iterator<Map<Param, String>> matcher(String path, Map<String, String[]> queryParams) {
     return root.route(path, queryParams);
   }
 

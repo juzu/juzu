@@ -19,12 +19,12 @@
 
 package juzu.impl.router;
 
+import juzu.impl.common.Builder;
 import juzu.impl.common.QualifiedName;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -35,26 +35,26 @@ public class MatchTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testRoot() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/");
 
     //
     assertNull(router.route(""));
-    assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/"));
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/");
     assertNull(router.route("/a"));
     assertNull(router.route("a"));
   }
 
   @Test
   public void testA() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/a");
 
     //
-    assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/a"));
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/a");
     assertNull(router.route("a"));
     assertNull(router.route("a/"));
-    assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/a/"));
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/a/");
     assertNull(router.route(""));
     assertNull(router.route("/"));
     assertNull(router.route("/b"));
@@ -64,13 +64,13 @@ public class MatchTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testAB() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/a/b");
 
     //
     assertNull(router.route("a/b"));
-    assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/a/b"));
-    assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/a/b/"));
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/a/b");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/a/b/");
     assertNull(router.route("a/b/"));
     assertNull(router.route(""));
     assertNull(router.route("/"));
@@ -81,29 +81,29 @@ public class MatchTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testParameter() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{p}");
 
     //
-    assertEquals(Collections.singletonMap(Names.P, "a"), router.route("/a"));
+    router.assertRoute(Collections.singletonMap(Names.P, "a"), "/a");
   }
 
   @Test
   public void testParameterPropagationToDescendants() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/a").addParam("p", "a").append("/b");
 
     //
-    assertEquals(Collections.singletonMap(Names.P, "a"), router.route("/a/b"));
+    router.assertRoute(Collections.singletonMap(Names.P, "a"), "/a/b");
   }
 
   @Test
   public void testSimplePattern() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<a>p}");
 
     //
-    assertEquals(Collections.singletonMap(Names.P, "a"), router.route("/a"));
+    router.assertRoute(Collections.singletonMap(Names.P, "a"), "/a");
     assertNull(router.route("a"));
     assertNull(router.route("/ab"));
     assertNull(router.route("ab"));
@@ -111,31 +111,31 @@ public class MatchTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testPrecedence() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/a");
     router.append("/{<a>p}/b");
 
     //
     assertNull(router.route("a"));
-    assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/a"));
-    assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/a/"));
-    assertEquals(Collections.singletonMap(Names.P, "a"), router.route("/a/b"));
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/a");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/a/");
+    router.assertRoute(Collections.singletonMap(Names.P, "a"), "/a/b");
   }
 
   @Test
   public void testTwoRules1() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/a").addParam("b", "b");
     router.append("/a/b");
 
     //
-    assertEquals(Collections.singletonMap(Names.B, "b"), router.route("/a"));
-    assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/a/b"));
+    router.assertRoute(Collections.singletonMap(Names.B, "b"), "/a");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/a/b");
   }
 
   @Test
   public void testTwoRules2() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{a}").addParam("b", "b");
     router.append("/{a}/b");
 
@@ -143,53 +143,53 @@ public class MatchTestCase extends AbstractControllerTestCase {
     Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
     expectedParameters.put(Names.A, "a");
     expectedParameters.put(Names.B, "b");
-    assertEquals(expectedParameters, router.route("/a"));
-    assertEquals(Collections.singletonMap(Names.A, "a"), router.route("/a/b"));
+    router.assertRoute(expectedParameters, "/a");
+    router.assertRoute(Collections.singletonMap(Names.A, "a"), "/a/b");
   }
 
   @Test
   public void testLang() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<(([A-Za-z]{2})/)?>[p]a}b");
 
     //
-    assertEquals(Collections.singletonMap(Names.A, "fr/"), router.route("/fr/b"));
-    assertEquals(Collections.singletonMap(Names.A, ""), router.route("/b"));
+    router.assertRoute(Collections.singletonMap(Names.A, "fr/"), "/fr/b");
+    router.assertRoute(Collections.singletonMap(Names.A, ""), "/b");
   }
 
   @Test
   public void testOptionalParameter() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<a?>[p]a}/b").addParam("b", "b");
 
     //
     Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
     expectedParameters.put(Names.A, "a");
     expectedParameters.put(Names.B, "b");
-    assertEquals(expectedParameters, router.route("/a/b"));
+    router.assertRoute(expectedParameters, "/a/b");
     assertEquals("/a/b", router.render(expectedParameters));
 
     //
     expectedParameters.put(Names.A, "");
-    assertEquals(expectedParameters, router.route("/b"));
+    router.assertRoute(expectedParameters, "/b");
     assertEquals("/b", router.render(expectedParameters));
   }
 
   @Test
   public void testAvoidMatchingPrefix() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<a?>[p]a}/ab/c");
 
     //
     Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
     expectedParameters.put(Names.A, "");
-    assertEquals(expectedParameters, router.route("/ab/c"));
+    router.assertRoute(expectedParameters, "/ab/c");
     assertEquals("/ab/c", router.render(expectedParameters));
   }
 
   @Test
   public void testPartialMatching() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<abc>[p]a}");
 
     //
@@ -223,39 +223,35 @@ public class MatchTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testZeroOrOneFollowedBySubRoute() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<a?>[p]a}").append("/b").addParam("b", "b");
 
     //
     Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
     expectedParameters.put(Names.A, "a");
     expectedParameters.put(Names.B, "b");
-    assertEquals(expectedParameters, router.route("/a/b"));
+    router.assertRoute(expectedParameters, "/a/b");
     assertEquals("/a/b", router.render(expectedParameters));
 
     //
     expectedParameters.put(Names.A, "");
-    assertEquals(expectedParameters, router.route("/b"));
+    router.assertRoute(expectedParameters, "/b");
     assertEquals("/b", router.render(expectedParameters));
   }
 
   @Test
   public void testMatcher() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{a}");
     router.append("/a").addParam("b", "b_value");
 
-    Iterator<Map<QualifiedName, String>> i = router.root.route("/a", Collections.<String, String[]>emptyMap());
-    Map<QualifiedName, String> s1 = i.next();
-    assertEquals(Collections.singletonMap(Names.A, "a"), s1);
-    Map<QualifiedName, String> s2 = i.next();
-    assertEquals(Collections.singletonMap(Names.B, "b_value"), s2);
-    assertFalse(i.hasNext());
+    //
+    router.assertRoutes(Builder.list(Collections.singletonMap(Names.A, "a")).add(Collections.singletonMap(Names.B, "b_value")).build(), "/a");
   }
 
   @Test
   public void testDisjunction() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<a|b>a}{b}");
 
     //
@@ -264,27 +260,17 @@ public class MatchTestCase extends AbstractControllerTestCase {
     expectedParameters.put(Names.B, "c");
 
     //
-    Iterator<Map<QualifiedName, String>> i = router.root.route("/ac", Collections.<String, String[]>emptyMap());
-    Map<QualifiedName, String> s1 = i.next();
-    assertEquals(expectedParameters, s1);
-    assertFalse(i.hasNext());
-
-    i = router.root.route("/bc", Collections.<String, String[]>emptyMap());
-    s1 = i.next();
+    router.assertRoute(expectedParameters, "/ac");
     expectedParameters.put(Names.A, "b");
-    assertEquals(expectedParameters, s1);
-    assertFalse(i.hasNext());
+    router.assertRoute(expectedParameters, "/bc");
   }
 
   @Test
   public void testCaptureGroup() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<a(.)c>[c]a}");
 
     //
-    Iterator<Map<QualifiedName, String>> i = router.root.route("/abc", Collections.<String, String[]>emptyMap());
-    Map<QualifiedName, String> s1 = i.next();
-    assertEquals(Collections.singletonMap(Names.A, "b"), s1);
-    assertFalse(i.hasNext());
+    router.assertRoute(Collections.singletonMap(Names.A, "b"), "/abc");
   }
 }

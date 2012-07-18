@@ -33,7 +33,7 @@ public class HierarchyTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testFoo() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/a").addParam("foo", "bar").append("/b").addParam("juu", "daa");
 
     //
@@ -44,6 +44,6 @@ public class HierarchyTestCase extends AbstractControllerTestCase {
     Map<QualifiedName, String> expected = new HashMap<QualifiedName, String>();
     expected.put(Names.FOO, "bar");
     expected.put(Names.JUU, "daa");
-    assertEquals(expected, router.route("/a/b"));
+    router.assertRoute(expected, "/a/b");
   }
 }

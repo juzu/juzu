@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package standalone.route.view;
+package standalone.route.view.mapping;
 
 import juzu.Controller;
 import juzu.Response;

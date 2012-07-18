@@ -28,22 +28,22 @@ public class RoutePriorityTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testExactMatchingAfterWildcard() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{foo}");
     router.append("/foo").addParam("foo", "b");
 
-    assertEquals(Collections.singletonMap(Names.FOO, "foo"), router.route("/foo"));
+    router.assertRoute(Collections.singletonMap(Names.FOO, "foo"), "/foo");
     assertEquals("/foo", router.render(Collections.singletonMap(Names.FOO, "foo")));
     assertEquals("/b", router.render(Collections.singletonMap(Names.FOO, "b")));
   }
 
   @Test
   public void testExactMatchingBeforeWildcard() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/foo").addParam("foo", "b");
     router.append("/{foo}");
 
-    assertEquals(Collections.singletonMap(Names.FOO, "b"), router.route("/foo"));
+    router.assertRoute(Collections.singletonMap(Names.FOO, "b"), "/foo");
     assertEquals("/foo", router.render(Collections.singletonMap(Names.FOO, "b")));
     assertEquals("/foo", router.render(Collections.singletonMap(Names.FOO, "foo")));
   }

@@ -90,7 +90,7 @@ class Route {
     for (RequestParam requestParam : requestParamArray) {
       writer.writeStartElement("request-param");
       writer.writeAttribute("qname", requestParam.name.getValue());
-      writer.writeAttribute("name", requestParam.matchName);
+      writer.writeAttribute("name", requestParam.matchedName);
       if (requestParam.matchPattern != null) {
         writer.writeAttribute("value", requestParam.matchPattern.re.getPattern());
       }
@@ -311,7 +311,7 @@ class Route {
       for (RequestParam requestParamDef : route.requestParamArray) {
         String s = matches.get(requestParamDef.name);
         if (s != null) {
-          writer.appendQueryParameter(requestParamDef.matchName, s);
+          writer.appendQueryParameter(requestParamDef.matchedName, s);
         }
       }
     }
@@ -446,7 +446,7 @@ class Route {
     private Status status;
 
     /** The matches. */
-    private Map<QualifiedName, String> matches;
+    private Map<Param, String> matches;
 
     /** The index when iterating child in {@link juzu.impl.router.Route.RouteFrame.Status#PROCESS_CHILDREN} status. */
     private int childIndex;
@@ -463,27 +463,27 @@ class Route {
       this(null, route, path);
     }
 
-    Map<QualifiedName, String> getParameters() {
-      Map<QualifiedName, String> parameters = null;
+    Map<Param, String> getParameters() {
+      Map<Param, String> parameters = null;
       for (RouteFrame frame = this;frame != null;frame = frame.parent) {
         if (frame.matches != null) {
           if (parameters == null) {
-            parameters = new HashMap<QualifiedName, String>();
+            parameters = new HashMap<Param, String>();
           }
           parameters.putAll(frame.matches);
         }
         for (RouteParam param : frame.route.routeParamArray) {
           if (parameters == null) {
-            parameters = new HashMap<QualifiedName, String>();
+            parameters = new HashMap<Param, String>();
           }
-          parameters.put(param.name, param.value);
+          parameters.put(param, param.value);
         }
       }
-      return parameters != null ? parameters : Collections.<QualifiedName, String>emptyMap();
+      return parameters != null ? parameters : Collections.<Param, String>emptyMap();
     }
   }
 
-  static class RouteMatcher implements Iterator<Map<QualifiedName, String>> {
+  static class RouteMatcher implements Iterator<Map<Param, String>> {
 
     /** . */
     private final Map<String, String[]> requestParams;
@@ -511,11 +511,11 @@ class Route {
       return next != null;
     }
 
-    public Map<QualifiedName, String> next() {
+    public Map<Param, String> next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
-      Map<QualifiedName, String> parameters = next.getParameters();
+      Map<Param, String> parameters = next.getParameters();
       next = null;
       return parameters;
     }
@@ -549,7 +549,7 @@ class Route {
         // We enter a frame
         for (RequestParam requestParamDef : current.route.requestParamArray) {
           String value = null;
-          String[] values = requestParams.get(requestParamDef.matchName);
+          String[] values = requestParams.get(requestParamDef.matchedName);
           if (values != null && values.length > 0 && values[0] != null) {
             value = values[0];
           }
@@ -564,9 +564,9 @@ class Route {
           }
           if (value != null) {
             if (current.matches == null) {
-              current.matches = new HashMap<QualifiedName, String>();
+              current.matches = new HashMap<Param, String>();
             }
-            current.matches.put(requestParamDef.name, value);
+            current.matches.put(requestParamDef, value);
           }
         }
 
@@ -695,9 +695,9 @@ class Route {
                       value = match.getValue();
                     }
                     if (next.matches == null) {
-                      next.matches = new HashMap<QualifiedName, String>();
+                      next.matches = new HashMap<Param, String>();
                     }
-                    next.matches.put(param.name, value);
+                    next.matches.put(param, value);
                     break;
                   }
                   else {
@@ -866,7 +866,7 @@ class Route {
     if (requestParamArray.length == 0) {
       requestParamMap = new HashMap<String, RequestParam>();
     }
-    requestParamMap.put(param.matchName, param);
+    requestParamMap.put(param.matchedName, param);
     requestParamArray = Tools.appendTo(requestParamArray, param);
     return this;
   }

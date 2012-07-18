@@ -32,11 +32,11 @@ import java.util.Map;
 public class PortalConfigurationTestCase extends AbstractControllerTestCase {
 
   /** . */
-  private Router router;
+  private RouterAssert router;
 
   @Override
   public void setUp() throws Exception {
-    this.router = new Router();
+    this.router = new RouterAssert();
 
     router.append("/private/{gtn:sitetype}/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:handler", "site");
     router.append("/groups/{gtn:sitetype}/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:handler", "site");
@@ -52,7 +52,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
     expectedParameters.put(Names.GTN_PATH, "/");
 
     //
-    assertEquals(expectedParameters, router.route("/private/portal/classic/"));
+    router.assertRoute(expectedParameters, "/private/portal/classic/");
     assertEquals("/private/portal/classic/", router.render(expectedParameters));
   }
 
@@ -65,7 +65,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
     expectedParameters.put(Names.GTN_PATH, "");
 
     //
-    assertEquals(expectedParameters, router.route("/private/portal/classic"));
+    router.assertRoute(expectedParameters, "/private/portal/classic");
     assertEquals("/private/portal/classic", router.render(expectedParameters));
   }
 
@@ -78,7 +78,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
     expectedParameters.put(Names.GTN_PATH, "/");
 
     //
-    assertEquals(expectedParameters, router.route("/private/portal/classic/"));
+    router.assertRoute(expectedParameters, "/private/portal/classic/");
     assertEquals("/private/portal/classic/", router.render(expectedParameters));
   }
 
@@ -91,7 +91,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
     expectedParameters.put(Names.GTN_PATH, "/home");
 
     //
-    assertEquals(expectedParameters, router.route("/private/portal/classic/home"));
+    router.assertRoute(expectedParameters, "/private/portal/classic/home");
     assertEquals("/private/portal/classic/home", router.render(expectedParameters));
   }
 
@@ -104,7 +104,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
     expectedParameters.put(Names.GTN_PATH, "/administration/registry");
 
     //
-    assertEquals(expectedParameters, router.route("/private/group/platform/administration/registry"));
+    router.assertRoute(expectedParameters, "/private/group/platform/administration/registry");
     assertEquals("/private/group/platform/administration/registry", router.render(expectedParameters));
 
     Map<QualifiedName, String> expectedParameters1 = new HashMap<QualifiedName, String>();
@@ -114,7 +114,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
     expectedParameters1.put(Names.GTN_PATH, "/tab_0");
 
     //
-    assertEquals(expectedParameters1, router.route("/private/user/root/tab_0"));
+    router.assertRoute(expectedParameters1, "/private/user/root/tab_0");
     assertEquals("/private/user/root/tab_0", router.render(expectedParameters1));
   }
 }

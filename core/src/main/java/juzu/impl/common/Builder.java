@@ -19,6 +19,7 @@
 
 package juzu.impl.common;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -44,6 +45,29 @@ public class Builder {
 
     public java.util.Map<K, V> build() {
       return map;
+    }
+  }
+
+  public static <E> List<E> list(E elt) {
+    return new List<E>().add(elt);
+  }
+
+  public static class List<E> {
+
+    /** . */
+    private ArrayList<E> list;
+
+    private List() {
+      this.list = new ArrayList<E>();
+    }
+
+    public List<E> add(E elt) {
+      list.add(elt);
+      return this;
+    }
+
+    public java.util.List<E> build() {
+      return list;
     }
   }
 }

@@ -22,7 +22,7 @@ package juzu.impl.router;
 import juzu.impl.common.QualifiedName;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class Param {
+public class Param {
 
   /** . */
   final QualifiedName name;
@@ -34,6 +34,10 @@ class Param {
 
     //
     this.name = name;
+  }
+
+  public QualifiedName getName() {
+    return name;
   }
 
   abstract static class AbstractBuilder {

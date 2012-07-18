@@ -25,13 +25,10 @@ import juzu.impl.common.QualifiedName;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-class RequestParam extends Param {
+public class RequestParam extends Param {
 
   /** . */
-  final QualifiedName name;
-
-  /** . */
-  final String matchName;
+  final String matchedName;
 
   /** . */
   final RERef matchPattern;
@@ -39,19 +36,22 @@ class RequestParam extends Param {
   /** . */
   final boolean required;
 
-  RequestParam(QualifiedName name, String matchName, RERef matchPattern, boolean required) {
+  RequestParam(QualifiedName name, String matchedName, RERef matchPattern, boolean required) {
     super(name);
 
     //
-    if (matchName == null) {
+    if (matchedName == null) {
       throw new NullPointerException("No null match name accepted");
     }
 
     //
-    this.name = name;
-    this.matchName = matchName;
+    this.matchedName = matchedName;
     this.matchPattern = matchPattern;
     this.required = required;
+  }
+
+  public String getMatchedName() {
+    return matchedName;
   }
 
   boolean matchValue(String value) {

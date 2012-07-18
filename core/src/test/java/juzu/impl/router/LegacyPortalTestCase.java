@@ -33,11 +33,11 @@ import java.util.Map;
 public class LegacyPortalTestCase extends AbstractTestCase {
 
   /** . */
-  private Router router;
+  private RouterAssert router;
 
   @Override
   public void setUp() throws Exception {
-    router = new Router();
+    router = new RouterAssert();
     Route portal = router.append("/").addParam("gtn:handler", "portal");
     portal.append("/public/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:access", "public");
     portal.append("/private/{gtn:sitename}{<.*>[p]gtn:path}").addParam("gtn:access", "private");
@@ -52,7 +52,7 @@ public class LegacyPortalTestCase extends AbstractTestCase {
     expectedParameters.put(Names.GTN_PATH, "");
 
     //
-    assertEquals(expectedParameters, router.route("/private/classic"));
+    router.assertRoute(expectedParameters, "/private/classic");
     assertEquals("/private/classic", router.render(expectedParameters));
   }
 
@@ -65,7 +65,7 @@ public class LegacyPortalTestCase extends AbstractTestCase {
     expectedParameters.put(Names.GTN_PATH, "");
 
     //
-    assertEquals(expectedParameters, router.route("/private/classic"));
+    router.assertRoute(expectedParameters, "/private/classic");
     assertEquals("/private/classic", router.render(expectedParameters));
   }
 
@@ -78,7 +78,7 @@ public class LegacyPortalTestCase extends AbstractTestCase {
     expectedParameters.put(Names.GTN_PATH, "/");
 
     //
-    assertEquals(expectedParameters, router.route("/private/classic/"));
+    router.assertRoute(expectedParameters, "/private/classic/");
     assertEquals("/private/classic/", router.render(expectedParameters));
   }
 
@@ -91,7 +91,7 @@ public class LegacyPortalTestCase extends AbstractTestCase {
     expectedParameters.put(Names.GTN_PATH, "/");
 
     //
-    assertEquals(expectedParameters, router.route("/private/classic/"));
+    router.assertRoute(expectedParameters, "/private/classic/");
     assertEquals("/private/classic/", router.render(expectedParameters));
   }
 
@@ -104,7 +104,7 @@ public class LegacyPortalTestCase extends AbstractTestCase {
     expectedParameters.put(Names.GTN_PATH, "/home");
 
     //
-    assertEquals(expectedParameters, router.route("/private/classic/home"));
+    router.assertRoute(expectedParameters, "/private/classic/home");
     assertEquals("/private/classic/home", router.render(expectedParameters));
   }
 
@@ -117,7 +117,7 @@ public class LegacyPortalTestCase extends AbstractTestCase {
     expectedParameters.put(Names.GTN_PATH, "/home");
 
     //
-    assertEquals(expectedParameters, router.route("/private/classic/home"));
+    router.assertRoute(expectedParameters, "/private/classic/home");
     assertEquals("/private/classic/home", router.render(expectedParameters));
   }
 }

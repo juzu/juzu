@@ -49,15 +49,15 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testParamDefaultForm() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<.+>p}");
 
     // Route
-    assertEquals(Collections.singletonMap(Names.P, "/"), router.route("/_"));
-    assertEquals(Collections.singletonMap(Names.P, "_"), router.route("/%5F"));
-    assertEquals(Collections.singletonMap(Names.P, "_/"), router.route("/%5F_"));
-    assertEquals(Collections.singletonMap(Names.P, "/_"), router.route("/_%5F"));
-    assertEquals(Collections.singletonMap(Names.P, "?"), router.route("/%3F"));
+    router.assertRoute(Collections.singletonMap(Names.P, "/"), "/_");
+    router.assertRoute(Collections.singletonMap(Names.P, "_"), "/%5F");
+    router.assertRoute(Collections.singletonMap(Names.P, "_/"), "/%5F_");
+    router.assertRoute(Collections.singletonMap(Names.P, "/_"), "/_%5F");
+    router.assertRoute(Collections.singletonMap(Names.P, "?"), "/%3F");
 
     // Render
     assertEquals("/_", router.render(Collections.singletonMap(Names.P, "/")));
@@ -69,13 +69,13 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testAlternativeSepartorEscape() throws Exception {
-    Router router = new Router(':');
+    RouterAssert router = new RouterAssert(':');
     router.append("/{<.+>p}");
 
     // Route
-    assertEquals(Collections.singletonMap(Names.P, "/"), router.route("/:"));
-    assertEquals(Collections.singletonMap(Names.P, "_"), router.route("/_"));
-    assertEquals(Collections.singletonMap(Names.P, ":"), router.route("/%3A"));
+    router.assertRoute(Collections.singletonMap(Names.P, "/"), "/:");
+    router.assertRoute(Collections.singletonMap(Names.P, "_"), "/_");
+    router.assertRoute(Collections.singletonMap(Names.P, ":"), "/%3A");
 
     // Render
     assertEquals("/:", router.render(Collections.singletonMap(Names.P, "/")));
@@ -101,11 +101,11 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testParamPreservePath() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<[^/]+>[p]p}");
 
     // Route
-    assertEquals(Collections.singletonMap(Names.P, "_"), router.route("/_"));
+    router.assertRoute(Collections.singletonMap(Names.P, "_"), "/_");
     assertNull(router.route("//"));
 
     // Render
@@ -114,14 +114,14 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testD() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{</[a-z]+/[a-z]+/?>p}");
 
     // Route
-    assertEquals(Collections.singletonMap(Names.P, "/platform/administrator"), router.route("/_platform_administrator"));
-    assertEquals(Collections.singletonMap(Names.P, "/platform/administrator"), router.route("/_platform_administrator/"));
-    assertEquals(Collections.singletonMap(Names.P, "/platform/administrator/"), router.route("/_platform_administrator_"));
-    assertEquals(Collections.singletonMap(Names.P, "/platform/administrator/"), router.route("/_platform_administrator_/"));
+    router.assertRoute(Collections.singletonMap(Names.P, "/platform/administrator"), "/_platform_administrator");
+    router.assertRoute(Collections.singletonMap(Names.P, "/platform/administrator"), "/_platform_administrator/");
+    router.assertRoute(Collections.singletonMap(Names.P, "/platform/administrator/"), "/_platform_administrator_");
+    router.assertRoute(Collections.singletonMap(Names.P, "/platform/administrator/"), "/_platform_administrator_/");
 
     // Render
     assertEquals("/_platform_administrator", router.render(Collections.singletonMap(Names.P, "/platform/administrator")));
@@ -131,7 +131,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testWildcardPathParamWithPreservePath() throws Exception {
-    Router router = new Router();
+    RouterAssert router = new RouterAssert();
     router.append("/{<.*>[p]p}");
 
     // Render
@@ -141,10 +141,10 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
     assertEquals("/a/b", router.render(Collections.singletonMap(Names.P, "a/b")));
 
     // Route
-    assertEquals(Collections.singletonMap(Names.P, ""), router.route("/"));
-    assertEquals(Collections.singletonMap(Names.P, "/"), router.route("//"));
-    assertEquals(Collections.singletonMap(Names.P, "a"), router.route("/a"));
-    assertEquals(Collections.singletonMap(Names.P, "a/b"), router.route("/a/b"));
+    router.assertRoute(Collections.singletonMap(Names.P, ""), "/");
+    router.assertRoute(Collections.singletonMap(Names.P, "/"), "//");
+    router.assertRoute(Collections.singletonMap(Names.P, "a"), "/a");
+    router.assertRoute(Collections.singletonMap(Names.P, "a/b"), "/a/b");
   }
 
   @Test
