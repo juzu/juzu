@@ -20,7 +20,6 @@
 package juzu.test.protocol.http;
 
 import juzu.impl.application.ApplicationRuntime;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -28,7 +27,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.net.URL;
-import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
@@ -58,13 +56,13 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
   }
 
   @Override
-  public MockApplication<?> assertDeploy(String... packageName) {
-    try {
-      return application = application(InjectImplementation.CDI_WELD, packageName);
-    }
-    catch (Exception e) {
-      throw failure("Could not deploy application " + Arrays.asList(packageName), e);
-    }
+  protected void doDeploy(MockApplication<?> application) {
+    this.application = application;
+  }
+
+  @Override
+  protected void doUndeploy(MockApplication<?> application) {
+    this.application = null;
   }
 
   @Deployment(testable = false)

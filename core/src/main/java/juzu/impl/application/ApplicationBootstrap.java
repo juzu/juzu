@@ -38,7 +38,7 @@ import java.lang.reflect.Method;
 public class ApplicationBootstrap {
 
   /** . */
-  public final InjectBuilder bootstrap;
+  public final InjectBuilder injectBuilder;
 
   /** . */
   public final ApplicationDescriptor descriptor;
@@ -46,8 +46,11 @@ public class ApplicationBootstrap {
   /** . */
   private BeanLifeCycle<ApplicationContext> contextLifeCycle;
 
-  public ApplicationBootstrap(InjectBuilder bootstrap, ApplicationDescriptor descriptor) {
-    this.bootstrap = bootstrap;
+  /** . */
+  private InjectionContext<?, ?> injectionContext;
+
+  public ApplicationBootstrap(InjectBuilder injectBuilder, ApplicationDescriptor descriptor) {
+    this.injectBuilder = injectBuilder;
     this.descriptor = descriptor;
   }
 
@@ -57,13 +60,13 @@ public class ApplicationBootstrap {
 
   private <B, I> void _start() throws ApplicationException {
     // Bind the application descriptor
-    bootstrap.bindBean(ApplicationDescriptor.class, null, descriptor);
+    injectBuilder.bindBean(ApplicationDescriptor.class, null, descriptor);
 
     // Bind the application context
-    bootstrap.declareBean(ApplicationContext.class, null, null, null);
+    injectBuilder.declareBean(ApplicationContext.class, null, null, null);
 
     //
-    bootstrap.setFilter(new BeanFilter() {
+    injectBuilder.setFilter(new BeanFilter() {
       public <T> boolean acceptBean(Class<T> beanType) {
         if (beanType.getName().startsWith("juzu.") || beanType.getAnnotation(Export.class) != null) {
           return false;
@@ -83,32 +86,32 @@ public class ApplicationBootstrap {
 
     // Bind the scopes
     for (Scope scope : Scope.values()) {
-      bootstrap.addScope(scope);
+      injectBuilder.addScope(scope);
     }
 
     // Bind the plugins
     for (Plugin plugin : descriptor.getFoo().values()) {
       Class aClass = plugin.getClass();
       Object o = plugin;
-      bootstrap.bindBean(aClass, null, o);
+      injectBuilder.bindBean(aClass, null, o);
     }
 
     // Bind the beans
     for (BeanDescriptor bean : descriptor.getBeans()) {
-      bean.install(bootstrap);
+      bean.install(injectBuilder);
     }
 
     //
-    InjectionContext<B, I> manager;
+    InjectionContext<B, I> injectionContext;
     try {
-      manager = bootstrap.create();
+      injectionContext = injectBuilder.create();
     }
     catch (Exception e) {
       throw new UnsupportedOperationException("handle me gracefully", e);
     }
 
     // Let the container create the application context bean
-    BeanLifeCycle<ApplicationContext> contextLifeCycle = manager.get(ApplicationContext.class);
+    BeanLifeCycle<ApplicationContext> contextLifeCycle = injectionContext.get(ApplicationContext.class);
     try {
       contextLifeCycle.get();
     }
@@ -118,6 +121,7 @@ public class ApplicationBootstrap {
 
     //
     this.contextLifeCycle = contextLifeCycle;
+    this.injectionContext = injectionContext;
   }
 
   public ApplicationContext getContext() {
@@ -125,7 +129,11 @@ public class ApplicationBootstrap {
   }
 
   public void stop() {
-    contextLifeCycle.release();
-    // container.stop();
+    if (contextLifeCycle != null) {
+      contextLifeCycle.release();
+    }
+    if (injectionContext != null) {
+      injectionContext.shutdown();
+    }
   }
 }

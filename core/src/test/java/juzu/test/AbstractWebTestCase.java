@@ -22,6 +22,7 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.protocol.mock.MockApplication;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
@@ -37,7 +39,40 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   @ArquillianResource
   protected URL deploymentURL;
 
-  public abstract MockApplication<?> assertDeploy(String... packageName);
+  /** The currently deployed application. */
+  private MockApplication<?> application;
+
+  public final MockApplication<?> assertDeploy(String... packageName) {
+    try {
+      application = application(InjectImplementation.CDI_WELD, packageName);
+      doDeploy(application);
+      return application;
+    }
+    catch (Exception e) {
+      throw failure("Could not deploy application " + Arrays.asList(packageName), e);
+    }
+  }
+
+  @Override
+  public void tearDown() {
+    super.tearDown();
+    if (application != null) {
+      assertUndeploy();
+    }
+  }
+
+  public void assertUndeploy() {
+    if (application == null) {
+      throw failure("No application to undeploy");
+    }
+    MockApplication<?> app = application;
+    application = null;
+    doUndeploy(app);
+    app.getRuntime().shutdown();
+  }
+  protected abstract void doDeploy(MockApplication<?> application);
+
+  protected abstract void doUndeploy(MockApplication<?> application);
 
   public void assertInternalError() {
     WebClient client = new WebClient();

@@ -20,7 +20,6 @@
 package juzu.test.protocol.standalone;
 
 import juzu.impl.application.ApplicationRuntime;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -28,7 +27,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.net.URL;
-import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
@@ -48,18 +46,12 @@ public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
       setWebXML(descriptor);
   }
 
-  /** The currently deployed application. */
-  private MockApplication<?> application;
+  @Override
+  protected void doDeploy(MockApplication<?> application) {
+    ApplicationRuntime.Provided.set(application.getRuntime());
+  }
 
   @Override
-  public MockApplication<?> assertDeploy(String... packageName) {
-    try {
-      application = application(InjectImplementation.CDI_WELD, packageName);
-      ApplicationRuntime.Provided.set(application.getRuntime());
-      return application;
-    }
-    catch (Exception e) {
-      throw failure("Could not deploy application " + Arrays.asList(packageName), e);
-    }
+  protected void doUndeploy(MockApplication<?> application) {
   }
 }

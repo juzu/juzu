@@ -93,6 +93,9 @@ public abstract class ApplicationRuntime<P, R> {
   /** . */
   protected ApplicationDescriptor descriptor;
 
+  /** . */
+  protected ApplicationBootstrap bootstrap;
+
   ApplicationRuntime(Logger logger) {
     this.logger = logger;
   }
@@ -439,8 +442,12 @@ public abstract class ApplicationRuntime<P, R> {
     this.scriptManager = scriptManager;
     this.stylesheetManager = stylesheetManager;
     this.descriptor = descriptor;
+    this.bootstrap = bootstrap;
   }
 
   public void shutdown() {
+    if (bootstrap != null) {
+      bootstrap.stop();
+    }
   }
 }
