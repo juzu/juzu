@@ -11,6 +11,7 @@ import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ElementHandle;
@@ -153,20 +154,16 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     ArrayList<JSON> routes = new ArrayList<JSON>();
     for (ControllerMetaModel controller : ac) {
       controllers.add(controller.getHandle().getFQN().getName() + "_");
-      for (ControllerMethodMetaModel method : controller.getMethods()) {
+      for (MethodMetaModel method : controller.getMethods()) {
         if (method.route != null) {
-          String id = method.declaredId;
-          if (id == null) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(controller.getHandle().getFQN().getSimpleName());
-            sb.append(".");
-            sb.append(method.getName());
-            id = sb.toString();
-          }
+          MethodHandle target = new MethodHandle(
+              method.handle.getFQN().getName(),
+              method.handle.getName(),
+              method.handle.getParameterTypes().toArray(new String[method.handle.getParameterTypes().size()])
+          );
           routes.add(new JSON().
               set("path", method.route).
-              set("id", id).
-              set("parameters", method.getParameters())
+              set("target", target.toString())
           );
         }
       }
@@ -187,7 +184,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void postProcessEvents(ApplicationMetaModel application) {
     // Check everything is OK here
     for (ControllerMetaModel controller : application.getChild(ControllersMetaModel.KEY)) {
-      for (ControllerMethodMetaModel method : controller.getMethods()) {
+      for (MethodMetaModel method : controller.getMethods()) {
         ExecutableElement executableElt = application.model.env.get(method.handle);
         Iterator<? extends VariableElement> i = executableElt.getParameters().iterator();
         for (ParameterMetaModel parameter : method.parameters) {
@@ -211,7 +208,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   private void emitController(ProcessingContext env, ControllerMetaModel controller) throws CompilationException {
     FQN fqn = controller.getHandle().getFQN();
     Element origin = env.get(controller.getHandle());
-    Collection<ControllerMethodMetaModel> methods = controller.getMethods();
+    Collection<MethodMetaModel> methods = controller.getMethods();
     Writer writer = null;
     try {
       JavaFileObject file = env.createSourceFile(fqn.getName() + "_", origin);
@@ -242,7 +239,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       //
       int index = 0;
-      for (ControllerMethodMetaModel method : methods) {
+      for (MethodMetaModel method : methods) {
         String methodRef = "method_" + index++;
 
         // Method constant

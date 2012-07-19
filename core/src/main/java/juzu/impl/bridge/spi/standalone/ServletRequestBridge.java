@@ -240,7 +240,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
-    RenderContext ctx = new RenderContext(Collections.singletonMap(ServletBridge.abc, method.getId()));
+    RenderContext ctx = new RenderContext(Collections.singletonMap(ServletBridge.TARGET, method.getHandle().toString()));
     String s = servlet.router.render(ctx);
     if (s != null) {
       buffer.append(s);

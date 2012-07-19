@@ -34,7 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerMethodMetaModel extends MetaModelObject {
+public class MethodMetaModel extends MetaModelObject {
 
   /** The controller. */
   ControllerMetaModel controller;
@@ -60,13 +60,13 @@ public class ControllerMethodMetaModel extends MetaModelObject {
   /** . */
   final String id;
 
-  ControllerMethodMetaModel(
-    ElementHandle.Method handle,
-    String declaredId,
-    Phase phase,
-    String name,
-    ArrayList<ParameterMetaModel> parameters,
-    String route) {
+  MethodMetaModel(
+      ElementHandle.Method handle,
+      String declaredId,
+      Phase phase,
+      String name,
+      ArrayList<ParameterMetaModel> parameters,
+      String route) {
 
     String id;
     if (declaredId == null) {

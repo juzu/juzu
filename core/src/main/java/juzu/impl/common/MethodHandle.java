@@ -71,7 +71,7 @@ public final class MethodHandle implements Iterable<String> {
     }
 
     //
-    this.type = method.getClass().getName();
+    this.type = method.getDeclaringClass().getName();
     this.name = method.getName();
     this.parameters = parameters.clone();
     this.toString = null;

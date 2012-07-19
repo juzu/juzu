@@ -49,7 +49,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
     removeChild(Key.of(controller.handle, ControllerMetaModel.class));
   }
 
-  public ControllerMethodMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException {
+  public MethodMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException {
     try {
       ControllerMetaModelResolver resolver = new ControllerMetaModelResolver(this);
       return resolver.resolve(typeName, methodName, parameterNames);

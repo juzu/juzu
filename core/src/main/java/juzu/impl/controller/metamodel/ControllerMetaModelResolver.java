@@ -8,60 +8,60 @@ import java.util.Collection;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class ControllerMetaModelResolver extends ControllerResolver<ControllerMethodMetaModel> {
+class ControllerMetaModelResolver extends ControllerResolver<MethodMetaModel> {
 
   /** . */
   private final ControllersMetaModel controllers;
 
   /** . */
-  private final ControllerMethodMetaModel[] methods;
+  private final MethodMetaModel[] methods;
 
   /** . */
   private final int size;
 
   ControllerMetaModelResolver(ControllersMetaModel controllers) throws NullPointerException {
     int size = 0;
-    List<ControllerMethodMetaModel> methods = new ArrayList<ControllerMethodMetaModel>();
+    List<MethodMetaModel> methods = new ArrayList<MethodMetaModel>();
     for (ControllerMetaModel controller : controllers.getChildren(ControllerMetaModel.class)) {
       size++;
-      for (ControllerMethodMetaModel method : controller.getMethods()) {
+      for (MethodMetaModel method : controller.getMethods()) {
         methods.add(method);
       }
     }
 
     //
     this.controllers = controllers;
-    this.methods = methods.toArray(new ControllerMethodMetaModel[methods.size()]);
+    this.methods = methods.toArray(new MethodMetaModel[methods.size()]);
     this.size = size;
   }
 
   @Override
-  public ControllerMethodMetaModel[] getMethods() {
+  public MethodMetaModel[] getMethods() {
     return methods;
   }
 
   @Override
-  public String getId(ControllerMethodMetaModel method) {
+  public String getId(MethodMetaModel method) {
     return method.getId();
   }
 
   @Override
-  public Phase getPhase(ControllerMethodMetaModel method) {
+  public Phase getPhase(MethodMetaModel method) {
     return method.getPhase();
   }
 
   @Override
-  public String getName(ControllerMethodMetaModel method) {
+  public String getName(MethodMetaModel method) {
     return method.getName();
   }
 
   @Override
-  public boolean isDefault(ControllerMethodMetaModel method) {
+  public boolean isDefault(MethodMetaModel method) {
     return method.getController().getHandle().getFQN().equals(controllers.defaultController) || size < 2;
   }
 
   @Override
-  public Collection<String> getParameterNames(ControllerMethodMetaModel method) {
+  public Collection<String> getParameterNames(MethodMetaModel method) {
     return method.getParameterNames();
   }
 }

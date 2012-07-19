@@ -23,7 +23,7 @@ import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.controller.metamodel.ControllerMetaModel;
-import juzu.impl.controller.metamodel.ControllerMethodMetaModel;
+import juzu.impl.controller.metamodel.MethodMetaModel;
 import juzu.impl.controller.metamodel.ControllersMetaModel;
 import juzu.impl.controller.metamodel.ParameterMetaModel;
 import juzu.impl.template.spi.TemplateProvider;
@@ -80,7 +80,7 @@ class ModelTemplateProcessContext extends ProcessContext {
 
   @Override
   public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException {
-    ControllerMethodMetaModel method = templateMetaModel.getTemplates().getApplication().getChild(ControllersMetaModel.KEY).resolve(typeName, methodName, parameterMap.keySet());
+    MethodMetaModel method = templateMetaModel.getTemplates().getApplication().getChild(ControllersMetaModel.KEY).resolve(typeName, methodName, parameterMap.keySet());
 
     //
     if (method == null) {

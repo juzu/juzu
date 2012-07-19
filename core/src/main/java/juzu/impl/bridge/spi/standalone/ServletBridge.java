@@ -23,6 +23,7 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.spi.RequestBridge;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QualifiedName;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.controller.descriptor.ControllersDescriptor;
@@ -47,10 +48,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletBridge extends HttpServlet {
+
+  /** . */
+  static final QualifiedName TARGET = QualifiedName.create("jz", "target");
 
   /** . */
   Bridge bridge;
@@ -140,12 +143,10 @@ public class ServletBridge extends HttpServlet {
     Router router = new Router();
     ControllersDescriptor desc = bridge.runtime.getDescriptor().getControllers();
     for (RouteDescriptor routeDesc : desc.getRoutes()) {
-      router.append(routeDesc.getPath(), Collections.singletonMap(abc, routeDesc.getId()));
+      router.append(routeDesc.getPath(), Collections.singletonMap(TARGET, routeDesc.getTarget().toString()));
     }
     this.router = router;
   }
-
-  public static final QualifiedName abc = QualifiedName.create("abc", "def");
 
   /**
    * Returns the application name to use using the <code>juzu.app_name</code> init parameter of the portlet deployment
@@ -161,9 +162,6 @@ public class ServletBridge extends HttpServlet {
   private ServletException wrap(Throwable e) {
     return e instanceof ServletException ? (ServletException)e : new ServletException("Could not find an application to start", e);
   }
-
-  /** . */
-  private static final Pattern PATTERN = Pattern.compile("^" + "(?:/(render|action|resource))?" + "/([^/]+)?" + "$");
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -182,9 +180,9 @@ public class ServletBridge extends HttpServlet {
       Map<Param, String> params = router.route(path);
       if (params != null) {
         for (Map.Entry<Param, String> entry : params.entrySet()) {
-          if (entry.getKey().getName().equals(abc)) {
-            String methodId = entry.getValue();
-            target =  bridge.runtime.getDescriptor().getControllers().getMethodById(methodId);
+          if (entry.getKey().getName().equals(TARGET)) {
+            MethodHandle handle = MethodHandle.parse(entry.getValue());
+            target =  bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
             break;
           }
         }

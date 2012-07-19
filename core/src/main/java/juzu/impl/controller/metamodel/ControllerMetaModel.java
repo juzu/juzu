@@ -80,15 +80,15 @@ public class ControllerMetaModel extends MetaModelObject {
     return handle;
   }
 
-  public Collection<ControllerMethodMetaModel> getMethods() {
-    return getChildren(ControllerMethodMetaModel.class);
+  public Collection<MethodMetaModel> getMethods() {
+    return getChildren(MethodMetaModel.class);
   }
 
   public void remove(ElementHandle.Method handle) {
-    removeChild(Key.of(handle, ControllerMethodMetaModel.class));
+    removeChild(Key.of(handle, MethodMetaModel.class));
   }
 
-  public ControllerMethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters) {
+  public MethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters) {
 /*
       ArrayList<ParameterMetaModel> params = new ArrayList<ParameterMetaModel>();
       ArrayList<String> types = new ArrayList<String>();
@@ -125,7 +125,7 @@ public class ControllerMetaModel extends MetaModelObject {
         ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
 
         // First remove the previous method
-        Key<ControllerMethodMetaModel> key = Key.of(origin, ControllerMethodMetaModel.class);
+        Key<MethodMetaModel> key = Key.of(origin, MethodMetaModel.class);
         if (getChild(key) == null) {
           // Parameters
           ArrayList<ParameterMetaModel> parameters = new ArrayList<ParameterMetaModel>();
@@ -188,7 +188,7 @@ public class ControllerMetaModel extends MetaModelObject {
           String route = (String)annotationValues.get("value");
 
           //
-          ControllerMethodMetaModel method = new ControllerMethodMetaModel(
+          MethodMetaModel method = new MethodMetaModel(
             origin,
             id,
             phase,

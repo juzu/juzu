@@ -75,13 +75,9 @@ public class ControllersDescriptor extends Descriptor {
     List<? extends JSON> abc = config.getList("routes", JSON.class);
     if (abc != null) {
       for (JSON route : abc) {
-        String id = route.getString("id");
-        List<? extends String> parameters = route.getList("parameters", String.class);
+        String target = route.getString("target");
         String path = route.getString("path");
-        RouteDescriptor r = new RouteDescriptor(
-            id,
-            Collections.unmodifiableSet(new HashSet<String>(parameters)),
-            path
+        RouteDescriptor r = new RouteDescriptor(MethodHandle.parse(target), path
         );
         routes.add(r);
       }
