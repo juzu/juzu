@@ -57,16 +57,16 @@ public class MockApplication<P> {
     if (props.names().size() != 1) {
       throw AbstractTestCase.failure("Could not find an application to start " + props);
     }
-    String name = props.names().iterator().next();
+    final String name = props.names().iterator().next();
 
     /** . */
     Logger log = new Logger() {
       public void log(CharSequence msg) {
-        System.out.print(msg);
+        System.out.println("[" + name + "] " + msg);
       }
 
       public void log(CharSequence msg, Throwable t) {
-        System.err.println(msg);
+        System.err.println("[" + name + "] " + msg);
         t.printStackTrace(System.err);
       }
     };
