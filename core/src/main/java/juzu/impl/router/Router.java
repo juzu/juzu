@@ -135,10 +135,22 @@ public class Router {
   }
 
   public void render(RenderContext context, URIWriter writer) throws IOException {
-    if (context.matchers == null) {
+    bilto(context);
+
+    // Ok, so this is not the fastest way to do it, but for now it's OK, it's what is needed, we'll find
+    // a way to optimize it later with some precompilation.
+    RouteMatch r = root.resolve(context);
+
+    // We found a route we need to render it now
+    if (r != null) {
+      r.render(writer);
+    }
+  }
+
+  void bilto(RenderContext context) {
+    if (context.matchers == null || context.matchers.length < regexes.length) {
       context.matchers = new RE.Matcher[regexes.length];
     }
-    root.render(context, writer);
   }
 
   public String render(RenderContext context) {
@@ -153,12 +165,12 @@ public class Router {
     }
   }
 
-  public Map<Param, String> route(String path) throws IOException {
+  public RouteMatch route(String path) throws IOException {
     return route(path, Collections.<String, String[]>emptyMap());
   }
 
-  public Map<Param, String> route(String path, Map<String, String[]> queryParams) {
-    Iterator<Map<Param, String>> matcher = matcher(path, queryParams);
+  public RouteMatch route(String path, Map<String, String[]> queryParams) {
+    Iterator<RouteMatch> matcher = matcher(path, queryParams);
     if (matcher.hasNext()) {
       return matcher.next();
     }
@@ -167,7 +179,7 @@ public class Router {
     }
   }
 
-  public Iterator<Map<Param, String>> matcher(String path, Map<String, String[]> queryParams) {
+  public Iterator<RouteMatch> matcher(String path, Map<String, String[]> queryParams) {
     return root.matcher(path, queryParams);
   }
 

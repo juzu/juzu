@@ -180,159 +180,159 @@ public class Route {
     this.requestParamArray = EMPTY_REQUEST_PARAM_ARRAY;
   }
 
-  final boolean isTerminal() {
-    return terminal;
-  }
-
-  /*
-  * Ok, so this is not the fastest way to do it, but for now it's OK, it's what is needed, we'll find
-  * a way to optimize it later with some precompilation.
-  */
-  final void render(RenderContext context, URIWriter writer) throws IOException {
-    RouteMatch r = find(context);
-
-    // We found a route we need to render it now
-    if (r != null) {
-      r.render(writer);
+  boolean renderPath(RouteMatch match, URIWriter writer, boolean hasChildren) throws IOException {
+    boolean endWithSlash;
+    if (parent != null) {
+      endWithSlash = parent.renderPath(match, writer, true);
     }
-  }
-
-  static class RouteMatch {
-
-    /** The matched route. */
-    final Route route;
-
-    /** The matched parameters. */
-    final Map<QualifiedName, String> matches;
-
-    /** . */
-    final RenderContext context;
-
-    RouteMatch(RenderContext context, Route route, Map<QualifiedName, String> matches) {
-      this.context = context;
-      this.route = route;
-      this.matches = matches;
+    else {
+      endWithSlash = false;
     }
 
-    private void render(URIWriter writer) throws IOException {
-      // Append path first
-      renderPath(route, writer, false);
-
-      // Append query parameters after
-      renderQueryString(route, writer);
-    }
-
-    private boolean renderPath(Route route, URIWriter writer, boolean hasChildren) throws IOException {
-      boolean endWithSlash;
-      if (route.parent != null) {
-        endWithSlash = renderPath(route.parent, writer, true);
+    //
+    if (this instanceof SegmentRoute) {
+      SegmentRoute sr = (SegmentRoute)this;
+      if (!endWithSlash) {
+        writer.append('/');
+        endWithSlash = true;
       }
-      else {
+      String name = sr.encodedName;
+      writer.append(name);
+      if (name.length() > 0) {
         endWithSlash = false;
       }
-
-      //
-      if (route instanceof SegmentRoute) {
-        SegmentRoute sr = (SegmentRoute)route;
-        if (!endWithSlash) {
-          writer.append('/');
-          endWithSlash = true;
-        }
-        String name = sr.encodedName;
-        writer.append(name);
-        if (name.length() > 0) {
-          endWithSlash = false;
-        }
+    }
+    else if (this instanceof PatternRoute) {
+      PatternRoute pr = (PatternRoute)this;
+      if (!endWithSlash) {
+        writer.append('/');
+        endWithSlash = true;
       }
-      else if (route instanceof PatternRoute) {
-        PatternRoute pr = (PatternRoute)route;
-        if (!endWithSlash) {
-          writer.append('/');
-          endWithSlash = true;
-        }
-        int i = 0;
-        int count = 0;
-        while (i < pr.params.length) {
-          writer.append(pr.encodedChunks[i]);
-          count += pr.chunks[i].length();
-
-          //
-          PathParam def = pr.params[i];
-          String value = matches.get(def.name);
-          count += value.length();
-
-          // Write value
-          for (int len = value.length(), j = 0;j < len;j++) {
-            char c = value.charAt(j);
-            if (c == route.router.separatorEscape) {
-              if (def.preservePath) {
-                writer.append('_');
-              }
-              else {
-                writer.append('%');
-                writer.append(route.router.separatorEscapeNible1);
-                writer.append(route.router.separatorEscapeNible2);
-              }
-            }
-            else if (c == '/') {
-              writer.append(def.preservePath ? '/' : route.router.separatorEscape);
-            }
-            else {
-              writer.appendSegment(c);
-            }
-          }
-
-          //
-          i++;
-        }
+      int i = 0;
+      int count = 0;
+      while (i < pr.params.length) {
         writer.append(pr.encodedChunks[i]);
         count += pr.chunks[i].length();
-        if (count > 0) {
-          endWithSlash = false;
-        }
-      }
-      else {
-        if (!hasChildren) {
-          writer.append('/');
-          endWithSlash = true;
-        }
-      }
 
-      //
-      return endWithSlash;
+        //
+        PathParam def = pr.params[i];
+        String value = match.matched.get(def);
+        count += value.length();
+
+        // Write value
+        for (int len = value.length(), j = 0;j < len;j++) {
+          char c = value.charAt(j);
+          if (c == router.separatorEscape) {
+            if (def.preservePath) {
+              writer.append('_');
+            }
+            else {
+              writer.append('%');
+              writer.append(router.separatorEscapeNible1);
+              writer.append(router.separatorEscapeNible2);
+            }
+          }
+          else if (c == '/') {
+            writer.append(def.preservePath ? '/' : router.separatorEscape);
+          }
+          else {
+            writer.appendSegment(c);
+          }
+        }
+
+        //
+        i++;
+      }
+      writer.append(pr.encodedChunks[i]);
+      count += pr.chunks[i].length();
+      if (count > 0) {
+        endWithSlash = false;
+      }
+    }
+    else {
+      if (!hasChildren) {
+        writer.append('/');
+        endWithSlash = true;
+      }
     }
 
-    private void renderQueryString(Route route, URIWriter writer) throws IOException {
-      if (route.parent != null) {
-        renderQueryString(route.parent, writer);
-      }
+    //
+    return endWithSlash;
+  }
 
-      //
-      for (RequestParam requestParamDef : route.requestParamArray) {
-        String s = matches.get(requestParamDef.name);
-        if (s != null) {
-          writer.appendQueryParameter(requestParamDef.matchedName, s);
-        }
+  void renderQueryString(RouteMatch match, URIWriter writer) throws IOException {
+    if (parent != null) {
+      parent.renderQueryString(match, writer);
+    }
+
+    //
+    for (RequestParam requestParamDef : requestParamArray) {
+      String s = match.matched.get(requestParamDef);
+      if (s != null) {
+        writer.appendQueryParameter(requestParamDef.matchedName, s);
       }
     }
   }
 
-  final RouteMatch find(RenderContext context) {
+  final RouteMatch resolve(RenderContext context) {
+
+    //
     context.enter();
-    RouteMatch route = _find(context);
+
+    //
+    RouteMatch match = null;
+
+    //
+    if (matches(context)) {
+
+      //
+      if (context.isEmpty() && terminal) {
+        match = new RouteMatch(this, context);
+      }
+
+      //
+      if (match == null) {
+        for (Route child : children) {
+          match = child.resolve(context);
+          if (match != null) {
+            break;
+          }
+        }
+      }
+    }
+
+    //
     context.leave();
-    return route;
+
+    //
+    return match;
   }
 
-  private RouteMatch _find(RenderContext context) {
+  public final RouteMatch matches(Map<QualifiedName, String> parameters) {
+    RenderContext context = new RenderContext(parameters);
+    router.bilto(context);
+    context.enter();
+    if (_matches(context)) {
+      return new RouteMatch(this, context);
+    } else {
+      return null;
+    }
+  }
+
+  private boolean _matches(RenderContext context) {
+    return (parent == null || parent._matches(context)) && matches(context);
+  }
+
+  private boolean matches(RenderContext context) {
+
     // Match first the static parameteters
     for (RouteParam param : routeParamArray) {
       RenderContext.Parameter entry = context.getParameter(param.name);
       if (entry != null && !entry.isMatched() && param.value.equals(entry.getValue())) {
-        entry.remove(entry.getValue());
+        entry.remove(param, entry.getValue());
       }
       else {
-        return null;
+        return false;
       }
     }
 
@@ -346,11 +346,11 @@ public class Route {
         }
       }
       if (matched) {
-        entry.remove(entry.getValue());
+        entry.remove(requestParamDef, entry.getValue());
       }
       else {
         if (requestParamDef.required) {
-          return null;
+          return false;
         }
       }
     }
@@ -372,38 +372,16 @@ public class Route {
           }
         }
         if (matched != null) {
-          s.remove(matched);
+          s.remove(param, matched);
         }
         else {
-          return null;
+          return false;
         }
       }
     }
 
     //
-    if (context.isEmpty() && terminal) {
-      Map<QualifiedName, String> matches = Collections.emptyMap();
-      for (QualifiedName name : context.getNames()) {
-        RenderContext.Parameter parameter = context.getParameter(name);
-        if (matches.isEmpty()) {
-          matches = new HashMap<QualifiedName, String>();
-        }
-        String match = parameter.getMatch();
-        matches.put(name, match);
-      }
-      return new RouteMatch(context, this, matches);
-    }
-
-    //
-    for (Route route : children) {
-      RouteMatch a = route.find(context);
-      if (a != null) {
-        return a;
-      }
-    }
-
-    //
-    return null;
+    return true;
   }
 
   /**
@@ -413,7 +391,7 @@ public class Route {
    * @param requestParams the query parameters
    * @return the route matcher
    */
-  public final Iterator<Map<Param, String>> matcher(String path, Map<String, String[]> requestParams) {
+  public final Iterator<RouteMatch> matcher(String path, Map<String, String[]> requestParams) {
     return new RouteMatcher(this, Path.parse(path), requestParams);
   }
 
@@ -483,7 +461,7 @@ public class Route {
     }
   }
 
-  static class RouteMatcher implements Iterator<Map<Param, String>> {
+  static class RouteMatcher implements Iterator<RouteMatch> {
 
     /** . */
     private final Map<String, String[]> requestParams;
@@ -511,13 +489,14 @@ public class Route {
       return next != null;
     }
 
-    public Map<Param, String> next() {
+    public RouteMatch next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
       Map<Param, String> parameters = next.getParameters();
+      Route route = next.route;
       next = null;
-      return parameters;
+      return new RouteMatch(route, parameters);
     }
 
     public void remove() {

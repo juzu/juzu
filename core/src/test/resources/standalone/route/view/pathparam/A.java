@@ -17,6 +17,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application package standalone.route.view.mapping;
+package standalone.route.view.pathparam;
 
-import juzu.Application;
+import juzu.Controller;
+import juzu.Response;
+import juzu.View;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A extends Controller {
+
+  @View
+  public Response.Content index() {
+    return Response.render("<a id='trigger' href='" + A_.fooURL("bar") + "'>click</div>");
+  }
+
+  @View("/foo/{juu}")
+  public Response.Content foo(String juu) {
+    return Response.ok("" + juu);
+  }
+}

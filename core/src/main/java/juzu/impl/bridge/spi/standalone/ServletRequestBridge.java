@@ -23,13 +23,16 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.QualifiedName;
 import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
-import juzu.impl.router.RenderContext;
+import juzu.impl.router.Route;
+import juzu.impl.router.RouteMatch;
+import juzu.impl.router.URIWriter;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
@@ -40,8 +43,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -240,33 +245,37 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
-    RenderContext ctx = new RenderContext(Collections.singletonMap(ServletBridge.TARGET, method.getHandle().toString()));
-    String s = servlet.router.render(ctx);
-    if (s != null) {
-      buffer.append(s);
+    Route route = servlet.routeMap.get(method.getHandle());
+    if (route != null) {
+      Map<QualifiedName, String> params;
+      if (parameters.isEmpty()) {
+        params = Collections.emptyMap();
+      } else {
+        params = new HashMap<QualifiedName, String>(parameters.size());
+        for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+          params.put(QualifiedName.create(entry.getKey()), entry.getValue()[0]);
+        }
+      }
+      RouteMatch match = route.matches(params);
+      if (match != null) {
+        try {
+          URIWriter writer = new URIWriter(buffer);
+          match.render(writer);
+          for (Map.Entry<QualifiedName, String> entry : match.getUnmatched().entrySet()) {
+            writer.appendQueryParameter(entry.getKey().getName(), entry.getValue());
+          }
+        }
+        catch (IOException e) {
+          throw new AssertionError("Should not happend");
+        }
+      } else {
+        throw new UnsupportedOperationException("handle me gracefully");
+      }
     } else {
       throw new UnsupportedOperationException("handle me gracefully");
     }
 
     //
-/*
-    boolean first = true;
-    for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
-      String name = parameter.getKey();
-      try {
-        String encName = URLEncoder.encode(name, "UTF-8");
-        for (String value : parameter.getValue()) {
-          String encValue = URLEncoder.encode(value, "UTF-8");
-          buffer.append(first ? '?' : '&').append(encName).append('=').append(encValue);
-          first = false;
-        }
-      }
-      catch (UnsupportedEncodingException e) {
-        // Should not happen
-        throw new AssertionError(e);
-      }
-    }
-*/
     return buffer.toString();
   }
 

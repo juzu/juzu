@@ -35,6 +35,9 @@ public class RenderContext {
   class Parameter {
 
     /** . */
+    private final QualifiedName name;
+
+    /** . */
     private String value;
 
     /** . */
@@ -43,9 +46,14 @@ public class RenderContext {
     /** This value is valid only if the parameter is matched. */
     private String match;
 
-    private Parameter(String value, int index) {
+    private Parameter(QualifiedName name, String value, int index) {
+      this.name = name;
       this.value = value;
       this.index = index;
+    }
+
+    public QualifiedName getName() {
+      return name;
     }
 
     public String getValue() {
@@ -57,17 +65,21 @@ public class RenderContext {
     }
 
     public boolean isMatched() {
-      return stack.getDepth() > 0 && stack.get(index);
+      return getParam() != null;
     }
 
-    public void remove(String match) {
+    public Param getParam() {
+      return stack.getDepth() > 0 ? stack.get(index) : null;
+    }
+
+    public void remove(Param param, String match) {
       if (stack.getDepth() < 1) {
         throw new IllegalStateException();
       }
-      if (stack.get(index)) {
+      if (stack.get(index) != null) {
         throw new AssertionError("We should not do that twice, shouldn't we ?");
       }
-      stack.set(index);
+      stack.set(index, param);
       this.match = match;
     }
   }
@@ -76,7 +88,7 @@ public class RenderContext {
   private final Map<QualifiedName, Parameter> parameters;
 
   /** . */
-  private BitStack stack = new BitStack();
+  private BitStack<Param> stack = new BitStack<Param>();
 
   /** . */
   RE.Matcher[] matchers;
@@ -90,7 +102,7 @@ public class RenderContext {
 
   public RenderContext() {
     this.parameters = new HashMap<QualifiedName, Parameter>();
-    this.stack = new BitStack();
+    this.stack = new BitStack<Param>();
     this.matchers = null;
   }
 
@@ -129,7 +141,7 @@ public class RenderContext {
     }
     Parameter parameter = parameters.get(name);
     if (parameter == null) {
-      parameter = new Parameter(value, parameters.size());
+      parameter = new Parameter(name, value, parameters.size());
       parameters.put(name, parameter);
     }
     else {

@@ -24,7 +24,10 @@ package juzu.impl.router;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-class BitStack {
+class BitStack<T> {
+
+  /** . */
+  private static final Object[] EMPTY = new Object[0];
 
   private static class Frame {
 
@@ -35,16 +38,16 @@ class BitStack {
     private Frame next;
 
     /** . */
-    private long bits;
+    private Object[] bits;
 
     /** . */
     private int cardinality;
 
-    private Frame() {
-      this(0, 0);
+    private Frame(int size) {
+      this(new Object[size], 0);
     }
 
-    private Frame(long bits, int cardinality) {
+    private Frame(Object[] bits, int cardinality) {
       this.previous = null;
       this.next = null;
       this.bits = bits;
@@ -90,14 +93,14 @@ class BitStack {
   void push() {
     if (current == null) {
       if (head == null) {
-        head = new Frame();
+        head = new Frame(size);
       }
       current = head;
       depth++;
     }
     else {
       if (current.next == null) {
-        Frame next = new Frame(current.bits, current.cardinality);
+        Frame next = new Frame(current.bits.clone(), current.cardinality);
         current.next = next;
         next.previous = current;
         current = next;
@@ -105,7 +108,7 @@ class BitStack {
       }
       else {
         Frame next = current.next;
-        next.bits = current.bits;
+        System.arraycopy(current.bits, 0, next.bits, 0, current.bits.length);
         next.cardinality = current.cardinality;
         current = next;
         depth++;
@@ -125,9 +128,12 @@ class BitStack {
     return depth;
   }
 
-  void set(int index) {
+  void set(int index, T value) {
     if (index > 63) {
       throw new IllegalArgumentException("Index " + index + "  > 63 not allowed");
+    }
+    if (value == null) {
+      throw new NullPointerException();
     }
     if (depth < 1) {
       throw new IllegalStateException();
@@ -135,14 +141,15 @@ class BitStack {
     if (index > size) {
       throw new IllegalArgumentException();
     }
-    long pre = current.bits;
-    current.bits |= 1L << index;
-    if (current.bits != pre) {
-      current.cardinality++;
+    Object pre = current.bits[index];
+    if (pre != null) {
+      throw new IllegalStateException();
     }
+    current.bits[index] = value;
+    current.cardinality++;
   }
 
-  boolean get(int index) {
+  T get(int index) {
     if (index > 63) {
       throw new IllegalArgumentException("Index " + index + "  > 63 not allowed");
     }
@@ -152,7 +159,7 @@ class BitStack {
     if (index > size) {
       throw new IllegalArgumentException();
     }
-    return (current.bits & (1L << index)) != 0;
+    return (T)current.bits[index];
   }
 
   boolean isEmpty() {

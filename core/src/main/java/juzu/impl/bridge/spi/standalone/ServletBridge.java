@@ -35,6 +35,8 @@ import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.router.Param;
+import juzu.impl.router.Route;
+import juzu.impl.router.RouteMatch;
 import juzu.impl.router.Router;
 
 import javax.servlet.ServletConfig;
@@ -46,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -60,6 +63,12 @@ public class ServletBridge extends HttpServlet {
 
   /** . */
   Router router;
+
+  /** . */
+  HashMap<MethodHandle, Route> routeMap;
+
+  /** . */
+  HashMap<Route, MethodHandle> routeMap2;
 
   @Override
   public void init() throws ServletException {
@@ -141,11 +150,17 @@ public class ServletBridge extends HttpServlet {
 
     //
     Router router = new Router();
+    HashMap<MethodHandle, Route> routeMap = new HashMap<MethodHandle, Route>();
+    HashMap<Route, MethodHandle> routeMap2 = new HashMap<Route, MethodHandle>();
     ControllersDescriptor desc = bridge.runtime.getDescriptor().getControllers();
     for (RouteDescriptor routeDesc : desc.getRoutes()) {
-      router.append(routeDesc.getPath(), Collections.singletonMap(TARGET, routeDesc.getTarget().toString()));
+      Route route = router.append(routeDesc.getPath());
+      routeMap.put(routeDesc.getTarget(), route);
+      routeMap2.put(route, routeDesc.getTarget());
     }
     this.router = router;
+    this.routeMap = routeMap;
+    this.routeMap2 = routeMap2;
   }
 
   /**
@@ -173,24 +188,26 @@ public class ServletBridge extends HttpServlet {
 
     //
     MethodDescriptor target = null;
+    Map<String, String[]> parameters = Collections.emptyMap();
 
     //
     String path = req.getRequestURI().substring(req.getContextPath().length());
     if (path != null) {
-      Map<Param, String> params = router.route(path);
-      if (params != null) {
-        for (Map.Entry<Param, String> entry : params.entrySet()) {
-          if (entry.getKey().getName().equals(TARGET)) {
-            MethodHandle handle = MethodHandle.parse(entry.getValue());
-            target =  bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
-            break;
+      RouteMatch match = router.route(path);
+      if (match != null) {
+        MethodHandle handle = routeMap2.get(match.getRoute());
+        target =  bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
+        if (match.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
+          parameters = new HashMap<String, String[]>();
+          for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet()) {
+            parameters.put(entry.getKey(), entry.getValue().clone());
+          }
+          for (Map.Entry<Param, String> entry : match.getMatched().entrySet()) {
+            parameters.put(entry.getKey().getName().getName(), new String[]{entry.getValue()});
           }
         }
       }
     }
-
-    //
-    Map<String, String[]> parameters = (Map<String, String[]>)req.getParameterMap();
 
     //
     RequestBridge requestBridge;

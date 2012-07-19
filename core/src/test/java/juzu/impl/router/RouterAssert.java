@@ -35,13 +35,13 @@ public class RouterAssert extends Router {
     }
 
     //
-    Iterator<Map<Param, String>> result = matcher(path, tmp);
+    Iterator<RouteMatch> result = matcher(path, tmp);
 
     //
     ArrayList<Map<QualifiedName, String>> a = new ArrayList<Map<QualifiedName, String>>();
     while (result.hasNext()) {
       HashMap<QualifiedName, String> actual = new HashMap<QualifiedName, String>();
-      for (Map.Entry<Param, String> entry : result.next().entrySet()) {
+      for (Map.Entry<Param, String> entry : result.next().getMatched().entrySet()) {
         actual.put(entry.getKey().getName(), entry.getValue());
       }
       a.add(actual);

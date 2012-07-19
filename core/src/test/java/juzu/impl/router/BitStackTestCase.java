@@ -27,16 +27,16 @@ public class BitStackTestCase extends AbstractTestCase {
 
   @Test
   public void testSimple() {
-    BitStack bs = new BitStack();
+    BitStack<Boolean> bs = new BitStack<Boolean>();
     assertEquals(0, bs.getDepth());
     bs.init(2);
     bs.push();
     assertEquals(1, bs.getDepth());
-    bs.set(1);
+    bs.set(1, true);
     assertFalse(bs.isEmpty());
     bs.push();
     assertEquals(2, bs.getDepth());
-    bs.set(0);
+    bs.set(0, true);
     assertTrue(bs.isEmpty());
     bs.pop();
     assertEquals(1, bs.getDepth());
@@ -47,12 +47,12 @@ public class BitStackTestCase extends AbstractTestCase {
 
   @Test
   public void testReuse() {
-    BitStack bs = new BitStack();
+    BitStack<Boolean> bs = new BitStack<Boolean>();
     bs.init(2);
     bs.push();
-    bs.set(0);
+    bs.set(0, true);
     bs.push();
-    bs.set(1);
+    bs.set(1, true);
     assertTrue(bs.isEmpty());
     bs.pop();
     bs.push();
@@ -61,9 +61,9 @@ public class BitStackTestCase extends AbstractTestCase {
 
   @Test
   public void testState() {
-    BitStack bs = new BitStack();
+    BitStack<Boolean> bs = new BitStack<Boolean>();
     try {
-      bs.set(0);
+      bs.set(0, true);
       fail();
     }
     catch (IllegalStateException e) {

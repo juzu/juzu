@@ -10,21 +10,23 @@ import org.openqa.selenium.WebElement;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteViewTestCase extends AbstractStandaloneTestCase {
+public class RouteViewPathMappingTestCase extends AbstractStandaloneTestCase {
 
   @Drone
   WebDriver driver;
 
   @Test
   public void testRender() throws Exception {
-    assertDeploy("standalone", "route", "view", "mapping");
+    assertDeploy("standalone", "route", "view", "pathmapping");
     driver.get(deploymentURL.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     String href = trigger.getAttribute("href");
     URL url = new URL(href);
     assertEquals("/juzu/foo", url.getPath());
+    assertNull(url.getQuery());
     trigger.click();
     String pass = driver.findElement(By.tagName("body")).getText();
     assertEquals("pass", pass);
+    assertUndeploy();
   }
 }
