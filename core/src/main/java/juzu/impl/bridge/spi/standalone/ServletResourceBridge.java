@@ -20,7 +20,9 @@
 package juzu.impl.bridge.spi.standalone;
 
 import juzu.Response;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.ResourceBridge;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
@@ -40,12 +42,13 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
   private Response.Content response;
 
   ServletResourceBridge(
+      ApplicationContext application,
       ServletBridge servlet,
       HttpServletRequest req,
       HttpServletResponse resp,
-      String methodId,
+      MethodHandle target,
       Map<String, String[]> parameters) {
-    super(servlet, req, resp, methodId, parameters);
+    super(application, servlet, req, resp, target, parameters);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

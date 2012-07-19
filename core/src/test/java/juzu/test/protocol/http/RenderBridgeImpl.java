@@ -21,6 +21,8 @@ package juzu.test.protocol.http;
 
 import juzu.Response;
 import juzu.asset.Asset;
+import juzu.impl.application.ApplicationContext;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.common.Tools;
@@ -52,11 +54,12 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
 
   RenderBridgeImpl(
       HttpServletImpl servlet,
+      ApplicationContext application,
       HttpServletRequest req,
       HttpServletResponse resp,
-      String methodId,
+      MethodHandle target,
       Map<String, String[]> parameters) {
-    super(req, resp, methodId, parameters);
+    super(application, req, resp, target, parameters);
 
     //
     this.servlet = servlet;

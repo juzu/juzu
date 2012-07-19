@@ -20,7 +20,9 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
+import juzu.impl.common.MethodHandle;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.test.AbstractTestCase;
@@ -35,14 +37,14 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   /** . */
   private Response response;
 
-  public MockActionBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
-    super(client, methodId, parameters);
+  public MockActionBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+    super(application, client, target, parameters);
   }
 
   public String assertUpdate() {
     if (response instanceof Response.Update) {
       Response.Update update = (Response.Update)response;
-      return renderURL(Phase.RENDER, update.getParameters(), update.getProperties());
+      return renderURL(update.getTarget(), update.getParameters(), update.getProperties());
     }
     else {
       throw AbstractTestCase.failure("Was expecting an update instead of " + response);
@@ -57,13 +59,16 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
     assertResponse(new Response.Redirect(location));
   }
 
-  public void assertRender(String expectedMethodId, Map<String, String> expectedArguments) {
-    Response.Update resp = new Response.Update();
-    resp.with(RequestContext.METHOD_ID, expectedMethodId);
+  public void assertRender(MethodHandle expectedTarget, Map<String, String> expectedArguments) {
+    Response.Update resp = new Response.Update(expectedTarget);
     for (Map.Entry<String, String> entry : expectedArguments.entrySet()) {
       resp.setParameter(entry.getKey(), entry.getValue());
     }
     assertResponse(resp);
+  }
+
+  public void assertRender(String expectedTarget, Map<String, String> expectedArguments) {
+    assertRender(application.getDescriptor().getControllers().getMethodById(expectedTarget).getHandle(), expectedArguments);
   }
 
   private void assertResponse(Response expectedResponse) {

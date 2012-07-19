@@ -21,6 +21,7 @@ package juzu.impl.application;
 
 import juzu.Response;
 import juzu.UndeclaredIOException;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.controller.ControllerPlugin;
 import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Export;
@@ -33,7 +34,6 @@ import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.request.Phase;
-import juzu.request.RequestContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +123,7 @@ public class ApplicationContext {
     }
 
     //
+/*
     String methodId = bridge.getProperty(RequestContext.METHOD_ID);
 
     //
@@ -140,14 +140,18 @@ public class ApplicationContext {
         parameters.put(name, value);
       }
     }
+*/
+
+    //
+    Map<String, String[]> parameters = bridge.getParameters();
 
     //
     MethodDescriptor method;
-    if (methodId == null) {
+    MethodHandle handle = bridge.getTarget();
+    if (handle != null) {
+      method = controller.getDescriptor().getMethodByHandle(handle);
+    } else {
       method = controller.getResolver().resolve(parameters.keySet());
-    }
-    else {
-      method = controller.getResolver().resolve(phase, methodId, parameters.keySet());
     }
 
     //
@@ -155,7 +159,7 @@ public class ApplicationContext {
       StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
         "phase=" + phase + " and parameters={");
       int index = 0;
-      for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet()) {
+      for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
         if (index++ > 0) {
           sb.append(',');
         }

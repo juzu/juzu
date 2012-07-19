@@ -21,6 +21,9 @@ package juzu.impl.bridge.spi.standalone;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.application.ApplicationContext;
+import juzu.impl.common.MethodHandle;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
@@ -29,7 +32,6 @@ import juzu.impl.common.Tools;
 import juzu.impl.router.RenderContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
-import juzu.request.RequestContext;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 import juzu.standalone.JuzuServlet;
@@ -38,14 +40,15 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext {
+
+  /** . */
+  final ApplicationContext application;
 
   /** . */
   final ServletBridge servlet;
@@ -60,28 +63,34 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   final Map<String, String[]> parameters;
 
   /** . */
-  final String methodId;
+  final MethodHandle target;
 
   /** . */
   protected Request request;
 
   ServletRequestBridge(
+      ApplicationContext application,
       ServletBridge servlet,
       HttpServletRequest req,
       HttpServletResponse resp,
-      String methodId,
+      MethodHandle target,
       Map<String, String[]> parameters) {
 
     //
+    this.application = application;
+    this.target = target;
     this.servlet = servlet;
     this.req = req;
     this.resp = resp;
-    this.methodId = methodId;
     this.parameters = parameters;
     this.request = null;
   }
 
   //
+
+  public MethodHandle getTarget() {
+    return target;
+  }
 
   public Cookie[] getCookies() {
     return req.getCookies();
@@ -104,9 +113,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   }
 
   public <T> T getProperty(PropertyType<T> propertyType) {
-    if (RequestContext.METHOD_ID.equals(propertyType)) {
-      return propertyType.getType().cast(methodId);
-    } else if (JuzuServlet.PATH.equals(propertyType)) {
+    if (JuzuServlet.PATH.equals(propertyType)) {
       return propertyType.getType().cast(req.getRequestURI());
     }
     return null;
@@ -211,7 +218,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     return null;
   }
 
-  public final String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties) {
+  public final String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
     StringBuilder buffer = new StringBuilder();
     buffer.append(req.getScheme());
     buffer.append("://");
@@ -230,15 +237,13 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     }
 
     //
-    String methodId = properties != null ? properties.getValue(RequestContext.METHOD_ID) : null;
-    if (methodId != null) {
-      RenderContext ctx = new RenderContext(Collections.singletonMap(ServletBridge.abc, methodId));
-      String s = servlet.router.render(ctx);
-      if (s != null) {
-        buffer.append(s);
-      } else {
-        throw new UnsupportedOperationException("handle me gracefully");
-      }
+    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+
+    //
+    RenderContext ctx = new RenderContext(Collections.singletonMap(ServletBridge.abc, method.getId()));
+    String s = servlet.router.render(ctx);
+    if (s != null) {
+      buffer.append(s);
     } else {
       throw new UnsupportedOperationException("handle me gracefully");
     }

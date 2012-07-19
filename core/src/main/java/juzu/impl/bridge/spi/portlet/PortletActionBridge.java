@@ -20,9 +20,10 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.portlet.JuzuPortlet;
-import juzu.request.RenderContext;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -36,8 +37,8 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge {
 
-  public PortletActionBridge(ActionRequest actionRequest, ActionResponse actionResponse, boolean prod) {
-    super(actionRequest, actionResponse, prod);
+  public PortletActionBridge(ApplicationContext application, ActionRequest actionRequest, ActionResponse actionResponse, boolean prod) {
+    super(application, actionRequest, actionResponse, prod);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
@@ -49,11 +50,11 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
         super.resp.setRenderParameter(entry.getKey(), entry.getValue());
       }
 
+      //
+      MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
+
       // Method id
-      String methodId = update.getProperties().getValue(RenderContext.METHOD_ID);
-      if (methodId != null) {
-        super.resp.setRenderParameter("juzu.op", methodId);
-      }
+      super.resp.setRenderParameter("juzu.op", method.getId());
 
       //
       PortletMode portletMode = update.getProperties().getValue(JuzuPortlet.PORTLET_MODE);

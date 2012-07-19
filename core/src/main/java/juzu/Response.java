@@ -20,6 +20,7 @@
 package juzu;
 
 import juzu.asset.Asset;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;
 import juzu.impl.common.Tools;
@@ -138,10 +139,18 @@ public abstract class Response {
   public static class Update extends Response {
 
     /** . */
+    private final MethodHandle target;
+
+    /** . */
     private ParameterMap parameterMap;
 
-    public Update() {
+    public Update(MethodHandle target) {
+      this.target = target;
       this.parameterMap = new ParameterHashMap();
+    }
+
+    public MethodHandle getTarget() {
+      return target;
     }
 
     public Update setParameter(String name, String value) throws NullPointerException {

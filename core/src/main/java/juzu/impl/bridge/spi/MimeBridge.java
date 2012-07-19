@@ -21,6 +21,7 @@ package juzu.impl.bridge.spi;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.common.MethodHandle;
 import juzu.request.Phase;
 
 import java.util.Map;
@@ -40,15 +41,15 @@ public interface MimeBridge extends RequestBridge {
   /**
    * Renders an URL.
    *
-   * @param phase      the phase
+   * @param target     the target
    * @param parameters the url parameters
    * @param properties the url properties
    * @return the rendered URL
    * @throws IllegalArgumentException if any argument is not valid
    */
   String renderURL(
-    Phase phase,
-    Map<String, String[]> parameters,
-    PropertyMap properties) throws IllegalArgumentException;
+      MethodHandle target,
+      Map<String, String[]> parameters,
+      PropertyMap properties) throws IllegalArgumentException;
 
 }

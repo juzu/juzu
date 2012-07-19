@@ -35,7 +35,6 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.router.Param;
 import juzu.impl.router.Router;
-import juzu.request.Phase;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -175,8 +174,7 @@ public class ServletBridge extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
     //
-    Phase phase = Phase.RENDER;
-    String op = null;
+    MethodDescriptor target = null;
 
     //
     String path = req.getRequestURI().substring(req.getContextPath().length());
@@ -186,9 +184,7 @@ public class ServletBridge extends HttpServlet {
         for (Map.Entry<Param, String> entry : params.entrySet()) {
           if (entry.getKey().getName().equals(abc)) {
             String methodId = entry.getValue();
-            MethodDescriptor m = bridge.runtime.getDescriptor().getControllers().getMethodById(methodId);
-            phase = m.getPhase();
-            op = methodId;
+            target =  bridge.runtime.getDescriptor().getControllers().getMethodById(methodId);
             break;
           }
         }
@@ -200,18 +196,22 @@ public class ServletBridge extends HttpServlet {
 
     //
     RequestBridge requestBridge;
-    switch (phase) {
-      case RENDER:
-        requestBridge = new ServletRenderBridge(this, req, resp, op, parameters);
-        break;
-      case ACTION:
-        requestBridge = new ServletActionBridge(this, req, resp, op, parameters);
-        break;
-      case RESOURCE:
-        requestBridge = new ServletResourceBridge(this, req, resp, op, parameters);
-        break;
-      default:
-        throw new ServletException("Cannot decode phase");
+    if (target != null) {
+      switch (target.getPhase()) {
+        case RENDER:
+          requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+          break;
+        case ACTION:
+          requestBridge = new ServletActionBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+          break;
+        case RESOURCE:
+          requestBridge = new ServletResourceBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+          break;
+        default:
+          throw new ServletException("Cannot decode phase");
+      }
+    } else {
+      requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, null, parameters);
     }
 
     //

@@ -22,6 +22,9 @@ package juzu.test.protocol.mock;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.URLBuilder;
+import juzu.impl.application.ApplicationContext;
+import juzu.impl.common.MethodHandle;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
@@ -29,7 +32,6 @@ import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
-import juzu.request.RequestContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +41,13 @@ import java.util.Map;
 public abstract class MockRequestBridge implements RequestBridge {
 
   /** . */
+  protected final ApplicationContext application;
+
+  /** . */
   protected final MockClient client;
 
   /** . */
-  private final String methodId;
+  private final MethodHandle target;
 
   /** . */
   private final Map<String, String[]> parameters;
@@ -62,9 +67,10 @@ public abstract class MockRequestBridge implements RequestBridge {
   /** . */
   private final List<Scoped> attributesHistory;
 
-  public MockRequestBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
+  public MockRequestBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+    this.application = application;
     this.client = client;
-    this.methodId = methodId;
+    this.target = target;
     this.parameters = parameters;
     this.attributes = new ScopedContext();
     this.httpContext = new MockHttpContext();
@@ -77,10 +83,11 @@ public abstract class MockRequestBridge implements RequestBridge {
     return attributesHistory;
   }
 
+  public MethodHandle getTarget() {
+    return target;
+  }
+
   public <T> T getProperty(PropertyType<T> propertyType) {
-    if (RequestContext.METHOD_ID.equals(propertyType)) {
-      return propertyType.getType().cast(methodId);
-    }
     return null;
   }
 
@@ -157,21 +164,22 @@ public abstract class MockRequestBridge implements RequestBridge {
       // OK
       return null;
     }
-    else if (propertyType == RequestContext.METHOD_ID) {
-      // OK
-      return null;
-    }
     else {
       return "Unsupported property " + propertyType + " = " + propertyValue;
     }
   }
 
-  public String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties) {
+  public String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
+
+    //
+    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+
+    //
     JSON props = new JSON();
     if (properties != null) {
       for (PropertyType<?> property : properties) {
         Object value = properties.getValue(property);
-        String valid = _checkPropertyValidity(phase, property, value);
+        String valid = _checkPropertyValidity(method.getPhase(), property, value);
         if (valid != null) {
           throw new IllegalArgumentException(valid);
         }
@@ -183,7 +191,7 @@ public abstract class MockRequestBridge implements RequestBridge {
 
     //
     JSON url = new JSON();
-    url.set("phase", phase.name());
+    url.set("target", target.toString());
     url.map("parameters", parameters);
     url.set("properties", props);
     return url.toString();

@@ -1,5 +1,6 @@
 package juzu.impl.controller.descriptor;
 
+import juzu.impl.common.MethodHandle;
 import juzu.impl.controller.ControllerResolver;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
@@ -8,8 +9,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllersDescriptor extends Descriptor {
@@ -35,16 +38,23 @@ public class ControllersDescriptor extends Descriptor {
   /** . */
   private ControllerDescriptorResolver resolver;
 
+  /** . */
+  private final Map<MethodHandle, MethodDescriptor> byHandle;
+
   public ControllersDescriptor(ClassLoader loader, JSON config) throws Exception {
     List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();
     List<MethodDescriptor> controllerMethods = new ArrayList<MethodDescriptor>();
     ArrayList<juzu.impl.inject.BeanDescriptor> beans = new ArrayList<juzu.impl.inject.BeanDescriptor>();
+    HashMap<MethodHandle, MethodDescriptor> byHandle = new HashMap<MethodHandle, MethodDescriptor>();
 
     // Load controllers
     for (String fqn : config.getList("controllers", String.class)) {
       Class<?> clazz = loader.loadClass(fqn);
       Field f = clazz.getField("DESCRIPTOR");
       ControllerDescriptor bean = (ControllerDescriptor)f.get(null);
+      for (MethodDescriptor method : bean.getMethods()) {
+        byHandle.put(method.getHandle(), method);
+      }
       controllers.add(bean);
       controllerMethods.addAll(bean.getMethods());
       beans.add(new juzu.impl.inject.BeanDescriptor(bean.getType(), null, null, null));
@@ -85,6 +95,7 @@ public class ControllersDescriptor extends Descriptor {
     this.beans = beans;
     this.routes = Collections.unmodifiableList(routes);
     this.resolver = new ControllerDescriptorResolver(this);
+    this.byHandle = byHandle;
   }
 
   public Iterable<juzu.impl.inject.BeanDescriptor> getBeans() {
@@ -142,5 +153,9 @@ public class ControllersDescriptor extends Descriptor {
       }
     }
     return null;
+  }
+
+  public MethodDescriptor getMethodByHandle(MethodHandle handle) {
+    return byHandle.get(handle);
   }
 }

@@ -87,7 +87,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
     render = (MockRenderBridge)client.invoke(m.group(2));
     m.reset(render.assertStringResult());
     assertTrue("Was expecting " + render.assertStringResult() + " to match", m.matches());
-    assertEquals("0", m.group(1));
+    assertEquals("2", m.group(1));
   }
 
   @Test

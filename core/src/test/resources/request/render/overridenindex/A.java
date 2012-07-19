@@ -39,7 +39,7 @@ public class A extends Controller {
       return Response.ok("1[" + A_.indexURL(null).toString() + "]");
     }
     else {
-      return Response.ok("fail]");
+      return Response.ok("2[]");
     }
   }
 }

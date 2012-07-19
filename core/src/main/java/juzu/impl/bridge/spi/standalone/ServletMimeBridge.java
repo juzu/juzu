@@ -19,7 +19,9 @@
 
 package juzu.impl.bridge.spi.standalone;
 
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
+import juzu.impl.common.MethodHandle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,11 +31,12 @@ import java.util.Map;
 public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
 
   ServletMimeBridge(
+      ApplicationContext application,
       ServletBridge servlet,
       HttpServletRequest req,
       HttpServletResponse resp,
-      String methodId,
+      MethodHandle target,
       Map<String, String[]> parameters) {
-    super(servlet, req, resp, methodId, parameters);
+    super(application, servlet, req, resp, target, parameters);
   }
 }

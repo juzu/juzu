@@ -49,10 +49,8 @@ public class ActionContext extends RequestContext {
     return Phase.ACTION;
   }
 
-  public Response.Update createResponse(MethodDescriptor method) throws IllegalStateException {
-    Response.Update update = new Response.Update();
-    update.with(RequestContext.METHOD_ID, method.getId());
-    return update;
+  public Response.Update createResponse(MethodDescriptor target) throws IllegalStateException {
+    return new Response.Update(target.getHandle());
   }
 
   public Response.Update createResponse(MethodDescriptor method, Object arg) throws IllegalStateException {

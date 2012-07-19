@@ -21,6 +21,7 @@ package juzu.impl.bridge.spi;
 
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
 import juzu.impl.request.Request;
 import juzu.request.HttpContext;
@@ -32,6 +33,8 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface RequestBridge {
+
+  MethodHandle getTarget();
 
   /**
    * Returns the request parameters.

@@ -23,13 +23,15 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.URLBuilder;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
+import juzu.impl.common.MethodHandle;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
 import juzu.portlet.JuzuPortlet;
 import juzu.request.Phase;
-import juzu.request.RequestContext;
 
 import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
@@ -57,8 +59,8 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
   /** . */
   private final boolean buffer;
 
-  PortletMimeBridge(Rq request, Rs response, boolean buffer, boolean prod) {
-    super(request, response, prod);
+  PortletMimeBridge(ApplicationContext application, Rq request, Rs response, boolean buffer, boolean prod) {
+    super(application, request, response, prod);
 
     //
     this.buffer = buffer;
@@ -97,9 +99,14 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
     }
   }
 
-  public String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties) {
+  public String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
+
+    //
+    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+
+    //
     BaseURL url;
-    switch (phase) {
+    switch (method.getPhase()) {
       case ACTION:
         url = resp.createActionURL();
         break;
@@ -110,7 +117,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
         url = resp.createResourceURL();
         break;
       default:
-        throw new AssertionError("Unexpected phase " + phase);
+        throw new AssertionError("Unexpected phase " + method.getPhase());
     }
 
     // Set generic parameters
@@ -157,10 +164,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       }
 
       // Set method id
-      String methodId = properties.getValue(RequestContext.METHOD_ID);
-      if (methodId != null) {
-        url.setParameter("juzu.op", methodId);
-      }
+      url.setParameter("juzu.op", method.getId());
     }
 
     //

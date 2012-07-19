@@ -21,6 +21,7 @@ package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
 import juzu.asset.Asset;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
@@ -46,8 +47,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
   /** . */
   private LinkedList<Element> headers = new LinkedList<Element>();
 
-  public PortletRenderBridge(Bridge bridge, RenderRequest request, RenderResponse response, boolean buffer, boolean prod) {
-    super(request, response, buffer, prod);
+  public PortletRenderBridge(ApplicationContext application, Bridge bridge, RenderRequest request, RenderResponse response, boolean buffer, boolean prod) {
+    super(application, request, response, buffer, prod);
 
     //
     this.bridge = bridge;

@@ -21,6 +21,9 @@ package juzu.test.protocol.http;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.application.ApplicationContext;
+import juzu.impl.common.MethodHandle;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
@@ -28,7 +31,6 @@ import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
-import juzu.request.RequestContext;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 
@@ -45,6 +47,9 @@ import java.util.Map;
 public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, WindowContext {
 
   /** . */
+  final ApplicationContext application;
+
+  /** . */
   final HttpServletRequest req;
 
   /** . */
@@ -54,19 +59,21 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   final Map<String, String[]> parameters;
 
   /** . */
-  final String methodId;
+  final MethodHandle target;
 
   /** . */
   protected Request request;
 
   RequestBridgeImpl(
+      ApplicationContext application,
       HttpServletRequest req,
       HttpServletResponse resp,
-      String methodId,
+      MethodHandle target,
       Map<String, String[]> parameters) {
+    this.application = application;
     this.req = req;
     this.resp = resp;
-    this.methodId = methodId;
+    this.target = target;
     this.parameters = parameters;
     this.request = null;
   }
@@ -94,9 +101,6 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   }
 
   public <T> T getProperty(PropertyType<T> propertyType) {
-    if (RequestContext.METHOD_ID.equals(propertyType)) {
-      return propertyType.getType().cast(methodId);
-    }
     return null;
   }
 
@@ -110,6 +114,10 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     return "window_id";
   }
   //
+
+  public MethodHandle getTarget() {
+    return target;
+  }
 
   public final Map<String, String[]> getParameters() {
     return parameters;
@@ -199,7 +207,12 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     return null;
   }
 
-  public final String renderURL(Phase phase, Map<String, String[]> parameters, PropertyMap properties) {
+  public final String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
+
+    //
+    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+
+    //
     StringBuilder buffer = new StringBuilder();
     buffer.append(req.getScheme());
     buffer.append("://");
@@ -210,13 +223,10 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     }
     buffer.append(req.getContextPath());
     buffer.append(req.getServletPath());
-    buffer.append("?juzu.phase=").append(phase);
+    buffer.append("?juzu.phase=").append(method.getPhase());
 
     //
-    String methodId = properties != null ? properties.getValue(RequestContext.METHOD_ID) : null;
-    if (methodId != null) {
-      buffer.append("&juzu.op=").append(methodId);
-    }
+    buffer.append("&juzu.op=").append(method.getId());
 
     //
     for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {

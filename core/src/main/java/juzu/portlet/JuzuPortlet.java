@@ -163,7 +163,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   }
 
   public void processAction(ActionRequest req, ActionResponse resp) throws PortletException, IOException {
-    PortletActionBridge requestBridge = new PortletActionBridge(req, resp, bridge.config.isProd());
+    PortletActionBridge requestBridge = new PortletActionBridge(bridge.runtime.getContext(), req, resp, bridge.config.isProd());
     try {
       bridge.processAction(requestBridge);
     }
@@ -178,7 +178,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
   public void render(final RenderRequest req, final RenderResponse resp) throws PortletException, IOException {
 
     //
-    PortletRenderBridge requestBridge = new PortletRenderBridge(bridge, req, resp, !bridgeConfig.isProd(), bridge.config.isProd());
+    PortletRenderBridge requestBridge = new PortletRenderBridge(bridge.runtime.getContext(), bridge, req, resp, !bridgeConfig.isProd(), bridge.config.isProd());
 
     //
     try {
@@ -215,7 +215,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       }
     }
     else {
-      PortletResourceBridge requestBridge = new PortletResourceBridge(req, resp, !bridgeConfig.isProd(), bridge.config.isProd());
+      PortletResourceBridge requestBridge = new PortletResourceBridge(bridge.runtime.getContext(), req, resp, !bridgeConfig.isProd(), bridge.config.isProd());
       try {
         bridge.serveResource(requestBridge);
       }

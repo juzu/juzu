@@ -20,6 +20,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.ResourceBridge;
 
 import javax.portlet.ResourceRequest;
@@ -32,8 +33,8 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
   /** . */
   private int status = 200;
 
-  public PortletResourceBridge(ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod) {
-    super(request, response, buffer, prod);
+  public PortletResourceBridge(ApplicationContext application, ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod) {
+    super(application, request, response, buffer, prod);
   }
 
   @Override

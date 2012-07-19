@@ -20,8 +20,9 @@
 package juzu.test.protocol.http;
 
 import juzu.Response;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
-import juzu.request.Phase;
+import juzu.impl.common.MethodHandle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,11 +36,12 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
   private Response response;
 
   ActionBridgeImpl(
+      ApplicationContext application,
       HttpServletRequest req,
       HttpServletResponse resp,
-      String methodId,
+      MethodHandle target,
       Map<String, String[]> parameters) {
-    super(req, resp, methodId, parameters);
+    super(application, req, resp, target, parameters);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
@@ -54,7 +56,7 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
     try {
       if (response instanceof Response.Update) {
         Response.Update update = (Response.Update)response;
-        String url = renderURL(Phase.RENDER, update.getParameters(), update.getProperties());
+        String url = renderURL(update.getTarget(), update.getParameters(), update.getProperties());
         resp.sendRedirect(url);
       }
       else if (response instanceof Response.Redirect) {

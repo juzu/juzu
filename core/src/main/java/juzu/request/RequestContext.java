@@ -30,13 +30,6 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class RequestContext {
 
-  /** Phase type literal. */
-  public static class METHOD_ID extends PropertyType<String> {
-  }
-
-  /** Phase type literal instance. */
-  public static METHOD_ID METHOD_ID = new METHOD_ID();
-
   /** . */
   protected final ApplicationContext application;
 

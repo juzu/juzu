@@ -20,7 +20,9 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
+import juzu.impl.common.MethodHandle;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
@@ -39,8 +41,8 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
   /** . */
   private String mimeType;
 
-  public MockMimeBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
-    super(client, methodId, parameters);
+  public MockMimeBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+    super(application, client, target, parameters);
   }
 
   public String assertStringResult() {

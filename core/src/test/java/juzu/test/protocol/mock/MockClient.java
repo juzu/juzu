@@ -20,12 +20,12 @@
 package juzu.test.protocol.mock;
 
 import juzu.impl.application.ApplicationException;
+import juzu.impl.common.MethodHandle;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
-import juzu.request.Phase;
-import juzu.request.RequestContext;
 import juzu.test.AbstractTestCase;
 
 import java.util.Collections;
@@ -56,21 +56,29 @@ public class MockClient {
       }
 
       //
-      String methodId = json.getJSON("properties").getString(RequestContext.METHOD_ID.class.getName());
+      MethodDescriptor method = null;
+      if (json.getString("target") != null) {
+        MethodHandle target = MethodHandle.parse(json.getString("target"));
+        method = application.getContext().getDescriptor().getControllers().getMethodByHandle(target);
+      }
 
-      Phase phase = Phase.valueOf(json.getString("phase"));
-      switch (phase) {
-        case ACTION:
-          request = new MockActionBridge(this, methodId, parameters);
-          break;
-        case RENDER:
-          request = new MockRenderBridge(this, methodId, parameters);
-          break;
-        case RESOURCE:
-          request = new MockResourceBridge(this, methodId, parameters);
-          break;
-        default:
-          throw AbstractTestCase.failure("Not yet supported " + phase);
+      //
+      if (method != null) {
+        switch (method.getPhase()) {
+          case ACTION:
+            request = new MockActionBridge(application.getContext(), this, method.getHandle(), parameters);
+            break;
+          case RENDER:
+            request = new MockRenderBridge(application.getContext(), this, method.getHandle(), parameters);
+            break;
+          case RESOURCE:
+            request = new MockResourceBridge(application.getContext(), this, method.getHandle(), parameters);
+            break;
+          default:
+            throw AbstractTestCase.failure("Not yet supported " + method.getPhase());
+        }
+      } else {
+        request = new MockRenderBridge(application.getContext(), this, null, parameters);
       }
     }
     catch (Exception e) {
@@ -101,7 +109,14 @@ public class MockClient {
   }
 
   public MockRenderBridge render(String methodId) throws ApplicationException {
-    MockRenderBridge render = new MockRenderBridge(this, methodId, new HashMap<String, String[]>());
+    MethodHandle handle = null;
+    if (methodId != null) {
+      MethodDescriptor method = application.getContext().getDescriptor().getControllers().getMethodById(methodId);
+      if (method != null) {
+        handle = method.getHandle();
+      }
+    }
+    MockRenderBridge render = new MockRenderBridge(application.getContext(), this, handle, new HashMap<String, String[]>());
     invoke(render);
     return render;
   }

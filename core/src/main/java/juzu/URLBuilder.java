@@ -23,7 +23,6 @@ import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;
-import juzu.request.RequestContext;
 
 import java.util.Map;
 
@@ -61,13 +60,7 @@ public final class URLBuilder {
   public static ESCAPE_XML ESCAPE_XML = new ESCAPE_XML();
 
   /** . */
-  private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
-  /** . */
   private final MimeBridge bridge;
-
-  /** . */
-  private final MethodDescriptor method;
 
   /** . */
   private ParameterMap parameterMap;
@@ -75,15 +68,14 @@ public final class URLBuilder {
   /** . */
   private PropertyMap properties;
 
-  public URLBuilder(MimeBridge bridge, MethodDescriptor method) {
-    PropertyMap properties = new PropertyMap();
-    properties.setValue(RequestContext.METHOD_ID, method.getId());
+  /** . */
+  private final MethodDescriptor target;
 
-    //
+  public URLBuilder(MimeBridge bridge, MethodDescriptor target) {
     this.bridge = bridge;
-    this.method = method;
+    this.target = target;
     this.parameterMap = new ParameterHashMap();
-    this.properties = properties;
+    this.properties = new PropertyMap();
   }
 
   public URLBuilder setParameter(String name, String value) throws NullPointerException {
@@ -120,7 +112,7 @@ public final class URLBuilder {
    * @throws IllegalArgumentException if the property is not valid
    */
   public <T> URLBuilder setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException {
-    String invalid = bridge.checkPropertyValidity(method.getPhase(), propertyType, propertyValue);
+    String invalid = bridge.checkPropertyValidity(target.getPhase(), propertyType, propertyValue);
     if (invalid != null) {
       throw new IllegalArgumentException(invalid);
     }
@@ -134,6 +126,6 @@ public final class URLBuilder {
    * @return the string url
    */
   public String toString() {
-    return bridge.renderURL(method.getPhase(), parameterMap, properties);
+    return bridge.renderURL(target.getHandle(), parameterMap, properties);
   }
 }

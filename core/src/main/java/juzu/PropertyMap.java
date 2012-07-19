@@ -105,7 +105,7 @@ public class PropertyMap implements Iterable<PropertyType<?>> {
   }
 
   public Iterator<PropertyType<?>> iterator() {
-    return map.keySet().iterator();
+    return map != null ? map.keySet().iterator() : Tools.<PropertyType<?>>emptyIterator();
   }
 
   public <T> T getValue(PropertyType<T> property) {

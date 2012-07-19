@@ -23,6 +23,7 @@ import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
+import juzu.impl.common.MethodHandle;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;
@@ -52,6 +53,8 @@ public class HttpServletImpl extends HttpServlet {
   private RequestBridgeImpl create(HttpServletRequest req, HttpServletResponse resp) {
     Phase phase = Phase.RENDER;
     Map<String, String[]> parameters = new HashMap<String, String[]>();
+
+    //
     String methodId = null;
     for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet()) {
       String name = entry.getKey();
@@ -68,13 +71,16 @@ public class HttpServletImpl extends HttpServlet {
     }
 
     //
+    MethodHandle method = methodId != null ? application.getDescriptor().getControllers().getMethodById(methodId).getHandle() : null;
+
+    //
     switch (phase) {
       case RENDER:
-        return new RenderBridgeImpl(this, req, resp, methodId, parameters);
+        return new RenderBridgeImpl(this, application.getContext(), req, resp, method, parameters);
       case ACTION:
-        return new ActionBridgeImpl(req, resp, methodId, parameters);
+        return new ActionBridgeImpl(application.getContext(), req, resp, method, parameters);
       case RESOURCE:
-        return new ResourceBridgeImpl(req, resp, methodId, parameters);
+        return new ResourceBridgeImpl(application.getContext(), req, resp, method, parameters);
       default:
         throw new UnsupportedOperationException("todo");
     }

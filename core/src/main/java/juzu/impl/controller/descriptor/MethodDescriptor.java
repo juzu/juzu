@@ -20,6 +20,7 @@
 package juzu.impl.controller.descriptor;
 
 import juzu.Param;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.common.ParameterMap;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
@@ -66,6 +67,9 @@ public final class MethodDescriptor {
 
   /** . */
   private final boolean requiresPrefix;
+
+  /** . */
+  private final MethodHandle handle;
 
   public MethodDescriptor(
       String id,
@@ -122,6 +126,11 @@ public final class MethodDescriptor {
     this.argumentList = Tools.safeUnmodifiableList(argumentList);
     this.argumentMap = Collections.unmodifiableMap(argumentMap);
     this.requiresPrefix = requiresPrefix;
+    this.handle = new MethodHandle(method);
+  }
+
+  public MethodHandle getHandle() {
+    return handle;
   }
 
   public String getId() {

@@ -20,7 +20,9 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
+import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.RenderBridge;
+import juzu.impl.common.MethodHandle;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,8 +33,8 @@ public class MockRenderBridge extends MockMimeBridge implements RenderBridge {
   /** . */
   private String title;
 
-  public MockRenderBridge(MockClient client, String methodId, Map<String, String[]> parameters) {
-    super(client, methodId, parameters);
+  public MockRenderBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+    super(application, client, target, parameters);
   }
 
   public String getTitle() {

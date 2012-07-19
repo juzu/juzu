@@ -20,13 +20,14 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.PropertyType;
+import juzu.impl.application.ApplicationContext;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.portlet.JuzuPortlet;
 import juzu.request.HttpContext;
-import juzu.request.RequestContext;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 
@@ -42,13 +43,16 @@ import java.util.Map;
 abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge {
 
   /** . */
+  protected final ApplicationContext application;
+
+  /** . */
   protected final Rq req;
 
   /** . */
   protected final Rs resp;
 
   /** . */
-  protected final String methodId;
+  protected final MethodHandle target;
 
   /** . */
   protected final Map<String, String[]> parameters;
@@ -68,7 +72,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   /** . */
   protected final boolean prod;
 
-  PortletRequestBridge(Rq req, Rs resp, boolean prod) {
+  PortletRequestBridge(ApplicationContext application, Rq req, Rs resp, boolean prod) {
     String methodId = null;
     Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
     for (Iterator<Map.Entry<String, String[]>> i = parameters.entrySet().iterator();i.hasNext();) {
@@ -83,9 +87,10 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     }
 
     //
+    this.application = application;
     this.req = req;
     this.resp = resp;
-    this.methodId = methodId;
+    this.target = null;
     this.parameters = parameters;
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
@@ -101,10 +106,11 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     else if (JuzuPortlet.WINDOW_STATE.equals(propertyType)) {
       propertyValue = req.getWindowState();
     }
-    else if (RequestContext.METHOD_ID.equals(propertyType)) {
-      propertyValue = methodId;
-    }
     return propertyValue == null ? null : propertyType.getType().cast(propertyValue);
+  }
+
+  public MethodHandle getTarget() {
+    return target;
   }
 
   public final Map<String, String[]> getParameters() {

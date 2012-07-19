@@ -21,6 +21,8 @@ package juzu.impl.bridge.spi.standalone;
 
 import juzu.Response;
 import juzu.asset.Asset;
+import juzu.impl.application.ApplicationContext;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.common.Tools;
@@ -48,12 +50,13 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
   private String title;
 
   ServletRenderBridge(
+      ApplicationContext application,
       ServletBridge servlet,
       HttpServletRequest req,
       HttpServletResponse resp,
-      String methodId,
+      MethodHandle target,
       Map<String, String[]> parameters) {
-    super(servlet, req, resp, methodId, parameters);
+    super(application, servlet, req, resp, target, parameters);
   }
 
   public void setTitle(String title) {
