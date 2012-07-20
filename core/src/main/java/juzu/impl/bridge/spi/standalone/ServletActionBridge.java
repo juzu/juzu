@@ -33,7 +33,7 @@ import java.util.Map;
 public class ServletActionBridge extends ServletRequestBridge implements ActionBridge {
 
   /** . */
-  private Response response;
+  Response response;
 
   ServletActionBridge(
       ApplicationContext application,
@@ -54,21 +54,5 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
   }
 
   public void close() {
-    try {
-      if (response instanceof Response.Update) {
-        Response.Update update = (Response.Update)response;
-        String url = renderURL(update.getTarget(), update.getParameters(), update.getProperties());
-        resp.sendRedirect(url);
-      }
-      else if (response instanceof Response.Redirect) {
-        Response.Redirect redirect = (Response.Redirect)response;
-        String url = redirect.getLocation();
-        resp.sendRedirect(url);
-      }
-    }
-    catch (IOException e) {
-      // ?????
-      e.printStackTrace();
-    }
   }
 }
