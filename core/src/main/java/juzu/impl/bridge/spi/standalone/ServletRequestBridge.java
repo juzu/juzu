@@ -236,11 +236,6 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     // Add context path
     buffer.append(req.getContextPath());
 
-    // Add servlet path
-    if (!req.getServletPath().equals("/")) {
-      buffer.append(req.getServletPath());
-    }
-
     //
     MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
