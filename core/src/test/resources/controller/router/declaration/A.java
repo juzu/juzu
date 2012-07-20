@@ -24,23 +24,21 @@ import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
 import juzu.View;
-import juzu.asset.Asset;
-import juzu.asset.AssetLocation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
 
-  @View("/view")
+  @View(route = "/view")
   public Response view() {
     throw new UnsupportedOperationException();
   }
 
-  @Action("/action")
+  @Action(route = "/action")
   public Response action() {
     throw new UnsupportedOperationException();
   }
 
-  @Resource("/resource")
+  @Resource(route = "/resource")
   public Response resource() {
     throw new UnsupportedOperationException();
   }

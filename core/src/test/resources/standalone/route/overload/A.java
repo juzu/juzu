@@ -17,13 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package standalone.route.action.directtoview;
+package standalone.route.overload;
 
 import juzu.Action;
 import juzu.Controller;
 import juzu.Response;
 import juzu.View;
-import juzu.standalone.JuzuServlet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
@@ -31,19 +30,19 @@ public class A extends Controller {
   @View
   public Response.Content index() {
     return Response.render(
-        "<form id='form' action='" + A_.fooURL() + "' method='post'>" +
-            "<input id='trigger' type='submit' name='click'/>" +
-            "</form>");
+        "<form id='form' action='" + A_.fooActionURL() + "' method='post'>" +
+        "<input type='hidden' name='juu' value='bar'/>" +
+        "<input id='trigger' type='submit' name='click'/>" +
+        "</form>");
   }
 
   @Action(route = "/foo")
-  public Response.Update foo() {
-    return A_.bar("juu").with(JuzuServlet.REDIRECT_AFTER_ACTION, false);
+  public Response.Update fooAction() {
+    return A_.fooView();
   }
 
-  @View(route = "/bar")
-  public Response.Content bar(String juu) {
-    String path = renderContext.getProperty(JuzuServlet.PATH);
-    return Response.ok("/juzu/foo".equals(path) && "juu".equals(juu) ? "pass" : "fail");
+  @View(route = "/foo")
+  public Response.Content fooView() {
+    return Response.ok("pass");
   }
 }

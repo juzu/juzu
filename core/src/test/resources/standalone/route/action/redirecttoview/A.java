@@ -36,12 +36,12 @@ public class A extends Controller {
             "</form>");
   }
 
-  @Action("/foo")
+  @Action(route = "/foo")
   public Response.Update foo() {
     return A_.bar("juu");
   }
 
-  @View("/bar")
+  @View(route = "/bar")
   public Response.Content bar(String juu) {
     String path = renderContext.getProperty(JuzuServlet.PATH);
     return Response.ok("/juzu/bar".equals(path) && "juu".equals(juu) ? "pass" : "fail");

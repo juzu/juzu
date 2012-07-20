@@ -35,7 +35,7 @@ public class A extends Controller {
         "</form>");
   }
 
-  @View("/foo")
+  @View(route = "/foo")
   public Response.Content foo(String juu) {
     return Response.ok("" + juu);
   }

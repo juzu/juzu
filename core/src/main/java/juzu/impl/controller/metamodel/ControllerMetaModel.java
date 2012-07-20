@@ -185,7 +185,7 @@ public class ControllerMetaModel extends MetaModelObject {
           }
 
           //
-          String route = (String)annotationValues.get("value");
+          String route = (String)annotationValues.get("route");
 
           //
           MethodMetaModel method = new MethodMetaModel(

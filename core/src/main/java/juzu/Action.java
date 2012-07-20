@@ -55,5 +55,5 @@ public @interface Action {
    *
    * @return the method route
    */
-  String value() default "";
+  String route() default "";
 }

@@ -31,7 +31,7 @@ public class A extends Controller {
     return Response.render("<a id='trigger' href='" + A_.fooURL("bar") + "'>click</div>");
   }
 
-  @View("/foo/{juu}")
+  @View(route = "/foo/{juu}")
   public Response.Content foo(String juu) {
     return Response.ok("" + juu);
   }

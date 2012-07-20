@@ -36,12 +36,12 @@ public class A extends Controller {
         "</form>");
   }
 
-  @Action("/foo")
+  @Action(route = "/foo")
   public Response.Update foo(String juu) {
     return A_.bar(juu);
   }
 
-  @View("/bar")
+  @View(route = "/bar")
   public Response.Content bar(String juu) {
     return Response.ok("" + juu);
   }
