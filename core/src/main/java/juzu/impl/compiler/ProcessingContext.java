@@ -235,7 +235,8 @@ public class ProcessingContext implements Filer, Elements {
           if (annotations.size() > 0) {
             log.log("Found package " + context.getQN() + " annotations " + annotations + " will use first one");
             AnnotationMirror annotation = annotations.get(0);
-            Class<?> treesClass = ClassLoader.getSystemClassLoader().loadClass("com.sun.source.util.Trees");
+            ClassLoader cl = env.getClass().getClassLoader();
+            Class<?> treesClass = cl.loadClass("com.sun.source.util.Trees");
             Method instanceMethod = treesClass.getMethod("instance", ProcessingEnvironment.class);
             Method getPathMethod = treesClass.getMethod("getPath", Element.class, AnnotationMirror.class);
             Object trees = instanceMethod.invoke(null, env);
