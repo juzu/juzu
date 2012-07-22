@@ -21,6 +21,7 @@ package juzu.impl.bridge.spi.standalone;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QualifiedName;
@@ -73,6 +74,9 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   /** . */
   protected Request request;
 
+  /** . */
+  protected Map<String, String[]> responseHeaders;
+
   ServletRequestBridge(
       ApplicationContext application,
       ServletBridge servlet,
@@ -119,7 +123,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
 
   public <T> T getProperty(PropertyType<T> propertyType) {
     if (JuzuServlet.PATH.equals(propertyType)) {
-      return propertyType.getType().cast(req.getRequestURI());
+      return propertyType.cast(req.getRequestURI());
     }
     return null;
   }
@@ -304,6 +308,19 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       }
     }
     return context;
+  }
+
+  public void setResponse(Response response) throws IllegalArgumentException, IOException {
+    responseHeaders = Collections.emptyMap();
+    Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
+    if (headers != null) {
+      for (Map.Entry<String, String[]> entry : headers) {
+        if (responseHeaders.isEmpty()) {
+          responseHeaders = new HashMap<String, String[]>();
+        }
+        responseHeaders.put(entry.getKey(), entry.getValue());
+      }
+    }
   }
 
   public final void begin(Request request) {

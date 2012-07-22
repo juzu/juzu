@@ -1,29 +1,31 @@
 package juzu;
 
-import java.lang.reflect.ParameterizedType;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PropertyType<T> {
 
-  /** . */
-  private final Class<T> type;
-
-  protected PropertyType() throws NullPointerException {
-    ParameterizedType pt = (ParameterizedType)getClass().getGenericSuperclass();
-    this.type = (Class)pt.getActualTypeArguments()[0];
+  /** Header type literal. */
+  public static class HEADER extends PropertyType<Map.Entry<String, String[]>> {
   }
 
-  public Class<T> getType() {
-    return type;
+  /** Header literal instance. */
+  public static HEADER HEADER = new HEADER();
+
+  protected PropertyType() throws NullPointerException {
+  }
+
+  public final T cast(Object o) {
+    return (T)o;
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public final boolean equals(Object obj) {
     return obj == this || obj != null && getClass().equals(obj.getClass());
   }
 
   @Override
-  public int hashCode() {
+  public final int hashCode() {
     return getClass().hashCode();
   }
 }

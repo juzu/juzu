@@ -64,6 +64,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
+    super.setResponse(response);
     if (response instanceof Response.Content) {
       if (response instanceof Response.Render) {
         Response.Render render = (Response.Render)response;
@@ -137,6 +138,11 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       Integer status = response.getStatus();
       if (status != null) {
         resp.setStatus(status);
+      }
+
+      //
+      for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
+        resp.setHeader(entry.getKey(), entry.getValue()[0]);
       }
 
       //

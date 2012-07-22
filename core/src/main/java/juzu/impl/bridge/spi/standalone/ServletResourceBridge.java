@@ -52,6 +52,7 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
+    super.setResponse(response);
     if (response instanceof Response.Content) {
       this.response = (Response.Content)response;
     } else {
@@ -71,6 +72,11 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
       String mimeType = response.getMimeType();
       if (mimeType != null) {
         resp.setContentType(mimeType);
+      }
+
+      // Set headers
+      for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
+        resp.setHeader(entry.getKey(), entry.getValue()[0]);
       }
 
       // Send response

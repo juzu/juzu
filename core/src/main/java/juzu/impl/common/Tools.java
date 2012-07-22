@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,9 +46,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -184,6 +187,24 @@ public class Tools {
     finally {
       safeClose(out);
     }
+  }
+
+  public static Map<String, String> responseHeaders(HttpURLConnection conn) {
+    Map<String, String> headers = Collections.emptyMap();
+    for (int i=0; ; i++) {
+      String name = conn.getHeaderFieldKey(i);
+      String value = conn.getHeaderField(i);
+      if (name == null && value == null) {
+        break;
+      }
+      if (name != null) {
+        if (headers.isEmpty()) {
+          headers = new HashMap<String, String>();
+        }
+        headers.put(name, value);
+      }
+    }
+    return headers;
   }
 
   public static String read(URL url) throws IOException {

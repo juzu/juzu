@@ -249,6 +249,9 @@ public class ServletBridge extends HttpServlet {
         Boolean redirect = response.getProperties().getValue(JuzuServlet.REDIRECT_AFTER_ACTION);
         if (redirect == null || redirect) {
           String url = requestBridge.renderURL(update.getTarget(), update.getParameters(), update.getProperties());
+          for (Map.Entry<String, String[]> entry : requestBridge.responseHeaders.entrySet()) {
+            resp.setHeader(entry.getKey(), entry.getValue()[0]);
+          }
           resp.sendRedirect(url);
         } else {
           ServletRenderBridge renderBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, update.getTarget(), update.getParameters());

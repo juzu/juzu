@@ -112,7 +112,7 @@ public class PropertyMap implements Iterable<PropertyType<?>> {
     T value = null;
     Values values = get(property, true, false);
     if (values != null && values.size > 0) {
-      value = property.getType().cast(values.objects[0]);
+      value = property.cast(values.objects[0]);
     }
     return value;
   }

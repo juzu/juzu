@@ -29,6 +29,7 @@ import juzu.io.Streamable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.AbstractMap;
 import java.util.Map;
 
 /**
@@ -133,6 +134,20 @@ public abstract class Response {
     return properties;
   }
 
+  public Response withHeader(String name, String... value) {
+    Iterable<Map.Entry<String, String[]>> values = properties.getValues(PropertyType.HEADER);
+    if (values != null) {
+      for (Map.Entry<String, String[]> header : values) {
+        if (header.getKey().equals(name)) {
+          header.setValue(value);
+          return this;
+        }
+      }
+    }
+    properties.addValue(PropertyType.HEADER, new AbstractMap.SimpleEntry<String, String[]>(name, value));
+    return this;
+  }
+
   /**
    * A response instructing to execute a render phase of a controller method after the current interaction.
    */
@@ -178,6 +193,11 @@ public abstract class Response {
     }
 
     @Override
+    public Update withHeader(String name, String... value) {
+      return (Update)super.withHeader(name, value);
+    }
+
+    @Override
     public boolean equals(Object obj) {
       if (obj == this) {
         return true;
@@ -214,6 +234,11 @@ public abstract class Response {
     @Override
     public <T> Redirect with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
       return (Redirect)super.with(propertyType, propertyValue);
+    }
+
+    @Override
+    public Redirect withHeader(String name, String... value) {
+      return (Redirect)super.withHeader(name, value);
     }
 
     @Override
@@ -297,6 +322,11 @@ public abstract class Response {
     public Content<S> withMimeType(String mimeType) {
       properties.setValue(MIME_TYPE, mimeType);
       return this;
+    }
+
+    @Override
+    public Content<S> withHeader(String name, String... value) {
+      return (Content<S>)super.withHeader(name, value);
     }
 
     public Integer getStatus() {
@@ -392,6 +422,11 @@ public abstract class Response {
       }
       properties.addValue(SCRIPT, stylesheet);
       return this;
+    }
+
+    @Override
+    public Render withHeader(String name, String... value) {
+      return (Render)super.withHeader(name, value);
     }
 
     @Override

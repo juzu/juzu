@@ -106,7 +106,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     else if (JuzuPortlet.WINDOW_STATE.equals(propertyType)) {
       propertyValue = req.getWindowState();
     }
-    return propertyValue == null ? null : propertyType.getType().cast(propertyValue);
+    return propertyValue == null ? null : propertyType.cast(propertyValue);
   }
 
   public MethodHandle getTarget() {

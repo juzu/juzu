@@ -46,6 +46,7 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
+    super.setResponse(response);
     if (response instanceof Response.Update || response instanceof Response.Redirect) {
       this.response = response;
     } else {
