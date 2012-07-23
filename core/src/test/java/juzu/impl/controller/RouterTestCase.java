@@ -1,9 +1,9 @@
 package juzu.impl.controller;
 
 import juzu.impl.application.ApplicationDescriptor;
-import juzu.impl.controller.descriptor.ControllersDescriptor;
-import juzu.impl.controller.descriptor.RouteDescriptor;
 import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.plugin.router.RouteDescriptor;
+import juzu.impl.plugin.router.RouterDescriptor;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.Test;
@@ -23,13 +23,8 @@ public class RouterTestCase extends AbstractInjectTestCase {
 
     //
     ApplicationDescriptor descriptor = application.getContext().getDescriptor();
-
-    ControllersDescriptor controller = descriptor.getControllers();
-
-    List<RouteDescriptor> routes = controller.getRoutes();
+    RouterDescriptor desc = (RouterDescriptor)descriptor.getPlugin("router");
+    List<RouteDescriptor> routes = desc.getRoutes();
     assertEquals(3, routes.size());
-
-
-
   }
 }

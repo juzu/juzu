@@ -1,4 +1,4 @@
-package juzu.impl.controller.descriptor;
+package juzu.impl.plugin.router;
 
 import juzu.impl.common.MethodHandle;
 

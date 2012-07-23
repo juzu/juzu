@@ -8,9 +8,7 @@ import juzu.impl.common.JSON;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -31,9 +29,6 @@ public class ControllersDescriptor extends Descriptor {
 
   /** . */
   private final Boolean escapeXML;
-
-  /** . */
-  private final List<RouteDescriptor> routes;
 
   /** . */
   private ControllerDescriptorResolver resolver;
@@ -70,26 +65,12 @@ public class ControllersDescriptor extends Descriptor {
       defaultController = loader.loadClass(defaultControllerName);
     }
 
-    // Routes
-    List<RouteDescriptor> routes = new ArrayList<RouteDescriptor>();
-    List<? extends JSON> abc = config.getList("routes", JSON.class);
-    if (abc != null) {
-      for (JSON route : abc) {
-        String target = route.getString("target");
-        String path = route.getString("path");
-        RouteDescriptor r = new RouteDescriptor(MethodHandle.parse(target), path
-        );
-        routes.add(r);
-      }
-    }
-
     //
     this.escapeXML = escapeXML;
     this.defaultController = defaultController;
     this.controllers = controllers;
     this.methods = controllerMethods;
     this.beans = beans;
-    this.routes = Collections.unmodifiableList(routes);
     this.resolver = new ControllerDescriptorResolver(this);
     this.byHandle = byHandle;
   }
@@ -116,10 +97,6 @@ public class ControllersDescriptor extends Descriptor {
 
   public List<MethodDescriptor> getMethods() {
     return methods;
-  }
-
-  public List<RouteDescriptor> getRoutes() {
-    return routes;
   }
 
   public MethodDescriptor getMethod(Class<?> type, String name, Class<?>... parameterTypes) {

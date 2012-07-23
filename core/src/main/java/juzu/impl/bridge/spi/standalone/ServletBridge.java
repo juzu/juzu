@@ -27,14 +27,14 @@ import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QualifiedName;
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.controller.descriptor.ControllersDescriptor;
 import juzu.impl.controller.descriptor.MethodDescriptor;
-import juzu.impl.controller.descriptor.RouteDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
+import juzu.impl.plugin.router.RouteDescriptor;
+import juzu.impl.plugin.router.RouterDescriptor;
 import juzu.impl.router.Param;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
@@ -153,12 +153,18 @@ public class ServletBridge extends HttpServlet {
     Router router = new Router();
     HashMap<MethodHandle, Route> routeMap = new HashMap<MethodHandle, Route>();
     HashMap<Route, MethodHandle> routeMap2 = new HashMap<Route, MethodHandle>();
-    ControllersDescriptor desc = bridge.runtime.getDescriptor().getControllers();
-    for (RouteDescriptor routeDesc : desc.getRoutes()) {
-      Route route = router.append(routeDesc.getPath());
-      routeMap.put(routeDesc.getTarget(), route);
-      routeMap2.put(route, routeDesc.getTarget());
+
+    //
+    RouterDescriptor routesDesc = (RouterDescriptor)bridge.runtime.getDescriptor().getPlugin("router");
+    if (routesDesc != null) {
+      for (RouteDescriptor routeDesc : routesDesc.getRoutes()) {
+        Route route = router.append(routeDesc.getPath());
+        routeMap.put(routeDesc.getTarget(), route);
+        routeMap2.put(route, routeDesc.getTarget());
+      }
     }
+
+    //
     this.router = router;
     this.routeMap = routeMap;
     this.routeMap2 = routeMap2;
