@@ -22,6 +22,7 @@ package juzu.impl.controller.metamodel;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModel;
+import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
@@ -132,9 +133,20 @@ public class MethodMetaModel extends MetaModelObject {
     return tmp;
   }
 
+  public String getRoute() {
+    return route;
+  }
+
+  @Override
+  protected void preDetach(MetaModelObject parent) {
+    controller = null;
+    queue(MetaModelEvent.createRemoved(this));
+  }
+
   @Override
   protected void postAttach(MetaModelObject parent) {
     controller = (ControllerMetaModel)parent;
+    queue(MetaModelEvent.createAdded(this));
   }
 
   @Override
