@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+             version="2.0"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
+   http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
+   <portlet>
+
+     <!-- Used by Arquillian to locate this portlet-->
+     <portlet-name>integrationTest</portlet-name>
+     <display-name xml:lang="EN">Integration Test</display-name>
+     <portlet-class>juzu.portlet.JuzuPortlet</portlet-class>
+     <init-param>
+       <name>juzu.run_mode</name>
+       <value>provided</value>
+     </init-param>
+     <init-param>
+       <name>juzu.inject</name>
+       <value>weld</value>
+       <!--
+       <value>spring</value>
+       -->
+     </init-param>
+     <supports>
+       <mime-type>text/html</mime-type>
+     </supports>
+     <portlet-info>
+       <title>Integration Test Application</title>
+     </portlet-info>
+   </portlet>
+</portlet-app>

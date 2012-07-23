@@ -23,7 +23,6 @@ import juzu.PropertyType;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
-import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
@@ -49,7 +48,6 @@ import javax.portlet.WindowState;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -133,18 +131,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     //
     this.bridgeConfig = bridgeConfig;
     this.bridge = bridge;
-
-    //
-    Collection<CompilationError> errors;
-    try {
-      errors = bridge.boot();
-    }
-    catch (Exception e) {
-      throw wrap(e);
-    }
-    if (errors != null && errors.size() > 0) {
-      log.log("Error when compiling application " + errors);
-    }
   }
 
   /**
@@ -170,12 +156,21 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     catch (Throwable e) {
       throw wrap(e);
     }
-    finally {
-      requestBridge.close();
-    }
   }
 
+  private boolean initialized = false;
+
   public void render(final RenderRequest req, final RenderResponse resp) throws PortletException, IOException {
+
+
+    if (!initialized) {
+      try {
+        bridge.boot();
+      }
+      catch (Exception e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+    }
 
     //
     PortletRenderBridge requestBridge = new PortletRenderBridge(bridge.runtime.getContext(), bridge, req, resp, !bridgeConfig.isProd(), bridge.config.isProd());

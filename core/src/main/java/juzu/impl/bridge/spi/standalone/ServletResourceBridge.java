@@ -60,7 +60,7 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
     }
   }
 
-  public void close() {
+  void send() throws IOException {
     if (response != null) {
       //
       int status = response.getStatus();
@@ -80,28 +80,23 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
       }
 
       // Send response
-      try {
-        if (response.getKind() == Stream.Char.class) {
-          PrintWriter writer = resp.getWriter();
-          try {
-            response.send(new AppendableStream(writer));
-          }
-          finally {
-            Tools.safeClose(writer);
-          }
+      if (response.getKind() == Stream.Char.class) {
+        PrintWriter writer = resp.getWriter();
+        try {
+          response.send(new AppendableStream(writer));
         }
-        else {
-          OutputStream out = resp.getOutputStream();
-          try {
-            response.send(new BinaryOutputStream(out));
-          }
-          finally {
-            Tools.safeClose(out);
-          }
+        finally {
+          Tools.safeClose(writer);
         }
       }
-      catch (IOException e) {
-        e.printStackTrace();
+      else {
+        OutputStream out = resp.getOutputStream();
+        try {
+          response.send(new BinaryOutputStream(out));
+        }
+        finally {
+          Tools.safeClose(out);
+        }
       }
     }
   }

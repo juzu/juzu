@@ -54,6 +54,20 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
     }
   }
 
-  public void close() {
+  @Override
+  void send() throws IOException {
+    if (response instanceof Response.Update) {
+      Response.Update update = (Response.Update)response;
+      String url = renderURL(update.getTarget(), update.getParameters(), update.getProperties());
+      for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
+        resp.setHeader(entry.getKey(), entry.getValue()[0]);
+      }
+      resp.sendRedirect(url);
+    }
+    else if (response instanceof Response.Redirect) {
+      Response.Redirect redirect = (Response.Redirect)response;
+      String url = redirect.getLocation();
+      resp.sendRedirect(url);
+    }
   }
 }

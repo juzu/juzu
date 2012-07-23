@@ -25,7 +25,6 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.QualifiedName;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -55,9 +54,6 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletBridge extends HttpServlet {
-
-  /** . */
-  static final QualifiedName TARGET = QualifiedName.create("jz", "target");
 
   /** . */
   Bridge bridge;
@@ -245,33 +241,25 @@ public class ServletBridge extends HttpServlet {
       throw wrap(throwable);
     }
 
-    //
+    // Implement the two phases in one
     if (requestBridge instanceof ServletActionBridge) {
       Response response = ((ServletActionBridge)requestBridge).response;
       if (response instanceof Response.Update) {
         Response.Update update = (Response.Update)response;
         Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
-        if (redirect == null || redirect) {
-          String url = requestBridge.renderURL(update.getTarget(), update.getParameters(), update.getProperties());
-          for (Map.Entry<String, String[]> entry : requestBridge.responseHeaders.entrySet()) {
-            resp.setHeader(entry.getKey(), entry.getValue()[0]);
-          }
-          resp.sendRedirect(url);
-        } else {
-          ServletRenderBridge renderBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, update.getTarget(), update.getParameters());
+        if (redirect != null && !redirect) {
+          requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, update.getTarget(), update.getParameters());
           try {
-            bridge.invoke(renderBridge);
+            bridge.invoke(requestBridge);
           }
           catch (Throwable throwable) {
             throw wrap(throwable);
           }
         }
       }
-      else if (response instanceof Response.Redirect) {
-        Response.Redirect redirect = (Response.Redirect)response;
-        String url = redirect.getLocation();
-        resp.sendRedirect(url);
-      }
     }
+
+    //
+    requestBridge.send();
   }
 }

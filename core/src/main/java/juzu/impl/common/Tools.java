@@ -664,6 +664,32 @@ public class Tools {
     return -1;
   }
 
+  /**
+   * Count the occurence of the separator string in the specified string with no overlapping.
+   *
+   * @param s the string to count in
+   * @param separator the separator
+   * @return the number of occurence
+   */
+  public static int count(String s, String separator) {
+    if (separator.length() == 0) {
+      return s.length() + 1;
+    } else {
+      int count = 0;
+      int prev = 0;
+      while (true) {
+        int pos = s.indexOf(separator, prev);
+        if (pos == -1) {
+          break;
+        } else {
+          count++;
+          prev = pos + separator.length();
+        }
+      }
+      return count;
+    }
+  }
+
   public static String[] split(CharSequence s, char separator) {
     return foo(s, separator, 0, 0, 0);
   }

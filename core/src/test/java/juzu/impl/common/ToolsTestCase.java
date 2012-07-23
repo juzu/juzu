@@ -83,6 +83,17 @@ public class ToolsTestCase extends AbstractTestCase {
   }
 
   @Test
+  public void testCount() {
+    assertEquals(0, Tools.count("a", "b"));
+    assertEquals(1, Tools.count("a", "a"));
+    assertEquals(2, Tools.count("aa", "a"));
+    assertEquals(1, Tools.count("", ""));
+    assertEquals(2, Tools.count("a", ""));
+    assertEquals(3, Tools.count("aa", ""));
+    assertEquals(1, Tools.count("aaa", "aa"));
+  }
+
+  @Test
   public void testSplit() {
     assertEquals(Collections.<String>emptyList(), Arrays.asList(Tools.split("", '.')));
     assertEquals(Arrays.asList("a"), Arrays.asList(Tools.split("a", '.')));

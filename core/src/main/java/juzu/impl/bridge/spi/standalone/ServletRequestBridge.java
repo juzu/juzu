@@ -335,4 +335,13 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       context.close();
     }
   }
+
+  public void close() {
+  }
+
+  /**
+   * Send the response to the client.
+   */
+  void send() throws IOException {
+  }
 }

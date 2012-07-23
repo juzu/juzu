@@ -132,7 +132,8 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
     }
   }
 
-  public void close() {
+  @Override
+  void send() throws IOException {
     if (response != null) {
 
       Integer status = response.getStatus();
@@ -202,10 +203,6 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         //
         writer.println("</body>");
         writer.println("</html>");
-      }
-      catch (IOException e) {
-        // ????
-        e.printStackTrace();
       }
       finally {
         Tools.safeClose(writer);
