@@ -1,10 +1,10 @@
 package juzu.impl.standalone;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteViewQueryParamTestCase extends AbstractRouteQueryParamTestCase {
+public class RouteActionQueryParamTestCase extends AbstractRouteQueryParamTestCase {
 
   @Override
   protected String[] getApplication() {
-    return new String[]{"standalone", "route", "view", "queryparam"};
+    return new String[]{"standalone", "route", "action", "queryparam"};
   }
 }
