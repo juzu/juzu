@@ -34,6 +34,9 @@ import java.util.Map;
 public class GroovyTemplateEmitter extends DialectTemplateEmitter {
 
   /** . */
+  private final String sep = (String)System.getProperty("line.separator");
+
+  /** . */
   private StringBuilder out = new StringBuilder();
 
   /** . */
@@ -71,13 +74,13 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
     builder.append(out.toString());
 
     //
-    builder.append("\n");
-    builder.append("public static class Constants\n");
-    builder.append("{\n");
+    builder.append(sep);
+    builder.append("public static class Constants").append(sep);
+    builder.append("{").append(sep);
 
     // Add text constant
     for (TextConstant method : textMethods) {
-      builder.append(method.getDeclaration()).append("\n");
+      builder.append(method.getDeclaration()).append(sep);
     }
 
     // Add line table
@@ -86,7 +89,7 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
       builder.append("[:]");
     }
     else {
-      builder.append("[\n");
+      builder.append("[").append(sep);
       for (Iterator<Map.Entry<Integer, Foo>> i = locationTable.entrySet().iterator();i.hasNext();) {
         Map.Entry<Integer, Foo> entry = i.next();
         Foo text = entry.getValue();
@@ -98,17 +101,17 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
         Tools.escape(text.getValue(), builder);
         builder.append("')");
         if (i.hasNext()) {
-          builder.append(",\n");
+          builder.append(",").append(sep);
         }
         else {
           builder.append(']');
         }
       }
     }
-    builder.append(";\n");
+    builder.append(";").append(sep);
 
     // Close context
-    builder.append("}\n");
+    builder.append("}").append(sep);
 
     //
     return builder.toString();
@@ -135,7 +138,7 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
 
   public void endScriptlet() {
     // We append a line break because we want that any line comment does not affect the template
-    out.append("\n");
+    out.append(sep);
     lineNumber++;
   }
 
@@ -150,13 +153,13 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
   }
 
   public void endExpression() {
-    out.append("}\");\n");
+    out.append("}\");").append(sep);
     lineNumber++;
   }
 
   public void appendText(String text) {
     TextConstant m = new TextConstant("s" + methodCount++, text);
-    out.append(";out.print(Constants.").append(m.name).append(");\n");
+    out.append(";out.print(Constants.").append(m.name).append(");").append(sep);
     textMethods.add(m);
     lineNumber++;
   }
@@ -165,11 +168,11 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
     this.pos = new Location(1, position.getLine() + 1);
     switch (currentType) {
       case SCRIPTLET:
-        out.append("\n");
+        out.append(sep);
         lineNumber++;
         break;
       case EXPR:
-        out.append("\n");
+        out.append(sep);
         lineNumber++;
         break;
       default:
