@@ -19,31 +19,32 @@
 
 package juzu.impl.template.spi.juzu.ast;
 
-import juzu.impl.template.spi.EmitContext;
-import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateStub;
-import juzu.impl.template.spi.juzu.compiler.EmitPhase;
 import juzu.io.AppendableStream;
 import juzu.template.TemplateRenderContext;
-import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.Random;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateBuilderTestCase extends AbstractTestCase {
+public class TemplateBuilderTestCase extends AbstractTemplateTestCase {
 
   @Test
   public void testFoo() throws Exception {
-    GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
-    new EmitPhase(new EmitContext()).emit(generator, ASTNode.Template.parse("a<%=foo%>c"));
-    GroovyTemplateStub s = generator.build("template_" + Math.abs(new Random().nextLong()));
+    GroovyTemplateStub s = template("a<%=foo%>c");
     s.init(Thread.currentThread().getContextClassLoader());
     StringWriter out = new StringWriter();
     new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(new AppendableStream(out));
     assertEquals("abc", out.toString());
   }
 
+  @Test
+  public void testCarriageReturn() throws Exception {
+    GroovyTemplateStub s = template("a\r\nb");
+    s.init(Thread.currentThread().getContextClassLoader());
+    StringWriter out = new StringWriter();
+    new TemplateRenderContext(s, Collections.<String, Object>emptyMap()).render(new AppendableStream(out));
+    assertEquals("a\nb", out.toString());
+  }
 }
