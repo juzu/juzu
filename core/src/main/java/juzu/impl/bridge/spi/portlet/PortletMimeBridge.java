@@ -185,6 +185,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
+    super.setResponse(response);
     if (response instanceof Response.Content<?>) {
       Response.Content<?> content = (Response.Content<?>)response;
 

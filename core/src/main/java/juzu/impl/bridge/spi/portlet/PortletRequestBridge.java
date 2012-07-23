@@ -20,6 +20,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
@@ -34,6 +35,8 @@ import juzu.request.WindowContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +44,9 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge {
+
+  /** . */
+  protected Map<String, String[]> responseHeaders;
 
   /** . */
   protected final ApplicationContext application;
@@ -197,6 +203,9 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   }
 
   public void close() {
+    for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
+      resp.addProperty(entry.getKey(), entry.getValue()[0]);
+    }
   }
 
   protected final ScopedContext getRequestContext(boolean create) {
@@ -229,6 +238,19 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
       }
     }
     return context;
+  }
+
+  public void setResponse(Response response) throws IllegalArgumentException, IOException {
+    responseHeaders = Collections.emptyMap();
+    Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
+    if (headers != null) {
+      for (Map.Entry<String, String[]> entry : headers) {
+        if (responseHeaders.isEmpty()) {
+          responseHeaders = new HashMap<String, String[]>();
+        }
+        responseHeaders.put(entry.getKey(), entry.getValue());
+      }
+    }
   }
 
   public void begin(Request request) {

@@ -42,6 +42,7 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
+    super.setResponse(response);
     if (response instanceof Response.Update) {
       Response.Update update = (Response.Update)response;
 
