@@ -120,7 +120,9 @@ public class Tools {
       else if (c == '\'') {
         appendable.append("\\\'");
       }
-      else {
+      else if (c == '\r') {
+        // Skip carriage return
+      } else {
         appendable.append(c);
       }
     }
