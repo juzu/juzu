@@ -351,31 +351,10 @@ public abstract class Response {
 
   public static class Render extends Content<Stream.Char> {
 
-    /** Script type literal. */
-    public static class SCRIPT extends PropertyType<Asset> {
-    }
-
-    /** Script type literal instance. */
-    public static SCRIPT SCRIPT = new SCRIPT();
-
-    /** Stylesheet type literal. */
-    public static class STYLESHEET extends PropertyType<Asset> {
-    }
-
-    /** Stylesheet literal instance. */
-    public static STYLESHEET STYLESHEET = new STYLESHEET();
-
     @Override
     public <T> Render with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
       return (Render)super.with(propertyType, propertyValue);
     }
-
-    /** Stylesheet type literal. */
-    public static class TITLE extends PropertyType<String> {
-    }
-
-    /** Stylesheet literal instance. */
-    public static TITLE TITLE = new TITLE();
 
     public Render() {
       super(200, Stream.Char.class);
@@ -390,16 +369,16 @@ public abstract class Response {
     }
 
     public String getTitle() {
-      return properties.getValue(TITLE);
+      return properties.getValue(PropertyType.TITLE);
     }
 
     public Render withTitle(String title) {
-      properties.setValue(TITLE, title);
+      properties.setValue(PropertyType.TITLE, title);
       return this;
     }
 
     public Iterable<Asset> getScripts() {
-      Iterable<Asset> scripts = properties.getValues(SCRIPT);
+      Iterable<Asset> scripts = properties.getValues(PropertyType.SCRIPT);
       return scripts != null ? scripts : Tools.<Asset>emptyIterable();
     }
 
@@ -407,12 +386,12 @@ public abstract class Response {
       if (script == null) {
         throw new NullPointerException("No null script accepted");
       }
-      properties.addValue(SCRIPT, script);
+      properties.addValue(PropertyType.SCRIPT, script);
       return this;
     }
 
     public Iterable<Asset> getStylesheets() {
-      Iterable<Asset> stylesheets = properties.getValues(STYLESHEET);
+      Iterable<Asset> stylesheets = properties.getValues(PropertyType.STYLESHEET);
       return stylesheets != null ? stylesheets : Tools.<Asset>emptyIterable();
     }
 
@@ -420,7 +399,7 @@ public abstract class Response {
       if (stylesheet == null) {
         throw new NullPointerException("No null stylesheet accepted");
       }
-      properties.addValue(SCRIPT, stylesheet);
+      properties.addValue(PropertyType.SCRIPT, stylesheet);
       return this;
     }
 

@@ -20,7 +20,7 @@
 package juzu.template;
 
 import juzu.PropertyMap;
-import juzu.Response;
+import juzu.PropertyType;
 import juzu.impl.application.ApplicationException;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.io.AppendableStream;
@@ -82,7 +82,7 @@ public class TemplateRenderContext {
 
   public void setTitle(String title) {
     if (properties != null) {
-      properties.setValue(Response.Render.TITLE, title);
+      properties.setValue(PropertyType.TITLE, title);
     }
   }
 

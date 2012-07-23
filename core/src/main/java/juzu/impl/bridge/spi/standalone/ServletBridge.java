@@ -19,11 +19,11 @@
 
 package juzu.impl.bridge.spi.standalone;
 
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
-import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QualifiedName;
 import juzu.impl.compiler.CompilationError;
@@ -39,9 +39,7 @@ import juzu.impl.router.Param;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.router.Router;
-import juzu.standalone.JuzuServlet;
 
-import javax.portlet.ActionRequest;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -246,7 +244,7 @@ public class ServletBridge extends HttpServlet {
       Response response = ((ServletActionBridge)requestBridge).response;
       if (response instanceof Response.Update) {
         Response.Update update = (Response.Update)response;
-        Boolean redirect = response.getProperties().getValue(JuzuServlet.REDIRECT_AFTER_ACTION);
+        Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
         if (redirect == null || redirect) {
           String url = requestBridge.renderURL(update.getTarget(), update.getParameters(), update.getProperties());
           for (Map.Entry<String, String[]> entry : requestBridge.responseHeaders.entrySet()) {

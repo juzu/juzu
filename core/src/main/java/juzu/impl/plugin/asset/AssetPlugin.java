@@ -1,6 +1,7 @@
 package juzu.impl.plugin.asset;
 
 import juzu.PropertyMap;
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
@@ -125,8 +126,8 @@ public class AssetPlugin extends Plugin implements RequestFilter {
 
         // Add assets
         PropertyMap properties = new PropertyMap(render.getProperties());
-        properties.addValues(Response.Render.STYLESHEET, stylesheets);
-        properties.addValues(Response.Render.SCRIPT, scripts);
+        properties.addValues(PropertyType.STYLESHEET, stylesheets);
+        properties.addValues(PropertyType.SCRIPT, scripts);
 
         // Use a new response
         request.setResponse(new Response.Render(properties, render.getStreamable()));

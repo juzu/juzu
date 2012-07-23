@@ -21,9 +21,9 @@ package standalone.response.header.actiondirecttoview;
 
 import juzu.Action;
 import juzu.Controller;
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.View;
-import juzu.standalone.JuzuServlet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
@@ -35,7 +35,7 @@ public class A extends Controller {
 
   @Action(route = "/foo")
   public Response.Update foo() {
-    return A_.bar().withHeader("juu", "juu_value").with(JuzuServlet.REDIRECT_AFTER_ACTION, false);
+    return A_.bar().withHeader("juu", "juu_value").with(PropertyType.REDIRECT_AFTER_ACTION, false);
   }
 
   @View(route = "/bar")

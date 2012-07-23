@@ -21,9 +21,9 @@ package standalone.route.action.directtoview;
 
 import juzu.Action;
 import juzu.Controller;
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.View;
-import juzu.standalone.JuzuServlet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
@@ -38,12 +38,12 @@ public class A extends Controller {
 
   @Action(route = "/foo")
   public Response.Update foo() {
-    return A_.bar("juu").with(JuzuServlet.REDIRECT_AFTER_ACTION, false);
+    return A_.bar("juu").with(PropertyType.REDIRECT_AFTER_ACTION, false);
   }
 
   @View(route = "/bar")
   public Response.Content bar(String juu) {
-    String path = renderContext.getProperty(JuzuServlet.PATH);
+    String path = renderContext.getProperty(PropertyType.PATH);
     return Response.ok("/juzu/foo".equals(path) && "juu".equals(juu) ? "pass" : "fail");
   }
 }

@@ -1,6 +1,7 @@
 package juzu.impl.plugin.ajax;
 
 import juzu.PropertyMap;
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
@@ -71,7 +72,7 @@ public class AjaxPlugin extends Plugin implements RequestFilter {
         PropertyMap properties = new PropertyMap(response.getProperties());
 
         //
-        properties.addValues(Response.Render.SCRIPT, Asset.ref("juzu.ajax"));
+        properties.addValues(PropertyType.SCRIPT, Asset.ref("juzu.ajax"));
 
         //
         final Streamable<Stream.Char> decorated = render.getStreamable();
