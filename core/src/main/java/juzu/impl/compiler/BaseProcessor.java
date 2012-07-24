@@ -172,15 +172,15 @@ public abstract class BaseProcessor extends AbstractProcessor {
       doProcess(annotations, roundEnv);
     }
     catch (Exception e) {
-      if (e instanceof CompilationException) {
-        CompilationException ce = (CompilationException)e;
+      if (e instanceof ProcessingException) {
+        ProcessingException ce = (ProcessingException)e;
         Element element = ce.getElement();
         AnnotationMirror annotation = ce.getAnnotation();
 
         //
         StringBuilder msg = new StringBuilder();
 
-        for (CompilationMessage cm : ce) {
+        for (Message cm : ce) {
           msg.setLength(0);
           MessageCode code = cm.getCode();
           Object[] args = cm.getArguments();
@@ -284,5 +284,5 @@ public abstract class BaseProcessor extends AbstractProcessor {
     return false;
   }
 
-  protected abstract void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) throws CompilationException;
+  protected abstract void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) throws ProcessingException;
 }

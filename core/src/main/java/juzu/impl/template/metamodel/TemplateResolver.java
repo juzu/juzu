@@ -21,7 +21,7 @@ package juzu.impl.template.metamodel;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.BaseProcessor;
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.inject.Export;
@@ -108,7 +108,7 @@ public class TemplateResolver implements Serializable {
     classCache.clear();
   }
 
-  public void process(TemplateMetaModelPlugin plugin, ProcessingContext context) throws CompilationException {
+  public void process(TemplateMetaModelPlugin plugin, ProcessingContext context) throws ProcessingException {
 
     //
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);

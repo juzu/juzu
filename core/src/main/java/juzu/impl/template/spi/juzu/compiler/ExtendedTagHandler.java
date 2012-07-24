@@ -19,7 +19,7 @@
 
 package juzu.impl.template.spi.juzu.compiler;
 
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.template.TagHandler;
@@ -27,9 +27,9 @@ import juzu.template.TagHandler;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class ExtendedTagHandler extends TagHandler {
 
-  public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException {
+  public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) throws ProcessingException {
   }
 
-  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws CompilationException {
+  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws ProcessingException {
   }
 }

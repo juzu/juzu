@@ -4,7 +4,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilationMessage {
+public class Message {
 
   /** . */
   private final MessageCode code;
@@ -12,7 +12,7 @@ public class CompilationMessage {
   /** . */
   private final Object[] arguments;
 
-  public CompilationMessage(MessageCode code, Object... arguments) {
+  public Message(MessageCode code, Object... arguments) {
     this.code = code;
     this.arguments = arguments;
   }

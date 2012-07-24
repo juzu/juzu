@@ -19,7 +19,7 @@
 
 package juzu.impl.template.spi.juzu.ast;
 
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
@@ -50,7 +50,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     try {
       ProcessPhase processPhase = new ProcessPhase(new ProcessContext(Collections.<Path, Template<?>>emptyMap()) {
         @Override
-        public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws CompilationException {
+        public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
           if (parameterMap.size() > 0) {
             throw failure("Unexpected non empty parameter map");
           }

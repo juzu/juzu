@@ -26,10 +26,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CompilationException extends RuntimeException implements Iterable<CompilationMessage> {
+public class ProcessingException extends RuntimeException implements Iterable<Message> {
 
   /** . */
-  private final List<CompilationMessage> messages;
+  private final List<Message> messages;
 
   /** . */
   private final Element element;
@@ -37,35 +37,35 @@ public class CompilationException extends RuntimeException implements Iterable<C
   /** . */
   private final AnnotationMirror annotation;
 
-  public CompilationException(MessageCode code, Object... arguments) {
+  public ProcessingException(MessageCode code, Object... arguments) {
     this(null, code, arguments);
   }
 
-  public CompilationException(Element element, MessageCode code, Object... arguments) {
+  public ProcessingException(Element element, MessageCode code, Object... arguments) {
     this(element, null, code, arguments);
   }
 
-  public CompilationException(Element element, AnnotationMirror annotation, MessageCode code, Object... arguments) {
-    this(element, annotation, new CompilationMessage(code, arguments));
+  public ProcessingException(Element element, AnnotationMirror annotation, MessageCode code, Object... arguments) {
+    this(element, annotation, new Message(code, arguments));
   }
 
-  public CompilationException(Element element, AnnotationMirror annotation, CompilationMessage... messages) {
+  public ProcessingException(Element element, AnnotationMirror annotation, Message... messages) {
     this(element, annotation, Arrays.asList(messages));
   }
 
-  public CompilationException(Element element, AnnotationMirror annotation, List<CompilationMessage> messages) {
+  public ProcessingException(Element element, AnnotationMirror annotation, List<Message> messages) {
     this.element = element;
     this.annotation = annotation;
     this.messages = messages;
   }
 
-  public Iterator<CompilationMessage> iterator() {
+  public Iterator<Message> iterator() {
     return messages.iterator();
   }
 
   @Override
-  public synchronized CompilationException initCause(Throwable cause) {
-    return (CompilationException)super.initCause(cause);
+  public synchronized ProcessingException initCause(Throwable cause) {
+    return (ProcessingException)super.initCause(cause);
   }
 
   public Element getElement() {
@@ -76,7 +76,7 @@ public class CompilationException extends RuntimeException implements Iterable<C
     return annotation;
   }
 
-  public List<CompilationMessage> getMessages() {
+  public List<Message> getMessages() {
     return messages;
   }
 }

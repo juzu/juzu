@@ -4,7 +4,7 @@ import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.compiler.AnnotationData;
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelProcessor;
@@ -67,7 +67,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) throws CompilationException {
+  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) throws ProcessingException {
     if (fqn.equals("juzu.Path")) {
       if (element instanceof VariableElement) {
         VariableElement variableElt = (VariableElement)element;

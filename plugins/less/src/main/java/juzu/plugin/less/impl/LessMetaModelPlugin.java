@@ -2,8 +2,8 @@ package juzu.plugin.less.impl;
 
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.BaseProcessor;
-import juzu.impl.compiler.CompilationException;
-import juzu.impl.compiler.CompilationMessage;
+import juzu.impl.compiler.Message;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
@@ -162,7 +162,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
           else {
             Failure failure = (Failure)result;
             LinkedList<LessError> errors = failure.getErrors();
-            ArrayList<CompilationMessage> messages = new ArrayList<CompilationMessage>(errors.size());
+            ArrayList<Message> messages = new ArrayList<Message>(errors.size());
             StringBuilder sb = new StringBuilder();
             for (LessError error : errors) {
               String text = error.message != null ? error.message : "There is an error in your .less file";
@@ -173,7 +173,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
                 sb.append(line).append("\n");
                 index++;
               }
-              CompilationMessage msg = new CompilationMessage(COMPILATION_ERROR,
+              Message msg = new Message(COMPILATION_ERROR,
                 text,
                 error.src,
                 error.line,
@@ -182,7 +182,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
               log.log(msg.toDisplayString());
               messages.add(msg);
             }
-            throw new CompilationException(pkgElt, annotationMirror, messages);
+            throw new ProcessingException(pkgElt, annotationMirror, messages);
           }
         }
       }

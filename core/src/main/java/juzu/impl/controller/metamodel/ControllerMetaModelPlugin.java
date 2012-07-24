@@ -13,7 +13,7 @@ import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.compiler.AnnotationData;
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.controller.descriptor.ControllerDescriptor;
@@ -98,7 +98,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) throws CompilationException {
+  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) throws ProcessingException {
     ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
     if (fqn.equals("juzu.View") || fqn.equals("juzu.Action") || fqn.equals("juzu.Resource")) {
       ExecutableElement methodElt = (ExecutableElement)element;
@@ -205,7 +205,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     }
   }
 
-  private void emitController(ProcessingContext env, ControllerMetaModel controller) throws CompilationException {
+  private void emitController(ProcessingContext env, ControllerMetaModel controller) throws ProcessingException {
     FQN fqn = controller.getHandle().getFQN();
     Element origin = env.get(controller.getHandle());
     Collection<MethodMetaModel> methods = controller.getMethods();

@@ -80,19 +80,19 @@ public class MessageCode {
     return "MessageCode[key=" + key + ",message=" + message + "]";
   }
 
-  public CompilationException failure(Object... args) {
-    return new CompilationException(this, args);
+  public ProcessingException failure(Object... args) {
+    return new ProcessingException(this, args);
   }
 
-  public CompilationException failure(Element element) {
-    return new CompilationException(element, this, EMPTY_OBJECT_ARRAY);
+  public ProcessingException failure(Element element) {
+    return new ProcessingException(element, this, EMPTY_OBJECT_ARRAY);
   }
 
-  public CompilationException failure(Element element, Object... args) {
-    return new CompilationException(element, this, args);
+  public ProcessingException failure(Element element, Object... args) {
+    return new ProcessingException(element, this, args);
   }
 
-  public CompilationException failure(Element element, AnnotationMirror annotation, Object... args) {
-    return new CompilationException(element, annotation, this, args);
+  public ProcessingException failure(Element element, AnnotationMirror annotation, Object... args) {
+    return new ProcessingException(element, annotation, this, args);
   }
 }

@@ -19,7 +19,7 @@
 
 package juzu.impl.template.spi.juzu.compiler;
 
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
@@ -64,11 +64,11 @@ public class ProcessPhase extends CompilationPhase {
     }
   }
 
-  public Template resolveTemplate(Path path) throws CompilationException {
+  public Template resolveTemplate(Path path) throws ProcessingException {
     return context.resolveTemplate(originPath, path);
   }
 
-  private void doProcess(Template<ASTNode.Template> template, ASTNode<?> node) throws CompilationException {
+  private void doProcess(Template<ASTNode.Template> template, ASTNode<?> node) throws ProcessingException {
     if (node instanceof ASTNode.Template) {
       for (ASTNode.Block child : node.getChildren()) {
         doProcess(template, child);
@@ -98,7 +98,7 @@ public class ProcessPhase extends CompilationPhase {
     }
   }
 
-  private void doResolve(Template<ASTNode.Template> template, ASTNode<?> node) throws CompilationException {
+  private void doResolve(Template<ASTNode.Template> template, ASTNode<?> node) throws ProcessingException {
     if (node instanceof ASTNode.Template) {
       for (ASTNode.Block child : node.getChildren()) {
         doResolve(template, child);

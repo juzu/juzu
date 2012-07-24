@@ -3,7 +3,7 @@ package juzu.plugin.portlet.impl;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.compiler.AnnotationData;
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
@@ -92,7 +92,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   private void emitPortlet(
     ProcessingContext env,
     PackageElement pkgElt,
-    String[] names) throws CompilationException {
+    String[] names) throws ProcessingException {
     Writer writer = null;
     FQN fqn = new FQN(pkgElt.getQualifiedName(), names[0]);
     try {

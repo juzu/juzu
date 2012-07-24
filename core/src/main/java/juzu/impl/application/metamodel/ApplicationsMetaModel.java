@@ -3,7 +3,7 @@ package juzu.impl.application.metamodel;
 import juzu.Application;
 import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.compiler.AnnotationData;
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.EventQueue;
@@ -94,7 +94,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     }
   }
 
-  public void processAnnotation(MetaModel model, Element element, String annotationFQN, AnnotationData annotationData) throws CompilationException {
+  public void processAnnotation(MetaModel model, Element element, String annotationFQN, AnnotationData annotationData) throws ProcessingException {
     PackageElement pkg = model.env.getPackageOf(element);
     QN pkgQN = QN.parse(pkg.getQualifiedName());
 
@@ -186,7 +186,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     }
   }
 
-  public void postProcessEvents(MetaModel model) throws CompilationException {
+  public void postProcessEvents(MetaModel model) throws ProcessingException {
     for (ApplicationMetaModel application : this) {
       for (ApplicationMetaModelPlugin plugin : plugins.values()) {
         plugin.postProcessEvents(application);
@@ -213,7 +213,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
 
   // ****
 
-  private ApplicationMetaModel processApplication(PackageElement packageElt, Map<String, Serializable> annotationValues) throws CompilationException {
+  private ApplicationMetaModel processApplication(PackageElement packageElt, Map<String, Serializable> annotationValues) throws ProcessingException {
     String name = (String)annotationValues.get("name");
     ElementHandle.Package handle = ElementHandle.Package.create(packageElt);
     ApplicationMetaModel application = get(handle);
@@ -261,7 +261,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     }
   }
 
-  private void emitApplication(ProcessingContext env, ApplicationMetaModel application) throws CompilationException {
+  private void emitApplication(ProcessingContext env, ApplicationMetaModel application) throws ProcessingException {
     PackageElement elt = env.get(application.getHandle());
     FQN fqn = application.getFQN();
 

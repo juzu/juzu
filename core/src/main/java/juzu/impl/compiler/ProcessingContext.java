@@ -193,24 +193,24 @@ public class ProcessingContext implements Filer, Elements {
     return handle.get(env);
   }
 
-  public <T> T executeWithin(ElementHandle element, Callable<T> callable) throws CompilationException {
+  public <T> T executeWithin(ElementHandle element, Callable<T> callable) throws ProcessingException {
     return executeWithin(element.get(env), callable);
   }
 
-  public <T> T executeWithin(Element element, Callable<T> callable) throws CompilationException {
+  public <T> T executeWithin(Element element, Callable<T> callable) throws ProcessingException {
     try {
       return callable.call();
     }
-    catch (CompilationException e) {
+    catch (ProcessingException e) {
       if (e.getElement() != null) {
         throw e;
       }
       else {
-        throw new CompilationException(element, null, e.getMessages()).initCause(e);
+        throw new ProcessingException(element, null, e.getMessages()).initCause(e);
       }
     }
     catch (Exception e) {
-      throw new CompilationException(element, UNEXPECTED_ERROR, e.getMessage()).initCause(e);
+      throw new ProcessingException(element, UNEXPECTED_ERROR, e.getMessage()).initCause(e);
     }
   }
 

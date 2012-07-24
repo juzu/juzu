@@ -19,7 +19,7 @@
 
 package juzu.impl.template.spi.juzu.compiler;
 
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.tags.DecorateTag;
 import juzu.impl.tags.IncludeTag;
 import juzu.impl.tags.InsertTag;
@@ -59,7 +59,7 @@ public class CompilationPhase {
     return tagHandlers.get(node);
   }
 
-  protected void doAttribute(ASTNode<?> node) throws CompilationException {
+  protected void doAttribute(ASTNode<?> node) throws ProcessingException {
     if (node instanceof ASTNode.Template) {
       for (ASTNode.Block child : node.getChildren()) {
         doAttribute(child);
@@ -84,7 +84,7 @@ public class CompilationPhase {
     }
   }
 
-  protected void doUnattribute(ASTNode<?> node) throws CompilationException {
+  protected void doUnattribute(ASTNode<?> node) throws ProcessingException {
     if (node instanceof ASTNode.Template) {
       for (ASTNode.Block child : node.getChildren()) {
         doUnattribute(child);

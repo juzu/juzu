@@ -19,7 +19,7 @@
 
 package juzu.impl.template.spi;
 
-import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.Content;
 import juzu.impl.common.MethodInvocation;
@@ -101,7 +101,7 @@ public class ProcessContext {
   public MethodInvocation resolveMethodInvocation(
     String typeName,
     String methodName,
-    Map<String, String> parameterMap) throws CompilationException {
+    Map<String, String> parameterMap) throws ProcessingException {
     return null;
   }
 }

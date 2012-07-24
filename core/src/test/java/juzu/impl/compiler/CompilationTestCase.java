@@ -296,9 +296,9 @@ public class CompilationTestCase extends AbstractTestCase {
     final MessageCode code = new MessageCode("ERROR_01", "The error");
     class P extends BaseProcessor {
       @Override
-      protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) throws CompilationException {
+      protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) throws ProcessingException {
         if (roundEnv.processingOver()) {
-          throw new CompilationException(code, 5, "foobar");
+          throw new ProcessingException(code, 5, "foobar");
         }
       }
     }
