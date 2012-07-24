@@ -56,7 +56,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
   private static final String APPLICATION_DESCRIPTOR = ApplicationDescriptor.class.getSimpleName();
 
   /** . */
-  private Map<String, String> moduleConfig;
+  private Map<String, JSON> moduleConfig;
 
   /** . */
   public final static Key<ApplicationsMetaModel> KEY = Key.of(ApplicationsMetaModel.class);
@@ -71,7 +71,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
   final LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
 
   public ApplicationsMetaModel() {
-    this.moduleConfig = new HashMap<String, String>();
+    this.moduleConfig = new HashMap<String, JSON>();
   }
 
   @Override
@@ -196,7 +196,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     if (obj instanceof ApplicationMetaModel) {
       ApplicationMetaModel application = (ApplicationMetaModel)obj;
       if (event.getType() == MetaModelEvent.AFTER_ADD) {
-        moduleConfig.put(application.getFQN().getSimpleName(), application.getFQN().getName());
+        moduleConfig.put(application.getFQN().getPackageName().toString(), new JSON());
         emitApplication(model.env, application);
       }
       else if (event.getType() == MetaModelEvent.BEFORE_REMOVE) {
@@ -282,7 +282,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
 
   private void emitApplication(ProcessingContext env, ApplicationMetaModel application) throws ProcessingException {
     PackageElement elt = env.get(application.getHandle());
-    FQN fqn = application.getFQN();
+    FQN fqn = new FQN(application.getFQN().getPackageName(), "Application");
 
     //
     Writer writer = null;

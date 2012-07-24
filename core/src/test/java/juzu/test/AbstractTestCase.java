@@ -21,6 +21,7 @@ package juzu.test;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
+import juzu.impl.common.QN;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.common.JSON;
@@ -210,7 +211,7 @@ public abstract class AbstractTestCase extends Assert {
   public MockApplication<?> application(InjectImplementation injectImplementation, String... packageName) {
     CompilerAssert<File, File> helper = compiler(packageName);
     helper.assertCompile();
-    return helper.application(injectImplementation);
+    return helper.application(injectImplementation, QN.create(packageName));
   }
 
   public static void assertEquals(JSON expected, JSON test) {

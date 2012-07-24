@@ -23,7 +23,8 @@ import juzu.asset.AssetType;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.asset.ManagerQualifier;
-import juzu.impl.compiler.CompilationError;
+import juzu.impl.common.FQN;
+import juzu.impl.common.QN;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.fs.Change;
@@ -39,9 +40,7 @@ import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.spring.SpringBuilder;
-import juzu.impl.common.JSON;
 import juzu.impl.common.Logger;
-import juzu.impl.common.Tools;
 import juzu.processor.MainProcessor;
 
 import javax.portlet.PortletException;
@@ -51,9 +50,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
 
@@ -65,13 +62,10 @@ import java.util.jar.JarFile;
 public abstract class ApplicationRuntime<P, R> {
 
   /** . */
-  private static final String[] CONFIG_PATH = {"juzu", "config.json"};
-
-  /** . */
   protected final Logger logger;
 
   /** . */
-  protected String name;
+  protected QN name;
 
   /** . */
   protected InjectImplementation injectImplementation;
@@ -105,11 +99,11 @@ public abstract class ApplicationRuntime<P, R> {
     return logger;
   }
 
-  public String getName() {
+  public QN getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public void setName(QN name) {
     this.name = name;
   }
 
@@ -325,7 +319,19 @@ public abstract class ApplicationRuntime<P, R> {
     @Override
     public void boot() throws Exception {
       if (context == null) {
-        doBoot();
+
+        // Get delegate
+        ApplicationRuntime delegate = get();
+
+        // Boot it
+        delegate.boot();
+
+        //
+        this.context = delegate.getContext();
+        this.scriptManager = delegate.scriptManager;
+        this.stylesheetManager = delegate.stylesheetManager;
+        this.descriptor = delegate.descriptor;
+        this.bootstrap = delegate.bootstrap;
       }
     }
   }
@@ -333,35 +339,11 @@ public abstract class ApplicationRuntime<P, R> {
   protected final void doBoot() throws Exception {
     ReadFileSystem<P> classes = getClasses();
 
-    // Find an application
-    P f = classes.getPath(CONFIG_PATH);
-    URL url = classes.getURL(f);
-    String s = Tools.read(url);
-    JSON json = (JSON)JSON.parse(s);
-
-    // Get the application name
-    String fqn = null;
-    if (name != null) {
-      fqn = (String)json.get(name.trim());
-    }
-    else {
-      // Find the first valid application for now
-      for (String a : json.names()) {
-        String b = json.getString(a);
-        if (a.length() > 0 && b.length() > 0) {
-          fqn = b;
-          break;
-        }
-      }
-    }
+    //
+    FQN fqn = new FQN(name, "Application");
 
     //
-    if (fqn == null) {
-      throw new Exception("Could not find an application to start " + json);
-    }
-
-    //
-    Class<?> clazz = getClassLoader().loadClass(fqn);
+    Class<?> clazz = getClassLoader().loadClass(fqn.toString());
     Field field = clazz.getDeclaredField("DESCRIPTOR");
     ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
 

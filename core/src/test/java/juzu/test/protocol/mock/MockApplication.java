@@ -22,16 +22,11 @@ package juzu.test.protocol.mock;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationException;
 import juzu.impl.application.ApplicationRuntime;
+import juzu.impl.common.QN;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.bridge.spi.RequestBridge;
-import juzu.impl.common.JSON;
 import juzu.impl.common.Logger;
-import juzu.impl.common.Tools;
-import juzu.test.AbstractTestCase;
-
-import java.net.URL;
-import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockApplication<P> {
@@ -42,7 +37,12 @@ public class MockApplication<P> {
   /** . */
   private final ApplicationRuntime<P, ?> runtime;
 
-  public <L> MockApplication(ReadFileSystem<P> classes, ClassLoader classLoader, InjectImplementation implementation) throws Exception {
+  public <L> MockApplication(
+      ReadFileSystem<P> classes,
+      ClassLoader classLoader,
+      InjectImplementation implementation,
+      QN name) throws Exception {
+/*
     P f = classes.getPath(Arrays.asList("juzu", "config.json"));
     if (f == null) {
       throw new Exception("Cannot find config properties");
@@ -58,15 +58,18 @@ public class MockApplication<P> {
       throw AbstractTestCase.failure("Could not find an application to start " + props);
     }
     final String name = props.names().iterator().next();
+*/
 
     /** . */
     Logger log = new Logger() {
       public void log(CharSequence msg) {
-        System.out.println("[" + name + "] " + msg);
+//        System.out.println("[" + name + "] " + msg);
+        System.out.println("[" + "] " + msg);
       }
 
       public void log(CharSequence msg, Throwable t) {
-        System.err.println("[" + name + "] " + msg);
+//        System.err.println("[" + name + "] " + msg);
+        System.err.println("[" + "] " + msg);
         t.printStackTrace(System.err);
       }
     };

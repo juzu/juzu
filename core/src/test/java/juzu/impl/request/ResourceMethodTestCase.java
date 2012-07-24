@@ -42,7 +42,7 @@ public class ResourceMethodTestCase extends AbstractTestCase {
     //
     aClass = compiler.assertClass("request.method.resource.A");
     compiler.assertClass("request.method.resource.A_");
-    Class<?> appClass = compiler.assertClass("request.method.resource.ResourceApplication");
+    Class<?> appClass = compiler.assertClass("request.method.resource.Application");
     descriptor = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
   }
 

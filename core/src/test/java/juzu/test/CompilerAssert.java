@@ -19,6 +19,7 @@
 
 package juzu.test;
 
+import juzu.impl.common.QN;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
@@ -164,9 +165,9 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public MockApplication<?> application(InjectImplementation injectImplementation) {
+  public MockApplication<?> application(InjectImplementation injectImplementation, QN name) {
     try {
-      return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation);
+      return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation, name);
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);

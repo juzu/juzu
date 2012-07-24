@@ -32,6 +32,10 @@ public class QN implements CharSequence, Serializable, Iterable<String> {
     return parse(value, 0, 0);
   }
 
+  public static QN create(String... value) {
+    return new QN(value);
+  }
+
   private static QN parse(CharSequence value, int from, int size) {
     int len = value.length();
     if (from < len) {
@@ -69,6 +73,10 @@ public class QN implements CharSequence, Serializable, Iterable<String> {
 
   /** . */
   private int size;
+
+  QN(String[] names) {
+    this(Tools.join('.', names), names, names.length);
+  }
 
   QN(String value, String[] names) {
     this(value, names, names.length);

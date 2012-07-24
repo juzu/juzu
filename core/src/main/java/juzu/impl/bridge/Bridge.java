@@ -97,7 +97,7 @@ public class Bridge {
       // Configure the runtime
       runtime.setResources(resources);
       runtime.setInjectImplementation(config.injectImpl);
-      runtime.setName(config.appName);
+      runtime.setName(config.name);
       runtime.setAssetServer(server);
     }
 

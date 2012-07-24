@@ -74,7 +74,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
       if (name == null) {
         name = application.getBaseName() + "Portlet";
       }
-      enabledMap.put(pkg, new String[]{name, application.getBaseName()});
+      enabledMap.put(pkg, new String[]{name, application.getFQN().getPackageName().toString()});
       toEmit.add(pkg);
     }
     else {
@@ -125,7 +125,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("public class ").append(names[0]).append(" extends ").append(JuzuPortlet.class.getName()).append(" {\n");
       writer.append("@Override\n");
       writer.append("protected String getApplicationName(javax.portlet.PortletConfig config) {\n");
-      writer.append("return \"").append(names[1]).append("Application\";\n");
+      writer.append("return \"").append(names[1]).append("\";\n");
       writer.append("}\n");
       writer.append("}\n");
     }

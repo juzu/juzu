@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge;
 
+import juzu.impl.common.QN;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.common.Tools;
 
@@ -54,14 +55,14 @@ public class BridgeConfig {
   public final int mode;
 
   /** . */
-  public final String appName;
+  public final QN name;
 
   /** . */
   public final InjectImplementation injectImpl;
 
-  public BridgeConfig(int mode, String appName, InjectImplementation injectImpl) {
+  public BridgeConfig(int mode, QN name, InjectImplementation injectImpl) {
     this.mode = mode;
-    this.appName = appName;
+    this.name = name;
     this.injectImpl = injectImpl;
   }
 
@@ -101,7 +102,10 @@ public class BridgeConfig {
     }
 
     //
-    this.appName = config.get("juzu.app_name");
+    String appName = config.get("juzu.app_name");
+
+    //
+    this.name = appName != null ? QN.parse(appName) : null;
     this.mode = mode;
     this.injectImpl = injectImpl;
   }

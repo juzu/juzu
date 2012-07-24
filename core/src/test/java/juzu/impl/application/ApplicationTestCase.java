@@ -34,7 +34,7 @@ public class ApplicationTestCase extends AbstractTestCase {
   public void testDefaultController() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("application", "default_controller");
     compiler.assertCompile();
-    Class<?> appClass = compiler.assertClass("application.default_controller.Default_controllerApplication");
+    Class<?> appClass = compiler.assertClass("application.default_controller.Application");
     Class<?> aClass = compiler.assertClass("application.default_controller.A");
 
     //
@@ -45,7 +45,7 @@ public class ApplicationTestCase extends AbstractTestCase {
   public void _testMethodId() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("application", "method", "id");
     compiler.assertCompile();
-    Class<?> appClass = compiler.assertClass("application.method.id.IdApplication");
+    Class<?> appClass = compiler.assertClass("application.method.id.Application");
     Class<?> aClass = compiler.assertClass("application.method.id.A");
 
     //

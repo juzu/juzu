@@ -42,7 +42,7 @@ public class ActionMethodTestCase extends AbstractTestCase {
     compiler.assertClass("request.method.action.A_");
 
     //
-    Class<?> appClass = compiler.assertClass("request.method.action.ActionApplication");
+    Class<?> appClass = compiler.assertClass("request.method.action.Application");
     descriptor = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
   }
 

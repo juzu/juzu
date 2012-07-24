@@ -42,7 +42,7 @@ public class ControllerResolverTestCase extends AbstractTestCase {
   public void testResolveIndex() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("application", "resolver", "default_method");
     compiler.assertCompile();
-    Class<?> appClass = compiler.assertClass("application.resolver.default_method.Default_methodApplication");
+    Class<?> appClass = compiler.assertClass("application.resolver.default_method.Application");
 
     //
     ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
@@ -60,7 +60,7 @@ public class ControllerResolverTestCase extends AbstractTestCase {
   public void testResolveAmbiguousIndex() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("application", "resolver", "ambiguous_method");
     compiler.assertCompile();
-    Class<?> appClass = compiler.assertClass("application.resolver.ambiguous_method.Ambiguous_methodApplication");
+    Class<?> appClass = compiler.assertClass("application.resolver.ambiguous_method.Application");
 
     //
     ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
@@ -82,7 +82,7 @@ public class ControllerResolverTestCase extends AbstractTestCase {
   public void testDefaultControllerResolveIndex() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("application", "resolver", "default_controller");
     compiler.assertCompile();
-    Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Default_controllerApplication");
+    Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Application");
     Class<?> aClass = compiler.assertClass("application.resolver.default_controller.A");
 
     //
@@ -103,7 +103,7 @@ public class ControllerResolverTestCase extends AbstractTestCase {
   public void testOverload() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("application", "resolver", "overload");
     compiler.assertCompile();
-    Class<?> appClass = compiler.assertClass("application.resolver.overload.OverloadApplication");
+    Class<?> appClass = compiler.assertClass("application.resolver.overload.Application");
     Class<?> aClass = compiler.assertClass("application.resolver.overload.A");
     ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
@@ -146,7 +146,7 @@ public class ControllerResolverTestCase extends AbstractTestCase {
 
     //
     Class<?> aClass = compiler.assertClass("application.resolver.method.A");
-    Class<?> clazz = compiler.assertClass("application.resolver.method.MethodApplication");
+    Class<?> clazz = compiler.assertClass("application.resolver.method.Application");
     ApplicationDescriptor desc = (ApplicationDescriptor)clazz.getField("DESCRIPTOR").get(null);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
     MethodDescriptor cm1_ = desc.getControllers().getMethod(aClass, "noArg");
@@ -167,7 +167,7 @@ public class ControllerResolverTestCase extends AbstractTestCase {
   public void testTemplate() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("application", "resolver", "default_controller");
     compiler.assertCompile();
-    Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Default_controllerApplication");
+    Class<?> appClass = compiler.assertClass("application.resolver.default_controller.Application");
     Class<?> aClass = compiler.assertClass("application.resolver.default_controller.A");
     Class<?> bClass = compiler.assertClass("application.resolver.default_controller.B");
     ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
@@ -193,7 +193,7 @@ public class ControllerResolverTestCase extends AbstractTestCase {
   public void testTemplateResolveMethod() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("application", "resolver", "method");
     compiler.assertCompile();
-    Class<?> appClass = compiler.assertClass("application.resolver.method.MethodApplication");
+    Class<?> appClass = compiler.assertClass("application.resolver.method.Application");
     Class<?> aClass = compiler.assertClass("application.resolver.method.A");
     ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
