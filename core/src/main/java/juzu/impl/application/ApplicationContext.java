@@ -123,36 +123,11 @@ public class ApplicationContext {
     }
 
     //
-/*
-    String methodId = bridge.getProperty(RequestContext.METHOD_ID);
-
-    //
-    Map<String, String[]> parameters = new HashMap<String, String[]>();
-    for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet()) {
-      String name = entry.getKey();
-      String[] value = entry.getValue();
-      if (name.startsWith("juzu.")) {
-        if (name.equals("juzu.op")) {
-          methodId = value[0];
-        }
-      }
-      else {
-        parameters.put(name, value);
-      }
-    }
-*/
-
-    //
     Map<String, String[]> parameters = bridge.getParameters();
 
     //
-    MethodDescriptor method;
     MethodHandle handle = bridge.getTarget();
-    if (handle != null) {
-      method = controller.getDescriptor().getMethodByHandle(handle);
-    } else {
-      method = controller.getResolver().resolve(parameters.keySet());
-    }
+    MethodDescriptor method = controller.getDescriptor().getMethodByHandle(handle);
 
     //
     if (method == null) {

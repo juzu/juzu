@@ -213,6 +213,11 @@ public class ServletBridge extends HttpServlet {
     }
 
     //
+    if (target == null) {
+      target = bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+    }
+
+    //
     ServletRequestBridge requestBridge;
     if (target != null) {
       switch (target.getPhase()) {

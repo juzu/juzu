@@ -23,6 +23,7 @@ import juzu.PropertyType;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
@@ -48,6 +49,7 @@ import javax.portlet.WindowState;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -112,7 +114,16 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       });
     }
     catch (Exception e) {
-      throw wrap(e);
+      String msg = "Could not find an application to start";
+      if (e instanceof PortletException) {
+        String nested = e.getMessage();
+        if (nested != null) {
+          msg += ":" + nested;
+        }
+        throw new PortletException(msg, e.getCause());
+      } else {
+        throw new PortletException(msg, e);
+      }
     }
 
     //
@@ -144,17 +155,24 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     return config.getInitParameter("juzu.app_name");
   }
 
-  private PortletException wrap(Throwable e) {
-    return e instanceof PortletException ? (PortletException)e : new PortletException("Could not find an application to start", e);
+  private void rethrow(Throwable e) throws PortletException, IOException {
+    if (e instanceof PortletException) {
+      throw (PortletException)e;
+    } else if (e instanceof IOException) {
+      throw (IOException)e;
+    } else {
+      throw new PortletException(e);
+    }
   }
 
   public void processAction(ActionRequest req, ActionResponse resp) throws PortletException, IOException {
-    PortletActionBridge requestBridge = new PortletActionBridge(bridge.runtime.getContext(), req, resp, bridge.config.isProd());
     try {
+      PortletActionBridge requestBridge = new PortletActionBridge(bridge.runtime.getContext(), req, resp, bridge.config.isProd());
       bridge.processAction(requestBridge);
+      requestBridge.send();
     }
     catch (Throwable e) {
-      throw wrap(e);
+      rethrow(e);
     }
   }
 
@@ -162,25 +180,37 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
   public void render(final RenderRequest req, final RenderResponse resp) throws PortletException, IOException {
 
-
+    //
     if (!initialized) {
+      Collection<CompilationError> errors;
       try {
-        bridge.boot();
+        errors = bridge.boot();
       }
       catch (Exception e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        String msg = "Could not compile application";
+        if (e instanceof PortletException) {
+          String nested = e.getMessage();
+          if (nested != null) {
+            msg += ":" + nested;
+          }
+          throw new PortletException(msg, e.getCause());
+        } else {
+          throw new PortletException(msg, e);
+        }
+      }
+      if (errors != null && errors.size() > 0) {
+        bridge.log.log("Error when compiling application " + errors);
       }
     }
-
-    //
-    PortletRenderBridge requestBridge = new PortletRenderBridge(bridge.runtime.getContext(), bridge, req, resp, !bridgeConfig.isProd(), bridge.config.isProd());
 
     //
     try {
+      PortletRenderBridge requestBridge = new PortletRenderBridge(bridge.runtime.getContext(), bridge, req, resp, bridge.config.isProd());
       bridge.render(requestBridge);
+      requestBridge.send();
     }
     catch (Throwable e) {
-      throw wrap(e);
+      rethrow(e);
     }
   }
 
@@ -210,12 +240,13 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
       }
     }
     else {
-      PortletResourceBridge requestBridge = new PortletResourceBridge(bridge.runtime.getContext(), req, resp, !bridgeConfig.isProd(), bridge.config.isProd());
       try {
+        PortletResourceBridge requestBridge = new PortletResourceBridge(bridge.runtime.getContext(), req, resp, bridge.config.isProd());
         bridge.serveResource(requestBridge);
+        requestBridge.send();
       }
       catch (Throwable throwable) {
-        throw wrap(throwable);
+        rethrow(throwable);
       }
     }
   }

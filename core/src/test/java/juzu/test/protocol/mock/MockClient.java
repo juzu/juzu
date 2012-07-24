@@ -21,6 +21,7 @@ package juzu.test.protocol.mock;
 
 import juzu.impl.application.ApplicationException;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.controller.descriptor.ControllersDescriptor;
 import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
@@ -93,6 +94,9 @@ public class MockClient {
   final MockApplication<?> application;
 
   /** . */
+  private final ControllersDescriptor controllers;
+
+  /** . */
   private ScopedContext session;
 
   /** . */
@@ -106,15 +110,19 @@ public class MockClient {
     this.session = new ScopedContext();
     this.flash = null;
     this.flashHistory = new LinkedList<List<Scoped>>();
+    this.controllers = application.getContext().getDescriptor().getControllers();
   }
 
   public MockRenderBridge render(String methodId) throws ApplicationException {
     MethodHandle handle = null;
+    MethodDescriptor method = null;
     if (methodId != null) {
-      MethodDescriptor method = application.getContext().getDescriptor().getControllers().getMethodById(methodId);
-      if (method != null) {
-        handle = method.getHandle();
-      }
+      method = controllers.getMethodById(methodId);
+    } else {
+      method = controllers.getResolver().resolve(Collections.<String>emptySet());
+    }
+    if (method != null) {
+      handle = method.getHandle();
     }
     MockRenderBridge render = new MockRenderBridge(application.getContext(), this, handle, new HashMap<String, String[]>());
     invoke(render);

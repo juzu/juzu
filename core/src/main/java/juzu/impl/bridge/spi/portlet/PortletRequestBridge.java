@@ -23,12 +23,15 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.controller.ControllerResolver;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.portlet.JuzuPortlet;
 import juzu.request.HttpContext;
+import juzu.request.Phase;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 
@@ -78,6 +81,9 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   /** . */
   protected final boolean prod;
 
+  /** . */
+  protected Response response;
+
   PortletRequestBridge(ApplicationContext application, Rq req, Rs resp, boolean prod) {
     String methodId = null;
     Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
@@ -93,16 +99,28 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     }
 
     //
+    Phase phase = getPhase();
+    ControllerResolver<MethodDescriptor> resolver = application.getDescriptor().getControllers().getResolver();
+    MethodDescriptor target;
+    if (methodId != null) {
+      target = resolver.resolve(phase, methodId, parameters.keySet());
+    } else {
+      target = resolver.resolve(parameters.keySet());
+    }
+
+    //
     this.application = application;
     this.req = req;
     this.resp = resp;
-    this.target = null;
+    this.target = target.getHandle();
     this.parameters = parameters;
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
     this.windowContext = new PortletWindowContext(this);
     this.prod = prod;
   }
+
+  protected abstract Phase getPhase();
 
   public <T> T getProperty(PropertyType<T> propertyType) {
     Object propertyValue = null;
@@ -203,9 +221,6 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   }
 
   public void close() {
-    for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
-      resp.addProperty(entry.getKey(), entry.getValue()[0]);
-    }
   }
 
   protected final ScopedContext getRequestContext(boolean create) {
@@ -264,6 +279,12 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     ScopedContext context = getRequestContext(false);
     if (context != null) {
       context.close();
+    }
+  }
+
+  public void send() throws IOException {
+    for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
+      resp.addProperty(entry.getKey(), entry.getValue()[0]);
     }
   }
 }

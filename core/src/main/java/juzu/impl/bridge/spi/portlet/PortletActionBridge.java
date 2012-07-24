@@ -24,6 +24,7 @@ import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.portlet.JuzuPortlet;
+import juzu.request.Phase;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -39,6 +40,11 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
 
   public PortletActionBridge(ApplicationContext application, ActionRequest actionRequest, ActionResponse actionResponse, boolean prod) {
     super(application, actionRequest, actionResponse, prod);
+  }
+
+  @Override
+  protected Phase getPhase() {
+    return Phase.ACTION;
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

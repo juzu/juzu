@@ -25,6 +25,7 @@ import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
+import juzu.request.Phase;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 
@@ -47,11 +48,16 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
   /** . */
   private LinkedList<Element> headers = new LinkedList<Element>();
 
-  public PortletRenderBridge(ApplicationContext application, Bridge bridge, RenderRequest request, RenderResponse response, boolean buffer, boolean prod) {
-    super(application, request, response, buffer, prod);
+  public PortletRenderBridge(ApplicationContext application, Bridge bridge, RenderRequest request, RenderResponse response, boolean prod) {
+    super(application, request, response, prod);
 
     //
     this.bridge = bridge;
+  }
+
+  @Override
+  protected Phase getPhase() {
+    return Phase.RENDER;
   }
 
   public void setTitle(String title) {
@@ -151,7 +157,18 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
   }
 
   @Override
-  public void close() {
+  public void end() {
+    super.end();
+
+    //
+    ScopedContext context = getFlashContext(false);
+    if (context != null) {
+      context.close();
+    }
+  }
+
+  @Override
+  public void send() throws IOException {
 
     // Set title
     if (title != null) {
@@ -164,17 +181,6 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     }
 
     //
-    super.close();
-  }
-
-  @Override
-  public void end() {
-    super.end();
-
-    //
-    ScopedContext context = getFlashContext(false);
-    if (context != null) {
-      context.close();
-    }
+    super.send();
   }
 }

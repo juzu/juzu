@@ -22,6 +22,7 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.Response;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.ResourceBridge;
+import juzu.request.Phase;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -33,8 +34,13 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
   /** . */
   private int status = 200;
 
-  public PortletResourceBridge(ApplicationContext application, ResourceRequest request, ResourceResponse response, boolean buffer, boolean prod) {
-    super(application, request, response, buffer, prod);
+  public PortletResourceBridge(ApplicationContext application, ResourceRequest request, ResourceResponse response, boolean prod) {
+    super(application, request, response, prod);
+  }
+
+  @Override
+  protected Phase getPhase() {
+    return Phase.RESOURCE;
   }
 
   @Override
@@ -50,12 +56,12 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
   }
 
   @Override
-  public void close() {
+  public void send() throws IOException {
     if (status != 200) {
       this.resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
     }
 
     //
-    super.close();
+    super.send();
   }
 }

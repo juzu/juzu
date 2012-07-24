@@ -24,6 +24,7 @@ import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +74,12 @@ public class HttpServletImpl extends HttpServlet {
 
     //
     MethodHandle method = methodId != null ? application.getDescriptor().getControllers().getMethodById(methodId).getHandle() : null;
+
+    //
+    if (method == null) {
+      MethodDescriptor descriptor = application.getContext().getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+      method = descriptor != null ? descriptor.getHandle() : null;
+    }
 
     //
     switch (phase) {
