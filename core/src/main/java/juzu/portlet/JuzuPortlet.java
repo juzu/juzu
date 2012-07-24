@@ -182,9 +182,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
     //
     if (!initialized) {
-      Collection<CompilationError> errors;
       try {
-        errors = bridge.boot();
+        bridge.boot();
+        initialized = true;
       }
       catch (Exception e) {
         String msg = "Could not compile application";
@@ -197,9 +197,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
         } else {
           throw new PortletException(msg, e);
         }
-      }
-      if (errors != null && errors.size() > 0) {
-        bridge.log.log("Error when compiling application " + errors);
       }
     }
 

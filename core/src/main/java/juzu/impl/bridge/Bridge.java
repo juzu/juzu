@@ -9,6 +9,7 @@ import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.compiler.CompilationError;
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.common.DevClassLoader;
@@ -54,7 +55,7 @@ public class Bridge {
   /** . */
   public ApplicationRuntime runtime;
 
-  public Collection<CompilationError> boot() throws Exception {
+  public void boot() throws Exception, CompilationException {
 
     if (runtime == null) {
       switch (config.mode) {
@@ -81,7 +82,8 @@ public class Bridge {
       runtime.setAssetServer(server);
     }
 
-    return runtime.boot();
+    //
+    runtime.boot();
   }
 
   public void invoke(RequestBridge requestBridge) throws Throwable {
@@ -121,7 +123,13 @@ public class Bridge {
   public void render(final RenderBridge requestBridge) throws Throwable {
 
     //
-    Collection<CompilationError> errors = boot();
+    Collection<CompilationError> errors = null;
+    try {
+      boot();
+    }
+    catch (CompilationException e) {
+      errors = e.getErrors();
+    }
 
     //
     if (errors == null || errors.isEmpty()) {

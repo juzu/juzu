@@ -20,6 +20,7 @@
 package juzu.test;
 
 import juzu.impl.compiler.CompilationError;
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -36,7 +37,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -153,9 +153,11 @@ public class CompilerAssert<I, O> {
 
   public List<CompilationError> failCompile() {
     try {
-      List<CompilationError> errors = strategy.compile();
-      AbstractTestCase.assertTrue("Was expecting compilation to fail", errors.size() > 0);
-      return errors;
+      strategy.compile();
+      throw AbstractTestCase.failure("Was expecting compilation to fail");
+    }
+    catch (CompilationException e) {
+      return e.getErrors();
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);
@@ -173,8 +175,7 @@ public class CompilerAssert<I, O> {
 
   public Compiler assertCompile() {
     try {
-      List<CompilationError> errors = strategy.compile();
-      AbstractTestCase.assertEquals("Compilation failed : " + errors, Collections.<CompilationError>emptyList(), errors);
+      strategy.compile();
       classLoader = new URLClassLoader(new URL[]{strategy.classOutput.getURL()}, baseClassLoader);
       return strategy.compiler;
     }

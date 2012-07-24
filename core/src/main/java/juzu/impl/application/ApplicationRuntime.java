@@ -24,6 +24,7 @@ import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.asset.ManagerQualifier;
 import juzu.impl.compiler.CompilationError;
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
@@ -162,7 +163,7 @@ public abstract class ApplicationRuntime<P, R> {
 
   protected abstract ReadFileSystem<P> getClasses();
 
-  public abstract Collection<CompilationError> boot() throws Exception;
+  public abstract void boot() throws Exception, CompilationException;
 
   public static class Static<P, R> extends ApplicationRuntime<P, R> {
 
@@ -194,13 +195,10 @@ public abstract class ApplicationRuntime<P, R> {
     }
 
     @Override
-    public Collection<CompilationError> boot() throws Exception {
+    public void boot() throws Exception {
       if (context == null) {
         doBoot();
       }
-
-      //
-      return null;
     }
   }
 
@@ -250,7 +248,7 @@ public abstract class ApplicationRuntime<P, R> {
       return classes;
     }
 
-    public Collection<CompilationError> boot() throws Exception {
+    public void boot() throws Exception {
       Map<String, Change> changes = devScanner.scan();
       if (context != null) {
         if (changes.size() > 0) {
@@ -287,23 +285,10 @@ public abstract class ApplicationRuntime<P, R> {
           classOutput(classOutput).
           addClassPath(classLoaderFS).build();
         compiler.addAnnotationProcessor(new MainProcessor());
-        List<CompilationError> res = compiler.compile();
-        if (res.isEmpty()) {
-          this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
-          this.classes = classOutput;
-
-          //
-          doBoot();
-
-          // Return empty to signal compilation occured
-          return Collections.emptyList();
-        }
-        else {
-          return res;
-        }
-      }
-      else {
-        return null;
+        compiler.compile();
+        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
+        this.classes = classOutput;
+        doBoot();
       }
     }
 
@@ -338,13 +323,10 @@ public abstract class ApplicationRuntime<P, R> {
     }
 
     @Override
-    public Collection<CompilationError> boot() throws Exception {
+    public void boot() throws Exception {
       if (context == null) {
         doBoot();
       }
-
-      //
-      return null;
     }
   }
 

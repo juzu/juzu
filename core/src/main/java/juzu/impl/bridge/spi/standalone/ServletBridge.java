@@ -25,7 +25,6 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.compiler.CompilationError;
 import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
@@ -46,7 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -134,36 +132,32 @@ public class ServletBridge extends HttpServlet {
     this.bridge = bridge;
 
     //
-    Collection<CompilationError> errors;
     try {
-      errors = bridge.boot();
+      bridge.boot();
+
+      //
+      Router router = new Router();
+      HashMap<MethodHandle, Route> routeMap = new HashMap<MethodHandle, Route>();
+      HashMap<Route, MethodHandle> routeMap2 = new HashMap<Route, MethodHandle>();
+
+      //
+      RouterDescriptor routesDesc = (RouterDescriptor)bridge.runtime.getDescriptor().getPlugin("router");
+      if (routesDesc != null) {
+        for (RouteDescriptor routeDesc : routesDesc.getRoutes()) {
+          Route route = router.append(routeDesc.getPath());
+          routeMap.put(routeDesc.getTarget(), route);
+          routeMap2.put(route, routeDesc.getTarget());
+        }
+      }
+
+      //
+      this.router = router;
+      this.routeMap = routeMap;
+      this.routeMap2 = routeMap2;
     }
     catch (Exception e) {
       throw wrap(e);
     }
-    if (errors != null && errors.size() > 0) {
-      log.log("Error when compiling application " + errors);
-    }
-
-    //
-    Router router = new Router();
-    HashMap<MethodHandle, Route> routeMap = new HashMap<MethodHandle, Route>();
-    HashMap<Route, MethodHandle> routeMap2 = new HashMap<Route, MethodHandle>();
-
-    //
-    RouterDescriptor routesDesc = (RouterDescriptor)bridge.runtime.getDescriptor().getPlugin("router");
-    if (routesDesc != null) {
-      for (RouteDescriptor routeDesc : routesDesc.getRoutes()) {
-        Route route = router.append(routeDesc.getPath());
-        routeMap.put(routeDesc.getTarget(), route);
-        routeMap2.put(route, routeDesc.getTarget());
-      }
-    }
-
-    //
-    this.router = router;
-    this.routeMap = routeMap;
-    this.routeMap2 = routeMap2;
   }
 
   /**

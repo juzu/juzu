@@ -221,7 +221,7 @@ public class Compiler {
     processors.add(annotationProcessorType);
   }
 
-  public List<CompilationError> compile(String... compilationUnits) throws IOException {
+  public void compile(String... compilationUnits) throws IOException, CompilationException {
     // Copy anything that is not a java file
     RAMFileSystem sourcePath1 = new RAMFileSystem();
     sourcePath.copy(new Filter() {
@@ -247,7 +247,7 @@ public class Compiler {
     Collection<JavaFileObject> files = getFromSourcePath(sourcePath, compilationUnits);
 
     //
-    return compile(fileManager, files);
+    compile(fileManager, files);
   }
 
   private <P> Collection<JavaFileObject> getFromSourcePath(ReadFileSystem<P> fs, String... compilationUnits) throws IOException {
@@ -273,7 +273,7 @@ public class Compiler {
     return javaFiles;
   }
 
-  public List<CompilationError> compile() throws IOException {
+  public void compile() throws IOException, CompilationException {
     VirtualFileManager fileManager = new VirtualFileManager(
       compiler.getStandardFileManager(null, null, null),
       sourcePath,
@@ -281,7 +281,7 @@ public class Compiler {
       sourceOutput,
       classOutput
     );
-    return compile(fileManager, getFromSourcePath(fileManager.sourcePath));
+    compile(fileManager, getFromSourcePath(fileManager.sourcePath));
   }
 
   private <P> Collection<JavaFileObject> getFromSourcePath(final SimpleFileManager<P> fileManager) throws IOException {
@@ -299,10 +299,12 @@ public class Compiler {
     return javaFiles;
   }
 
-  private List<CompilationError> compile(VirtualFileManager fileManager, Collection<JavaFileObject> compilationUnits) throws IOException {
+  private void compile(
+      VirtualFileManager fileManager,
+      Collection<JavaFileObject> compilationUnits) throws IOException, CompilationException {
     if (compilationUnits.isEmpty()) {
       if (!config.getForce()) {
-        return Collections.emptyList();
+        return;
       }
       else {
         URI uri = URI.create("/Dumb.java");
@@ -396,6 +398,8 @@ public class Compiler {
     processors.clear();
 
     //
-    return ok ? Collections.<CompilationError>emptyList() : errors;
+    if (!ok) {
+      throw new CompilationException(errors);
+    }
   }
 }

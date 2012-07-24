@@ -1,7 +1,7 @@
 package juzu.test;
 
 import junit.framework.Assert;
-import juzu.impl.compiler.CompilationError;
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.compiler.CompilerConfig;
 import juzu.impl.fs.Change;
@@ -68,7 +68,7 @@ public abstract class CompileStrategy<I, O> {
 
   Compiler compiler;
 
-  abstract List<CompilationError> compile() throws IOException;
+  abstract void compile() throws IOException, CompilationException;
 
   abstract void addClassPath(ReadFileSystem<?> classPath);
 
@@ -91,7 +91,7 @@ public abstract class CompileStrategy<I, O> {
       this.scanner = FileSystemScanner.createHashing(sourcePath);
     }
 
-    List<CompilationError> compile() throws IOException {
+    void compile() throws IOException, CompilationException {
       Compiler.Builder builder = compiler();
 
       //
@@ -137,7 +137,7 @@ public abstract class CompileStrategy<I, O> {
       //
       System.out.println("Compiling " + toCompile);
       compiler = builder.build(processorFactory != null ? processorFactory.get() : null);
-      return compiler.compile(toCompile.toArray(new String[toCompile.size()]));
+      compiler.compile(toCompile.toArray(new String[toCompile.size()]));
     }
 
     @Override
@@ -151,10 +151,10 @@ public abstract class CompileStrategy<I, O> {
       super(classPath, sourcePath, sourceOutput, classOutput, processorFactory);
     }
 
-    List<CompilationError> compile() throws IOException {
+    void compile() throws IOException, CompilationException {
       Compiler.Builder builder = compiler();
       compiler = builder.build(processorFactory != null ? processorFactory.get() : null);
-      return compiler.compile();
+      compiler.compile();
     }
 
     @Override
