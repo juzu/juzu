@@ -76,7 +76,6 @@ public class ControllerTestCase extends AbstractTestCase {
               set("phase", "RENDER")
             )
           ).
-          set("fqn", "metamodel.controller.ControllerApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
@@ -151,7 +150,6 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "metamodel.controller.ControllerApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
@@ -201,7 +199,6 @@ public class ControllerTestCase extends AbstractTestCase {
               set("phase", "ACTION")
             )
           ).
-          set("fqn", "metamodel.controller.ControllerApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
@@ -248,7 +245,6 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "metamodel.controller.ControllerApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
@@ -305,7 +301,6 @@ public class ControllerTestCase extends AbstractTestCase {
               set("phase", "RENDER")
             )
           ).
-          set("fqn", "metamodel.controller.ControllerApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
@@ -347,7 +342,6 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "metamodel.controller.ControllerApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
@@ -403,7 +397,6 @@ public class ControllerTestCase extends AbstractTestCase {
               set("phase", "RENDER")
             )
           ).
-          set("fqn", "metamodel.controller.ControllerApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
@@ -458,7 +451,6 @@ public class ControllerTestCase extends AbstractTestCase {
               set("phase", "RENDER")
             )
           ).
-          set("fqn", "metamodel.controller.ControllerApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )

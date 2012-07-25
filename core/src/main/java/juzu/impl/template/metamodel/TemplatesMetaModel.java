@@ -105,7 +105,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
   protected void postAttach(MetaModelObject parent) {
     if (parent instanceof ApplicationMetaModel) {
       this.application = (ApplicationMetaModel)parent;
-      this.qn = application.getFQN().getPackageName().append("templates");
+      this.qn = application.getName().append("templates");
       this.resolver = new TemplateResolver(application);
     }
   }

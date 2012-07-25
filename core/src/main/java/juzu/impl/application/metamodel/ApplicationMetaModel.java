@@ -20,6 +20,7 @@
 package juzu.impl.application.metamodel;
 
 import juzu.Application;
+import juzu.impl.common.QN;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
@@ -28,7 +29,6 @@ import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.template.metamodel.TemplatesMetaModel;
-import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -48,9 +48,6 @@ public class ApplicationMetaModel extends MetaModelObject {
 
   /** . */
   final ElementHandle.Package handle;
-
-  /** . */
-  final FQN fqn;
 
   /** . */
   public MetaModel model;
@@ -79,19 +76,17 @@ public class ApplicationMetaModel extends MetaModelObject {
 
     //
     String name = baseName + "Application";
-    FQN fqn = new FQN(handle.getQN(), name);
 
     //
     this.handle = handle;
-    this.fqn = fqn;
     this.modified = false;
     this.baseName = baseName;
     this.toProcess = new HashMap<BufKey, AnnotationData>();
     this.processed = new HashMap<BufKey, AnnotationData>();
   }
 
-  public FQN getFQN() {
-    return fqn;
+  public QN getName() {
+    return handle.getQN();
   }
 
   public String getBaseName() {
@@ -105,7 +100,7 @@ public class ApplicationMetaModel extends MetaModelObject {
   public JSON toJSON() {
     JSON json = new JSON();
     json.set("handle", handle);
-    json.set("fqn", fqn.getName());
+    json.set("qn", handle.getQN().toString());
     json.map("templates", getChild(TemplatesMetaModel.KEY));
     json.map("controllers", getChild(ControllersMetaModel.KEY));
     return json;

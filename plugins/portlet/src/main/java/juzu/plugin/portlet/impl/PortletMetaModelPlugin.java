@@ -74,7 +74,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
       if (name == null) {
         name = application.getBaseName() + "Portlet";
       }
-      enabledMap.put(pkg, new String[]{name, application.getFQN().getPackageName().toString()});
+      enabledMap.put(pkg, new String[]{name, application.getName().toString()});
       toEmit.add(pkg);
     }
     else {

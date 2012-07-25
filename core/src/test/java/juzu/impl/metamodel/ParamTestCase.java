@@ -56,7 +56,6 @@ public class ParamTestCase extends AbstractTestCase {
             )
           )
         ).
-        set("fqn", "metamodel.param.ParamApplication").
         set("handle", "ElementHandle.Package[qn=metamodel.param]").
         list("templates")
       )

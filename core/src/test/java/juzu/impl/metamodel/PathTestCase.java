@@ -46,7 +46,6 @@ public class PathTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "metamodel.path.PathApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.path]").
           list("templates", json().
             set("path", "foo.gtmpl").
@@ -78,7 +77,6 @@ public class PathTestCase extends AbstractTestCase {
       .set("applications",
         json().list("values", json().
           list("controllers").
-          set("fqn", "metamodel.path.PathApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.path]").
           list("templates", json().
             set("path", "bar.gtmpl").
@@ -107,7 +105,6 @@ public class PathTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "metamodel.path.PathApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.path]").
           list("templates")
         )
@@ -167,7 +164,6 @@ public class PathTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "metamodel.MetamodelApplication").
           set("handle", "ElementHandle.Package[qn=metamodel]").
           list("templates", json().
             set("path", "foo.gtmpl").

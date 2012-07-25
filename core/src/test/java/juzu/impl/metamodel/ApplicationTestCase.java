@@ -52,7 +52,6 @@ public class ApplicationTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "metamodel.application.ApplicationApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.application]").
           list("templates")
         )
@@ -92,7 +91,6 @@ public class ApplicationTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "metamodel.application.ApplicationApplication").
           set("handle", "ElementHandle.Package[qn=metamodel.application]").
           list("templates")
         )

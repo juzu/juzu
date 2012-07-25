@@ -131,7 +131,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     }
     else {
       for (ApplicationMetaModel application : this) {
-        if (application.fqn.getPackageName().isPrefix(pkgQN)) {
+        if (application.getName().isPrefix(pkgQN)) {
           found = application;
           break;
         }
@@ -196,11 +196,11 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     if (obj instanceof ApplicationMetaModel) {
       ApplicationMetaModel application = (ApplicationMetaModel)obj;
       if (event.getType() == MetaModelEvent.AFTER_ADD) {
-        moduleConfig.put(application.getFQN().getPackageName().toString(), new JSON());
+        moduleConfig.put(application.getName().toString(), new JSON());
         emitApplication(model.env, application);
       }
       else if (event.getType() == MetaModelEvent.BEFORE_REMOVE) {
-        moduleConfig.remove(application.getFQN().getSimpleName());
+        moduleConfig.remove(application.getName().toString());
       }
     }
   }
@@ -282,7 +282,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
 
   private void emitApplication(ProcessingContext env, ApplicationMetaModel application) throws ProcessingException {
     PackageElement elt = env.get(application.getHandle());
-    FQN fqn = new FQN(application.getFQN().getPackageName(), "Application");
+    FQN fqn = new FQN(application.getName(), "Application");
 
     //
     Writer writer = null;
@@ -310,7 +310,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       MetaModel.log.log("Generated application " + fqn.getName() + " as " + applicationFile.toUri());
     }
     catch (IOException e) {
-      throw TemplateMetaModel.CANNOT_WRITE_APPLICATION.failure(e, elt, application.getFQN());
+      throw TemplateMetaModel.CANNOT_WRITE_APPLICATION.failure(e, elt, application.getName());
     }
     finally {
       Tools.safeClose(writer);
@@ -350,12 +350,12 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       //
       writer = null;
       try {
-        FileObject fo = model.env.createResource(StandardLocation.CLASS_OUTPUT, application.getFQN().getPackageName(), "config.json");
+        FileObject fo = model.env.createResource(StandardLocation.CLASS_OUTPUT, application.getName(), "config.json");
         writer = fo.openWriter();
         descriptor.toString(writer, 2);
       }
       catch (IOException e) {
-        throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, model.env.get(application.getHandle()), application.getFQN());
+        throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, model.env.get(application.getHandle()), application.getName());
       }
       finally {
         Tools.safeClose(writer);
