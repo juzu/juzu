@@ -261,13 +261,6 @@ public abstract class Response {
 
   public static class Content<S extends Stream> extends Response {
 
-    /** Mime type type literal. */
-    public static class MIME_TYPE extends PropertyType<String> {
-    }
-
-    /** Mime type literal instance. */
-    public static MIME_TYPE MIME_TYPE = new MIME_TYPE();
-
     /** . */
     private int status;
 
@@ -316,11 +309,11 @@ public abstract class Response {
     }
 
     public String getMimeType() {
-      return properties.getValue(MIME_TYPE);
+      return properties.getValue(PropertyType.MIME_TYPE);
     }
 
     public Content<S> withMimeType(String mimeType) {
-      properties.setValue(MIME_TYPE, mimeType);
+      properties.setValue(PropertyType.MIME_TYPE, mimeType);
       return this;
     }
 

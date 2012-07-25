@@ -19,7 +19,7 @@
 
 package juzu.impl.request;
 
-import juzu.URLBuilder;
+import juzu.PropertyType;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.common.JSON;
 import juzu.test.AbstractInjectTestCase;
@@ -44,7 +44,7 @@ public class URLTestCase extends AbstractInjectTestCase {
     MockClient client = app.client();
     MockRenderBridge render = client.render();
     JSON url = (JSON)JSON.parse(render.assertStringResult());
-    assertFalse(url.getJSON("properties").contains(URLBuilder.ESCAPE_XML.class.getName()));
+    assertFalse(url.getJSON("properties").contains(PropertyType.ESCAPE_XML.getClass().getName()));
   }
 
   @Test
@@ -56,7 +56,7 @@ public class URLTestCase extends AbstractInjectTestCase {
     MockClient client = app.client();
     MockRenderBridge render = client.render();
     JSON url = (JSON)JSON.parse(render.assertStringResult());
-    assertEquals(Boolean.TRUE, url.getJSON("properties").get(URLBuilder.ESCAPE_XML.class.getName()));
+    assertEquals(Boolean.TRUE, url.getJSON("properties").get(PropertyType.ESCAPE_XML.getClass().getName()));
   }
 
   @Test

@@ -52,13 +52,6 @@ import java.util.Map;
  */
 public final class URLBuilder {
 
-  /** Escape XML type literal. */
-  public static class ESCAPE_XML extends PropertyType<Boolean> {
-  }
-
-  /** Escape XML type literal instance. */
-  public static ESCAPE_XML ESCAPE_XML = new ESCAPE_XML();
-
   /** . */
   private final MimeBridge bridge;
 
@@ -98,7 +91,7 @@ public final class URLBuilder {
   }
 
   public URLBuilder escapeXML(Boolean escapeXML) {
-    setProperty(ESCAPE_XML, escapeXML);
+    setProperty(PropertyType.ESCAPE_XML, escapeXML);
     return this;
   }
 

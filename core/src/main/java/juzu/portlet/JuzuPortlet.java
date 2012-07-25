@@ -23,7 +23,6 @@ import juzu.PropertyType;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
-import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
@@ -49,23 +48,16 @@ import javax.portlet.WindowState;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
   /** . */
-  public static final class PORTLET_MODE extends PropertyType<PortletMode> {}
+  public static final PropertyType<PortletMode> PORTLET_MODE = new PropertyType<PortletMode>(){};
 
   /** . */
-  public static final class WINDOW_STATE extends PropertyType<WindowState> {}
-
-  /** . */
-  public static final PORTLET_MODE PORTLET_MODE = new PORTLET_MODE();
-
-  /** . */
-  public static final WINDOW_STATE WINDOW_STATE = new WINDOW_STATE();
+  public static final PropertyType<WindowState> WINDOW_STATE = new PropertyType<WindowState>(){};
 
   /** . */
   private BridgeConfig bridgeConfig;

@@ -21,7 +21,6 @@ package juzu.test.protocol.mock;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.URLBuilder;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.controller.descriptor.MethodDescriptor;
@@ -160,7 +159,7 @@ public abstract class MockRequestBridge implements RequestBridge {
   }
 
   public String _checkPropertyValidity(Phase phase, PropertyType<?> propertyType, Object propertyValue) {
-    if (propertyType == URLBuilder.ESCAPE_XML) {
+    if (propertyType == PropertyType.ESCAPE_XML) {
       // OK
       return null;
     }

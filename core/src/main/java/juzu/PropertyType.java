@@ -26,41 +26,29 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PropertyType<T> {
 
-  /** Script type literal. */
-  public static class SCRIPT extends PropertyType<Asset> {}
+  /** Script. */
+  public static PropertyType<Asset> SCRIPT = new PropertyType<Asset>(){};
 
-  /** Script type literal instance. */
-  public static SCRIPT SCRIPT = new SCRIPT();
+  /** Stylesheet. */
+  public static PropertyType<Asset> STYLESHEET = new PropertyType<Asset>(){};
 
-  /** Stylesheet type literal. */
-  public static class STYLESHEET extends PropertyType<Asset> {}
+  /** Title. */
+  public static PropertyType<String> TITLE = new PropertyType<String>(){};
 
-  /** Stylesheet literal instance. */
-  public static STYLESHEET STYLESHEET = new STYLESHEET();
+  /** Path. */
+  public static final PropertyType<String> PATH = new PropertyType<String>(){};
 
-  /** Stylesheet type literal. */
-  public static class TITLE extends PropertyType<String> {}
+  /** Redirect after action. */
+  public static final PropertyType<Boolean> REDIRECT_AFTER_ACTION = new PropertyType<Boolean>(){};
 
-  /** Stylesheet literal instance. */
-  public static TITLE TITLE = new TITLE();
+  /** Header. */
+  public static final PropertyType<Map.Entry<String, String[]>> HEADER = new PropertyType<Map.Entry<String, String[]>>(){};
 
-  /** . */
-  public static final class PATH extends PropertyType<String> {}
+  /** Mime type. */
+  public static PropertyType<String> MIME_TYPE = new PropertyType<String>(){};
 
-  /** . */
-  public static final PropertyType.PATH PATH = new PropertyType.PATH();
-
-  /** . */
-  public static final class REDIRECT_AFTER_ACTION extends PropertyType<Boolean> {}
-
-  /** . */
-  public static final REDIRECT_AFTER_ACTION REDIRECT_AFTER_ACTION = new REDIRECT_AFTER_ACTION();
-
-  /** Header type literal. */
-  public static class HEADER extends PropertyType<Map.Entry<String, String[]>> {}
-
-  /** Header literal instance. */
-  public static HEADER HEADER = new HEADER();
+  /** Escape XML. */
+  public static PropertyType<Boolean> ESCAPE_XML = new PropertyType<Boolean>(){};
 
   protected PropertyType() throws NullPointerException {
   }

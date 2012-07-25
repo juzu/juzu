@@ -22,7 +22,6 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.URLBuilder;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
@@ -116,7 +115,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
     //
     boolean escapeXML = false;
     if (properties != null) {
-      Boolean escapeXMLProperty = properties.getValue(URLBuilder.ESCAPE_XML);
+      Boolean escapeXMLProperty = properties.getValue(PropertyType.ESCAPE_XML);
       if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty)) {
         escapeXML = true;
       }
