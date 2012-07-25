@@ -17,6 +17,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application package model.meta.application;
+package metamodel.path;
 
-import juzu.Application;
+import juzu.Path;
+import juzu.template.Template;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @Path("foo.gtmpl")
+  Template index;
+
+}

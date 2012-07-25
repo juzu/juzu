@@ -17,6 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application package model.meta.controller;
+@Application package metamodel.path;
 
 import juzu.Application;

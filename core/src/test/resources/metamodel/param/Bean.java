@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package model.meta.param;
+package metamodel.param;
 
 import juzu.Param;
 

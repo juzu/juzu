@@ -35,7 +35,7 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testBuild() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
     helper.assertCompile();
 
     //
@@ -46,8 +46,8 @@ public class PathTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "model.meta.path.PathApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.path]").
+          set("fqn", "metamodel.path.PathApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.path]").
           list("templates", json().
             set("path", "foo.gtmpl").
             list("refs")
@@ -59,13 +59,13 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testChangeValue() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
     helper.assertCompile();
 
     //
-    File a = helper.getSourcePath().getPath("model", "meta", "path", "A.java");
+    File a = helper.getSourcePath().getPath("metamodel", "path", "A.java");
     Tools.write(Tools.read(a).replace("foo.gtmpl", "bar.gtmpl"), a);
-    File foo = helper.getSourcePath().getPath("model", "meta", "path", "templates", "foo.gtmpl");
+    File foo = helper.getSourcePath().getPath("metamodel", "path", "templates", "foo.gtmpl");
     File bar = new File(foo.getParentFile(), "bar.gtmpl");
     assertTrue(foo.renameTo(bar));
 
@@ -78,8 +78,8 @@ public class PathTestCase extends AbstractTestCase {
       .set("applications",
         json().list("values", json().
           list("controllers").
-          set("fqn", "model.meta.path.PathApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.path]").
+          set("fqn", "metamodel.path.PathApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.path]").
           list("templates", json().
             set("path", "bar.gtmpl").
             list("refs")
@@ -91,11 +91,11 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
     helper.assertCompile();
 
     //
-    File a = helper.getSourcePath().getPath("model", "meta", "path", "A.java");
+    File a = helper.getSourcePath().getPath("metamodel", "path", "A.java");
     Tools.write(Tools.read(a).replace("@Path(\"foo.gtmpl\")", ""), a);
 
     //
@@ -107,8 +107,8 @@ public class PathTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "model.meta.path.PathApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.path]").
+          set("fqn", "metamodel.path.PathApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.path]").
           list("templates")
         )
       );
@@ -117,11 +117,11 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testPathRemoveApplication() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
     helper.assertCompile();
 
     //
-    assertDelete(helper.getSourcePath().getPath("model", "meta", "path", "package-info.java"));
+    assertDelete(helper.getSourcePath().getPath("metamodel", "path", "package-info.java"));
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -139,7 +139,7 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testRefactorApplication() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
     helper.assertCompile();
 
     //
@@ -149,14 +149,14 @@ public class PathTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     //
-    File pkg = helper.getSourcePath().getPath("model", "meta", "path", "package-info.java");
+    File pkg = helper.getSourcePath().getPath("metamodel", "path", "package-info.java");
     File dst = new File(pkg.getParentFile().getParentFile(), pkg.getName());
     assertTrue(pkg.renameTo(dst));
     pkg = dst;
-    File templates = helper.getSourcePath().getPath("model", "meta", "path", "templates");
+    File templates = helper.getSourcePath().getPath("metamodel", "path", "templates");
     File newtemplates = new File(templates.getParentFile().getParentFile(), templates.getName());
     assertTrue(templates.renameTo(newtemplates));
-    Tools.write(Tools.read(pkg).replace("package model.meta.path;", "package model.meta;"), pkg);
+    Tools.write(Tools.read(pkg).replace("package metamodel.path;", "package metamodel;"), pkg);
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -167,8 +167,8 @@ public class PathTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "model.meta.MetaApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta]").
+          set("fqn", "metamodel.MetamodelApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel]").
           list("templates", json().
             set("path", "foo.gtmpl").
             list("refs")

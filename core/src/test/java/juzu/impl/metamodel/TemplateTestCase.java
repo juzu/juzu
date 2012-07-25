@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProcessorTestCase extends AbstractTestCase {
+public class TemplateTestCase extends AbstractTestCase {
 
   @Test
   public void testTemplatePathMatching() {
@@ -164,11 +164,11 @@ public class ProcessorTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveTemplate() throws Exception {
-    CompilerAssert<File, File> helper = compiler("model", "processor", "simple");
+    CompilerAssert<File, File> helper = compiler("metamodel", "template");
     helper.assertCompile();
 
     //
-    assertDelete(helper.getSourcePath().getPath("model", "processor", "simple", "templates", "index.gtmpl"));
+    assertDelete(helper.getSourcePath().getPath("metamodel", "template", "templates", "index.gtmpl"));
 
     //
     helper.addClassPath(helper.getClassOutput()).failCompile();

@@ -17,13 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package model.meta.param;
+@Application package metamodel.application;
 
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public void index(Bean bean) {
-  }
-}
+import juzu.Application;

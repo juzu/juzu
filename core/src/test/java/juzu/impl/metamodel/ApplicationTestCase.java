@@ -37,7 +37,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testAdd() throws Exception {
-    CompilerAssert<File, File> helper = compiler("model", "meta", "application");
+    CompilerAssert<File, File> helper = compiler("metamodel", "application");
     helper.assertCompile();
 
     //
@@ -52,8 +52,8 @@ public class ApplicationTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "model.meta.application.ApplicationApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.application]").
+          set("fqn", "metamodel.application.ApplicationApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.application]").
           list("templates")
         )
       );
@@ -62,7 +62,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testUpdate() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "application");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
     helper.assertCompile();
 
     //
@@ -72,7 +72,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     // Just touch this file to force recompile
-    File pkg = helper.getSourcePath().getPath("model", "meta", "application", "package-info.java");
+    File pkg = helper.getSourcePath().getPath("metamodel", "application", "package-info.java");
     FileWriter writer = new FileWriter(pkg, true);
     writer.write(" ");
     writer.close();
@@ -92,8 +92,8 @@ public class ApplicationTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "model.meta.application.ApplicationApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.application]").
+          set("fqn", "metamodel.application.ApplicationApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.application]").
           list("templates")
         )
       );
@@ -102,7 +102,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testRemove() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "application");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
     helper.assertCompile();
 
     //
@@ -112,7 +112,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     //
-    assertTrue(helper.getSourcePath().getPath("model", "meta", "application", "package-info.java").delete());
+    assertTrue(helper.getSourcePath().getPath("metamodel", "application", "package-info.java").delete());
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();

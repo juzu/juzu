@@ -56,7 +56,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testBuild() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
     helper.assertCompile();
 
     //
@@ -67,17 +67,17 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers", json().
-            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            set("handle", "ElementHandle.Class[fqn=metamodel.controller.A]").
             list("methods", json().
-              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("handle", "ElementHandle.Method[fqn=metamodel.controller.A,name=index,parameterTypes[]]").
               set("id", null).
               set("name", "index").
               list("parameters").
               set("phase", "RENDER")
             )
           ).
-          set("fqn", "model.meta.controller.ControllerApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          set("fqn", "metamodel.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
       );
@@ -98,7 +98,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveApplication() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -106,7 +106,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     //
-    assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "package-info.java"));
+    assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "package-info.java"));
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -132,7 +132,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveController() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -140,7 +140,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     //
-    assertDelete(helper.getSourcePath().getPath("model", "meta", "controller", "A.java"));
+    assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "A.java"));
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
@@ -151,8 +151,8 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "model.meta.controller.ControllerApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          set("fqn", "metamodel.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
       );
@@ -169,7 +169,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testChangeAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -177,7 +177,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     decl.getAnnotations().get(0).setName(ASTHelper.createNameExpr(Action.class.getName()));
@@ -192,17 +192,17 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers", json().
-            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            set("handle", "ElementHandle.Class[fqn=metamodel.controller.A]").
             list("methods", json().
-              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("handle", "ElementHandle.Method[fqn=metamodel.controller.A,name=index,parameterTypes[]]").
               set("id", null).
               set("name", "index").
               list("parameters").
               set("phase", "ACTION")
             )
           ).
-          set("fqn", "model.meta.controller.ControllerApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          set("fqn", "metamodel.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
       );
@@ -225,7 +225,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -233,7 +233,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     decl.getAnnotations().clear();
@@ -248,8 +248,8 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "model.meta.controller.ControllerApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          set("fqn", "metamodel.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
       );
@@ -266,8 +266,8 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testAddMethod() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     assertTrue(a.getMembers().remove(decl));
@@ -296,17 +296,17 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers", json().
-            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            set("handle", "ElementHandle.Class[fqn=metamodel.controller.A]").
             list("methods", json().
-              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("handle", "ElementHandle.Method[fqn=metamodel.controller.A,name=index,parameterTypes[]]").
               set("id", null).
               set("name", "index").
               list("parameters").
               set("phase", "RENDER")
             )
           ).
-          set("fqn", "model.meta.controller.ControllerApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          set("fqn", "metamodel.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
       );
@@ -325,7 +325,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveSingleMethod() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModel mm = Tools.unserialize(MetaModel.class, ser);
@@ -333,7 +333,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     a.getMembers().clear();
     file.assertSave();
@@ -347,8 +347,8 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers").
-          set("fqn", "model.meta.controller.ControllerApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          set("fqn", "metamodel.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
       );
@@ -365,10 +365,10 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveMethod() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
 
     //
-    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration show = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "show");
     show.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
@@ -394,17 +394,17 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers", json().
-            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            set("handle", "ElementHandle.Class[fqn=metamodel.controller.A]").
             list("methods", json().
-              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("handle", "ElementHandle.Method[fqn=metamodel.controller.A,name=index,parameterTypes[]]").
               set("id", null).
               set("name", "index").
               list("parameters").
               set("phase", "RENDER")
             )
           ).
-          set("fqn", "model.meta.controller.ControllerApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          set("fqn", "metamodel.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
       );
@@ -419,8 +419,8 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveOverloadedMethod() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
-    JavaFile file = helper.assertJavaFile("model", "meta", "controller", "A.java");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration index = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "index");
     ASTHelper.addParameter(index, ASTHelper.createParameter(new ClassOrInterfaceType(String.class.getName()), "s"));
@@ -449,17 +449,17 @@ public class ControllerTestCase extends AbstractTestCase {
       .set("applications", json().
         list("values", json().
           list("controllers", json().
-            set("handle", "ElementHandle.Class[fqn=model.meta.controller.A]").
+            set("handle", "ElementHandle.Class[fqn=metamodel.controller.A]").
             list("methods", json().
-              set("handle", "ElementHandle.Method[fqn=model.meta.controller.A,name=index,parameterTypes[]]").
+              set("handle", "ElementHandle.Method[fqn=metamodel.controller.A,name=index,parameterTypes[]]").
               set("id", null).
               set("name", "index").
               list("parameters").
               set("phase", "RENDER")
             )
           ).
-          set("fqn", "model.meta.controller.ControllerApplication").
-          set("handle", "ElementHandle.Package[qn=model.meta.controller]").
+          set("fqn", "metamodel.controller.ControllerApplication").
+          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
           list("templates")
         )
       );
@@ -474,7 +474,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRefactorPackageName() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
     helper.assertCompile();
 
     //
@@ -484,13 +484,13 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(mm, ser);
 
     //
-    File file = helper.getSourcePath().getPath("model", "meta", "controller", "A.java");
+    File file = helper.getSourcePath().getPath("metamodel", "controller", "A.java");
     File sub = new File(file.getParentFile(), "sub");
     assertTrue(sub.mkdir());
     File tmp = new File(sub, file.getName());
     assertTrue(file.renameTo(tmp));
-    JavaFile javaFile = helper.assertJavaFile("model", "meta", "controller", "sub", "A.java");
-    javaFile.assertCompilationUnit().getPackage().setName(ASTHelper.createNameExpr("model.meta.controller.sub"));
+    JavaFile javaFile = helper.assertJavaFile("metamodel", "controller", "sub", "A.java");
+    javaFile.assertCompilationUnit().getPackage().setName(ASTHelper.createNameExpr("metamodel.controller.sub"));
     javaFile.assertSave();
 
     //
@@ -501,14 +501,14 @@ public class ControllerTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(5, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertEquals(ElementHandle.Method.create(new FQN("model.meta.controller.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(0).getObject()).getHandle());
+    assertEquals(ElementHandle.Method.create(new FQN("metamodel.controller.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(0).getObject()).getHandle());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
-    assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
+    assertEquals(ElementHandle.Class.create(new FQN("metamodel.controller.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(2).getType());
-    assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
+    assertEquals(ElementHandle.Class.create(new FQN("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(3).getType());
-    assertEquals(ElementHandle.Method.create(new FQN("model.meta.controller.sub.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(3).getObject()).getHandle());
+    assertEquals(ElementHandle.Method.create(new FQN("metamodel.controller.sub.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(3).getObject()).getHandle());
     assertEquals(MetaModelEvent.UPDATED, events.get(4).getType());
-    assertEquals(ElementHandle.Class.create(new FQN("model.meta.controller.sub.A")), ((ControllerMetaModel)events.get(4).getObject()).getHandle());
+    assertEquals(ElementHandle.Class.create(new FQN("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(4).getObject()).getHandle());
   }
 }

@@ -42,29 +42,29 @@ public class ParamTestCase extends AbstractTestCase {
     .set("applications", json().
       list("values", json().
         list("controllers", json().
-          set("handle", "ElementHandle.Class[fqn=model.meta.param.A]").
+          set("handle", "ElementHandle.Class[fqn=metamodel.param.A]").
           list("methods", json().
-            set("handle", "ElementHandle.Method[fqn=model.meta.param.A,name=index,parameterTypes[model.meta.param.Bean]]").
+            set("handle", "ElementHandle.Method[fqn=metamodel.param.A,name=index,parameterTypes[metamodel.param.Bean]]").
             set("id", null).
             set("name", "index").
             set("phase", "RENDER").
             list("parameters", json().
               set("name", "bean").
-              set("declaredType", "model.meta.param.Bean").
-              set("type", "ElementHandle.Class[fqn=model.meta.param.Bean]").
+              set("declaredType", "metamodel.param.Bean").
+              set("type", "ElementHandle.Class[fqn=metamodel.param.Bean]").
               set("cardinality", "SINGLE")
             )
           )
         ).
-        set("fqn", "model.meta.param.ParamApplication").
-        set("handle", "ElementHandle.Package[qn=model.meta.param]").
+        set("fqn", "metamodel.param.ParamApplication").
+        set("handle", "ElementHandle.Package[qn=metamodel.param]").
         list("templates")
       )
     );
 
   @Test
   public void testBuild() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "param");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "param");
     helper.assertCompile();
 
     //
@@ -74,16 +74,16 @@ public class ParamTestCase extends AbstractTestCase {
 
   @Test
   public void testParam() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("model", "meta", "param");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "param");
     helper.assertCompile();
 
     // Remove @Param
-    JavaFile file = helper.assertJavaFile("model", "meta", "param", "Bean.java");
+    JavaFile file = helper.assertJavaFile("metamodel", "param", "Bean.java");
     ClassOrInterfaceDeclaration bean = file.assertDeclaration();
     AnnotationExpr annotation = bean.getAnnotations().get(0);
     bean.getAnnotations().clear();
     file.assertSave();
-//      helper.assertRemove("model", "meta", "param", "A.java");
+//      helper.assertRemove("metamodel", "param", "A.java");
 
     // Recompile
     // we should have a way to test the error kind more precisely
