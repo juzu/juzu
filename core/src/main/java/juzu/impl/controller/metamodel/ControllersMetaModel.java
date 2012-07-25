@@ -20,6 +20,7 @@
 package juzu.impl.controller.metamodel;
 
 import juzu.AmbiguousResolutionException;
+import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModel;
@@ -42,11 +43,18 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
   /** . */
   Boolean escapeXML;
 
+  /** . */
+  private ApplicationMetaModel application;
+
   @Override
   public JSON toJSON() {
     JSON json = new JSON();
     json.map("values", getChildren(ControllerMetaModel.class));
     return json;
+  }
+
+  public ApplicationMetaModel getApplication() {
+    return application;
   }
 
   public Iterator<ControllerMetaModel> iterator() {
@@ -76,6 +84,20 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
     catch (AmbiguousResolutionException e) {
       MetaModel.log.log("Could not resolve ambiguous method " + methodName + " " + parameterNames);
       return null;
+    }
+  }
+
+  @Override
+  protected void postAttach(MetaModelObject parent) {
+    if (parent instanceof ApplicationMetaModel) {
+      application = (ApplicationMetaModel)parent;
+    }
+  }
+
+  @Override
+  protected void preDetach(MetaModelObject parent) {
+    if (parent instanceof ApplicationMetaModel) {
+      application = null;
     }
   }
 }

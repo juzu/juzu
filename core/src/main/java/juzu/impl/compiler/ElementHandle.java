@@ -20,6 +20,7 @@
 package juzu.impl.compiler;
 
 import juzu.impl.common.FQN;
+import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QN;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -273,6 +274,10 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
         hashCode = hashCode * 41 + parameterType.hashCode();
       }
       return hashCode;
+    }
+
+    public MethodHandle getMethodHandle() {
+      return new MethodHandle(fqn.getName(), name, parameterTypes.toArray(new String[parameterTypes.size()]));
     }
 
     @Override

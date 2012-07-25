@@ -139,8 +139,8 @@ public class MethodMetaModel extends MetaModelObject {
 
   @Override
   protected void preDetach(MetaModelObject parent) {
+    queue(MetaModelEvent.createRemoved(this, controller.getControllers().getApplication().getHandle()));
     controller = null;
-    queue(MetaModelEvent.createRemoved(this));
   }
 
   @Override

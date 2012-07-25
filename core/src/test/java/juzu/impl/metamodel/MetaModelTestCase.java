@@ -23,9 +23,11 @@ import juzu.impl.compiler.ProcessingContext;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
+import java.util.LinkedList;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MetaModelTestCase extends AbstractTestCase {
-
+  
   /** . */
   private static final Key<MetaModelObject> A = Key.of("a", MetaModelObject.class);
 
@@ -38,125 +40,148 @@ public class MetaModelTestCase extends AbstractTestCase {
   /** . */
   private static final Key<MetaModelObject> D = Key.of("d", MetaModelObject.class);
 
+  /** . */
+  private Context context;
+
+  @Override
+  public void setUp() throws Exception {
+    this.context = new Context();
+  }
+
   @Test
   public void testCannotRemoveRoot() {
-    Simple a = new Simple("a");
-    Simple b = new Simple("b");
+    Simple a = context.create("a");
+    Simple b = context.create("b");
     a.addChild(B, b);
 
     //
     a.remove();
     assertSame(b, a.getChild(B));
-    assertEquals(0, a.removed);
-    assertEquals(0, b.removed);
+    context.assertEmpty();
   }
 
   @Test
   public void testTransitiveRemove() {
-    Simple a = new Simple("a");
-    Simple b = new Simple("b");
-    Simple c = new Simple("c");
+    Simple a = context.create("a");
+    Simple b = context.create("b");
+    Simple c = context.create("c");
     a.addChild(B, b).addChild(C, c);
 
     //
     b.remove();
-    assertEquals(0, a.removed);
-    assertEquals(1, b.removed);
-    assertEquals(1, c.removed);
+    context.assertPreDetach("c");
+    context.assertRemove("c");
+    context.assertPreDetach("b");
+    context.assertRemove("b");
+    context.assertEmpty();
   }
 
   @Test
   public void testTransitiveRemoveChild() {
-    Simple a = new Simple("a");
-    Simple b = new Simple("b");
-    Simple c = new Simple("c");
+    Simple a = context.create("a");
+    Simple b = context.create("b");
+    Simple c = context.create("c");
     a.addChild(B, b).addChild(C, c);
 
     //
     a.removeChild(B);
-    assertEquals(0, a.removed);
-    assertEquals(1, b.removed);
-    assertEquals(1, c.removed);
+    context.assertPreDetach("c");
+    context.assertRemove("c");
+    context.assertPreDetach("b");
+    context.assertRemove("b");
+    context.assertEmpty();
   }
 
   @Test
   public void testRemoveOrphan() {
-    Simple a = new Simple("a");
-    Simple b = new Simple("b");
-    Simple c = new Simple("c");
+    Simple a = context.create("a");
+    Simple b = context.create("b");
+    Simple c = context.create("c");
     a.addChild(C, c);
     b.addChild(C, c);
 
     //
     a.removeChild(C);
-    assertEquals(0, c.removed);
+    context.assertPreDetach("c");
+    context.assertEmpty();
     b.removeChild(C);
-    assertEquals(1, c.removed);
+    context.assertPreDetach("c");
+    context.assertRemove("c");
+    context.assertEmpty();
   }
 
   @Test
   public void testTransitiveGarbage() {
     MetaModel m = new MetaModel();
-    Simple a = new Simple("a");
-    Simple b = new Simple("b");
+    Simple a = context.create("a");
+    Simple b = context.create("b");
     m.addChild(A, a).addChild(B, b);
 
     //
     a.exist = b.exist = false;
-    m.postActivate((ProcessingContext)null);
+    m.postActivate(null);
     assertNull(a.getChild(B));
     assertNull(m.getChild(B));
-    assertEquals(1, a.removed);
-    assertEquals(1, b.removed);
+    context.assertPreDetach("b");
+    context.assertRemove("b");
+    context.assertPreDetach("a");
+    context.assertRemove("a");
+    context.assertEmpty();
   }
 
   @Test
   public void testForcedGarbage() {
     MetaModel m = new MetaModel();
-    Simple a = new Simple("a");
-    Simple b = new Simple("b");
+    Simple a = context.create("a");
+    Simple b = context.create("b");
     m.addChild(A, a).addChild(B, b);
 
     //
     a.exist = false;
-    m.postActivate((ProcessingContext)null);
+    m.postActivate(null);
     assertNull(a.getChild(B));
     assertNull(m.getChild(A));
-    assertEquals(1, a.removed);
-    assertEquals(1, b.removed);
+    context.assertPreDetach("b");
+    context.assertRemove("b");
+    context.assertPreDetach("a");
+    context.assertRemove("a");
+    context.assertEmpty();
   }
 
   @Test
   public void testForcedGarbage2() {
     MetaModel m = new MetaModel();
-    Simple a = new Simple("a");
-    Simple b = new Simple("b");
-    Simple c = new Simple("c");
+    Simple a = context.create("a");
+    Simple b = context.create("b");
+    Simple c = context.create("c");
     m.addChild(A, a).addChild(B, b);
     m.addChild(C, c).addChild(B, b);
 
     //
     a.exist = false;
-    m.postActivate((ProcessingContext)null);
+    m.postActivate(null);
     assertNull(a.getChild(B));
     assertNull(m.getChild(A));
     assertSame(b, c.getChild(B));
-    assertEquals(1, a.removed);
-    assertEquals(0, b.removed);
-    assertEquals(0, c.removed);
+    context.assertPreDetach("b");
+    context.assertPreDetach("a");
+    context.assertRemove("a");
+    context.assertEmpty();
     c.exist = false;
-    m.postActivate((ProcessingContext)null);
-    assertEquals(1, a.removed);
-    assertEquals(1, b.removed);
-    assertEquals(1, c.removed);
+    m.postActivate(null);
+    context.assertPreDetach("b");
+    context.assertRemove("b");
+    context.assertPreDetach("c");
+    context.assertRemove("c");
+    context.assertEmpty();
   }
 
   @Test
   public void testBug() {
-    Simple a = new Simple("a");
-    Simple b = new Simple("b");
-    Simple c = new Simple("c");
-    Simple d = new Simple("d");
+    Simple a = context.create("a");
+    Simple b = context.create("b");
+    Simple c = context.create("c");
+    Simple d = context.create("d");
     a.addChild(C, c);
     b.addChild(C, c);
     c.addChild(D, d);
@@ -168,18 +193,27 @@ public class MetaModelTestCase extends AbstractTestCase {
     assertSame(d, c.getChild(D));
   }
 
+  @Test
+  public void testEventWhenRemoved() {
+    Simple a = context.create("a");
+    Simple b = context.create("b");
+    a.addChild(B, b);
+
+  }
+
   static class Simple extends MetaModelObject {
 
+    /** . */
+    final Context context;
+    
     /** . */
     final String name;
 
     /** . */
     boolean exist = true;
 
-    /** . */
-    int removed = 0;
-
-    Simple(String name) {
+    Simple(Context context, String name) {
+      this.context = context;
       this.name = name;
     }
 
@@ -189,13 +223,66 @@ public class MetaModelTestCase extends AbstractTestCase {
     }
 
     @Override
+    protected void preDetach(MetaModelObject parent) {
+      context.addLast(new Event(this, Event.PRE_DETACH));
+    }
+
+    @Override
     protected void preRemove() {
-      removed++;
+      context.addLast(new Event(this, Event.REMOVED));
     }
 
     @Override
     public String toString() {
       return "Simple[" + name + "]";
+    }
+  }
+  
+  static class Event {
+
+    /** . */
+    static final int ADDED = 0;
+
+    /** . */
+    static final int REMOVED = 1;
+
+    /** . */
+    static final int PRE_DETACH = 2;
+
+    /** . */
+    private final Simple source;
+
+    /** . */
+    private final int kind;
+
+    Event(Simple source, int kind) {
+      this.source = source;
+      this.kind = kind;
+    }
+  }
+
+  static class Context extends LinkedList<Event> {
+
+    Simple create(String name) {
+      return new Simple(this, name);
+    }
+
+    void assertRemove(String name) {
+      assertTrue("Expecting to have at least one event", size() > 0);
+      Event event = removeFirst();
+      assertEquals(Event.REMOVED, event.kind);
+      assertEquals(name, event.source.name);
+    }
+
+    void assertPreDetach(String name) {
+      assertTrue("Expecting to have at least one event", size() > 0);
+      Event event = removeFirst();
+      assertEquals(Event.PRE_DETACH, event.kind);
+      assertEquals(name, event.source.name);
+    }
+
+    void assertEmpty() {
+      assertTrue(isEmpty());
     }
   }
 }

@@ -122,24 +122,41 @@ public class MetaModelObject implements Serializable {
   }
 
   public final <O extends MetaModelObject> O removeChild(Key<O> key) {
-    MetaModelObject child = children.remove(key);
+    MetaModelObject child = children.get(key);
     if (child != null) {
-      if (child.parents.remove(this) != null) {
-        child.preDetach(this);
+      if (child.parents.containsKey(this)) {
 
-        // Remove orphan
-        if (child.parents.isEmpty()) {
-          // Remove children if needed
+        // Detect orphan
+        boolean remove = child.parents.size() == 1;
+
+        //
+        if (remove) {
+
+          // Remove children recursively
           if (child.children.size() > 0) {
             for (Key<?> key2 : new ArrayList<Key<?>>(child.children.keySet())) {
               child.removeChild(key2);
             }
           }
+        }
 
+        // Pre detach
+        child.preDetach(this);
+
+        // Break relationship
+        if (children.remove(key) == null) {
+          throw new AssertionError("Internal bug");
+        }
+        if (child.parents.remove(this) == null) {
+          throw new AssertionError("Internal bug");
+        }
+
+        //
+        if (remove) {
           // Remove callback
           child.preRemove();
 
-          //
+          // Set model to null
           child.metaModel = null;
         }
 

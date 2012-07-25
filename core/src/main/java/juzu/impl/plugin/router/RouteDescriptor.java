@@ -19,32 +19,64 @@
 
 package juzu.impl.plugin.router;
 
-import juzu.impl.common.MethodHandle;
+import juzu.impl.common.JSON;
+import juzu.impl.metadata.Descriptor;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteDescriptor {
+public class RouteDescriptor extends Descriptor {
 
   /** . */
-  private final MethodHandle target;
+  private final Map<String, String> targets;
 
   /** . */
-  private final String path;
+  private final Map<String, RouteDescriptor> children;
 
-  RouteDescriptor(MethodHandle target, String path) {
-    this.target = target;
-    this.path = path;
+  public RouteDescriptor(JSON json) {
+
+    JSON targets = json.getJSON("targets");
+    if (targets != null) {
+      Set<String> names = targets.names();
+      if (names.size() > 0) {
+        this.targets = new HashMap<String, String>();
+        for (String name : names) {
+          String value = targets.getString(name);
+          this.targets.put(name, value);
+        }
+      } else {
+        this.targets = Collections.emptyMap();
+      }
+    } else {
+      this.targets = Collections.emptyMap();
+    }
+
+    //
+    JSON children = json.getJSON("children");
+    if (children != null) {
+      Set<String> names = children.names();
+      if (names.size() > 0) {
+        this.children = new HashMap<String, RouteDescriptor>();
+        for (String name : names) {
+          JSON value = children.getJSON(name);
+          this.children.put(name, new RouteDescriptor(value));
+        }
+      } else {
+        this.children = Collections.emptyMap();
+      }
+    } else {
+      this.children = Collections.emptyMap();
+    }
   }
 
-  public MethodHandle getTarget() {
-    return target;
+  public Map<String, String> getTargets() {
+    return targets;
   }
 
-  public String getPath() {
-    return path;
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName() + "[path=" + path + ",target=" + target + "]";
+  public Map<String, RouteDescriptor> getChildren() {
+    return children;
   }
 }

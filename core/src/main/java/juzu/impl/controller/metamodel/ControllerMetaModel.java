@@ -76,6 +76,10 @@ public class ControllerMetaModel extends MetaModelObject {
     return json;
   }
 
+  public ControllersMetaModel getControllers() {
+    return controllers;
+  }
+
   public ElementHandle.Class getHandle() {
     return handle;
   }

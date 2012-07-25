@@ -32,7 +32,6 @@ import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.plugin.router.RouteDescriptor;
-import juzu.impl.plugin.router.RouterDescriptor;
 import juzu.impl.router.Param;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
@@ -141,12 +140,14 @@ public class ServletBridge extends HttpServlet {
       HashMap<Route, MethodHandle> routeMap2 = new HashMap<Route, MethodHandle>();
 
       //
-      RouterDescriptor routesDesc = (RouterDescriptor)bridge.runtime.getDescriptor().getPlugin("router");
+      RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPlugin("router");
       if (routesDesc != null) {
-        for (RouteDescriptor routeDesc : routesDesc.getRoutes()) {
-          Route route = router.append(routeDesc.getPath());
-          routeMap.put(routeDesc.getTarget(), route);
-          routeMap2.put(route, routeDesc.getTarget());
+        for (Map.Entry<String, RouteDescriptor> child : routesDesc.getChildren().entrySet()) {
+          Route route = router.append(child.getKey());
+          Map.Entry<String, String> e = child.getValue().getTargets().entrySet().iterator().next();
+          MethodHandle handle = MethodHandle.parse(e.getValue());
+          routeMap.put(handle, route);
+          routeMap2.put(route, handle);
         }
       }
 
