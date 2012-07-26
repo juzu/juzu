@@ -17,32 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package standalone.route.overload;
+@Application package standalone.route.overload.actionandview;
 
-import juzu.Action;
-import juzu.Controller;
-import juzu.Response;
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
-
-  @View
-  public Response.Content index() {
-    return Response.render(
-        "<form id='form' action='" + A_.fooActionURL() + "' method='post'>" +
-        "<input type='hidden' name='juu' value='bar'/>" +
-        "<input id='trigger' type='submit' name='click'/>" +
-        "</form>");
-  }
-
-  @Action(route = "/foo")
-  public Response.Update fooAction() {
-    return A_.fooView();
-  }
-
-  @View(route = "/foo")
-  public Response.Content fooView() {
-    return Response.ok("pass");
-  }
-}
+import juzu.Application;
