@@ -20,14 +20,13 @@
 package juzu.impl.application.metamodel;
 
 import juzu.Application;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelPlugin;
 import juzu.impl.common.JSON;
 
 import javax.lang.model.element.Element;
-import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,14 +36,14 @@ import java.util.Set;
 public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
 
   /** . */
-  private HashSet<Class<? extends Annotation>> annotationTypes;
+  private HashSet<Class<? extends java.lang.annotation.Annotation>> annotationTypes;
 
   public ApplicationsMetaModelPlugin() {
     super("applications");
   }
 
   @Override
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
     return annotationTypes;
   }
 
@@ -65,12 +64,12 @@ public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
     MetaModel.log.log(msg);
 
     // We are interested by the Application annotation
-    HashSet<Class<? extends Annotation>> annotationTypes = new HashSet<Class<? extends Annotation>>();
+    HashSet<Class<? extends java.lang.annotation.Annotation>> annotationTypes = new HashSet<Class<? extends java.lang.annotation.Annotation>>();
     annotationTypes.add(Application.class);
 
     // Add the plugin annotations
     for (ApplicationMetaModelPlugin plugin : plugins.values()) {
-      Set<Class<? extends Annotation>> processed = plugin.getAnnotationTypes();
+      Set<Class<? extends java.lang.annotation.Annotation>> processed = plugin.getAnnotationTypes();
       MetaModel.log.log("Application plugin " + plugin.getName() + " wants to process " + processed);
       annotationTypes.addAll(processed);
     }
@@ -96,7 +95,7 @@ public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(MetaModel metaModel, Element element, AnnotationData annotation) {
+  public void processAnnotation(MetaModel metaModel, Element element, Annotation annotation) {
     metaModel.getChild(ApplicationsMetaModel.KEY).processAnnotation(metaModel, element, annotation);
   }
 

@@ -21,7 +21,7 @@ package juzu.impl.application.metamodel;
 
 import juzu.Application;
 import juzu.impl.application.ApplicationDescriptor;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -68,7 +68,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
   public MetaModel model;
 
   /** . */
-  final Map<BufKey, AnnotationData> toProcess = new HashMap<BufKey, AnnotationData>();
+  final Map<BufKey, Annotation> toProcess = new HashMap<BufKey, Annotation>();
 
   /** The meta model plugins. */
   final LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
@@ -116,7 +116,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     }
   }
 
-  public void processAnnotation(MetaModel model, Element element, AnnotationData annotation) throws ProcessingException {
+  public void processAnnotation(MetaModel model, Element element, Annotation annotation) throws ProcessingException {
     PackageElement pkg = model.env.getPackageOf(element);
     QN pkgQN = QN.parse(pkg.getQualifiedName());
 
@@ -153,10 +153,10 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
 
     // Broadcast annotations
     if (found != null) {
-      for (Iterator<Map.Entry<BufKey, AnnotationData>> i = found.toProcess.entrySet().iterator();i.hasNext();) {
-        Map.Entry<BufKey, AnnotationData> entry = i.next();
+      for (Iterator<Map.Entry<BufKey, Annotation>> i = found.toProcess.entrySet().iterator();i.hasNext();) {
+        Map.Entry<BufKey, Annotation> entry = i.next();
         BufKey key = entry.getKey();
-        AnnotationData data = entry.getValue();
+        Annotation data = entry.getValue();
         Element e = model.env.get(key.element);
         i.remove();
         MetaModel.log.log("Broadcasting annotation " + key + " = " + data);
@@ -256,11 +256,11 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     ApplicationMetaModel application = new ApplicationMetaModel(handle, applicationName);
 
     // Let's find buffered annotations
-    for (Iterator<Map.Entry<BufKey, AnnotationData>> i = toProcess.entrySet().iterator();i.hasNext();) {
-      Map.Entry<BufKey, AnnotationData> entry = i.next();
+    for (Iterator<Map.Entry<BufKey, Annotation>> i = toProcess.entrySet().iterator();i.hasNext();) {
+      Map.Entry<BufKey, Annotation> entry = i.next();
       BufKey key = entry.getKey();
       if (handle.getQN().isPrefix(key.pkg)) {
-        AnnotationData data = entry.getValue();
+        Annotation data = entry.getValue();
         i.remove();
         MetaModel.log.log("Moving " + key + " = " + data);
         application.toProcess.put(key, data);

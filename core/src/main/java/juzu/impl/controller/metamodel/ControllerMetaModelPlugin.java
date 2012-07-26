@@ -31,7 +31,7 @@ import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -60,7 +60,6 @@ import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -102,8 +101,8 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     super("controller");
   }
 
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
-    return Tools.<Class<? extends Annotation>>set(View.class, Action.class, Resource.class);
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+    return Tools.<Class<? extends java.lang.annotation.Annotation>>set(View.class, Action.class, Resource.class);
   }
 
   @Override
@@ -111,7 +110,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     ControllersMetaModel controllers = new ControllersMetaModel();
     PackageElement pkg = application.model.env.get(application.getHandle());
     AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
-    AnnotationData values = AnnotationData.create(annotation);
+    Annotation values = Annotation.create(annotation);
     Boolean escapeXML = (Boolean)values.get("escapeXML");
     ElementHandle.Class defaultControllerElt = (ElementHandle.Class)values.get("defaultController");
     controllers.escapeXML = escapeXML;
@@ -120,7 +119,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) throws ProcessingException {
+  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) throws ProcessingException {
     ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
     if (NAMES.contains(annotation.getName())) {
       ExecutableElement methodElt = (ExecutableElement)element;

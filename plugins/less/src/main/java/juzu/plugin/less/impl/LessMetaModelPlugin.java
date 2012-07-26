@@ -20,7 +20,7 @@
 package juzu.plugin.less.impl;
 
 import juzu.impl.common.FQN;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.Message;
 import juzu.impl.compiler.ProcessingException;
@@ -48,7 +48,6 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,7 +74,7 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
   static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);
 
   /** . */
-  private HashMap<ElementHandle.Package, AnnotationData> annotations;
+  private HashMap<ElementHandle.Package, Annotation> annotations;
 
   public LessMetaModelPlugin() {
     super("less");
@@ -83,16 +82,16 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
 
   @Override
   public void init(MetaModel metaModel) {
-    annotations = new HashMap<ElementHandle.Package, AnnotationData>();
+    annotations = new HashMap<ElementHandle.Package, Annotation>();
   }
 
   @Override
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
-    return Collections.<Class<? extends Annotation>>singleton(Less.class);
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Less.class);
   }
 
   @Override
-  public void processAnnotation(MetaModel metaModel, Element element, AnnotationData annotation) {
+  public void processAnnotation(MetaModel metaModel, Element element, Annotation annotation) {
     if (annotation.getName().equals(LESS)) {
       ElementHandle.Package pkg = (ElementHandle.Package)ElementHandle.create(element);
       log.log("Recording less annotation for package " + pkg.getQN());
@@ -102,18 +101,18 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
 
   @Override
   public void postActivate(MetaModel metaModel) {
-    annotations = new HashMap<ElementHandle.Package, AnnotationData>();
+    annotations = new HashMap<ElementHandle.Package, Annotation>();
   }
 
   @Override
   public void prePassivate(MetaModel metaModel) {
     // First clear annotation map
-    HashMap<ElementHandle.Package, AnnotationData> clone = annotations;
+    HashMap<ElementHandle.Package, Annotation> clone = annotations;
     annotations = null;
 
     //
-    for (Map.Entry<ElementHandle.Package, AnnotationData> entry : clone.entrySet()) {
-      AnnotationData annotation = entry.getValue();
+    for (Map.Entry<ElementHandle.Package, Annotation> entry : clone.entrySet()) {
+      Annotation annotation = entry.getValue();
       ElementHandle.Package pkg = entry.getKey();
       ProcessingContext env = metaModel.env;
       PackageElement pkgElt = env.get(pkg);

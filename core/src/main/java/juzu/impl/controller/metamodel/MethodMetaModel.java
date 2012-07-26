@@ -19,7 +19,7 @@
 
 package juzu.impl.controller.metamodel;
 
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
@@ -155,7 +155,7 @@ public class MethodMetaModel extends MetaModelObject {
     if (methodElt != null) {
       AnnotationMirror am = Tools.getAnnotation(methodElt, phase.annotation.getName());
       if (am != null) {
-        AnnotationData values = AnnotationData.create(am);
+        Annotation values = Annotation.create(am);
         String id = (String)values.get("id");
         return Tools.safeEquals(id, this.declaredId);
       }

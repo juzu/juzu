@@ -19,7 +19,7 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ProcessingContext;
@@ -27,7 +27,6 @@ import juzu.impl.common.JSON;
 import juzu.impl.common.Logger;
 
 import javax.lang.model.element.Element;
-import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -87,7 +86,7 @@ public final class MetaModel extends MetaModelObject {
       // Collect processed annotations
       HashSet<Class> supportedAnnotations = new HashSet<Class>();
       for (MetaModelPlugin plugin : plugins.values()) {
-        Set<Class<? extends Annotation>> processed = plugin.getAnnotationTypes();
+        Set<Class<? extends java.lang.annotation.Annotation>> processed = plugin.getAnnotationTypes();
         log.log("Plugin " + plugin.getName() + " wants to process " + processed);
         supportedAnnotations.addAll(processed);
       }
@@ -134,7 +133,7 @@ public final class MetaModel extends MetaModelObject {
     }
   }
 
-  public void processAnnotation(Element element, AnnotationData annotation) throws ProcessingException {
+  public void processAnnotation(Element element, Annotation annotation) throws ProcessingException {
     queuing = true;
     try {
       MetaModel.log.log("Processing annotation " + element);

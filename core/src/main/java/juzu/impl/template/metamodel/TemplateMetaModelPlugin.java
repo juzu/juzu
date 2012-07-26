@@ -23,7 +23,7 @@ import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.FQN;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModel;
@@ -36,7 +36,6 @@ import juzu.impl.common.Path;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,8 +60,8 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
-    return Collections.<Class<? extends Annotation>>singleton(juzu.Path.class);
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(juzu.Path.class);
   }
 
   @Override
@@ -90,7 +89,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) throws ProcessingException {
+  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) throws ProcessingException {
     if (annotation.getName().equals(PATH)) {
       if (element instanceof VariableElement) {
         VariableElement variableElt = (VariableElement)element;

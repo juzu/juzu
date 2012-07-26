@@ -22,13 +22,12 @@ package juzu.impl.plugin.asset;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.FQN;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.common.JSON;
 import juzu.plugin.asset.Assets;
 
 import javax.lang.model.element.Element;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,12 +49,12 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
-    return Collections.<Class<? extends Annotation>>singleton(Assets.class);
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Assets.class);
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) {
     if (annotation.getName().equals(ASSETS)) {
       ElementHandle.Package handle = application.getHandle();
       JSON json = new JSON();

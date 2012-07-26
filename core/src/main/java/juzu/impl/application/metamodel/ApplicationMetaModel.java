@@ -21,7 +21,7 @@ package juzu.impl.application.metamodel;
 
 import juzu.Application;
 import juzu.impl.common.QN;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.controller.metamodel.ControllersMetaModel;
@@ -56,10 +56,10 @@ public class ApplicationMetaModel extends MetaModelObject {
   boolean modified;
 
   /** . */
-  final Map<BufKey, AnnotationData> toProcess;
+  final Map<BufKey, Annotation> toProcess;
 
   /** . */
-  final Map<BufKey, AnnotationData> processed;
+  final Map<BufKey, Annotation> processed;
 
   /** . */
   final String baseName;
@@ -81,8 +81,8 @@ public class ApplicationMetaModel extends MetaModelObject {
     this.handle = handle;
     this.modified = false;
     this.baseName = baseName;
-    this.toProcess = new HashMap<BufKey, AnnotationData>();
-    this.processed = new HashMap<BufKey, AnnotationData>();
+    this.toProcess = new HashMap<BufKey, Annotation>();
+    this.processed = new HashMap<BufKey, Annotation>();
   }
 
   public QN getName() {

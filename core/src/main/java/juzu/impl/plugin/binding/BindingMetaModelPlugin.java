@@ -22,7 +22,7 @@ package juzu.impl.plugin.binding;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.FQN;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
@@ -39,7 +39,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.ElementFilter;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,12 +114,12 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
-    return Collections.<Class<? extends Annotation>>singleton(Bindings.class);
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Bindings.class);
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) {
     if (annotation.getName().equals(BINDINGS)) {
       ProcessingContext env = application.model.env;
 

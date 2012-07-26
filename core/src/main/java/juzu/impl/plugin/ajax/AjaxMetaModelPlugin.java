@@ -22,13 +22,12 @@ package juzu.impl.plugin.ajax;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.FQN;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.common.JSON;
 import juzu.plugin.ajax.Ajax;
 
 import javax.lang.model.element.Element;
-import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
@@ -48,12 +47,12 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
-    return Collections.<Class<? extends Annotation>>singleton(Ajax.class);
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Ajax.class);
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) {
     if (annotation.getName().equals(AJAX)) {
       ElementHandle.Package handle = application.getHandle();
       AtomicBoolean enabled = enabledMap.get(handle);

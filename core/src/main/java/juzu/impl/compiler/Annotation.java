@@ -35,17 +35,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AnnotationData extends HashMap<String, Serializable> {
+/**
+ * Captures the state of an annotation.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public class Annotation extends HashMap<String, Serializable> {
 
-  public static AnnotationData create(AnnotationMirror annotation) throws NullPointerException {
+  public static Annotation create(AnnotationMirror annotation) throws NullPointerException {
     if (annotation == null) {
       throw new NullPointerException("No null annotation allowed");
     }
 
     //
     FQN name = new FQN(((TypeElement)annotation.getAnnotationType().asElement()).getQualifiedName().toString());
-    AnnotationData values = new AnnotationData(name);
+    Annotation values = new Annotation(name);
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation.getElementValues().entrySet()) {
       String m = entry.getKey().getSimpleName().toString();
       Serializable value = unwrap(entry.getValue(), entry.getKey().getReturnType());
@@ -95,7 +99,7 @@ public class AnnotationData extends HashMap<String, Serializable> {
   /** . */
   private final FQN name;
 
-  public AnnotationData(FQN name) {
+  public Annotation(FQN name) {
     this.name = name;
   }
 

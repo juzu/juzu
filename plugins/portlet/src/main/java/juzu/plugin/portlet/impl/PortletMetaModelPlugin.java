@@ -21,7 +21,7 @@ package juzu.plugin.portlet.impl;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
@@ -39,7 +39,6 @@ import javax.lang.model.element.PackageElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,12 +64,12 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
-    return Collections.<Class<? extends Annotation>>singleton(Portlet.class);
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+    return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Portlet.class);
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) {
     ElementHandle.Package pkg = application.getHandle();
     if (annotation.getName().equals(PORTLET) && ElementHandle.create(element).equals(pkg)) {
       String name = (String)annotation.get("name");

@@ -19,7 +19,7 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
@@ -126,7 +126,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
             if (annotatedElt.getAnnotation(Generated.class) == null) {
               for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
                 if (annotationMirror.getAnnotationType().asElement().equals(annotationElt)) {
-                  AnnotationData annotationData = AnnotationData.create(annotationMirror);
+                  Annotation annotationData = Annotation.create(annotationMirror);
                   metaModel.processAnnotation(annotatedElt, annotationData);
                 }
               }

@@ -19,12 +19,11 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.compiler.AnnotationData;
+import juzu.impl.compiler.Annotation;
 import juzu.impl.common.JSON;
 
 import javax.lang.model.element.Element;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 
@@ -62,7 +61,7 @@ public class MetaModelPlugin implements Serializable {
     return null;
   }
 
-  public Set<Class<? extends Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
     return Collections.emptySet();
   }
 
@@ -72,7 +71,7 @@ public class MetaModelPlugin implements Serializable {
   public void postActivate(MetaModel metaModel) {
   }
 
-  public void processAnnotation(MetaModel metaModel, Element element, AnnotationData annotation) {
+  public void processAnnotation(MetaModel metaModel, Element element, Annotation annotation) {
   }
 
   public void postProcessAnnotations(MetaModel metaModel) {
