@@ -60,7 +60,7 @@ public abstract class ApplicationMetaModelPlugin implements Serializable {
   public void postActivate(ApplicationMetaModel application) {
   }
 
-  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) {
   }
 
   public void postProcessAnnotations(ApplicationMetaModel application) {

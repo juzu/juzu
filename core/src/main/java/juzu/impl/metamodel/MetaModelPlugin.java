@@ -72,7 +72,7 @@ public class MetaModelPlugin implements Serializable {
   public void postActivate(MetaModel metaModel) {
   }
 
-  public void processAnnotation(MetaModel metaModel, Element element, String fqn, AnnotationData data) {
+  public void processAnnotation(MetaModel metaModel, Element element, AnnotationData annotation) {
   }
 
   public void postProcessAnnotations(MetaModel metaModel) {

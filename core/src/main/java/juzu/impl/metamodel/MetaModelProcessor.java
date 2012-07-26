@@ -127,8 +127,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
               for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
                 if (annotationMirror.getAnnotationType().asElement().equals(annotationElt)) {
                   AnnotationData annotationData = AnnotationData.create(annotationMirror);
-                  String annotationFQN = annotationElt.getQualifiedName().toString();
-                  metaModel.processAnnotation(annotatedElt, annotationFQN, annotationData);
+                  metaModel.processAnnotation(annotatedElt, annotationData);
                 }
               }
             }

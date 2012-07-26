@@ -21,6 +21,7 @@ package juzu.impl.plugin.binding;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.common.FQN;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
@@ -104,6 +105,9 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
       "The binding implementation provider factory %1$s must provides a public constructor");
 
   /** . */
+  private static final FQN BINDINGS = new FQN(Bindings.class);
+
+  /** . */
   private Map<ElementHandle.Package, JSON> state = new HashMap<ElementHandle.Package, JSON>();
 
   public BindingMetaModelPlugin() {
@@ -116,8 +120,8 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {
-    if (fqn.equals(Bindings.class.getName())) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) {
+    if (annotation.getName().equals(BINDINGS)) {
       ProcessingContext env = application.model.env;
 
       //
@@ -127,7 +131,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
       TypeMirror rawProviderTM = env.erasure(providerTM);
 
       //
-      List<Map<String, Object>> bindings = (List<Map<String, Object>>)data.get("value");
+      List<Map<String, Object>> bindings = (List<Map<String, Object>>)annotation.get("value");
       ArrayList<JSON> list = new ArrayList<JSON>();
       if (bindings != null) {
         for (Map<String, Object> binding : bindings) {

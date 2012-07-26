@@ -96,8 +96,8 @@ public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(MetaModel metaModel, Element element, String fqn, AnnotationData data) {
-    metaModel.getChild(ApplicationsMetaModel.KEY).processAnnotation(metaModel, element, fqn, data);
+  public void processAnnotation(MetaModel metaModel, Element element, AnnotationData annotation) {
+    metaModel.getChild(ApplicationsMetaModel.KEY).processAnnotation(metaModel, element, annotation);
   }
 
   @Override

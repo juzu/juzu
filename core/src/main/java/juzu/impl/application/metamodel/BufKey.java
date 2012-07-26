@@ -19,6 +19,7 @@
 
 package juzu.impl.application.metamodel;
 
+import juzu.impl.common.FQN;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.common.QN;
@@ -36,9 +37,9 @@ class BufKey implements Serializable {
   final ElementHandle element;
 
   /** . */
-  final String annotationFQN;
+  final FQN annotationFQN;
 
-  BufKey(ProcessingContext env, Element element, String annotationFQN) {
+  BufKey(ProcessingContext env, Element element, FQN annotationFQN) {
     this.pkg = QN.parse(env.getPackageOf(element).getQualifiedName());
     this.element = ElementHandle.create(element);
     this.annotationFQN = annotationFQN;

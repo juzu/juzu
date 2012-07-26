@@ -93,6 +93,9 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final String CARDINALITY = Cardinality.class.getSimpleName();
 
   /** . */
+  private static final Set<FQN> NAMES = Tools.set(new FQN(Action.class), new FQN(View.class), new FQN(Resource.class));
+
+  /** . */
   private HashSet<ControllerMetaModel> written = new HashSet<ControllerMetaModel>();
 
   public ControllerMetaModelPlugin() {
@@ -117,9 +120,9 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) throws ProcessingException {
+  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) throws ProcessingException {
     ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
-    if (fqn.equals("juzu.View") || fqn.equals("juzu.Action") || fqn.equals("juzu.Resource")) {
+    if (NAMES.contains(annotation.getName())) {
       ExecutableElement methodElt = (ExecutableElement)element;
       MetaModel.log.log("Processing controller method " + methodElt + " found on type " + methodElt.getEnclosingElement());
       TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
@@ -131,8 +134,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       controller.addMethod(
         application.model,
         methodElt,
-        fqn,
-        data
+        annotation
       );
     }
   }

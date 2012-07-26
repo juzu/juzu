@@ -134,14 +134,14 @@ public final class MetaModel extends MetaModelObject {
     }
   }
 
-  public void processAnnotation(Element element, String annotationType, AnnotationData annotationData) throws ProcessingException {
+  public void processAnnotation(Element element, AnnotationData annotation) throws ProcessingException {
     queuing = true;
     try {
       MetaModel.log.log("Processing annotation " + element);
 
       //
       for (MetaModelPlugin plugin : plugins.values()) {
-        plugin.processAnnotation(this, element, annotationType, annotationData);
+        plugin.processAnnotation(this, element, annotation);
       }
     }
     finally {

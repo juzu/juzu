@@ -21,6 +21,7 @@ package juzu.impl.plugin.ajax;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.common.FQN;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.common.JSON;
@@ -37,6 +38,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
+  private static final FQN AJAX = new FQN(Ajax.class);
+
+  /** . */
   private final HashMap<ElementHandle.Package, AtomicBoolean> enabledMap = new HashMap<ElementHandle.Package, AtomicBoolean>();
 
   public AjaxMetaModelPlugin() {
@@ -49,8 +53,8 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {
-    if (fqn.equals(Ajax.class.getName())) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) {
+    if (annotation.getName().equals(AJAX)) {
       ElementHandle.Package handle = application.getHandle();
       AtomicBoolean enabled = enabledMap.get(handle);
       enabled.set(true);

@@ -21,6 +21,7 @@ package juzu.impl.plugin.asset;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.common.FQN;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.common.JSON;
@@ -41,6 +42,9 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   /** . */
   private final HashMap<ElementHandle.Package, JSON> enabledMap = new HashMap<ElementHandle.Package, JSON>();
 
+  /** . */
+  private static final FQN ASSETS = new FQN(Assets.class);
+
   public AssetMetaModelPlugin() {
     super("asset");
   }
@@ -51,12 +55,12 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) {
-    if (fqn.equals(Assets.class.getName())) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) {
+    if (annotation.getName().equals(ASSETS)) {
       ElementHandle.Package handle = application.getHandle();
       JSON json = new JSON();
-      json.set("scripts", build((List<Map<String, Object>>)data.get("scripts")));
-      json.set("stylesheets", build((List<Map<String, Object>>)data.get("stylesheets")));
+      json.set("scripts", build((List<Map<String, Object>>)annotation.get("scripts")));
+      json.set("stylesheets", build((List<Map<String, Object>>)annotation.get("stylesheets")));
       json.set("package", application.getName().append("assets").getValue());
       enabledMap.put(handle, json);
     }

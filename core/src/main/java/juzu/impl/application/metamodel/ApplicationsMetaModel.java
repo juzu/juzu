@@ -53,6 +53,9 @@ import java.util.Map;
 public class ApplicationsMetaModel extends MetaModelObject implements Iterable<ApplicationMetaModel> {
 
   /** . */
+  private static final FQN APPLICATION = new FQN(Application.class);
+
+  /** . */
   private static final String APPLICATION_DESCRIPTOR = ApplicationDescriptor.class.getSimpleName();
 
   /** . */
@@ -113,7 +116,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     }
   }
 
-  public void processAnnotation(MetaModel model, Element element, String annotationFQN, AnnotationData annotationData) throws ProcessingException {
+  public void processAnnotation(MetaModel model, Element element, AnnotationData annotation) throws ProcessingException {
     PackageElement pkg = model.env.getPackageOf(element);
     QN pkgQN = QN.parse(pkg.getQualifiedName());
 
@@ -121,12 +124,12 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
     ApplicationMetaModel found = null;
 
     //
-    if (annotationFQN.equals(Application.class.getName())) {
-      found = processApplication((PackageElement)element, annotationData);
+    if (annotation.getName().equals(APPLICATION)) {
+      found = processApplication((PackageElement)element, annotation);
 
       // Process this annotation manually
       for (ApplicationMetaModelPlugin plugin : plugins.values()) {
-        plugin.processAnnotation(found, element, annotationFQN, annotationData);
+        plugin.processAnnotation(found, element, annotation);
       }
     }
     else {
@@ -138,13 +141,13 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
       }
 
       //
-      BufKey key = new BufKey(model.env, element, annotationFQN);
+      BufKey key = new BufKey(model.env, element, annotation.getName());
       if (found == null) {
-        toProcess.put(key, annotationData);
-        MetaModel.log.log("Buffering " + key + " = " + annotationData);
+        toProcess.put(key, annotation);
+        MetaModel.log.log("Buffering " + key + " = " + annotation);
       }
       else {
-        found.toProcess.put(key, annotationData);
+        found.toProcess.put(key, annotation);
       }
     }
 
@@ -158,7 +161,7 @@ public class ApplicationsMetaModel extends MetaModelObject implements Iterable<A
         i.remove();
         MetaModel.log.log("Broadcasting annotation " + key + " = " + data);
         for (ApplicationMetaModelPlugin plugin : plugins.values()) {
-          plugin.processAnnotation(found, e, key.annotationFQN, data);
+          plugin.processAnnotation(found, e, data);
         }
         found.processed.put(key, data);
       }

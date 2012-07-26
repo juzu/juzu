@@ -22,6 +22,7 @@ package juzu.impl.template.metamodel;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
+import juzu.impl.common.FQN;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
@@ -48,6 +49,9 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   public static final Pattern PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
+
+  /** . */
+  private static final FQN PATH = new FQN(juzu.Path.class);
 
   /** . */
   Map<String, TemplateProvider> providers;
@@ -86,8 +90,8 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, String fqn, AnnotationData data) throws ProcessingException {
-    if (fqn.equals("juzu.Path")) {
+  public void processAnnotation(ApplicationMetaModel application, Element element, AnnotationData annotation) throws ProcessingException {
+    if (annotation.getName().equals(PATH)) {
       if (element instanceof VariableElement) {
         VariableElement variableElt = (VariableElement)element;
         MetaModel.log.log("Processing template declaration " + variableElt.getEnclosingElement() + "#" + variableElt);
@@ -96,7 +100,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         TemplatesMetaModel at = application.getChild(TemplatesMetaModel.KEY);
 
         //
-        Path path = Path.parse((String)data.get("value"));
+        Path path = Path.parse((String)annotation.get("value"));
         ElementHandle.Field handle = ElementHandle.Field.create(variableElt);
         at.add(handle, path);
       }

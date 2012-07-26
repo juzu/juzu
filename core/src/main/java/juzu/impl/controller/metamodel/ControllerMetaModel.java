@@ -19,6 +19,7 @@
 
 package juzu.impl.controller.metamodel;
 
+import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.metamodel.Key;
@@ -117,15 +118,14 @@ public class ControllerMetaModel extends MetaModelObject {
   void addMethod(
     MetaModel context,
     ExecutableElement methodElt,
-    String annotationFQN,
-    Map<String, Serializable> annotationValues) {
+    AnnotationData annotation) {
 
     //
-    String id = (String)annotationValues.get("id");
+    String id = (String)annotation.get("id");
 
     //
     for (Phase phase : Phase.values()) {
-      if (phase.annotation.getName().equals(annotationFQN)) {
+      if (phase.annotation.getName().equals(annotation.getName().toString())) {
         ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
 
         // First remove the previous method
@@ -189,7 +189,7 @@ public class ControllerMetaModel extends MetaModelObject {
           }
 
           //
-          String route = (String)annotationValues.get("route");
+          String route = (String)annotation.get("route");
 
           //
           MethodMetaModel method = new MethodMetaModel(

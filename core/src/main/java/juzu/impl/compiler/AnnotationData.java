@@ -19,6 +19,8 @@
 
 package juzu.impl.compiler;
 
+import juzu.impl.common.FQN;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
@@ -42,7 +44,8 @@ public class AnnotationData extends HashMap<String, Serializable> {
     }
 
     //
-    AnnotationData values = new AnnotationData();
+    FQN name = new FQN(((TypeElement)annotation.getAnnotationType().asElement()).getQualifiedName().toString());
+    AnnotationData values = new AnnotationData(name);
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation.getElementValues().entrySet()) {
       String m = entry.getKey().getSimpleName().toString();
       Serializable value = unwrap(entry.getValue(), entry.getKey().getReturnType());
@@ -87,5 +90,16 @@ public class AnnotationData extends HashMap<String, Serializable> {
       throw new UnsupportedOperationException("Need to unwrap not serializable type " + value + " " +
         value.getClass().getName());
     }
+  }
+
+  /** . */
+  private final FQN name;
+
+  public AnnotationData(FQN name) {
+    this.name = name;
+  }
+
+  public FQN getName() {
+    return name;
   }
 }

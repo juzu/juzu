@@ -19,6 +19,7 @@
 
 package juzu.plugin.less.impl;
 
+import juzu.impl.common.FQN;
 import juzu.impl.compiler.AnnotationData;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.Message;
@@ -68,6 +69,9 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
   public static final MessageCode MALFORMED_PATH = new MessageCode("LESS_MALFORMED_PATH", "The resource path %1$s is malformed");
 
   /** . */
+  private static final FQN LESS = new FQN(Less.class);
+
+  /** . */
   static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);
 
   /** . */
@@ -88,11 +92,11 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(MetaModel metaModel, Element element, String fqn, AnnotationData data) {
-    if (fqn.equals(Less.class.getName())) {
+  public void processAnnotation(MetaModel metaModel, Element element, AnnotationData annotation) {
+    if (annotation.getName().equals(LESS)) {
       ElementHandle.Package pkg = (ElementHandle.Package)ElementHandle.create(element);
       log.log("Recording less annotation for package " + pkg.getQN());
-      annotations.put(pkg, data);
+      annotations.put(pkg, annotation);
     }
   }
 
