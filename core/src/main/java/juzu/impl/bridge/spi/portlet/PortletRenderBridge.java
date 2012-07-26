@@ -86,7 +86,6 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           elt.setAttribute("type", "text/" + ext);
           elt.setAttribute("href", getAssetURL(stylesheet));
           headers.add(elt);
-          this.resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
         }
 
         //
