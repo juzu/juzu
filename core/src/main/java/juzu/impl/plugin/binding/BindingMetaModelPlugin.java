@@ -114,7 +114,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
     return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Bindings.class);
   }
 
@@ -243,7 +243,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void preDestroy(ApplicationMetaModel application) {
+  public void destroy(ApplicationMetaModel application) {
     state.remove(application.getHandle());
   }
 

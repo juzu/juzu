@@ -24,9 +24,9 @@ import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.FQN;
 import juzu.impl.compiler.Annotation;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
-import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.Template;
@@ -60,18 +60,14 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
     return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(juzu.Path.class);
   }
 
   @Override
-  public void init(ApplicationsMetaModel applications) {
-  }
-
-  @Override
-  public void postActivateApplicationsMetaModel(ApplicationsMetaModel applications) {
+  public void postActivate(ApplicationsMetaModel applications) {
     // Discover the template providers
-    Iterable<TemplateProvider> loader = applications.model.env.loadServices(TemplateProvider.class);
+    Iterable<TemplateProvider> loader = applications.env.loadServices(TemplateProvider.class);
     Map<String, TemplateProvider> providers = new HashMap<String, TemplateProvider>();
     for (TemplateProvider provider : loader) {
       providers.put(provider.getSourceExtension(), provider);
@@ -82,7 +78,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void postConstruct(ApplicationMetaModel application) {
+  public void init(ApplicationMetaModel application) {
     TemplatesMetaModel templates = new TemplatesMetaModel();
     templates.plugin = this;
     application.addChild(TemplatesMetaModel.KEY, templates);
@@ -93,7 +89,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     if (annotation.getName().equals(PATH)) {
       if (element instanceof VariableElement) {
         VariableElement variableElt = (VariableElement)element;
-        MetaModel.log.log("Processing template declaration " + variableElt.getEnclosingElement() + "#" + variableElt);
+        application.env.log("Processing template declaration " + variableElt.getEnclosingElement() + "#" + variableElt);
 
         //
         TemplatesMetaModel at = application.getChild(TemplatesMetaModel.KEY);
@@ -119,7 +115,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void prePassivate(ApplicationMetaModel application) {
-    MetaModel.log.log("Passivating template resolver for " + application.getHandle());
+    application.env.log("Passivating template resolver for " + application.getHandle());
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
     metaModel.resolver.prePassivate();
     metaModel.plugin = null;
@@ -127,13 +123,13 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void prePassivate(ApplicationsMetaModel applications) {
-    MetaModel.log.log("Passivating templates");
+    applications.env.log("Passivating templates");
     this.providers = null;
   }
 
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
-    MetaModel.log.log("Processing templates of " + application.getHandle());
+    application.env.log("Processing templates of " + application.getHandle());
     application.getChild(TemplatesMetaModel.KEY).resolver.process(this, application.model.env);
   }
 

@@ -25,6 +25,7 @@ import juzu.impl.common.FQN;
 import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.common.JSON;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.plugin.ajax.Ajax;
 
 import javax.lang.model.element.Element;
@@ -47,7 +48,7 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
     return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Ajax.class);
   }
 
@@ -61,12 +62,12 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void postConstruct(ApplicationMetaModel application) {
+  public void init(ApplicationMetaModel application) {
     enabledMap.put(application.getHandle(), new AtomicBoolean(false));
   }
 
   @Override
-  public void preDestroy(ApplicationMetaModel application) {
+  public void destroy(ApplicationMetaModel application) {
     enabledMap.remove(application.getHandle());
   }
 

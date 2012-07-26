@@ -23,7 +23,6 @@ import juzu.AmbiguousResolutionException;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
-import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
@@ -82,7 +81,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
       return resolver.resolve(typeName, methodName, parameterNames);
     }
     catch (AmbiguousResolutionException e) {
-      MetaModel.log.log("Could not resolve ambiguous method " + methodName + " " + parameterNames);
+      // RootMetaModel.log.log("Could not resolve ambiguous method " + methodName + " " + parameterNames);
       return null;
     }
   }

@@ -19,78 +19,36 @@
 
 package juzu.impl.application.metamodel;
 
-import juzu.impl.compiler.Annotation;
+import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModelEvent;
-import juzu.impl.common.JSON;
+import juzu.impl.metamodel.MetaModelPlugin;
 
-import javax.lang.model.element.Element;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * A plugin for meta model processing.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ApplicationMetaModelPlugin implements Serializable {
-
-  /** . */
-  private final String name;
+public abstract class ApplicationMetaModelPlugin extends MetaModelPlugin<ApplicationMetaModel, ApplicationMetaModelPlugin> implements Serializable {
 
   protected ApplicationMetaModelPlugin(String name) {
-    this.name = name;
+    super(name);
   }
 
-  public final String getName() {
-    return name;
+  public void postActivate(ApplicationsMetaModel applications) {
   }
 
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
-    return Collections.emptySet();
+  @Override
+  public final void processEvents(ApplicationMetaModel metaModel, EventQueue queue) {
+    for (MetaModelEvent event : queue.clear()) {
+      processEvent(metaModel, event);
+    }
   }
 
-  public void init(ApplicationsMetaModel applications) {
-  }
-
-  public void postActivateApplicationsMetaModel(ApplicationsMetaModel applications) {
-  }
-
-  public void postActivate(ApplicationMetaModel application) {
-  }
-
-  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) {
-  }
-
-  public void postProcessAnnotations(ApplicationMetaModel application) {
-  }
-
-  public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event) {
-  }
-
-  public void postProcessEvents(ApplicationMetaModel application) {
-  }
-
-  public void prePassivate(ApplicationMetaModel model) {
+  public void processEvent(ApplicationMetaModel application, MetaModelEvent event) {
   }
 
   public void prePassivate(ApplicationsMetaModel applications) {
-  }
-
-  public void postConstruct(ApplicationMetaModel application) {
-  }
-
-  public void preDestroy(ApplicationMetaModel application) {
-  }
-
-  /**
-   * Returns the plugin descriptor for the specified application or null if the plugin should not be involved at
-   * runtime.
-   *
-   * @param application the application
-   * @return the descriptor
-   */
-  public JSON getDescriptor(ApplicationMetaModel application) {
-    return null;
   }
 }

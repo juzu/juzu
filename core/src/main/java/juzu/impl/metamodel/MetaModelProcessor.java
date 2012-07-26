@@ -19,6 +19,7 @@
 
 package juzu.impl.metamodel;
 
+import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.MessageCode;
@@ -46,7 +47,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
   public static final MessageCode ANNOTATION_UNSUPPORTED = new MessageCode("ANNOTATION_UNSUPPORTED", "The annotation of this element cannot be supported");
 
   /** . */
-  private MetaModel metaModel;
+  private ApplicationsMetaModel metaModel;
 
   /** . */
   private int index;
@@ -97,12 +98,12 @@ public abstract class MetaModelProcessor extends BaseProcessor {
             FileObject file = getContext().getResource(StandardLocation.SOURCE_OUTPUT, "juzu", "metamodel.ser");
             in = file.openInputStream();
             ObjectInputStream ois = new ObjectInputStream(in);
-            metaModel = (MetaModel)ois.readObject();
+            metaModel = (ApplicationsMetaModel)ois.readObject();
             log.log("Loaded model from " + file.toUri());
           }
           catch (Exception e) {
             log.log("Created new meta model");
-            MetaModel metaModel = new MetaModel();
+            ApplicationsMetaModel metaModel = new ApplicationsMetaModel();
 
             //
             metaModel.init(getContext());
@@ -120,7 +121,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         }
 
         //
-        for (Class annotationType : this.metaModel.getSupportedAnnotations()) {
+        for (Class annotationType : metaModel.getSupportedAnnotations()) {
           TypeElement annotationElt = getContext().getTypeElement(annotationType.getName());
           for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt)) {
             if (annotatedElt.getAnnotation(Generated.class) == null) {
@@ -137,6 +138,14 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         //
         log.log("Post processing model");
         metaModel.postProcessAnnotations();
+
+        //
+        log.log("Process events");
+        metaModel.processEvents();
+
+        //
+        log.log("Post process events");
+        metaModel.postProcessEvents();
 
         //
         log.log("Ending APT round #" + index++);

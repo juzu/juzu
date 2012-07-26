@@ -20,8 +20,8 @@
 package juzu.impl.template.metamodel;
 
 import juzu.impl.compiler.MessageCode;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.Key;
-import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
@@ -103,7 +103,7 @@ public class TemplateMetaModel extends MetaModelObject {
   private int refCount = 0;
 
   @Override
-  public boolean exist(MetaModel model) {
+  public boolean exist(ProcessingContext env) {
     return refCount == 0 || templates == null;
   }
 

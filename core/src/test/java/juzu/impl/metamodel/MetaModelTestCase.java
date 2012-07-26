@@ -19,6 +19,7 @@
 
 package juzu.impl.metamodel;
 
+import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
@@ -112,7 +113,7 @@ public class MetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testTransitiveGarbage() {
-    MetaModel m = new MetaModel();
+    ApplicationsMetaModel m = new ApplicationsMetaModel();
     Simple a = context.create("a");
     Simple b = context.create("b");
     m.addChild(A, a).addChild(B, b);
@@ -131,7 +132,7 @@ public class MetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testForcedGarbage() {
-    MetaModel m = new MetaModel();
+    ApplicationsMetaModel m = new ApplicationsMetaModel();
     Simple a = context.create("a");
     Simple b = context.create("b");
     m.addChild(A, a).addChild(B, b);
@@ -150,7 +151,7 @@ public class MetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testForcedGarbage2() {
-    MetaModel m = new MetaModel();
+    ApplicationsMetaModel m = new ApplicationsMetaModel();
     Simple a = context.create("a");
     Simple b = context.create("b");
     Simple c = context.create("c");
@@ -218,7 +219,7 @@ public class MetaModelTestCase extends AbstractTestCase {
     }
 
     @Override
-    public boolean exist(MetaModel model) {
+    public boolean exist(ProcessingContext env) {
       return exist;
     }
 

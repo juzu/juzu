@@ -21,7 +21,7 @@ package juzu.impl.template.metamodel;
 
 import juzu.Path;
 import juzu.impl.compiler.ElementHandle;
-import juzu.impl.metamodel.MetaModel;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 
@@ -63,15 +63,15 @@ public class TemplateRefMetaModel extends MetaModelObject {
   }
 
   @Override
-  public boolean exist(MetaModel model) {
-    VariableElement fieldElt = model.env.get(handle);
+  public boolean exist(ProcessingContext env) {
+    VariableElement fieldElt = env.get(handle);
     boolean exist = true;
     if (fieldElt == null) {
-      MetaModel.log.log("Removing handle " + handle + " that does not exist anymore");
+      env.log("Removing handle " + handle + " that does not exist anymore");
       exist = false;
     }
     else if (fieldElt.getAnnotation(Path.class) == null) {
-      MetaModel.log.log("Removing handle " + handle + " that is not annoated anymore");
+      env.log("Removing handle " + handle + " that is not annoated anymore");
       exist = false;
     }
     return exist;

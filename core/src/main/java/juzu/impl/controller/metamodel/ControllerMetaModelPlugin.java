@@ -29,7 +29,6 @@ import juzu.View;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ProcessingException;
@@ -38,7 +37,6 @@ import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.controller.descriptor.ControllerDescriptor;
 import juzu.impl.controller.descriptor.MethodDescriptor;
 import juzu.impl.controller.descriptor.ParameterDescriptor;
-import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.request.Request;
@@ -101,12 +99,12 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     super("controller");
   }
 
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
     return Tools.<Class<? extends java.lang.annotation.Annotation>>set(View.class, Action.class, Resource.class);
   }
 
   @Override
-  public void postConstruct(ApplicationMetaModel application) {
+  public void init(ApplicationMetaModel application) {
     ControllersMetaModel controllers = new ControllersMetaModel();
     PackageElement pkg = application.model.env.get(application.getHandle());
     AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
@@ -123,7 +121,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
     if (NAMES.contains(annotation.getName())) {
       ExecutableElement methodElt = (ExecutableElement)element;
-      MetaModel.log.log("Processing controller method " + methodElt + " found on type " + methodElt.getEnclosingElement());
+      application.env.log("Processing controller method " + methodElt + " found on type " + methodElt.getEnclosingElement());
       TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
       ElementHandle.Class handle = ElementHandle.Class.create(controllerElt);
       ControllerMetaModel controller = ac.get(handle);
@@ -149,7 +147,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event) {
+  public void processEvent(ApplicationMetaModel application, MetaModelEvent event) {
     MetaModelObject obj = event.getObject();
     if (obj instanceof ControllerMetaModel) {
       switch (event.getType()) {
@@ -373,7 +371,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("}\n");
 
       //
-      MetaModel.log.log("Generated controller companion " + fqn.getName() + "_" + " as " + file.toUri());
+      env.log("Generated controller companion " + fqn.getName() + "_" + " as " + file.toUri());
     }
     catch (IOException e) {
       throw ControllerMetaModel.CANNOT_WRITE_CONTROLLER_COMPANION.failure(e, origin, controller.getHandle().getFQN());

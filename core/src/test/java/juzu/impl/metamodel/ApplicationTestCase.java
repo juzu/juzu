@@ -20,6 +20,7 @@
 package juzu.impl.metamodel;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
+import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
@@ -41,7 +42,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(1, events.size());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
@@ -66,7 +67,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, ser);
     mm.getQueue().clear();
     Tools.serialize(mm, ser);
 
@@ -78,7 +79,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
 
     //
     List<MetaModelEvent> events = mm.getQueue().clear();
@@ -105,7 +106,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    MetaModel mm = Tools.unserialize(MetaModel.class, ser);
+    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, ser);
     mm.getQueue().clear();
     Tools.serialize(mm, ser);
 
@@ -114,7 +115,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
 
     //
     List<MetaModelEvent> events = mm.getQueue().clear();

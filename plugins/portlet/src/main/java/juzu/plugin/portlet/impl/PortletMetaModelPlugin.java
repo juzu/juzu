@@ -64,7 +64,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
     return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Portlet.class);
   }
 
@@ -85,7 +85,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void preDestroy(ApplicationMetaModel application) {
+  public void destroy(ApplicationMetaModel application) {
     enabledMap.remove(application.getHandle());
   }
 

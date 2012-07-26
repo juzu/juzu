@@ -21,6 +21,7 @@ package juzu.impl.metamodel;
 
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.expr.AnnotationExpr;
+import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
@@ -67,7 +68,7 @@ public class ParamTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
     assertEquals(expectedJSON, mm.toJSON());
   }
 
@@ -97,7 +98,7 @@ public class ParamTestCase extends AbstractTestCase {
     helper.addClassPath(helper.getClassOutput()).assertCompile();
 
     // Check
-    MetaModel mm = Tools.unserialize(MetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
     assertEquals(expectedJSON, mm.toJSON());
   }
 }

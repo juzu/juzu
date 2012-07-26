@@ -19,11 +19,12 @@
 
 package juzu.impl.controller.metamodel;
 
+import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.Key;
-import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.Cardinality;
@@ -115,7 +116,7 @@ public class ControllerMetaModel extends MetaModelObject {
   }
 
   void addMethod(
-    MetaModel context,
+    ApplicationsMetaModel context,
     ExecutableElement methodElt,
     Annotation annotation) {
 
@@ -207,7 +208,7 @@ public class ControllerMetaModel extends MetaModelObject {
   }
 
   @Override
-  public boolean exist(MetaModel model) {
+  public boolean exist(ProcessingContext env) {
     return getChildren().size() > 0;
   }
 

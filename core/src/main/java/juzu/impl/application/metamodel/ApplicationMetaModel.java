@@ -24,9 +24,10 @@ import juzu.impl.common.QN;
 import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.controller.metamodel.ControllersMetaModel;
+import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModel;
-import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.template.metamodel.TemplatesMetaModel;
 import juzu.impl.common.JSON;
@@ -34,11 +35,12 @@ import juzu.impl.common.JSON;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationMetaModel extends MetaModelObject {
+public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, ApplicationMetaModel> {
 
   /** . */
   public static final MessageCode CANNOT_WRITE_APPLICATION_CONFIG = new MessageCode("CANNOT_WRITE_APPLICATION_CONFIG", "The application %1$s configuration cannot be written");
@@ -50,7 +52,7 @@ public class ApplicationMetaModel extends MetaModelObject {
   final ElementHandle.Package handle;
 
   /** . */
-  public MetaModel model;
+  public ApplicationsMetaModel model;
 
   /** . */
   boolean modified;
@@ -63,6 +65,9 @@ public class ApplicationMetaModel extends MetaModelObject {
 
   /** . */
   final String baseName;
+
+  /** . */
+  private ApplicationsMetaModel applications;
 
   ApplicationMetaModel(
     ElementHandle.Package handle,
@@ -107,8 +112,8 @@ public class ApplicationMetaModel extends MetaModelObject {
   }
 
   @Override
-  public boolean exist(MetaModel model) {
-    PackageElement element = model.env.get(handle);
+  public boolean exist(ProcessingContext env) {
+    PackageElement element = env.get(handle);
     boolean found = false;
     if (element != null) {
       for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
@@ -120,17 +125,21 @@ public class ApplicationMetaModel extends MetaModelObject {
     return found;
   }
 
+  void processEvents(Collection<ApplicationMetaModelPlugin> plugins) {
+    for (ApplicationMetaModelPlugin plugin : plugins) {
+      plugin.processEvents(this, new EventQueue(dispatch));
+    }
+
+    // Clear dispatch queue
+    dispatch.clear();
+  }
+
   @Override
   protected void postAttach(MetaModelObject parent) {
     if (parent instanceof ApplicationsMetaModel) {
-      queue(MetaModelEvent.createAdded(this));
-      ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
-      model = applications.model;
-
-      //
-      for (ApplicationMetaModelPlugin plugin : applications.plugins.values()) {
-        plugin.postConstruct(this);
-      }
+      applications = (ApplicationsMetaModel)parent;
+      model = applications;
+      applications.added(this);
     }
   }
 
@@ -138,19 +147,9 @@ public class ApplicationMetaModel extends MetaModelObject {
   protected void preDetach(MetaModelObject parent) {
     if (parent instanceof ApplicationsMetaModel) {
       ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
-
-      //
-      for (ApplicationMetaModelPlugin plugin : applications.plugins.values()) {
-        plugin.preDestroy(this);
-      }
-
-      //
-      applications.toProcess.putAll(processed);
-      toProcess.clear();
-
-      //
-      queue(MetaModelEvent.createRemoved(this));
-      model = null;
+      applications.removed(this);
+      this.model = null;
+      this.applications = null;
     }
   }
 }

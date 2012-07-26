@@ -20,6 +20,7 @@
 package juzu.impl.metamodel;
 
 import juzu.impl.common.JSON;
+import juzu.impl.compiler.ProcessingContext;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,12 +41,9 @@ public class MetaModelObject implements Serializable {
   private final HashMap<MetaModelObject, Key<?>> parents = new HashMap<MetaModelObject, Key<?>>();
 
   /** . */
-  private MetaModel metaModel;
+  protected MetaModel metaModel;
 
   public MetaModelObject() {
-    if (this instanceof MetaModel) {
-      metaModel = (MetaModel)this;
-    }
   }
 
   public final Collection<MetaModelObject> getParents() {
@@ -97,14 +95,16 @@ public class MetaModelObject implements Serializable {
       }
       else {
         if (child.parents.size() == 0) {
-          // Note : it may be null
-          child.metaModel = metaModel;
+
+          // Context
+          if (this instanceof MetaModel) {
+            child.metaModel = (MetaModel)this;
+          } else {
+            child.metaModel = metaModel;
+          }
 
           // Post construct
           child.postConstruct();
-        }
-        else if (child.metaModel != metaModel) {
-          throw new UnsupportedOperationException("handle me gracefully " + child.metaModel + " " + metaModel);
         }
 
         // Wire
@@ -199,13 +199,7 @@ public class MetaModelObject implements Serializable {
   protected void preRemove() {
   }
 
-  /**
-   * Check the existence of the object, the default implementation always return true.
-   *
-   * @param model
-   * @return the existence
-   */
-  public boolean exist(MetaModel model) {
+  public boolean exist(ProcessingContext env) {
     return true;
   }
 

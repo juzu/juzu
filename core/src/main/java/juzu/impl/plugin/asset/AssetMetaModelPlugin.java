@@ -25,6 +25,7 @@ import juzu.impl.common.FQN;
 import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.common.JSON;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.plugin.asset.Assets;
 
 import javax.lang.model.element.Element;
@@ -49,7 +50,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
     return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Assets.class);
   }
 
@@ -81,11 +82,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void postConstruct(ApplicationMetaModel application) {
-  }
-
-  @Override
-  public void preDestroy(ApplicationMetaModel application) {
+  public void destroy(ApplicationMetaModel application) {
     enabledMap.remove(application.getHandle());
   }
 

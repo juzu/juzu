@@ -71,7 +71,7 @@ import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProcessingContext implements Filer, Elements {
+public class ProcessingContext implements Filer, Elements, Logger {
 
   /** . */
   private static final MessageCode UNEXPECTED_ERROR = new MessageCode("UNEXPECTED_ERROR", "Unexpected error: %1$s");
@@ -517,5 +517,15 @@ public class ProcessingContext implements Filer, Elements {
 
   public FileObject getResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName) throws IOException {
     return env.getFiler().getResource(location, pkg, relativeName);
+  }
+
+  // Logger implementation
+
+  public void log(CharSequence msg) {
+    log.log(msg);
+  }
+
+  public void log(CharSequence msg, Throwable t) {
+    log.log(msg, t);
   }
 }

@@ -19,103 +19,23 @@
 
 package juzu.impl.application.metamodel;
 
-import juzu.Application;
-import juzu.impl.compiler.Annotation;
-import juzu.impl.metamodel.EventQueue;
-import juzu.impl.metamodel.MetaModel;
-import juzu.impl.metamodel.MetaModelPlugin;
 import juzu.impl.common.JSON;
-
-import javax.lang.model.element.Element;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import juzu.impl.metamodel.MetaModelPlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationsMetaModelPlugin extends MetaModelPlugin {
+public class ApplicationsMetaModelPlugin extends MetaModelPlugin<ApplicationsMetaModel, ApplicationsMetaModelPlugin> {
 
-  /** . */
-  private HashSet<Class<? extends java.lang.annotation.Annotation>> annotationTypes;
-
-  public ApplicationsMetaModelPlugin() {
-    super("applications");
+  public ApplicationsMetaModelPlugin(String name) {
+    super(name);
   }
 
-  @Override
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
-    return annotationTypes;
-  }
-
-  @Override
-  public JSON toJSON(MetaModel metaModel) {
-    return metaModel.getChild(ApplicationsMetaModel.KEY).toJSON();
-  }
-
-  @Override
-  public void init(MetaModel metaModel) {
-    // Discover plugins
-    LinkedHashMap<String, ApplicationMetaModelPlugin> plugins = new LinkedHashMap<String, ApplicationMetaModelPlugin>();
-    StringBuilder msg = new StringBuilder("Using application plugins:");
-    for (ApplicationMetaModelPlugin plugin : metaModel.env.loadServices(ApplicationMetaModelPlugin.class)) {
-      msg.append(" ").append(plugin.getName());
-      plugins.put(plugin.getName(), plugin);
-    }
-    MetaModel.log.log(msg);
-
-    // We are interested by the Application annotation
-    HashSet<Class<? extends java.lang.annotation.Annotation>> annotationTypes = new HashSet<Class<? extends java.lang.annotation.Annotation>>();
-    annotationTypes.add(Application.class);
-
-    // Add the plugin annotations
-    for (ApplicationMetaModelPlugin plugin : plugins.values()) {
-      Set<Class<? extends java.lang.annotation.Annotation>> processed = plugin.getAnnotationTypes();
-      MetaModel.log.log("Application plugin " + plugin.getName() + " wants to process " + processed);
-      annotationTypes.addAll(processed);
-    }
-
-    // Create application
-    ApplicationsMetaModel application = new ApplicationsMetaModel();
-
-    // Add the applications container to the meta model
-    metaModel.addChild(ApplicationsMetaModel.KEY, application);
-
-    // Add plugins
-    for (Map.Entry<String, ApplicationMetaModelPlugin> entry : plugins.entrySet()) {
-      application.addPlugin(entry.getKey(), entry.getValue());
-    }
-
-    //
-    this.annotationTypes = annotationTypes;
-  }
-
-  @Override
-  public void postActivate(MetaModel metaModel) {
-    metaModel.getChild(ApplicationsMetaModel.KEY).postActivate(metaModel);
-  }
-
-  @Override
-  public void processAnnotation(MetaModel metaModel, Element element, Annotation annotation) {
-    metaModel.getChild(ApplicationsMetaModel.KEY).processAnnotation(metaModel, element, annotation);
-  }
-
-  @Override
-  public void postProcessAnnotations(MetaModel metaModel) {
-    metaModel.getChild(ApplicationsMetaModel.KEY).postProcessAnnotations(metaModel);
-  }
-
-  @Override
-  public void processEvents(MetaModel metaModel, EventQueue queue) {
-    metaModel.getChild(ApplicationsMetaModel.KEY).processEvents(metaModel, queue);
-  }
-
-  @Override
-  public void postProcessEvents(MetaModel metaModel) {
-    metaModel.getChild(ApplicationsMetaModel.KEY).postProcessEvents(metaModel);
-  }
-
-  @Override
-  public void prePassivate(MetaModel metaModel) {
-    metaModel.getChild(ApplicationsMetaModel.KEY).prePassivate(metaModel);
+  /**
+   * Returns a JSON representation mainly for testing purposes.
+   *
+   * @param metaModel the meta model instance
+   * @return the json representation
+   */
+  public JSON toJSON(ApplicationsMetaModel metaModel) {
+    return null;
   }
 }

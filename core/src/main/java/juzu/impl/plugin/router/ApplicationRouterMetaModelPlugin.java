@@ -21,7 +21,6 @@ package juzu.impl.plugin.router;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.controller.metamodel.MethodMetaModel;
@@ -49,13 +48,12 @@ public class ApplicationRouterMetaModelPlugin extends ApplicationMetaModelPlugin
   }
 
   @Override
-  public void processEvent(ApplicationsMetaModel applications, MetaModelEvent event) {
+  public void processEvent(ApplicationMetaModel application, MetaModelEvent event) {
     MetaModelObject object = event.getObject();
     if (object instanceof MethodMetaModel) {
       MethodMetaModel method = (MethodMetaModel)object;
       if (event.getType() == MetaModelEvent.AFTER_ADD) {
         if (method.getRoute() != null) {
-          ApplicationMetaModel application = method.getController().getControllers().getApplication();
           RouteMetaModel route = route(application.getHandle(), true).addChild(method.getRoute());
           route.setTarget(method.getPhase().name(), method.getHandle().getMethodHandle().toString());
         }

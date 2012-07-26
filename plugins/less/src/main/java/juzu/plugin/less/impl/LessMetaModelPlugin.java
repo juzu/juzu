@@ -19,6 +19,8 @@
 
 package juzu.plugin.less.impl;
 
+import juzu.impl.application.metamodel.ApplicationsMetaModel;
+import juzu.impl.application.metamodel.ApplicationsMetaModelPlugin;
 import juzu.impl.common.FQN;
 import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.BaseProcessor;
@@ -27,8 +29,6 @@ import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.metamodel.MetaModel;
-import juzu.impl.metamodel.MetaModelPlugin;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Path;
 import juzu.impl.common.QN;
@@ -57,7 +57,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LessMetaModelPlugin extends MetaModelPlugin {
+public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
 
   /** . */
   public static final MessageCode COMPILATION_ERROR = new MessageCode(
@@ -81,17 +81,17 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
   }
 
   @Override
-  public void init(MetaModel metaModel) {
+  public void init(ApplicationsMetaModel metaModel) {
     annotations = new HashMap<ElementHandle.Package, Annotation>();
   }
 
   @Override
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
+  public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
     return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Less.class);
   }
 
   @Override
-  public void processAnnotation(MetaModel metaModel, Element element, Annotation annotation) {
+  public void processAnnotation(ApplicationsMetaModel metaModel, Element element, Annotation annotation) {
     if (annotation.getName().equals(LESS)) {
       ElementHandle.Package pkg = (ElementHandle.Package)ElementHandle.create(element);
       log.log("Recording less annotation for package " + pkg.getQN());
@@ -100,12 +100,12 @@ public class LessMetaModelPlugin extends MetaModelPlugin {
   }
 
   @Override
-  public void postActivate(MetaModel metaModel) {
+  public void postActivate(ApplicationsMetaModel metaModel) {
     annotations = new HashMap<ElementHandle.Package, Annotation>();
   }
 
   @Override
-  public void prePassivate(MetaModel metaModel) {
+  public void prePassivate(ApplicationsMetaModel metaModel) {
     // First clear annotation map
     HashMap<ElementHandle.Package, Annotation> clone = annotations;
     annotations = null;

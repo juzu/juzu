@@ -21,7 +21,7 @@ package juzu.impl.controller.metamodel;
 
 import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
-import juzu.impl.metamodel.MetaModel;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
@@ -150,8 +150,8 @@ public class MethodMetaModel extends MetaModelObject {
   }
 
   @Override
-  public boolean exist(MetaModel model) {
-    ExecutableElement methodElt = model.env.get(handle);
+  public boolean exist(ProcessingContext env) {
+    ExecutableElement methodElt = env.get(handle);
     if (methodElt != null) {
       AnnotationMirror am = Tools.getAnnotation(methodElt, phase.annotation.getName());
       if (am != null) {

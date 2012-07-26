@@ -19,16 +19,21 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.compiler.Annotation;
 import juzu.impl.common.JSON;
+import juzu.impl.compiler.Annotation;
+import juzu.impl.compiler.ProcessingContext;
 
 import javax.lang.model.element.Element;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaModelPlugin implements Serializable {
+/**
+ * A plugin for a meta model object.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public class MetaModelPlugin<M extends MetaModel<P, M>, P extends MetaModelPlugin<M, P>> implements Serializable {
 
   /** The plugin name. */
   private final String name;
@@ -41,48 +46,41 @@ public class MetaModelPlugin implements Serializable {
     return name;
   }
 
+  public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
+    return Collections.emptySet();
+  }
+
+  public void init(M metaModel) {
+  }
+
+  public void postActivate(M metaModel) {
+  }
+
+  public void processAnnotation(M metaModel, Element element, Annotation annotation) {
+  }
+
+  public void postProcessAnnotations(M metaModel) {
+  }
+
+  public void processEvents(M metaModel, EventQueue queue) {
+  }
+
+  public void postProcessEvents(M metaModel) {
+  }
+
+  public void prePassivate(M metaModel) {
+  }
+
+  public void destroy(M metaModel) {
+  }
+
   /**
    * Returns the plugin descriptor or null.
    *
    * @param metaModel the meta model instance
    * @return the descriptor
    */
-  public JSON getDescriptor(MetaModel metaModel) {
+  public JSON getDescriptor(M metaModel) {
     return null;
-  }
-
-  /**
-   * Returns a JSON representation mainly for testing purposes.
-   *
-   * @param metaModel the meta model instance
-   * @return the json representation
-   */
-  public JSON toJSON(MetaModel metaModel) {
-    return null;
-  }
-
-  public Set<Class<? extends java.lang.annotation.Annotation>> getAnnotationTypes() {
-    return Collections.emptySet();
-  }
-
-  public void init(MetaModel metaModel) {
-  }
-
-  public void postActivate(MetaModel metaModel) {
-  }
-
-  public void processAnnotation(MetaModel metaModel, Element element, Annotation annotation) {
-  }
-
-  public void postProcessAnnotations(MetaModel metaModel) {
-  }
-
-  public void processEvents(MetaModel metaModel, EventQueue queue) {
-  }
-
-  public void postProcessEvents(MetaModel metaModel) {
-  }
-
-  public void prePassivate(MetaModel metaModel) {
   }
 }
