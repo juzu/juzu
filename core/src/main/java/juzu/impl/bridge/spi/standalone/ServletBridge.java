@@ -38,6 +38,7 @@ import juzu.impl.router.RouteMatch;
 import juzu.impl.router.Router;
 import juzu.request.Phase;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -45,6 +46,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -248,58 +251,71 @@ public class ServletBridge extends HttpServlet {
     }
 
     //
-    if (target == null) {
-      target = bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+    RequestDispatcher dispatcher = null;
+    if (target == null && path != null && path.length() > 1 && !path.startsWith("/WEB-INF/")) {
+      URL url = getServletContext().getResource(path);
+      if (url != null) {
+        dispatcher = getServletContext().getNamedDispatcher("default");
+      }
     }
 
     //
-    ServletRequestBridge requestBridge;
-    if (target != null) {
-      switch (target.getPhase()) {
-        case VIEW:
-          requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
-          break;
-        case ACTION: {
-          requestBridge = new ServletActionBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
-          break;
-        }
-        case RESOURCE:
-          requestBridge = new ServletResourceBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
-          break;
-        default:
-          throw new ServletException("Cannot decode phase");
-      }
+    if (dispatcher != null) {
+      dispatcher.include(req, resp);
     } else {
-      requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, null, parameters);
-    }
+      if (target == null) {
+        target = bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+      }
 
-    //
-    try {
-      bridge.invoke(requestBridge);
-    }
-    catch (Throwable throwable) {
-      throw wrap(throwable);
-    }
-
-    // Implement the two phases in one
-    if (requestBridge instanceof ServletActionBridge) {
-      Response response = ((ServletActionBridge)requestBridge).response;
-      if (response instanceof Response.Update) {
-        Response.Update update = (Response.Update)response;
-        Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
-        if (redirect != null && !redirect) {
-          requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, update.getTarget(), update.getParameters());
-          try {
-            bridge.invoke(requestBridge);
+      //
+      ServletRequestBridge requestBridge;
+      if (target != null) {
+        switch (target.getPhase()) {
+          case VIEW:
+            requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+            break;
+          case ACTION: {
+            requestBridge = new ServletActionBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+            break;
           }
-          catch (Throwable throwable) {
-            throw wrap(throwable);
+          case RESOURCE:
+            requestBridge = new ServletResourceBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+            break;
+          default:
+            throw new ServletException("Cannot decode phase");
+        }
+      } else {
+        requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, null, parameters);
+      }
+
+      //
+      try {
+        bridge.invoke(requestBridge);
+      }
+      catch (Throwable throwable) {
+        throw wrap(throwable);
+      }
+
+      // Implement the two phases in one
+      if (requestBridge instanceof ServletActionBridge) {
+        Response response = ((ServletActionBridge)requestBridge).response;
+        if (response instanceof Response.Update) {
+          Response.Update update = (Response.Update)response;
+          Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
+          if (redirect != null && !redirect) {
+            requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, update.getTarget(), update.getParameters());
+            try {
+              bridge.invoke(requestBridge);
+            }
+            catch (Throwable throwable) {
+              throw wrap(throwable);
+            }
           }
         }
       }
-    }
 
-    //
-    requestBridge.send();
+      //
+      requestBridge.send();
+    }
   }
 }

@@ -270,7 +270,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
         throw new UnsupportedOperationException("handle me gracefully");
       }
     } else {
-      throw new UnsupportedOperationException("handle me gracefully");
+      throw new UnsupportedOperationException("handle me gracefully method not mapped " + method.getHandle());
     }
 
     //
