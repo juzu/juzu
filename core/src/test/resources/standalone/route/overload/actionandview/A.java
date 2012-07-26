@@ -22,6 +22,7 @@ package standalone.route.overload.actionandview;
 import juzu.Action;
 import juzu.Controller;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -36,13 +37,15 @@ public class A extends Controller {
     return Response.render("" + A_.fooActionURL());
   }
 
-  @Action(route = "/foo")
+  @Action
+  @Route("/foo")
   public Response.Update fooAction() {
     count = 1;
     return A_.fooView();
   }
 
-  @View(route = "/foo")
+  @View
+  @Route("/foo")
   public Response.Content fooView() {
     return Response.ok(count == 1 ? "pass" : "fail");
   }

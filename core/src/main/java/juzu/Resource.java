@@ -49,11 +49,4 @@ public @interface Resource {
    * @return the controller method id
    */
   String id() default "";
-
-  /**
-   * The controller method route.
-   *
-   * @return the method route
-   */
-  String route() default "";
 }

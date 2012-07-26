@@ -22,6 +22,7 @@ package standalone.route.resource.pathparam;
 import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -32,7 +33,8 @@ public class A extends Controller {
     return Response.render("<a id='trigger' href='" + A_.fooURL("bar") + "'>click</div>");
   }
 
-  @Resource(route = "/foo/{juu}")
+  @Resource
+  @Route("/foo/{juu}")
   public Response.Content foo(String juu) {
     return Response.ok("" + juu);
   }

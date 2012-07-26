@@ -110,7 +110,7 @@ public class DispatchMetaModelPlugin extends ApplicationsMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationRemoved(ApplicationsMetaModel metaModel, AnnotationKey key, AnnotationState state) {
+  public void processAnnotationRemoved(ApplicationsMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (key.getType().equals(ApplicationsMetaModel.APPLICATION)) {
       ElementHandle.Package pkg = (ElementHandle.Package)key.getElement();
       ApplicationMetaModel mm = metaModel.get(pkg);

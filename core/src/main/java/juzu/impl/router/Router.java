@@ -165,18 +165,52 @@ public class Router {
     }
   }
 
-  public RouteMatch route(String path) throws IOException {
+  public RouteMatch route(String path) {
     return route(path, Collections.<String, String[]>emptyMap());
   }
 
   public RouteMatch route(String path, Map<String, String[]> queryParams) {
     Iterator<RouteMatch> matcher = matcher(path, queryParams);
+    RouteMatch found = null;
     if (matcher.hasNext()) {
-      return matcher.next();
+      found = matcher.next();
+
+      //Select a route if more than one
+      while (matcher.hasNext()) {
+        RouteMatch match = matcher.next();
+        Iterator<Route> foundI = found.getRoute().getPath().iterator();
+        Iterator<Route> matchI = match.getRoute().getPath().iterator();
+
+        // Drop the root route
+        foundI.next();
+        matchI.next();
+
+        //
+        while (foundI.hasNext()) {
+          Route foundR = foundI.next();
+          if (matchI.hasNext()) {
+            Route matchR = matchI.next();
+            if (foundR instanceof SegmentRoute) {
+              if (matchR instanceof SegmentRoute) {
+                // Continue
+              } else {
+                break;
+              }
+            } else {
+              if (matchR instanceof SegmentRoute) {
+                found = match;
+                break;
+              } else {
+                // Continue
+              }
+            }
+          } else {
+            break;
+          }
+        }
+      }
     }
-    else {
-      return null;
-    }
+    return found;
   }
 
   public Iterator<RouteMatch> matcher(String path, Map<String, String[]> queryParams) {

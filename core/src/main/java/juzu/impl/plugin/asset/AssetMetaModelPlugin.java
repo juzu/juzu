@@ -55,13 +55,13 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationChange(ApplicationMetaModel application, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+  public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (key.getType().equals(ASSETS)) {
-      ElementHandle.Package handle = application.getHandle();
+      ElementHandle.Package handle = metaModel.getHandle();
       JSON json = new JSON();
       json.set("scripts", build((List<Map<String, Object>>)added.get("scripts")));
       json.set("stylesheets", build((List<Map<String, Object>>)added.get("stylesheets")));
-      json.set("package", application.getName().append("assets").getValue());
+      json.set("package", metaModel.getName().append("assets").getValue());
       enabledMap.put(handle, json);
     }
   }

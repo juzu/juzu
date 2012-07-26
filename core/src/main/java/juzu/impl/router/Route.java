@@ -152,6 +152,9 @@ public class Route {
   private Route parent;
 
   /** . */
+  private List<Route> path;
+
+  /** . */
   private boolean terminal;
 
   /** . */
@@ -170,6 +173,7 @@ public class Route {
   private RequestParam[] requestParamArray;
 
   Route(Router router) {
+    this.path = Collections.singletonList(this);
     this.router = router;
     this.parent = null;
     this.terminal = true;
@@ -180,7 +184,15 @@ public class Route {
     this.requestParamArray = EMPTY_REQUEST_PARAM_ARRAY;
   }
 
-  boolean renderPath(RouteMatch match, URIWriter writer, boolean hasChildren) throws IOException {
+  public final Route getParent() {
+    return parent;
+  }
+
+  public final List<Route> getPath() {
+    return path;
+  }
+
+  final boolean renderPath(RouteMatch match, URIWriter writer, boolean hasChildren) throws IOException {
     boolean endWithSlash;
     if (parent != null) {
       endWithSlash = parent.renderPath(match, writer, true);
@@ -260,7 +272,7 @@ public class Route {
     return endWithSlash;
   }
 
-  void renderQueryString(RouteMatch match, URIWriter writer) throws IOException {
+  final void renderQueryString(RouteMatch match, URIWriter writer) throws IOException {
     if (parent != null) {
       parent.renderQueryString(match, writer);
     }
@@ -749,7 +761,15 @@ public class Route {
     if (route instanceof PatternRoute || route instanceof SegmentRoute) {
       children = Tools.appendTo(children, route);
       terminal = false;
+
+      // Compute path
+      List<Route> path = new ArrayList<Route>(this.path.size() + 1);
+      path.addAll(this.path);
+      path.add(route);
+
+      //
       route.parent = this;
+      route.path = Collections.unmodifiableList(path);
     }
     else {
       throw new IllegalArgumentException("Only accept segment or pattern routes");

@@ -21,6 +21,7 @@ package standalone.render;
 
 import juzu.Controller;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -29,7 +30,8 @@ public class A extends Controller {
   /** . */
   private static int count = 0;
 
-  @View(route = "/foo")
+  @View
+  @Route("/foo")
   public Response.Content index() {
     if (count == 0) {
       count = 1;

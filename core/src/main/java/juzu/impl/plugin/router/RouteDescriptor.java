@@ -24,6 +24,8 @@ import juzu.impl.metadata.Descriptor;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,12 +33,19 @@ import java.util.Set;
 public class RouteDescriptor extends Descriptor {
 
   /** . */
+  private final String path;
+
+  /** . */
   private final Map<String, String> targets;
 
   /** . */
-  private final Map<String, RouteDescriptor> children;
+  private final List<RouteDescriptor> children;
 
   public RouteDescriptor(JSON json) {
+    this(null, json);
+  }
+
+  public RouteDescriptor(String path, JSON json) {
 
     JSON targets = json.getJSON("targets");
     if (targets != null) {
@@ -55,28 +64,33 @@ public class RouteDescriptor extends Descriptor {
     }
 
     //
-    JSON children = json.getJSON("children");
+    List<RouteDescriptor> abc = Collections.emptyList();
+    List<? extends JSON> children = json.getList("routes", JSON.class);
     if (children != null) {
-      Set<String> names = children.names();
-      if (names.size() > 0) {
-        this.children = new HashMap<String, RouteDescriptor>();
-        for (String name : names) {
-          JSON value = children.getJSON(name);
-          this.children.put(name, new RouteDescriptor(value));
+      for (JSON child : children) {
+        String childPath = child.getString("path");
+        RouteDescriptor c = new RouteDescriptor(childPath, child);
+        if (abc.isEmpty()) {
+          abc = new LinkedList<RouteDescriptor>();
         }
-      } else {
-        this.children = Collections.emptyMap();
+        abc.add(c);
       }
-    } else {
-      this.children = Collections.emptyMap();
     }
+
+    //
+    this.children = abc;
+    this.path = path;
+  }
+
+  public String getPath() {
+    return path;
   }
 
   public Map<String, String> getTargets() {
     return targets;
   }
 
-  public Map<String, RouteDescriptor> getChildren() {
+  public List<RouteDescriptor> getChildren() {
     return children;
   }
 }

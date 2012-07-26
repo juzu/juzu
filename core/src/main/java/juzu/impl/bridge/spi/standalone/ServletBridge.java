@@ -46,7 +46,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -146,9 +145,9 @@ public class ServletBridge extends HttpServlet {
       //
       RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPlugin("router");
       if (routesDesc != null) {
-        for (Map.Entry<String, RouteDescriptor> child : routesDesc.getChildren().entrySet()) {
-          Route route = router.append(child.getKey());
-          for (Map.Entry<String, String> entry : child.getValue().getTargets().entrySet()) {
+        for (RouteDescriptor child : routesDesc.getChildren()) {
+          Route route = router.append(child.getPath());
+          for (Map.Entry<String, String> entry : child.getTargets().entrySet()) {
             MethodHandle handle = MethodHandle.parse(entry.getValue());
             Phase phase = Phase.valueOf(entry.getKey());
             routeMap.put(handle, route);
@@ -207,11 +206,11 @@ public class ServletBridge extends HttpServlet {
     //
     String path = req.getRequestURI().substring(req.getContextPath().length());
     if (path != null) {
-      RouteMatch match = router.route(path);
-      if (match != null) {
+      RouteMatch found = router.route(path, Collections.<String, String[]>emptyMap());
+      if (found != null) {
 
         //
-        Map<Phase, MethodHandle> m = routeMap2.get(match.getRoute());
+        Map<Phase, MethodHandle> m = routeMap2.get(found.getRoute());
 
         //
         if (m != null) {
@@ -237,12 +236,12 @@ public class ServletBridge extends HttpServlet {
 
           //
           target =  bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
-          if (match.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
+          if (found.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
             parameters = new HashMap<String, String[]>();
             for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet()) {
               parameters.put(entry.getKey(), entry.getValue().clone());
             }
-            for (Map.Entry<Param, String> entry : match.getMatched().entrySet()) {
+            for (Map.Entry<Param, String> entry : found.getMatched().entrySet()) {
               parameters.put(entry.getKey().getName().getName(), new String[]{entry.getValue()});
             }
           }

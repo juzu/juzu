@@ -41,7 +41,7 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
   private static final FQN AJAX = new FQN(Ajax.class);
 
   /** . */
-  private final HashMap<ElementHandle.Package, AtomicBoolean> enabledMap = new HashMap<ElementHandle.Package, AtomicBoolean>();
+  private final HashMap<ElementHandle.Package, Boolean> enabledMap = new HashMap<ElementHandle.Package, Boolean>();
 
   public AjaxMetaModelPlugin() {
     super("ajax");
@@ -53,17 +53,23 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationChange(ApplicationMetaModel application, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+  public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (key.getType().equals(AJAX)) {
-      ElementHandle.Package handle = application.getHandle();
-      AtomicBoolean enabled = enabledMap.get(handle);
-      enabled.set(true);
+      ElementHandle.Package handle = metaModel.getHandle();
+      enabledMap.put(handle, true);
+    }
+  }
+
+  @Override
+  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
+    if (key.getType().equals(AJAX)) {
+      ElementHandle.Package handle = metaModel.getHandle();
+      enabledMap.remove(handle);
     }
   }
 
   @Override
   public void init(ApplicationMetaModel application) {
-    enabledMap.put(application.getHandle(), new AtomicBoolean(false));
   }
 
   @Override
@@ -74,7 +80,7 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
     ElementHandle.Package handle = application.getHandle();
-    AtomicBoolean enabled = enabledMap.get(handle);
-    return enabled != null && enabled.get() ? new JSON() : null;
+    Boolean enabled = enabledMap.get(handle);
+    return enabled != null && enabled ? new JSON() : null;
   }
 }

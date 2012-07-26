@@ -50,9 +50,6 @@ public class MethodMetaModel extends MetaModelObject {
   /** . */
   final ArrayList<ParameterMetaModel> parameters;
 
-  /** The route. */
-  final String route;
-
   /** . */
   final String id;
 
@@ -61,8 +58,7 @@ public class MethodMetaModel extends MetaModelObject {
       String declaredId,
       Phase phase,
       String name,
-      ArrayList<ParameterMetaModel> parameters,
-      String route) {
+      ArrayList<ParameterMetaModel> parameters) {
 
     String id;
     if (declaredId == null) {
@@ -77,7 +73,6 @@ public class MethodMetaModel extends MetaModelObject {
     this.phase = phase;
     this.name = name;
     this.parameters = parameters;
-    this.route = route;
     this.id = id;
   }
 
@@ -88,7 +83,6 @@ public class MethodMetaModel extends MetaModelObject {
     json.set("phase", phase);
     json.set("name", name);
     json.map("parameters", new ArrayList<ParameterMetaModel>(parameters));
-    json.set("route", route);
     return json;
   }
 
@@ -126,10 +120,6 @@ public class MethodMetaModel extends MetaModelObject {
       tmp.add(param.getName());
     }
     return tmp;
-  }
-
-  public String getRoute() {
-    return route;
   }
 
   @Override

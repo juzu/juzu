@@ -60,23 +60,25 @@ public class MetaModelPlugin<M extends MetaModel<P, M>, P extends MetaModelPlugi
     }
   }
 
-  public void processAnnotationChange(M metaModel, AnnotationKey key, AnnotationState previous, AnnotationState next) {
-    if (next == null) {
-      processAnnotationRemoved(metaModel, key, previous);
-    } else if (previous == null) {
-      processAnnotationAdded(metaModel, key, next);
-    } else if (!previous.equals(next)) {
-      processAnnotationUpdated(metaModel, key, previous, next);
+  public void processAnnotationChange(M metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+    if (added == null) {
+      processAnnotationRemoved(metaModel, key, removed);
+    } else if (removed == null) {
+      processAnnotationAdded(metaModel, key, added);
+    } else if (!removed.equals(added)) {
+      processAnnotationUpdated(metaModel, key, removed, added);
     }
   }
 
-  public void processAnnotationAdded(M metaModel, AnnotationKey key, AnnotationState ee) {
+  public void processAnnotationAdded(M metaModel, AnnotationKey key, AnnotationState added) {
   }
 
   public void processAnnotationUpdated(M metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+    processAnnotationRemoved(metaModel, key, removed);
+    processAnnotationAdded(metaModel, key, added);
   }
 
-  public void processAnnotationRemoved(M metaModel, AnnotationKey key, AnnotationState state) {
+  public void processAnnotationRemoved(M metaModel, AnnotationKey key, AnnotationState removed) {
   }
 
   public void postProcessAnnotations(M metaModel) {

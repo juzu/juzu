@@ -5,6 +5,9 @@
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.standalone.JuzuServlet</servlet-class>
+    <init-param>
+      <param-name>juzu.app_name</param-name>
+      <param-value>org.sample.booking</param-value></init-param>
   </servlet>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>
@@ -13,7 +16,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>JuzuServlet</servlet-name>
-    <url-pattern>/juzu/*</url-pattern>
+    <url-pattern>/</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>AssetServlet</servlet-name>

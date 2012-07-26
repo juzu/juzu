@@ -21,8 +21,10 @@ package org.sample.booking.controllers;
 
 import juzu.Action;
 import juzu.Path;
+import juzu.PropertyType;
 import juzu.Resource;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 import juzu.plugin.ajax.Ajax;
 import org.sample.booking.Flash;
@@ -76,7 +78,6 @@ public class Hotels // extends Application
   @Path("hotels/confirmBooking.gtmpl")
   org.sample.booking.templates.hotels.confirmBooking confirmBooking;
 
-  @View
   public void index() {
     String username = login.getUserName();
     List<Booking> bookings = Booking.findByUser(username);
@@ -85,6 +86,7 @@ public class Hotels // extends Application
 
   @Ajax
   @Resource
+  @Route("/hotels/list")
   public void list(String search, String size, String page) {
     int _size = size != null ? Integer.parseInt(size) : 5;
     int _page = page != null ? Integer.parseInt(page) : 0;
@@ -101,12 +103,14 @@ public class Hotels // extends Application
   }
 
   @View
+  @Route("/hotels/{id}")
   public void show(String id) {
     Hotel hotel = Hotel.findById(id);
     show.with().hotel(hotel).render();
   }
 
   @View
+  @Route("/hotels/{id}/booking")
   public void book(String id, Booking booking) {
     Hotel hotel = Hotel.findById(id);
     if (booking == null) {
@@ -116,6 +120,7 @@ public class Hotels // extends Application
   }
 
   @Action
+  @Route("/hotels/{id}/booking")
   public Response processConfirmBooking(String confirm, String id, String revise, Booking booking) {
     Hotel hotel = Hotel.findById(id);
     User user = User.find(login.getUserName(), null);
@@ -133,11 +138,11 @@ public class Hotels // extends Application
       booking.create();
       flash.setSuccess("Thank you, " + login.getUserName() + ", your confimation number for " + hotel.name
         + " is " + booking.id);
-      return Hotels_.index();
+      return Application_.index();
     }
     else {
       // Display booking
-      return Hotels_.confirmBooking(id, booking);
+      return Hotels_.confirmBooking(id, booking).with(PropertyType.REDIRECT_AFTER_ACTION, false);
     }
   }
 
@@ -148,14 +153,16 @@ public class Hotels // extends Application
   }
 
   @Action
+  @Route("/bookings/{id}")
   public Response cancelBooking(String id) {
     Booking booking = Booking.find(id);
     booking.delete();
     flash.setSuccess("Booking cancelled for confirmation number " + id);
-    return Hotels_.index();
+    return Application_.index();
   }
 
   @View
+  @Route("/settings")
   public void settings() {
     throw new UnsupportedOperationException("todo settings.gtmpl");
   }

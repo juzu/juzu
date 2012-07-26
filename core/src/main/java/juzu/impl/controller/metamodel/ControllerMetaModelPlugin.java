@@ -29,7 +29,6 @@ import juzu.View;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.common.MethodHandle;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingException;
@@ -118,11 +117,6 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationUpdated(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
-    processAnnotationAdded(metaModel, key, added);
-  }
-
-  @Override
   public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
     if (NAMES.contains(key.getType())) {
       ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
@@ -137,7 +131,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState state) {
+  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (NAMES.contains(key.getType())) {
       ElementHandle.Method methodHandle = (ElementHandle.Method)key.getElement();
       ElementHandle.Class controllerHandle = ElementHandle.Class.create(methodHandle.getFQN());
@@ -185,29 +179,14 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
     // Build routes configuration
     ArrayList<String> controllers = new ArrayList<String>();
-    ArrayList<JSON> routes = new ArrayList<JSON>();
     for (ControllerMetaModel controller : ac) {
       controllers.add(controller.getHandle().getFQN().getName() + "_");
-      for (MethodMetaModel method : controller.getMethods()) {
-        if (method.route != null) {
-          MethodHandle target = new MethodHandle(
-              method.handle.getFQN().getName(),
-              method.handle.getName(),
-              method.handle.getParameterTypes().toArray(new String[method.handle.getParameterTypes().size()])
-          );
-          routes.add(new JSON().
-              set("path", method.route).
-              set("target", target.toString())
-          );
-        }
-      }
     }
 
     //
     JSON config = new JSON();
     config.set("default", ac.defaultController != null ? ac.defaultController.getName() : null);
     config.set("escapeXML", ac.escapeXML);
-    config.set("routes", routes);
     config.map("controllers", controllers);
 
     //

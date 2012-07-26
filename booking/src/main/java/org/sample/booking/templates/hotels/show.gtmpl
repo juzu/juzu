@@ -4,7 +4,7 @@
 
 <h1>View hotel</h1>
 
-<form action="@{book(id = hotel.id)}" method="post">
+<form action="@{processConfirmBooking(id = hotel.id)}" method="post">
     <p>
         <strong>Name:</strong> ${hotel.name}
     </p>

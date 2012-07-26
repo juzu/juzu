@@ -119,9 +119,9 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationChange(ApplicationMetaModel application, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+  public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (key.getType().equals(BINDINGS)) {
-      ProcessingContext env = application.model.env;
+      ProcessingContext env = metaModel.model.env;
 
       //
       TypeMirror providerFactoryTM = env.getTypeElement(ProviderFactory.class.getName()).asType();
@@ -238,7 +238,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
       }
 
       //
-      state.put(application.getHandle(), new JSON().set("bindings", list));
+      state.put(metaModel.getHandle(), new JSON().set("bindings", list));
     }
   }
 

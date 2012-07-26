@@ -5,7 +5,7 @@
             <div class="options">
                 Connected as ${login.userName}
                 |
-                <a href="@{Hotels.index()}">Search</a>
+                <a href="@{Application.index()}">Search</a>
                 |
                 <a href="@{Hotels.settings()}">Settings</a>
                 |

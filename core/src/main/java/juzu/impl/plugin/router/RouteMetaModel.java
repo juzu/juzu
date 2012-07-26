@@ -24,6 +24,11 @@ import juzu.impl.common.JSON;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteMetaModel implements Serializable {
@@ -31,9 +36,10 @@ public class RouteMetaModel implements Serializable {
   /** . */
   HashMap<String, String> targets;
 
-  HashMap<String, RouteMetaModel> children;
+  /** . */
+  TreeMap<Integer, LinkedHashMap<String, RouteMetaModel>> children;
 
-  void setTarget(String key, String target) {
+  RouteMetaModel setTarget(String key, String target) {
     if (target == null) {
       if (targets != null) {
         targets.remove(key);
@@ -44,23 +50,43 @@ public class RouteMetaModel implements Serializable {
       }
       targets.put(key, target);
     }
+    return this;
   }
 
-  RouteMetaModel addChild(String path) {
+  RouteMetaModel addChild(int priority, String path) {
     if (children == null) {
-      children = new HashMap<String, RouteMetaModel>();
+      children = new TreeMap<Integer, LinkedHashMap<String, RouteMetaModel>>();
     }
-    RouteMetaModel child = children.get(path);
+    LinkedHashMap<String, RouteMetaModel> child = children.get(priority);
     if (child == null) {
-      children.put(path, child = new RouteMetaModel());
+      children.put(priority, child = new LinkedHashMap<String, RouteMetaModel>());
     }
-    return child;
+    RouteMetaModel foo = child.get(path);
+    if (foo == null) {
+      child.put(path, foo = new RouteMetaModel());
+    }
+    return foo;
   }
 
   public JSON toJSON() {
+
+    List<JSON> a = Collections.emptyList();
+    if (children != null) {
+      for (LinkedHashMap<String, RouteMetaModel> b : children.values()) {
+        for (Map.Entry<String, RouteMetaModel> entry : b.entrySet()) {
+          if (a.isEmpty()) {
+            a = new LinkedList<JSON>();
+          }
+          JSON foo = entry.getValue().toJSON();
+          foo.set("path", entry.getKey());
+          a.add(foo);
+        }
+      }
+    }
+
     JSON json = new JSON();
     json.set("targets", targets != null ? targets : Collections.<String, String>emptyMap());
-    json.set("children", children != null ? children : Collections.<String, RouteMetaModel>emptyMap());
+    json.set("routes", a);
     return json;
   }
 }

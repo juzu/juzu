@@ -26,7 +26,7 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.Test;
 
-import java.util.Map;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouterTestCase extends AbstractInjectTestCase {
@@ -42,7 +42,7 @@ public class RouterTestCase extends AbstractInjectTestCase {
     //
     ApplicationDescriptor descriptor = application.getContext().getDescriptor();
     RouteDescriptor desc = (RouteDescriptor)descriptor.getPlugin("router");
-    Map<String, RouteDescriptor> routes = desc.getChildren();
+    List<RouteDescriptor> routes = desc.getChildren();
     assertEquals(3, routes.size());
   }
 }

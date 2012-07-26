@@ -22,6 +22,7 @@ package org.sample.booking.controllers;
 import juzu.Action;
 import juzu.Path;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
 import org.sample.booking.Flash;
@@ -73,6 +74,7 @@ public class Application {
   Flash flash;
 
   @View
+  @Route("/")
   public void index() {
     if (login.isConnected()) {
       hotels.index();
@@ -83,11 +85,13 @@ public class Application {
   }
 
   @View
+  @Route("/register")
   public void register() {
     register.render();
   }
 
   @Action
+  @Route("/register")
   public Response saveUser(User user, String verifyPassword) {
 /*
        validation.required(verifyPassword);
@@ -104,13 +108,14 @@ public class Application {
 
 
   @Action
+  @Route("/login")
   public Response login(User u) {
     System.out.println("Want login " + u.username + " " + u.password);
     User user = User.find(u.username, u.password);
     if (user != null) {
       login.setUserName(user.username);
       flash.setSuccess("Welcome, " + user.name);
-      return Hotels_.index();
+      return Application_.index();
     }
     else {
       // Oops
@@ -121,6 +126,7 @@ public class Application {
   }
 
   @Action
+  @Route("/logout")
   public Response logout() {
     login.setUserName(null);
     return Application_.index();

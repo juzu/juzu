@@ -50,10 +50,4 @@ public @interface Action {
    */
   String id() default "";
 
-  /**
-   * The controller method route.
-   *
-   * @return the method route
-   */
-  String route() default "";
 }

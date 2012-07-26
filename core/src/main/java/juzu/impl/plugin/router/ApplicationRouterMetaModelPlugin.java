@@ -19,57 +19,86 @@
 
 package juzu.impl.plugin.router;
 
+import juzu.Route;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ElementHandle;
+import juzu.impl.compiler.ProcessingContext;
+import juzu.impl.controller.metamodel.ControllerMetaModel;
+import juzu.impl.controller.metamodel.ControllersMetaModel;
 import juzu.impl.controller.metamodel.MethodMetaModel;
-import juzu.impl.metamodel.MetaModelEvent;
-import juzu.impl.metamodel.MetaModelObject;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 
-import java.util.HashMap;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationRouterMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private final HashMap<ElementHandle.Package, RouteMetaModel> routes = new HashMap<ElementHandle.Package, RouteMetaModel>();
+  private static final FQN ROUTE = new FQN(Route.class);
 
   public ApplicationRouterMetaModelPlugin() {
     super("router");
   }
 
-  private RouteMetaModel route(ElementHandle.Package application, boolean create) {
-    RouteMetaModel route = routes.get(application);
-    if (route == null && create) {
-      routes.put(application, route = new RouteMetaModel());
+  @Override
+  public Set<Class<? extends Annotation>> init(ProcessingContext env) {
+    return Collections.<Class<? extends Annotation>>singleton(Route.class);
+  }
+
+  private ApplicationRouterMetaModel getRoutes(ApplicationMetaModel metaModel, boolean create) {
+    ApplicationRouterMetaModel routes = metaModel.getChild(ApplicationRouterMetaModel.KEY);
+    if (routes == null && create) {
+      metaModel.addChild(ApplicationRouterMetaModel.KEY, routes = new ApplicationRouterMetaModel());
     }
-    return route;
+    return routes;
   }
 
   @Override
-  public void processEvent(ApplicationMetaModel application, MetaModelEvent event) {
-    MetaModelObject object = event.getObject();
-    if (object instanceof MethodMetaModel) {
-      MethodMetaModel method = (MethodMetaModel)object;
-      if (event.getType() == MetaModelEvent.AFTER_ADD) {
-        if (method.getRoute() != null) {
-          RouteMetaModel route = route(application.getHandle(), true).addChild(method.getRoute());
-          route.setTarget(method.getPhase().name(), method.getHandle().getMethodHandle().toString());
+  public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
+    if (key.getType().equals(ROUTE)) {
+      getRoutes(metaModel, true).annotations.put((ElementHandle.Method)key.getElement(), added);
+    }
+  }
+
+  @Override
+  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
+    if (key.getType().equals(ROUTE)) {
+      getRoutes(metaModel, true).annotations.remove(key.getElement());
+    }
+  }
+
+  @Override
+  public void postProcessEvents(ApplicationMetaModel metaModel) {
+    ApplicationRouterMetaModel router = getRoutes(metaModel, false);
+    if (router != null) {
+      ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
+      if (controllers != null) {
+        RouteMetaModel root = new RouteMetaModel();
+        for (ControllerMetaModel controller : controllers) {
+          for (MethodMetaModel method : controller) {
+            AnnotationState annotation = router.annotations.get(method.getHandle());
+            if (annotation != null) {
+              String path = (String)annotation.get("value");
+              Integer priority = (Integer)annotation.get("priority");
+              RouteMetaModel route = root.addChild(priority != null ? priority : 0, path);
+              route.setTarget(method.getPhase().name(), method.getHandle().getMethodHandle().toString());
+            }
+          }
         }
-      } else if (event.getType() == MetaModelEvent.BEFORE_REMOVE) {
-        ElementHandle.Package pkg = (ElementHandle.Package)event.getPayload();
-        RouteMetaModel route = route(pkg, false);
-        if (route != null) {
-          route.setTarget(method.getPhase().name(), null);
-        }
+        router.root = root;
       }
     }
   }
 
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
-    RouteMetaModel route = route(application.getHandle(), false);
-    return route != null ? route.toJSON() : null;
+    ApplicationRouterMetaModel router = getRoutes(application, false);
+    return router != null && router.root != null ? router.root.toJSON() : null;
   }
 }

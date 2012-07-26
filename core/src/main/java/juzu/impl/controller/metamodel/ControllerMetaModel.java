@@ -41,10 +41,11 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerMetaModel extends MetaModelObject {
+public class ControllerMetaModel extends MetaModelObject implements Iterable<MethodMetaModel> {
 
   /** . */
   public static final MessageCode CANNOT_WRITE_CONTROLLER_COMPANION = new MessageCode("CANNOT_WRITE_CONTROLLER_COMPANION", "The controller companion %1$s cannot be written");
@@ -67,6 +68,10 @@ public class ControllerMetaModel extends MetaModelObject {
   public ControllerMetaModel(ElementHandle.Class handle) {
     this.handle = handle;
     this.modified = false;
+  }
+
+  public Iterator<MethodMetaModel> iterator() {
+    return getMethods().iterator();
   }
 
   public JSON toJSON() {
@@ -168,16 +173,12 @@ public class ControllerMetaModel extends MetaModelObject {
           }
 
           //
-          String route = (String)annotation.get("route");
-
-          //
           MethodMetaModel method = new MethodMetaModel(
             origin,
             id,
             phase,
             methodElt.getSimpleName().toString(),
-            parameters,
-            route);
+            parameters);
           addChild(key, method);
           modified = true;
         }

@@ -76,4 +76,22 @@ public class ApplicationTestCase extends AbstractTestCase {
     CompilerAssert<?, ?> compiler = compiler("application", "prefix");
     compiler.assertCompile();
   }
+
+  @Test
+  public void testMultiple() throws Exception {
+    CompilerAssert<?, ?> compiler = compiler("application", "multiple");
+    compiler.assertCompile();
+
+    //
+    Class<?> app1Class = compiler.assertClass("application.multiple.app1.Application");
+    Class<?> a1Class = compiler.assertClass("application.multiple.app1.A");
+    ApplicationDescriptor desc1 = (ApplicationDescriptor)app1Class.getDeclaredField("DESCRIPTOR").get(null);
+    assertSame(a1Class, desc1.getControllers().getControllers().get(0).getType());
+
+    //
+    Class<?> app2Class = compiler.assertClass("application.multiple.app2.Application");
+    Class<?> a2Class = compiler.assertClass("application.multiple.app2.A");
+    ApplicationDescriptor desc2 = (ApplicationDescriptor)app2Class.getDeclaredField("DESCRIPTOR").get(null);
+    assertSame(a2Class, desc2.getControllers().getControllers().get(0).getType());
+  }
 }
