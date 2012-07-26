@@ -216,7 +216,7 @@ public class ServletBridge extends HttpServlet {
     ServletRequestBridge requestBridge;
     if (target != null) {
       switch (target.getPhase()) {
-        case RENDER:
+        case VIEW:
           requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
           break;
         case ACTION: {

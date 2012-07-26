@@ -99,7 +99,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
       case ACTION:
         url = resp.createActionURL();
         break;
-      case RENDER:
+      case VIEW:
         url = resp.createRenderURL();
         break;
       case RESOURCE:

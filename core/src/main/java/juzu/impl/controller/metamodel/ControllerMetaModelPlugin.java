@@ -295,7 +295,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         writer.append(");\n");
 
         // Render builder literal
-        if (method.getPhase() == Phase.RENDER) {
+        if (method.getPhase() == Phase.VIEW) {
           writer.append("public static ").append(RESPONSE).append(" ").append(method.getName()).append("(");
           for (int j = 0;j < method.getParameters().size();j++) {
             if (j > 0) {

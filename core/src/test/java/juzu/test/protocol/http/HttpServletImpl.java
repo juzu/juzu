@@ -53,7 +53,7 @@ public class HttpServletImpl extends HttpServlet {
   AssetManager stylesheetManager;
 
   private RequestBridgeImpl create(HttpServletRequest req, HttpServletResponse resp) {
-    Phase phase = Phase.RENDER;
+    Phase phase = Phase.VIEW;
     Map<String, String[]> parameters = new HashMap<String, String[]>();
 
     //
@@ -83,7 +83,7 @@ public class HttpServletImpl extends HttpServlet {
 
     //
     switch (phase) {
-      case RENDER:
+      case VIEW:
         return new RenderBridgeImpl(this, application.getContext(), req, resp, method, parameters);
       case ACTION:
         return new ActionBridgeImpl(application.getContext(), req, resp, method, parameters);

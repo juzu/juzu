@@ -60,10 +60,10 @@ import java.util.Map;
  *       }
  *    }
  * </pre></code>
- * <p/> <h2>Mime response</h2> <p/> <p>Mime response are used by the {@link juzu.request.Phase#RENDER} and the {@link
+ * <p/> <h2>Mime response</h2> <p/> <p>Mime response are used by the {@link juzu.request.Phase#VIEW} and the {@link
  * juzu.request.Phase#RESOURCE} phases. Both contains a content to be streamed to the client but still they have some
  * noticeable differences.</p> <p/> <p>The {@link juzu.Response.Content} class is the base response class which will
- * work well for the two phases. However the {@link juzu.request.Phase#RENDER} can specify an optional title and the
+ * work well for the two phases. However the {@link juzu.request.Phase#VIEW} can specify an optional title and the
  * {@link juzu.request.Phase#RESOURCE} can specify an optional status code for the user agent response.</p> <p/>
  * <p>Responses are created using the {@link Response} factory methods such as</p> <p/> <ul> <li>{@link
  * Response#ok} creates an ok response</li> <li>{@link Response#notFound} creates a not found response</li> </ul>

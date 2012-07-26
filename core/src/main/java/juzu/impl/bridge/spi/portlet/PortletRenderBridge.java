@@ -57,7 +57,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
   @Override
   protected Phase getPhase() {
-    return Phase.RENDER;
+    return Phase.VIEW;
   }
 
   public void setTitle(String title) {

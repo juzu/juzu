@@ -69,7 +69,7 @@ public class MockClient {
           case ACTION:
             request = new MockActionBridge(application.getContext(), this, method.getHandle(), parameters);
             break;
-          case RENDER:
+          case VIEW:
             request = new MockRenderBridge(application.getContext(), this, method.getHandle(), parameters);
             break;
           case RESOURCE:

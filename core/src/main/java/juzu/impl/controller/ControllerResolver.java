@@ -142,7 +142,7 @@ public abstract class ControllerResolver<M> {
     //
     List<Match> matches = new ArrayList<Match>();
     for (M method : getMethods()) {
-      if (getPhase(method) == Phase.RENDER && getName(method).equals("index")) {
+      if (getPhase(method) == Phase.VIEW && getName(method).equals("index")) {
         matches.add(new Match(parameterNames, method));
       }
     }

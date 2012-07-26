@@ -44,6 +44,6 @@ public class RenderContext extends MimeContext {
 
   @Override
   public Phase getPhase() {
-    return Phase.RENDER;
+    return Phase.VIEW;
   }
 }

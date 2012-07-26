@@ -110,7 +110,7 @@ public class ApplicationContext {
   public void invoke(RequestBridge bridge) throws ApplicationException {
     Phase phase;
     if (bridge instanceof RenderBridge) {
-      phase = Phase.RENDER;
+      phase = Phase.VIEW;
     }
     else if (bridge instanceof ActionBridge) {
       phase = Phase.ACTION;

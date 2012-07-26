@@ -47,7 +47,7 @@ public class ParamTestCase extends AbstractTestCase {
             set("handle", "ElementHandle.Method[fqn=metamodel.param.A,name=index,parameterTypes[metamodel.param.Bean]]").
             set("id", null).
             set("name", "index").
-            set("phase", "RENDER").
+            set("phase", "VIEW").
             list("parameters", json().
               set("name", "bean").
               set("declaredType", "metamodel.param.Bean").

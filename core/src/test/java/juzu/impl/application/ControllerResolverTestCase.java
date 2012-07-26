@@ -109,32 +109,32 @@ public class ControllerResolverTestCase extends AbstractTestCase {
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
 
     //
-    MethodDescriptor method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set());
+    MethodDescriptor method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set());
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set(), method.getArgumentNames());
 
     //
-    method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("foo"));
+    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("foo"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set("foo"), method.getArgumentNames());
 
     //
-    method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("foo", "bar"));
+    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("foo", "bar"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set("foo", "bar"), method.getArgumentNames());
 
     //
-    method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("bar"));
+    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("bar"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set("foo", "bar"), method.getArgumentNames());
 
     //
-    method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("bar"));
+    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("bar"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set("foo", "bar"), method.getArgumentNames());
 
     //
-    method = resolver.resolve(Phase.RENDER, "A.m", Tools.<String>set("daa"));
+    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("daa"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set(), method.getArgumentNames());
   }
@@ -153,12 +153,12 @@ public class ControllerResolverTestCase extends AbstractTestCase {
     MethodDescriptor cm2_ = desc.getControllers().getMethod(aClass, "fooArg", String.class);
 
     //
-    MethodDescriptor cm1 = resolver.resolve(Phase.RENDER, cm1_.getId(), cm1_.getArgumentNames());
+    MethodDescriptor cm1 = resolver.resolve(Phase.VIEW, cm1_.getId(), cm1_.getArgumentNames());
     assertNotNull(cm1);
     assertEquals("noArg", cm1.getName());
 
     //
-    MethodDescriptor cm2 = resolver.resolve(Phase.RENDER, cm2_.getId(), cm2_.getArgumentNames());
+    MethodDescriptor cm2 = resolver.resolve(Phase.VIEW, cm2_.getId(), cm2_.getArgumentNames());
     assertNotNull(cm2);
     assertEquals("fooArg", cm2.getName());
   }

@@ -73,7 +73,7 @@ public class ControllerTestCase extends AbstractTestCase {
               set("id", null).
               set("name", "index").
               list("parameters").
-              set("phase", "RENDER")
+              set("phase", "VIEW")
             )
           ).
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
@@ -298,7 +298,7 @@ public class ControllerTestCase extends AbstractTestCase {
               set("id", null).
               set("name", "index").
               list("parameters").
-              set("phase", "RENDER")
+              set("phase", "VIEW")
             )
           ).
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
@@ -394,7 +394,7 @@ public class ControllerTestCase extends AbstractTestCase {
               set("id", null).
               set("name", "index").
               list("parameters").
-              set("phase", "RENDER")
+              set("phase", "VIEW")
             )
           ).
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").
@@ -448,7 +448,7 @@ public class ControllerTestCase extends AbstractTestCase {
               set("id", null).
               set("name", "index").
               list("parameters").
-              set("phase", "RENDER")
+              set("phase", "VIEW")
             )
           ).
           set("handle", "ElementHandle.Package[qn=metamodel.controller]").

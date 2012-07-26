@@ -40,8 +40,8 @@ public enum Phase {
     }
   },
 
-  /** Render phase. */
-  RENDER(View.class) {
+  /** View phase. */
+  VIEW(View.class) {
     @Override
     public String id(Annotation annotation) throws ClassCastException {
       return ((View)annotation).id();
