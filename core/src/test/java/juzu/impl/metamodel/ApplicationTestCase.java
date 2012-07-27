@@ -19,16 +19,24 @@
 
 package juzu.impl.metamodel;
 
+import japa.parser.ASTHelper;
+import japa.parser.ast.PackageDeclaration;
+import japa.parser.ast.expr.AnnotationExpr;
+import japa.parser.ast.expr.MemberValuePair;
+import japa.parser.ast.expr.NormalAnnotationExpr;
+import japa.parser.ast.expr.StringLiteralExpr;
+import juzu.Application;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
+import juzu.test.JavaFile;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.util.Collections;
 import java.util.List;
 
 import static juzu.impl.common.JSON.json;
@@ -42,7 +50,8 @@ public class ApplicationTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(1, events.size());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
@@ -67,19 +76,27 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, ser);
+    MetaModelState b = Tools.unserialize(MetaModelState.class, ser);
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)b.metaModel;
     mm.getQueue().clear();
-    Tools.serialize(mm, ser);
+    Tools.serialize(b, ser);
 
-    // Just touch this file to force recompile
-    File pkg = helper.getSourcePath().getPath("metamodel", "application", "package-info.java");
-    FileWriter writer = new FileWriter(pkg, true);
-    writer.write(" ");
-    writer.close();
+    //
+    JavaFile pkgFile = helper.assertJavaFile("metamodel", "application", "package-info.java");
+    PackageDeclaration pkg = pkgFile.assertPackage();
+    pkg.getAnnotations().clear();
+    List<AnnotationExpr> a = Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(
+        Application.class.getName()),
+        Collections.<MemberValuePair>singletonList(new MemberValuePair(
+            "name", new StringLiteralExpr("abc")
+        ))));
+    pkg.setAnnotations(a);
+    pkgFile.assertSave();
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     List<MetaModelEvent> events = mm.getQueue().clear();
@@ -106,16 +123,18 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, ser);
+    MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
-    Tools.serialize(mm, ser);
+    Tools.serialize(unserialize, ser);
 
     //
     assertTrue(helper.getSourcePath().getPath("metamodel", "application", "package-info.java").delete());
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     List<MetaModelEvent> events = mm.getQueue().clear();
@@ -129,5 +148,22 @@ public class ApplicationTestCase extends AbstractTestCase {
         list("values")
       );
     assertEquals(expected, mm.toJSON());
+  }
+
+  @Test
+  public void testRemoveAnnotation() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
+    helper.assertCompile();
+
+    //
+    JavaFile pkgFile = helper.assertJavaFile("metamodel", "application", "package-info.java");
+    PackageDeclaration pkg = pkgFile.assertPackage();
+    pkg.getAnnotations().clear();
+    pkgFile.assertSave();
+
+    //
+    helper.assertCompile();
+
+
   }
 }

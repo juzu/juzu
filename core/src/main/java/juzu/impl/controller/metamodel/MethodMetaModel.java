@@ -19,17 +19,12 @@
 
 package juzu.impl.controller.metamodel;
 
-import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
-import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
-import juzu.impl.common.Tools;
 import juzu.request.Phase;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -147,19 +142,5 @@ public class MethodMetaModel extends MetaModelObject {
   protected void postAttach(MetaModelObject parent) {
     controller = (ControllerMetaModel)parent;
     queue(MetaModelEvent.createAdded(this));
-  }
-
-  @Override
-  public boolean exist(ProcessingContext env) {
-    ExecutableElement methodElt = env.get(handle);
-    if (methodElt != null) {
-      AnnotationMirror am = Tools.getAnnotation(methodElt, phase.annotation.getName());
-      if (am != null) {
-        Annotation values = Annotation.create(am);
-        String id = (String)values.get("id");
-        return Tools.safeEquals(id, this.declaredId);
-      }
-    }
-    return false;
   }
 }

@@ -40,7 +40,8 @@ public class PathTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -71,7 +72,8 @@ public class PathTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -99,7 +101,8 @@ public class PathTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -123,7 +126,8 @@ public class PathTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json().
@@ -142,9 +146,10 @@ public class PathTestCase extends AbstractTestCase {
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, ser);
+    MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
     mm.getQueue().clear();
-    Tools.serialize(mm, ser);
+    Tools.serialize(unserialize, ser);
 
     //
     File pkg = helper.getSourcePath().getPath("metamodel", "path", "package-info.java");
@@ -158,7 +163,8 @@ public class PathTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -177,6 +183,7 @@ public class PathTestCase extends AbstractTestCase {
     // Should also test objects....
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(4, events.size());
+
 
     // 1 remove application
     // 2 add application

@@ -92,8 +92,11 @@ public class MetaModelObject implements Serializable {
     else {
       if (child.parents.containsKey(this)) {
         throw new IllegalArgumentException("Child " + child + " cannot be added for key " + key + " because parent already contains it");
-      }
-      else {
+      } else {
+        if (children.containsKey(key)) {
+          throw new IllegalArgumentException("Object " + this + " has already a child named "  + key);
+        }
+
         if (child.parents.size() == 0) {
 
           // Context
@@ -197,10 +200,6 @@ public class MetaModelObject implements Serializable {
   }
 
   protected void preRemove() {
-  }
-
-  public boolean exist(ProcessingContext env) {
-    return true;
   }
 
   public JSON toJSON() {

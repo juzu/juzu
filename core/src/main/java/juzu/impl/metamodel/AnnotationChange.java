@@ -17,44 +17,35 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.template.metamodel;
+package juzu.impl.metamodel;
 
-import juzu.impl.compiler.ElementHandle;
-import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.common.JSON;
-
-/**
- * A reference to a template.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public class TemplateRefMetaModel extends MetaModelObject {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class AnnotationChange {
 
   /** . */
-  final ElementHandle.Field handle;
+  final AnnotationKey key;
 
   /** . */
-  juzu.impl.common.Path path;
+  final AnnotationState removed;
 
-  TemplateRefMetaModel(
-    ElementHandle.Field handle,
-    juzu.impl.common.Path path) {
-    this.handle = handle;
-    this.path = path;
+  /** . */
+  final AnnotationState added;
+
+  public AnnotationChange(AnnotationKey key, AnnotationState removed, AnnotationState added) {
+    this.key = key;
+    this.removed = removed;
+    this.added = added;
   }
 
-  public ElementHandle.Field getHandle() {
-    return handle;
+  public AnnotationKey getKey() {
+    return key;
   }
 
-  public juzu.impl.common.Path getPath() {
-    return path;
+  public AnnotationState getRemoved() {
+    return removed;
   }
 
-  public JSON toJSON() {
-    JSON json = new JSON();
-    json.set("handle", handle);
-    json.set("template", getChild(TemplateMetaModel.KEY));
-    return json;
+  public AnnotationState getAdded() {
+    return added;
   }
 }

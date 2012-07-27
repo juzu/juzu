@@ -19,25 +19,14 @@
 
 package juzu.impl.application.metamodel;
 
-import juzu.Application;
 import juzu.impl.common.QN;
-import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
-import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.controller.metamodel.ControllersMetaModel;
-import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.template.metamodel.TemplatesMetaModel;
 import juzu.impl.common.JSON;
-
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, ApplicationMetaModel> {
@@ -58,12 +47,6 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   boolean modified;
 
   /** . */
-  final Map<BufKey, Annotation> toProcess;
-
-  /** . */
-  final Map<BufKey, Annotation> processed;
-
-  /** . */
   final String baseName;
 
   /** . */
@@ -80,14 +63,9 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
     }
 
     //
-    String name = baseName + "Application";
-
-    //
     this.handle = handle;
     this.modified = false;
     this.baseName = baseName;
-    this.toProcess = new HashMap<BufKey, Annotation>();
-    this.processed = new HashMap<BufKey, Annotation>();
   }
 
   public QN getName() {
@@ -109,29 +87,6 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
     json.map("templates", getChild(TemplatesMetaModel.KEY));
     json.map("controllers", getChild(ControllersMetaModel.KEY));
     return json;
-  }
-
-  @Override
-  public boolean exist(ProcessingContext env) {
-    PackageElement element = env.get(handle);
-    boolean found = false;
-    if (element != null) {
-      for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-        if (found = ((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().contentEquals(Application.class.getName())) {
-          break;
-        }
-      }
-    }
-    return found;
-  }
-
-  void processEvents(Collection<ApplicationMetaModelPlugin> plugins) {
-    for (ApplicationMetaModelPlugin plugin : plugins) {
-      plugin.processEvents(this, new EventQueue(dispatch));
-    }
-
-    // Clear dispatch queue
-    dispatch.clear();
   }
 
   @Override

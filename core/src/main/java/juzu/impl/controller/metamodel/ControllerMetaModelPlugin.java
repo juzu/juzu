@@ -30,7 +30,8 @@ import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.compiler.Annotation;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -108,7 +109,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     ControllersMetaModel controllers = new ControllersMetaModel();
     PackageElement pkg = application.model.env.get(application.getHandle());
     AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
-    Annotation values = Annotation.create(annotation);
+    AnnotationState values = AnnotationState.create(annotation);
     Boolean escapeXML = (Boolean)values.get("escapeXML");
     ElementHandle.Class defaultControllerElt = (ElementHandle.Class)values.get("defaultController");
     controllers.escapeXML = escapeXML;
@@ -117,22 +118,37 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) throws ProcessingException {
-    ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
-    if (NAMES.contains(annotation.getName())) {
-      ExecutableElement methodElt = (ExecutableElement)element;
-      application.env.log("Processing controller method " + methodElt + " found on type " + methodElt.getEnclosingElement());
-      TypeElement controllerElt = (TypeElement)methodElt.getEnclosingElement();
-      ElementHandle.Class handle = ElementHandle.Class.create(controllerElt);
+  public void processAnnotationUpdated(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+    processAnnotationAdded(metaModel, key, added);
+  }
+
+  @Override
+  public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
+    if (NAMES.contains(key.getType())) {
+      ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
+      ElementHandle.Method m = (ElementHandle.Method)key.getElement();
+      ElementHandle.Class handle = ElementHandle.Class.create(m.getFQN());
       ControllerMetaModel controller = ac.get(handle);
       if (controller == null) {
         ac.add(controller = new ControllerMetaModel(handle));
       }
-      controller.addMethod(
-        application.model,
-        methodElt,
-        annotation
-      );
+      controller.addMethod(application.model, key, added);
+    }
+  }
+
+  @Override
+  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState state) {
+    if (NAMES.contains(key.getType())) {
+      ElementHandle.Method methodHandle = (ElementHandle.Method)key.getElement();
+      ElementHandle.Class controllerHandle = ElementHandle.Class.create(methodHandle.getFQN());
+      ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
+      ControllerMetaModel controller = controllers.get(controllerHandle);
+      if (controller != null) {
+        controller.remove(methodHandle);
+        if (controller.getMethods().isEmpty()) {
+          controller.remove();
+        }
+      }
     }
   }
 

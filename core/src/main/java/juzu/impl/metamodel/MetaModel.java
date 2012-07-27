@@ -20,6 +20,12 @@
 package juzu.impl.metamodel;
 
 import juzu.impl.compiler.ProcessingContext;
+import juzu.impl.compiler.ProcessingException;
+
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MetaModel<P extends MetaModelPlugin<M, P>, M extends MetaModel<P, M>> extends MetaModelObject {
@@ -33,8 +39,14 @@ public class MetaModel<P extends MetaModelPlugin<M, P>, M extends MetaModel<P, M
   /** . */
   protected final EventQueue queue = new EventQueue();
 
+  /** . */
+  boolean forward = false;
+
+  /** . */
+  protected MetaModelContext<P, M> context;
+
   @Override
-  public void queue(MetaModelEvent event) {
+  public final void queue(MetaModelEvent event) {
 //    if (!queuing) {
 //      throw new IllegalStateException("Not queueing");
 //    }
@@ -49,7 +61,21 @@ public class MetaModel<P extends MetaModelPlugin<M, P>, M extends MetaModel<P, M
     }
   }
 
-  public EventQueue getQueue() {
+  public void init(ProcessingContext env) {}
+
+  public Set<Class<? extends Annotation>> getSupportedAnnotations() { return Collections.emptySet(); }
+
+  public void postActivate(ProcessingContext env) {}
+
+  public void prePassivate() {}
+
+  public void postProcessAnnotations() throws ProcessingException {}
+
+  public void processEvents() {}
+
+  public void postProcessEvents() {}
+
+  public final EventQueue getQueue() {
     return queue;
   }
 }

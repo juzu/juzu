@@ -20,10 +20,8 @@
 package juzu.impl.metamodel;
 
 import juzu.impl.common.JSON;
-import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ProcessingContext;
 
-import javax.lang.model.element.Element;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
@@ -56,7 +54,29 @@ public class MetaModelPlugin<M extends MetaModel<P, M>, P extends MetaModelPlugi
   public void postActivate(M metaModel) {
   }
 
-  public void processAnnotation(M metaModel, Element element, Annotation annotation) {
+  public void processAnnotationChanges(M metaModel, Iterable<AnnotationChange> changes) {
+    for (AnnotationChange change : changes) {
+      processAnnotationChange(metaModel, change.key, change.removed, change.added);
+    }
+  }
+
+  public void processAnnotationChange(M metaModel, AnnotationKey key, AnnotationState previous, AnnotationState next) {
+    if (next == null) {
+      processAnnotationRemoved(metaModel, key, previous);
+    } else if (previous == null) {
+      processAnnotationAdded(metaModel, key, next);
+    } else if (!previous.equals(next)) {
+      processAnnotationUpdated(metaModel, key, previous, next);
+    }
+  }
+
+  public void processAnnotationAdded(M metaModel, AnnotationKey key, AnnotationState ee) {
+  }
+
+  public void processAnnotationUpdated(M metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+  }
+
+  public void processAnnotationRemoved(M metaModel, AnnotationKey key, AnnotationState state) {
   }
 
   public void postProcessAnnotations(M metaModel) {

@@ -17,9 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.compiler;
+package juzu.impl.metamodel;
 
-import juzu.impl.common.FQN;
+import juzu.impl.compiler.ElementHandle;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -40,16 +40,15 @@ import java.util.Map;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class Annotation extends HashMap<String, Serializable> {
+public class AnnotationState extends HashMap<String, Serializable> {
 
-  public static Annotation create(AnnotationMirror annotation) throws NullPointerException {
+  public static AnnotationState create(AnnotationMirror annotation) throws NullPointerException {
     if (annotation == null) {
       throw new NullPointerException("No null annotation allowed");
     }
 
     //
-    FQN name = new FQN(((TypeElement)annotation.getAnnotationType().asElement()).getQualifiedName().toString());
-    Annotation values = new Annotation(name);
+    AnnotationState values = new AnnotationState();
     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation.getElementValues().entrySet()) {
       String m = entry.getKey().getSimpleName().toString();
       Serializable value = unwrap(entry.getValue(), entry.getKey().getReturnType());
@@ -94,16 +93,5 @@ public class Annotation extends HashMap<String, Serializable> {
       throw new UnsupportedOperationException("Need to unwrap not serializable type " + value + " " +
         value.getClass().getName());
     }
-  }
-
-  /** . */
-  private final FQN name;
-
-  public Annotation(FQN name) {
-    this.name = name;
-  }
-
-  public FQN getName() {
-    return name;
   }
 }

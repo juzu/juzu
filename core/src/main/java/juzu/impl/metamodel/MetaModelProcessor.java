@@ -19,8 +19,7 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.application.metamodel.ApplicationsMetaModel;
-import juzu.impl.compiler.Annotation;
+import juzu.impl.common.FQN;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
@@ -38,6 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.annotation.Annotation;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -47,7 +48,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
   public static final MessageCode ANNOTATION_UNSUPPORTED = new MessageCode("ANNOTATION_UNSUPPORTED", "The annotation of this element cannot be supported");
 
   /** . */
-  private ApplicationsMetaModel metaModel;
+  private MetaModelState<?, ?> metaModel;
 
   /** . */
   private int index;
@@ -63,6 +64,10 @@ public abstract class MetaModelProcessor extends BaseProcessor {
     this.index = 0;
   }
 
+  protected abstract Class<? extends MetaModelPlugin<?, ?>> getPluginType();
+
+  protected abstract MetaModel<?, ?> createMetaModel();
+
   @Override
   protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (!roundEnv.errorRaised()) {
@@ -71,7 +76,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
 
         //
         log.log("Passivating model");
-        metaModel.prePassivate();
+        metaModel.metaModel.prePassivate();
 
         // Passivate model
         ObjectOutputStream out = null;
@@ -98,12 +103,12 @@ public abstract class MetaModelProcessor extends BaseProcessor {
             FileObject file = getContext().getResource(StandardLocation.SOURCE_OUTPUT, "juzu", "metamodel.ser");
             in = file.openInputStream();
             ObjectInputStream ois = new ObjectInputStream(in);
-            metaModel = (ApplicationsMetaModel)ois.readObject();
+            metaModel = (MetaModelState<?, ?>)ois.readObject();
             log.log("Loaded model from " + file.toUri());
           }
           catch (Exception e) {
             log.log("Created new meta model");
-            ApplicationsMetaModel metaModel = new ApplicationsMetaModel();
+            MetaModelState<?, ?> metaModel = new MetaModelState(getPluginType(), createMetaModel());
 
             //
             metaModel.init(getContext());
@@ -117,18 +122,21 @@ public abstract class MetaModelProcessor extends BaseProcessor {
 
           // Activate
           log.log("Activating model");
-          metaModel.postActivate(getContext());
+          metaModel.metaModel.postActivate(getContext());
         }
 
         //
-        for (Class annotationType : metaModel.getSupportedAnnotations()) {
+        LinkedHashMap<AnnotationKey, AnnotationState> updates = new LinkedHashMap<AnnotationKey, AnnotationState>();
+        Set<Class<? extends Annotation>> abc = metaModel.metaModel.getSupportedAnnotations();
+        for (Class annotationType : abc) {
           TypeElement annotationElt = getContext().getTypeElement(annotationType.getName());
           for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt)) {
             if (annotatedElt.getAnnotation(Generated.class) == null) {
               for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
                 if (annotationMirror.getAnnotationType().asElement().equals(annotationElt)) {
-                  Annotation annotationData = Annotation.create(annotationMirror);
-                  metaModel.processAnnotation(annotatedElt, annotationData);
+                  AnnotationKey key = new AnnotationKey(annotatedElt, new FQN(((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().toString()));
+                  AnnotationState state = AnnotationState.create(annotationMirror);
+                  updates.put(key, state);
                 }
               }
             }
@@ -136,16 +144,20 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         }
 
         //
+        log.log("Process annotations");
+        metaModel.context.processAnnotations(updates.entrySet());
+
+        //
         log.log("Post processing model");
-        metaModel.postProcessAnnotations();
+        metaModel.metaModel.postProcessAnnotations();
 
         //
         log.log("Process events");
-        metaModel.processEvents();
+        metaModel.metaModel.processEvents();
 
         //
         log.log("Post process events");
-        metaModel.postProcessEvents();
+        metaModel.metaModel.postProcessEvents();
 
         //
         log.log("Ending APT round #" + index++);

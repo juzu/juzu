@@ -21,7 +21,8 @@ package juzu.plugin.portlet.impl;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.compiler.Annotation;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
@@ -34,7 +35,6 @@ import juzu.portlet.JuzuPortlet;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
@@ -69,18 +69,15 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) {
+  public void processAnnotationChange(ApplicationMetaModel application, AnnotationKey key, AnnotationState removed, AnnotationState added) {
     ElementHandle.Package pkg = application.getHandle();
-    if (annotation.getName().equals(PORTLET) && ElementHandle.create(element).equals(pkg)) {
-      String name = (String)annotation.get("name");
+    if (key.getType().equals(PORTLET) && key.getElement().getPackage().equals(pkg.getQN())) {
+      String name = (String)added.get("name");
       if (name == null) {
         name = application.getBaseName() + "Portlet";
       }
       enabledMap.put(pkg, new String[]{name, application.getName().toString()});
       toEmit.add(pkg);
-    }
-    else {
-      // Issue a warning ?
     }
   }
 

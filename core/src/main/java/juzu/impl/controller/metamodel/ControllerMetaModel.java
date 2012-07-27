@@ -20,10 +20,10 @@
 package juzu.impl.controller.metamodel;
 
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
-import juzu.impl.compiler.Annotation;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
-import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
@@ -42,7 +42,6 @@ import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerMetaModel extends MetaModelObject {
@@ -93,40 +92,20 @@ public class ControllerMetaModel extends MetaModelObject {
     removeChild(Key.of(handle, MethodMetaModel.class));
   }
 
-  public MethodMetaModel addMethod(Phase phase, String name, Iterable<Map.Entry<String, String>> parameters) {
-/*
-      ArrayList<ParameterMetaModel> params = new ArrayList<ParameterMetaModel>();
-      ArrayList<String> types = new ArrayList<String>();
-      for (Map.Entry<String, String> entry : parameters)
-      {
-         params.add(new ParameterMetaModel(entry.getKey(), Cardinality.SINGLE, entry.getValue()));
-         types.add(entry.getValue());
-      }
-      ElementHandle.Method handle = ElementHandle.Method.create(this.handle.getFQN(), name, types);
-      ControllerMethodMetaModel method = new ControllerMethodMetaModel(
-         handle,
-         null,
-         phase,
-         name,
-         params);
-      addChild(Key.of(handle, ControllerMethodMetaModel.class), method);
-      return method;
-*/
-    throw new UnsupportedOperationException("remove me at some point");
-  }
-
   void addMethod(
     ApplicationsMetaModel context,
-    ExecutableElement methodElt,
-    Annotation annotation) {
+    AnnotationKey key2,
+    AnnotationState annotation) {
 
     //
     String id = (String)annotation.get("id");
 
+    ExecutableElement methodElt = (ExecutableElement)context.env.get(key2.getElement());
+
     //
     for (Phase phase : Phase.values()) {
-      if (phase.annotation.getName().equals(annotation.getName().toString())) {
-        ElementHandle.Method origin = ElementHandle.Method.create(methodElt);
+      if (phase.annotation.getName().equals(key2.getType().toString())) {
+        ElementHandle.Method origin = (ElementHandle.Method)key2.getElement();
 
         // First remove the previous method
         Key<MethodMetaModel> key = Key.of(origin, MethodMetaModel.class);
@@ -205,11 +184,6 @@ public class ControllerMetaModel extends MetaModelObject {
         break;
       }
     }
-  }
-
-  @Override
-  public boolean exist(ProcessingContext env) {
-    return getChildren().size() > 0;
   }
 
   @Override

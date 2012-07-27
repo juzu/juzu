@@ -22,7 +22,8 @@ package juzu.plugin.less.impl;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.application.metamodel.ApplicationsMetaModelPlugin;
 import juzu.impl.common.FQN;
-import juzu.impl.compiler.Annotation;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.Message;
 import juzu.impl.compiler.ProcessingException;
@@ -42,7 +43,6 @@ import juzu.plugin.less.impl.lesser.Lesser;
 import juzu.plugin.less.impl.lesser.Result;
 
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -74,7 +74,7 @@ public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
   static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);
 
   /** . */
-  private HashMap<ElementHandle.Package, Annotation> annotations;
+  private HashMap<QN, AnnotationState> annotations;
 
   public LessMetaModelPlugin() {
     super("less");
@@ -82,7 +82,7 @@ public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
 
   @Override
   public void init(ApplicationsMetaModel metaModel) {
-    annotations = new HashMap<ElementHandle.Package, Annotation>();
+    annotations = new HashMap<QN, AnnotationState>();
   }
 
   @Override
@@ -91,31 +91,32 @@ public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationsMetaModel metaModel, Element element, Annotation annotation) {
-    if (annotation.getName().equals(LESS)) {
-      ElementHandle.Package pkg = (ElementHandle.Package)ElementHandle.create(element);
-      log.log("Recording less annotation for package " + pkg.getQN());
-      annotations.put(pkg, annotation);
+  public void processAnnotationChange(ApplicationsMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+    if (key.getType().equals(LESS)) {
+      QN pkg = key.getElement().getPackage();
+      log.log("Recording less annotation for package " + pkg);
+      annotations.put(pkg, added);
     }
   }
 
   @Override
   public void postActivate(ApplicationsMetaModel metaModel) {
-    annotations = new HashMap<ElementHandle.Package, Annotation>();
+    annotations = new HashMap<QN, AnnotationState>();
   }
 
   @Override
   public void prePassivate(ApplicationsMetaModel metaModel) {
     // First clear annotation map
-    HashMap<ElementHandle.Package, Annotation> clone = annotations;
+    HashMap<QN, AnnotationState> clone = annotations;
     annotations = null;
 
     //
-    for (Map.Entry<ElementHandle.Package, Annotation> entry : clone.entrySet()) {
-      Annotation annotation = entry.getValue();
-      ElementHandle.Package pkg = entry.getKey();
+    for (Map.Entry<QN, AnnotationState> entry : clone.entrySet()) {
+      AnnotationState annotation = entry.getValue();
+      QN pkg = entry.getKey();
       ProcessingContext env = metaModel.env;
-      PackageElement pkgElt = env.get(pkg);
+      ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
+      PackageElement pkgElt = env.get(pkgHandle);
       Boolean minify = (Boolean)annotation.get("minify");
       List<String> resources = (List<String>)annotation.get("value");
 
@@ -123,16 +124,16 @@ public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
       AnnotationMirror annotationMirror = Tools.getAnnotation(pkgElt, Less.class.getName());
 
       //
-      log.log("Handling less annotation for package " + pkg.getQN() + ": minify=" + minify + " resources=" + resources);
+      log.log("Handling less annotation for package " + pkg + ": minify=" + minify + " resources=" + resources);
 
       //
       if (resources != null && resources.size() > 0) {
 
         // For now we use the hardcoded assets package
-        QN assetPkg = pkg.getQN().append("assets");
+        QN assetPkg = pkg.append("assets");
 
         //
-        CompilerLessContext clc = new CompilerLessContext(env, entry.getKey(), assetPkg);
+        CompilerLessContext clc = new CompilerLessContext(env, pkgHandle, assetPkg);
 
         //
         for (String resource : resources) {

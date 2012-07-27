@@ -20,19 +20,17 @@
 package juzu.impl.application.metamodel;
 
 import juzu.Application;
-import juzu.impl.common.QN;
-import juzu.impl.compiler.Annotation;
+import juzu.impl.compiler.ElementHandle;
+import juzu.impl.metamodel.AnnotationChange;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModelContext;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.PackageElement;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -65,7 +63,7 @@ public class DispatchMetaModelPlugin extends ApplicationsMetaModelPlugin {
 
   @Override
   public void init(ApplicationsMetaModel metaModel) {
-    metaModel.context = context;
+    metaModel.applicationContext = context;
   }
 
   @Override
@@ -84,54 +82,40 @@ public class DispatchMetaModelPlugin extends ApplicationsMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationsMetaModel metaModel, Element element, Annotation annotation) {
-    PackageElement pkg = metaModel.env.getPackageOf(element);
-    QN pkgQN = QN.parse(pkg.getQualifiedName());
+  public void processAnnotationChanges(ApplicationsMetaModel metaModel, Iterable<AnnotationChange> changes) {
 
-    //
-    ApplicationMetaModel found = null;
+    // Normal processing for now
+    super.processAnnotationChanges(metaModel, changes);
 
-    //
-    if (annotation.getName().equals(ApplicationsMetaModel.APPLICATION)) {
-      found = metaModel.processApplication((PackageElement)element, annotation);
+    // Forward
+    metaModel.applicationContext.processAnnotationChanges(changes);
+  }
 
-      // Process this annotation manually
-      for (ApplicationMetaModelPlugin plugin :context.getPlugins()) {
-        plugin.processAnnotation(found, element, annotation);
-      }
+  @Override
+  public void processAnnotationAdded(ApplicationsMetaModel metaModel, AnnotationKey key, AnnotationState added) {
+    if (key.getType().equals(ApplicationsMetaModel.APPLICATION)) {
+      ElementHandle.Package pkg = (ElementHandle.Package)key.getElement();
+      String name = (String)added.get("name");
+      metaModel.add(pkg, name);
     }
-    else {
-      for (ApplicationMetaModel application : metaModel) {
-        if (application.getName().isPrefix(pkgQN)) {
-          found = application;
-          break;
-        }
-      }
+  }
 
-      //
-      BufKey key = new BufKey(metaModel.env, element, annotation.getName());
-      if (found == null) {
-        metaModel.toProcess.put(key, annotation);
-        metaModel.env.log("Buffering " + key + " = " + annotation);
-      }
-      else {
-        found.toProcess.put(key, annotation);
-      }
+  @Override
+  public void processAnnotationUpdated(ApplicationsMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+    if (key.getType().equals(ApplicationsMetaModel.APPLICATION)) {
+      ElementHandle.Package pkg = (ElementHandle.Package)key.getElement();
+      ApplicationMetaModel application = metaModel.get(pkg);
+      application.modified = true;
     }
+  }
 
-    // Broadcast annotations
-    if (found != null) {
-      for (Iterator<Map.Entry<BufKey, Annotation>> i = found.toProcess.entrySet().iterator();i.hasNext();) {
-        Map.Entry<BufKey, Annotation> entry = i.next();
-        BufKey key = entry.getKey();
-        Annotation data = entry.getValue();
-        Element e = metaModel.env.get(key.element);
-        i.remove();
-        metaModel.env.log("Broadcasting annotation " + key + " = " + data);
-        for (ApplicationMetaModelPlugin plugin : context.getPlugins()) {
-          plugin.processAnnotation(found, e, data);
-        }
-        found.processed.put(key, data);
+  @Override
+  public void processAnnotationRemoved(ApplicationsMetaModel metaModel, AnnotationKey key, AnnotationState state) {
+    if (key.getType().equals(ApplicationsMetaModel.APPLICATION)) {
+      ElementHandle.Package pkg = (ElementHandle.Package)key.getElement();
+      ApplicationMetaModel mm = metaModel.get(pkg);
+      if (mm != null) {
+        mm.remove();
       }
     }
   }

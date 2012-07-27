@@ -21,6 +21,7 @@ package juzu.test;
 
 import japa.parser.JavaParser;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.PackageDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
@@ -66,6 +67,10 @@ public class JavaFile<I> {
     AbstractTestCase.assertEquals(1, decls.size());
     TypeDeclaration decl = decls.get(0);
     return AbstractTestCase.assertInstanceOf(ClassOrInterfaceDeclaration.class, decl);
+  }
+
+  public PackageDeclaration assertPackage() {
+    return assertCompilationUnit().getPackage();
   }
 
   public void assertTouch() {

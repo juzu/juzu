@@ -19,6 +19,10 @@
 
 package juzu.impl.metamodel;
 
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.FieldDeclaration;
+import juzu.impl.application.metamodel.ApplicationsMetaModel;
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
@@ -29,6 +33,7 @@ import juzu.impl.template.metamodel.TemplateMetaModelPlugin;
 import juzu.impl.common.Content;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
+import juzu.test.JavaFile;
 import org.junit.Test;
 
 import java.io.File;
@@ -172,5 +177,36 @@ public class TemplateTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).failCompile();
+  }
+
+  @Test
+  public void testRemoveAnnotation() throws Exception {
+    CompilerAssert<File, File> helper = compiler("metamodel", "template");
+    helper.assertCompile();
+
+    //
+    JavaFile file = helper.assertJavaFile("metamodel", "template", "A.java");
+    ClassOrInterfaceDeclaration a = file.assertDeclaration();
+    FieldDeclaration decl = (FieldDeclaration)a.getMembers().get(0);
+    decl.getAnnotations().clear();
+    file.assertSave();
+
+    //
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;
+    mm.getQueue().clear();
+    Tools.serialize(unserialize, ser);
+
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+
+    //
+    unserialize = Tools.unserialize(MetaModelState.class, ser);
+    mm = (ApplicationsMetaModel)unserialize.metaModel;
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(1, events.size());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+    assertInstanceOf(TemplateMetaModel.class, events.get(0).getObject());
   }
 }

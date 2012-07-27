@@ -17,37 +17,44 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.application.metamodel;
+package juzu.impl.metamodel;
 
 import juzu.impl.common.FQN;
 import juzu.impl.compiler.ElementHandle;
-import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.common.QN;
 
 import javax.lang.model.element.Element;
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class BufKey implements Serializable {
+public class AnnotationKey implements Serializable {
 
   /** . */
-  final QN pkg;
+  final ElementHandle<?> element;
 
   /** . */
-  final ElementHandle element;
+  final FQN type;
 
-  /** . */
-  final FQN annotationFQN;
-
-  BufKey(ProcessingContext env, Element element, FQN annotationFQN) {
-    this.pkg = QN.parse(env.getPackageOf(element).getQualifiedName());
+  public AnnotationKey(Element element, FQN type) {
     this.element = ElementHandle.create(element);
-    this.annotationFQN = annotationFQN;
+    this.type = type;
+  }
+
+  public AnnotationKey(ElementHandle<?> element, FQN type) {
+    this.element = element;
+    this.type = type;
+  }
+
+  public ElementHandle<?> getElement() {
+    return element;
+  }
+
+  public FQN getType() {
+    return type;
   }
 
   @Override
   public int hashCode() {
-    return element.hashCode() ^ annotationFQN.hashCode();
+    return element.hashCode() ^ type.hashCode();
   }
 
   @Override
@@ -55,15 +62,15 @@ class BufKey implements Serializable {
     if (this == obj) {
       return true;
     }
-    if (obj instanceof BufKey) {
-      BufKey that = (BufKey)obj;
-      return element.equals(that.element) && annotationFQN.equals(that.annotationFQN);
+    if (obj instanceof AnnotationKey) {
+      AnnotationKey that = (AnnotationKey)obj;
+      return element.equals(that.element) && type.equals(that.type);
     }
     return false;
   }
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "[element=" + element + ",annotation=" + annotationFQN + "]";
+    return getClass().getSimpleName() + "[annotated=" + element + ",type=" + type + "]";
   }
 }

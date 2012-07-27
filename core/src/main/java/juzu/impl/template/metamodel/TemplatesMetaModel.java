@@ -80,16 +80,22 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     return getChildren(TemplateMetaModel.class).iterator();
   }
 
+  public void remove(ElementHandle.Field handle) {
+    Key<TemplateRefMetaModel> key = Key.of(handle, TemplateRefMetaModel.class);
+    TemplateRefMetaModel ref = getChild(key);
+    TemplateMetaModel template = ref.getChild(TemplateMetaModel.KEY);
+    removeChild(key);
+    if (template.refCount == 0) {
+      template.remove();
+    }
+  }
+
   public TemplateRefMetaModel add(ElementHandle.Field handle, Path path) {
     TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new TemplateRefMetaModel(handle, path));
-
-    //
     TemplateMetaModel template = getChild(Key.of(path, TemplateMetaModel.class));
     if (template == null) {
       template = addChild(Key.of(path, TemplateMetaModel.class), new TemplateMetaModel(path));
     }
-
-    //
     ref.addChild(TemplateMetaModel.KEY, template);
     return ref;
   }

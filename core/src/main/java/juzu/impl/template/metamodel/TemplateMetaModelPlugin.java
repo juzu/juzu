@@ -23,7 +23,8 @@ import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.application.metamodel.ApplicationsMetaModel;
 import juzu.impl.common.FQN;
-import juzu.impl.compiler.Annotation;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
@@ -33,9 +34,6 @@ import juzu.impl.template.spi.Template;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,25 +83,48 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) throws ProcessingException {
-    if (annotation.getName().equals(PATH)) {
-      if (element instanceof VariableElement) {
-        VariableElement variableElt = (VariableElement)element;
-        application.env.log("Processing template declaration " + variableElt.getEnclosingElement() + "#" + variableElt);
-
-        //
-        TemplatesMetaModel at = application.getChild(TemplatesMetaModel.KEY);
-
-        //
-        Path path = Path.parse((String)annotation.get("value"));
-        ElementHandle.Field handle = ElementHandle.Field.create(variableElt);
-        at.add(handle, path);
+  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
+    if (key.getType().equals(PATH)) {
+      if (key.getElement() instanceof ElementHandle.Field) {
+        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+        Path removedPath = Path.parse((String)removed.get("value"));
+        TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
+        metaModel.env.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath);
+        templates.remove(variableElt);
       }
-      else if (element instanceof TypeElement) {
+    }
+  }
+
+  @Override
+  public void processAnnotationUpdated(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+    if (key.getType().equals(PATH)) {
+      if (key.getElement() instanceof ElementHandle.Field) {
+        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+        Path addedPath = Path.parse((String)added.get("value"));
+        Path removedPath = Path.parse((String)removed.get("value"));
+        TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
+        metaModel.env.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
+        templates.remove(variableElt);
+        templates.add(variableElt, addedPath);
+      }
+    }
+  }
+
+  @Override
+  public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
+    if (key.getType().equals(PATH)) {
+      if (key.getElement() instanceof ElementHandle.Field) {
+        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+        TemplatesMetaModel templates = application.getChild(TemplatesMetaModel.KEY);
+        Path addedPath = Path.parse((String)added.get("value"));
+        application.env.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
+        templates.add(variableElt, addedPath);
+      }
+      else if (key.getElement() instanceof ElementHandle.Class) {
         // We ignore it on purpose
       }
       else {
-        throw MetaModelProcessor.ANNOTATION_UNSUPPORTED.failure(element);
+        throw MetaModelProcessor.ANNOTATION_UNSUPPORTED.failure(key);
       }
     }
   }

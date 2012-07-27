@@ -236,27 +236,34 @@ public class ProcessingContext implements Filer, Elements, Logger {
             log.log("Found package " + context.getQN() + " annotations " + annotations + " will use first one");
             AnnotationMirror annotation = annotations.get(0);
             ClassLoader cl = env.getClass().getClassLoader();
+            if (cl == null) {
+              cl = ClassLoader.getSystemClassLoader();
+            }
             Class<?> treesClass = cl.loadClass("com.sun.source.util.Trees");
             Method instanceMethod = treesClass.getMethod("instance", ProcessingEnvironment.class);
             Method getPathMethod = treesClass.getMethod("getPath", Element.class, AnnotationMirror.class);
             Object trees = instanceMethod.invoke(null, env);
             Object path = getPathMethod.invoke(trees, element, annotation);
-            Method getCompilationUnitMethod = path.getClass().getMethod("getCompilationUnit");
-            Object cu = getCompilationUnitMethod.invoke(path);
-            Method getSourceFileMethod = cu.getClass().getMethod("getSourceFile");
-            JavaFileObject file = (JavaFileObject)getSourceFileMethod.invoke(cu);
-            URI uri = file.toUri();
-            log.log("Resolved uri " + uri + " for package " + context.getQN());
-            File f = new File(uri.getPath());
-            if (f.exists() && f.isFile()) {
-              File dir = f.getParentFile().getParentFile();
-              Name name = element.getQualifiedName();
-              for (int i = 0;i < name.length();i++) {
-                if (name.charAt(i) == '.') {
-                  dir = dir.getParentFile();
+            if (path != null) {
+              Method getCompilationUnitMethod = path.getClass().getMethod("getCompilationUnit");
+              Object cu = getCompilationUnitMethod.invoke(path);
+              Method getSourceFileMethod = cu.getClass().getMethod("getSourceFile");
+              JavaFileObject file = (JavaFileObject)getSourceFileMethod.invoke(cu);
+              URI uri = file.toUri();
+              log.log("Resolved uri " + uri + " for package " + context.getQN());
+              File f = new File(uri.getPath());
+              if (f.exists() && f.isFile()) {
+                File dir = f.getParentFile().getParentFile();
+                Name name = element.getQualifiedName();
+                for (int i = 0;i < name.length();i++) {
+                  if (name.charAt(i) == '.') {
+                    dir = dir.getParentFile();
+                  }
                 }
+                sourcePathMap.put(context, sourcePath = new DiskFileSystem(dir));
               }
-              sourcePathMap.put(context, sourcePath = new DiskFileSystem(dir));
+            } else {
+              log.log("No path object for package " + context.getQN());
             }
           }
           else {

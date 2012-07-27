@@ -17,44 +17,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.template.metamodel;
+package juzu.impl.metamodel;
 
-import juzu.impl.compiler.ElementHandle;
-import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.common.JSON;
+import juzu.impl.compiler.ProcessingContext;
 
-/**
- * A reference to a template.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public class TemplateRefMetaModel extends MetaModelObject {
+import java.io.Serializable;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class MetaModelState<P extends MetaModelPlugin<M, P>, M extends MetaModel<P, M>> implements Serializable {
 
   /** . */
-  final ElementHandle.Field handle;
+  final MetaModelContext<P, M> context;
 
   /** . */
-  juzu.impl.common.Path path;
+  final M metaModel;
 
-  TemplateRefMetaModel(
-    ElementHandle.Field handle,
-    juzu.impl.common.Path path) {
-    this.handle = handle;
-    this.path = path;
+  public MetaModelState(Class<P> pluginType, M metaModel) {
+    this.context = new MetaModelContext<P, M>(pluginType);
+    this.metaModel = metaModel;
   }
 
-  public ElementHandle.Field getHandle() {
-    return handle;
-  }
-
-  public juzu.impl.common.Path getPath() {
-    return path;
-  }
-
-  public JSON toJSON() {
-    JSON json = new JSON();
-    json.set("handle", handle);
-    json.set("template", getChild(TemplateMetaModel.KEY));
-    return json;
+  void init(ProcessingContext env) {
+    context.init(env);
+    context.add(metaModel);
   }
 }

@@ -19,15 +19,13 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.application.metamodel.ApplicationsMetaModel;
-import juzu.impl.compiler.ProcessingContext;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
 import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaModelTestCase extends AbstractTestCase {
+public abstract class MetaModelTestCase extends AbstractTestCase {
   
   /** . */
   private static final Key<MetaModelObject> A = Key.of("a", MetaModelObject.class);
@@ -112,72 +110,6 @@ public class MetaModelTestCase extends AbstractTestCase {
   }
 
   @Test
-  public void testTransitiveGarbage() {
-    ApplicationsMetaModel m = new ApplicationsMetaModel();
-    Simple a = context.create("a");
-    Simple b = context.create("b");
-    m.addChild(A, a).addChild(B, b);
-
-    //
-    a.exist = b.exist = false;
-    m.postActivate(null);
-    assertNull(a.getChild(B));
-    assertNull(m.getChild(B));
-    context.assertPreDetach("b");
-    context.assertRemove("b");
-    context.assertPreDetach("a");
-    context.assertRemove("a");
-    context.assertEmpty();
-  }
-
-  @Test
-  public void testForcedGarbage() {
-    ApplicationsMetaModel m = new ApplicationsMetaModel();
-    Simple a = context.create("a");
-    Simple b = context.create("b");
-    m.addChild(A, a).addChild(B, b);
-
-    //
-    a.exist = false;
-    m.postActivate(null);
-    assertNull(a.getChild(B));
-    assertNull(m.getChild(A));
-    context.assertPreDetach("b");
-    context.assertRemove("b");
-    context.assertPreDetach("a");
-    context.assertRemove("a");
-    context.assertEmpty();
-  }
-
-  @Test
-  public void testForcedGarbage2() {
-    ApplicationsMetaModel m = new ApplicationsMetaModel();
-    Simple a = context.create("a");
-    Simple b = context.create("b");
-    Simple c = context.create("c");
-    m.addChild(A, a).addChild(B, b);
-    m.addChild(C, c).addChild(B, b);
-
-    //
-    a.exist = false;
-    m.postActivate(null);
-    assertNull(a.getChild(B));
-    assertNull(m.getChild(A));
-    assertSame(b, c.getChild(B));
-    context.assertPreDetach("b");
-    context.assertPreDetach("a");
-    context.assertRemove("a");
-    context.assertEmpty();
-    c.exist = false;
-    m.postActivate(null);
-    context.assertPreDetach("b");
-    context.assertRemove("b");
-    context.assertPreDetach("c");
-    context.assertRemove("c");
-    context.assertEmpty();
-  }
-
-  @Test
   public void testBug() {
     Simple a = context.create("a");
     Simple b = context.create("b");
@@ -210,17 +142,9 @@ public class MetaModelTestCase extends AbstractTestCase {
     /** . */
     final String name;
 
-    /** . */
-    boolean exist = true;
-
     Simple(Context context, String name) {
       this.context = context;
       this.name = name;
-    }
-
-    @Override
-    public boolean exist(ProcessingContext env) {
-      return exist;
     }
 
     @Override

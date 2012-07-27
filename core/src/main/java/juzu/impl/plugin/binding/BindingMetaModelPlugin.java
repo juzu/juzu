@@ -22,7 +22,8 @@ package juzu.impl.plugin.binding;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.FQN;
-import juzu.impl.compiler.Annotation;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
@@ -30,7 +31,6 @@ import juzu.impl.common.JSON;
 import juzu.inject.ProviderFactory;
 import juzu.plugin.binding.Bindings;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -119,8 +119,8 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotation(ApplicationMetaModel application, Element element, Annotation annotation) {
-    if (annotation.getName().equals(BINDINGS)) {
+  public void processAnnotationChange(ApplicationMetaModel application, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+    if (key.getType().equals(BINDINGS)) {
       ProcessingContext env = application.model.env;
 
       //
@@ -130,7 +130,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
       TypeMirror rawProviderTM = env.erasure(providerTM);
 
       //
-      List<Map<String, Object>> bindings = (List<Map<String, Object>>)annotation.get("value");
+      List<Map<String, Object>> bindings = (List<Map<String, Object>>)added.get("value");
       ArrayList<JSON> list = new ArrayList<JSON>();
       if (bindings != null) {
         for (Map<String, Object> binding : bindings) {
@@ -152,7 +152,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
 
             // Check class
             if (implementationElt.getKind() != ElementKind.CLASS) {
-              throw IMPLEMENTATION_INVALID_TYPE.failure(element, providerElt.getQualifiedName());
+              throw IMPLEMENTATION_INVALID_TYPE.failure(env.get(key.getElement()), providerElt.getQualifiedName());
             }
 
             //
@@ -160,14 +160,14 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
 
             // Check not abstract
             if (modifiers.contains(Modifier.ABSTRACT)) {
-              throw IMPLEMENTATION_NOT_ABSTRACT.failure(element, implementationElt.getQualifiedName());
+              throw IMPLEMENTATION_NOT_ABSTRACT.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
             }
 
             //
             if (env.isAssignable(implementationTM, providerFactoryTM)) {
               // Check public
               if (!modifiers.contains(Modifier.PUBLIC)) {
-                throw PROVIDER_FACTORY_NOT_PUBLIC.failure(element, implementationElt.getQualifiedName());
+                throw PROVIDER_FACTORY_NOT_PUBLIC.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
               }
 
               // Find zero arg constructor
@@ -181,10 +181,10 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
 
               // Validate constructor
               if (emptyCtor == null) {
-                throw PROVIDER_FACTORY_NO_ZERO_ARG_CTOR.failure(element, implementationElt.getQualifiedName());
+                throw PROVIDER_FACTORY_NO_ZERO_ARG_CTOR.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
               }
               if (!emptyCtor.getModifiers().contains(Modifier.PUBLIC)) {
-                throw PROVIDER_FACTORY_NO_PUBLIC_CTOR.failure(element, implementationElt.getQualifiedName());
+                throw PROVIDER_FACTORY_NO_PUBLIC_CTOR.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
               }
             }
             else if (env.isAssignable(implementationTM, rawProviderTM)) {
@@ -195,7 +195,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
               }
               else {
                 throw PROVIDER_NOT_ASSIGNABLE.failure(
-                  element,
+                    env.get(key.getElement()),
                   implementationElt.getQualifiedName(),
                   resolved,
                   valueElt.getQualifiedName());
@@ -206,7 +206,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
             }
             else {
               throw IMPLEMENTATION_NOT_ASSIGNABLE.failure(
-                element,
+                  env.get(key.getElement()),
                 implementationElt.getQualifiedName(),
                 valueElt.getQualifiedName());
             }
@@ -217,13 +217,13 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
           else {
             // Check valid class
             if (valueElt.getKind() != ElementKind.CLASS) {
-              throw BEAN_INVALID_TYPE.failure(element, valueElt.getQualifiedName());
+              throw BEAN_INVALID_TYPE.failure(env.get(key.getElement()), valueElt.getQualifiedName());
             }
 
             // Check for concrete type
             Set<Modifier> modifiers = valueElt.getModifiers();
             if (modifiers.contains(Modifier.ABSTRACT)) {
-              throw BEAN_ABSTRACT_TYPE.failure(element, valueElt.getQualifiedName());
+              throw BEAN_ABSTRACT_TYPE.failure(env.get(key.getElement()), valueElt.getQualifiedName());
             }
           }
 

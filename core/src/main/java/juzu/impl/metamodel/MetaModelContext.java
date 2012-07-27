@@ -19,16 +19,20 @@
 
 package juzu.impl.metamodel;
 
+import juzu.impl.common.FQN;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ProcessingException;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -49,6 +53,9 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
 
   /** . */
   private final Class<P> pluginType;
+
+  /** All known annotations. */
+  final LinkedHashMap<AnnotationKey, AnnotationState> knownAnnotations = new LinkedHashMap<AnnotationKey, AnnotationState>();
 
   public MetaModelContext(Class<P> pluginType) {
     this.pluginType = pluginType;
@@ -73,7 +80,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
     env.log(msg);
 
     // Collect processed annotations
-    HashSet<Class<? extends java.lang.annotation.Annotation>> supportedAnnotations = new HashSet<Class<? extends Annotation>>();
+    HashSet<Class<? extends java.lang.annotation.Annotation>> supportedAnnotations = new HashSet<Class<? extends java.lang.annotation.Annotation>>();
     for (P plugin : plugins.values()) {
       Set<Class<? extends java.lang.annotation.Annotation>> processed = plugin.init(env);
       env.log("Plugin " + plugin.getName() + " wants to process " + processed);
@@ -99,6 +106,9 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
 
   public void add(M metaModel) {
     metaModel.env = env;
+    metaModel.forward = true;
+    metaModel.context = this;
+    metaModel.init(env);
     for (P plugin : plugins.values()) {
       plugin.init(metaModel);
     }
@@ -118,6 +128,64 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
         plugin.postActivate(metaModel);
       }
     }
+  }
+
+  public void processAnnotationChanges(Iterable<AnnotationChange> delta) {
+    //
+    for (AnnotationChange change : delta) {
+      if (change.getAdded() == null) {
+        knownAnnotations.remove(change.getKey());
+      } else {
+        knownAnnotations.put(change.getKey(), change.getAdded());
+      }
+    }
+
+    //
+    ArrayList<AnnotationChange> all = new ArrayList<AnnotationChange>();
+    for (Map.Entry<AnnotationKey, AnnotationState> annotation : knownAnnotations.entrySet()) {
+      all.add(new AnnotationChange(annotation.getKey(), null, annotation.getValue()));
+    }
+
+    //
+    for (M metaModel : metaModels) {
+      Iterable<AnnotationChange> changes;
+      if (metaModel.forward) {
+        metaModel.forward = false;
+        changes = all;
+      } else {
+        changes = delta;
+      }
+      for (P plugin : plugins.values()) {
+        plugin.processAnnotationChanges(metaModel, changes);
+      }
+    }
+  }
+
+  void processAnnotations(Iterable<Map.Entry<AnnotationKey, AnnotationState>> annotations) {
+    ArrayList<AnnotationChange> delta = new ArrayList<AnnotationChange>();
+    for (Map.Entry<AnnotationKey, AnnotationState> entry : knownAnnotations.entrySet()) {
+      AnnotationKey key = entry.getKey();
+      Element element = env.get(key.element);
+      if (element == null) {
+        delta.add(new AnnotationChange(key, entry.getValue(), null));
+      } else {
+        AnnotationMirror found = null;
+        for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
+          FQN f = new FQN(((TypeElement)mirror.getAnnotationType().asElement()).getQualifiedName().toString());
+          if (key.getType().equals(f)) {
+            found = mirror;
+            break;
+          }
+        }
+        if (found == null) {
+          delta.add(new AnnotationChange(key, entry.getValue(), null));
+        }
+      }
+    }
+    for (Map.Entry<AnnotationKey, AnnotationState> annotation : annotations) {
+      delta.add(new AnnotationChange(annotation.getKey(), knownAnnotations.get(annotation.getKey()), annotation.getValue()));
+    }
+    processAnnotationChanges(delta);
   }
 
   public void postProcessAnnotations() throws ProcessingException {

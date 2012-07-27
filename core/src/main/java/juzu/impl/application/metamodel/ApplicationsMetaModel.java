@@ -21,7 +21,6 @@ package juzu.impl.application.metamodel;
 
 import juzu.Application;
 import juzu.impl.application.ApplicationDescriptor;
-import juzu.impl.compiler.Annotation;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -29,19 +28,16 @@ import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelContext;
 import juzu.impl.metamodel.MetaModelEvent;
-import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,9 +52,6 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
   private static final ThreadLocal<ApplicationsMetaModel> current = new ThreadLocal<ApplicationsMetaModel>();
 
   /** . */
-  private MetaModelContext<ApplicationsMetaModelPlugin, ApplicationsMetaModel> context2;
-
-  /** . */
   private Set<Class<? extends java.lang.annotation.Annotation>> supportedAnnotations;
 
   /** . */
@@ -71,20 +64,14 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
   Map<String, JSON> moduleConfig;
 
   /** . */
-  final Map<BufKey, Annotation> toProcess = new HashMap<BufKey, Annotation>();
-
-  /** . */
-  MetaModelContext<ApplicationMetaModelPlugin, ApplicationMetaModel> context;
+  MetaModelContext<ApplicationMetaModelPlugin, ApplicationMetaModel> applicationContext;
 
   public ApplicationsMetaModel() {
     this.moduleConfig = new HashMap<String, JSON>();
-    this.context2 = new MetaModelContext<ApplicationsMetaModelPlugin, ApplicationsMetaModel>(ApplicationsMetaModelPlugin.class);
   }
 
   public void init(ProcessingContext env) {
-    context2.init(env);
-    context2.add(this);
-    supportedAnnotations = new HashSet<Class<? extends java.lang.annotation.Annotation>>(context2.getSupportedAnnotations());
+    supportedAnnotations = new HashSet<Class<? extends java.lang.annotation.Annotation>>(context.getSupportedAnnotations());
   }
 
   public Set<Class<? extends java.lang.annotation.Annotation>> getSupportedAnnotations() {
@@ -106,98 +93,37 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
     return getChild(Key.of(handle, ApplicationMetaModel.class));
   }
 
-
-
   public final void postActivate(ProcessingContext env) {
     current.set(this);
-    garbage(env, this, new HashSet<MetaModelObject>());
-    context2.postActivate(env);
-  }
-
-  public final void processAnnotation(Element element, Annotation annotation) throws ProcessingException {
-    for (ApplicationsMetaModelPlugin plugin : context2.getPlugins()) {
-      plugin.processAnnotation(this, element, annotation);
-    }
+    context.postActivate(env);
   }
 
   public final void postProcessAnnotations() throws ProcessingException {
-    context2.postProcessAnnotations();
+    context.postProcessAnnotations();
   }
 
   public final void processEvents() {
-    context2.processEvents();
+    context.processEvents();
   }
 
   public final void postProcessEvents() {
-    context2.postProcessEvents();
+    context.postProcessEvents();
   }
 
   public final void prePassivate() {
     try {
-      context2.prePassivate();
+      context.prePassivate();
     }
     finally {
       current.set(null);
     }
   }
 
-  private void garbage(ProcessingContext env, MetaModelObject object, HashSet<MetaModelObject> visited) {
-    if (!visited.contains(object)) {
-      visited.add(this);
-
-      //
-      for (MetaModelObject child : object.getChildren()) {
-        garbage(env, child, visited);
-      }
-
-      //
-      if (!object.exist(env)) {
-        object.remove();
-      }
-    }
-  }
-
-
-
-
   // ****
-
-  ApplicationMetaModel processApplication(PackageElement packageElt, Map<String, Serializable> annotationValues) throws ProcessingException {
-    String name = (String)annotationValues.get("name");
-    ElementHandle.Package handle = ElementHandle.Package.create(packageElt);
-    ApplicationMetaModel application = get(handle);
-
-    //
-    if (application == null) {
-      application = add(handle, name);
-    }
-    else {
-      application.modified = true;
-    }
-
-    //
-    return application;
-  }
 
   public ApplicationMetaModel add(ElementHandle.Package handle, String applicationName) {
     ApplicationMetaModel application = new ApplicationMetaModel(handle, applicationName);
-
-    // Let's find buffered annotations
-    for (Iterator<Map.Entry<BufKey, Annotation>> i = toProcess.entrySet().iterator();i.hasNext();) {
-      Map.Entry<BufKey, Annotation> entry = i.next();
-      BufKey key = entry.getKey();
-      if (handle.getQN().isPrefix(key.pkg)) {
-        Annotation data = entry.getValue();
-        i.remove();
-        env.log("Moving " + key + " = " + data);
-        application.toProcess.put(key, data);
-      }
-    }
-
-    // Add child
     addChild(Key.of(handle, ApplicationMetaModel.class), application);
-
-    //
     return application;
   }
 
@@ -270,7 +196,7 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
       descriptor.clear();
 
       // Emit config
-      for (ApplicationMetaModelPlugin plugin : context.getPlugins()) {
+      for (ApplicationMetaModelPlugin plugin : applicationContext.getPlugins()) {
         JSON pluginDescriptor = plugin.getDescriptor(application);
         if (pluginDescriptor != null) {
           descriptor.set(plugin.getName(), pluginDescriptor);
@@ -294,15 +220,13 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
   }
 
   void added(ApplicationMetaModel application) {
-    context.add(application);
+    applicationContext.add(application);
     moduleConfig.put(application.handle.getQN().toString(), new JSON());
     queue(MetaModelEvent.createAdded(application));
   }
 
   void removed(ApplicationMetaModel application) {
-    context.remove(application);
-    toProcess.putAll(application.processed);
-    application.toProcess.clear();
+    applicationContext.remove(application);
     moduleConfig.remove(application.handle.getQN().toString());
     queue(MetaModelEvent.createRemoved(application));
   }

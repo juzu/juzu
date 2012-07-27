@@ -68,7 +68,8 @@ public class ParamTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
     assertEquals(expectedJSON, mm.toJSON());
   }
 
@@ -98,7 +99,8 @@ public class ParamTestCase extends AbstractTestCase {
     helper.addClassPath(helper.getClassOutput()).assertCompile();
 
     // Check
-    ApplicationsMetaModel mm = Tools.unserialize(ApplicationsMetaModel.class, helper.getSourceOutput().getPath("juzu", "metamodel.ser"));
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    ApplicationsMetaModel mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
     assertEquals(expectedJSON, mm.toJSON());
   }
 }

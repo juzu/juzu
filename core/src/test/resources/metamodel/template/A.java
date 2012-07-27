@@ -26,8 +26,4 @@ public class A {
   @juzu.Path("index.gtmpl")
   juzu.template.Template template;
 
-  @juzu.View
-  public void index() {
-  }
-
 }

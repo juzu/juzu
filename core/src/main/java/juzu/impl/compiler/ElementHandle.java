@@ -83,6 +83,8 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
   protected abstract E doGet(ProcessingEnvironment env);
 
+  public abstract QN getPackage();
+
   public abstract boolean equals(Object obj);
 
   public abstract int hashCode();
@@ -107,6 +109,11 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     }
 
     public QN getQN() {
+      return qn;
+    }
+
+    @Override
+    public QN getPackage() {
       return qn;
     }
 
@@ -157,6 +164,11 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
     public FQN getFQN() {
       return fqn;
+    }
+
+    @Override
+    public QN getPackage() {
+      return fqn.getPackageName();
     }
 
     @Override
@@ -230,6 +242,11 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
     public List<String> getParameterTypes() {
       return parameterTypes;
+    }
+
+    @Override
+    public QN getPackage() {
+      return fqn.getPackageName();
     }
 
     @Override
@@ -320,6 +337,11 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
     public String getName() {
       return name;
+    }
+
+    @Override
+    public QN getPackage() {
+      return fqn.getPackageName();
     }
 
     @Override
