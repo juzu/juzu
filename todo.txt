@@ -1,0 +1,18 @@
+Various things to do, not exhaustive that needs to go in the roadmap
+
+- in dev mode : only compile the package of the application to speed up build
+
+- parse error in template parser
+- more stack trace sanitization
+- handle internal error correctly
+- think about doing a "debug" portlet that would cooperate with juzu portlets
+- for plugins : think about an @Depends to define dependencies for ordering (?)
+- decouple plugin discovery from plugin bootstrap in order to know the declared classes / it's already more or less the case actually
+- one issue is to bootstrap correctly juzu in a managed environment
+
+Template suggestions:
+
+- combine curly brace and angle bracket: <% if () {> <}>
+- combine condition and angle bracket: <(a == 0)>
+- property ${} combined with Elvis operator like : ?{} or $?{} to avoid "null" result
+
