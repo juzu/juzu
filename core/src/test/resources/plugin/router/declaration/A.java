@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.controller.router.declaration;
+package plugin.router.declaration;
 
 import juzu.Action;
 import juzu.Controller;

@@ -17,11 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.controller.router;
+package juzu.impl.plugin.router;
 
 import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.Test;
@@ -37,7 +36,7 @@ public class RouterTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testDeclaration() throws Exception {
-    MockApplication<?> application = application("plugin", "controller", "router", "declaration").init();
+    MockApplication<?> application = application("plugin", "router", "declaration").init();
 
     //
     ApplicationDescriptor descriptor = application.getContext().getDescriptor();
