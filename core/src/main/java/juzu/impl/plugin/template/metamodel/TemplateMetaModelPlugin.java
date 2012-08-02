@@ -53,7 +53,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   Map<String, TemplateProvider> providers;
 
   public TemplateMetaModelPlugin() {
-    super("template");
+    super("plugin/template");
   }
 
   @Override

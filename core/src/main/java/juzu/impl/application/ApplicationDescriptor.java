@@ -126,7 +126,7 @@ public class ApplicationDescriptor extends Descriptor {
     this.applicationClass = applicationClass;
     this.name = applicationClass.getSimpleName();
     this.packageName = applicationClass.getPackage().getName();
-    this.templates = (TemplatesDescriptor)pluginDescriptors.get("template");
+    this.templates = (TemplatesDescriptor)pluginDescriptors.get("plugin/template");
     this.packageClass = packageClass;
     this.controllers = (ControllersDescriptor)pluginDescriptors.get("controller");
     this.plugins = pluginDescriptors;

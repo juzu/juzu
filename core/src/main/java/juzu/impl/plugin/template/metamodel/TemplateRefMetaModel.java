@@ -54,7 +54,7 @@ public class TemplateRefMetaModel extends MetaModelObject {
   public JSON toJSON() {
     JSON json = new JSON();
     json.set("handle", handle);
-    json.set("template", getChild(TemplateMetaModel.KEY));
+    json.set("plugin/template", getChild(TemplateMetaModel.KEY));
     return json;
   }
 }
