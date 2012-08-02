@@ -23,7 +23,7 @@ import juzu.Response;
 import juzu.Scope;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationException;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;

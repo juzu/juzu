@@ -20,8 +20,8 @@
 package juzu.impl.application;
 
 import juzu.AmbiguousResolutionException;
-import juzu.impl.controller.ControllerResolver;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.ControllerResolver;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
 import juzu.test.AbstractTestCase;

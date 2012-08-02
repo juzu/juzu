@@ -24,7 +24,7 @@ import juzu.impl.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;

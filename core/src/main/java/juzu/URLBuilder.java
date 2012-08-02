@@ -19,7 +19,7 @@
 
 package juzu;
 
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;

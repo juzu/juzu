@@ -23,7 +23,7 @@ import juzu.Response;
 import juzu.URLBuilder;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.application.ApplicationDescriptor;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.io.AppendableStream;

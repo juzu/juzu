@@ -19,7 +19,7 @@
 
 package juzu.impl.application;
 
-import juzu.impl.controller.descriptor.ControllersDescriptor;
+import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;

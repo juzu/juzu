@@ -22,7 +22,7 @@ package juzu.impl.application.metamodel;
 import juzu.impl.common.QN;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
-import juzu.impl.controller.metamodel.ControllersMetaModel;
+import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.plugin.template.metamodel.TemplatesMetaModel;

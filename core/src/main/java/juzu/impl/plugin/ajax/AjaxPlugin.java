@@ -30,7 +30,7 @@ import juzu.impl.application.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.asset.Manager;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;

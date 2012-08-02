@@ -25,7 +25,7 @@ import juzu.Response;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QualifiedName;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;

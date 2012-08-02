@@ -25,7 +25,7 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;

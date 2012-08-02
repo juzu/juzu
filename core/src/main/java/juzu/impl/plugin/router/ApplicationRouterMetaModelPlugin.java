@@ -26,9 +26,9 @@ import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.controller.metamodel.ControllerMetaModel;
-import juzu.impl.controller.metamodel.ControllersMetaModel;
-import juzu.impl.controller.metamodel.MethodMetaModel;
+import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
+import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
+import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 

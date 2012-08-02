@@ -25,7 +25,7 @@ import juzu.Response;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;

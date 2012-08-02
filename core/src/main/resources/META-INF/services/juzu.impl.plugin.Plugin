@@ -1,4 +1,4 @@
-juzu.impl.controller.ControllerPlugin
+juzu.impl.plugin.controller.ControllerPlugin
 juzu.impl.plugin.template.TemplatePlugin
 juzu.impl.plugin.binding.BindingPlugin
 juzu.impl.plugin.ajax.AjaxPlugin

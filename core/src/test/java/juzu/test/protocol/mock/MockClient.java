@@ -21,8 +21,8 @@ package juzu.test.protocol.mock;
 
 import juzu.impl.application.ApplicationException;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.controller.descriptor.ControllersDescriptor;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.common.JSON;

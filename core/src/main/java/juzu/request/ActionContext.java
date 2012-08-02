@@ -21,7 +21,7 @@ package juzu.request;
 
 import juzu.Response;
 import juzu.impl.application.ApplicationContext;
-import juzu.impl.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.ParameterMap;
