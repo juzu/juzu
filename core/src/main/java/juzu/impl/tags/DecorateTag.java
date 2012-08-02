@@ -24,7 +24,7 @@ import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.compiler.ExtendedTagHandler;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
 import juzu.impl.template.spi.Template;
-import juzu.impl.template.metamodel.TemplateMetaModel;
+import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.Path;
 import juzu.template.Renderable;
 import juzu.template.TemplateRenderContext;

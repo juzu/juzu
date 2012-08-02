@@ -25,7 +25,7 @@ import juzu.impl.compiler.MessageCode;
 import juzu.impl.controller.metamodel.ControllersMetaModel;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.template.metamodel.TemplatesMetaModel;
+import juzu.impl.plugin.template.metamodel.TemplatesMetaModel;
 import juzu.impl.common.JSON;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

@@ -17,14 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.template;
+package juzu.impl.plugin.template;
 
 import juzu.PropertyMap;
 import juzu.impl.application.ApplicationContext;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.template.spi.TemplateStub;
-import juzu.impl.template.metadata.TemplatesDescriptor;
+import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
 import juzu.template.Template;

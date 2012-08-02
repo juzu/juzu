@@ -27,7 +27,7 @@ import juzu.impl.template.spi.juzu.compiler.EmitPhase;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
 import juzu.impl.template.spi.Template;
-import juzu.impl.template.metadata.TemplateDescriptor;
+import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.common.Path;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;

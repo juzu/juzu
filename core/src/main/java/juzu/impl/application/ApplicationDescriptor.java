@@ -23,7 +23,7 @@ import juzu.impl.controller.descriptor.ControllersDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
-import juzu.impl.template.metadata.TemplatesDescriptor;
+import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 

@@ -28,7 +28,7 @@ import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelContext;
 import juzu.impl.metamodel.MetaModelEvent;
-import juzu.impl.template.metamodel.TemplateMetaModel;
+import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;

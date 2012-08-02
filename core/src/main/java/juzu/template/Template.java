@@ -23,7 +23,7 @@ import juzu.PropertyMap;
 import juzu.Response;
 import juzu.UndeclaredIOException;
 import juzu.impl.request.Request;
-import juzu.impl.template.TemplatePlugin;
+import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.common.Path;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;

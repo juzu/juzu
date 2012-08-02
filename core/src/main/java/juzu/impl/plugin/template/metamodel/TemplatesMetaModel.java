@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.template.metamodel;
+package juzu.impl.plugin.template.metamodel;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;

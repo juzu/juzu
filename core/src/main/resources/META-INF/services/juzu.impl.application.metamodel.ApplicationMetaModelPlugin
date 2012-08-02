@@ -1,5 +1,5 @@
 juzu.impl.controller.metamodel.ControllerMetaModelPlugin
-juzu.impl.template.metamodel.TemplateMetaModelPlugin
+juzu.impl.plugin.template.metamodel.TemplateMetaModelPlugin
 juzu.impl.plugin.ajax.AjaxMetaModelPlugin
 juzu.impl.plugin.asset.AssetMetaModelPlugin
 juzu.impl.plugin.binding.BindingMetaModelPlugin

@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.template.metamodel;
+package juzu.impl.plugin.template.metamodel;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.BaseProcessor;
@@ -28,8 +28,8 @@ import juzu.impl.inject.Export;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.Template;
-import juzu.impl.template.TemplatePlugin;
-import juzu.impl.template.metadata.TemplateDescriptor;
+import juzu.impl.plugin.template.TemplatePlugin;
+import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.common.Content;
 import juzu.impl.common.FQN;
 import juzu.impl.common.Logger;

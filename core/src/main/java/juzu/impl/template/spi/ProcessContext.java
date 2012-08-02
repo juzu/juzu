@@ -20,7 +20,7 @@
 package juzu.impl.template.spi;
 
 import juzu.impl.compiler.ProcessingException;
-import juzu.impl.template.metamodel.TemplateMetaModel;
+import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.Content;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;

@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.template;
+package juzu.impl.plugin.template;
 
 import juzu.PropertyMap;
 import juzu.impl.application.ApplicationException;
@@ -28,12 +28,12 @@ import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateRenderContextImpl extends TemplateRenderContext {
+class TemplateRenderContextImpl extends TemplateRenderContext {
 
   /** . */
   private final TemplatePlugin plugin;
 
-  public TemplateRenderContextImpl(TemplatePlugin plugin, PropertyMap properties, TemplateStub stub, Map<String, ?> attributes, Locale locale) {
+  TemplateRenderContextImpl(TemplatePlugin plugin, PropertyMap properties, TemplateStub stub, Map<String, ?> attributes, Locale locale) {
     super(stub, properties, attributes, locale);
 
     //

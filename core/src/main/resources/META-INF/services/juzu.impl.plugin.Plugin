@@ -1,5 +1,5 @@
 juzu.impl.controller.ControllerPlugin
-juzu.impl.template.TemplatePlugin
+juzu.impl.plugin.template.TemplatePlugin
 juzu.impl.plugin.binding.BindingPlugin
 juzu.impl.plugin.ajax.AjaxPlugin
 juzu.impl.plugin.asset.AssetPlugin
