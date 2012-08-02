@@ -19,8 +19,8 @@
 
 package juzu.plugin.less.impl;
 
-import juzu.impl.application.metamodel.ApplicationsMetaModel;
-import juzu.impl.application.metamodel.ApplicationsMetaModelPlugin;
+import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
+import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
 import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -57,7 +57,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
+public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
 
   /** . */
   public static final MessageCode COMPILATION_ERROR = new MessageCode(
@@ -81,7 +81,7 @@ public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
   }
 
   @Override
-  public void init(ApplicationsMetaModel metaModel) {
+  public void init(ModuleMetaModel metaModel) {
     annotations = new HashMap<QN, AnnotationState>();
   }
 
@@ -91,7 +91,7 @@ public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationChange(ApplicationsMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
+  public void processAnnotationChange(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
     if (key.getType().equals(LESS)) {
       QN pkg = key.getElement().getPackage();
       log.log("Recording less annotation for package " + pkg);
@@ -100,12 +100,12 @@ public class LessMetaModelPlugin extends ApplicationsMetaModelPlugin {
   }
 
   @Override
-  public void postActivate(ApplicationsMetaModel metaModel) {
+  public void postActivate(ModuleMetaModel metaModel) {
     annotations = new HashMap<QN, AnnotationState>();
   }
 
   @Override
-  public void prePassivate(ApplicationsMetaModel metaModel) {
+  public void prePassivate(ModuleMetaModel metaModel) {
     // First clear annotation map
     HashMap<QN, AnnotationState> clone = annotations;
     annotations = null;

@@ -22,9 +22,11 @@ package juzu.impl.application.metamodel;
 import juzu.impl.common.QN;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
+import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
+import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.template.metamodel.TemplatesMetaModel;
 import juzu.impl.common.JSON;
 
@@ -41,7 +43,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   final ElementHandle.Package handle;
 
   /** . */
-  public ApplicationsMetaModel model;
+  public ModuleMetaModel model;
 
   /** . */
   boolean modified;
@@ -50,7 +52,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   final String baseName;
 
   /** . */
-  private ApplicationsMetaModel applications;
+  private ModuleMetaModel applications;
 
   ApplicationMetaModel(
     ElementHandle.Package handle,
@@ -91,18 +93,18 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
 
   @Override
   protected void postAttach(MetaModelObject parent) {
-    if (parent instanceof ApplicationsMetaModel) {
-      applications = (ApplicationsMetaModel)parent;
+    if (parent instanceof ModuleMetaModel) {
+      applications = (ModuleMetaModel)parent;
       model = applications;
-      applications.added(this);
+      applications.queue(MetaModelEvent.createAdded(this));
     }
   }
 
   @Override
   protected void preDetach(MetaModelObject parent) {
-    if (parent instanceof ApplicationsMetaModel) {
-      ApplicationsMetaModel applications = (ApplicationsMetaModel)parent;
-      applications.removed(this);
+    if (parent instanceof ModuleMetaModel) {
+      ModuleMetaModel applications = (ModuleMetaModel)parent;
+      applications.queue(MetaModelEvent.createRemoved(this));
       this.model = null;
       this.applications = null;
     }

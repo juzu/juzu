@@ -17,15 +17,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.application.metamodel;
+package juzu.impl.plugin.module.metamodel;
 
 import juzu.impl.common.JSON;
 import juzu.impl.metamodel.MetaModelPlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationsMetaModelPlugin extends MetaModelPlugin<ApplicationsMetaModel, ApplicationsMetaModelPlugin> {
+public class ModuleMetaModelPlugin extends MetaModelPlugin<ModuleMetaModel, ModuleMetaModelPlugin> {
 
-  public ApplicationsMetaModelPlugin(String name) {
+  public ModuleMetaModelPlugin(String name) {
     super(name);
   }
 
@@ -35,7 +35,7 @@ public class ApplicationsMetaModelPlugin extends MetaModelPlugin<ApplicationsMet
    * @param metaModel the meta model instance
    * @return the json representation
    */
-  public JSON toJSON(ApplicationsMetaModel metaModel) {
+  public JSON toJSON(ModuleMetaModel metaModel) {
     return null;
   }
 }

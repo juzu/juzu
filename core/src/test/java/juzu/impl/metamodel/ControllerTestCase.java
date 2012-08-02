@@ -30,7 +30,7 @@ import japa.parser.ast.type.ClassOrInterfaceType;
 import juzu.Action;
 import juzu.View;
 import juzu.impl.application.metamodel.ApplicationMetaModel;
-import juzu.impl.application.metamodel.ApplicationsMetaModel;
+import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
@@ -61,7 +61,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -102,7 +102,7 @@ public class ControllerTestCase extends AbstractTestCase {
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -111,7 +111,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json().
@@ -137,7 +137,7 @@ public class ControllerTestCase extends AbstractTestCase {
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -146,7 +146,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -174,7 +174,7 @@ public class ControllerTestCase extends AbstractTestCase {
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -187,7 +187,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -230,7 +230,7 @@ public class ControllerTestCase extends AbstractTestCase {
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -243,7 +243,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -278,7 +278,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(1, events.size());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
@@ -291,7 +291,7 @@ public class ControllerTestCase extends AbstractTestCase {
     helper.addClassPath(helper.getClassOutput()).assertCompile();
 
     //
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -330,7 +330,7 @@ public class ControllerTestCase extends AbstractTestCase {
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -342,7 +342,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -381,7 +381,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -389,7 +389,7 @@ public class ControllerTestCase extends AbstractTestCase {
     assertTrue(a.getMembers().remove(show));
     file.assertSave();
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -434,7 +434,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -444,7 +444,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     JSON expected = json()
@@ -481,7 +481,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ApplicationsMetaModel mm = (ApplicationsMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -497,7 +497,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ApplicationsMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
 
     //
     List<MetaModelEvent> events = mm.getQueue().clear();

@@ -24,6 +24,7 @@ import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelPlugin;
+import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 
 import java.io.Serializable;
 
@@ -38,7 +39,7 @@ public abstract class ApplicationMetaModelPlugin extends MetaModelPlugin<Applica
     super(name);
   }
 
-  public void postActivate(ApplicationsMetaModel applications) {
+  public void postActivate(ModuleMetaModel applications) {
   }
 
   @Override
@@ -58,6 +59,6 @@ public abstract class ApplicationMetaModelPlugin extends MetaModelPlugin<Applica
   public void processEvent(ApplicationMetaModel application, MetaModelEvent event) {
   }
 
-  public void prePassivate(ApplicationsMetaModel applications) {
+  public void prePassivate(ModuleMetaModel applications) {
   }
 }

@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller.metamodel;
 
-import juzu.impl.application.metamodel.ApplicationsMetaModel;
+import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ElementHandle;
@@ -98,7 +98,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
   }
 
   void addMethod(
-    ApplicationsMetaModel context,
+    ModuleMetaModel context,
     AnnotationKey key2,
     AnnotationState annotation) {
 

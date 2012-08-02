@@ -21,7 +21,7 @@ package juzu.impl.plugin.template.metamodel;
 
 import juzu.impl.application.metamodel.ApplicationMetaModel;
 import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.application.metamodel.ApplicationsMetaModel;
+import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -62,7 +62,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void postActivate(ApplicationsMetaModel applications) {
+  public void postActivate(ModuleMetaModel applications) {
     // Discover the template providers
     Iterable<TemplateProvider> loader = applications.env.loadServices(TemplateProvider.class);
     Map<String, TemplateProvider> providers = new HashMap<String, TemplateProvider>();
@@ -142,7 +142,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void prePassivate(ApplicationsMetaModel applications) {
+  public void prePassivate(ModuleMetaModel applications) {
     applications.env.log("Passivating templates");
     this.providers = null;
   }
