@@ -39,10 +39,8 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -61,13 +59,9 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
   private static final String APPLICATION_DESCRIPTOR = ApplicationDescriptor.class.getSimpleName();
 
   /** . */
-  Map<String, JSON> moduleConfig;
-
-  /** . */
   MetaModelContext<ApplicationMetaModelPlugin, ApplicationMetaModel> applicationContext;
 
   public ApplicationsMetaModel() {
-    this.moduleConfig = new HashMap<String, JSON>();
   }
 
   public void init(ProcessingContext env) {
@@ -175,9 +169,11 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
 
   void emitConfig() {
     JSON descriptor = new JSON();
-    descriptor.merge(moduleConfig);
 
     // Module config
+    for (ApplicationMetaModel application : this) {
+      descriptor.set(application.getHandle().getPackage().toString(), new JSON());
+    }
     Writer writer = null;
     try {
       FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, "juzu", "config.json");
@@ -193,6 +189,8 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
 
     // Application configs
     for (ApplicationMetaModel application : this) {
+
+      // Recycle
       descriptor.clear();
 
       // Emit config
@@ -221,13 +219,11 @@ public class ApplicationsMetaModel extends MetaModel<ApplicationsMetaModelPlugin
 
   void added(ApplicationMetaModel application) {
     applicationContext.add(application);
-    moduleConfig.put(application.handle.getQN().toString(), new JSON());
     queue(MetaModelEvent.createAdded(application));
   }
 
   void removed(ApplicationMetaModel application) {
     applicationContext.remove(application);
-    moduleConfig.remove(application.handle.getQN().toString());
     queue(MetaModelEvent.createRemoved(application));
   }
 }
