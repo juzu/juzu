@@ -19,7 +19,7 @@
 
 package juzu.test.protocol.mock;
 
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;

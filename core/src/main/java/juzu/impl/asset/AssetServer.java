@@ -19,7 +19,7 @@
 
 package juzu.impl.asset;
 
-import juzu.impl.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationRuntime;
 import juzu.impl.common.Tools;
 
 import javax.servlet.ServletContext;

@@ -19,7 +19,7 @@
 
 package plugin.controller.filter.lifecycle;
 
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.test.Registry;

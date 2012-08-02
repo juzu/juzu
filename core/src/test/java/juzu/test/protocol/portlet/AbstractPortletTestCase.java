@@ -19,7 +19,7 @@
 
 package juzu.test.protocol.portlet;
 
-import juzu.impl.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationRuntime;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.apache.pluto.container.driver.PlutoServices;

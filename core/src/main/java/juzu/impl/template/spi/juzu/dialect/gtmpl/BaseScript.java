@@ -21,7 +21,7 @@ package juzu.impl.template.spi.juzu.dialect.gtmpl;
 
 import groovy.lang.Binding;
 import groovy.lang.Script;
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.template.TemplateRenderContext;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 

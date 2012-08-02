@@ -19,7 +19,7 @@
 
 package juzu.template;
 
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.common.Location;
 
 /**

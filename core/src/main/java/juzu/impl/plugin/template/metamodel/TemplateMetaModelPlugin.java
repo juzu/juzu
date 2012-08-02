@@ -19,8 +19,8 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.impl.application.metamodel.ApplicationMetaModel;
-import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;

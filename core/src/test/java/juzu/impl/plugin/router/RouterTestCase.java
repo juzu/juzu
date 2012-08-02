@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.router;
 
-import juzu.impl.application.ApplicationDescriptor;
+import juzu.impl.plugin.application.ApplicationDescriptor;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;

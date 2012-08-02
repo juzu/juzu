@@ -19,7 +19,7 @@
 
 package juzu.test.protocol.http;
 
-import juzu.impl.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
 

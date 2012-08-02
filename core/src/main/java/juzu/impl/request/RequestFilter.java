@@ -19,7 +19,7 @@
 
 package juzu.impl.request;
 
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 
 /**
  * The request filters should be implemented by beans wanting to filter the request.

@@ -26,7 +26,7 @@ import japa.parser.ast.expr.MemberValuePair;
 import japa.parser.ast.expr.NormalAnnotationExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import juzu.Application;
-import juzu.impl.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;

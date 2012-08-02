@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.binding;
 
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;

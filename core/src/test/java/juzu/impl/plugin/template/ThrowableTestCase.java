@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.template;
 
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.template.TemplateExecutionException;
 import juzu.test.AbstractInjectTestCase;

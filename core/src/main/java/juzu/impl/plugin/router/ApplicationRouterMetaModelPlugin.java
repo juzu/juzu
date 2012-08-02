@@ -20,8 +20,8 @@
 package juzu.impl.plugin.router;
 
 import juzu.Route;
-import juzu.impl.application.metamodel.ApplicationMetaModel;
-import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ElementHandle;

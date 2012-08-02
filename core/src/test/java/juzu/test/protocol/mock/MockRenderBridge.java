@@ -20,7 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.common.MethodHandle;
 

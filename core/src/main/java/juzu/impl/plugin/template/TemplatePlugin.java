@@ -20,7 +20,7 @@
 package juzu.impl.plugin.template;
 
 import juzu.PropertyMap;
-import juzu.impl.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.template.spi.TemplateStub;

@@ -20,7 +20,7 @@
 package juzu.impl.inject;
 
 import juzu.Scope;
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.inject.ProviderFactory;
 

@@ -20,7 +20,7 @@
 package juzu.impl.plugin.template;
 
 import juzu.PropertyMap;
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.template.TemplateRenderContext;
 

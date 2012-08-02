@@ -29,7 +29,7 @@ import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import juzu.Action;
 import juzu.View;
-import juzu.impl.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
@@ -66,20 +66,20 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     JSON expected = json()
       .set("applications", json().
-        list("values", json().
-          list("controllers", json().
-            set("handle", "ElementHandle.Class[fqn=metamodel.controller.A]").
-            list("methods", json().
-              set("handle", "ElementHandle.Method[fqn=metamodel.controller.A,name=index,parameterTypes[]]").
-              set("id", null).
-              set("name", "index").
-              list("parameters").
-              set("phase", "VIEW")
-            )
-          ).
-          set("handle", "ElementHandle.Package[qn=metamodel.controller]").
-          list("templates")
-        )
+          list("values", json().
+              list("controllers", json().
+                  set("handle", "ElementHandle.Class[fqn=metamodel.controller.A]").
+                  list("methods", json().
+                      set("handle", "ElementHandle.Method[fqn=metamodel.controller.A,name=index,parameterTypes[]]").
+                      set("id", null).
+                      set("name", "index").
+                      list("parameters").
+                      set("phase", "VIEW")
+                  )
+              ).
+              set("handle", "ElementHandle.Package[qn=metamodel.controller]").
+              list("templates")
+          )
       );
     assertEquals(expected, mm.toJSON());
 

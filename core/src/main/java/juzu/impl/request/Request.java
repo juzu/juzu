@@ -21,8 +21,8 @@ package juzu.impl.request;
 
 import juzu.Response;
 import juzu.Scope;
-import juzu.impl.application.ApplicationContext;
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;

@@ -22,7 +22,7 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.impl.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;

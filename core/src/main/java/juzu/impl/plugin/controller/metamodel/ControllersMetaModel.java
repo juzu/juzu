@@ -20,7 +20,7 @@
 package juzu.impl.plugin.controller.metamodel;
 
 import juzu.AmbiguousResolutionException;
-import juzu.impl.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;

@@ -19,8 +19,8 @@
 
 package juzu.plugin.portlet.impl;
 
-import juzu.impl.application.metamodel.ApplicationMetaModel;
-import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingException;

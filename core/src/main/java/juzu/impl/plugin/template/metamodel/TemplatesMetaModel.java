@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.impl.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;

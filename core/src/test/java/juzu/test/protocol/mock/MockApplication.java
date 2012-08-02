@@ -19,9 +19,9 @@
 
 package juzu.test.protocol.mock;
 
-import juzu.impl.application.ApplicationContext;
-import juzu.impl.application.ApplicationException;
-import juzu.impl.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationRuntime;
 import juzu.impl.common.QN;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;

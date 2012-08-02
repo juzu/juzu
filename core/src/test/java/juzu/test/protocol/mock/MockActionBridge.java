@@ -20,11 +20,9 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
-import juzu.request.Phase;
-import juzu.request.RequestContext;
 import juzu.test.AbstractTestCase;
 
 import java.io.IOException;

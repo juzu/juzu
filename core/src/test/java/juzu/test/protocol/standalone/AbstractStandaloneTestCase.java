@@ -19,7 +19,7 @@
 
 package juzu.test.protocol.standalone;
 
-import juzu.impl.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationRuntime;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.jboss.arquillian.container.test.api.Deployment;

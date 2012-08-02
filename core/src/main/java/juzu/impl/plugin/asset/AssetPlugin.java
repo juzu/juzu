@@ -25,7 +25,7 @@ import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.asset.AssetType;
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.asset.Manager;

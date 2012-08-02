@@ -19,8 +19,8 @@
 
 package juzu.test.protocol.http;
 
-import juzu.impl.application.ApplicationContext;
-import juzu.impl.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationRuntime;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodHandle;

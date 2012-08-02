@@ -20,7 +20,7 @@
 package juzu.impl.bridge.spi.standalone;
 
 import juzu.Response;
-import juzu.impl.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
 

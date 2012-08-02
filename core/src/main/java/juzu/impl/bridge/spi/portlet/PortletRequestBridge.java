@@ -21,7 +21,7 @@ package juzu.impl.bridge.spi.portlet;
 
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.impl.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;

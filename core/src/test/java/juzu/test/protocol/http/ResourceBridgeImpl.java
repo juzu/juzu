@@ -20,7 +20,7 @@
 package juzu.test.protocol.http;
 
 import juzu.Response;
-import juzu.impl.application.ApplicationContext;
+import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;

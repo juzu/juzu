@@ -20,8 +20,8 @@
 package juzu.impl.bridge;
 
 import juzu.Response;
-import juzu.impl.application.ApplicationException;
-import juzu.impl.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationRuntime;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.RenderBridge;

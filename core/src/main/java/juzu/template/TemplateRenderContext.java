@@ -21,7 +21,7 @@ package juzu.template;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.impl.application.ApplicationException;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;

@@ -19,8 +19,8 @@
 
 package juzu.impl.plugin.ajax;
 
-import juzu.impl.application.metamodel.ApplicationMetaModel;
-import juzu.impl.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -32,7 +32,6 @@ import juzu.plugin.ajax.Ajax;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {

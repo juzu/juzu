@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.impl.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
