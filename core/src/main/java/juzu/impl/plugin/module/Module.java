@@ -17,31 +17,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.router;
+package juzu.impl.plugin.module;
 
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
-import juzu.impl.inject.spi.InjectImplementation;
-import juzu.test.AbstractInjectTestCase;
-import juzu.test.protocol.mock.MockApplication;
-import org.junit.Test;
+import juzu.impl.common.JSON;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.ServiceLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouterTestCase extends AbstractInjectTestCase {
+public class Module {
 
-  public RouterTestCase(InjectImplementation di) {
-    super(di);
-  }
+  /** . */
+  private final HashMap<String, ModulePlugin> plugins;
 
-  @Test
-  public void testDeclaration() throws Exception {
-    MockApplication<?> application = application("plugin", "router", "declaration").init();
+  public Module(ClassLoader loader, JSON config) throws Exception {
 
     //
-    ApplicationDescriptor descriptor = application.getContext().getDescriptor();
-    RouteDescriptor desc = (RouteDescriptor)descriptor.getPlugin("router");
-    List<RouteDescriptor> routes = desc.getChildren();
-    assertEquals(3, routes.size());
+    HashMap<String, ModulePlugin> plugins = new HashMap<String, ModulePlugin>();
+    for (ModulePlugin plugin : ServiceLoader.load(ModulePlugin.class)) {
+      plugins.put(plugin.getName(), plugin);
+    }
+
+    // Init plugins
+    for (ModulePlugin plugin : plugins.values()) {
+      JSON pluginConfig = config.getJSON(plugin.getName());
+      if (pluginConfig != null) {
+        plugin.init(loader, pluginConfig);
+      }
+    }
+
+    //
+    this.plugins = plugins;
+  }
+
+  public ModulePlugin getPlugin(String name) {
+    return plugins.get(name);
   }
 }

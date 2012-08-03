@@ -19,11 +19,17 @@
 
 package juzu.impl.plugin.module.metamodel;
 
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.common.JSON;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -75,11 +81,44 @@ public class ModuleMetaModel extends MetaModel<ModuleMetaModelPlugin, ModuleMeta
   }
 
   public final void prePassivate() {
+
+    //
+    ProcessingContext env = this.env;
+
+    //
+    emitConfig(env);
+
+    //
     try {
       context.prePassivate();
     }
     finally {
       current.set(null);
+    }
+  }
+
+  private void emitConfig(ProcessingContext env) {
+    env.log("Emitting module config");
+
+    // Module config
+    JSON descriptor = new JSON();
+    for (ModuleMetaModelPlugin plugin : context.getPlugins()) {
+      JSON pluginDesc = plugin.getDescriptor(this);
+      if (pluginDesc != null) {
+        descriptor.set(plugin.getName(), pluginDesc);
+      }
+    }
+    Writer writer = null;
+    try {
+      FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, "juzu", "config.json");
+      writer = fo.openWriter();
+      descriptor.toString(writer, 2);
+    }
+    catch (IOException e) {
+      throw ApplicationMetaModel.CANNOT_WRITE_CONFIG.failure(e);
+    }
+    finally {
+      Tools.safeClose(writer);
     }
   }
 }

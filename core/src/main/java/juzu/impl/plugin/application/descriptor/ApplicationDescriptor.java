@@ -17,8 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.application;
+package juzu.impl.plugin.application.descriptor;
 
+import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
@@ -60,7 +61,7 @@ public class ApplicationDescriptor extends Descriptor {
   private final Map<String, Descriptor> plugins;
 
   /** . */
-  private final Map<String, Plugin> foo;
+  private final Map<String, ApplicationPlugin> foo;
 
   public ApplicationDescriptor(Class<?> applicationClass) {
     // Load config
@@ -90,8 +91,8 @@ public class ApplicationDescriptor extends Descriptor {
     }
 
     //
-    HashMap<String, Plugin> pluginMap = new HashMap<String, Plugin>();
-    for (Plugin plugin : ServiceLoader.load(Plugin.class)) {
+    HashMap<String, ApplicationPlugin> pluginMap = new HashMap<String, ApplicationPlugin>();
+    for (ApplicationPlugin plugin : ServiceLoader.load(ApplicationPlugin.class)) {
       pluginMap.put(plugin.getName(), plugin);
     }
 
@@ -133,7 +134,7 @@ public class ApplicationDescriptor extends Descriptor {
     this.foo = pluginMap;
   }
 
-  public Map<String, Plugin> getFoo() {
+  public Map<String, ApplicationPlugin> getFoo() {
     return foo;
   }
 

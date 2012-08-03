@@ -24,13 +24,18 @@ import juzu.Response;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.common.JSON;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.Tools;
+import juzu.impl.plugin.application.ApplicationModulePlugin;
+import juzu.impl.plugin.application.metamodel.ApplicationModuleMetaModelPlugin;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
+import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.router.Param;
 import juzu.impl.router.Route;
@@ -67,6 +72,10 @@ public class ServletBridge extends HttpServlet {
   /** . */
   HashMap<Route, Map<Phase, MethodHandle>> routeMap2;
 
+  protected ClassLoader getClassLoader() {
+    return Thread.currentThread().getContextClassLoader();
+  }
+
   @Override
   public void init() throws ServletException {
 
@@ -84,6 +93,23 @@ public class ServletBridge extends HttpServlet {
         t.printStackTrace();
       }
     };
+
+    //
+    ClassLoader loader = getClassLoader();
+
+    //
+    URL cfg = loader.getResource("juzu/config.json");
+    if (cfg != null) {
+      try {
+        String s = Tools.read(cfg);
+        JSON json = (JSON)JSON.parse(s);
+        Module module = new Module(loader, json);
+        ApplicationModulePlugin plugin = (ApplicationModulePlugin)module.getPlugin("application");
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
     //
     AssetServer server = (AssetServer)config.getServletContext().getAttribute("asset.server");

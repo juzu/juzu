@@ -22,7 +22,7 @@ package juzu.impl.plugin.template;
 import juzu.PropertyMap;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.Plugin;
+import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
 import juzu.impl.common.JSON;
@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplatePlugin extends Plugin {
+public class TemplatePlugin extends ApplicationPlugin {
 
   /** . */
   private TemplatesDescriptor descriptor;

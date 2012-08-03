@@ -22,6 +22,7 @@ package juzu.impl.plugin.application;
 import juzu.Response;
 import juzu.UndeclaredIOException;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Export;

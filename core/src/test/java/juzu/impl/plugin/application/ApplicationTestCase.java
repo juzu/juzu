@@ -20,6 +20,7 @@
 package juzu.impl.plugin.application;
 
 import juzu.impl.compiler.CompilationError;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;

@@ -21,14 +21,14 @@ package juzu.impl.plugin.binding;
 
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.Plugin;
 import juzu.impl.common.JSON;
+import juzu.impl.plugin.application.ApplicationPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BindingPlugin extends Plugin {
+public class BindingPlugin extends ApplicationPlugin {
 
   public BindingPlugin() {
     super("binding");

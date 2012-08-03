@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.plugin.application.ApplicationDescriptor;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.plugin.controller.descriptor.ParameterDescriptor;
 import juzu.impl.common.Cardinality;

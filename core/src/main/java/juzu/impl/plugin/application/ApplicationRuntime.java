@@ -41,6 +41,7 @@ import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.spring.SpringBuilder;
 import juzu.impl.common.Logger;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.processor.MainProcessor;
 
 import javax.portlet.PortletException;

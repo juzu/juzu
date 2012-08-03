@@ -17,31 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.router;
+package juzu.impl.plugin.module;
 
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
-import juzu.impl.inject.spi.InjectImplementation;
-import juzu.test.AbstractInjectTestCase;
-import juzu.test.protocol.mock.MockApplication;
-import org.junit.Test;
-
-import java.util.List;
+import juzu.impl.plugin.Plugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouterTestCase extends AbstractInjectTestCase {
+public abstract class ModulePlugin extends Plugin {
 
-  public RouterTestCase(InjectImplementation di) {
-    super(di);
-  }
-
-  @Test
-  public void testDeclaration() throws Exception {
-    MockApplication<?> application = application("plugin", "router", "declaration").init();
-
-    //
-    ApplicationDescriptor descriptor = application.getContext().getDescriptor();
-    RouteDescriptor desc = (RouteDescriptor)descriptor.getPlugin("router");
-    List<RouteDescriptor> routes = desc.getChildren();
-    assertEquals(3, routes.size());
+  public ModulePlugin(String name) {
+    super(name);
   }
 }

@@ -19,14 +19,14 @@
 
 package juzu.impl.plugin.controller;
 
+import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.Plugin;
 import juzu.impl.common.JSON;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerPlugin extends Plugin {
+public class ControllerPlugin extends ApplicationPlugin {
 
   /** . */
   private ControllersDescriptor descriptor;

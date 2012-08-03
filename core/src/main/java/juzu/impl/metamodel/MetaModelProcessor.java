@@ -48,7 +48,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
   public static final MessageCode ANNOTATION_UNSUPPORTED = new MessageCode("ANNOTATION_UNSUPPORTED", "The annotation of this element cannot be supported");
 
   /** . */
-  private MetaModelState<?, ?> metaModel;
+  private MetaModelState<?, ?> state;
 
   /** . */
   private int index;
@@ -76,15 +76,15 @@ public abstract class MetaModelProcessor extends BaseProcessor {
 
         //
         log.log("Passivating model");
-        metaModel.metaModel.prePassivate();
+        state.metaModel.prePassivate();
 
         // Passivate model
         ObjectOutputStream out = null;
         try {
           FileObject file = getContext().createResource(StandardLocation.SOURCE_OUTPUT, "juzu", "metamodel.ser");
           out = new ObjectOutputStream(file.openOutputStream());
-          out.writeObject(metaModel);
-          metaModel = null;
+          out.writeObject(state);
+          state = null;
         }
         catch (IOException e) {
           log.log("Could not passivate model ", e);
@@ -97,13 +97,13 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         log.log("Starting APT round #" + index);
 
         //
-        if (metaModel == null) {
+        if (state == null) {
           InputStream in = null;
           try {
             FileObject file = getContext().getResource(StandardLocation.SOURCE_OUTPUT, "juzu", "metamodel.ser");
             in = file.openInputStream();
             ObjectInputStream ois = new ObjectInputStream(in);
-            metaModel = (MetaModelState<?, ?>)ois.readObject();
+            state = (MetaModelState<?, ?>)ois.readObject();
             log.log("Loaded model from " + file.toUri());
           }
           catch (Exception e) {
@@ -114,7 +114,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
             metaModel.init(getContext());
 
             //
-            this.metaModel = metaModel;
+            this.state = metaModel;
           }
           finally {
             Tools.safeClose(in);
@@ -122,12 +122,12 @@ public abstract class MetaModelProcessor extends BaseProcessor {
 
           // Activate
           log.log("Activating model");
-          metaModel.metaModel.postActivate(getContext());
+          state.metaModel.postActivate(getContext());
         }
 
         //
         LinkedHashMap<AnnotationKey, AnnotationState> updates = new LinkedHashMap<AnnotationKey, AnnotationState>();
-        Set<Class<? extends Annotation>> abc = metaModel.metaModel.getSupportedAnnotations();
+        Set<Class<? extends Annotation>> abc = state.metaModel.getSupportedAnnotations();
         for (Class annotationType : abc) {
           TypeElement annotationElt = getContext().getTypeElement(annotationType.getName());
           for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt)) {
@@ -145,19 +145,19 @@ public abstract class MetaModelProcessor extends BaseProcessor {
 
         //
         log.log("Process annotations");
-        metaModel.context.processAnnotations(updates.entrySet());
+        state.context.processAnnotations(updates.entrySet());
 
         //
         log.log("Post processing model");
-        metaModel.metaModel.postProcessAnnotations();
+        state.metaModel.postProcessAnnotations();
 
         //
         log.log("Process events");
-        metaModel.metaModel.processEvents();
+        state.metaModel.processEvents();
 
         //
         log.log("Post process events");
-        metaModel.metaModel.postProcessEvents();
+        state.metaModel.postProcessEvents();
 
         //
         log.log("Ending APT round #" + index++);

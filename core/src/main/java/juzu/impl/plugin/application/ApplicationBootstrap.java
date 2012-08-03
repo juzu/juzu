@@ -30,6 +30,7 @@ import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectionContext;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -29,7 +29,7 @@ import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.asset.Manager;
-import juzu.impl.plugin.Plugin;
+import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
@@ -42,7 +42,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetPlugin extends Plugin implements RequestFilter {
+public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   private Asset[] scripts;

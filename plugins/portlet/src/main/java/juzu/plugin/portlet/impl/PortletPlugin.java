@@ -20,14 +20,14 @@
 package juzu.plugin.portlet.impl;
 
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.Plugin;
 import juzu.impl.common.JSON;
+import juzu.impl.plugin.application.ApplicationPlugin;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class PortletPlugin extends Plugin {
+public class PortletPlugin extends ApplicationPlugin {
 
   public PortletPlugin() {
     super("portlet");

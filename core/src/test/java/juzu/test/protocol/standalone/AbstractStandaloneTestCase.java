@@ -31,6 +31,8 @@ import java.net.URL;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
 
+  static ClassLoader loader;
+
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
     URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
@@ -48,6 +50,7 @@ public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
 
   @Override
   protected void doDeploy(MockApplication<?> application) {
+    loader = application.getRuntime().getClassLoader();
     ApplicationRuntime.Provided.set(application.getRuntime());
   }
 

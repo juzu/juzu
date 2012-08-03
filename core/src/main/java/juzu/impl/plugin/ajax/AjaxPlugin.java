@@ -26,12 +26,12 @@ import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.asset.AssetType;
 import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.plugin.application.ApplicationDescriptor;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.asset.Manager;
+import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
-import juzu.impl.plugin.Plugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.io.Stream;
@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxPlugin extends Plugin implements RequestFilter {
+public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   Map<String, MethodDescriptor> table;

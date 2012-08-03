@@ -20,7 +20,7 @@
 package juzu.impl.plugin.application.metamodel;
 
 import juzu.Application;
-import juzu.impl.plugin.application.ApplicationDescriptor;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
@@ -61,7 +61,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
   final MetaModelContext<ApplicationMetaModelPlugin, ApplicationMetaModel> context;
 
   public ApplicationModuleMetaModelPlugin() {
-    super("applications");
+    super("application");
 
     //
     this.context = new MetaModelContext<ApplicationMetaModelPlugin, ApplicationMetaModel>(ApplicationMetaModelPlugin.class);
@@ -229,32 +229,17 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
     }
 
     //
-    metaModel.env.log("Emitting config");
     emitConfig(metaModel);
   }
 
   private void emitConfig(ModuleMetaModel metaModel) {
     JSON descriptor = new JSON();
 
-    // Module config
-    for (ApplicationMetaModel application : metaModel.getChildren(ApplicationMetaModel.class)) {
-      descriptor.set(application.getHandle().getPackage().toString(), new JSON());
-    }
-    Writer writer = null;
-    try {
-      FileObject fo = metaModel.env.createResource(StandardLocation.CLASS_OUTPUT, "juzu", "config.json");
-      writer = fo.openWriter();
-      descriptor.toString(writer, 2);
-    }
-    catch (IOException e) {
-      throw ApplicationMetaModel.CANNOT_WRITE_CONFIG.failure(e);
-    }
-    finally {
-      Tools.safeClose(writer);
-    }
-
     // Application configs
     for (ApplicationMetaModel application : metaModel.getChildren(ApplicationMetaModel.class)) {
+
+      //
+      metaModel.env.log("Emitting application " + application.getHandle() + " config");
 
       // Recycle
       descriptor.clear();
@@ -268,7 +253,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       }
 
       //
-      writer = null;
+      Writer writer = null;
       try {
         FileObject fo = metaModel.env.createResource(StandardLocation.CLASS_OUTPUT, application.getName(), "config.json");
         writer = fo.openWriter();
@@ -286,7 +271,9 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
   @Override
   public JSON getDescriptor(ModuleMetaModel metaModel) {
     JSON json = new JSON();
-    json.map("values", metaModel.getChildren(ApplicationMetaModel.class));
+    for (ApplicationMetaModel application : metaModel.getChildren(ApplicationMetaModel.class)) {
+      json.set(application.getHandle().getPackage().toString(), new JSON());
+    }
     return json;
   }
 }
