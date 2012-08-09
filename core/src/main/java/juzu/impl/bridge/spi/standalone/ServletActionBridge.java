@@ -20,6 +20,7 @@
 package juzu.impl.bridge.spi.standalone;
 
 import juzu.Response;
+import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
@@ -58,7 +59,7 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
   void send() throws IOException {
     if (response instanceof Response.Update) {
       Response.Update update = (Response.Update)response;
-      String url = renderURL(update.getTarget(), update.getParameters(), update.getProperties());
+      String url = renderURL(update.getTarget(), update.getParameters(), update.getProperties(), MimeType.PLAIN);
       for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
         resp.setHeader(entry.getKey(), entry.getValue()[0]);
       }

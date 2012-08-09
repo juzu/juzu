@@ -22,6 +22,9 @@ package juzu.impl.common;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MethodHandleTestCase extends AbstractTestCase {
 
@@ -52,12 +55,31 @@ public class MethodHandleTestCase extends AbstractTestCase {
     }
   }
 
-
-
   @Test
   public void testParse() {
     assertEquals(new MethodHandle("a", "b"), MethodHandle.parse("a#b()"));
     assertEquals(new MethodHandle("a", "b", "c"), MethodHandle.parse("a#b(c)"));
     assertEquals(new MethodHandle("a", "b", "c", "d"), MethodHandle.parse("a#b(c,d)"));
+  }
+
+  @Test
+  public void testJavaLangReflectMethod() {
+    assertParameterTypes(getMethod(new Object(){ public void m(String p) {}}), "java.lang.String");
+    assertParameterTypes(getMethod(new Object(){ public void m(String[] p) {}}), "java.lang.String[]");
+    assertParameterTypes(getMethod(new Object(){ public void m(String[][] p) {}}), "java.lang.String[][]");
+    assertParameterTypes(getMethod(new Object(){ public void m(List<String> p) {}}), "java.util.List<java.lang.String>");
+    assertParameterTypes(getMethod(new Object(){ public void m(List<String>[] p) {}}), "java.util.List<java.lang.String>[]");
+  }
+
+  private static void assertParameterTypes(Method m, String... parameterTypes) {
+    MethodHandle handle = new MethodHandle(m);
+    assertEquals(parameterTypes.length, handle.getParameterSize());
+    for (int i = 0;i < parameterTypes.length;i++) {
+      assertEquals(parameterTypes[i], handle.getParameterAt(i));
+    }
+  }
+
+  private static Method getMethod(Object o) {
+    return o.getClass().getDeclaredMethods()[0];
   }
 }

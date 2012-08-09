@@ -19,7 +19,10 @@
 
 package juzu.impl.common;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -83,10 +86,13 @@ public final class MethodHandle implements Iterable<String> {
       throw new NullPointerException("No null method accepted");
     }
 
-    Class<?>[] parameterTypes = method.getParameterTypes();
+    Type[] parameterTypes = method.getGenericParameterTypes();
     String[] parameters = new String[parameterTypes.length];
+    StringBuilder sb = new StringBuilder();
     for (int i = 0;i < parameters.length;i++) {
-      parameters[i] = parameterTypes[i].getName();
+      format(parameterTypes[i], sb);
+      parameters[i] = sb.toString();
+      sb.setLength(0);
     }
 
     //
@@ -94,6 +100,36 @@ public final class MethodHandle implements Iterable<String> {
     this.name = method.getName();
     this.parameters = parameters.clone();
     this.toString = null;
+  }
+
+  private void format(Type type, StringBuilder sb) {
+    if (type instanceof Class) {
+      Class classType = (Class)type;
+      if (classType.isArray()) {
+        format(classType.getComponentType(), sb);
+        sb.append("[]");
+      } else {
+        sb.append(classType.getName());
+      }
+    } else if (type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType)type;
+      format(parameterizedType.getRawType(), sb);
+      sb.append('<');
+      Type[] typeArguments = parameterizedType.getActualTypeArguments();
+      for (int i = 0;i < typeArguments.length;i++) {
+        if (i > 0) {
+          sb.append(',');
+        }
+        format(typeArguments[i], sb);
+      }
+      sb.append('>');
+    } else if (type instanceof GenericArrayType) {
+      GenericArrayType arrayType = (GenericArrayType)type;
+      format(arrayType.getGenericComponentType(), sb);
+      sb.append("[]");
+    } else {
+      throw new UnsupportedOperationException("todo " + type);
+    }
   }
 
   public MethodHandle(String type, String name) {

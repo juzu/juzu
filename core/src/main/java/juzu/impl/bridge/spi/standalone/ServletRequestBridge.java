@@ -22,6 +22,7 @@ package juzu.impl.bridge.spi.standalone;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QualifiedName;
@@ -227,6 +228,14 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   }
 
   public final String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
+    return renderURL(target, parameters, properties, MimeType.XHTML);
+  }
+
+    public final String renderURL(
+      MethodHandle target,
+      Map<String, String[]> parameters,
+      PropertyMap properties,
+      MimeType mimeType) {
     StringBuilder buffer = new StringBuilder();
     buffer.append(req.getScheme());
     buffer.append("://");
@@ -257,10 +266,13 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       RouteMatch match = route.matches(params);
       if (match != null) {
         try {
-          URIWriter writer = new URIWriter(buffer);
+          URIWriter writer = new URIWriter(buffer, mimeType);
           match.render(writer);
           for (Map.Entry<QualifiedName, String> entry : match.getUnmatched().entrySet()) {
-            writer.appendQueryParameter(entry.getKey().getName(), entry.getValue());
+            String[] values = parameters.get(entry.getKey().getValue());
+            for (String value : values) {
+              writer.appendQueryParameter(entry.getKey().getName(), value);
+            }
           }
         }
         catch (IOException e) {
