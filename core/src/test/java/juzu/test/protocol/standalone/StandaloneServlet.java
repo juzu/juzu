@@ -21,11 +21,12 @@ package juzu.test.protocol.standalone;
 
 import juzu.impl.bridge.spi.standalone.ServletBridge;
 
+import javax.servlet.ServletConfig;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class StandaloneServlet extends ServletBridge {
-
   @Override
-  protected ClassLoader getClassLoader() {
-    return AbstractStandaloneTestCase.loader;
+  protected String getApplicationName(ServletConfig config) {
+    return AbstractStandaloneTestCase.applicationName;
   }
 }

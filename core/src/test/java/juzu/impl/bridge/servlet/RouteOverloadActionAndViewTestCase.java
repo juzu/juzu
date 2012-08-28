@@ -21,7 +21,9 @@ package juzu.impl.bridge.servlet;
 
 import juzu.impl.common.Tools;
 import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -34,12 +36,16 @@ import java.net.URLConnection;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteOverloadActionAndViewTestCase extends AbstractStandaloneTestCase {
 
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createDeployment("bridge", "servlet","route", "overload", "actionandview");
+  }
+
   @Drone
   WebDriver driver;
 
   @Test
   public void testRender() throws Exception {
-    assertDeploy("bridge", "servlet","route", "overload", "actionandview");
     driver.get(deploymentURL.toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     URL url = new URL(trigger.getText());
@@ -56,6 +62,5 @@ public class RouteOverloadActionAndViewTestCase extends AbstractStandaloneTestCa
     driver.get(url.toString());
     String pass = driver.findElement(By.tagName("body")).getText();
     assertEquals("pass", pass);
-    assertUndeploy();
   }
 }

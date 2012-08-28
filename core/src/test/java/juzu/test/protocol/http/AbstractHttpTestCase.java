@@ -19,6 +19,7 @@
 
 package juzu.test.protocol.http;
 
+import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.plugin.application.ApplicationRuntime;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.protocol.mock.MockApplication;
@@ -27,6 +28,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.net.URL;
+import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
@@ -52,17 +54,10 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
   @Override
   public void tearDown() {
     super.tearDown();
+    if (application != null) {
+      assertUndeploy();
+    }
     currentTest = null;
-  }
-
-  @Override
-  protected void doDeploy(MockApplication<?> application) {
-    this.application = application;
-  }
-
-  @Override
-  protected void doUndeploy(MockApplication<?> application) {
-    this.application = null;
   }
 
   @Deployment(testable = false)
@@ -76,5 +71,23 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
       addAsWebResource(test, "test.js").
       addAsWebResource(stylesheet, "main.css").
       setWebXML(descriptor);
+  }
+
+  public void assertUndeploy() {
+    if (application == null) {
+      throw failure("No application to undeploy");
+    }
+    MockApplication<?> app = application;
+    application = null;
+    app.getRuntime().shutdown();
+  }
+
+  public final MockApplication<?> assertDeploy(String... packageName) {
+    try {
+      return application = application(InjectImplementation.CDI_WELD, packageName);
+    }
+    catch (Exception e) {
+      throw failure("Could not deploy application " + Arrays.asList(packageName), e);
+    }
   }
 }

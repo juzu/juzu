@@ -34,11 +34,8 @@ public abstract class AbstractRoutePathMappingTestCase extends AbstractStandalon
   @Drone
   WebDriver driver;
 
-  protected abstract String[] getApplication();
-
   @Test
   public void testRender() throws Exception {
-    assertDeploy(getApplication());
     driver.get(deploymentURL.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     String href = trigger.getAttribute("href");
@@ -48,6 +45,5 @@ public abstract class AbstractRoutePathMappingTestCase extends AbstractStandalon
     trigger.click();
     String pass = driver.findElement(By.tagName("body")).getText();
     assertEquals("pass", pass);
-    assertUndeploy();
   }
 }

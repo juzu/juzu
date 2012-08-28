@@ -19,17 +19,19 @@
 
 package juzu.impl.bridge.servlet;
 
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.openqa.selenium.WebDriver;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteViewPathMappingTestCase extends AbstractRoutePathMappingTestCase {
 
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createDeployment("bridge", "servlet","route", "view", "pathmapping");
+  }
+
   @Drone
   WebDriver driver;
-
-  @Override
-  protected String[] getApplication() {
-    return new String[]{"bridge", "servlet","route", "view", "pathmapping"};
-  }
 }

@@ -21,7 +21,9 @@ package juzu.impl.bridge.servlet;
 
 import juzu.impl.common.Tools;
 import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -34,12 +36,16 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ResponseResourceTestCase extends AbstractStandaloneTestCase {
 
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createDeployment("bridge", "servlet","response", "header", "resource");
+  }
+
   @Drone
   WebDriver driver;
 
   @Test
   public void testPathParam() throws Exception {
-    assertDeploy("bridge", "servlet","response", "header", "resource");
     driver.get(deploymentURL.toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     URL url = new URL(trigger.getText());
@@ -48,6 +54,5 @@ public class ResponseResourceTestCase extends AbstractStandaloneTestCase {
     Map<String, String> headers = Tools.responseHeaders(conn);
     assertTrue(headers.containsKey("juu"));
     assertEquals("juu_value", headers.get("juu"));
-    assertUndeploy();
   }
 }

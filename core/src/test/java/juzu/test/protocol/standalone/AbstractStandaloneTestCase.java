@@ -19,11 +19,8 @@
 
 package juzu.test.protocol.standalone;
 
-import juzu.impl.plugin.application.ApplicationRuntime;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
-import juzu.test.protocol.mock.MockApplication;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.net.URL;
@@ -31,30 +28,22 @@ import java.net.URL;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
 
-  static ClassLoader loader;
+  /** . */
+  static String applicationName;
 
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
+  public static WebArchive createDeployment(String... pkgName) {
+
+    // Create war
+    final WebArchive war = AbstractWebTestCase.createDeployment(pkgName);
+
+    // Descriptor
     URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
-/*
-    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
-    URL test = HttpServletImpl.class.getResource("test.js");
-    URL stylesheet = HttpServletImpl.class.getResource("main.css");
-*/
-    return ShrinkWrap.create(WebArchive.class, "juzu.war").
-//      addAsWebResource(jquery, "jquery.js").
-//      addAsWebResource(test, "test.js").
-//      addAsWebResource(stylesheet, "main.css").
-      setWebXML(descriptor);
-  }
+    war.setWebXML(descriptor);
 
-  @Override
-  protected void doDeploy(MockApplication<?> application) {
-    loader = application.getRuntime().getClassLoader();
-    ApplicationRuntime.Provided.set(application.getRuntime());
-  }
+    // Set application name (maybe remove that)
+    applicationName = Tools.join('.', pkgName);
 
-  @Override
-  protected void doUndeploy(MockApplication<?> application) {
+    //
+    return war;
   }
 }

@@ -17,16 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.servlet;
+package juzu.test.protocol.portlet;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import juzu.portlet.JuzuPortlet;
+
+import javax.portlet.PortletConfig;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteViewQueryParamTestCase extends AbstractRouteQueryParamTestCase {
+public class StandalonePortlet extends JuzuPortlet {
 
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createDeployment("bridge", "servlet","route", "view", "queryparam");
+  @Override
+  protected String getApplicationName(PortletConfig config) {
+    return AbstractPortletTestCase.applicationName;
   }
 }

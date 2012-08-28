@@ -254,12 +254,38 @@ public class Tools {
   }
 
   public static String join(char separator, String... names) {
-    StringBuilder sb = new StringBuilder();
-    join(sb, separator, names);
-    return sb.toString();
+    return join(new StringBuilder(), separator, names).toString();
+  }
+
+  public static String join(char separator, Iterator<String> names) {
+    return join(new StringBuilder(), separator, names).toString();
+  }
+
+  public static String join(char separator, Iterable<String> names) {
+    return join(new StringBuilder(), separator, names).toString();
   }
 
   public static StringBuilder join(StringBuilder sb, char separator, String... names) {
+    try {
+      join((Appendable)sb, separator, names);
+      return sb;
+    }
+    catch (IOException e) {
+      throw new UndeclaredIOException(e);
+    }
+  }
+
+  public static StringBuilder join(StringBuilder sb, char separator, Iterator<String> names) {
+    try {
+      join((Appendable)sb, separator, names);
+      return sb;
+    }
+    catch (IOException e) {
+      throw new UndeclaredIOException(e);
+    }
+  }
+
+  public static StringBuilder join(StringBuilder sb, char separator, Iterable<String> names) {
     try {
       join((Appendable)sb, separator, names);
       return sb;
@@ -285,6 +311,21 @@ public class Tools {
           appendable.append(names[i]);
         }
         break;
+    }
+    return appendable;
+  }
+
+  public static <A extends Appendable> Appendable join(A appendable, char separator, Iterable<String> names) throws IOException {
+    return join(appendable, separator, names.iterator());
+  }
+
+  public static <A extends Appendable> Appendable join(A appendable, char separator, Iterator<String> names) throws IOException {
+    if (names.hasNext()) {
+      appendable.append(names.next());
+      while (names.hasNext()) {
+        appendable.append(separator);
+        appendable.append(names.next());
+      }
     }
     return appendable;
   }

@@ -84,9 +84,6 @@ public class Bridge {
           dynamic.init(classPath, sourcePath);
           runtime = dynamic;
           break;
-        case BridgeConfig.PROVIDED_MODE:
-          runtime = new ApplicationRuntime.Provided<String, String>(log);
-          break;
         default:
           ApplicationRuntime.Static<String, String> ss = new ApplicationRuntime.Static<String, String>(log);
           ss.setClasses(classes);

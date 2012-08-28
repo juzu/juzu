@@ -34,11 +34,8 @@ public abstract class AbstractRouteBodyParamTestCase extends AbstractStandaloneT
   @Drone
   WebDriver driver;
 
-  protected abstract String[] getApplication();
-
   @Test
   public void testPathParam() throws Exception {
-    assertDeploy(getApplication());
     driver.get(deploymentURL.toString());
     WebElement form = driver.findElement(By.id("form"));
     String action = form.getAttribute("action");
@@ -49,6 +46,5 @@ public abstract class AbstractRouteBodyParamTestCase extends AbstractStandaloneT
     trigger.click();
     String pass = driver.findElement(By.tagName("body")).getText();
     assertEquals("bar", pass);
-    assertUndeploy();
   }
 }

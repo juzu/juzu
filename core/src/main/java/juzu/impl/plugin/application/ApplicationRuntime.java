@@ -293,50 +293,6 @@ public abstract class ApplicationRuntime<P, R> {
     }
   }
 
-  public static class Provided<R, S> extends ApplicationRuntime<R, S> {
-
-    public static void set(ApplicationRuntime<?, ?> runtime) {
-      System.getProperties().put("abc", runtime);
-    }
-
-    private ApplicationRuntime<?, ?> get() {
-      return (ApplicationRuntime<?, ?>)System.getProperties().get("abc");
-    }
-
-    public Provided(Logger logger) {
-      super(logger);
-    }
-
-    @Override
-    public ClassLoader getClassLoader() {
-      return get().getClassLoader();
-    }
-
-    @Override
-    protected ReadFileSystem<R> getClasses() {
-      return (ReadFileSystem<R>)get().getClasses();
-    }
-
-    @Override
-    public void boot() throws Exception {
-      if (context == null) {
-
-        // Get delegate
-        ApplicationRuntime delegate = get();
-
-        // Boot it
-        delegate.boot();
-
-        //
-        this.context = delegate.getContext();
-        this.scriptManager = delegate.scriptManager;
-        this.stylesheetManager = delegate.stylesheetManager;
-        this.descriptor = delegate.descriptor;
-        this.bootstrap = delegate.bootstrap;
-      }
-    }
-  }
-
   protected final void doBoot() throws Exception {
     ReadFileSystem<P> classes = getClasses();
 

@@ -22,57 +22,78 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
-import juzu.impl.inject.spi.InjectImplementation;
-import juzu.test.protocol.mock.MockApplication;
+import juzu.impl.common.Tools;
+import juzu.impl.fs.Visitor;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.ram.RAMFileSystem;
+import juzu.impl.fs.spi.ram.RAMPath;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
 public abstract class AbstractWebTestCase extends AbstractTestCase {
 
+  public static WebArchive createDeployment(String... pkgName) {
+
+    // Compile classes
+    DiskFileSystem sourcePath = diskFS(pkgName);
+    RAMFileSystem sourceOutput = new RAMFileSystem();
+    RAMFileSystem classOutput = new RAMFileSystem();
+    CompilerAssert<File, RAMPath> compiler = new CompilerAssert<File, RAMPath>(
+        false,
+        sourcePath,
+        sourceOutput,
+        classOutput);
+    compiler.assertCompile();
+
+    // Create war
+    final WebArchive war = ShrinkWrap.create(WebArchive.class, "juzu.war");
+
+    // Add output to war
+    try {
+      classOutput.traverse(new Visitor.Default<RAMPath>() {
+
+        LinkedList<String> path = new LinkedList<String>();
+
+        @Override
+        public void enterDir(RAMPath dir, String name) throws IOException {
+          path.addLast(name.isEmpty() ? "classes" : name);
+        }
+
+        @Override
+        public void leaveDir(RAMPath dir, String name) throws IOException {
+          path.removeLast();
+        }
+
+        @Override
+        public void file(RAMPath file, String name) throws IOException {
+          path.addLast(name);
+          String target = Tools.join('/', path);
+          path.removeLast();
+          war.addAsWebInfResource(new ByteArrayAsset(file.getContent().getInputStream()), target);
+        }
+      });
+    }
+    catch (IOException e) {
+      throw failure(e);
+    }
+
+    //
+    return war;
+  }
+
   @ArquillianResource
   protected URL deploymentURL;
-
-  /** The currently deployed application. */
-  private MockApplication<?> application;
-
-  public final MockApplication<?> assertDeploy(String... packageName) {
-    try {
-      application = application(InjectImplementation.CDI_WELD, packageName);
-      doDeploy(application);
-      return application;
-    }
-    catch (Exception e) {
-      throw failure("Could not deploy application " + Arrays.asList(packageName), e);
-    }
-  }
-
-  @Override
-  public void tearDown() {
-    super.tearDown();
-    if (application != null) {
-      assertUndeploy();
-    }
-  }
-
-  public void assertUndeploy() {
-    if (application == null) {
-      throw failure("No application to undeploy");
-    }
-    MockApplication<?> app = application;
-    application = null;
-    doUndeploy(app);
-    app.getRuntime().shutdown();
-  }
-  protected abstract void doDeploy(MockApplication<?> application);
-
-  protected abstract void doUndeploy(MockApplication<?> application);
 
   public void assertInternalError() {
     WebClient client = new WebClient();

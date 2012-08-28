@@ -9,11 +9,7 @@
      <!-- Used by Arquillian to locate this portlet-->
      <portlet-name>integrationTest</portlet-name>
      <display-name xml:lang="EN">Integration Test</display-name>
-     <portlet-class>juzu.portlet.JuzuPortlet</portlet-class>
-     <init-param>
-       <name>juzu.run_mode</name>
-       <value>provided</value>
-     </init-param>
+     <portlet-class>juzu.test.protocol.portlet.StandalonePortlet</portlet-class>
      <init-param>
        <name>juzu.inject</name>
        <value>weld</value>

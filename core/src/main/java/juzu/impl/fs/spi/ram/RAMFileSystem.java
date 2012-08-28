@@ -24,6 +24,7 @@ import juzu.impl.common.Content;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 
@@ -36,9 +37,16 @@ public class RAMFileSystem extends ReadWriteFileSystem<RAMPath> {
   /** . */
   private final URL contextURL;
 
-  public RAMFileSystem() throws IOException {
-    this.root = new RAMDir();
-    this.contextURL = new URL("juzu", null, 0, "/", new RAMURLStreamHandler(this));
+  public RAMFileSystem() {
+    try {
+      this.root = new RAMDir();
+      this.contextURL = new URL("juzu", null, 0, "/", new RAMURLStreamHandler(this));
+    }
+    catch (MalformedURLException e) {
+      AssertionError ae = new AssertionError("Unexpected exception");
+      ae.initCause(e);
+      throw ae;
+    }
   }
 
   @Override

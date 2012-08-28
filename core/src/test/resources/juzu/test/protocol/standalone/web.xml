@@ -5,10 +5,6 @@
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.test.protocol.standalone.StandaloneServlet</servlet-class>
-    <init-param>
-      <param-name>juzu.run_mode</param-name>
-      <param-value>provided</param-value>
-    </init-param>
   </servlet>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>

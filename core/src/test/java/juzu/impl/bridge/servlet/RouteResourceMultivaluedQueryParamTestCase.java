@@ -19,11 +19,14 @@
 
 package juzu.impl.bridge.servlet;
 
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteResourceMultivaluedQueryParamTestCase extends AbstractRouteMultivaluedQueryParamTestCase {
 
-  @Override
-  protected String[] getApplication() {
-    return new String[]{"bridge", "servlet","route", "resource", "multivaluedqueryparam"};
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createDeployment("bridge", "servlet","route", "resource", "multivaluedqueryparam");
   }
 }
