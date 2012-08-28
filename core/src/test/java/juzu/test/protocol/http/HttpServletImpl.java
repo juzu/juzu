@@ -100,7 +100,7 @@ public class HttpServletImpl extends HttpServlet {
       ApplicationRuntime<?, ?> application = AbstractHttpTestCase.getCurrentApplication();
 
       //
-      application.boot();
+      application.start();
 
       // Bind the asset managers
       assetServer = new AssetServer();

@@ -158,7 +158,7 @@ public abstract class ApplicationRuntime<P, R> {
 
   protected abstract ReadFileSystem<P> getClasses();
 
-  public abstract void boot() throws Exception, CompilationException;
+  public abstract void start() throws Exception, CompilationException;
 
   public static class Static<P, R> extends ApplicationRuntime<P, R> {
 
@@ -190,7 +190,7 @@ public abstract class ApplicationRuntime<P, R> {
     }
 
     @Override
-    public void boot() throws Exception {
+    public void start() throws Exception {
       if (context == null) {
         doBoot();
       }
@@ -243,7 +243,7 @@ public abstract class ApplicationRuntime<P, R> {
       return classes;
     }
 
-    public void boot() throws Exception {
+    public void start() throws Exception {
       Map<String, Change> changes = devScanner.scan();
       if (context != null) {
         if (changes.size() > 0) {

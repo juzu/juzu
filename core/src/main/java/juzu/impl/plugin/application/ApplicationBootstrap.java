@@ -36,7 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationBootstrap {
+class ApplicationBootstrap {
 
   /** . */
   public final InjectBuilder injectBuilder;
@@ -50,12 +50,12 @@ public class ApplicationBootstrap {
   /** . */
   private InjectionContext<?, ?> injectionContext;
 
-  public ApplicationBootstrap(InjectBuilder injectBuilder, ApplicationDescriptor descriptor) {
+  ApplicationBootstrap(InjectBuilder injectBuilder, ApplicationDescriptor descriptor) {
     this.injectBuilder = injectBuilder;
     this.descriptor = descriptor;
   }
 
-  public void start() throws ApplicationException {
+  void start() throws ApplicationException {
     _start();
   }
 
@@ -125,11 +125,11 @@ public class ApplicationBootstrap {
     this.injectionContext = injectionContext;
   }
 
-  public ApplicationContext getContext() {
+  ApplicationContext getContext() {
     return contextLifeCycle.peek();
   }
 
-  public void stop() {
+  void stop() {
     if (contextLifeCycle != null) {
       contextLifeCycle.release();
     }

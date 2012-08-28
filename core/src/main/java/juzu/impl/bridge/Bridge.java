@@ -99,7 +99,7 @@ public class Bridge {
     }
 
     //
-    runtime.boot();
+    runtime.start();
   }
 
   public void invoke(RequestBridge requestBridge) throws Throwable {

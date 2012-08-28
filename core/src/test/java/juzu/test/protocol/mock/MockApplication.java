@@ -88,7 +88,7 @@ public class MockApplication<P> {
   }
 
   public MockApplication<P> init() throws Exception {
-    runtime.boot();
+    runtime.start();
     return this;
   }
 
