@@ -19,6 +19,9 @@
 
 package juzu.impl.plugin.application;
 
+import juzu.impl.common.JSON;
+import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.plugin.module.ModulePlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -26,5 +29,10 @@ public class ApplicationModulePlugin extends ModulePlugin {
 
   public ApplicationModulePlugin() {
     super("application");
+  }
+
+  @Override
+  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
+    return new ApplicationModuleDescriptor(config);
   }
 }

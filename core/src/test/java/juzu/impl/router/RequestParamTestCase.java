@@ -112,7 +112,7 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testInheritance() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/a?a={<a>[r]foo}").append("/b?b={<b>[r]bar}");
+    router.append("/a?a={<a>[r]foo}", false).append("/b?b={<b>[r]bar}");
 
     //
     assertNull(router.route("/a"));

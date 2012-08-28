@@ -51,12 +51,12 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
 
   ServletRenderBridge(
       ApplicationContext application,
-      ServletBridge servlet,
+      Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,
       Map<String, String[]> parameters) {
-    super(application, servlet, req, resp, target, parameters);
+    super(application, handler, req, resp, target, parameters);
   }
 
   public void setTitle(String title) {
@@ -69,8 +69,8 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       if (response instanceof Response.Render) {
         Response.Render render = (Response.Render)response;
         try {
-          Iterable<Asset.Value> scripts = servlet.bridge.runtime.getScriptManager().resolveAssets(render.getScripts());
-          Iterable<Asset.Value> stylesheets = servlet.bridge.runtime.getStylesheetManager().resolveAssets(render.getStylesheets());
+          Iterable<Asset.Value> scripts = handler.bridge.runtime.getScriptManager().resolveAssets(render.getScripts());
+          Iterable<Asset.Value> stylesheets = handler.bridge.runtime.getStylesheetManager().resolveAssets(render.getStylesheets());
           this.scripts = scripts;
           this.stylesheets = stylesheets;
         }
@@ -99,7 +99,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         url = sb.toString();
         break;
       case CLASSPATH:
-        if (servlet.bridge.config.isProd()) {
+        if (handler.bridge.config.isProd()) {
           sb = new StringBuilder();
           sb.append(req.getContextPath()).append("/assets");
           if (!uri.startsWith("/")) {

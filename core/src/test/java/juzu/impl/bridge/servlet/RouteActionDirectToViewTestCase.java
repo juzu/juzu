@@ -27,6 +27,6 @@ public class RouteActionDirectToViewTestCase extends AbstractRouteActionToViewTe
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge", "servlet","route", "action", "directtoview");
+    return createDeployment("bridge.servlet.route.action.directtoview");
   }
 }

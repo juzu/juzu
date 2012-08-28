@@ -124,6 +124,11 @@ public abstract class AbstractTestCase extends Assert {
     }
   }
 
+  public static DiskFileSystem diskFS(QN packageName) {
+    File root = new File(System.getProperty("test.resources"));
+    return new DiskFileSystem(root, packageName);
+  }
+
   public static DiskFileSystem diskFS(String... packageName) {
     File root = new File(System.getProperty("test.resources"));
     return new DiskFileSystem(root, packageName);

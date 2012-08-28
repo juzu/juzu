@@ -34,7 +34,7 @@ public class HierarchyTestCase extends AbstractControllerTestCase {
   @Test
   public void testFoo() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/a").addParam("foo", "bar").append("/b").addParam("juu", "daa");
+    router.append("/a", false).addParam("foo", "bar").append("/b").addParam("juu", "daa");
 
     //
     // assertEquals(Collections.singletonMap(QualifiedName.create("foo"), "bar"), router.route("/a"));

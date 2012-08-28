@@ -1,1 +1,2 @@
 juzu.impl.plugin.application.ApplicationModulePlugin
+juzu.impl.plugin.router.RouterModulePlugin

@@ -32,11 +32,11 @@ public abstract class ServletMimeBridge extends ServletRequestBridge implements 
 
   ServletMimeBridge(
       ApplicationContext application,
-      ServletBridge servlet,
+      Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,
       Map<String, String[]> parameters) {
-    super(application, servlet, req, resp, target, parameters);
+    super(application, handler, req, resp, target, parameters);
   }
 }

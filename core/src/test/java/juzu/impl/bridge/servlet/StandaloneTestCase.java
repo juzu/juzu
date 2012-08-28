@@ -33,7 +33,7 @@ public class StandaloneTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge", "servlet", "render");
+    return createDeployment("bridge.servlet.render");
   }
 
   @Drone

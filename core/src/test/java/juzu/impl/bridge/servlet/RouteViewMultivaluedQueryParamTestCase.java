@@ -27,6 +27,6 @@ public class RouteViewMultivaluedQueryParamTestCase extends AbstractRouteMultiva
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge", "servlet","route", "view", "multivaluedqueryparam");
+    return createDeployment("bridge.servlet.route.view.multivaluedqueryparam");
   }
 }

@@ -26,15 +26,15 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.JSON;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.QN;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.application.ApplicationModulePlugin;
-import juzu.impl.plugin.application.metamodel.ApplicationModuleMetaModelPlugin;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.router.Param;
@@ -52,25 +52,30 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletBridge extends HttpServlet {
 
   /** . */
-  Bridge bridge;
+  private static final Phase[] GET_PHASES = {Phase.VIEW, Phase.ACTION, Phase.RESOURCE};
 
   /** . */
-  Router router;
+  private static final Phase[] POST_PHASES = {Phase.ACTION, Phase.VIEW, Phase.RESOURCE};
 
   /** . */
-  HashMap<MethodHandle, Route> routeMap;
+  Router root;
 
   /** . */
-  HashMap<Route, Map<Phase, MethodHandle>> routeMap2;
+  List<Handler> handlers;
+
+  /** . */
+  Handler defaultHandler;
 
   protected ClassLoader getClassLoader() {
     return Thread.currentThread().getContextClassLoader();
@@ -98,20 +103,6 @@ public class ServletBridge extends HttpServlet {
     ClassLoader loader = getClassLoader();
 
     //
-    URL cfg = loader.getResource("juzu/config.json");
-    if (cfg != null) {
-      try {
-        String s = Tools.read(cfg);
-        JSON json = (JSON)JSON.parse(s);
-        Module module = new Module(loader, json);
-        ApplicationModulePlugin plugin = (ApplicationModulePlugin)module.getPlugin("application");
-      }
-      catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-
-    //
     AssetServer server = (AssetServer)config.getServletContext().getAttribute("asset.server");
     if (server == null) {
       server = new AssetServer();
@@ -119,81 +110,96 @@ public class ServletBridge extends HttpServlet {
     }
 
     //
-    BridgeConfig bridgeConfig;
-    try {
-      bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
-        @Override
-        protected Iterator<String> keys() {
-          return BridgeConfig.NAMES.iterator();
-        }
-
-        @Override
-        public String get(Object key) {
-          if (BridgeConfig.APP_NAME.equals(key)) {
-            return getApplicationName(config);
-          } else if (BridgeConfig.NAMES.contains(key)) {
-            return config.getInitParameter((String)key);
-          } else {
-            return null;
-          }
-        }
-      });
-    }
-    catch (Exception e) {
-      throw wrap(e);
-    }
-
-    //
     String srcPath = config.getInitParameter("juzu.src_path");
     ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getServletContext(), "/WEB-INF/src/");
+    WarFileSystem classes = WarFileSystem.create(config.getServletContext(), "/WEB-INF/classes/");
+    WarFileSystem resources = WarFileSystem.create(config.getServletContext(), "/WEB-INF/");
 
     //
-    Bridge bridge = new Bridge();
-    bridge.config = bridgeConfig;
-    bridge.resources = WarFileSystem.create(config.getServletContext(), "/WEB-INF/");
-    bridge.server = server;
-    bridge.log = log;
-    bridge.sourcePath = sourcePath;
-    bridge.classes = WarFileSystem.create(config.getServletContext(), "/WEB-INF/classes/");
-
-    //
-    this.bridge = bridge;
-
-    //
+    Module module;
+    URL cfg = loader.getResource("juzu/config.json");
     try {
-      bridge.boot();
-
-      //
-      Router router = new Router();
-      HashMap<MethodHandle, Route> routeMap = new HashMap<MethodHandle, Route>();
-      HashMap<Route, Map<Phase, MethodHandle>> routeMap2 = new HashMap<Route, Map<Phase, MethodHandle>>();
-
-      //
-      RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPlugin("router");
-      if (routesDesc != null) {
-        for (RouteDescriptor child : routesDesc.getChildren()) {
-          Route route = router.append(child.getPath());
-          for (Map.Entry<String, String> entry : child.getTargets().entrySet()) {
-            MethodHandle handle = MethodHandle.parse(entry.getValue());
-            Phase phase = Phase.valueOf(entry.getKey());
-            routeMap.put(handle, route);
-            Map<Phase, MethodHandle> map =  routeMap2.get(route);
-            if (map == null) {
-              routeMap2.put(route, map = new HashMap<Phase, MethodHandle>());
-            }
-            map.put(phase, handle);
-          }
-        }
-      }
-
-      //
-      this.router = router;
-      this.routeMap = routeMap;
-      this.routeMap2 = routeMap2;
+      String s = Tools.read(cfg);
+      JSON json = (JSON)JSON.parse(s);
+      module = new Module(loader, json);
     }
     catch (Exception e) {
-      throw wrap(e);
+      throw new ServletException(e);
     }
+
+    //
+    ApplicationModuleDescriptor desc = (ApplicationModuleDescriptor)module.getDescriptors().get("application");
+
+    //
+    Map<String, Bridge> applications = new HashMap<String, Bridge>();
+    for (final QN name : desc.getNames()) {
+
+
+      //
+      BridgeConfig bridgeConfig;
+      try {
+        bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
+          @Override
+          protected Iterator<String> keys() {
+            return BridgeConfig.NAMES.iterator();
+          }
+
+          @Override
+          public String get(Object key) {
+            if (BridgeConfig.APP_NAME.equals(key)) {
+              return name.toString();
+            } else if (BridgeConfig.NAMES.contains(key)) {
+              return config.getInitParameter((String)key);
+            } else {
+              return null;
+            }
+          }
+        });
+      }
+      catch (Exception e) {
+        throw wrap(e);
+      }
+
+      // Create and configure bridge
+      Bridge bridge = new Bridge();
+      bridge.config = bridgeConfig;
+      bridge.resources = resources;
+      bridge.server = server;
+      bridge.log = log;
+      bridge.sourcePath = sourcePath;
+      bridge.classes = classes;
+
+      //
+      applications.put(name.toString(), bridge);
+    }
+
+    // Build first mounted applications
+    RouteDescriptor routesDesc = (RouteDescriptor)module.getDescriptors().get("router");
+    Router root = new Router();
+    ArrayList<Handler> handlers = new ArrayList<Handler>();
+    if (routesDesc != null) {
+      for (RouteDescriptor child : routesDesc.getChildren()) {
+        Route route = root.append(child.getPath());
+        String application = child.getTargets().get("application");
+        Bridge bridge = applications.get(application);
+        handlers.add(new Handler(route, bridge));
+      }
+      this.handlers = handlers;
+      this.root = root;
+    } else {
+      this.handlers = Collections.emptyList();
+      this.root = null;
+    }
+
+    //
+    String applicationName = getApplicationName(config);
+    if (applicationName != null) {
+      this.defaultHandler = new Handler(new Router(), applications.get(applicationName));
+    }
+  }
+
+  static ServletException wrap(Throwable e) {
+    return e instanceof ServletException ? (ServletException)e : new ServletException("Could not find an application to start", e);
   }
 
   /**
@@ -207,36 +213,57 @@ public class ServletBridge extends HttpServlet {
     return config.getInitParameter("juzu.app_name");
   }
 
-  private ServletException wrap(Throwable e) {
-    return e instanceof ServletException ? (ServletException)e : new ServletException("Could not find an application to start", e);
-  }
-
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    doGet(req, resp);
-  }
-
-  /** . */
-  private static final Phase[] GET_PHASES = {Phase.VIEW, Phase.ACTION, Phase.RESOURCE};
-
-  /** . */
-  private static final Phase[] POST_PHASES = {Phase.ACTION, Phase.VIEW, Phase.RESOURCE};
-
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-    //
+
+    Handler targetHandler = null;
     MethodDescriptor target = null;
     Map<String, String[]> parameters = Collections.emptyMap();
 
     //
     String path = req.getRequestURI().substring(req.getContextPath().length());
     if (path != null) {
-      RouteMatch found = router.route(path, Collections.<String, String[]>emptyMap());
+
+      //
+      Route abc;
+      List<Handler> def;
+      if (root != null) {
+        abc = root;
+        def = handlers;
+      } else if (defaultHandler != null) {
+        abc = defaultHandler.root;
+        def = Collections.singletonList(defaultHandler);
+      } else {
+        abc = null;
+        def = null;
+      }
+
+      //
+      RouteMatch found;
+      if (abc != null) {
+        found = abc.route(path, Collections.<String, String[]>emptyMap());
+      } else {
+        found = null;
+      }
+
+      //
       if (found != null) {
 
         //
-        Map<Phase, MethodHandle> m = routeMap2.get(found.getRoute());
+        Map<Phase, MethodHandle> m = null;
+        for (Handler handler : def) {
+          if (handler.root == found.getRoute()) {
+            targetHandler = handler;
+            break;
+          } else {
+            m = handler.routeMap2.get(found.getRoute());
+            if (m != null) {
+              targetHandler = handler;
+              break;
+            }
+          }
+        }
 
         //
         if (m != null) {
@@ -261,7 +288,7 @@ public class ServletBridge extends HttpServlet {
           }
 
           //
-          target =  bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
+          target =  targetHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
           if (found.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
             parameters = new HashMap<String, String[]>();
             for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet()) {
@@ -289,7 +316,19 @@ public class ServletBridge extends HttpServlet {
       dispatcher.include(req, resp);
     } else {
       if (target == null) {
-        target = bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+
+        //
+        if (targetHandler == null) {
+          if (defaultHandler == null) {
+            resp.sendError(404);
+            return;
+          } else {
+            targetHandler = defaultHandler;
+          }
+        }
+
+        //
+        target = targetHandler.bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
       }
 
       //
@@ -297,28 +336,28 @@ public class ServletBridge extends HttpServlet {
       if (target != null) {
         switch (target.getPhase()) {
           case VIEW:
-            requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+            requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
             break;
           case ACTION: {
-            requestBridge = new ServletActionBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+            requestBridge = new ServletActionBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
             break;
           }
           case RESOURCE:
-            requestBridge = new ServletResourceBridge(bridge.runtime.getContext(), this, req, resp, target.getHandle(), parameters);
+            requestBridge = new ServletResourceBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
             break;
           default:
             throw new ServletException("Cannot decode phase");
         }
       } else {
-        requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, null, parameters);
+        requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, null, parameters);
       }
 
       //
       try {
-        bridge.invoke(requestBridge);
+        targetHandler.bridge.invoke(requestBridge);
       }
       catch (Throwable throwable) {
-        throw wrap(throwable);
+        throw ServletBridge.wrap(throwable);
       }
 
       // Implement the two phases in one
@@ -328,12 +367,12 @@ public class ServletBridge extends HttpServlet {
           Response.Update update = (Response.Update)response;
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
-            requestBridge = new ServletRenderBridge(bridge.runtime.getContext(), this, req, resp, update.getTarget(), update.getParameters());
+            requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, update.getTarget(), update.getParameters());
             try {
-              bridge.invoke(requestBridge);
+              targetHandler.bridge.invoke(requestBridge);
             }
             catch (Throwable throwable) {
-              throw wrap(throwable);
+              throw ServletBridge.wrap(throwable);
             }
           }
         }
@@ -342,5 +381,10 @@ public class ServletBridge extends HttpServlet {
       //
       requestBridge.send();
     }
+  }
+
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    doGet(req, resp);
   }
 }

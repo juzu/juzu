@@ -173,10 +173,19 @@ public class Route {
   private RequestParam[] requestParamArray;
 
   Route(Router router) {
-    this.path = Collections.singletonList(this);
+
+    // Invoked by Router subclass ... not pretty but simple and does the work
+    if (router == null) {
+      router = (Router)this;
+    }
+
+    //
     this.router = router;
+
+    //
+    this.path = Collections.singletonList(this);
     this.parent = null;
-    this.terminal = true;
+    this.terminal = false;
     this.children = EMPTY_ROUTE_ARRAY;
     this.routeParamMap = Collections.emptyMap();
     this.routeParamArray = EMPTY_ROUTE_PARAM_ARRAY;
@@ -184,10 +193,27 @@ public class Route {
     this.requestParamArray = EMPTY_REQUEST_PARAM_ARRAY;
   }
 
+  /**
+   * Clear this route of the children it may have, when cleared this route becomes a terminal route.
+   */
+  public final void clearChildren() {
+    this.children = EMPTY_ROUTE_ARRAY;
+  }
+
+  /**
+   * Returns the parent route or null when the route is the root route.
+   *
+   * @return the parent route
+   */
   public final Route getParent() {
     return parent;
   }
 
+  /**
+   * Returns the path of routes from the root to this route.
+   *
+   * @return the path
+   */
   public final List<Route> getPath() {
     return path;
   }
@@ -394,6 +420,54 @@ public class Route {
 
     //
     return true;
+  }
+
+  public final RouteMatch route(String path) {
+    return route(path, Collections.<String, String[]>emptyMap());
+  }
+
+  public final RouteMatch route(String path, Map<String, String[]> queryParams) {
+    Iterator<RouteMatch> matcher = matcher(path, queryParams);
+    RouteMatch found = null;
+    if (matcher.hasNext()) {
+      found = matcher.next();
+
+      //Select a route if more than one
+      while (matcher.hasNext()) {
+        RouteMatch match = matcher.next();
+        Iterator<Route> foundI = found.getRoute().getPath().iterator();
+        Iterator<Route> matchI = match.getRoute().getPath().iterator();
+
+        // Drop the root route
+        foundI.next();
+        matchI.next();
+
+        //
+        while (foundI.hasNext()) {
+          Route foundR = foundI.next();
+          if (matchI.hasNext()) {
+            Route matchR = matchI.next();
+            if (foundR instanceof SegmentRoute) {
+              if (matchR instanceof SegmentRoute) {
+                // Continue
+              } else {
+                break;
+              }
+            } else {
+              if (matchR instanceof SegmentRoute) {
+                found = match;
+                break;
+              } else {
+                // Continue
+              }
+            }
+          } else {
+            break;
+          }
+        }
+      }
+    }
+    return found;
   }
 
   /**
@@ -760,7 +834,6 @@ public class Route {
     //
     if (route instanceof PatternRoute || route instanceof SegmentRoute) {
       children = Tools.appendTo(children, route);
-      terminal = false;
 
       // Compute path
       List<Route> path = new ArrayList<Route>(this.path.size() + 1);
@@ -871,10 +944,18 @@ public class Route {
   }
 
   public Route append(String path) {
-    return append(path, Collections.<QualifiedName, String>emptyMap());
+    return append(path, true);
   }
 
   public Route append(String path, Map<QualifiedName, String> params) {
+    return append(path, params, true);
+  }
+
+  public Route append(String path, boolean terminal) {
+    return append(path, Collections.<QualifiedName, String>emptyMap(), terminal);
+  }
+
+  public Route append(String path, Map<QualifiedName, String> params, boolean terminal) {
 
     //
     class Assembler implements RouteParserHandler {
@@ -1023,6 +1104,9 @@ public class Route {
     for (Map.Entry<QualifiedName, String> entry : params.entrySet()) {
       asm.current.add(new RouteParam(entry.getKey(), entry.getValue()));
     }
+
+    // Set terminal status of last route
+    asm.current.terminal = terminal;
 
     //
     return asm.current;

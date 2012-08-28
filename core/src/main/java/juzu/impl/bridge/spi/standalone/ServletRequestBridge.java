@@ -57,7 +57,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   final ApplicationContext application;
 
   /** . */
-  final ServletBridge servlet;
+  final Handler handler;
 
   /** . */
   final HttpServletRequest req;
@@ -79,7 +79,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
 
   ServletRequestBridge(
       ApplicationContext application,
-      ServletBridge servlet,
+      Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,
@@ -88,7 +88,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     //
     this.application = application;
     this.target = target;
-    this.servlet = servlet;
+    this.handler = handler;
     this.req = req;
     this.resp = resp;
     this.parameters = parameters;
@@ -252,7 +252,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
-    Route route = servlet.routeMap.get(method.getHandle());
+    Route route = handler.routeMap.get(method.getHandle());
     if (route != null) {
       Map<QualifiedName, String> params;
       if (parameters.isEmpty()) {

@@ -19,7 +19,6 @@
 
 package juzu.test.protocol.standalone;
 
-import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -31,7 +30,11 @@ public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
   /** . */
   static String applicationName;
 
-  public static WebArchive createDeployment(String... pkgName) {
+  public static WebArchive createDeployment(String pkgName) {
+    return createDeployment(pkgName, pkgName);
+  }
+
+  public static WebArchive createDeployment(String applicationName, String pkgName) {
 
     // Create war
     final WebArchive war = AbstractWebTestCase.createDeployment(pkgName);
@@ -41,7 +44,7 @@ public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
     war.setWebXML(descriptor);
 
     // Set application name (maybe remove that)
-    applicationName = Tools.join('.', pkgName);
+    AbstractStandaloneTestCase.applicationName = applicationName;
 
     //
     return war;

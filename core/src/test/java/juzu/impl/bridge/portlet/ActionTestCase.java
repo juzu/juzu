@@ -37,7 +37,7 @@ public class ActionTestCase extends AbstractPortletTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge", "portlet", "action");
+    return createDeployment("bridge.portlet.action");
   }
 
   @Drone

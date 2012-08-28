@@ -34,9 +34,9 @@ public class BuildRouteTestCase extends AbstractTestCase {
     router.append("/{a}");
 
     //
-    assertEquals(0, router.root.getSegmentNames().size());
-    assertEquals(1, router.root.getPatternSize());
-    PatternRoute patternRoute = router.root.getPattern(0);
+    assertEquals(0, router.getSegmentNames().size());
+    assertEquals(1, router.getPatternSize());
+    PatternRoute patternRoute = router.getPattern(0);
     assertEquals("^/(?:([^/]+))(?:(?<=^/)|(?=/)|$)", patternRoute.pattern.re.getPattern());
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.A, patternRoute.params[0].name);
@@ -53,9 +53,9 @@ public class BuildRouteTestCase extends AbstractTestCase {
     router.append("/{q:a}");
 
     //
-    assertEquals(0, router.root.getSegmentNames().size());
-    assertEquals(1, router.root.getPatternSize());
-    PatternRoute patternRoute = router.root.getPattern(0);
+    assertEquals(0, router.getSegmentNames().size());
+    assertEquals(1, router.getPatternSize());
+    PatternRoute patternRoute = router.getPattern(0);
     assertEquals("^/(?:([^/]+))(?:(?<=^/)|(?=/)|$)", patternRoute.pattern.re.getPattern());
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.Q_A, patternRoute.params[0].name);
@@ -72,9 +72,9 @@ public class BuildRouteTestCase extends AbstractTestCase {
     router.append("/{<.*>a}");
 
     //
-    assertEquals(0, router.root.getSegmentNames().size());
-    assertEquals(1, router.root.getPatternSize());
-    PatternRoute patternRoute = router.root.getPattern(0);
+    assertEquals(0, router.getSegmentNames().size());
+    assertEquals(1, router.getPatternSize());
+    PatternRoute patternRoute = router.getPattern(0);
     assertEquals("^/(?:([^/]*))(?:(?<=^/)|(?=/)|$)", patternRoute.pattern.re.getPattern());
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.A, patternRoute.params[0].name);
@@ -91,11 +91,37 @@ public class BuildRouteTestCase extends AbstractTestCase {
     router.append("/public/foo");
     router.append("/public/bar");
 
-    assertEquals(2, router.root.getSegmentSize("public"));
-    Route publicRoute1 = router.root.getSegment("public", 0);
+    assertEquals(2, router.getSegmentSize("public"));
+    Route publicRoute1 = router.getSegment("public", 0);
     assertEquals(1, publicRoute1.getSegmentSize("foo"));
-    Route publicRoute2 = router.root.getSegment("public", 1);
+    Route publicRoute2 = router.getSegment("public", 1);
     assertEquals(1, publicRoute2.getSegmentSize("bar"));
+  }
+
+  @Test
+  public void testClear() throws Exception {
+    Router router = new Router();
+    Route foo = router.append("/foo");
+
+    RouteMatch match = router.route("/foo");
+    assertNotNull(match);
+    assertSame(foo, match.getRoute());
+
+
+    Route bar = foo.append("/bar");
+
+    //
+    /*RouteMatch*/ match = router.route("/foo/bar");
+    assertNotNull(match);
+    assertSame(bar, match.getRoute());
+
+    //
+    foo.clearChildren();
+    match = router.route("/foo/bar");
+    assertNull(match);
+    match = router.route("/foo");
+    assertNotNull(match);
+    assertSame(foo, match.getRoute());
   }
 
   private void assertEquals(Route expectedRoute, Route route) {

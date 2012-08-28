@@ -38,7 +38,7 @@ public class ResponseActionDirectToViewTestCase extends AbstractStandaloneTestCa
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge", "servlet",  "response", "header", "actiondirecttoview");
+    return createDeployment("bridge.servlet.response.header.actiondirecttoview");
   }
 
   @Drone

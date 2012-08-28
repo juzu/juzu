@@ -38,7 +38,7 @@ public abstract class AbstractPortletTestCase extends AbstractWebTestCase {
   /** . */
   static String applicationName;
 
-  public static WebArchive createDeployment(String... pkgName) {
+  public static WebArchive createDeployment(String pkgName) {
 
     // Create war
     WebArchive war = AbstractWebTestCase.createDeployment(pkgName);

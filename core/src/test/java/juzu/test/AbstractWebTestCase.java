@@ -22,6 +22,7 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
+import juzu.impl.common.QN;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
@@ -43,10 +44,10 @@ import java.util.LinkedList;
 @RunWith(Arquillian.class)
 public abstract class AbstractWebTestCase extends AbstractTestCase {
 
-  public static WebArchive createDeployment(String... pkgName) {
+  public static WebArchive createDeployment(String pkgName) {
 
     // Compile classes
-    DiskFileSystem sourcePath = diskFS(pkgName);
+    DiskFileSystem sourcePath = diskFS(QN.parse(pkgName));
     RAMFileSystem sourceOutput = new RAMFileSystem();
     RAMFileSystem classOutput = new RAMFileSystem();
     CompilerAssert<File, RAMPath> compiler = new CompilerAssert<File, RAMPath>(

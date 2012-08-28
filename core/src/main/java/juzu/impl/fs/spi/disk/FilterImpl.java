@@ -19,6 +19,8 @@
 
 package juzu.impl.fs.spi.disk;
 
+import juzu.impl.common.QN;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ class FilterImpl implements FilenameFilter {
   /** . */
   private final Map<File, String> valids;
 
-  FilterImpl(File root, String[] path) {
+  FilterImpl(File root, QN path) {
     Map<File, String> valids = new HashMap<File, String>();
 
     {

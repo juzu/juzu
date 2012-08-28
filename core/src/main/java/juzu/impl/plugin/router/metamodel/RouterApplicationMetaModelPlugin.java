@@ -17,12 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.router;
+package juzu.impl.plugin.router.metamodel;
 
 import juzu.Route;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -37,12 +36,9 @@ import java.util.Collections;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationRouterMetaModelPlugin extends ApplicationMetaModelPlugin {
+public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin {
 
-  /** . */
-  private static final FQN ROUTE = new FQN(Route.class);
-
-  public ApplicationRouterMetaModelPlugin() {
+  public RouterApplicationMetaModelPlugin() {
     super("router");
   }
 
@@ -51,31 +47,31 @@ public class ApplicationRouterMetaModelPlugin extends ApplicationMetaModelPlugin
     return Collections.<Class<? extends Annotation>>singleton(Route.class);
   }
 
-  private ApplicationRouterMetaModel getRoutes(ApplicationMetaModel metaModel, boolean create) {
-    ApplicationRouterMetaModel routes = metaModel.getChild(ApplicationRouterMetaModel.KEY);
+  private RouterMetaModel getRoutes(ApplicationMetaModel metaModel, boolean create) {
+    RouterMetaModel routes = metaModel.getChild(RouterMetaModel.KEY);
     if (routes == null && create) {
-      metaModel.addChild(ApplicationRouterMetaModel.KEY, routes = new ApplicationRouterMetaModel());
+      metaModel.addChild(RouterMetaModel.KEY, routes = new RouterMetaModel());
     }
     return routes;
   }
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    if (key.getType().equals(ROUTE)) {
-      getRoutes(metaModel, true).annotations.put((ElementHandle.Method)key.getElement(), added);
+    if (key.getType().equals(RouteMetaModel.FQN) && key.getElement() instanceof ElementHandle.Method) {
+      getRoutes(metaModel, true).annotations.put(key.getElement(), added);
     }
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().equals(ROUTE)) {
+    if (key.getType().equals(RouteMetaModel.FQN) && key.getElement() instanceof ElementHandle.Method) {
       getRoutes(metaModel, true).annotations.remove(key.getElement());
     }
   }
 
   @Override
   public void postProcessEvents(ApplicationMetaModel metaModel) {
-    ApplicationRouterMetaModel router = getRoutes(metaModel, false);
+    RouterMetaModel router = getRoutes(metaModel, false);
     if (router != null) {
       ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
       if (controllers != null) {
@@ -98,7 +94,7 @@ public class ApplicationRouterMetaModelPlugin extends ApplicationMetaModelPlugin
 
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
-    ApplicationRouterMetaModel router = getRoutes(application, false);
+    RouterMetaModel router = getRoutes(application, false);
     return router != null && router.root != null ? router.root.toJSON() : null;
   }
 }

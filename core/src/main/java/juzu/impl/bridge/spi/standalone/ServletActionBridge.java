@@ -38,12 +38,12 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
 
   ServletActionBridge(
       ApplicationContext application,
-      ServletBridge servlet,
+      Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,
       Map<String, String[]> parameters) {
-    super(application, servlet, req, resp, target, parameters);
+    super(application, handler, req, resp, target, parameters);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

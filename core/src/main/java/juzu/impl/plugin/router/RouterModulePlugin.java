@@ -21,12 +21,12 @@ package juzu.impl.plugin.router;
 
 import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.module.ModulePlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouterPlugin extends ApplicationPlugin {
+public class RouterModulePlugin extends ModulePlugin {
 
-  public RouterPlugin() {
+  public RouterModulePlugin() {
     super("router");
   }
 

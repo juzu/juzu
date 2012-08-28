@@ -38,7 +38,7 @@ public class RouteOverloadActionAndViewTestCase extends AbstractStandaloneTestCa
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge", "servlet","route", "overload", "actionandview");
+    return createDeployment("bridge.servlet.route.overload.actionandview");
   }
 
   @Drone

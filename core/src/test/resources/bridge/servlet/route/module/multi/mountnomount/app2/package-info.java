@@ -17,26 +17,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.router;
+@Application
+package bridge.servlet.route.module.multi.mountnomount.app2;
 
-import juzu.impl.compiler.ElementHandle;
-import juzu.impl.metamodel.AnnotationState;
-import juzu.impl.metamodel.Key;
-import juzu.impl.metamodel.MetaModelObject;
-
-import java.util.HashMap;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationRouterMetaModel extends MetaModelObject {
-
-  /** . */
-  public final static Key<ApplicationRouterMetaModel> KEY = Key.of(ApplicationRouterMetaModel.class);
-
-  /** . */
-  final HashMap<ElementHandle.Method, AnnotationState> annotations = new HashMap<ElementHandle.Method, AnnotationState>();
-
-  /** . */
-  RouteMetaModel root;
-
-
-}
+import juzu.Application;
+import juzu.Route;

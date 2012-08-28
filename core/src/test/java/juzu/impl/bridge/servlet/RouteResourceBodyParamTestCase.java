@@ -27,6 +27,6 @@ public class RouteResourceBodyParamTestCase extends AbstractRouteBodyParamTestCa
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge", "servlet","route", "resource", "bodyparam");
+    return createDeployment("bridge.servlet.route.resource.bodyparam");
   }
 }

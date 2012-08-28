@@ -20,8 +20,10 @@
 package juzu.impl.plugin.module;
 
 import juzu.impl.common.JSON;
+import juzu.impl.metadata.Descriptor;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -29,6 +31,9 @@ public class Module {
 
   /** . */
   private final HashMap<String, ModulePlugin> plugins;
+
+  /** . */
+  private final HashMap<String, Descriptor> descriptors;
 
   public Module(ClassLoader loader, JSON config) throws Exception {
 
@@ -39,18 +44,34 @@ public class Module {
     }
 
     // Init plugins
+    HashMap<String, Descriptor> descriptors = new HashMap<String, Descriptor>();
     for (ModulePlugin plugin : plugins.values()) {
       JSON pluginConfig = config.getJSON(plugin.getName());
       if (pluginConfig != null) {
-        plugin.init(loader, pluginConfig);
+        Descriptor desc = plugin.init(loader, pluginConfig);
+        descriptors.put(plugin.getName(), desc);
       }
     }
 
     //
     this.plugins = plugins;
+    this.descriptors = descriptors;
   }
 
   public ModulePlugin getPlugin(String name) {
     return plugins.get(name);
+  }
+
+  public <P extends ModulePlugin> P getPlugin(Class<P> type) {
+    for (ModulePlugin plugin : plugins.values()) {
+      if (type.isInstance(plugin)) {
+        return type.cast(plugin);
+      }
+    }
+    return null;
+  }
+
+  public Map<String, Descriptor> getDescriptors() {
+    return descriptors;
   }
 }
