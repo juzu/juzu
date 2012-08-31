@@ -231,11 +231,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     return renderURL(target, parameters, properties, MimeType.XHTML);
   }
 
-    public final String renderURL(
-      MethodHandle target,
-      Map<String, String[]> parameters,
-      PropertyMap properties,
-      MimeType mimeType) {
+  public final String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties, MimeType mimeType) {
     StringBuilder buffer = new StringBuilder();
     buffer.append(req.getScheme());
     buffer.append("://");
@@ -253,6 +249,13 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
 
     //
     Route route = handler.routeMap.get(method.getHandle());
+    if (route == null) {
+      if (application.getDescriptor().getControllers().getResolver().isIndex(method)) {
+        route = handler.root;
+      }
+    }
+
+    //
     if (route != null) {
       Map<QualifiedName, String> params;
       if (parameters.isEmpty()) {

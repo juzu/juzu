@@ -83,7 +83,7 @@ public class ModuleMetaModel extends MetaModel<ModuleMetaModelPlugin, ModuleMeta
   public final void prePassivate() {
 
     //
-    ProcessingContext env = this.env;
+    ProcessingContext env = this.processingContext;
 
     //
     emitConfig(env);

@@ -89,7 +89,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
     }
 
     //
-    context.postActivate(metaModel.env);
+    context.postActivate(metaModel.processingContext);
     for (ApplicationMetaModel application : metaModel.getChildren(ApplicationMetaModel.class)) {
       for (ApplicationMetaModelPlugin plugin : context.getPlugins()) {
         plugin.postActivate(application);
@@ -168,7 +168,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       if (obj instanceof ApplicationMetaModel) {
         ApplicationMetaModel application = (ApplicationMetaModel)obj;
         if (event.getType() == MetaModelEvent.AFTER_ADD) {
-          emitApplication(metaModel.env, application);
+          emitApplication(metaModel.processingContext, application);
         }
       }
     }
@@ -239,7 +239,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
     for (ApplicationMetaModel application : metaModel.getChildren(ApplicationMetaModel.class)) {
 
       //
-      metaModel.env.log("Emitting application " + application.getHandle() + " config");
+      metaModel.processingContext.log("Emitting application " + application.getHandle() + " config");
 
       // Recycle
       descriptor.clear();
@@ -255,12 +255,12 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       //
       Writer writer = null;
       try {
-        FileObject fo = metaModel.env.createResource(StandardLocation.CLASS_OUTPUT, application.getName(), "config.json");
+        FileObject fo = metaModel.processingContext.createResource(StandardLocation.CLASS_OUTPUT, application.getName(), "config.json");
         writer = fo.openWriter();
         descriptor.toString(writer, 2);
       }
       catch (IOException e) {
-        throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, metaModel.env.get(application.getHandle()), application.getName());
+        throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, metaModel.processingContext.get(application.getHandle()), application.getName());
       }
       finally {
         Tools.safeClose(writer);

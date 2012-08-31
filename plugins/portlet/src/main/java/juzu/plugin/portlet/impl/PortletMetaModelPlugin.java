@@ -92,7 +92,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
     ElementHandle.Package pkg = application.getHandle();
     String[] names = enabledMap.get(pkg);
     if (names != null) {
-      PackageElement pkgElt = application.model.env.get(pkg);
+      PackageElement pkgElt = application.model.processingContext.get(pkg);
       AnnotationMirror am = Tools.getAnnotation(pkgElt, Portlet.class.getName());
       if (am == null) {
         enabledMap.remove(pkg);
@@ -101,7 +101,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
       else {
         if (toEmit.contains(pkg)) {
           toEmit.remove(pkg);
-          emitPortlet(application.model.env, pkgElt, names);
+          emitPortlet(application.model.processingContext, pkgElt, names);
         }
       }
     }

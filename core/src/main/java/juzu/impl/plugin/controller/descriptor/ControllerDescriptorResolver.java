@@ -64,7 +64,7 @@ class ControllerDescriptorResolver extends ControllerResolver<MethodDescriptor> 
 
   @Override
   public boolean isDefault(MethodDescriptor method) {
-    return method.getType() == desc.getDefault();
+    return method.getType() == desc.getDefault() || desc.getControllers().size() < 2;
   }
 
   @Override

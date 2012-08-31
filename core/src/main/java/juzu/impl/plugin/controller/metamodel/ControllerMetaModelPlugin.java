@@ -106,7 +106,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void init(ApplicationMetaModel application) {
     ControllersMetaModel controllers = new ControllersMetaModel();
-    PackageElement pkg = application.model.env.get(application.getHandle());
+    PackageElement pkg = application.model.processingContext.get(application.getHandle());
     AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
     AnnotationState values = AnnotationState.create(annotation);
     Boolean escapeXML = (Boolean)values.get("escapeXML");
@@ -198,11 +198,11 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     // Check everything is OK here
     for (ControllerMetaModel controller : application.getChild(ControllersMetaModel.KEY)) {
       for (MethodMetaModel method : controller.getMethods()) {
-        ExecutableElement executableElt = application.model.env.get(method.handle);
+        ExecutableElement executableElt = application.model.processingContext.get(method.handle);
         Iterator<? extends VariableElement> i = executableElt.getParameters().iterator();
         for (ParameterMetaModel parameter : method.parameters) {
           VariableElement ve = i.next();
-          TypeElement te = application.model.env.get(parameter.getType());
+          TypeElement te = application.model.processingContext.get(parameter.getType());
           if (!te.toString().equals("java.lang.String") && te.getAnnotation(Param.class) == null) {
             throw ControllerMetaModel.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(ve, ve.getSimpleName());
           }
@@ -214,7 +214,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     for (Iterator<ControllerMetaModel> i = written.iterator();i.hasNext();) {
       ControllerMetaModel controller = i.next();
       i.remove();
-      emitController(application.model.env, controller);
+      emitController(application.model.processingContext, controller);
     }
   }
 

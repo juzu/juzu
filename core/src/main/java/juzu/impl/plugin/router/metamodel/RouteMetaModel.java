@@ -47,7 +47,19 @@ public class RouteMetaModel implements Serializable {
   /** . */
   TreeMap<Integer, LinkedHashMap<String, RouteMetaModel>> children;
 
-  RouteMetaModel setTarget(String key, String target) {
+  /**
+   * Sets a target if the target is not null otherwise remove it.
+   *
+   * @param key the key
+   * @param target the target
+   * @return this object
+   * @throws NullPointerException if the key is null
+   * @throws IllegalArgumentException if the key is already present
+   */
+  RouteMetaModel setTarget(String key, String target) throws NullPointerException, IllegalArgumentException {
+    if (key == null) {
+      throw new NullPointerException("No null key accepted");
+    }
     if (target == null) {
       if (targets != null) {
         targets.remove(key);
@@ -56,9 +68,31 @@ public class RouteMetaModel implements Serializable {
       if (targets == null) {
         targets = new HashMap<String, String>();
       }
-      targets.put(key, target);
+      if (targets.containsKey(key)) {
+        throw new IllegalArgumentException("Cannot have two identical targets " + key);
+      } else {
+        targets.put(key, target);
+      }
     }
     return this;
+  }
+
+  /**
+   * Returns a keyed target.
+   *
+   * @param key the key
+   * @return the target or null
+   * @throws NullPointerException if the key is null
+   */
+  String getTarget(String key) throws NullPointerException {
+    if (key == null) {
+      throw new NullPointerException("No null key accepted");
+    }
+    if (targets != null) {
+      return targets.get(key);
+    } else {
+      return null;
+    }
   }
 
   RouteMetaModel addChild(int priority, String path) {

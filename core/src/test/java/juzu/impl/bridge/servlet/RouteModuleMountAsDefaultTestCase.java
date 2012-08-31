@@ -43,23 +43,25 @@ public class RouteModuleMountAsDefaultTestCase extends AbstractStandaloneTestCas
 
   @Test
   public void testRenderRoot() throws Exception {
+    URL url = deploymentURL.toURI().resolve("foo").toURL();
     driver.get(deploymentURL.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("index", index);
+    assertEquals(url, new URL((String)Registry.get("url")));
   }
 
   @Test
   public void testRenderIndex() throws Exception {
-    String url = deploymentURL.toURI().resolve("foo").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("foo").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("index", index);
+    assertEquals(url, new URL((String)Registry.get("url")));
   }
 
   @Test
   public void testRenderPath() throws Exception {
     URL url = deploymentURL.toURI().resolve("foo/bar").toURL();
-    Registry.clear();
     driver.get(url.toString());
     String bar = driver.findElement(By.tagName("body")).getText();
     assertEquals("bar", bar);

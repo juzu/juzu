@@ -64,7 +64,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postActivate(ModuleMetaModel applications) {
     // Discover the template providers
-    Iterable<TemplateProvider> loader = applications.env.loadServices(TemplateProvider.class);
+    Iterable<TemplateProvider> loader = applications.processingContext.loadServices(TemplateProvider.class);
     Map<String, TemplateProvider> providers = new HashMap<String, TemplateProvider>();
     for (TemplateProvider provider : loader) {
       providers.put(provider.getSourceExtension(), provider);
@@ -88,7 +88,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
         Path removedPath = Path.parse((String)removed.get("value"));
         TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
-        metaModel.env.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath);
+        metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath);
         templates.remove(variableElt);
       }
     }
@@ -102,7 +102,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         Path addedPath = Path.parse((String)added.get("value"));
         Path removedPath = Path.parse((String)removed.get("value"));
         TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
-        metaModel.env.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
+        metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
         templates.remove(variableElt);
         templates.add(variableElt, addedPath);
       }
@@ -116,7 +116,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
         TemplatesMetaModel templates = application.getChild(TemplatesMetaModel.KEY);
         Path addedPath = Path.parse((String)added.get("value"));
-        application.env.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
+        application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
         templates.add(variableElt, addedPath);
       }
       else if (key.getElement() instanceof ElementHandle.Class) {
@@ -135,7 +135,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void prePassivate(ApplicationMetaModel application) {
-    application.env.log("Passivating template resolver for " + application.getHandle());
+    application.processingContext.log("Passivating template resolver for " + application.getHandle());
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
     metaModel.resolver.prePassivate();
     metaModel.plugin = null;
@@ -143,14 +143,14 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void prePassivate(ModuleMetaModel applications) {
-    applications.env.log("Passivating templates");
+    applications.processingContext.log("Passivating templates");
     this.providers = null;
   }
 
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
-    application.env.log("Processing templates of " + application.getHandle());
-    application.getChild(TemplatesMetaModel.KEY).resolver.process(this, application.model.env);
+    application.processingContext.log("Processing templates of " + application.getHandle());
+    application.getChild(TemplatesMetaModel.KEY).resolver.process(this, application.model.processingContext);
   }
 
   @Override

@@ -64,6 +64,10 @@ public abstract class ControllerResolver<M> {
 
   public abstract boolean isDefault(M method);
 
+  public final boolean isIndex(M method) {
+    return isDefault(method) && "index".equals(getName(method));
+  }
+
   public abstract Collection<String> getParameterNames(M method);
 
   private class Match implements Comparable<Match> {

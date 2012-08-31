@@ -105,7 +105,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
     //
     String id = (String)annotation.get("id");
 
-    ExecutableElement methodElt = (ExecutableElement)context.env.get(key2.getElement());
+    ExecutableElement methodElt = (ExecutableElement)context.processingContext.get(key2.getElement());
 
     //
     for (Phase phase : Phase.values()) {
@@ -122,7 +122,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
           for (int i = 0;i < parameterTypeMirrors.size();i++) {
             VariableElement parameterVariableElt = parameterVariableElements.get(i);
             TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i);
-            TypeMirror erasedParameterTypeMirror = context.env.erasure(parameterTypeMirror);
+            TypeMirror erasedParameterTypeMirror = context.processingContext.erasure(parameterTypeMirror);
             String parameterType = erasedParameterTypeMirror.toString();
             //
             String parameterName = parameterVariableElt.getSimpleName().toString();
@@ -133,9 +133,9 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
             switch (parameterTypeMirror.getKind()) {
               case DECLARED:
                 DeclaredType dt = (DeclaredType)parameterTypeMirror;
-                TypeElement col = context.env.getTypeElement("java.util.List");
-                TypeMirror tm = context.env.erasure(col.asType());
-                TypeMirror err = context.env.erasure(dt);
+                TypeElement col = context.processingContext.getTypeElement("java.util.List");
+                TypeMirror tm = context.processingContext.erasure(col.asType());
+                TypeMirror err = context.processingContext.erasure(dt);
                 // context.env.isSubtype(err, tm)
                 if (err.equals(tm)) {
                   if (dt.getTypeArguments().size() != 1) {
@@ -165,7 +165,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
             }
 
             //
-            TypeElement te = (TypeElement)context.env.asElement(parameterSimpleTypeMirror);
+            TypeElement te = (TypeElement)context.processingContext.asElement(parameterSimpleTypeMirror);
             ElementHandle.Class a = ElementHandle.Class.create(te);
 
             //

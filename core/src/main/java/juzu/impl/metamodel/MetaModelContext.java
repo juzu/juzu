@@ -40,7 +40,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
     implements Serializable, Iterable<M> {
 
   /** . */
-  private ProcessingContext env;
+  private ProcessingContext processingContext;
 
   /** The meta model. */
   private ArrayList<M> metaModels;
@@ -68,7 +68,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
 //    }
 
     //
-    this.env = env;
+    this.processingContext = env;
 
     //
     LinkedHashMap<String, P> plugins = new LinkedHashMap<String, P>();
@@ -105,25 +105,20 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
   }
 
   public void add(M metaModel) {
-    metaModel.env = env;
+    metaModel.processingContext = processingContext;
     metaModel.forward = true;
     metaModel.context = this;
-    metaModel.init(env);
+    metaModel.init(processingContext);
     for (P plugin : plugins.values()) {
       plugin.init(metaModel);
     }
     metaModels.add(metaModel);
   }
 
-  public final void postActivate(ProcessingContext env) throws NullPointerException {
-//    if (env == null) {
-//      throw new NullPointerException("No null env accepted");
-//    }
-
-    //
-    this.env = env;
+  public final void postActivate(ProcessingContext processingContext) throws NullPointerException {
+    this.processingContext = processingContext;
     for (M metaModel : metaModels) {
-      metaModel.env = env;
+      metaModel.processingContext = processingContext;
       for (P plugin : plugins.values()) {
         plugin.postActivate(metaModel);
       }
@@ -165,7 +160,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
     ArrayList<AnnotationChange> delta = new ArrayList<AnnotationChange>();
     for (Map.Entry<AnnotationKey, AnnotationState> entry : knownAnnotations.entrySet()) {
       AnnotationKey key = entry.getKey();
-      Element element = env.get(key.element);
+      Element element = processingContext.get(key.element);
       if (element == null) {
         delta.add(new AnnotationChange(key, entry.getValue(), null));
       } else {
@@ -218,14 +213,14 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
       for (P plugin : plugins.values()) {
         plugin.prePassivate(metaModel);
       }
-      metaModel.env = null;
+      metaModel.processingContext = null;
     }
-    this.env = null;
+    this.processingContext = null;
   }
 
   public void remove(M metaModel) {
     try {
-      metaModel.env = env;
+      metaModel.processingContext = processingContext;
 
       //
       metaModels.remove(metaModel);
@@ -236,7 +231,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
       }
     }
     finally {
-      metaModel.env = null;
+      metaModel.processingContext = null;
     }
   }
 }

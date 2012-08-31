@@ -17,27 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.servlet.route.module.nomount;
+@Application
+package metamodel.router.duplicate.methodroute;
 
-import juzu.Controller;
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
-import juzu.test.Registry;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
-
-  @View
-  public Response.Content index() {
-    Registry.set("url", "" + A_.indexURL());
-    return Response.render("index");
-  }
-
-  @View
-  @Route("/bar")
-  public Response.Content bar() {
-    Registry.set("url", "" + A_.barURL());
-    return Response.render("bar");
-  }
-}
+import juzu.Application;

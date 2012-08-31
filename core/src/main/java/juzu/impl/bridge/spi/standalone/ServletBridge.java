@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -175,26 +176,33 @@ public class ServletBridge extends HttpServlet {
 
     // Build first mounted applications
     RouteDescriptor routesDesc = (RouteDescriptor)module.getDescriptors().get("router");
-    Router root = new Router();
-    ArrayList<Handler> handlers = new ArrayList<Handler>();
+    LinkedHashMap<String, Handler> handlers = new LinkedHashMap<String, Handler>();
     if (routesDesc != null) {
+      Router root = new Router();
       for (RouteDescriptor child : routesDesc.getChildren()) {
         Route route = root.append(child.getPath());
         String application = child.getTargets().get("application");
         Bridge bridge = applications.get(application);
-        handlers.add(new Handler(route, bridge));
+        handlers.put(application, new Handler(route, bridge));
       }
-      this.handlers = handlers;
       this.root = root;
     } else {
-      this.handlers = Collections.emptyList();
       this.root = null;
     }
 
     //
+    this.handlers = new ArrayList<Handler>(handlers.values());
+
+    //
     String applicationName = getApplicationName(config);
     if (applicationName != null) {
-      this.defaultHandler = new Handler(new Router(), applications.get(applicationName));
+      Handler defaultHandler = handlers.get(applicationName);
+      if (defaultHandler == null) {
+        defaultHandler = new Handler(new Router(), applications.get(applicationName));
+      }
+      this.defaultHandler = defaultHandler;
+    } else {
+      this.defaultHandler = null;
     }
   }
 

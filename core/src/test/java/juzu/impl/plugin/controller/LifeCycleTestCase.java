@@ -40,7 +40,6 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
 
       //
       MockClient client = app.client();
-      Registry.clear();
       client.render();
       Integer count = Registry.get("count");
       assertEquals((Integer)2, count);

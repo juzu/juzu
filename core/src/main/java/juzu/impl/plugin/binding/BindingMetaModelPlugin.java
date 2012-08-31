@@ -121,7 +121,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (key.getType().equals(BINDINGS)) {
-      ProcessingContext env = metaModel.model.env;
+      ProcessingContext env = metaModel.model.processingContext;
 
       //
       TypeMirror providerFactoryTM = env.getTypeElement(ProviderFactory.class.getName()).asType();

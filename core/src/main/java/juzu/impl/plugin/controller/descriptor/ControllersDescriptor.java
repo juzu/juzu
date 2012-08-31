@@ -41,7 +41,7 @@ public class ControllersDescriptor extends Descriptor {
   private final List<ControllerDescriptor> controllers;
 
   /** . */
-  private final List<MethodDescriptor> methods;
+  private final ArrayList<MethodDescriptor> methods;
 
   /** . */
   private final ArrayList<juzu.impl.inject.BeanDescriptor> beans;
@@ -57,7 +57,7 @@ public class ControllersDescriptor extends Descriptor {
 
   public ControllersDescriptor(ClassLoader loader, JSON config) throws Exception {
     List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();
-    List<MethodDescriptor> controllerMethods = new ArrayList<MethodDescriptor>();
+    ArrayList<MethodDescriptor> controllerMethods = new ArrayList<MethodDescriptor>();
     ArrayList<juzu.impl.inject.BeanDescriptor> beans = new ArrayList<juzu.impl.inject.BeanDescriptor>();
     HashMap<MethodHandle, MethodDescriptor> byHandle = new HashMap<MethodHandle, MethodDescriptor>();
 

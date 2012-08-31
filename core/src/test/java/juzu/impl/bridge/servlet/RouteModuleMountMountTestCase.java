@@ -28,6 +28,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import java.net.HttpURLConnection;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteModuleMountMountTestCase extends AbstractStandaloneTestCase {
@@ -49,32 +50,32 @@ public class RouteModuleMountMountTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testRenderIndexApp1() throws Exception {
-    String url = deploymentURL.toURI().resolve("app1").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("app1").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("app1:index", index);
   }
 
   @Test
   public void testRenderRouteApp1() throws Exception {
-    String url = deploymentURL.toURI().resolve("app1/bar").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("app1/bar").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("app1:bar", index);
   }
 
   @Test
   public void testRenderIndexApp2() throws Exception {
-    String url = deploymentURL.toURI().resolve("app2").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("app2").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("app2:index", index);
   }
 
   @Test
   public void testRenderRouteApp2() throws Exception {
-    String url = deploymentURL.toURI().resolve("app2/bar").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("app2/bar").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("app2:bar", index);
   }

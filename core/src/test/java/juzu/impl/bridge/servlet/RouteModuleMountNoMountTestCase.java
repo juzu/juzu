@@ -50,16 +50,16 @@ public class RouteModuleMountNoMountTestCase extends AbstractStandaloneTestCase 
 
   @Test
   public void testRenderIndexApp1() throws Exception {
-    String url = deploymentURL.toURI().resolve("app1").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("app1").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("app1:index", index);
   }
 
   @Test
   public void testRenderRouteApp1() throws Exception {
-    String url = deploymentURL.toURI().resolve("app1/bar").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("app1/bar").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("app1:bar", index);
   }

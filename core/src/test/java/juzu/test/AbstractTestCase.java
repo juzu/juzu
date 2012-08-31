@@ -45,6 +45,7 @@ public abstract class AbstractTestCase extends Assert {
 
   @Before
   public void setUp() throws Exception {
+    Registry.clear();
   }
 
   @After

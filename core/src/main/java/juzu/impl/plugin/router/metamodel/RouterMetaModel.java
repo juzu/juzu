@@ -20,6 +20,7 @@
 package juzu.impl.plugin.router.metamodel;
 
 import juzu.impl.compiler.ElementHandle;
+import juzu.impl.compiler.MessageCode;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
@@ -28,6 +29,9 @@ import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouterMetaModel extends MetaModelObject {
+
+  /** . */
+  public static final MessageCode ROUTER_DUPLICATE_ROUTE = new MessageCode("ROUTER_DUPLICATE_ROUTE", "The route %1s is already declared");
 
   /** . */
   public final static Key<RouterMetaModel> KEY = Key.of(RouterMetaModel.class);

@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.servlet;
 
+import juzu.test.Registry;
 import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -28,6 +29,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import java.net.HttpURLConnection;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteModuleMountTestCase extends AbstractStandaloneTestCase {
@@ -49,17 +51,19 @@ public class RouteModuleMountTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testRenderIndex() throws Exception {
-    String url = deploymentURL.toURI().resolve("foo").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("foo").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("index", index);
+    assertEquals(url, new URL((String)Registry.get("url")));
   }
 
   @Test
   public void testRenderPath() throws Exception {
-    String url = deploymentURL.toURI().resolve("foo/bar").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("foo/bar").toURL();
+    driver.get(url.toString());
     String bar = driver.findElement(By.tagName("body")).getText();
     assertEquals("bar", bar);
+    assertEquals(url, new URL((String)Registry.get("url")));
   }
 }

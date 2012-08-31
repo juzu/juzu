@@ -31,7 +31,7 @@ import java.util.Set;
 public class MetaModel<P extends MetaModelPlugin<M, P>, M extends MetaModel<P, M>> extends MetaModelObject {
 
   /** . */
-  public ProcessingContext env;
+  public ProcessingContext processingContext;
 
   /** . */
   protected final EventQueue dispatch = new EventQueue();

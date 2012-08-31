@@ -20,6 +20,7 @@
 package juzu.impl.metamodel;
 
 import juzu.impl.common.Tools;
+import juzu.impl.compiler.CompilationError;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.router.metamodel.RouteMetaModel;
 import juzu.impl.plugin.router.metamodel.RouterMetaModel;
@@ -30,7 +31,9 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouterTestCase extends AbstractTestCase {
@@ -60,5 +63,28 @@ public class RouterTestCase extends AbstractTestCase {
     RouteMetaModel app2 = children.get("/app2");
     assertNull(app2.getPriorities());
     assertEquals(Collections.singletonMap("application", "metamodel.router.module.app2"), app2.getTargets());
+  }
+
+  @Test
+  public void testDuplicateMethodRoute() throws Exception {
+    CompilerAssert<File, File> helper = compiler("metamodel", "router", "duplicate", "methodroute").formalErrorReporting(true);
+    List<CompilationError> errors =  helper.failCompile();
+    assertEquals(1, errors.size());
+    CompilationError error = errors.get(0);
+    assertSame(RouterMetaModel.ROUTER_DUPLICATE_ROUTE, error.getCode());
+    assertEquals(Arrays.asList("/foo"), error.getArguments());
+    assertEquals("/metamodel/router/duplicate/methodroute/A.java", error.getSource());
+  }
+
+  @Test
+  public void testDuplicatePackageRoute() throws Exception {
+    CompilerAssert<File, File> helper = compiler("metamodel", "router", "duplicate", "packageroute").formalErrorReporting(true);
+    List<CompilationError> errors =  helper.failCompile();
+    assertEquals(1, errors.size());
+    CompilationError error = errors.get(0);
+    assertSame(RouterMetaModel.ROUTER_DUPLICATE_ROUTE, error.getCode());
+    assertEquals(Arrays.asList("/foo"), error.getArguments());
+    String src = error.getSource();
+    assertTrue(Pattern.compile("/metamodel/router/duplicate/packageroute/app[12]/package-info\\.java").matcher(src).matches());
   }
 }

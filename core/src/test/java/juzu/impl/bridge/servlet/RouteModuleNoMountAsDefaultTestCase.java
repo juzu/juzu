@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.servlet;
 
+import juzu.test.Registry;
 import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -26,6 +27,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteModuleNoMountAsDefaultTestCase extends AbstractStandaloneTestCase {
@@ -43,21 +46,24 @@ public class RouteModuleNoMountAsDefaultTestCase extends AbstractStandaloneTestC
     driver.get(deploymentURL.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("index", index);
+    assertEquals(deploymentURL, new URL((String)Registry.get("url")));
   }
 
   @Test
   public void testRenderPath() throws Exception {
-    String url = deploymentURL.toURI().resolve("bar").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("bar").toURL();
+    driver.get(url.toString());
     String bar = driver.findElement(By.tagName("body")).getText();
     assertEquals("bar", bar);
+    assertEquals(url, new URL((String)Registry.get("url")));
   }
 
   @Test
   public void testRenderAny() throws Exception {
-    String url = deploymentURL.toURI().resolve("any").toURL().toString();
-    driver.get(url);
+    URL url = deploymentURL.toURI().resolve("any").toURL();
+    driver.get(url.toString());
     String index = driver.findElement(By.tagName("body")).getText();
     assertEquals("index", index);
+    assertEquals(deploymentURL, new URL((String)Registry.get("url")));
   }
 }

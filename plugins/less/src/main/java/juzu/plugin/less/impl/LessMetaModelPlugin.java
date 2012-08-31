@@ -114,7 +114,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
     for (Map.Entry<QN, AnnotationState> entry : clone.entrySet()) {
       AnnotationState annotation = entry.getValue();
       QN pkg = entry.getKey();
-      ProcessingContext env = metaModel.env;
+      ProcessingContext env = metaModel.processingContext;
       ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
       PackageElement pkgElt = env.get(pkgHandle);
       Boolean minify = (Boolean)annotation.get("minify");
