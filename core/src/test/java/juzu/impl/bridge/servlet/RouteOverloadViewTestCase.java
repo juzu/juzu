@@ -26,47 +26,26 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteModuleMultiMountDefaultNoMountTestCase extends AbstractStandaloneTestCase {
+public class RouteOverloadViewTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.module.multi.mountnomount.app2", "bridge.servlet.route.module.multi.mountnomount");
+    return createDeployment("bridge.servlet.route.overload.view");
   }
 
   @Drone
   WebDriver driver;
 
   @Test
-  public void testRenderDefault() throws Exception {
-    driver.get(deploymentURL.toString());
-    String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app2:index", index);
+  public void testView() throws Exception {
+    driver.get(deploymentURL.toURI().resolve("foo").toURL().toString());
+    WebElement trigger = driver.findElement(By.tagName("body"));
+    assertEquals("foo", trigger.getText());
+    driver.get(deploymentURL.toURI().resolve("bar").toURL().toString() + "?p=p_value");
+    trigger = driver.findElement(By.tagName("body"));
+    assertEquals("foo(p_value)", trigger.getText());
   }
-
-  @Test
-  public void testRenderIndexApp1() throws Exception {
-    String url = deploymentURL.toURI().resolve("app1").toURL().toString();
-    driver.get(url);
-    String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app1:index", index);
-  }
-
-  @Test
-  public void testRenderRouteApp1() throws Exception {
-    String url = deploymentURL.toURI().resolve("app1/bar").toURL().toString();
-    driver.get(url);
-    String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app1:bar", index);
-  }
-
-  @Test
-  public void testRenderAny() throws Exception {
-    String url = deploymentURL.toURI().resolve("any").toURL().toString();
-    driver.get(url);
-    String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app2:index", index);
-  }
-
 }

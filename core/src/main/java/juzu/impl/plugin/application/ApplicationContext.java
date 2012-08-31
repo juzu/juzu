@@ -133,7 +133,7 @@ public class ApplicationContext {
     //
     if (method == null) {
       StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
-        "phase=" + phase + " and parameters={");
+        "phase=").append(phase).append(" handle=").append(handle).append(" parameters={");
       int index = 0;
       for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
         if (index++ > 0) {

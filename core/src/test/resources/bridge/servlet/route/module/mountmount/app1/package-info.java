@@ -17,24 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.servlet.route.module.multi.mountmount.app2;
+@Application
+@Route("/app1")
+package bridge.servlet.route.module.mountmount.app1;
 
-import juzu.Controller;
-import juzu.Response;
+import juzu.Application;
 import juzu.Route;
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
-
-  @View
-  public Response.Content index() {
-    return Response.render("app2:index");
-  }
-
-  @View
-  @Route("/bar")
-  public Response.Content bar() {
-    return Response.render("app2:bar");
-  }
-}

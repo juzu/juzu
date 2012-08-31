@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.servlet.route.module.multi.mountnomount.app1;
+package bridge.servlet.route.module.mountnomount.app1;
 
 import juzu.Controller;
 import juzu.Response;

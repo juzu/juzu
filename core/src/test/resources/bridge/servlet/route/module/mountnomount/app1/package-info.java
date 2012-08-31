@@ -19,7 +19,7 @@
 
 @Application
 @Route("/app1")
-package bridge.servlet.route.module.multi.mountmount.app1;
+package bridge.servlet.route.module.mountnomount.app1;
 
 import juzu.Application;
 import juzu.Route;

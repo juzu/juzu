@@ -28,11 +28,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteModuleMultiDefaultMountMountTestCase extends AbstractStandaloneTestCase {
+public class RouteModuleMountAsDefaultNoMountTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.module.multi.mountmount.app1", "bridge.servlet.route.module.multi.mountmount");
+    return createDeployment("bridge.servlet.route.module.mountnomount.app1", "bridge.servlet.route.module.mountnomount");
   }
 
   @Drone
@@ -62,18 +62,11 @@ public class RouteModuleMultiDefaultMountMountTestCase extends AbstractStandalon
   }
 
   @Test
-  public void testRenderIndexApp2() throws Exception {
-    String url = deploymentURL.toURI().resolve("app2").toURL().toString();
+  public void testRenderAny() throws Exception {
+    String url = deploymentURL.toURI().resolve("foo").toURL().toString();
     driver.get(url);
     String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app2:index", index);
+    assertEquals("app1:index", index);
   }
 
-  @Test
-  public void testRenderRouteApp2() throws Exception {
-    String url = deploymentURL.toURI().resolve("app2/bar").toURL().toString();
-    driver.get(url);
-    String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app2:bar", index);
-  }
 }

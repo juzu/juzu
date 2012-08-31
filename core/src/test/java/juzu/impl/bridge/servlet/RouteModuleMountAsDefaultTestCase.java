@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.servlet;
 
+import juzu.test.Registry;
 import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -27,49 +28,41 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteModuleMultiDefaultMountNoMountTestCase extends AbstractStandaloneTestCase {
+public class RouteModuleMountAsDefaultTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.module.multi.mountnomount.app1", "bridge.servlet.route.module.multi.mountnomount");
+    return createDeployment("bridge.servlet.route.module.mount");
   }
 
   @Drone
   WebDriver driver;
 
   @Test
-  public void testRenderDefault() throws Exception {
+  public void testRenderRoot() throws Exception {
     driver.get(deploymentURL.toString());
     String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app1:index", index);
+    assertEquals("index", index);
   }
 
   @Test
-  public void testRenderIndexApp1() throws Exception {
-    String url = deploymentURL.toURI().resolve("app1").toURL().toString();
-    driver.get(url);
-    String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app1:index", index);
-  }
-
-  @Test
-  public void testRenderRouteApp1() throws Exception {
-    String url = deploymentURL.toURI().resolve("app1/bar").toURL().toString();
-    driver.get(url);
-    String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app1:bar", index);
-  }
-
-  @Test
-  public void testRenderAny() throws Exception {
+  public void testRenderIndex() throws Exception {
     String url = deploymentURL.toURI().resolve("foo").toURL().toString();
     driver.get(url);
     String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("app1:index", index);
+    assertEquals("index", index);
   }
 
+  @Test
+  public void testRenderPath() throws Exception {
+    URL url = deploymentURL.toURI().resolve("foo/bar").toURL();
+    Registry.clear();
+    driver.get(url.toString());
+    String bar = driver.findElement(By.tagName("body")).getText();
+    assertEquals("bar", bar);
+    assertEquals(url, new URL((String)Registry.get("url")));
+  }
 }

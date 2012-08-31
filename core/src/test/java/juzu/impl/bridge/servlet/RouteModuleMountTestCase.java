@@ -27,12 +27,14 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import java.net.HttpURLConnection;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteModuleSingleTestCase extends AbstractStandaloneTestCase {
+public class RouteModuleMountTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.module.single");
+    return createDeployment(null, "bridge.servlet.route.module.mount");
   }
 
   @Drone
@@ -40,9 +42,9 @@ public class RouteModuleSingleTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testRenderRoot() throws Exception {
-    driver.get(deploymentURL.toString());
-    String index = driver.findElement(By.tagName("body")).getText();
-    assertEquals("index", index);
+    HttpURLConnection conn = (HttpURLConnection)deploymentURL.openConnection();
+    conn.connect();
+    assertEquals(404, conn.getResponseCode());
   }
 
   @Test
