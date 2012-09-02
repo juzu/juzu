@@ -17,10 +17,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router;
+package juzu.impl.router.parser;
 
-import juzu.impl.router.RouteParser;
-import juzu.impl.router.RouteParserHandler;
 import juzu.impl.router.regex.SyntaxException;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
@@ -41,7 +39,7 @@ public class RouteParserTestCase extends AbstractTestCase {
     /** . */
     private final StringBuilder buffer = new StringBuilder();
 
-    public void openSegment() {
+    public void segmentOpen() {
       buffer.append("/");
     }
 
@@ -49,13 +47,17 @@ public class RouteParserTestCase extends AbstractTestCase {
       buffer.append(s, from, to);
     }
 
-    public void closeSegment() {
+    public void segmentClose() {
       chunks.add(buffer.toString());
       buffer.setLength(0);
     }
 
-    public void closePath() {
-      chunks.add("$");
+    public void pathClose(boolean slash) {
+      if (slash) {
+        chunks.add("/$");
+      } else {
+        chunks.add("$");
+      }
     }
 
     public void query() {
@@ -74,31 +76,31 @@ public class RouteParserTestCase extends AbstractTestCase {
       buffer.append('=');
     }
 
-    public void openExpr() {
+    public void exprOpen() {
       buffer.append('{');
     }
 
-    public void pattern(CharSequence s, int from, int to) {
+    public void exprPattern(CharSequence s, int from, int to) {
       buffer.append('<');
       buffer.append(s, from, to);
       buffer.append('>');
     }
 
-    public void modifiers(CharSequence s, int from, int to) {
+    public void exprModifiers(CharSequence s, int from, int to) {
       buffer.append('[');
       buffer.append(s, from, to);
       buffer.append(']');
     }
 
-    public void ident(CharSequence s, int from, int to) {
+    public void exprIdent(CharSequence s, int from, int to) {
       buffer.append(s, from, to);
     }
 
-    public void closeExpr() {
+    public void exprClose() {
       buffer.append('}');
     }
 
-    public void endQueryParam() {
+    public void queryParamClose() {
       chunks.add(buffer.toString());
       buffer.setLength(0);
     }
@@ -133,9 +135,8 @@ public class RouteParserTestCase extends AbstractTestCase {
     assertEquals(Arrays.asList("$"), parse(""));
     assertEquals(Arrays.asList("/a", "$"), parse("a"));
     assertEquals(Arrays.asList("/a", "$"), parse("/a"));
-    assertEquals(Arrays.asList("/a", "$"), parse("a/"));
+
     assertEquals(Arrays.asList("/a", "$"), parse("//a"));
-    assertEquals(Arrays.asList("/a", "$"), parse("a//"));
     assertEquals(Arrays.asList("/a", "/b", "$"), parse("a/b"));
   }
   
@@ -143,6 +144,19 @@ public class RouteParserTestCase extends AbstractTestCase {
   public void testPathParam() {
     assertEquals(Arrays.asList("/{a}", "$"), parse("{a}"));
     assertEquals(Arrays.asList("/a{b}c", "$"), parse("a{b}c"));
+  }
+
+  @Test
+  public void testEndWithSeparator() {
+    assertEquals(Arrays.asList("/$"), parse("/"));
+    assertEquals(Arrays.asList("/a", "/$"), parse("a/"));
+    assertEquals(Arrays.asList("/a", "/$"), parse("a//"));
+    assertEquals(Arrays.asList("/a", "/$"), parse("/a/"));
+    assertEquals(Arrays.asList("/a", "/$"), parse("/a//"));
+    assertEquals(Arrays.asList("/$", "?"), parse("/?"));
+    assertEquals(Arrays.asList("/$", "?"), parse("//?"));
+    assertEquals(Arrays.asList("/a", "/$", "?"), parse("/a/?"));
+    assertEquals(Arrays.asList("/a", "/$", "?"), parse("/a//?"));
   }
 
   @Test

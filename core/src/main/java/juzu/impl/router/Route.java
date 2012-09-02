@@ -21,6 +21,8 @@ package juzu.impl.router;
 
 //import javanet.staxutils.IndentingXMLStreamWriter;
 
+import juzu.impl.router.parser.RouteParser;
+import juzu.impl.router.parser.RouteParserHandler;
 import juzu.impl.router.regex.RE;
 import juzu.impl.router.regex.SyntaxException;
 import juzu.impl.common.QualifiedName;
@@ -967,7 +969,7 @@ public class Route {
       PathParam.Builder paramDesc;
       RequestParam.Builder requestParam;
       boolean lastSegment;
-      public void openSegment() {
+      public void segmentOpen() {
         builder.clear().expr("^/");
         chunks.clear();
         parameterPatterns.clear();
@@ -978,7 +980,7 @@ public class Route {
         chunks.add(s.subSequence(from, to).toString());
         lastSegment = true;
       }
-      public void closeSegment() {
+      public void segmentClose() {
         if (!lastSegment) {
           chunks.add("");
         }
@@ -999,7 +1001,7 @@ public class Route {
         current = current.add(next);
       }
 
-      public void closePath() {
+      public void pathClose(boolean slash) {
         if (Route.this == current) {
           // Generate a route if no path segment was parsed
           current = current.add(new SegmentRoute(router, ""));
@@ -1013,7 +1015,7 @@ public class Route {
         String name = s.subSequence(from, to).toString();
         requestParam = RequestParam.builder().setName(name);
       }
-      public void endQueryParam() {
+      public void queryParamClose() {
         current.add(requestParam.build(router));
       }
       public void queryParamRHS() {
@@ -1021,7 +1023,7 @@ public class Route {
       public void queryParamRHS(CharSequence s, int from, int to) {
         requestParam.matchByValue(s.subSequence(from, to).toString());
       }
-      public void openExpr() {
+      public void exprOpen() {
         if (path) {
           paramDesc = PathParam.builder();
           if (!lastSegment) {
@@ -1029,14 +1031,14 @@ public class Route {
           }
         }
       }
-      public void pattern(CharSequence s, int from, int to) {
+      public void exprPattern(CharSequence s, int from, int to) {
         if (path) {
           paramDesc.setPattern(s.subSequence(from, to).toString());
         } else {
           requestParam.matchByPattern(s.subSequence(from, to).toString());
         }
       }
-      public void modifiers(CharSequence s, int from, int to) {
+      public void exprModifiers(CharSequence s, int from, int to) {
         while (from < to) {
           char modifier = s.charAt(from++);
           if (path) {
@@ -1068,7 +1070,7 @@ public class Route {
           }
         }
       }
-      public void ident(CharSequence s, int from, int to) {
+      public void exprIdent(CharSequence s, int from, int to) {
         String parameterName = s.subSequence(from, to).toString();
         QualifiedName qn = QualifiedName.parse(parameterName);
         if (path) {
@@ -1077,7 +1079,7 @@ public class Route {
           requestParam.setQualifiedName(qn);
         }
       }
-      public void closeExpr() {
+      public void exprClose() {
         if (path) {
           lastSegment = false;
 

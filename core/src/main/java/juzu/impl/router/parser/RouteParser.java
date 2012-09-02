@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router;
+package juzu.impl.router.parser;
 
 import juzu.impl.router.regex.SyntaxException;
 import juzu.impl.common.Location;
@@ -108,15 +108,17 @@ public class RouteParser {
             if (c == '/') {
               from++;
             } else if (c == '?') {
-              handler.closePath();
+              boolean slash = from > pos && s.charAt(from - 1) == '/';
+              handler.pathClose(slash);
               status = READ_QUESTION_MARK;
             } else {
-              handler.openSegment();
+              handler.segmentOpen();
               status = READ_SEGMENT;
               pos = from;
             }
           } else {
-            handler.closePath();
+            boolean slash = from > pos && s.charAt(from - 1) == '/';
+            handler.pathClose(slash);
             status = READ_DONE;
           }
           break;
@@ -128,21 +130,21 @@ public class RouteParser {
               if (from - pos > 0) {
                 handler.segmentChunk(s, pos, from);
               }
-              handler.openExpr();
+              handler.exprOpen();
               from = pos = parseExpr(s, from + 1, to, handler);
-              handler.closeExpr();
+              handler.exprClose();
             } else if (c == '/') {
               status = READ_PATH;
               if (from - pos > 0) {
                 handler.segmentChunk(s, pos, from);
               }
-              handler.closeSegment();
+              handler.segmentClose();
             } else if (c == '?') {
               if (from - pos > 0) {
                 handler.segmentChunk(s, pos, from);
               }
-              handler.closeSegment();
-              handler.closePath();
+              handler.segmentClose();
+              handler.pathClose(false);
               status = READ_QUESTION_MARK;
             } else {
               ++from;
@@ -151,9 +153,8 @@ public class RouteParser {
             if (from - pos > 0) {
               handler.segmentChunk(s, pos, from);
             }
-            handler.closeSegment();
+            handler.segmentClose();
             status = READ_PATH;
-            from++;
           }
           break;
         }
@@ -180,7 +181,7 @@ public class RouteParser {
             } else if (c == '&') {
               if (from - pos > 0) {
                 handler.queryParamLHS(s, pos, from);
-                handler.endQueryParam();
+                handler.queryParamClose();
                 pos = ++from;
               } else {
                 throw new SyntaxException(CODE_INVALID_AMPERSAND_CHAR, "Invalid char & at index " + from, Location.at(1 + from));
@@ -191,7 +192,7 @@ public class RouteParser {
           } else {
             if (from - pos > 0) {
               handler.queryParamLHS(s, pos, from);
-              handler.endQueryParam();
+              handler.queryParamClose();
             }
             status = READ_DONE;
           }
@@ -204,15 +205,15 @@ public class RouteParser {
               if (from - pos > 0) {
                 handler.queryParamRHS(s, pos, from);
               }
-              handler.endQueryParam();
+              handler.queryParamClose();
               pos = ++from;
               status = READ_QUERY_LHS;
             } else if (c == '{') {
               if (from - pos == 0) {
-                handler.openExpr();
+                handler.exprOpen();
                 from = pos = parseExpr(s, ++from, to, handler);
-                handler.closeExpr();
-                handler.endQueryParam();
+                handler.exprClose();
+                handler.queryParamClose();
                 status = READ_QUERY_LHS;
               } else {
                 from++;
@@ -222,7 +223,7 @@ public class RouteParser {
             }
           } else {
             handler.queryParamRHS(s, pos, from);
-            handler.endQueryParam();
+            handler.queryParamClose();
             status = READ_DONE;
           }
           break;
@@ -255,7 +256,7 @@ public class RouteParser {
           if (from < to) {
             char c = s.charAt(from);
             if (c == '}') {
-              handler.ident(s, pos, from);
+              handler.exprIdent(s, pos, from);
               return ++from;
             } else {
               if (c == '<') {
@@ -277,7 +278,7 @@ public class RouteParser {
           if (from < to) {
             char c = s.charAt(from);
             if (c == '}') {
-              handler.ident(s, pos, from);
+              handler.exprIdent(s, pos, from);
               return ++from;
             } else {
               ++from;
@@ -292,7 +293,7 @@ public class RouteParser {
             char c = s.charAt(from);
             if (c == '>') {
               if (from - pos > 0) {
-                handler.pattern(s, pos, from);
+                handler.exprPattern(s, pos, from);
                 pos = ++from;
                 status = EXPR_AFTER_REGEX;
                 break;
@@ -330,7 +331,7 @@ public class RouteParser {
           if (from < to) {
             char c = s.charAt(from);
             if (c == ']') {
-              handler.modifiers(s, pos, from);
+              handler.exprModifiers(s, pos, from);
               status = EXPR_IDENT;
               pos = ++from;
               break;
