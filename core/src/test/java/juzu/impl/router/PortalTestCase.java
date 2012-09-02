@@ -84,32 +84,6 @@ public class PortalTestCase extends AbstractControllerTestCase {
   }
 
   @Test
-  public void testDuplicateRouteWithDifferentRouteParam() throws Exception {
-    RouterAssert router = new RouterAssert();
-    router.append("?bar={<bar_value>bar}").addParam("foo", "foo_1");
-    router.append("/").addParam("foo", "foo_2");
-
-    //
-    Map<QualifiedName, String> expected = new HashMap<QualifiedName, String>();
-    expected.put(Names.FOO, "foo_1");
-    expected.put(Names.BAR, "bar_value");
-    router.assertRoute(expected, "/", Collections.singletonMap("bar", "bar_value"));
-    URIHelper rc = new URIHelper();
-    router.render(expected, rc.writer);
-    assertEquals("/", rc.getPath());
-    assertMapEquals(Collections.<String, String[]>singletonMap("bar", new String[]{"bar_value"}), rc.getQueryParams());
-
-    //
-    expected = new HashMap<QualifiedName, String>();
-    expected.put(Names.FOO, "foo_2");
-    router.assertRoute(expected, "/", Collections.singletonMap("bar", "flabbergast"));
-    rc = new URIHelper();
-    router.render(expected, rc.writer);
-    assertEquals("/", rc.getPath());
-    assertEquals(null, rc.getQueryParams());
-  }
-
-  @Test
   public void testJSMin() throws Exception {
     RouterAssert router = new RouterAssert();
     router.append("/foo{<-(min)|>[c]gtn:min}.js");

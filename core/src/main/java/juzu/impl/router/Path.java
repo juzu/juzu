@@ -38,9 +38,6 @@ class Path {
     }
   }
 
-  /** Constant. */
-  public static final Path SLASH = Path.parse("/");
-
   private static final class Data {
 
     private int hex(char c) {
@@ -216,7 +213,7 @@ class Path {
     }
     else {
       int i = offset + index;
-      if (i >= data.value.length()) {
+      if (i > data.value.length()) {
         throw new IndexOutOfBoundsException("Index can't be greater than length");
       }
       return new Path(data, i);
@@ -239,5 +236,10 @@ class Path {
       throw new IndexOutOfBoundsException("Index can't be greater than length");
     }
     return pos;
+  }
+
+  @Override
+  public String toString() {
+    return "Path[" + value + "]";
   }
 }

@@ -52,6 +52,18 @@ import java.util.Set;
  */
 public class Route {
 
+  /** . */
+  private static final int TERMINATION_NONE = 0;
+
+  /** . */
+  private static final int TERMINATION_SEGMENT = 1;
+
+  /** . */
+  private static final int TERMINATION_SEPARATOR = 2;
+
+  /** . */
+  private static final int TERMINATION_ANY = 3;
+
   void writeTo(XMLStreamWriter writer) throws XMLStreamException {
     if (this instanceof SegmentRoute) {
       writer.writeStartElement("segment");
@@ -67,7 +79,7 @@ public class Route {
       path.append(pr.chunks[pr.chunks.length - 1]);
       writer.writeStartElement("pattern");
       writer.writeAttribute("path", path.toString());
-      writer.writeAttribute("terminal", Boolean.toString(terminal));
+      writer.writeAttribute("terminal", Integer.toString(terminal));
       for (PathParam param : pr.params) {
         writer.writeStartElement("path-param");
         writer.writeAttribute("qname", param.name.getValue());
@@ -157,7 +169,7 @@ public class Route {
   private List<Route> path;
 
   /** . */
-  private boolean terminal;
+  private int terminal;
 
   /** . */
   private Route[] children;
@@ -187,7 +199,7 @@ public class Route {
     //
     this.path = Collections.singletonList(this);
     this.parent = null;
-    this.terminal = false;
+    this.terminal = TERMINATION_NONE;
     this.children = EMPTY_ROUTE_ARRAY;
     this.routeParamMap = Collections.emptyMap();
     this.routeParamArray = EMPTY_ROUTE_PARAM_ARRAY;
@@ -326,7 +338,7 @@ public class Route {
     if (matches(context)) {
 
       //
-      if (context.isEmpty() && terminal) {
+      if (context.isEmpty() && terminal != TERMINATION_NONE) {
         match = new RouteMatch(this, context);
       }
 
@@ -489,8 +501,6 @@ public class Route {
     static enum Status {
       BEGIN,
 
-      MATCHED_PARAMS,
-
       PROCESS_CHILDREN,
 
       MATCHED,
@@ -640,31 +650,11 @@ public class Route {
         //
         if (matched) {
           // We enter next state
-          current.status = RouteFrame.Status.MATCHED_PARAMS;
+          current.status = RouteFrame.Status.PROCESS_CHILDREN;
         }
         else {
           current.status = RouteFrame.Status.END;
         }
-      }
-      else if (current.status == RouteFrame.Status.MATCHED_PARAMS) {
-        RouteFrame.Status next;
-
-        // Anything that does not begin with '/' returns null
-        if (current.path.length() > 0 && current.path.charAt(0) == '/') {
-          // The '/' means the current controller if any, otherwise it may be processed by the pattern matching
-          if (current.path.length() == 1 && current.route.terminal) {
-            next = RouteFrame.Status.MATCHED;
-          }
-          else {
-            next = RouteFrame.Status.PROCESS_CHILDREN;
-          }
-        }
-        else {
-          next = RouteFrame.Status.END;
-        }
-
-        //
-        current.status = next;
       }
       else if (current.status == RouteFrame.Status.PROCESS_CHILDREN) {
         if (current.childIndex < current.route.children.length) {
@@ -677,63 +667,53 @@ public class Route {
           if (child instanceof SegmentRoute) {
             SegmentRoute segmentRoute = (SegmentRoute)child;
 
+            // Remove any leading slashes
+            int POS = 0;
+            while (POS < current.path.length() && current.path.charAt(POS) == '/') {
+              POS++;
+            }
+
+            // Find the next '/' for determining the segment and next path
+            // JULIEN : this can be computed multiple times
+            int pos = current.path.indexOf('/', POS);
+            if (pos == -1) {
+              pos = current.path.length();
+            }
+
             //
-            if (segmentRoute.name.length() == 0) {
+            String segment = current.path.getValue().substring(POS, pos);
+
+            // Determine next path
+            if (segmentRoute.name.equals(segment)) {
+              // Lazy create next segment path
+              // JULIEN : this can be computed multiple times
+              Path nextSegmentPath = current.path.subPath(pos);
+
               // Delegate the process to the next route
-              next = new RouteFrame(current, segmentRoute, current.path);
+              next = new RouteFrame(current, segmentRoute, nextSegmentPath);
             }
             else {
-              // Find the next '/' for determining the segment and next path
-              // JULIEN : this can be computed multiple times
-              int pos = current.path.indexOf('/', 1);
-              if (pos == -1) {
-                pos = current.path.length();
-              }
-              String segment = current.path.getValue().substring(1, pos);
-
-              // Determine next path
-              if (segmentRoute.name.equals(segment)) {
-                // Lazy create next segment path
-                // JULIEN : this can be computed multiple times
-                Path nextSegmentPath;
-                if (pos == current.path.length()) {
-                  // todo make a constant
-                  nextSegmentPath = Path.SLASH;
-                }
-                else {
-                  nextSegmentPath = current.path.subPath(pos);
-                }
-
-                // Delegate the process to the next route
-                next = new RouteFrame(current, segmentRoute, nextSegmentPath);
-              }
-              else {
-                next = null;
-              }
+              next = null;
             }
           }
           else if (child instanceof PatternRoute) {
             PatternRoute patternRoute = (PatternRoute)child;
 
+            // We skip one '/' , should we skip more ? this raise issues with path encoding that manages '/'
+            // need to figure out later
+            Path path = current.path;
+            if (path.length() > 0 && path.charAt(0) == '/') {
+              path = path.subPath(1);
+            }
+
             //
-            RE.Match[] matches = patternRoute.pattern.re.matcher().find(current.path.getValue());
+            RE.Match[] matches = patternRoute.pattern.re.matcher().find(path.getValue());
 
             // We match
             if (matches.length > 0) {
               // Build next controller context
               int nextPos = matches[0].getEnd();
-              Path nextPath;
-              if (current.path.length() == nextPos) {
-                nextPath = Path.SLASH;
-              }
-              else {
-                if (nextPos > 0 && current.path.charAt(nextPos - 1) == '/') {
-                  nextPos--;
-                }
-
-                //
-                nextPath = current.path.subPath(nextPos);
-              }
+              Path nextPath = path.subPath(nextPos);
 
               // Delegate to next patternRoute
               next = new RouteFrame(current, patternRoute, nextPath);
@@ -750,8 +730,8 @@ public class Route {
                     if (!param.preservePath) {
                       StringBuilder sb = new StringBuilder();
                       for (int from = match.getStart();from < match.getEnd();from++) {
-                        char c = current.path.charAt(from);
-                        if (c == child.router.separatorEscape && current.path.getRawLength(from) == 1) {
+                        char c = path.charAt(from);
+                        if (c == child.router.separatorEscape && path.getRawLength(from) == 1) {
                           c = '/';
                         }
                         sb.append(c);
@@ -789,7 +769,42 @@ public class Route {
           }
         }
         else {
-          current.status = RouteFrame.Status.END;
+
+          //
+          RouteFrame.Status next;
+
+          // Anything that does not begin with '/' returns null
+
+
+          int pos = 0;
+          while (pos < current.path.length() && current.path.charAt(pos) == '/') {
+            pos++;
+          }
+
+          // Are we done ?
+          if (pos == current.path.length()) {
+            switch (current.route.terminal) {
+              case TERMINATION_NONE:
+                next = RouteFrame.Status.END;
+                break;
+              case TERMINATION_SEGMENT:
+                next = pos == 0 ? RouteFrame.Status.MATCHED : RouteFrame.Status.END;
+                break;
+              case TERMINATION_SEPARATOR:
+                next = pos == 0 ? RouteFrame.Status.END : RouteFrame.Status.MATCHED;
+                break;
+              case TERMINATION_ANY:
+                next = RouteFrame.Status.MATCHED;
+                break;
+              default:
+                throw new AssertionError();
+            }
+          } else {
+            next = RouteFrame.Status.END;
+          }
+
+          //
+          current.status = next;
         }
       }
       else if (current.status == RouteFrame.Status.MATCHED) {
@@ -946,18 +961,21 @@ public class Route {
   }
 
   public Route append(String path) {
-    return append(path, true);
+    return append(path, RouteKind.MATCH);
   }
 
   public Route append(String path, Map<QualifiedName, String> params) {
-    return append(path, params, true);
+    return append(path, params, RouteKind.MATCH);
   }
 
-  public Route append(String path, boolean terminal) {
-    return append(path, Collections.<QualifiedName, String>emptyMap(), terminal);
+  public Route append(String path, RouteKind kind) {
+    return append(path, Collections.<QualifiedName, String>emptyMap(), kind);
   }
 
-  public Route append(String path, Map<QualifiedName, String> params, boolean terminal) {
+  public Route append(
+      String path,
+      Map<QualifiedName, String> params,
+      final RouteKind kind) {
 
     //
     class Assembler implements RouteParserHandler {
@@ -970,7 +988,7 @@ public class Route {
       RequestParam.Builder requestParam;
       boolean lastSegment;
       public void segmentOpen() {
-        builder.clear().expr("^/");
+        builder.clear().expr("");
         chunks.clear();
         parameterPatterns.clear();
         lastSegment = false;
@@ -992,8 +1010,8 @@ public class Route {
           // We want to satisfy one of the following conditions
           // - the next char after the matched expression is '/'
           // - the expression matched until the end
-          // - the match expression is the '/' expression
-          builder.expr("(?:(?<=^/)|(?=/)|$)");
+          // - the match expression is the empty expression
+          builder.expr("(?:(?<=^)|(?=/)|$)");
           next = new PatternRoute(router, router.compile(builder.build()), parameterPatterns, chunks);
         }
 
@@ -1002,9 +1020,17 @@ public class Route {
       }
 
       public void pathClose(boolean slash) {
-        if (Route.this == current) {
-          // Generate a route if no path segment was parsed
-          current = current.add(new SegmentRoute(router, ""));
+        // Set terminal status
+        switch (kind) {
+          case CONNECT:
+            current.terminal = TERMINATION_NONE;
+            break;
+          case MATCH:
+            current.terminal = slash ? TERMINATION_SEPARATOR : TERMINATION_SEGMENT;
+            break;
+          case MATCH_ANY:
+            current.terminal = TERMINATION_ANY;
+            break;
         }
       }
 
@@ -1106,9 +1132,6 @@ public class Route {
     for (Map.Entry<QualifiedName, String> entry : params.entrySet()) {
       asm.current.add(new RouteParam(entry.getKey(), entry.getValue()));
     }
-
-    // Set terminal status of last route
-    asm.current.terminal = terminal;
 
     //
     return asm.current;

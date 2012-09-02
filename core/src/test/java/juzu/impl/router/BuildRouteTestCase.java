@@ -37,7 +37,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
     assertEquals(0, router.getSegmentNames().size());
     assertEquals(1, router.getPatternSize());
     PatternRoute patternRoute = router.getPattern(0);
-    assertEquals("^/(?:([^/]+))(?:(?<=^/)|(?=/)|$)", patternRoute.pattern.re.getPattern());
+    assertEquals("(?:([^/]+))(?:(?<=^)|(?=/)|$)", patternRoute.pattern.re.getPattern());
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.A, patternRoute.params[0].name);
     assertEquals("^(.+)$", patternRoute.params[0].matchingRegex[0].re.getPattern());
@@ -56,7 +56,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
     assertEquals(0, router.getSegmentNames().size());
     assertEquals(1, router.getPatternSize());
     PatternRoute patternRoute = router.getPattern(0);
-    assertEquals("^/(?:([^/]+))(?:(?<=^/)|(?=/)|$)", patternRoute.pattern.re.getPattern());
+    assertEquals("(?:([^/]+))(?:(?<=^)|(?=/)|$)", patternRoute.pattern.re.getPattern());
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.Q_A, patternRoute.params[0].name);
     assertEquals("^(.+)$", patternRoute.params[0].matchingRegex[0].re.getPattern());
@@ -75,7 +75,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
     assertEquals(0, router.getSegmentNames().size());
     assertEquals(1, router.getPatternSize());
     PatternRoute patternRoute = router.getPattern(0);
-    assertEquals("^/(?:([^/]*))(?:(?<=^/)|(?=/)|$)", patternRoute.pattern.re.getPattern());
+    assertEquals("(?:([^/]*))(?:(?<=^)|(?=/)|$)", patternRoute.pattern.re.getPattern());
     assertEquals(1, patternRoute.params.length);
     assertEquals(Names.A, patternRoute.params[0].name);
     assertEquals("^(.*)$", patternRoute.params[0].matchingRegex[0].re.getPattern());

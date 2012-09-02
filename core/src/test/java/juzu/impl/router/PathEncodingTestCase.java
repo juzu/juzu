@@ -115,7 +115,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testD() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/{</[a-z]+/[a-z]+/?>p}");
+    router.append("/{</[a-z]+/[a-z]+/?>p}", RouteKind.MATCH_ANY);
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "/platform/administrator"), "/_platform_administrator");

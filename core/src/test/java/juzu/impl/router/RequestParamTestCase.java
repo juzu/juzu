@@ -36,7 +36,7 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testRoot() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("?a={<a>[r]foo}");
+    router.append("/?a={<a>[r]foo}");
 
     //
     assertNull(router.route("/"));
@@ -112,7 +112,7 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testInheritance() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/a?a={<a>[r]foo}", false).append("/b?b={<b>[r]bar}");
+    router.append("/a?a={<a>[r]foo}", RouteKind.CONNECT).append("/b?b={<b>[r]bar}");
 
     //
     assertNull(router.route("/a"));
@@ -146,7 +146,7 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testOptional() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("?a={<a>foo}");
+    router.append("/?a={<a>foo}");
 
     //
     router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/");
@@ -184,7 +184,7 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testLiteralMatch() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("?a={<foo_value>[o]foo}");
+    router.append("/?a={<foo_value>[o]foo}");
 
     //
     Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();
@@ -209,7 +209,7 @@ public class RequestParamTestCase extends AbstractControllerTestCase {
   @Test
   public void testCanonical() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("?a={[o]foo}");
+    router.append("/?a={[o]foo}");
 
     //
     Map<QualifiedName, String> parameters = new HashMap<QualifiedName, String>();

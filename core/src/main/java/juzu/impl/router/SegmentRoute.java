@@ -37,6 +37,11 @@ class SegmentRoute extends Route {
     super(router);
 
     //
+    if (name.length() == 0) {
+      throw new AssertionError("Should not happen");
+    }
+
+    //
     this.name = name;
     this.encodedName = PercentCodec.PATH_SEGMENT.encode(name);
   }

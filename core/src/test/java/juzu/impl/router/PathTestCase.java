@@ -109,6 +109,27 @@ public class PathTestCase extends AbstractTestCase {
   }
 
   @Test
+  public void testSubPath() {
+    Path path = Path.parse("foo");
+    assertEquals("foo", path.subPath(0).getValue());
+    assertEquals("oo", path.subPath(1).getValue());
+    assertEquals("o", path.subPath(2).getValue());
+    assertEquals("", path.subPath(3).getValue());
+    try {
+      path.subPath(4);
+      fail();
+    }
+    catch (IndexOutOfBoundsException expected) {
+    }
+    try {
+      path.subPath(-1);
+      fail();
+    }
+    catch (IndexOutOfBoundsException expected) {
+    }
+  }
+
+  @Test
   public void testInvalid() {
     // Not enough chars
     assertInvalid("%");
