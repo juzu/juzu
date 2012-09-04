@@ -22,6 +22,8 @@ package juzu.impl.router;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
+import java.util.Collections;
+
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
@@ -69,7 +71,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
   @Test
   public void testPatternSegment() throws Exception {
     Router router = new Router();
-    router.append("/{<.*>a}");
+    router.append("/{a}", Collections.singletonMap(Names.A, PathParam.builder().matchedBy(".*")));
 
     //
     assertEquals(0, router.getSegmentNames().size());

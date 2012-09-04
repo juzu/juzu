@@ -50,7 +50,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testParamDefaultForm() throws Exception {
     RouterAssert router = new RouterAssert();
-    Route a = router.append("/{<.+>p}");
+    Route a = router.append("/{p}", Collections.singletonMap(Names.P, PathParam.builder().matchedBy(".+")));
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "/"), "/_");
@@ -70,7 +70,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testAlternativeSepartorEscape() throws Exception {
     RouterAssert router = new RouterAssert(':');
-    Route a = router.append("/{<.+>p}");
+    Route a = router.append("/{p}", Collections.singletonMap(Names.P, PathParam.builder().matchedBy(".+")));
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "/"), "/:");
@@ -86,7 +86,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testBug() throws Exception {
     Router router = new Router();
-    Route a = router.append("/{<[^_]+>p}");
+    Route a = router.append("/{p}", Collections.singletonMap(Names.P, PathParam.builder().matchedBy("[^_]+")));
 
     // This is a *known* bug
     assertNull(router.route("/_"));
@@ -102,7 +102,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testParamPreservePath() throws Exception {
     RouterAssert router = new RouterAssert();
-    Route a = router.append("/{<[^/]+>[p]p}");
+    Route a = router.append("/{p}", Collections.singletonMap(Names.P, PathParam.builder().matchedBy("[^/]+").preservePath(true)));
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "_"), "/_");
@@ -115,7 +115,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testD() throws Exception {
     RouterAssert router = new RouterAssert();
-    Route a = router.append("/{</[a-z]+/[a-z]+/?>p}", RouteKind.MATCH_ANY);
+    Route a = router.append("/{p}", RouteKind.MATCH_ANY, Collections.singletonMap(Names.P, PathParam.builder().matchedBy("/[a-z]+/[a-z]+/?")));
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "/platform/administrator"), "/_platform_administrator");
@@ -132,7 +132,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testWildcardPathParamWithPreservePath() throws Exception {
     RouterAssert router = new RouterAssert();
-    Route a= router.append("/{<.*>[p]p}");
+    Route a= router.append("/{p}", Collections.singletonMap(Names.P, PathParam.builder().matchedBy(".*").preservePath(true)));
 
     // Render
     assertEquals("/", a.matches(Collections.singletonMap(Names.P, "")).render());
@@ -150,7 +150,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testWildcardParamPathWithDefaultForm() throws Exception {
     Router router = new Router();
-    Route a= router.append("/{<.*>p}");
+    Route a= router.append("/{p}", Collections.singletonMap(Names.P, PathParam.builder().matchedBy(".*")));
 
     //
     assertEquals("/_", a.matches(Collections.singletonMap(Names.P, "/")).render());

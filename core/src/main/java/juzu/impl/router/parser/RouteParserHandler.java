@@ -55,60 +55,9 @@ public interface RouteParserHandler {
   void pathClose(boolean slash);
 
   /**
-   * A query string exist, it can be the empty query string.
-   */
-  void query();
-
-  /**
-   * A query parameter left hand side.
-   *
-   * @param s the char sequence
-   * @param from the position to read from (inclusive)
-   * @param to the position to read to (exclusive)
-   */
-  void queryParamLHS(CharSequence s, int from, int to);
-
-  /**
-   * The query parameter has a right hand side (which can eventually be empty).
-   */
-  void queryParamRHS();
-
-  /**
-   * The query parameter right hand side value.
-   *
-   * @param s the char sequence
-   * @param from the position to read from (inclusive)
-   * @param to the position to read to (exclusive)
-   */
-  void queryParamRHS(CharSequence s, int from, int to);
-
-  /**
-   * Ends the query parameter.
-   */
-  void queryParamClose();
-
-  /**
    * Opens an expression.
    */
   void exprOpen();
-
-  /**
-   * The expression pattern.
-   *
-   * @param s the char sequence
-   * @param from the position to read from (inclusive)
-   * @param to the position to read to (exclusive)
-   */
-  void exprPattern(CharSequence s, int from, int to);
-
-  /**
-   * The expression modifiers.
-   *
-   * @param s the char sequence
-   * @param from the position to read from (inclusive)
-   * @param to the position to read to (exclusive)
-   */
-  void exprModifiers(CharSequence s, int from, int to);
 
   /**
    * The expression identifier.

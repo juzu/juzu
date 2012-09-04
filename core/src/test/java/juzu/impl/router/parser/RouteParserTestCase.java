@@ -64,32 +64,8 @@ public class RouteParserTestCase extends AbstractTestCase {
       chunks.add("?");
     }
 
-    public void queryParamLHS(CharSequence s, int from, int to) {
-      buffer.append(s, from, to);
-    }
-
-    public void queryParamRHS(CharSequence s, int from, int to) {
-      buffer.append(s, from, to);
-    }
-
-    public void queryParamRHS() {
-      buffer.append('=');
-    }
-
     public void exprOpen() {
       buffer.append('{');
-    }
-
-    public void exprPattern(CharSequence s, int from, int to) {
-      buffer.append('<');
-      buffer.append(s, from, to);
-      buffer.append('>');
-    }
-
-    public void exprModifiers(CharSequence s, int from, int to) {
-      buffer.append('[');
-      buffer.append(s, from, to);
-      buffer.append(']');
     }
 
     public void exprIdent(CharSequence s, int from, int to) {
@@ -98,11 +74,6 @@ public class RouteParserTestCase extends AbstractTestCase {
 
     public void exprClose() {
       buffer.append('}');
-    }
-
-    public void queryParamClose() {
-      chunks.add(buffer.toString());
-      buffer.setLength(0);
     }
   }
   
@@ -153,46 +124,12 @@ public class RouteParserTestCase extends AbstractTestCase {
     assertEquals(Arrays.asList("/a", "/$"), parse("a//"));
     assertEquals(Arrays.asList("/a", "/$"), parse("/a/"));
     assertEquals(Arrays.asList("/a", "/$"), parse("/a//"));
-    assertEquals(Arrays.asList("/$", "?"), parse("/?"));
-    assertEquals(Arrays.asList("/$", "?"), parse("//?"));
-    assertEquals(Arrays.asList("/a", "/$", "?"), parse("/a/?"));
-    assertEquals(Arrays.asList("/a", "/$", "?"), parse("/a//?"));
-  }
-
-  @Test
-  public void testQuery() {
-    assertEquals(Arrays.asList("$", "?"), parse("?"));
-    assertEquals(Arrays.asList("$", "?", "a"), parse("?a"));
-    assertEquals(Arrays.asList("$", "?", "a="), parse("?a="));
-    assertEquals(Arrays.asList("$", "?", "a=", "b"), parse("?a=&b"));
-    assertEquals(Arrays.asList("$", "?", "a", "b"), parse("?a&b"));
-    assertEquals(Arrays.asList("$", "?", "a", "b="), parse("?a&b="));
-    assertEquals(Arrays.asList("$", "?", "a=b"), parse("?a=b"));
-    assertEquals(Arrays.asList("$", "?", "a=b", "c"), parse("?a=b&c"));
-    assertEquals(Arrays.asList("$", "?", "a={b}"), parse("?a={b}"));
-    assertEquals(Arrays.asList("$", "?", "a={<b>c}"), parse("?a={<b>c}"));
-    assertEquals(Arrays.asList("$", "?", "a={[]c}"), parse("?a={[]c}"));
-    assertEquals(Arrays.asList("$", "?", "a={[b]c}"), parse("?a={[b]c}"));
   }
 
   @Test
   public void testInvalid() {
-    fail("??", RouteParser.CODE_INVALID_QUESTION_MARK_CHAR, 2);
-    fail("?&", RouteParser.CODE_INVALID_AMPERSAND_CHAR, 2);
-    fail("?=", RouteParser.CODE_INVALID_EQUALS_CHAR, 2);
     fail("{", RouteParser.CODE_UNCLOSED_EXPR, 2);
     fail("{a", RouteParser.CODE_UNCLOSED_EXPR, 3);
-    fail("?a={", RouteParser.CODE_UNCLOSED_EXPR, 5);
-    fail("?a={b", RouteParser.CODE_UNCLOSED_EXPR, 6);
-    fail("{<>", RouteParser.CODE_EMPTY_REGEX, 3);
-    fail("?a={<>", RouteParser.CODE_EMPTY_REGEX, 6);
-    fail("{<", RouteParser.CODE_UNCLOSED_REGEX, 3);
-    fail("?a={<", RouteParser.CODE_UNCLOSED_REGEX, 6);
-    fail("{<b>}", RouteParser.CODE_MISSING_EXPR_IDENT, 5);
-    fail("{<b>", RouteParser.CODE_MISSING_EXPR_IDENT, 5);
-    fail("?a={<b>}", RouteParser.CODE_MISSING_EXPR_IDENT, 8);
-    fail("?a={<b>", RouteParser.CODE_MISSING_EXPR_IDENT, 8);
-    fail("{[", RouteParser.CODE_UNCLOSED_MODIFIER, 3);
-    fail("?a={[", RouteParser.CODE_UNCLOSED_MODIFIER, 6);
+    fail("{}", RouteParser.CODE_MISSING_EXPR_IDENT, 2);
   }
 }

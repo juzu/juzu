@@ -22,6 +22,7 @@ package juzu.impl.router;
 import juzu.impl.common.QualifiedName;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,9 +48,11 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
   public void setUp() throws Exception {
     this.router = new RouterAssert();
 
-    portal = router.append("/private/{gtn:sitetype}/{gtn:sitename}{<.*>[p]gtn:path}");
-    group = router.append("/groups/{gtn:sitetype}/{gtn:sitename}{<.*>[p]gtn:path}");
-    user = router.append("/users/{gtn:sitetype}/{gtn:sitename}{<.*>[p]gtn:path}");
+    Map<QualifiedName, PathParam.Builder> params = Collections.singletonMap(Names.GTN_PATH, PathParam.builder().matchedBy(".*").preservePath(true));
+
+    portal = router.append("/private/{gtn:sitetype}/{gtn:sitename}{gtn:path}", params);
+    group = router.append("/groups/{gtn:sitetype}/{gtn:sitename}{gtn:path}", params);
+    user = router.append("/users/{gtn:sitetype}/{gtn:sitename}{gtn:path}", params);
   }
 
   @Test

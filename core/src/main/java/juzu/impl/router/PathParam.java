@@ -87,14 +87,11 @@ public class PathParam {
     return "PathParam[name=" + name + ",preservePath=" + preservePath + ",pattern=" + matchingRegex + "]";
   }
 
-  static Builder builder() {
+  public static Builder builder() {
     return new Builder();
   }
 
-  static class Builder {
-
-    /** . */
-    private QualifiedName qualifiedName;
+  public static class Builder {
 
     /** . */
     private String pattern;
@@ -110,7 +107,7 @@ public class PathParam {
       this.captureGroup = false;
     }
 
-    PathParam build(Router router) {
+    PathParam build(Router router, QualifiedName name) {
 
       Builder descriptor = this;
 
@@ -184,7 +181,7 @@ public class PathParam {
 
       //
       return new PathParam(
-          descriptor.getQualifiedName(),
+          name,
           preservePath,
           routingRegex.toString(),
           renderingRegexes,
@@ -192,46 +189,35 @@ public class PathParam {
           templateSuffixes);
     }
 
-    Builder matchedBy(String pattern) {
+    public Builder matchedBy(String pattern) {
       this.pattern = pattern;
       return this;
     }
 
-    Builder captureGroup(boolean capture) {
+    public Builder captureGroup(boolean capture) {
       this.captureGroup = capture;
       return this;
     }
 
-    Builder preservePath(boolean preservePath) {
+    public Builder preservePath(boolean preservePath) {
       this.preservePath = preservePath;
       return this;
     }
 
-    String getPattern() {
+    public String getPattern() {
       return pattern;
     }
 
-    void setPattern(String pattern) {
+    public void setPattern(String pattern) {
       this.pattern = pattern;
     }
 
-    boolean getCaptureGroup() {
+    public boolean getCaptureGroup() {
       return captureGroup;
     }
 
-    void setCaptureGroup(boolean captureGroup) {
+    public void setCaptureGroup(boolean captureGroup) {
       this.captureGroup = captureGroup;
-    }
-
-    QualifiedName getQualifiedName() {
-      return qualifiedName;
-    }
-
-    void setQualifiedName(QualifiedName qualifiedName) throws NullPointerException {
-      if (qualifiedName == null) {
-        throw new NullPointerException();
-      }
-      this.qualifiedName = qualifiedName;
     }
   }
 }

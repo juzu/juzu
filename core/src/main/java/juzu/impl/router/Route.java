@@ -785,26 +785,41 @@ public class Route {
   }
 
   public Route append(String path, final RouteKind kind) {
+    return append(path, kind, Collections.<QualifiedName, PathParam.Builder>emptyMap());
+  }
+
+  public Route append(String path, Map<QualifiedName, PathParam.Builder> params) {
+    return append(path, RouteKind.MATCH, params);
+  }
+
+  public Route append(
+      String path,
+      final RouteKind kind,
+      final Map<QualifiedName, PathParam.Builder> params) {
 
     //
     class Assembler implements RouteParserHandler {
+
       Route current = Route.this;
       PatternBuilder builder = new PatternBuilder();
       List<String> chunks = new ArrayList<String>();
       List<PathParam> parameterPatterns = new ArrayList<PathParam>();
-      PathParam.Builder paramDesc;
+      QualifiedName paramName;
       boolean lastSegment;
+
       public void segmentOpen() {
         builder.clear().expr("");
         chunks.clear();
         parameterPatterns.clear();
         lastSegment = false;
       }
+
       public void segmentChunk(CharSequence s, int from, int to) {
         builder.litteral(s, from, to);
         chunks.add(s.subSequence(from, to).toString());
         lastSegment = true;
       }
+
       public void segmentClose() {
         if (!lastSegment) {
           chunks.add("");
@@ -841,52 +856,28 @@ public class Route {
         }
       }
 
-      public void query() {
-      }
-      public void queryParamLHS(CharSequence s, int from, int to) {
-      }
-      public void queryParamClose() {
-      }
-      public void queryParamRHS() {
-      }
-      public void queryParamRHS(CharSequence s, int from, int to) {
-      }
       public void exprOpen() {
-        paramDesc = PathParam.builder();
         if (!lastSegment) {
           chunks.add("");
         }
       }
-      public void exprPattern(CharSequence s, int from, int to) {
-        paramDesc.setPattern(s.subSequence(from, to).toString());
-      }
-      public void exprModifiers(CharSequence s, int from, int to) {
-        while (from < to) {
-          char modifier = s.charAt(from++);
-          switch (modifier) {
-            // Capture group
-            case 'c':
-              paramDesc.setCaptureGroup(true);
-              break;
-            // Preserve path
-            case 'p':
-              paramDesc.preservePath(true);
-              break;
-            default:
-              throw new MalformedRouteException("Unrecognized modifier " + modifier);
-          }
-        }
-      }
+
       public void exprIdent(CharSequence s, int from, int to) {
         String parameterName = s.subSequence(from, to).toString();
-        QualifiedName qn = QualifiedName.parse(parameterName);
-        paramDesc.setQualifiedName(qn);
+        paramName = QualifiedName.parse(parameterName);
       }
+
       public void exprClose() {
         lastSegment = false;
 
         //
-        PathParam param = paramDesc.build(router);
+        PathParam.Builder desc = params.get(paramName);
+        if (desc == null) {
+          desc = PathParam.builder();
+        }
+
+        //
+        PathParam param = desc.build(router, paramName);
         // Append routing regex to the route regex surrounded by a non capturing regex
         // to isolate routingRegex like a|b or a(.)b
         builder.expr("(?:").expr(param.routingRegex).expr(")");
