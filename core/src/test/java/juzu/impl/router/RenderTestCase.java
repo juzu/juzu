@@ -33,88 +33,86 @@ public class RenderTestCase extends AbstractControllerTestCase {
   @Test
   public void testRoot() throws Exception {
     Router router = new Router();
-    router.append("/");
+    Route r = router.append("/");
 
     //
-    assertEquals("/", router.render(Collections.<QualifiedName, String>emptyMap()));
+    assertEquals("/", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
   }
 
   @Test
   public void testA() throws Exception {
     Router router = new Router();
-    router.append("/a");
+    Route r = router.append("/a");
 
     //
-    assertEquals("/a", router.render(Collections.<QualifiedName, String>emptyMap()));
+    assertEquals("/a", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
   }
 
   @Test
   public void testAB() throws Exception {
     Router router = new Router();
-    router.append("/a/b");
+    Route r = router.append("/a/b");
 
     //
-    assertEquals("/a/b", router.render(Collections.<QualifiedName, String>emptyMap()));
+    assertEquals("/a/b", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
   }
 
   @Test
   public void testPathParam() throws Exception {
     Router router = new Router();
-    router.append("/{p}");
+    Route r = router.append("/{p}");
 
     //
-    assertEquals("/a", router.render(Collections.singletonMap(Names.P, "a")));
-    assertEquals("", router.render(Collections.<QualifiedName, String>emptyMap()));
+    assertEquals("/a", r.matches(Collections.singletonMap(Names.P, "a")).render());
+    assertNull(r.matches(Collections.<QualifiedName, String>emptyMap()));
   }
 
   @Test
   public void testSimplePatternPathParam() throws Exception {
     Router router = new Router();
-    router.append("/{<a>p}");
+    Route r = router.append("/{<a>p}");
 
     //
-    assertEquals("/a", router.render(Collections.singletonMap(Names.P, "a")));
-    assertEquals("", router.render(Collections.singletonMap(Names.P, "ab")));
+    assertEquals("/a", r.matches(Collections.singletonMap(Names.P, "a")).render());
+    assertNull(r.matches(Collections.singletonMap(Names.P, "ab")));
   }
 
   @Test
   public void testPrecedence() throws Exception {
     Router router = new Router();
-    router.append("/a");
-    router.append("/{<a>p}/b");
+    Route a = router.append("/a");
+    Route b = router.append("/{<a>p}/b");
 
     //
-    assertEquals("/a", router.render(Collections.<QualifiedName, String>emptyMap()));
-
-    //
-    assertEquals("/a/b", router.render(Collections.singletonMap(Names.P, "a")));
+    assertEquals("/a", a.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/a/b", b.matches(Collections.singletonMap(Names.P, "a")).render());
   }
 
   @Test
   public void testLang() throws Exception {
     Router router = new Router();
-    router.append("/{<(([A-Za-z]{2})/)?>[p]a}b");
+    Route r = router.append("/{<(([A-Za-z]{2})/)?>[p]a}b");
 
     //
-    assertEquals("/fr/b", router.render(Collections.singletonMap(Names.A, "fr/")));
-    assertEquals("/b", router.render(Collections.singletonMap(Names.A, "")));
+    assertEquals("/fr/b", r.matches(Collections.singletonMap(Names.A, "fr/")).render());
+    assertEquals("/b", r.matches(Collections.singletonMap(Names.A, "")).render());
   }
 
   @Test
   public void testDisjunction() throws Exception {
     Router router = new Router();
-    router.append("/{<a|b>a}");
+    Route r = router.append("/{<a|b>a}");
 
     //
-    assertEquals("/b", router.render(Collections.singletonMap(Names.A, "b")));
+    assertEquals("/b", r.matches(Collections.singletonMap(Names.A, "b")).render());
   }
 
   @Test
   public void testCaptureGroup() throws Exception {
     Router router = new Router();
-    router.append("/{<a(.)c>[c]a}");
+    Route r = router.append("/{<a(.)c>[c]a}");
 
     //
-    assertEquals("/abc", router.render(Collections.singletonMap(Names.A, "b")));
+    assertEquals("/abc", r.matches(Collections.singletonMap(Names.A, "b")).render());
   }
 }

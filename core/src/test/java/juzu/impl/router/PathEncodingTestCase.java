@@ -50,7 +50,7 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testParamDefaultForm() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/{<.+>p}");
+    Route a = router.append("/{<.+>p}");
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "/"), "/_");
@@ -60,17 +60,17 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
     router.assertRoute(Collections.singletonMap(Names.P, "?"), "/%3F");
 
     // Render
-    assertEquals("/_", router.render(Collections.singletonMap(Names.P, "/")));
-    assertEquals("/%5F", router.render(Collections.singletonMap(Names.P, "_")));
-    assertEquals("/%5F_", router.render(Collections.singletonMap(Names.P, "_/")));
-    assertEquals("/_%5F", router.render(Collections.singletonMap(Names.P, "/_")));
-    assertEquals("/%3F", router.render(Collections.singletonMap(Names.P, "?")));
+    assertEquals("/_", a.matches(Collections.singletonMap(Names.P, "/")).render());
+    assertEquals("/%5F", a.matches(Collections.singletonMap(Names.P, "_")).render());
+    assertEquals("/%5F_", a.matches(Collections.singletonMap(Names.P, "_/")).render());
+    assertEquals("/_%5F", a.matches(Collections.singletonMap(Names.P, "/_")).render());
+    assertEquals("/%3F", a.matches(Collections.singletonMap(Names.P, "?")).render());
   }
 
   @Test
   public void testAlternativeSepartorEscape() throws Exception {
     RouterAssert router = new RouterAssert(':');
-    router.append("/{<.+>p}");
+    Route a = router.append("/{<.+>p}");
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "/"), "/:");
@@ -78,44 +78,44 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
     router.assertRoute(Collections.singletonMap(Names.P, ":"), "/%3A");
 
     // Render
-    assertEquals("/:", router.render(Collections.singletonMap(Names.P, "/")));
-    assertEquals("/_", router.render(Collections.singletonMap(Names.P, "_")));
-    assertEquals("/%3A", router.render(Collections.singletonMap(Names.P, ":")));
+    assertEquals("/:", a.matches(Collections.singletonMap(Names.P, "/")).render());
+    assertEquals("/_", a.matches(Collections.singletonMap(Names.P, "_")).render());
+    assertEquals("/%3A", a.matches(Collections.singletonMap(Names.P, ":")).render());
   }
 
   @Test
   public void testBug() throws Exception {
     Router router = new Router();
-    router.append("/{<[^_]+>p}");
+    Route a = router.append("/{<[^_]+>p}");
 
     // This is a *known* bug
     assertNull(router.route("/_"));
 
     // This is expected
-    assertEquals("/_", router.render(Collections.singletonMap(Names.P, "/")));
+    assertEquals("/_", a.matches(Collections.singletonMap(Names.P, "/")).render());
 
     // This is expected
     assertNull(router.route("/%5F"));
-    assertEquals("", router.render(Collections.singletonMap(Names.P, "_")));
+    assertNull(a.matches(Collections.singletonMap(Names.P, "_")));
   }
 
   @Test
   public void testParamPreservePath() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/{<[^/]+>[p]p}");
+    Route a = router.append("/{<[^/]+>[p]p}");
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "_"), "/_");
     assertNull(router.route("//"));
 
     // Render
-    assertEquals("", router.render(Collections.singletonMap(Names.P, "/")));
+    assertNull(a.matches(Collections.singletonMap(Names.P, "/")));
   }
 
   @Test
   public void testD() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/{</[a-z]+/[a-z]+/?>p}", RouteKind.MATCH_ANY);
+    Route a = router.append("/{</[a-z]+/[a-z]+/?>p}", RouteKind.MATCH_ANY);
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, "/platform/administrator"), "/_platform_administrator");
@@ -124,21 +124,21 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
     router.assertRoute(Collections.singletonMap(Names.P, "/platform/administrator/"), "/_platform_administrator_/");
 
     // Render
-    assertEquals("/_platform_administrator", router.render(Collections.singletonMap(Names.P, "/platform/administrator")));
-    assertEquals("/_platform_administrator_", router.render(Collections.singletonMap(Names.P, "/platform/administrator/")));
-    assertEquals("", router.render(Collections.singletonMap(Names.P, "/platform/administrator//")));
+    assertEquals("/_platform_administrator", a.matches(Collections.singletonMap(Names.P, "/platform/administrator")).render());
+    assertEquals("/_platform_administrator_", a.matches(Collections.singletonMap(Names.P, "/platform/administrator/")).render());
+    assertNull(a.matches(Collections.singletonMap(Names.P, "/platform/administrator//")));
   }
 
   @Test
   public void testWildcardPathParamWithPreservePath() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/{<.*>[p]p}");
+    Route a= router.append("/{<.*>[p]p}");
 
     // Render
-    assertEquals("/", router.render(Collections.singletonMap(Names.P, "")));
-    assertEquals("//", router.render(Collections.singletonMap(Names.P, "/")));
-    assertEquals("/a", router.render(Collections.singletonMap(Names.P, "a")));
-    assertEquals("/a/b", router.render(Collections.singletonMap(Names.P, "a/b")));
+    assertEquals("/", a.matches(Collections.singletonMap(Names.P, "")).render());
+    assertEquals("//", a.matches(Collections.singletonMap(Names.P, "/")).render());
+    assertEquals("/a", a.matches(Collections.singletonMap(Names.P, "a")).render());
+    assertEquals("/a/b", a.matches(Collections.singletonMap(Names.P, "a/b")).render());
 
     // Route
     router.assertRoute(Collections.singletonMap(Names.P, ""), "/");
@@ -150,10 +150,10 @@ public class PathEncodingTestCase extends AbstractControllerTestCase {
   @Test
   public void testWildcardParamPathWithDefaultForm() throws Exception {
     Router router = new Router();
-    router.append("/{<.*>p}");
+    Route a= router.append("/{<.*>p}");
 
     //
-    assertEquals("/_", router.render(Collections.singletonMap(Names.P, "/")));
+    assertEquals("/_", a.matches(Collections.singletonMap(Names.P, "/")).render());
   }
 
 }

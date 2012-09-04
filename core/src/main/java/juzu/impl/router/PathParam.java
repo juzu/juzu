@@ -33,7 +33,10 @@ import java.util.List;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class PathParam extends Param {
+public class PathParam {
+
+  /** . */
+  final QualifiedName name;
 
   /** . */
   final boolean preservePath;
@@ -57,19 +60,26 @@ public class PathParam extends Param {
       RERef[] matchingRegex,
       String[] templatePrefixes,
       String[] templateSuffixes) {
-    super(name);
 
     //
+    if (name == null) {
+      throw new NullPointerException("No null name accepted");
+    }
     if (matchingRegex == null || matchingRegex.length == 0) {
       throw new NullPointerException("No null or empty pattern accepted");
     }
 
     //
+    this.name = name;
     this.preservePath = preservePath;
     this.routingRegex = routingRegex;
     this.matchingRegex = matchingRegex;
     this.templatePrefixes = templatePrefixes;
     this.templateSuffixes = templateSuffixes;
+  }
+
+  public QualifiedName getName() {
+    return name;
   }
 
   @Override
@@ -81,7 +91,10 @@ public class PathParam extends Param {
     return new Builder();
   }
 
-  static class Builder extends AbstractBuilder {
+  static class Builder {
+
+    /** . */
+    private QualifiedName qualifiedName;
 
     /** . */
     private String pattern;
@@ -208,6 +221,17 @@ public class PathParam extends Param {
 
     void setCaptureGroup(boolean captureGroup) {
       this.captureGroup = captureGroup;
+    }
+
+    QualifiedName getQualifiedName() {
+      return qualifiedName;
+    }
+
+    void setQualifiedName(QualifiedName qualifiedName) throws NullPointerException {
+      if (qualifiedName == null) {
+        throw new NullPointerException();
+      }
+      this.qualifiedName = qualifiedName;
     }
   }
 }

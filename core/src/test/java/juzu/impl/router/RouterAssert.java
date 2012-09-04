@@ -21,6 +21,7 @@ package juzu.impl.router;
 
 import junit.framework.Assert;
 import juzu.impl.common.QualifiedName;
+import juzu.impl.common.Tools;
 import juzu.impl.router.regex.REFactory;
 import juzu.test.AbstractTestCase;
 
@@ -60,7 +61,7 @@ public class RouterAssert extends Router {
     ArrayList<Map<QualifiedName, String>> a = new ArrayList<Map<QualifiedName, String>>();
     while (result.hasNext()) {
       HashMap<QualifiedName, String> actual = new HashMap<QualifiedName, String>();
-      for (Map.Entry<Param, String> entry : result.next().getMatched().entrySet()) {
+      for (Map.Entry<PathParam, String> entry : result.next().getMatched().entrySet()) {
         actual.put(entry.getKey().getName(), entry.getValue());
       }
       a.add(actual);
@@ -77,6 +78,50 @@ public class RouterAssert extends Router {
     }
     Assert.assertFalse(b.isEmpty());
     AbstractTestCase.assertEquals(Collections.singletonList(expected), b.subList(0, 1));
+  }
+
+  public Map<QualifiedName, String> assertRoute(Route expectedRoute, String path) {
+    return assertRoute(expectedRoute, path, Collections.<String, String>emptyMap());
+  }
+
+  public void assertRoute(Route expectedRoute, Map<QualifiedName, String> expectedParameters, String path) {
+    Map<QualifiedName, String> parameters = assertRoute(expectedRoute, path, Collections.<String, String>emptyMap());
+    Assert.assertEquals(expectedParameters, parameters);
+  }
+
+  public Map<QualifiedName, String> assertRoute(Route expectedRoute, String path, Map<String, String> parameters) {
+
+    //
+    HashMap<String, String[]> tmp = new HashMap<String, String[]>();
+    for (Map.Entry<String, String> entry : parameters.entrySet()) {
+      tmp.put(entry.getKey(), new String[]{entry.getValue()});
+    }
+
+    //
+    Iterator<RouteMatch> result = matcher(path, tmp);
+
+    //
+    Assert.assertTrue(result.hasNext());
+    RouteMatch match = result.next();
+    Assert.assertSame(expectedRoute, match.getRoute());
+
+    //
+    Map<QualifiedName, String> ret = new HashMap<QualifiedName, String>();
+    for (Map.Entry<PathParam, String> entry : match.getMatched().entrySet()) {
+      ret.put(entry.getKey().getName(), entry.getValue());
+    }
+
+    //
+    return ret;
+  }
+
+  public void assertRoutes(Iterable<Route> expected, String path) {
+    Iterator<RouteMatch> matches = matcher(path, Collections.<String, String[]>emptyMap());
+    List<Route> routes = new ArrayList<Route>();
+    while (matches.hasNext()) {
+      routes.add(matches.next().getRoute());
+    }
+    AbstractTestCase.assertEquals(expected, routes);
   }
 
   public void assertRoute(Map<QualifiedName, String> expected, String path) {

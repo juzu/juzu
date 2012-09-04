@@ -37,7 +37,7 @@ import juzu.impl.common.SimpleMap;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.router.RouteDescriptor;
-import juzu.impl.router.Param;
+import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.router.Router;
@@ -302,7 +302,7 @@ public class ServletBridge extends HttpServlet {
             for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet()) {
               parameters.put(entry.getKey(), entry.getValue().clone());
             }
-            for (Map.Entry<Param, String> entry : found.getMatched().entrySet()) {
+            for (Map.Entry<PathParam, String> entry : found.getMatched().entrySet()) {
               parameters.put(entry.getKey().getName().getName(), new String[]{entry.getValue()});
             }
           }

@@ -19,11 +19,7 @@
 
 package juzu.impl.router;
 
-import juzu.impl.common.QualifiedName;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -34,16 +30,14 @@ public class HierarchyTestCase extends AbstractControllerTestCase {
   @Test
   public void testFoo() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/a", RouteKind.CONNECT).addParam("foo", "bar").append("/b").addParam("juu", "daa");
+    Route a = router.append("/a", RouteKind.CONNECT);
+    Route b= a.append("/b");
 
     //
     // assertEquals(Collections.singletonMap(QualifiedName.create("foo"), "bar"), router.route("/a"));
     assertNull(router.route("/a"));
 
     //
-    Map<QualifiedName, String> expected = new HashMap<QualifiedName, String>();
-    expected.put(Names.FOO, "bar");
-    expected.put(Names.JUU, "daa");
-    router.assertRoute(expected, "/a/b");
+    router.assertRoute(b, "/a/b");
   }
 }
