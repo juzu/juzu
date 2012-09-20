@@ -21,7 +21,7 @@ package juzu.plugin.less;
 
 import juzu.plugin.less.impl.lesser.Compilation;
 import juzu.plugin.less.impl.lesser.Failure;
-import juzu.plugin.less.impl.lesser.JSR223Context;
+import juzu.plugin.less.impl.lesser.JSContext;
 import juzu.plugin.less.impl.lesser.LessError;
 import juzu.plugin.less.impl.lesser.Lesser;
 import juzu.plugin.less.impl.lesser.URLLessContext;
@@ -41,7 +41,7 @@ public class LesserTestCase {
 
   @Parameterized.Parameters
   public static Collection<Object[]> configs() throws Exception {
-    return Arrays.asList(new Object[][]{{new Lesser(new JSR223Context())}});
+    return Arrays.asList(new Object[][]{{new Lesser(JSContext.create())}});
   }
 
   /** . */

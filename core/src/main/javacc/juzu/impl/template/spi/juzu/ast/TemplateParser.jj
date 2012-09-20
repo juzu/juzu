@@ -1,6 +1,7 @@
-options
-{
-   TOKEN_EXTENDS = "OffsetToken";
+options {
+  STATIC = false;
+  TOKEN_EXTENDS = "OffsetToken";
+  LOOKAHEAD = 3;
 }
 
 PARSER_BEGIN(TemplateParser)

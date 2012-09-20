@@ -37,7 +37,7 @@ import juzu.impl.common.Tools;
 import juzu.plugin.less.Less;
 import juzu.plugin.less.impl.lesser.Compilation;
 import juzu.plugin.less.impl.lesser.Failure;
-import juzu.plugin.less.impl.lesser.JSR223Context;
+import juzu.plugin.less.impl.lesser.JSContext;
 import juzu.plugin.less.impl.lesser.LessError;
 import juzu.plugin.less.impl.lesser.Lesser;
 import juzu.plugin.less.impl.lesser.Result;
@@ -156,7 +156,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
           Lesser lesser;
           Result result;
           try {
-            lesser = new Lesser(new JSR223Context());
+            lesser = new Lesser(JSContext.create());
             result = lesser.compile(clc, resource, Boolean.TRUE.equals(minify));
           }
           catch (Exception e) {

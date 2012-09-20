@@ -54,6 +54,7 @@ public class JSONTestCase extends AbstractTestCase {
     assertEquals("[0]", JSON.toString(Arrays.asList(0), new StringBuilder()).toString());
   }
 
+/*
   @Test
   public void testReadString() throws Exception {
     assertEquals("abc", (String)JSON.parse("\"abc\""));
@@ -67,6 +68,7 @@ public class JSONTestCase extends AbstractTestCase {
     assertEquals("\t", (String)JSON.parse("\"\\t\""));
     assertEquals("\\", (String)JSON.parse("\"\\\\\""));
   }
+*/
 
   @Test
   public void testWriteString() throws Exception {
@@ -79,11 +81,13 @@ public class JSONTestCase extends AbstractTestCase {
     assertEquals("\"\\t\"", JSON.toString("\t", new StringBuilder()).toString());
   }
 
+/*
   @Test
   public void testReadBoolean() throws Exception {
     assertEquals(true, JSON.parse("true"));
     assertEquals(false, JSON.parse("false"));
   }
+*/
 
   @Test
   public void testWriteBoolean() throws Exception {
@@ -91,10 +95,12 @@ public class JSONTestCase extends AbstractTestCase {
     assertEquals("false", JSON.toString(false, new StringBuilder()).toString());
   }
 
+/*
   @Test
   public void testReadNumber() throws Exception {
     assertEquals(123, JSON.parse("123"));
   }
+*/
 
   @Test
   public void testWriteNumber() throws Exception {

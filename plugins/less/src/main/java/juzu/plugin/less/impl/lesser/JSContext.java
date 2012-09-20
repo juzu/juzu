@@ -19,8 +19,29 @@
 
 package juzu.plugin.less.impl.lesser;
 
+import juzu.plugin.less.impl.lesser.jsr223.JSR223Context;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class JSContext {
+
+  public static JSContext create() {
+    JSContext context = JSR223Context.create();
+    if (context == null) {
+      // No JS available via JSR223
+      try {
+        Class<JSContext> type = (Class<JSContext>)JSContext.class.getClassLoader().loadClass("juzu.plugin.less.impl.lesser.rhino1_7R3.Rhino1_7R3Context");
+        context = type.newInstance();
+      }
+      catch (Throwable e) {
+        e.printStackTrace();
+        // Cannot load it / should we log it ?
+      }
+    }
+    if (context == null) {
+      throw new UnsupportedOperationException("No JavaScript support available");
+    }
+    return context;
+  }
 
   public abstract void put(String name, Object value);
 

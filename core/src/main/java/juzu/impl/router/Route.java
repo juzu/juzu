@@ -675,7 +675,7 @@ public class Route {
     return current;
   }
 
-  final <R extends Route> R add(R route) throws MalformedRouteException {
+  private void add(Route route) throws MalformedRouteException {
     if (route == null) {
       throw new NullPointerException("No null route accepted");
     }
@@ -710,9 +710,6 @@ public class Route {
     else {
       throw new IllegalArgumentException("Only accept segment or pattern routes");
     }
-
-    //
-    return route;
   }
 
   final Set<String> getSegmentNames() {
@@ -838,7 +835,8 @@ public class Route {
         }
 
         //
-        current = current.add(next);
+        current.add(next);
+        current = next;
       }
 
       public void pathClose(boolean slash) {

@@ -17,7 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.plugin.less.impl.lesser;
+package juzu.plugin.less.impl.lesser.jsr223;
+
+import juzu.plugin.less.impl.lesser.JSContext;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -26,8 +28,21 @@ import javax.script.ScriptEngineManager;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class JSR223Context extends JSContext {
 
+  public static JSR223Context create() {
+    ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+    if (engine != null) {
+      return new JSR223Context(engine);
+    } else {
+      return null;
+    }
+  }
+
   /** . */
-  private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+  private final ScriptEngine engine;
+
+  private JSR223Context(ScriptEngine engine) {
+    this.engine = engine;
+  }
 
   @Override
   public void put(String name, Object value) {

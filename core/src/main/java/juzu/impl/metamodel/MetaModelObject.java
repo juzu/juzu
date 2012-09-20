@@ -86,6 +86,10 @@ public class MetaModelObject implements Serializable {
   }
 
   public final <O extends MetaModelObject> O addChild(Key<O> key, O child) throws IllegalArgumentException, IllegalStateException {
+    return (O)_addChild(key, child);
+  }
+
+  private MetaModelObject _addChild(Key key, MetaModelObject child) throws IllegalArgumentException, IllegalStateException {
     if (closure(child, new HashSet<MetaModelObject>()).contains(this)) {
       throw new IllegalStateException("Cycle detected");
     }

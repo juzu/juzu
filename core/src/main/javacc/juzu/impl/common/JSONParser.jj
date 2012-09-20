@@ -1,0 +1,291 @@
+options {
+  STATIC = false;
+  SUPPORT_CLASS_VISIBILITY_PUBLIC = true;
+  ERROR_REPORTING = false;
+  JAVA_UNICODE_ESCAPE = true;
+  UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(JSONParser)
+
+package juzu.impl.common;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+// Based on https://github.com/mwnorman/JSONParser
+// at https://github.com/mwnorman/JSONParser/tree/90baa1b93e5779e4aff771bd1d9aa12578fbad0a
+// with very few modifications
+
+public class JSONParser {
+
+}
+
+PARSER_END(JSONParser)
+
+// Pls see http://www.ietf.org/rfc/rfc4627.txt for JSON spec details
+
+// white space
+SKIP: {
+        " "
+    |   "\t"
+    |   "\n"
+    |   "\r"
+    |   "\f"
+    // comments: not really part of JSON spec, but parser shouldn't blow-up if present
+    |   <SINGLE_LINE_COMMENT_C_STYLE: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+    |   <SINGLE_LINE_COMMENT_BASH_STYLE: "#" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+    |   <MULTI_LINE_COMMENT_C_STYLE: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+    |   <MULTI_LINE_COMMENT_HTML_STYLE: "<!--" (~["-"])* "-" ("-" | (~["-",">"] (~["-"])* "-"))* ">">
+}
+
+// JSON reserved keywords (prefix with K_ to avoid naming conflicts): only lower case allowed!
+TOKEN: {
+        <K_TRUE: "true">
+    |   <K_FALSE: "false">
+    |   <K_NULL: "null">
+}
+
+// JSON operators (prefix with O_ to avoid naming conflicts)
+TOKEN: {
+        <O_OPENBRACE: "{">
+    |   <O_CLOSEBRACE: "}">
+    |   <O_OPENBRACKET: "[">
+    |   <O_CLOSEBRACKET: "]">
+    |   <O_COMMA: ",">
+    |   <O_COLON: ":">
+    |   <O_DOT: ".">
+    |   <O_PLUS: "+">
+    |   <O_MINUS: "-">
+}
+
+// numeric literals
+TOKEN: {
+        <#DIGIT: ["0" - "9"] >
+    |   <#NONZERO_DIGIT: ["1" - "9"] >
+    |   <#EXP: ["e", "E"] ( <O_PLUS > | <O_MINUS > )? >
+}
+// JSON numbers do not support octal or hexadecimal formats
+TOKEN: {
+
+        <NUMBER:  <INTEGER> | <INTEGER> <FRACTIONAL_DIGITS> | <INTEGER> <EXPONENT> | <INTEGER> <FRACTIONAL_DIGITS> <EXPONENT> >
+    |   <INTEGER: (<O_MINUS>)? ( <DIGIT> | <NONZERO_DIGIT> <DIGITS>) >
+    |   <FRACTIONAL_DIGITS: <O_DOT> <DIGITS > >
+    |   <EXPONENT: <EXP> <DIGITS> >
+    |   <DIGITS: ( <DIGIT> )+ >
+}
+
+// string literals
+TOKEN: {
+        <SINGLE_QUOTED_STRING: ["'"](~["'"]|"\\'")*["'"]>
+    |   <QUOTED_STRING: ["\""](~["\""]|"\\\"")*["\""]>
+    |   <UNQUOTED_STRING: (~[" ","\r","\n","\t","{","}","[","]",",",":","\"","'"])+>
+}
+
+Object parse():
+{
+Object o = null;
+}
+{
+    ( o=object() | o=array() )
+    {
+        return o;
+
+    }
+}
+
+JSON object():
+{
+JSON m = JSON.json();
+}
+{
+    <O_OPENBRACE> ( members(m) )? <O_CLOSEBRACE>
+    {
+        return m;
+    }
+}
+
+void members(JSON m):
+{
+}
+{
+    pair(m) [ <O_COMMA> members(m) ]
+}
+
+void pair(JSON m):
+{
+Token t = null;
+Object o;
+String fieldName = null;
+}
+{
+    fieldName=fieldName() <O_COLON> o=value()
+    {
+        m.set(fieldName, o);
+    }
+}
+
+String fieldName():
+{
+String fieldName = null;
+}
+{
+    (
+      <SINGLE_QUOTED_STRING>
+        {
+          fieldName = stripOffQuotes(decodeBackslash(token.image));
+        }
+      |
+      <QUOTED_STRING>
+        {
+          fieldName = stripOffQuotes(decodeBackslash(token.image));
+        }
+      |
+      <UNQUOTED_STRING>
+        {
+          fieldName = decodeBackslash(token.image);
+        }
+    )
+    {
+      return fieldName;
+    }
+}
+
+JAVACODE
+String stripOffQuotes(String quotedString) {
+    if (!(quotedString.startsWith("\"") || quotedString.startsWith("'"))) {
+        return quotedString;
+    }
+    return quotedString.substring(1, quotedString.length() - 1);
+}
+
+JAVACODE
+String decodeBackslash(String s) {
+    StringBuilder sb = new StringBuilder();
+    int inputLength = s.length();
+    boolean isAfterSlash = false;
+    for (int i = 0; i < inputLength; i ++) {
+        char c = s.charAt(i);
+        if (c == '\\') {
+            if (!isAfterSlash) {
+                isAfterSlash = true;
+            }
+            else {
+                sb.append(c);
+                isAfterSlash = false;
+            }
+        }
+        else {
+            if (isAfterSlash) {
+                switch (c) {
+                    case 'n':
+                        sb.append('\n');
+                    break;
+                    case 'r':
+                        sb.append('\r');
+                    break;
+                    case 't':
+                        sb.append('\t');
+                    break;
+                    case 'b':
+                        sb.append('\b');
+                    break;
+                    case 'f':
+                        sb.append('\f');
+                    break;
+                    case '\'':
+                        sb.append('\'');
+                    break;
+                    case '/':
+                        sb.append('/');
+                    break;
+                    case '\"':
+                        sb.append('\"');
+                    break;
+                    //handle Unicode-escaping
+                    case 'u':
+                        int u = Integer.parseInt(s.substring(i + 1, i + 5), 16);
+                        sb.append((char)u);
+                        i += 4;
+                    break;
+                }
+                isAfterSlash = false;
+            }
+            else {
+                sb.append(c);
+            }
+        }
+    }
+    return sb.toString();
+}
+
+ArrayList<Object> array():
+{
+ArrayList<Object> a=new ArrayList<Object>();
+}
+{
+    <O_OPENBRACKET> ( elements(a) )? <O_CLOSEBRACKET>
+    {
+        Collections.reverse(a);
+        return a;
+    }
+}
+
+void elements(List<Object> a):
+{
+Object o = null;
+}
+{
+    o=value() [ <O_COMMA> elements(a) ]
+    {
+        a.add(o);
+    }
+}
+
+Object value():
+{
+Token t = null;
+Object o = null;
+}
+{
+    (   o=object()
+    |   o=array()
+    |   t=<SINGLE_QUOTED_STRING> {o = stripOffQuotes(decodeBackslash(t.image));}
+    |   t=<QUOTED_STRING> {o = stripOffQuotes(decodeBackslash(t.image));}
+    |   t=<NUMBER>
+        {
+            try {
+              o = Integer.valueOf(t.image);
+
+            }
+            catch (NumberFormatException nfe1) {
+                try {
+                    o = Long.valueOf(t.image);
+                }
+                catch (NumberFormatException nfe2) {
+                    try {
+                        o = Float.valueOf(t.image);
+                    }
+                    catch (NumberFormatException nfe3) {
+                        try {
+                            o = Double.valueOf(t.image);
+                        }
+                        catch  (NumberFormatException nfe4) {
+                            o = Double.NaN;
+                        }
+                    }
+                }
+
+            }
+        }
+    |   <K_TRUE> {o = Boolean.TRUE;}
+    |   <K_FALSE> {o = Boolean.TRUE;}
+    |   <K_NULL> )
+    {
+        return o;
+
+    }
+}

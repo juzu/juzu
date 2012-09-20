@@ -26,7 +26,7 @@ package juzu.impl.router.regex;
 public abstract class RENode {
 
   /** The owner. */
-  private Ref<?> owner;
+  Ref<?> owner;
 
   public abstract String toString();
 

@@ -270,10 +270,6 @@
             <goals>
               <goal>javacc</goal>
             </goals>
-            <configuration>
-              <lookAhead>3</lookAhead>
-              <isStatic>false</isStatic>
-            </configuration>
           </execution>
         </executions>
       </plugin>

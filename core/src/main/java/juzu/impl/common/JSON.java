@@ -19,13 +19,9 @@
 
 package juzu.impl.common;
 
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A simple JSON object useful for marshalling and unmarshalling data.
@@ -49,23 +44,6 @@ public final class JSON implements Serializable {
 
   /** . */
   private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
-  /** . */
-  private static final ScriptEngine engine;
-
-  static {
-    try {
-      String init = Tools.read(Tools.class.getResource("json.js"));
-      ScriptEngine tmp = new ScriptEngineManager().getEngineByName("JavaScript");
-      tmp.put("JSON", new JSON());
-      tmp.eval(init);
-      engine = tmp;
-    }
-    catch (Exception e) {
-      // Unexpected
-      throw new AssertionError(e);
-    }
-  }
 
   private static final Set<Class<?>> simpleTypes = new HashSet<Class<?>>(Arrays.asList(
     Integer.class,
@@ -392,15 +370,26 @@ public final class JSON implements Serializable {
   }
 
   public static Object parse(String json) {
+
+    JSONParser parser = new JSONParser(new StringReader(json));
+
     try {
-      Bindings bindings = new SimpleBindings();
-      String eval = "var tmp = (" + json + ");var o = new java.util.concurrent.atomic.AtomicReference(tmp.toJava());";
-      engine.eval(eval, bindings);
-      AtomicReference ret = (AtomicReference)bindings.get("o");
-      return ret.get();
+      return parser.parse();
     }
-    catch (ScriptException e) {
+    catch (ParseException e) {
       throw new AssertionError(e);
     }
+
+
+//    try {
+//      Bindings bindings = new SimpleBindings();
+//      String eval = "var tmp = (" + json + ");var o = new java.util.concurrent.atomic.AtomicReference(tmp.toJava());";
+//      engine.eval(eval, bindings);
+//      AtomicReference ret = (AtomicReference)bindings.get("o");
+//      return ret.get();
+//    }
+//    catch (ScriptException e) {
+//      throw new AssertionError(e);
+//    }
   }
 }
