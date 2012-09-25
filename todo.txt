@@ -9,6 +9,7 @@ Various things to do, not exhaustive that needs to go in the roadmap
 - for plugins : think about an @Depends to define dependencies for ordering (?)
 - decouple plugin discovery from plugin bootstrap in order to know the declared classes / it's already more or less the case actually
 - one issue is to bootstrap correctly juzu in a managed environment
+- in standalone mode : implement portlet Preferences with cookie
 
 Template suggestions:
 
