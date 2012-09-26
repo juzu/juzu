@@ -7,7 +7,7 @@
    <portlet>
 
      <!-- Used by Arquillian to locate this portlet-->
-     <portlet-name>integrationTest</portlet-name>
+     <portlet-name>StandalonePortlet</portlet-name>
      <display-name xml:lang="EN">Integration Test</display-name>
      <portlet-class>juzu.test.protocol.portlet.StandalonePortlet</portlet-class>
      <init-param>

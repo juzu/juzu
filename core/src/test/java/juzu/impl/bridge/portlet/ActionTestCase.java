@@ -23,7 +23,7 @@ import juzu.impl.common.Tools;
 import juzu.test.protocol.portlet.AbstractPortletTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.portletbridge.arquillian.enrichers.resource.PlutoURLProvider;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -40,13 +40,16 @@ public class ActionTestCase extends AbstractPortletTestCase {
     return createDeployment("bridge.portlet.action");
   }
 
+  @ArquillianResource
+  URL deploymentURL;
+
   @Drone
   WebDriver driver;
 
   @Test
   public void testFoo() throws Exception {
-    URL portalURL = new PlutoURLProvider().customizeURL(deploymentURL);
-    driver.get(portalURL.toString());
+    URL url = deploymentURL.toURI().resolve("embed/StandalonePortlet").toURL();
+    driver.get(url.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
     WebElement body = driver.findElement(By.tagName("body"));
