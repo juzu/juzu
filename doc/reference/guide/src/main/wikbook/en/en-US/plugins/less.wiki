@@ -26,7 +26,7 @@ The //stylesheet.less// file will be located in the ##myapp.assets## package. Th
 annotated package should contain the stylesheet, this is done on purpose to coincide exactly with the
 ##assets## package used by the Asset plugin. During the compilation phase the //stylesheet.less// will be compiled
 to the //stylesheet.css//. If we want this file to be served with the application we simply add the corresponding
-##@Asset## annotation:
+##@Assets## annotation:
 
 {{example title="LESS and Asset plugins in action"}}
 {{java}}
@@ -38,8 +38,10 @@ to the //stylesheet.css//. If we want this file to be served with the applicatio
 @Application
 package myapp;
 
+import juzu.Application;
+import juzu.asset.AssetLocation;
 import juzu.plugin.less.Less;
-import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.Stylesheet;
 {{/java}}
 {{/example}}
