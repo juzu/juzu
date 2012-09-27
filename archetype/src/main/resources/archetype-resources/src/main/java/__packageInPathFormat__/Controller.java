@@ -1,4 +1,4 @@
-package org.sample;
+package ${package};
 
 import juzu.Path;
 import juzu.View;
