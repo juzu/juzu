@@ -1,0 +1,1 @@
+@juzu.Application package ${package};
