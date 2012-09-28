@@ -37,6 +37,7 @@ import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,14 +79,20 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    List<AssetMetaData> scripts = load(packageName, location, config.getList("scripts", JSON.class));
-    List<AssetMetaData> stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
+    List<AssetMetaData> scripts = load(loader, packageName, location, config.getList("scripts", JSON.class));
+
+    //
+    List<AssetMetaData> stylesheets = load(loader, packageName, location, config.getList("stylesheets", JSON.class));
 
     //
     return descriptor = new AssetDescriptor(packageName, location, scripts, stylesheets);
   }
 
-  private List<AssetMetaData> load(String packageName, AssetLocation defaultLocation, List<? extends JSON> scripts) {
+  private List<AssetMetaData> load(
+      ClassLoader loader,
+      String packageName,
+      AssetLocation defaultLocation,
+      List<? extends JSON> scripts) throws Exception {
     List<AssetMetaData> abc = Collections.emptyList();
     if (scripts != null && scripts.size() > 0) {
       abc = new ArrayList<AssetMetaData>();
@@ -102,6 +109,14 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         String value = script.getString("src");
         if (!value.startsWith("/") && location == AssetLocation.CLASSPATH) {
           value = "/" + packageName.replace('.', '/') + "/" + value;
+        }
+
+        // Validate classpath assets
+        if (location == AssetLocation.CLASSPATH) {
+          URL url = loader.getResource(value.substring(1));
+          if (url == null) {
+            throw new Exception("Could not resolve classpath assets " + url);
+          }
         }
 
         //
