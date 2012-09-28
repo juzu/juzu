@@ -18,8 +18,10 @@
  */
 
 @Application()
-@Assets(scripts = @Script(id = "jquery", src = "jquery.js")) package plugin.asset.location.relativeserver;
+@Assets(scripts = @Script(id = "jquery", src = "jquery.js", location = AssetLocation.SERVER))
+package plugin.asset.location.relativeserver;
 
 import juzu.Application;
+import juzu.asset.AssetLocation;
 import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.Script;

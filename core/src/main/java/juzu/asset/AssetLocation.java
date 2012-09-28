@@ -40,6 +40,6 @@ public enum AssetLocation {
         // Should log as warning ?
       }
     }
-    return AssetLocation.SERVER;
+    return null;
   }
 }

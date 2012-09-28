@@ -55,7 +55,7 @@ public @interface Stylesheet {
    *
    * @return the location
    */
-  AssetLocation location() default AssetLocation.SERVER;
+  AssetLocation location() default AssetLocation.CLASSPATH;
 
   /**
    * The stylesheet source.

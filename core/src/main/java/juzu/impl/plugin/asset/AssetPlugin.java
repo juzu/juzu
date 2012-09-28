@@ -83,6 +83,11 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         String id = script.getString("id");
         AssetLocation location = AssetLocation.safeValueOf(script.getString("location"));
 
+        // We handle here location / perhaps we could handle it at compile time instead?
+        if (location == null) {
+          location = AssetLocation.CLASSPATH;
+        }
+
         //
         String value = script.getString("src");
         if (!value.startsWith("/") && location == AssetLocation.CLASSPATH) {
