@@ -1,6 +1,13 @@
 Various things to do, not exhaustive that needs to go in the roadmap
 
 - in dev mode : only compile the package of the application to speed up build
+- translate Juzu scopes into other framework specific scopes : session scope to CDI scope, etc...
+- in standalone mode : implement portlet Preferences with cookie
+- improve startup error reporting, specially from plugins (cf asset plugin that validates classpath assets exist)
+- option for copying an asset to the output
+- send 404 when resource cannot be resolved with some warn in the log
+- deploy URL (classloader) for classpath locations ?
+
 
 - parse error in template parser
 - more stack trace sanitization
@@ -9,7 +16,6 @@ Various things to do, not exhaustive that needs to go in the roadmap
 - for plugins : think about an @Depends to define dependencies for ordering (?)
 - decouple plugin discovery from plugin bootstrap in order to know the declared classes / it's already more or less the case actually
 - one issue is to bootstrap correctly juzu in a managed environment
-- in standalone mode : implement portlet Preferences with cookie
 
 Template suggestions:
 
