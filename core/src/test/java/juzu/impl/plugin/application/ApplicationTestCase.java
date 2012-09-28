@@ -39,7 +39,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     Class<?> aClass = compiler.assertClass("plugin.application.default_controller.A");
 
     //
-    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     assertSame(aClass, desc.getControllers().getDefault());
   }
 
@@ -50,7 +50,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     Class<?> aClass = compiler.assertClass("plugin.application.method.id.A");
 
     //
-    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     MethodDescriptor a = desc.getControllers().getMethod(aClass, "a");
     MethodDescriptor b = desc.getControllers().getMethod(aClass, "b");
     MethodDescriptor c = desc.getControllers().getMethod(aClass, "c");
@@ -86,13 +86,13 @@ public class ApplicationTestCase extends AbstractTestCase {
     //
     Class<?> app1Class = compiler.assertClass("plugin.application.multiple.app1.Application");
     Class<?> a1Class = compiler.assertClass("plugin.application.multiple.app1.A");
-    ApplicationDescriptor desc1 = (ApplicationDescriptor)app1Class.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc1 = ApplicationDescriptor.create(app1Class);
     assertSame(a1Class, desc1.getControllers().getControllers().get(0).getType());
 
     //
     Class<?> app2Class = compiler.assertClass("plugin.application.multiple.app2.Application");
     Class<?> a2Class = compiler.assertClass("plugin.application.multiple.app2.A");
-    ApplicationDescriptor desc2 = (ApplicationDescriptor)app2Class.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc2 = ApplicationDescriptor.create(app2Class);
     assertSame(a2Class, desc2.getControllers().getControllers().get(0).getType());
   }
 }

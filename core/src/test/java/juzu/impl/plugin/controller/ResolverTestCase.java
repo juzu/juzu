@@ -45,7 +45,7 @@ public class ResolverTestCase extends AbstractTestCase {
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.default_method.Application");
 
     //
-    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
     MethodDescriptor method = resolver.resolve(Collections.<String>emptySet());
     assertEquals("index", method.getName());
@@ -63,7 +63,7 @@ public class ResolverTestCase extends AbstractTestCase {
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.ambiguous_method.Application");
 
     //
-    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
     try {
       resolver.resolve(Collections.<String>emptySet());
@@ -86,7 +86,7 @@ public class ResolverTestCase extends AbstractTestCase {
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.default_controller.A");
 
     //
-    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
     MethodDescriptor method = resolver.resolve(Collections.<String>emptySet());
     assertEquals("index", method.getName());
@@ -105,7 +105,7 @@ public class ResolverTestCase extends AbstractTestCase {
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.overload.Application");
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.overload.A");
-    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
 
     //
@@ -147,7 +147,7 @@ public class ResolverTestCase extends AbstractTestCase {
     //
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.method.A");
     Class<?> clazz = compiler.assertClass("plugin.controller.resolver.method.Application");
-    ApplicationDescriptor desc = (ApplicationDescriptor)clazz.getField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(clazz);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
     MethodDescriptor cm1_ = desc.getControllers().getMethod(aClass, "noArg");
     MethodDescriptor cm2_ = desc.getControllers().getMethod(aClass, "fooArg", String.class);
@@ -170,7 +170,7 @@ public class ResolverTestCase extends AbstractTestCase {
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.default_controller.Application");
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.default_controller.A");
     Class<?> bClass = compiler.assertClass("plugin.controller.resolver.default_controller.B");
-    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
 
     //
@@ -195,7 +195,7 @@ public class ResolverTestCase extends AbstractTestCase {
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.method.Application");
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.method.A");
-    ApplicationDescriptor desc = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<MethodDescriptor> resolver = desc.getControllers().getResolver();
 
     //

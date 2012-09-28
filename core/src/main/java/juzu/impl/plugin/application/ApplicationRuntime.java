@@ -48,7 +48,6 @@ import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -301,8 +300,7 @@ public abstract class ApplicationRuntime<P, R> {
 
     //
     Class<?> clazz = getClassLoader().loadClass(fqn.toString());
-    Field field = clazz.getDeclaredField("DESCRIPTOR");
-    ApplicationDescriptor descriptor = (ApplicationDescriptor)field.get(null);
+    ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
 
     // Find the juzu jar
     URL mainURL = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();

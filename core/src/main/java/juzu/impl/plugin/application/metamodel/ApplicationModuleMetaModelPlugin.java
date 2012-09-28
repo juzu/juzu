@@ -195,10 +195,18 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       // Open class
       writer.append("public class ").append(fqn.getSimpleName()).append(" {\n");
 
-      // Singleton
-      writer.append("public static final ").append(APPLICATION_DESCRIPTOR).append(" DESCRIPTOR = new ").append(APPLICATION_DESCRIPTOR).append("(");
-      writer.append(fqn.getSimpleName()).append(".class");
-      writer.append(");\n");
+      // Field
+      writer.append("private final ").append(APPLICATION_DESCRIPTOR).append(" descriptor;\n");
+
+      // Constructor
+      writer.append("public ").append(fqn.getSimpleName()).append("() throws Exception {\n");
+      writer.append("this.descriptor = ").append(APPLICATION_DESCRIPTOR).append(".create(getClass());\n");
+      writer.append("}\n");
+
+      // Getter
+      writer.append("public ").append(APPLICATION_DESCRIPTOR).append(" getDescriptor() {\n");
+      writer.append("return descriptor;\n");
+      writer.append("}\n");
 
       // Close class
       writer.append("}\n");

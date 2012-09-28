@@ -43,7 +43,7 @@ public class ActionMethodTestCase extends AbstractTestCase {
 
     //
     Class<?> appClass = compiler.assertClass("plugin.controller.method.action.Application");
-    descriptor = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    descriptor = ApplicationDescriptor.create(appClass);
   }
 
   /** . */

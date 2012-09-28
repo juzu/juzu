@@ -43,7 +43,7 @@ public class RenderMethodTestCase extends AbstractTestCase {
 
     //
     Class<?> appClass = compiler.assertClass("plugin.controller.method.render.Application");
-    descriptor = (ApplicationDescriptor)appClass.getDeclaredField("DESCRIPTOR").get(null);
+    descriptor = ApplicationDescriptor.create(appClass);
   }
 
   /** . */

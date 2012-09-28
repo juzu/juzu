@@ -30,6 +30,7 @@ import juzu.impl.common.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +39,17 @@ import java.util.ServiceLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationDescriptor extends Descriptor {
+
+  /**
+   * Encapsulate application descriptor loading from an application class.
+   *
+   * @param applicationClass the application class
+   * @return the descriptor
+   * @throws Exception any exception that would prevent the exception to be loaded
+   */
+  public static ApplicationDescriptor create(Class<?> applicationClass) throws Exception {
+    return new ApplicationDescriptor(applicationClass);
+  }
 
   /** . */
   private final Class<?> applicationClass;
@@ -63,7 +75,7 @@ public class ApplicationDescriptor extends Descriptor {
   /** . */
   private final Map<String, ApplicationPlugin> foo;
 
-  public ApplicationDescriptor(Class<?> applicationClass) {
+  public ApplicationDescriptor(Class<?> applicationClass) throws Exception {
     // Load config
     JSON config;
     InputStream in = null;
@@ -104,15 +116,8 @@ public class ApplicationDescriptor extends Descriptor {
         throw new UnsupportedOperationException("Handle me gracefully : missing plugin " + name);
       }
       JSON pluginConfig = config.getJSON(name);
-      try {
-        Descriptor pluginDescriptor = plugin.init(applicationClass.getClassLoader(), pluginConfig);
-        pluginDescriptors.put(name, pluginDescriptor);
-      }
-      catch (Exception e) {
-        AssertionError ae = new AssertionError("Cannot load config");
-        ae.initCause(e);
-        throw ae;
-      }
+      Descriptor pluginDescriptor = plugin.init(applicationClass.getClassLoader(), pluginConfig);
+      pluginDescriptors.put(name, pluginDescriptor);
     }
 
     //
