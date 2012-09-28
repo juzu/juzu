@@ -19,6 +19,7 @@
 
 package juzu.impl.plugin.asset;
 
+import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.metadata.Descriptor;
 
@@ -31,15 +32,27 @@ public class AssetDescriptor extends Descriptor {
   private final String packageName;
 
   /** . */
+  private AssetLocation location;
+
+  /** . */
   private List<AssetMetaData> scripts;
 
   /** . */
   private List<AssetMetaData> stylesheets;
 
-  public AssetDescriptor(String packageName, List<AssetMetaData> scripts, List<AssetMetaData> stylesheets) {
+  public AssetDescriptor(
+      String packageName,
+      AssetLocation location,
+      List<AssetMetaData> scripts,
+      List<AssetMetaData> stylesheets) {
     this.packageName = packageName;
+    this.location = location;
     this.scripts = scripts;
     this.stylesheets = stylesheets;
+  }
+
+  public AssetLocation getLocation() {
+    return location;
   }
 
   public String getPackageName() {

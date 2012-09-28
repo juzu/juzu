@@ -31,15 +31,48 @@ package juzu.asset;
  */
 public abstract class Asset {
 
-  public static Ref ref(String id) {
-    return new Ref(id);
+  public static Id ref(String id) {
+    return new Id(id);
   }
 
-  public static Value uri(String uri) {
-    return uri(AssetLocation.SERVER, uri);
+  /**
+   * Wraps an URI as a server located asset.
+   *
+   * @param uri the asset uri
+   * @return the asset
+   */
+  public static Value server(String uri) {
+    return of(AssetLocation.SERVER, uri);
   }
 
-  public static Value uri(AssetLocation location, String uri) {
+  /**
+   * Wraps an URI as a classpath located asset.
+   *
+   * @param uri the asset uri
+   * @return the asset
+   */
+  public static Value classpath(String uri) {
+    return of(AssetLocation.CLASSPATH, uri);
+  }
+
+  /**
+   * Wraps an URI as an absolute uri.
+   *
+   * @param uri the asset uri
+   * @return the asset
+   */
+  public static Value url(String uri) {
+    return of(AssetLocation.URL, uri);
+  }
+
+  /**
+   * Returns an asset.
+   *
+   * @param location the asset location
+   * @param uri the asset uri
+   * @return the asset
+   */
+  public static Value of(AssetLocation location, String uri) {
     return new Value(location, uri);
   }
 
@@ -69,19 +102,19 @@ public abstract class Asset {
   }
 
   /**
-   * A referenced asset.
+   * An identified asset.
    */
-  public static class Ref extends Asset {
+  public static class Id extends Asset {
 
     /** . */
-    private final String id;
+    private final String value;
 
-    private Ref(String id) {
-      this.id = id;
+    private Id(String value) {
+      this.value = value;
     }
 
-    public String getId() {
-      return id;
+    public String getValue() {
+      return value;
     }
   }
 }

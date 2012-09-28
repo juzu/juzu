@@ -97,7 +97,7 @@ public class AssetManager {
         // resolved.addLast(script);
       }
       else {
-        AssetNode asset = assets.get(((juzu.asset.Asset.Ref)script).getId());
+        AssetNode asset = assets.get(((Asset.Id)script).getValue());
         if (asset != null) {
           sub.put(asset.id, new HashSet<String>(asset.iDependOn));
         }
@@ -116,7 +116,7 @@ public class AssetManager {
         if (entry.getValue().isEmpty()) {
           i.remove();
           AssetNode asset = assets.get(entry.getKey());
-          resolved.addLast(Asset.uri(asset.getLocation(), asset.getValue()));
+          resolved.addLast(Asset.of(asset.getLocation(), asset.getValue()));
           for (String dependency : asset.dependsOnMe) {
             HashSet<String> foo = sub.get(dependency);
             if (foo != null) {
@@ -141,7 +141,7 @@ public class AssetManager {
       if (script instanceof Asset.Value) {
         Asset.Value script1 = (Asset.Value)script;
         String uri = script1.getURI();
-        resolved.addLast(Asset.uri(script1.getLocation(), uri));
+        resolved.addLast(Asset.of(script1.getLocation(), uri));
       }
     }
 

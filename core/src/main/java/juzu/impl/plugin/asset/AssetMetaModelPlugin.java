@@ -62,6 +62,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       json.set("scripts", build((List<Map<String, Object>>)added.get("scripts")));
       json.set("stylesheets", build((List<Map<String, Object>>)added.get("stylesheets")));
       json.set("package", metaModel.getName().append("assets").getValue());
+      json.set("location", added.get("location"));
       enabledMap.put(handle, json);
     }
   }

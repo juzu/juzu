@@ -146,7 +146,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           url = r.toString();
         }
         break;
-      case EXTERNAL:
+      case URL:
         url = uri;
         break;
       default:

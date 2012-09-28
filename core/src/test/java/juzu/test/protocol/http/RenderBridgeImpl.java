@@ -106,7 +106,7 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
         }
         appendable.append(uri);
         break;
-      case EXTERNAL:
+      case URL:
         appendable.append(uri);
         break;
     }

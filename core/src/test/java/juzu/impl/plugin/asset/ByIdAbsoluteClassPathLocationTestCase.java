@@ -17,11 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application()
-@Assets(scripts = @Script(id = "jquery", src = "jquery.js", location = AssetLocation.SERVER))
-package plugin.asset.location.relativeserver;
+package juzu.impl.plugin.asset;
 
-import juzu.Application;
-import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ByIdAbsoluteClassPathLocationTestCase extends AbstractLocationTestCase {
+
+  @Override
+  protected String[] getFQN() {
+    return new String[]{"plugin", "asset", "byid", "absoluteclasspath"};
+  }
+}

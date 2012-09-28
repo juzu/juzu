@@ -17,44 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.plugin.asset;
+@Application()
+@Assets(
+  scripts = @Script(id = "jquery", src = "/juzu/jquery.js", location = AssetLocation.SERVER),
+  stylesheets = {
+    @Stylesheet(src = "/juzu/main.css", location = AssetLocation.SERVER),
+    @Stylesheet(src = "/juzu/main.less", location = AssetLocation.SERVER)
+  }
+)
+package plugin.asset.mimetype;
 
+import juzu.Application;
 import juzu.asset.AssetLocation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * Declares assets.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
-public @interface Assets {
-
-  /**
-   * The application scripts.
-   *
-   * @return a list of scripts
-   */
-  Script[] scripts() default {};
-
-  /**
-   * The application stylesheets.
-   *
-   * @return a list of stylesheet
-   */
-  Stylesheet[] stylesheets() default {};
-
-  /**
-   * The default asset location used by the contained assets when no location
-   * is explicitly defined.
-   *
-   * @return the default asset location
-   */
-  AssetLocation location() default AssetLocation.CLASSPATH;
-
-}
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Stylesheet;

@@ -17,16 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.asset.location.relativeclasspath;
+@Application()
+package plugin.asset.byvalue.relativeserver;
 
-import juzu.Response;
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public Response.Render index() {
-    String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
-    return Response.render(content);
-  }
-}
+import juzu.Application;

@@ -70,12 +70,22 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   @Override
   public AssetDescriptor init(ClassLoader loader, JSON config) throws Exception {
     String packageName = config.getString("package");
-    List<AssetMetaData> scripts = load(packageName, config.getList("scripts", JSON.class));
-    List<AssetMetaData> stylesheets = load(packageName, config.getList("stylesheets", JSON.class));
-    return descriptor = new AssetDescriptor(packageName, scripts, stylesheets);
+    AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
+
+    //
+    if (location == null) {
+      location = AssetLocation.CLASSPATH;
+    }
+
+    //
+    List<AssetMetaData> scripts = load(packageName, location, config.getList("scripts", JSON.class));
+    List<AssetMetaData> stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
+
+    //
+    return descriptor = new AssetDescriptor(packageName, location, scripts, stylesheets);
   }
 
-  private List<AssetMetaData> load(String packageName, List<? extends JSON> scripts) {
+  private List<AssetMetaData> load(String packageName, AssetLocation defaultLocation, List<? extends JSON> scripts) {
     List<AssetMetaData> abc = Collections.emptyList();
     if (scripts != null && scripts.size() > 0) {
       abc = new ArrayList<AssetMetaData>();
@@ -85,7 +95,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
         // We handle here location / perhaps we could handle it at compile time instead?
         if (location == null) {
-          location = AssetLocation.CLASSPATH;
+          location = defaultLocation;
         }
 
         //
@@ -116,7 +126,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         scripts.add(Asset.ref(id));
       }
       else {
-        scripts.add(Asset.uri(script.getLocation(), script.getValue()));
+        scripts.add(Asset.of(script.getLocation(), script.getValue()));
       }
       scriptManager.addAsset(script);
     }
@@ -129,7 +139,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         stylesheets.add(Asset.ref(stylesheet.getId()));
       }
       else {
-        stylesheets.add(Asset.uri(stylesheet.getLocation(), stylesheet.getValue()));
+        stylesheets.add(Asset.of(stylesheet.getLocation(), stylesheet.getValue()));
       }
       stylesheetManager.addAsset(stylesheet);
     }

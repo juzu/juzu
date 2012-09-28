@@ -112,7 +112,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
           throw new UnsupportedOperationException("not yet done");
         }
         break;
-      case EXTERNAL:
+      case URL:
         url = uri;
         break;
       default:

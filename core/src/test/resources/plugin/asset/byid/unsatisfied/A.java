@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.asset.location.absoluteserver;
+package plugin.asset.byid.unsatisfied;
 
 import juzu.Response;
 import juzu.View;
@@ -26,15 +26,6 @@ import juzu.View;
 public class A {
   @View
   public Response.Render index() {
-    String content = "" +
-      "<script>\n" +
-      "$(function() {\n" +
-      "  $('#trigger').click(function() {\n" +
-      "    alert(\"OK MEN\");\n" +
-      "  });\n" +
-      "});\n" +
-      "</script>\n" +
-      "<a id='trigger' href='#'>click</a>";
-    return Response.render(content);
+    return Response.render("nothing");
   }
 }

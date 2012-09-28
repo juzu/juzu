@@ -17,36 +17,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.asset;
+package plugin.asset.byid.relativeserver;
+
+import juzu.Response;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum AssetLocation {
-
-  /**
-   * An external asset, not managed by Juzu.
-   */
-  URL,
-
-  /**
-   * A server served asset, server assets URI is managed by Juzu and is computed relative to the server
-   * deployment. For instance, for a web application, the asset is located in the web application archive.
-   */
-  SERVER,
-
-  /**
-   * A classpath served asset.
-   */
-  CLASSPATH;
-
-  public static AssetLocation safeValueOf(String name) {
-    if (name != null) {
-      try {
-        return valueOf(name);
-      }
-      catch (IllegalArgumentException e) {
-        // Should log as warning ?
-      }
-    }
-    return null;
+public class A {
+  @View
+  public Response.Render index() {
+    String content = "" +
+      "<script>\n" +
+      "$(function() {\n" +
+      "  $('#trigger').click(function() {\n" +
+      "    alert(\"OK MEN\");\n" +
+      "  });\n" +
+      "});\n" +
+      "</script>\n" +
+      "<a id='trigger' href='#'>click</a>";
+    return Response.render(content);
   }
 }

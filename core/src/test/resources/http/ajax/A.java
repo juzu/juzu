@@ -47,7 +47,7 @@ public class A extends Controller {
         "</script>\n" +
         "<a id='trigger' href='#'>click</a>\n" +
         "<div id='foo'>foo</div>";
-    return Response.render(content).addScript(Asset.uri(AssetLocation.SERVER, "jquery.js"));
+    return Response.render(content).addScript(Asset.of(AssetLocation.SERVER, "jquery.js"));
   }
 
   @Resource

@@ -18,9 +18,13 @@
  */
 
 @Application()
-@Assets(scripts = @Script(src = "/plugin/asset/location/absoluteclasspath/test.js"))
-package plugin.asset.location.absoluteclasspath;
+@Assets(
+  scripts = @Script(id = "jquery", src = "/juzu/jquery.js"),
+  location = AssetLocation.SERVER
+)
+package plugin.asset.inheritance;
 
 import juzu.Application;
+import juzu.asset.AssetLocation;
 import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.Script;

@@ -17,16 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.asset.location.absoluteclasspath;
+package juzu.impl.plugin.asset;
 
-import juzu.Response;
-import juzu.View;
+import juzu.test.protocol.http.AbstractHttpTestCase;
+import juzu.test.protocol.mock.MockApplication;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public Response.Render index() {
-    String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
-    return Response.render(content);
+public class ByIdUnsatisfiedTestCase extends AbstractHttpTestCase {
+  @Test
+  public void testRequestFail() {
+    MockApplication<?> app = assertDeploy("plugin", "asset", "byid", "unsatisfied");
+
+    //
+    assertInternalError();
   }
 }
