@@ -95,7 +95,7 @@ public final class BeanDescriptor {
     return implementationType;
   }
 
-  public void install(InjectBuilder builder) {
+  public void bind(InjectBuilder builder) {
     Class<?> type = getDeclaredType();
     Class<?> implementation = getImplementationType();
     if (implementation == null) {

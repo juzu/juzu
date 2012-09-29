@@ -19,10 +19,8 @@
 
 package juzu.impl.plugin.application;
 
-import juzu.asset.AssetType;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
-import juzu.impl.asset.ManagerQualifier;
 import juzu.impl.common.FQN;
 import juzu.impl.common.QN;
 import juzu.impl.compiler.CompilationException;
@@ -42,15 +40,14 @@ import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.spring.SpringBuilder;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
+import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.processor.MainProcessor;
 
 import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Collections;
 import java.util.Map;
 import java.util.jar.JarFile;
 
@@ -333,6 +330,11 @@ public abstract class ApplicationRuntime<P, R> {
       }
     }
 
+    // Handle here / later do differently
+    if (descriptor.getPluginDescriptor("asset") == null) {
+      descriptor.addPlugin(new AssetPlugin());
+    }
+
     //
     ApplicationBootstrap bootstrap = new ApplicationBootstrap(
       injectBootstrap,
@@ -340,26 +342,16 @@ public abstract class ApplicationRuntime<P, R> {
     );
 
     //
-    AssetManager scriptManager = new AssetManager();
-    AssetManager stylesheetManager = new AssetManager();
-    injectBootstrap.bindBean(
-      AssetManager.class,
-      Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.SCRIPT)),
-      scriptManager);
-    injectBootstrap.bindBean(
-      AssetManager.class,
-      Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.STYLESHEET)),
-      stylesheetManager);
-
-    //
-    //
     logger.log("Starting " + descriptor.getName());
     bootstrap.start();
 
     //
+    AssetPlugin assetPlugin = bootstrap.getContext().getInjectionContext().get(AssetPlugin.class).get();
+
+    //
     this.context = bootstrap.getContext();
-    this.scriptManager = scriptManager;
-    this.stylesheetManager = stylesheetManager;
+    this.scriptManager = assetPlugin.getScriptManager();
+    this.stylesheetManager = assetPlugin.getStylesheetManager();
     this.descriptor = descriptor;
     this.bootstrap = bootstrap;
   }

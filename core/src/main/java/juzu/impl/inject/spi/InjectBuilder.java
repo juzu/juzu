@@ -86,7 +86,10 @@ public abstract class InjectBuilder {
    * @param instance       the bean instance
    * @return this builder
    */
-  public abstract <T> InjectBuilder bindBean(Class<T> beanType, Iterable<Annotation> beanQualifiers, T instance);
+  public abstract <T> InjectBuilder bindBean(
+      Class<T> beanType,
+      Iterable<Annotation> beanQualifiers,
+      T instance);
 
   public abstract <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs);
 

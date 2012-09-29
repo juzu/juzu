@@ -30,7 +30,6 @@ import juzu.impl.common.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,10 +69,10 @@ public class ApplicationDescriptor extends Descriptor {
   private final TemplatesDescriptor templates;
 
   /** . */
-  private final Map<String, Descriptor> plugins;
+  private final Map<String, Descriptor> pluginDescriptors;
 
   /** . */
-  private final Map<String, ApplicationPlugin> foo;
+  private final Map<String, ApplicationPlugin> plugins;
 
   public ApplicationDescriptor(Class<?> applicationClass) throws Exception {
     // Load config
@@ -111,7 +110,7 @@ public class ApplicationDescriptor extends Descriptor {
     //
     HashMap<String, Descriptor> pluginDescriptors = new HashMap<String, Descriptor>();
     for (String name : config.names()) {
-      Plugin plugin = pluginMap.get(name);
+      ApplicationPlugin plugin = pluginMap.get(name);
       if (plugin == null) {
         throw new UnsupportedOperationException("Handle me gracefully : missing plugin " + name);
       }
@@ -135,29 +134,30 @@ public class ApplicationDescriptor extends Descriptor {
     this.templates = (TemplatesDescriptor)pluginDescriptors.get("plugin/template");
     this.packageClass = packageClass;
     this.controllers = (ControllersDescriptor)pluginDescriptors.get("controller");
-    this.plugins = pluginDescriptors;
-    this.foo = pluginMap;
+    this.pluginDescriptors = pluginDescriptors;
+    this.plugins = pluginMap;
   }
 
   public Map<String, ApplicationPlugin> getFoo() {
-    return foo;
+    return plugins;
   }
 
   @Override
   public Iterable<BeanDescriptor> getBeans() {
     ArrayList<BeanDescriptor> beans = new ArrayList<BeanDescriptor>();
-    for (Descriptor descriptor : plugins.values()) {
+    for (Descriptor descriptor : pluginDescriptors.values()) {
       Tools.addAll(beans, descriptor.getBeans());
     }
     return beans;
   }
 
-  public Descriptor getPlugin(String name) {
-    return plugins.get(name);
+  public Descriptor getPluginDescriptor(String name) {
+    return pluginDescriptors.get(name);
   }
 
-  public void addPlugin(String name, Descriptor plugin) {
-    plugins.put(name, plugin);
+  public void addPlugin(ApplicationPlugin plugin) throws Exception {
+    plugins.put(plugin.getName(), plugin);
+    pluginDescriptors.put(name,  plugin.init(applicationClass.getClassLoader(), new JSON()));
   }
 
   public Class<?> getPackageClass() {

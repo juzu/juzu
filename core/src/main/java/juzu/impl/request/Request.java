@@ -186,7 +186,7 @@ public class Request implements ScopingContext {
       }
       else if (index == application.getLifecycles().size()) {
         //
-        Object ret = doInvoke(this, args, application.getInjectManager());
+        Object ret = doInvoke(this, args, application.getInjectionContext());
 
         //
         if (ret instanceof Response) {

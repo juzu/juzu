@@ -19,10 +19,17 @@
 
 package juzu.impl.plugin.asset;
 
+import juzu.Scope;
 import juzu.asset.AssetLocation;
+import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
+import juzu.impl.common.NameLiteral;
+import juzu.impl.common.Tools;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -67,12 +74,18 @@ public class AssetDescriptor extends Descriptor {
     return stylesheets;
   }
 
-/*
   @Override
   public Iterable<BeanDescriptor> getBeans() {
     return Tools.list(
-      new BeanDescriptor(AssetManager.class, Scope.SINGLETON, Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.SCRIPT)), null),
-      new BeanDescriptor(AssetManager.class, Scope.SINGLETON, Collections.<Annotation>singletonList(new ManagerQualifier(AssetType.STYLESHEET)), null));
+        new BeanDescriptor(
+            AssetManager.class,
+            Scope.SINGLETON,
+            Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.script")),
+            null),
+        new BeanDescriptor(
+            AssetManager.class,
+            Scope.SINGLETON,
+            Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.stylesheet")),
+            null));
   }
-*/
 }

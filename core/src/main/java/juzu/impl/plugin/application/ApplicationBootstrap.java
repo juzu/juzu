@@ -99,7 +99,7 @@ class ApplicationBootstrap {
 
     // Bind the beans
     for (BeanDescriptor bean : descriptor.getBeans()) {
-      bean.install(injectBuilder);
+      bean.bind(injectBuilder);
     }
 
     //

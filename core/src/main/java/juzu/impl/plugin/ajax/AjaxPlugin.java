@@ -24,12 +24,10 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
-import juzu.asset.AssetType;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
-import juzu.impl.asset.Manager;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
@@ -41,6 +39,7 @@ import juzu.request.RenderContext;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +54,8 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
   ApplicationDescriptor desc;
 
   @Inject
-  @Manager(AssetType.SCRIPT) AssetManager manager;
+  @Named("juzu.asset_manager.script")
+  AssetManager manager;
 
   public AjaxPlugin() {
     super("ajax");

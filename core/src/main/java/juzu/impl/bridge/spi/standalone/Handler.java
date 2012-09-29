@@ -56,7 +56,7 @@ class Handler {
       HashMap<Route, Map<Phase, MethodHandle>> routeMap2 = new HashMap<Route, Map<Phase, MethodHandle>>();
 
       //
-      RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPlugin("router");
+      RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPluginDescriptor("router");
       if (routesDesc != null) {
         for (RouteDescriptor child : routesDesc.getChildren()) {
           Route route = root.append(child.getPath());

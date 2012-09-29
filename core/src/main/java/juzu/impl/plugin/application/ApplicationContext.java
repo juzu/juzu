@@ -54,7 +54,7 @@ public class ApplicationContext {
   private final ApplicationDescriptor descriptor;
 
   /** . */
-  final InjectionContext<?, ?> injectManager;
+  final InjectionContext<?, ?> injectionContext;
 
   /** . */
   private final ControllerPlugin controller;
@@ -63,9 +63,9 @@ public class ApplicationContext {
   public ArrayList<RequestFilter> lifecycles;
 
   @Inject
-  public ApplicationContext(InjectionContext injectManager, ApplicationDescriptor descriptor, ControllerPlugin controller) throws Exception {
+  public ApplicationContext(InjectionContext injectionContext, ApplicationDescriptor descriptor, ControllerPlugin controller) throws Exception {
     this.descriptor = descriptor;
-    this.injectManager = injectManager;
+    this.injectionContext = injectionContext;
     this.controller = controller;
   }
 
@@ -89,7 +89,7 @@ public class ApplicationContext {
 
   public List<RequestFilter> getLifecycles() {
     try {
-      return getLifecycles(injectManager);
+      return getLifecycles(injectionContext);
     }
     catch (Exception e) {
       throw new UnsupportedOperationException("handle me cracefully", e);
@@ -97,15 +97,15 @@ public class ApplicationContext {
   }
 
   public ClassLoader getClassLoader() {
-    return injectManager.getClassLoader();
+    return injectionContext.getClassLoader();
   }
 
   public ApplicationDescriptor getDescriptor() {
     return descriptor;
   }
 
-  public InjectionContext getInjectManager() {
-    return injectManager;
+  public InjectionContext<?, ?> getInjectionContext() {
+    return injectionContext;
   }
 
   public void invoke(RequestBridge bridge) throws ApplicationException {
@@ -152,7 +152,7 @@ public class ApplicationContext {
     //
     ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
     try {
-      ClassLoader classLoader = injectManager.getClassLoader();
+      ClassLoader classLoader = injectionContext.getClassLoader();
       Thread.currentThread().setContextClassLoader(classLoader);
       ScopeController.begin(request);
       bridge.begin(request);
@@ -175,7 +175,7 @@ public class ApplicationContext {
   }
 
   public Object resolveBean(String name) throws ApplicationException {
-    return resolveBean(injectManager, name);
+    return resolveBean(injectionContext, name);
   }
 
   private <B, I> Object resolveBean(InjectionContext<B, I> manager, String name) throws ApplicationException {

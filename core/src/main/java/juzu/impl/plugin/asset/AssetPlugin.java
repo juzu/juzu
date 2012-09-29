@@ -24,11 +24,9 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
-import juzu.asset.AssetType;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
-import juzu.impl.asset.Manager;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
@@ -37,6 +35,7 @@ import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,16 +55,24 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   @Inject
-  @Manager(AssetType.SCRIPT)
+  @Named("juzu.asset_manager.script")
   AssetManager scriptManager;
 
   /** . */
   @Inject
-  @Manager(AssetType.STYLESHEET)
+  @Named("juzu.asset_manager.stylesheet")
   AssetManager stylesheetManager;
 
   public AssetPlugin() {
     super("asset");
+  }
+
+  public AssetManager getScriptManager() {
+    return scriptManager;
+  }
+
+  public AssetManager getStylesheetManager() {
+    return stylesheetManager;
   }
 
   @Override

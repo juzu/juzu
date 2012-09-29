@@ -171,4 +171,9 @@ abstract class AbstractBean implements Bean {
   public final Set<InjectionPoint> getInjectionPoints() {
     return Collections.emptySet();
   }
+
+  @Override
+  public String toString() {
+    return "Bean[type=" + type.getName() + ",name=" + name + ",qualifiers=" + qualifiers + "]";
+  }
 }
