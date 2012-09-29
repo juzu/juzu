@@ -17,15 +17,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.asset;
+package juzu.impl.resource;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ByIdAbsoluteClassPathLocationTestCase extends AbstractLocationTestCase {
-  @Deployment
-  public static WebArchive createDeployment() {
-    return createDeployment("plugin.asset.byid.absoluteclasspath", "plugin.asset.byid");
-  }
+public interface ResourceResolver {
+
+  /**
+   * Resolve the uri are an {@link java.net.URL}, it returns null when resolution cannot be performed.
+   *
+   * @param uri the uri
+   * @return the url
+   */
+  URL resolve(String uri);
+
+
 }

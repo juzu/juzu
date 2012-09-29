@@ -22,6 +22,7 @@ package plugin.ajax;
 import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 import juzu.plugin.ajax.Ajax;
 
@@ -81,12 +82,14 @@ public class A extends Controller {
 
   @Ajax
   @Resource
+  @Route("/resource")
   public Response.Content resource() {
     return Response.content(200, "OK MEN");
   }
 
   @Ajax
   @Resource
+  @Route("/resource2")
   public Response.Content resource2() {
     return Response.content(200, "OK MEN 2");
   }

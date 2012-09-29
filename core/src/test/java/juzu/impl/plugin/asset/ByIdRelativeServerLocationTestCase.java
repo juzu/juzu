@@ -19,11 +19,13 @@
 
 package juzu.impl.plugin.asset;
 
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ByIdRelativeServerLocationTestCase extends AbstractLocationTestCase {
-
-  @Override
-  protected String[] getFQN() {
-    return new String[]{"plugin", "asset", "byid", "relativeserver"};
+  @Deployment
+  public static WebArchive createDeployment() {
+    return createDeployment("plugin.asset.byid.relativeserver", "plugin.asset.byid");
   }
 }

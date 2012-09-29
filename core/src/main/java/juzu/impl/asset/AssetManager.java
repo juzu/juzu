@@ -22,6 +22,8 @@ package juzu.impl.asset;
 import juzu.asset.Asset;
 import juzu.impl.common.Tools;
 
+import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -35,20 +37,21 @@ public class AssetManager {
   private final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
 
   /** . */
-  private final HashSet<String> classPathAssets = new HashSet<String>();
+  private final HashMap<String, URL> resources = new HashMap<String, URL>();
 
   /**
    * Attempt to add an asset to the manager.
    *
-   * @param metaData the metaData to add
+   * @param data the asset description
+   * @param url the asset url
    * @throws NullPointerException     if the metaData argument is nul
    * @throws IllegalArgumentException if the metaData does not have an id set
    */
-  public void addAsset(AssetMetaData metaData) throws NullPointerException, IllegalArgumentException {
-    String id = metaData.id;
+  public void addAsset(AssetMetaData data, URL url) throws NullPointerException, IllegalArgumentException {
+    String id = data.id;
     if (id != null) {
       if (!assets.keySet().contains(id)) {
-        AssetNode asset = new AssetNode(id, metaData.location, metaData.value, metaData.dependencies);
+        AssetNode asset = new AssetNode(id, data.location, data.value, data.dependencies);
         for (AssetNode deployed : assets.values()) {
           if (deployed.iDependOn.contains(id)) {
             asset.dependsOnMe = Tools.addToHashSet(asset.dependsOnMe, deployed.id);
@@ -66,9 +69,10 @@ public class AssetManager {
     }
 
     //
-    switch (metaData.location) {
+    switch (data.location) {
       case CLASSPATH:
-        classPathAssets.add(metaData.getValue());
+      case SERVER:
+        resources.put(data.getValue(), url);
         break;
       default:
         // Nothing to do
@@ -76,8 +80,14 @@ public class AssetManager {
     }
   }
 
-  public boolean isClassPath(String path) {
-    return classPathAssets.contains(path);
+  /**
+   * Resolve an asset as a resource URL or return null if it cannot be found.
+   *
+   * @param path the path
+   * @return the resource
+   */
+  public URL resolveAsset(String path) {
+    return resources.get(path);
   }
 
   /**

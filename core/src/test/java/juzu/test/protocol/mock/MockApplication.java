@@ -27,6 +27,9 @@ import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Logger;
+import juzu.impl.resource.ResourceResolver;
+
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockApplication<P> {
@@ -81,6 +84,11 @@ public class MockApplication<P> {
     runtime.setClassLoader(classLoader);
     runtime.setName(name);
     runtime.setInjectImplementation(implementation);
+    runtime.setResolver(new ResourceResolver() {
+      public URL resolve(String uri) {
+        return null;
+      }
+    });
 
     //
     this.classLoader = classLoader;

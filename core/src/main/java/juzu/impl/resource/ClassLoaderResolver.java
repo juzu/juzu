@@ -17,15 +17,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.asset;
+package juzu.impl.resource;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import java.net.URL;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ByIdAbsoluteClassPathLocationTestCase extends AbstractLocationTestCase {
-  @Deployment
-  public static WebArchive createDeployment() {
-    return createDeployment("plugin.asset.byid.absoluteclasspath", "plugin.asset.byid");
+public class ClassLoaderResolver implements ResourceResolver {
+
+  /** . */
+  private final AtomicReference<ClassLoader> loader;
+
+  public ClassLoaderResolver(ClassLoader loader) {
+    this.loader = new AtomicReference<ClassLoader>(loader);
+  }
+
+  public URL resolve(String uri) {
+    return loader.get().getResource(uri.substring(1));
   }
 }

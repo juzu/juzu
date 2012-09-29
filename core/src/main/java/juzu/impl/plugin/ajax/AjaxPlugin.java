@@ -41,6 +41,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,8 +63,22 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @PostConstruct
-  public void start() {
-    manager.addAsset(new AssetMetaData("juzu.ajax", AssetLocation.CLASSPATH, "/juzu/impl/plugin/ajax/script.js", "jquery"));
+  public void start() throws Exception {
+
+    //
+    URL url = AjaxPlugin.class.getClassLoader().getResource("juzu/impl/plugin/ajax/script.js");
+    if (url == null) {
+      throw new Exception("Not found script.js");
+    }
+
+    //
+    manager.addAsset(
+        new AssetMetaData(
+            "juzu.ajax",
+            AssetLocation.CLASSPATH,
+            "/juzu/impl/plugin/ajax/script.js",
+            "jquery"),
+        url);
 
     //
     Map<String, MethodDescriptor> table = new HashMap<String, MethodDescriptor>();

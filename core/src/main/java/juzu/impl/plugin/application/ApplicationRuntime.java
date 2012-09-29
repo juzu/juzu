@@ -22,6 +22,7 @@ package juzu.impl.plugin.application;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.FQN;
+import juzu.impl.common.NameLiteral;
 import juzu.impl.common.QN;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
@@ -41,13 +42,17 @@ import juzu.impl.inject.spi.spring.SpringBuilder;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.impl.resource.ClassLoaderResolver;
+import juzu.impl.resource.ResourceResolver;
 import juzu.processor.MainProcessor;
 
 import javax.portlet.PortletException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 import java.util.Map;
 import java.util.jar.JarFile;
 
@@ -88,6 +93,9 @@ public abstract class ApplicationRuntime<P, R> {
   /** . */
   protected ApplicationBootstrap bootstrap;
 
+  /** . */
+  protected ResourceResolver resolver;
+
   ApplicationRuntime(Logger logger) {
     this.logger = logger;
   }
@@ -118,6 +126,14 @@ public abstract class ApplicationRuntime<P, R> {
 
   public void setResources(SimpleFileSystem<R> resources) {
     this.resources = resources;
+  }
+
+  public ResourceResolver getResolver() {
+    return resolver;
+  }
+
+  public void setResolver(ResourceResolver resolver) {
+    this.resolver = resolver;
   }
 
   public ApplicationContext getContext() {
@@ -316,17 +332,17 @@ public abstract class ApplicationRuntime<P, R> {
     }
 
     //
-    InjectBuilder injectBootstrap = injectImplementation.builder();
-    injectBootstrap.addFileSystem(classes);
-    injectBootstrap.addFileSystem(libs);
-    injectBootstrap.setClassLoader(getClassLoader());
+    InjectBuilder injectBuilder = injectImplementation.builder();
+    injectBuilder.addFileSystem(classes);
+    injectBuilder.addFileSystem(libs);
+    injectBuilder.setClassLoader(getClassLoader());
 
     //
-    if (injectBootstrap instanceof SpringBuilder) {
+    if (injectBuilder instanceof SpringBuilder) {
       R springName = resources.getPath("spring.xml");
       if (springName != null) {
         URL configurationURL = resources.getURL(springName);
-        ((SpringBuilder)injectBootstrap).setConfigurationURL(configurationURL);
+        ((SpringBuilder)injectBuilder).setConfigurationURL(configurationURL);
       }
     }
 
@@ -335,9 +351,14 @@ public abstract class ApplicationRuntime<P, R> {
       descriptor.addPlugin(new AssetPlugin());
     }
 
+    // Bind the resolver
+    ClassLoaderResolver resolver = new ClassLoaderResolver(getClassLoader());
+    injectBuilder.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.classpath")), resolver);
+    injectBuilder.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.server")), this.resolver);
+
     //
     ApplicationBootstrap bootstrap = new ApplicationBootstrap(
-      injectBootstrap,
+      injectBuilder,
       descriptor
     );
 

@@ -6,7 +6,6 @@ Various things to do, not exhaustive that needs to go in the roadmap
 - improve startup error reporting, specially from plugins (cf asset plugin that validates classpath assets exist)
 - option for copying an asset to the output
 - send 404 when resource cannot be resolved with some warn in the log
-- deploy URL (classloader) for classpath locations ?
 
 
 - parse error in template parser

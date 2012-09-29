@@ -27,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -51,15 +52,24 @@ public class AssetServer {
       for (ApplicationRuntime<?, ?> runtime : runtimes) {
         String contentType;
         InputStream in;
-        if (runtime.getScriptManager().isClassPath(path)) {
+        URL url = runtime.getScriptManager().resolveAsset(path);
+        if (url != null) {
           contentType = "text/javascript";
-          in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+          in = url.openStream();
+        } else {
+          contentType = null;
+          in = null;
         }
-        else if (runtime.getStylesheetManager().isClassPath(path)) {
-          contentType = "text/css";
-          in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+        if (in == null) {
+          url = runtime.getStylesheetManager().resolveAsset(path);
+          if (url != null) {
+            contentType = "text/css";
+            in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+          }
         }
-        else {
+
+        // It could be a server resource like an image
+        if (in == null) {
           in = ctx.getResourceAsStream(path);
           if (in != null) {
             int pos = path.lastIndexOf('/');

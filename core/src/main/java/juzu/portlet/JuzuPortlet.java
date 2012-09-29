@@ -32,11 +32,13 @@ import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.common.Tools;
+import juzu.impl.resource.ResourceResolver;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
@@ -48,6 +50,8 @@ import javax.portlet.WindowState;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -64,6 +68,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
 
   /** . */
   private Bridge bridge;
+
+  /** . */
+  private PortletContext context;
 
   public void init(final PortletConfig config) throws PortletException {
     Logger log = new Logger() {
@@ -130,10 +137,21 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     bridge.log = log;
     bridge.sourcePath = sourcePath;
     bridge.classes = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/");
+    bridge.resolver = new ResourceResolver() {
+      public URL resolve(String uri) {
+        try {
+          return context.getResource(uri);
+        }
+        catch (MalformedURLException e) {
+          return null;
+        }
+      }
+    };
 
     //
     this.bridgeConfig = bridgeConfig;
     this.bridge = bridge;
+    this.context = config.getPortletContext();
   }
 
   /**
@@ -209,26 +227,31 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     //
     if (assetRequest && !bridgeConfig.isProd()) {
       String path = req.getResourceID();
+
       String contentType;
       InputStream in;
-      if (bridge.runtime.getScriptManager().isClassPath(path)) {
+      URL url = bridge.runtime.getScriptManager().resolveAsset(path);
+      if (url != null) {
         contentType = "text/javascript";
-        in = bridge.runtime.getClassLoader().getResourceAsStream(path.substring(1));
-      }
-      else if (bridge.runtime.getStylesheetManager().isClassPath(path)) {
-        contentType = "text/css";
-        in = bridge.runtime.getClassLoader().getResourceAsStream(path.substring(1));
-      }
-      else {
+        in = url.openStream();
+      } else {
         contentType = null;
         in = null;
+      }
+      if (in == null) {
+        url = bridge.runtime.getStylesheetManager().resolveAsset(path);
+        if (url != null) {
+          contentType = "text/css";
+          in = bridge.runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+        }
       }
       if (in != null) {
         resp.setContentType(contentType);
         Tools.copy(in, resp.getPortletOutputStream());
+      } else {
+        resp.addProperty(ResourceResponse.HTTP_STATUS_CODE, "404");
       }
-    }
-    else {
+    } else {
       try {
         PortletResourceBridge requestBridge = new PortletResourceBridge(bridge.runtime.getContext(), req, resp, bridge.config.isProd());
         bridge.serveResource(requestBridge);

@@ -35,6 +35,7 @@ import juzu.impl.common.DevClassLoader;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Tools;
 import juzu.impl.common.TrimmingException;
+import juzu.impl.resource.ResourceResolver;
 import juzu.portlet.JuzuPortlet;
 
 import java.io.BufferedReader;
@@ -74,6 +75,9 @@ public class Bridge {
   /** . */
   public ApplicationRuntime runtime;
 
+  /** . */
+  public ResourceResolver resolver;
+
   public void boot() throws Exception, CompilationException {
 
     if (runtime == null) {
@@ -96,6 +100,7 @@ public class Bridge {
       runtime.setInjectImplementation(config.injectImpl);
       runtime.setName(config.name);
       runtime.setAssetServer(server);
+      runtime.setResolver(resolver);
     }
 
     //

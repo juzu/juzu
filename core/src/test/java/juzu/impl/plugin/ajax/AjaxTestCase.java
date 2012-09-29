@@ -21,26 +21,38 @@ package juzu.impl.plugin.ajax;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import juzu.test.protocol.http.AbstractHttpTestCase;
 import juzu.test.UserAgent;
-import juzu.test.protocol.mock.MockApplication;
+import juzu.test.protocol.http.HttpServletImpl;
+import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxTestCase extends AbstractHttpTestCase {
+public class AjaxTestCase extends AbstractStandaloneTestCase {
+
+  @Deployment
+  public static WebArchive createDeployment() {
+    WebArchive war = AbstractStandaloneTestCase.createDeployment("plugin.ajax");
+    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
+    URL test = HttpServletImpl.class.getResource("test.js");
+    URL stylesheet = HttpServletImpl.class.getResource("main.css");
+    return war.
+        addAsWebResource(jquery, "jquery.js").
+        addAsWebResource(test, "test.js").
+        addAsWebResource(stylesheet, "main.css");
+  }
 
   @Test
+  @RunAsClient
   public void testAjaxResource() throws Exception {
-    MockApplication<?> app = assertDeploy("plugin", "ajax");
-
-    //
     UserAgent ua = assertInitialPage();
     HtmlPage page = ua.getHomePage();
-
-    System.out.println("page.asText() = " + page.asText());
 
     HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
     trigger.click();

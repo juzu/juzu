@@ -37,6 +37,7 @@ import juzu.impl.common.SimpleMap;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.router.RouteDescriptor;
+import juzu.impl.resource.ResourceResolver;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
@@ -51,6 +52,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,6 +171,16 @@ public class ServletBridge extends HttpServlet {
       bridge.log = log;
       bridge.sourcePath = sourcePath;
       bridge.classes = classes;
+      bridge.resolver = new ResourceResolver() {
+        public URL resolve(String uri) {
+          try {
+            return config.getServletContext().getResource(uri);
+          }
+          catch (MalformedURLException e) {
+            return null;
+          }
+        }
+      };
 
       //
       applications.put(name.toString(), bridge);

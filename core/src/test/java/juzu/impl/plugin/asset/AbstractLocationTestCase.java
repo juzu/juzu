@@ -22,22 +22,33 @@ package juzu.impl.plugin.asset;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.UserAgent;
-import juzu.test.protocol.http.AbstractHttpTestCase;
+import juzu.test.protocol.http.HttpServletImpl;
+import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractLocationTestCase extends AbstractHttpTestCase {
+public abstract class AbstractLocationTestCase extends AbstractStandaloneTestCase {
 
-  protected abstract String[] getFQN();
+  public static WebArchive createDeployment(String applicationName, String pkgName) {
+    WebArchive war = AbstractStandaloneTestCase.createDeployment(applicationName, pkgName);
+    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
+    URL test = HttpServletImpl.class.getResource("test.js");
+    URL stylesheet = HttpServletImpl.class.getResource("main.css");
+    return war.
+        addAsWebResource(jquery, "jquery.js").
+        addAsWebResource(test, "test.js").
+        addAsWebResource(stylesheet, "main.css");
+  }
 
   @Test
+  @RunAsClient
   public final void testSatisfied() throws Exception {
-    assertDeploy(getFQN());
-
-    //
     UserAgent ua = assertInitialPage();
     HtmlPage page = ua.getHomePage();
 

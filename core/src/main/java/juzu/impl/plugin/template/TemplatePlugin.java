@@ -48,7 +48,7 @@ public class TemplatePlugin extends ApplicationPlugin {
   ApplicationContext application;
 
   public TemplatePlugin() {
-    super("plugin/template");
+    super("template");
 
     //
     this.stubs = new ConcurrentHashMap<Path, TemplateStub>();

@@ -31,6 +31,7 @@ import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
+import juzu.impl.resource.ResourceResolver;
 import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
@@ -63,6 +64,16 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   @Named("juzu.asset_manager.stylesheet")
   AssetManager stylesheetManager;
 
+  /** . */
+  @Inject
+  @Named("juzu.resource_resolver.classpath")
+  ResourceResolver classPathResolver;
+
+  /** . */
+  @Inject
+  @Named("juzu.resource_resolver.server")
+  ResourceResolver serverResolver;
+
   public AssetPlugin() {
     super("asset");
   }
@@ -86,17 +97,14 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    List<AssetMetaData> scripts = load(loader, packageName, location, config.getList("scripts", JSON.class));
-
-    //
-    List<AssetMetaData> stylesheets = load(loader, packageName, location, config.getList("stylesheets", JSON.class));
+    List<AssetMetaData> scripts = load(packageName, location, config.getList("scripts", JSON.class));
+    List<AssetMetaData> stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
 
     //
     return descriptor = new AssetDescriptor(packageName, location, scripts, stylesheets);
   }
 
   private List<AssetMetaData> load(
-      ClassLoader loader,
       String packageName,
       AssetLocation defaultLocation,
       List<? extends JSON> scripts) throws Exception {
@@ -118,14 +126,6 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
           value = "/" + packageName.replace('.', '/') + "/" + value;
         }
 
-        // Validate classpath assets
-        if (location == AssetLocation.CLASSPATH) {
-          URL url = loader.getResource(value.substring(1));
-          if (url == null) {
-            throw new Exception("Could not resolve classpath assets " + url);
-          }
-        }
-
         //
         AssetMetaData descriptor = new AssetMetaData(
           id,
@@ -140,35 +140,43 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @PostConstruct
-  public void start() {
-    ArrayList<Asset> scripts = new ArrayList<Asset>();
-    for (AssetMetaData script : descriptor.getScripts()) {
+  public void start() throws Exception {
+    this.scripts = process(descriptor.getScripts(), scriptManager);
+    this.stylesheets = process(descriptor.getStylesheets(), stylesheetManager);
+  }
+
+  private Asset[] process(List<AssetMetaData> data, AssetManager manager) throws Exception {
+    ArrayList<Asset> assets = new ArrayList<Asset>();
+    for (AssetMetaData script : data) {
       String id = script.getId();
       if (id != null) {
-        scripts.add(Asset.ref(id));
+        assets.add(Asset.ref(id));
       }
       else {
-        scripts.add(Asset.of(script.getLocation(), script.getValue()));
+        assets.add(Asset.of(script.getLocation(), script.getValue()));
       }
-      scriptManager.addAsset(script);
-    }
 
-    //
-    ArrayList<Asset> stylesheets = new ArrayList<Asset>();
-    for (AssetMetaData stylesheet : descriptor.getStylesheets()) {
-      String id = stylesheet.getId();
-      if (id != null) {
-        stylesheets.add(Asset.ref(stylesheet.getId()));
+      // Validate assets
+      AssetLocation location = script.getLocation();
+      URL url;
+      if (location == AssetLocation.CLASSPATH) {
+        url = classPathResolver.resolve(script.getValue());
+        if (url == null) {
+          throw new Exception("Could not resolve classpath assets " + url);
+        }
+      } else if (location == AssetLocation.SERVER && !script.getValue().startsWith("/")) {
+        url = serverResolver.resolve("/" + script.getValue());
+        if (url == null) {
+          throw new Exception("Could not resolve server assets " + url);
+        }
+      } else {
+        url = null;
       }
-      else {
-        stylesheets.add(Asset.of(stylesheet.getLocation(), stylesheet.getValue()));
-      }
-      stylesheetManager.addAsset(stylesheet);
-    }
 
-    //
-    this.scripts = scripts.toArray(new Asset[scripts.size()]);
-    this.stylesheets = stylesheets.toArray(new Asset[stylesheets.size()]);
+      //
+      manager.addAsset(script, url);
+    }
+    return assets.toArray(new Asset[assets.size()]);
   }
 
   public void invoke(Request request) throws ApplicationException {
