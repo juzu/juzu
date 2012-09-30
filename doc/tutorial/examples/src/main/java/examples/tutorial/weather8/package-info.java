@@ -19,7 +19,8 @@
 
 @Application
 @Portlet
-@Assets(stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css")) package examples.tutorial.weather8;
+@Assets(stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css"))
+package examples.tutorial.weather8;
 
 import juzu.Application;
 import juzu.plugin.asset.Assets;

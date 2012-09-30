@@ -27,7 +27,8 @@
     @Script(src = "weather.js", depends = {"jquery", "collapse"})
   },
   stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css")
-) package examples.tutorial.weather9;
+)
+package examples.tutorial.weather9;
 
 import juzu.Application;
 import juzu.plugin.asset.Assets;

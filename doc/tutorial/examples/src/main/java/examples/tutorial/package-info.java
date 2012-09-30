@@ -17,6 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Less(value = "bootstrap.less", minify = true) package examples.tutorial;
+@Less(value = "bootstrap.less", minify = true)
+package examples.tutorial;
 
 import juzu.plugin.less.Less;
