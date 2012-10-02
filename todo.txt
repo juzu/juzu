@@ -1,5 +1,6 @@
 Various things to do, not exhaustive that needs to go in the roadmap
 
+- implement some kind of completion to see what it gives
 - in dev mode : only compile the package of the application to speed up build
 - translate Juzu scopes into other framework specific scopes : session scope to CDI scope, etc...
 - in standalone mode : implement portlet Preferences with cookie
