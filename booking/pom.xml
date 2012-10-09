@@ -73,6 +73,19 @@
               </descriptorRefs>
             </configuration>
           </execution>
+          <execution>
+            <id>tomcat</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <classifier>tomcat</classifier>
+              <descriptorRefs>
+                <descriptorRef>tomcat</descriptorRef>
+              </descriptorRefs>
+            </configuration>
+          </execution>
         </executions>
 
       </plugin>

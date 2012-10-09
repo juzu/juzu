@@ -69,13 +69,16 @@ class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         @Override
         public void file(Object file, String name) throws IOException {
           if (name.endsWith(".class")) {
-            StringBuilder fqn = new StringBuilder();
-            fileSystem.packageOf(file, '.', fqn);
-            if (fqn.length() > 0) {
-              fqn.append('.');
+            StringBuilder buf = new StringBuilder();
+            fileSystem.packageOf(file, '.', buf);
+            if (buf.length() > 0) {
+              buf.append('.');
             }
-            fqn.append(name, 0, name.length() - ".class".length());
-            beanClasses.add(fqn.toString());
+            buf.append(name, 0, name.length() - ".class".length());
+            String fqn = buf.toString();
+            if (!fqn.startsWith("juzu.impl.inject.spi.guice.") && !fqn.startsWith("juzu.impl.inject.spi.spring.")) {
+              beanClasses.add(fqn);
+            }
           }
         }
       });
