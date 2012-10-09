@@ -19,7 +19,7 @@
 
 package juzu.impl.inject.spi.configuration;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.spring.SpringBuilder;
 import juzu.impl.common.Tools;
@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ConfigurationTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class ConfigurationTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public ConfigurationTestCase(InjectImplementation di) {
     super(di);

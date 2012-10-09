@@ -20,7 +20,6 @@
 package juzu.impl.inject.spi.guice;
 
 import juzu.Scope;
-import juzu.impl.inject.BeanFilter;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectionContext;
@@ -87,11 +86,6 @@ public class GuiceBuilder extends InjectBuilder {
   @Override
   public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider) {
     bindings.add(new BeanBinding.ToProviderInstance<T>(beanType, beanScope, beanQualifiers, provider));
-    return this;
-  }
-
-  @Override
-  public InjectBuilder setFilter(BeanFilter filter) {
     return this;
   }
 

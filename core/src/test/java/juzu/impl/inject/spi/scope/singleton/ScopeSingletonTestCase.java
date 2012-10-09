@@ -19,12 +19,12 @@
 
 package juzu.impl.inject.spi.scope.singleton;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopeSingletonTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class ScopeSingletonTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public ScopeSingletonTestCase(InjectImplementation di) {
     super(di);

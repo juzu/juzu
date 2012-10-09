@@ -19,13 +19,10 @@
 
 package juzu.impl.inject.spi.named;
 
-import juzu.impl.inject.Export;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Export
 public class Injected {
 
   @Inject

@@ -75,7 +75,7 @@ public class ExtensionImpl implements Extension {
     }
 
     //
-    boolean veto = bound || manager.filter != null && !manager.filter.acceptBean(type);
+    boolean veto = bound || type.getName().startsWith("juzu.");
 
     //
     if (veto) {

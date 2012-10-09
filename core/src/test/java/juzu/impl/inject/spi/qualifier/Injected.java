@@ -19,14 +19,12 @@
 
 package juzu.impl.inject.spi.qualifier;
 
-import juzu.impl.inject.Export;
 import juzu.impl.inject.spi.Color;
 import juzu.impl.inject.spi.Colorized;
 
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Export
 public class Injected {
 
   @Inject

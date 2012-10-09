@@ -20,12 +20,10 @@
 package juzu.impl.inject.spi.scope.scoped;
 
 import juzu.RequestScoped;
-import juzu.impl.inject.Export;
 
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Export
 public class Injected {
 
   @Inject

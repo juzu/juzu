@@ -19,12 +19,12 @@
 
 package juzu.impl.inject.spi.bound.bean.qualifier.introspected;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BoundBeanQualifierIntrospectedTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class BoundBeanQualifierIntrospectedTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public BoundBeanQualifierIntrospectedTestCase(InjectImplementation di) {
     super(di);

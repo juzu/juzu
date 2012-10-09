@@ -20,7 +20,6 @@
 package juzu.impl.inject.spi.cdi;
 
 import juzu.Scope;
-import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
@@ -49,14 +48,10 @@ public class CDIBuilder extends InjectBuilder {
   /** . */
   private ArrayList<AbstractBean> boundBeans;
 
-  /** . */
-  private BeanFilter filter;
-
   public CDIBuilder() {
     this.scopes = new HashSet<Scope>();
     this.fileSystems = new ArrayList<ReadFileSystem<?>>();
     this.boundBeans = new ArrayList<AbstractBean>();
-    this.filter = null;
   }
 
   @Override
@@ -90,12 +85,6 @@ public class CDIBuilder extends InjectBuilder {
   }
 
   @Override
-  public InjectBuilder setFilter(BeanFilter filter) {
-    this.filter = filter;
-    return this;
-  }
-
-  @Override
   public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance) {
     boundBeans.add(new SingletonBean(type, qualifiers, instance));
     return this;
@@ -113,6 +102,6 @@ public class CDIBuilder extends InjectBuilder {
     for (ReadFileSystem<?> fs : fileSystems) {
       container.addFileSystem(fs);
     }
-    return new CDIContext(container, filter, boundBeans);
+    return new CDIContext(container, boundBeans);
   }
 }

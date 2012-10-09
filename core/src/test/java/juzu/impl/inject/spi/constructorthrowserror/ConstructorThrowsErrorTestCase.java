@@ -19,14 +19,14 @@
 
 package juzu.impl.inject.spi.constructorthrowserror;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ConstructorThrowsErrorTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class ConstructorThrowsErrorTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public ConstructorThrowsErrorTestCase(InjectImplementation di) {
     super(di);

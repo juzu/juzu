@@ -19,12 +19,9 @@
 
 package juzu.impl.inject.spi.bound.bean.injection;
 
-import juzu.impl.inject.Export;
-
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Export
 public class Injected {
 
   @Inject

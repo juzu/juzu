@@ -20,18 +20,16 @@
 package juzu.impl.inject.spi;
 
 import juzu.Scope;
-import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.Scoped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.common.Tools;
-import juzu.test.AbstractInjectTestCase;
 
 import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInjectTestCase {
+public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInjectTestCase {
 
   /** . */
   protected InjectBuilder bootstrap;
@@ -45,7 +43,7 @@ public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInject
   /** . */
   protected ScopingContextImpl scopingContext;
 
-  public AbstractInjectManagerTestCase(InjectImplementation di) {
+  public AbstractInjectTestCase(InjectImplementation di) {
     super(di);
   }
 
@@ -54,7 +52,7 @@ public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInject
   }
 
   protected final void init(String... pkg) throws Exception {
-    File root = new File(AbstractInjectManagerTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+    File root = new File(AbstractInjectTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
     assertTrue(root.exists());
     assertTrue(root.isDirectory());
     init(new DiskFileSystem(root, pkg), Thread.currentThread().getContextClassLoader());
@@ -64,7 +62,6 @@ public abstract class AbstractInjectManagerTestCase<B, I> extends AbstractInject
     InjectBuilder bootstrap = getManager();
     bootstrap.addFileSystem(fs);
     bootstrap.setClassLoader(classLoader);
-    bootstrap.setFilter(BeanFilter.DEFAULT);
 
     //
     this.bootstrap = bootstrap;

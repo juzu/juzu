@@ -19,19 +19,16 @@
 
 package juzu.impl.inject.spi.qualifier;
 
-import juzu.impl.inject.Export;
 import juzu.impl.inject.spi.Color;
 import juzu.impl.inject.spi.Colorized;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Bean {
 
-  @Export
   @Colorized(Color.RED)
   public static class Red extends Bean {
   }
 
-  @Export
   @Colorized(Color.GREEN)
   public static class Green extends Bean {
   }

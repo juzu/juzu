@@ -19,12 +19,12 @@
 
 package juzu.impl.inject.spi.bound.bean.supertype;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BoundBeanBeanSuperTypeTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class BoundBeanBeanSuperTypeTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public BoundBeanBeanSuperTypeTestCase(InjectImplementation di) {
     super(di);

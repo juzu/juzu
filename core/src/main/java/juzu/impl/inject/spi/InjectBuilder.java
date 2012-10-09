@@ -20,7 +20,6 @@
 package juzu.impl.inject.spi;
 
 import juzu.Scope;
-import juzu.impl.inject.BeanFilter;
 import juzu.impl.fs.spi.ReadFileSystem;
 
 import javax.inject.Provider;
@@ -96,8 +95,6 @@ public abstract class InjectBuilder {
   public abstract InjectBuilder addScope(Scope scope);
 
   public abstract InjectBuilder setClassLoader(ClassLoader classLoader);
-
-  public abstract InjectBuilder setFilter(BeanFilter filter);
 
   public abstract <B, I> InjectionContext<B, I> create() throws Exception;
 

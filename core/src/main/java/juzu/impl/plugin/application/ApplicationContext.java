@@ -25,7 +25,6 @@ import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
-import juzu.impl.inject.Export;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.request.Request;
@@ -46,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Export
 @Singleton
 public class ApplicationContext {
 

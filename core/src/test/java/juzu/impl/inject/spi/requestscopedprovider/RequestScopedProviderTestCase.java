@@ -20,12 +20,12 @@
 package juzu.impl.inject.spi.requestscopedprovider;
 
 import juzu.Scope;
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RequestScopedProviderTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class RequestScopedProviderTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public RequestScopedProviderTestCase(InjectImplementation di) {
     super(di);

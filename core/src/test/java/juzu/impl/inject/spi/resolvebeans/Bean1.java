@@ -19,9 +19,6 @@
 
 package juzu.impl.inject.spi.resolvebeans;
 
-import juzu.impl.inject.Export;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Export
 public class Bean1 extends AbstractBean {
 }

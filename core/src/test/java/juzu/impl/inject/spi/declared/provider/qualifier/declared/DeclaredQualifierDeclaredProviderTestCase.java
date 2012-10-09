@@ -19,7 +19,7 @@
 
 package juzu.impl.inject.spi.declared.provider.qualifier.declared;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.Color;
 import juzu.impl.inject.spi.ColorizedLiteral;
 import juzu.impl.inject.spi.InjectImplementation;
@@ -29,7 +29,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DeclaredQualifierDeclaredProviderTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class DeclaredQualifierDeclaredProviderTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public DeclaredQualifierDeclaredProviderTestCase(InjectImplementation di) {
     super(di);

@@ -20,7 +20,6 @@
 package juzu.impl.inject.spi.spring;
 
 import juzu.Scope;
-import juzu.impl.inject.BeanFilter;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
@@ -73,11 +72,6 @@ public class SpringBuilder extends InjectBuilder {
 
   public void setConfigurationURL(URL configurationURL) {
     this.configurationURL = configurationURL;
-  }
-
-  @Override
-  public InjectBuilder setFilter(BeanFilter filter) {
-    return this;
   }
 
   public <T> InjectBuilder declareBean(AbstractBean bean) {

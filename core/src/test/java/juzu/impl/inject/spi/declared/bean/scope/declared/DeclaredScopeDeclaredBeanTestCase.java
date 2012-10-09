@@ -20,13 +20,13 @@
 package juzu.impl.inject.spi.declared.bean.scope.declared;
 
 import juzu.Scope;
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.ScopedKey;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DeclaredScopeDeclaredBeanTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class DeclaredScopeDeclaredBeanTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public DeclaredScopeDeclaredBeanTestCase(InjectImplementation di) {
     super(di);

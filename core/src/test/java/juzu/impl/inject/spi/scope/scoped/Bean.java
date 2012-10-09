@@ -20,11 +20,9 @@
 package juzu.impl.inject.spi.scope.scoped;
 
 import juzu.RequestScoped;
-import juzu.impl.inject.Export;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RequestScoped
-@Export
 public class Bean {
 
   /** . */

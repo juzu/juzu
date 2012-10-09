@@ -19,13 +19,10 @@
 
 package juzu.impl.inject.spi.siblingproducers;
 
-import juzu.impl.inject.Export;
-
 import javax.enterprise.inject.Produces;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Export
 public class Bean2Provider implements Provider<Bean2> {
 
   @Produces

@@ -20,12 +20,12 @@
 package juzu.impl.inject.spi.bound.bean.injected.install;
 
 import juzu.Scope;
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class InstallInjectedTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class InstallInjectedTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public InstallInjectedTestCase(InjectImplementation di) {
     super(di);

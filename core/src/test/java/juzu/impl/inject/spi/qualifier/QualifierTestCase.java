@@ -19,12 +19,12 @@
 
 package juzu.impl.inject.spi.qualifier;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class QualifierTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class QualifierTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public QualifierTestCase(InjectImplementation di) {
     super(di);

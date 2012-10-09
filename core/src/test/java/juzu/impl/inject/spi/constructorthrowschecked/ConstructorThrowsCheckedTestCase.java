@@ -19,7 +19,7 @@
 
 package juzu.impl.inject.spi.constructorthrowschecked;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ import javax.naming.AuthenticationException;
 import java.lang.reflect.InvocationTargetException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ConstructorThrowsCheckedTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class ConstructorThrowsCheckedTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public ConstructorThrowsCheckedTestCase(InjectImplementation di) {
     super(di);

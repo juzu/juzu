@@ -19,7 +19,7 @@
 
 package juzu.impl.inject.spi.resolvebeans;
 
-import juzu.impl.inject.spi.AbstractInjectManagerTestCase;
+import juzu.impl.inject.spi.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.common.Tools;
 import org.junit.Test;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResolvableBeansTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class ResolvableBeansTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
   public ResolvableBeansTestCase(InjectImplementation di) {
     super(di);

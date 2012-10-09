@@ -19,7 +19,6 @@
 
 package juzu.impl.inject.spi;
 
-import juzu.impl.inject.Export;
 import juzu.impl.fs.spi.ram.RAMDir;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.fs.spi.ram.RAMPath;
@@ -30,9 +29,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIManagerTestCase<B, I> extends AbstractInjectManagerTestCase<B, I> {
+public class CDITestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public CDIManagerTestCase(InjectImplementation di) {
+  public CDITestCase(InjectImplementation di) {
     super(di);
   }
 
@@ -45,9 +44,14 @@ public class CDIManagerTestCase<B, I> extends AbstractInjectManagerTestCase<B, I
       //
       RAMDir foo = sources.addDir(sources.getRoot(), "foo");
       foo.addFile("Bean1.java").update("package foo; public class Bean1 {}");
-      foo.addFile("Bean2.java").update("package foo; @" + Export.class.getName() + " public class Bean2 {}");
-      foo.addFile("Bean3.java").update("package foo; @" + Export.class.getName() + " public class Bean3 {}");
-      foo.addFile("Bean4.java").update("package foo; @" + Export.class.getName() + " public class Bean4 {}");
+      foo.addFile("Bean2.java").update("package foo; public class Bean2 {}");
+      foo.addFile("Bean3.java").update("package foo; public class Bean3 {}");
+
+      //
+      RAMDir juzu = sources.addDir(sources.getRoot(), "juzu");
+      juzu.addFile("Bean1.java").update("package juzu; public class Bean1 {}");
+      juzu.addFile("Bean2.java").update("package juzu; public class Bean2 {}");
+      juzu.addFile("Bean3.java").update("package juzu; public class Bean3 {}");
 
       //
       CompilerAssert<RAMPath, RAMPath> helper = new CompilerAssert<RAMPath, RAMPath>(sources, classes);
@@ -55,26 +59,44 @@ public class CDIManagerTestCase<B, I> extends AbstractInjectManagerTestCase<B, I
       URLClassLoader classLoader = new URLClassLoader(new URL[]{classes.getURL()}, Thread.currentThread().getContextClassLoader());
 
       //
-      Class bean1Class = classLoader.loadClass("foo.Bean1");
-      Class bean2Class = classLoader.loadClass("foo.Bean2");
-      Class bean3Class = classLoader.loadClass("foo.Bean3");
-      Class bean4Class = classLoader.loadClass("foo.Bean4");
+      Class fooBean1Class = classLoader.loadClass("foo.Bean1");
+      Class fooBean2Class = classLoader.loadClass("foo.Bean2");
+      Class fooBean3Class = classLoader.loadClass("foo.Bean3");
+
+      //
+      Class juzuBean1Class = classLoader.loadClass("juzu.Bean1");
+      Class juzuBean2Class = classLoader.loadClass("juzu.Bean2");
+      Class juzuBean3Class = classLoader.loadClass("juzu.Bean3");
 
       //
       init(classes, classLoader);
-      bootstrap.declareBean(bean2Class, null, null, null);
-      bootstrap.bindBean(bean3Class, null, bean3Class.newInstance());
+
+      //
+      bootstrap.declareBean(fooBean2Class, null, null, null);
+      bootstrap.bindBean(fooBean3Class, null, fooBean3Class.newInstance());
+
+      //
+      bootstrap.declareBean(juzuBean2Class, null, null, null);
+      bootstrap.bindBean(juzuBean3Class, null, juzuBean3Class.newInstance());
+
+      //
       boot();
 
       //
-      B bean1 = mgr.resolveBean(bean1Class);
-      assertNotNull(bean1);
-      B bean2 = mgr.resolveBean(bean2Class);
-      assertNotNull(bean2);
-      B bean3 = mgr.resolveBean(bean3Class);
-      assertNotNull(bean3);
-      B bean4 = mgr.resolveBean(bean4Class);
-      assertNull(bean4);
+      B fooBean1 = mgr.resolveBean(fooBean1Class);
+      assertNotNull(fooBean1);
+      B fooBean2 = mgr.resolveBean(fooBean2Class);
+      assertNotNull(fooBean2);
+      B fooBean3 = mgr.resolveBean(fooBean3Class);
+      assertNotNull(fooBean3);
+
+      //
+      B juzuBean1 = mgr.resolveBean(juzuBean1Class);
+      assertNull(juzuBean1);
+      B juzuBean2 = mgr.resolveBean(juzuBean2Class);
+      assertNotNull(juzuBean2);
+      B juzuBean3 = mgr.resolveBean(juzuBean3Class);
+      assertNotNull(juzuBean3);
     }
   }
 }
