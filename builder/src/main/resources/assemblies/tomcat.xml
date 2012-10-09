@@ -37,6 +37,14 @@
       <outputDirectory>/WEB-INF/src</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory> ${project.build.sourceDirectory}</directory>
+      <outputDirectory>/WEB-INF/classes</outputDirectory>
+      <includes>
+        <include>**/*.js</include>
+        <include>**/*.css</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/src/main/webapp</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
