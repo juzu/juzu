@@ -4,30 +4,28 @@
 
 <h1>View hotel</h1>
 
-<form action="@{processConfirmBooking(id = hotel.id)}" method="post">
-    <p>
-        <strong>Name:</strong> ${hotel.name}
-    </p>
-    <p>
-        <strong>Address:</strong> ${hotel.address}
-    </p>
-    <p>
-        <strong>City:</strong> ${hotel.city}
-    </p>
-    <p>
-        <strong>State:</strong> ${hotel.state}
-    </p>
-    <p>
-        <strong>Zip:</strong> ${hotel.zip}
-    </p>
-    <p>
-        <strong>Country:</strong> ${hotel.country}
-    </p>
-    <p>
-        <strong>Nightly rate:</strong> ${hotel.price}
-    </p>
+<p>
+    <strong>Name:</strong> ${hotel.name}
+</p>
+<p>
+    <strong>Address:</strong> ${hotel.address}
+</p>
+<p>
+    <strong>City:</strong> ${hotel.city}
+</p>
+<p>
+    <strong>State:</strong> ${hotel.state}
+</p>
+<p>
+    <strong>Zip:</strong> ${hotel.zip}
+</p>
+<p>
+    <strong>Country:</strong> ${hotel.country}
+</p>
+<p>
+    <strong>Nightly rate:</strong> ${hotel.price}
+</p>
 
-    <p class="buttons">
-        <input type="submit" value="Book Hotel"> <a href="@{index()}">Back to search</a>
-    </p>
-</form>
+<p class="buttons">
+    <a href="@{processConfirmBooking(id = hotel.id)}">Book Hotel</a> <a href="@{index()}">Back to search</a>
+</p>
