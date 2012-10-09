@@ -30,7 +30,7 @@
   <fileSets>
     <fileSet>
       <directory>${project.build.outputDirectory}</directory>
-      <outputDirectory>/WEB-INF/classes</outputDirectory>
+			<outputDirectory>/WEB-INF/classes</outputDirectory>
     </fileSet>
     <fileSet>
       <directory> ${project.build.sourceDirectory}</directory>
@@ -47,6 +47,7 @@
     <fileSet>
       <directory>${project.basedir}/src/main/webapp</directory>
       <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
     </fileSet>
   </fileSets>
 

@@ -47,6 +47,7 @@
     <fileSet>
       <directory>${project.basedir}/src/main/webapp</directory>
       <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
     </fileSet>
   </fileSets>
 
