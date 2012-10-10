@@ -19,46 +19,16 @@
 
 package juzu.test.protocol.portlet;
 
-import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
-import org.junit.AfterClass;
 import org.junit.runner.RunWith;
-
-import java.lang.reflect.Field;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
 public abstract class AbstractPortletTestCase extends AbstractWebTestCase {
 
-  /** . */
-  static String applicationName;
-
   public static WebArchive createDeployment(String pkgName) {
-
-    // Create war
-    WebArchive war = AbstractWebTestCase.createDeployment(pkgName);
-
-    // Descriptor
-    war.setWebXML(AbstractPortletTestCase.class.getResource("web.xml"));
-    war.addAsWebInfResource(AbstractPortletTestCase.class.getResource("portlet.xml"), "portlet.xml");
-
-    // Add libraries we need
-/*
-    war.addAsLibraries(DependencyResolvers.
-        use(MavenDependencyResolver.class).
-        loadEffectivePom("pom.xml")
-        .artifacts("javax.servlet:jstl", "taglibs:standard").
-            resolveAsFiles());
-*/
-
-    // Set application name (maybe remove that)
-    applicationName = Tools.join('.', pkgName);
-
-    //
-    return war;
+    return createPortletDeployment(pkgName);
   }
 }

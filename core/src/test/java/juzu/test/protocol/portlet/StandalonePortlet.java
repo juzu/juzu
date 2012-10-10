@@ -20,6 +20,7 @@
 package juzu.test.protocol.portlet;
 
 import juzu.portlet.JuzuPortlet;
+import juzu.test.AbstractWebTestCase;
 
 import javax.portlet.PortletConfig;
 
@@ -28,6 +29,6 @@ public class StandalonePortlet extends JuzuPortlet {
 
   @Override
   protected String getApplicationName(PortletConfig config) {
-    return AbstractPortletTestCase.applicationName;
+    return AbstractWebTestCase.getApplicationName();
   }
 }

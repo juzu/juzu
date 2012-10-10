@@ -28,6 +28,8 @@ import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.fs.spi.ram.RAMPath;
+import juzu.test.protocol.portlet.AbstractPortletTestCase;
+import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -37,6 +39,8 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedList;
 
@@ -44,7 +48,64 @@ import java.util.LinkedList;
 @RunWith(Arquillian.class)
 public abstract class AbstractWebTestCase extends AbstractTestCase {
 
-  public static WebArchive createDeployment(String pkgName) {
+  /** . */
+  private static String applicationName;
+
+  /**
+   * Returns the currently deployed application name.
+   *
+   * @return the application name
+   */
+  public static String getApplicationName() {
+    return applicationName;
+  }
+
+  public static WebArchive createServletDeployment(String pkgName) {
+    return createServletDeployment(pkgName, pkgName);
+  }
+
+  public static WebArchive createServletDeployment(String applicationName, String pkgName) {
+
+    // Create war
+    final WebArchive war = createDeployment(pkgName);
+
+    // Descriptor
+    URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
+    war.setWebXML(descriptor);
+
+    // Set application name (maybe remove that)
+    AbstractWebTestCase.applicationName = applicationName;
+
+    //
+    return war;
+  }
+
+  public static WebArchive createPortletDeployment(String pkgName) {
+
+    // Create war
+    WebArchive war = createDeployment(pkgName);
+
+    // Descriptor
+    war.setWebXML(AbstractPortletTestCase.class.getResource("web.xml"));
+    war.addAsWebInfResource(AbstractPortletTestCase.class.getResource("portlet.xml"), "portlet.xml");
+
+    // Add libraries we need
+/*
+    war.addAsLibraries(DependencyResolvers.
+        use(MavenDependencyResolver.class).
+        loadEffectivePom("pom.xml")
+        .artifacts("javax.servlet:jstl", "taglibs:standard").
+            resolveAsFiles());
+*/
+
+    // Set application name (maybe remove that)
+    applicationName = Tools.join('.', pkgName);
+
+    //
+    return war;
+  }
+
+  private static WebArchive createDeployment(String pkgName) {
 
     // Compile classes
     DiskFileSystem sourcePath = diskFS(QN.parse(pkgName));
@@ -95,6 +156,20 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
 
   @ArquillianResource
   protected URL deploymentURL;
+
+  /**
+   * Returns the portlet URL for standalone portlet unit test.
+   *
+   * @return the base portlet URL
+   */
+  public URL getPortletURL() {
+    try {
+      return deploymentURL.toURI().resolve("embed/StandalonePortlet").toURL();
+    }
+    catch (Exception e) {
+      throw failure(e);
+    }
+  }
 
   public void assertInternalError() {
     WebClient client = new WebClient();

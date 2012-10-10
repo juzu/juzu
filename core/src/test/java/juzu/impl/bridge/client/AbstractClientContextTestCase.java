@@ -17,14 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.servlet;
+package juzu.impl.bridge.client;
 
 import junit.framework.Assert;
+import juzu.test.AbstractWebTestCase;
 import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,7 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ClientContextTestCase extends AbstractStandaloneTestCase {
+public abstract class AbstractClientContextTestCase extends AbstractWebTestCase {
 
   /** . */
   public static String kind;
@@ -52,26 +50,11 @@ public class ClientContextTestCase extends AbstractStandaloneTestCase {
   /** . */
   public static int contentLength;
 
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createDeployment("bridge.client.action");
-  }
-
   @Drone
   WebDriver driver;
 
-  @Test
-  public void testAction() throws Exception {
-    test("action");
-  }
-
-  @Test
-  public void testResource() throws Exception {
-    test("resource");
-  }
-
-  private void test(String kind) throws Exception {
-    driver.get(deploymentURL.toString());
+  protected void test(URL initialURL, String kind) throws Exception {
+    driver.get(initialURL.toString());
     WebElement link = driver.findElement(By.id(kind));
     contentLength = -1;
     charset = null;
@@ -92,6 +75,6 @@ public class ClientContextTestCase extends AbstractStandaloneTestCase {
     assertEquals("UTF8", charset);
     assertEquals("application/octet-stream;charset=UTF8", contentType);
     assertEquals("foo", content);
-    assertEquals(kind, ClientContextTestCase.kind);
+    assertEquals(kind, AbstractClientContextTestCase.kind);
   }
 }

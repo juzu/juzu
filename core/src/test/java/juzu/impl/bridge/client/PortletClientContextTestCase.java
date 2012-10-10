@@ -17,17 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.test.protocol.standalone;
+package juzu.impl.bridge.client;
 
-import juzu.impl.bridge.spi.standalone.ServletBridge;
-import juzu.test.AbstractWebTestCase;
-
-import javax.servlet.ServletConfig;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class StandaloneServlet extends ServletBridge {
-  @Override
-  protected String getApplicationName(ServletConfig config) {
-    return AbstractWebTestCase.getApplicationName();
+public class PortletClientContextTestCase extends AbstractClientContextTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createPortletDeployment("bridge.client.action");
+  }
+
+  @Test
+  public void testServletAction() throws Exception {
+    test(getPortletURL(), "action");
+  }
+
+  @Test
+  public void testServletResource() throws Exception {
+    test(getPortletURL(), "resource");
   }
 }

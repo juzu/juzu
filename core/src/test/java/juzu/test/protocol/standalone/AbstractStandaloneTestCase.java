@@ -22,31 +22,14 @@ package juzu.test.protocol.standalone;
 import juzu.test.AbstractWebTestCase;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import java.net.URL;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
 
-  /** . */
-  static String applicationName;
-
   public static WebArchive createDeployment(String pkgName) {
-    return createDeployment(pkgName, pkgName);
+    return createServletDeployment(pkgName);
   }
 
   public static WebArchive createDeployment(String applicationName, String pkgName) {
-
-    // Create war
-    final WebArchive war = AbstractWebTestCase.createDeployment(pkgName);
-
-    // Descriptor
-    URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
-    war.setWebXML(descriptor);
-
-    // Set application name (maybe remove that)
-    AbstractStandaloneTestCase.applicationName = applicationName;
-
-    //
-    return war;
+    return createServletDeployment(applicationName, pkgName);
   }
 }

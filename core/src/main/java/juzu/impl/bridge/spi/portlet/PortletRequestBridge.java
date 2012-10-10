@@ -283,8 +283,10 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   }
 
   public void send() throws IOException {
-    for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
-      resp.addProperty(entry.getKey(), entry.getValue()[0]);
+    if (responseHeaders != null) {
+      for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
+        resp.addProperty(entry.getKey(), entry.getValue()[0]);
+      }
     }
   }
 }

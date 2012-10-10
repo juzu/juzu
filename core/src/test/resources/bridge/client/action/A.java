@@ -25,7 +25,7 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.impl.bridge.servlet.ClientContextTestCase;
+import juzu.impl.bridge.client.AbstractClientContextTestCase;
 import juzu.impl.common.Tools;
 import juzu.request.ClientContext;
 
@@ -39,22 +39,22 @@ public class A extends Controller {
   @Route("/action")
   public void action() throws IOException {
     test(actionContext.getClientContext());
-    ClientContextTestCase.kind = "action";
+    AbstractClientContextTestCase.kind = "action";
   }
 
   @Resource
   @Route("/resource")
   public void resource() throws IOException {
     test(resourceContext.getClientContext());
-    ClientContextTestCase.kind = "resource";
+    AbstractClientContextTestCase.kind = "resource";
   }
 
   private void test(ClientContext client) throws IOException {
     InputStream in = client.getInputStream();
-    ClientContextTestCase.content = Tools.read(in, " UTF-8");
-    ClientContextTestCase.contentLength = client.getContentLenth();
-    ClientContextTestCase.charset = client.getCharacterEncoding();
-    ClientContextTestCase.contentType = client.getContentType();
+    AbstractClientContextTestCase.content = Tools.read(in, " UTF-8");
+    AbstractClientContextTestCase.contentLength = client.getContentLenth();
+    AbstractClientContextTestCase.charset = client.getCharacterEncoding();
+    AbstractClientContextTestCase.contentType = client.getContentType();
   }
 
   @View
