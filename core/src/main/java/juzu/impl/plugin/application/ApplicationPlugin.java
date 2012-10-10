@@ -19,12 +19,31 @@
 
 package juzu.impl.plugin.application;
 
+import juzu.impl.common.JSON;
+import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class ApplicationPlugin extends Plugin {
 
+  /** . */
+  protected ApplicationDescriptor application;
+
   public ApplicationPlugin(String name) {
     super(name);
+  }
+
+  /**
+   * Returns the plugin descriptor or null if the plugin should not be loaded.
+   *
+   * @param application the application
+   * @param config the plugin config
+   * @return the descriptor
+   * @throws Exception any exception
+   */
+  public Descriptor init(ApplicationDescriptor application, JSON config) throws Exception {
+    this.application = application;
+    return init(application.getApplicationLoader(), config);
   }
 }

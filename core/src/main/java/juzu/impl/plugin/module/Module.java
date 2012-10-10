@@ -47,8 +47,8 @@ public class Module {
     HashMap<String, Descriptor> descriptors = new HashMap<String, Descriptor>();
     for (ModulePlugin plugin : plugins.values()) {
       JSON pluginConfig = config.getJSON(plugin.getName());
-      if (pluginConfig != null) {
-        Descriptor desc = plugin.init(loader, pluginConfig);
+      Descriptor desc = plugin.init(loader, pluginConfig);
+      if (desc != null) {
         descriptors.put(plugin.getName(), desc);
       }
     }

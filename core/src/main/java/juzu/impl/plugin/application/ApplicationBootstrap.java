@@ -66,7 +66,7 @@ class ApplicationBootstrap {
     }
 
     // Bind the plugins
-    for (Plugin plugin : descriptor.getFoo().values()) {
+    for (Plugin plugin : descriptor.getPlugins().values()) {
       Class aClass = plugin.getClass();
       Object o = plugin;
       injectBuilder.bindBean(aClass, null, o);

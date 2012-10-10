@@ -32,6 +32,6 @@ public class RouterModulePlugin extends ModulePlugin {
 
   @Override
   public Descriptor init(ClassLoader loader, JSON config) throws Exception {
-    return new RouteDescriptor(config);
+    return config != null ? new RouteDescriptor(config) : null;
   }
 }

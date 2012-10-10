@@ -24,6 +24,8 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
+import juzu.impl.common.JSON;
+import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
@@ -60,6 +62,11 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
   public AjaxPlugin() {
     super("ajax");
+  }
+
+  @Override
+  public Descriptor init(ApplicationDescriptor application, JSON config) throws Exception {
+    return config != null ? new Descriptor() : null;
   }
 
   @PostConstruct

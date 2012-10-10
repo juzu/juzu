@@ -346,11 +346,6 @@ public abstract class ApplicationRuntime<P, R> {
       }
     }
 
-    // Handle here / later do differently
-    if (descriptor.getPluginDescriptor("asset") == null) {
-      descriptor.addPlugin(new AssetPlugin());
-    }
-
     // Bind the resolver
     ClassLoaderResolver resolver = new ClassLoaderResolver(getClassLoader());
     injectBuilder.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.classpath")), resolver);

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -107,16 +108,37 @@ public class ApplicationDescriptor extends Descriptor {
       pluginMap.put(plugin.getName(), plugin);
     }
 
+    // Init this first before initing plugin so they can use it
+    this.applicationClass = applicationClass;
+    this.name = applicationClass.getSimpleName();
+    this.packageName = applicationClass.getPackage().getName();
+    this.packageClass = packageClass;
+
+    //
+    HashSet<String> names = new HashSet<String>(config.names());
+    HashMap<ApplicationPlugin, JSON> configs = new HashMap<ApplicationPlugin, JSON>();
+    for (ApplicationPlugin plugin : pluginMap.values()) {
+      String name = plugin.getName();
+      if (names.remove(name)) {
+        configs.put(plugin, config.getJSON(plugin.getName()));
+      } else {
+        configs.put(plugin, null);
+      }
+    }
+
+    //
+    if (names.size() > 0) {
+      throw new UnsupportedOperationException("Handle me gracefully : missing plugin " + name);
+    }
+
     //
     HashMap<String, Descriptor> pluginDescriptors = new HashMap<String, Descriptor>();
-    for (String name : config.names()) {
-      ApplicationPlugin plugin = pluginMap.get(name);
-      if (plugin == null) {
-        throw new UnsupportedOperationException("Handle me gracefully : missing plugin " + name);
+    for (Map.Entry<ApplicationPlugin, JSON> entry : configs.entrySet()) {
+      ApplicationPlugin plugin = entry.getKey();
+      Descriptor descriptor = plugin.init(this, entry.getValue());
+      if (descriptor != null) {
+        pluginDescriptors.put(plugin.getName(), descriptor);
       }
-      JSON pluginConfig = config.getJSON(name);
-      Descriptor pluginDescriptor = plugin.init(applicationClass.getClassLoader(), pluginConfig);
-      pluginDescriptors.put(name, pluginDescriptor);
     }
 
     //
@@ -128,17 +150,13 @@ public class ApplicationDescriptor extends Descriptor {
     }
 
     //
-    this.applicationClass = applicationClass;
-    this.name = applicationClass.getSimpleName();
-    this.packageName = applicationClass.getPackage().getName();
     this.templates = (TemplatesDescriptor)pluginDescriptors.get("template");
-    this.packageClass = packageClass;
     this.controllers = (ControllersDescriptor)pluginDescriptors.get("controller");
     this.pluginDescriptors = pluginDescriptors;
     this.plugins = pluginMap;
   }
 
-  public Map<String, ApplicationPlugin> getFoo() {
+  public Map<String, ApplicationPlugin> getPlugins() {
     return plugins;
   }
 
@@ -157,7 +175,7 @@ public class ApplicationDescriptor extends Descriptor {
 
   public void addPlugin(ApplicationPlugin plugin) throws Exception {
     plugins.put(plugin.getName(), plugin);
-    pluginDescriptors.put(name,  plugin.init(applicationClass.getClassLoader(), new JSON()));
+    pluginDescriptors.put(name,  plugin.init(this, new JSON()));
   }
 
   public Class<?> getPackageClass() {

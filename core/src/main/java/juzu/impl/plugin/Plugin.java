@@ -41,7 +41,7 @@ public abstract class Plugin {
   }
 
   /**
-   * Returns the plugin descriptor or null if the plugin does not provide any descriptor.
+   * Returns the plugin descriptor or null if the plugin should not be loaded.
    *
    * @param loader the loader
    * @param config the plugin config
@@ -49,6 +49,6 @@ public abstract class Plugin {
    * @throws Exception any exception
    */
   public Descriptor init(ClassLoader loader, JSON config) throws Exception {
-    return Descriptor.EMPTY;
+    return null;
   }
 }

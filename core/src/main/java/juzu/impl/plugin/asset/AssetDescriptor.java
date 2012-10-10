@@ -36,34 +36,14 @@ import java.util.List;
 public class AssetDescriptor extends Descriptor {
 
   /** . */
-  private final String packageName;
-
-  /** . */
-  private AssetLocation location;
-
-  /** . */
   private List<AssetMetaData> scripts;
 
   /** . */
   private List<AssetMetaData> stylesheets;
 
-  public AssetDescriptor(
-      String packageName,
-      AssetLocation location,
-      List<AssetMetaData> scripts,
-      List<AssetMetaData> stylesheets) {
-    this.packageName = packageName;
-    this.location = location;
+  public AssetDescriptor(List<AssetMetaData> scripts, List<AssetMetaData> stylesheets) {
     this.scripts = scripts;
     this.stylesheets = stylesheets;
-  }
-
-  public AssetLocation getLocation() {
-    return location;
-  }
-
-  public String getPackageName() {
-    return packageName;
   }
 
   public List<AssetMetaData> getScripts() {

@@ -24,10 +24,12 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
+import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
@@ -87,21 +89,19 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @Override
-  public AssetDescriptor init(ClassLoader loader, JSON config) throws Exception {
-    String packageName = config.getString("package");
-    AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
-
-    //
-    if (location == null) {
-      location = AssetLocation.CLASSPATH;
+  public Descriptor init(ApplicationDescriptor application, JSON config) throws Exception {
+    if (config != null) {
+      String packageName = config.getString("package");
+      AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
+      if (location == null) {
+        location = AssetLocation.CLASSPATH;
+      }
+      List<AssetMetaData> scripts = load(packageName, location, config.getList("scripts", JSON.class));
+      List<AssetMetaData> stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
+      return descriptor = new AssetDescriptor(scripts, stylesheets);
+    } else {
+      return descriptor = new AssetDescriptor(Collections.<AssetMetaData>emptyList(), Collections.<AssetMetaData>emptyList());
     }
-
-    //
-    List<AssetMetaData> scripts = load(packageName, location, config.getList("scripts", JSON.class));
-    List<AssetMetaData> stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
-
-    //
-    return descriptor = new AssetDescriptor(packageName, location, scripts, stylesheets);
   }
 
   private List<AssetMetaData> load(
