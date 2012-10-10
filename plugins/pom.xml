@@ -96,6 +96,7 @@
   <modules>
     <module>portlet</module>
     <module>less</module>
+    <module>upload</module>
   </modules>
 
 </project>
