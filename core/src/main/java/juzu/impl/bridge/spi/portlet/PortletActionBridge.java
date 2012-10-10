@@ -24,6 +24,7 @@ import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.portlet.JuzuPortlet;
+import juzu.request.ClientContext;
 import juzu.request.Phase;
 
 import javax.portlet.ActionRequest;
@@ -38,8 +39,18 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletActionBridge extends PortletRequestBridge<ActionRequest, ActionResponse> implements ActionBridge {
 
-  public PortletActionBridge(ApplicationContext application, ActionRequest actionRequest, ActionResponse actionResponse, boolean prod) {
-    super(application, actionRequest, actionResponse, prod);
+  /** . */
+  private final PortletClientContext clientContext;
+
+  public PortletActionBridge(ApplicationContext application, ActionRequest request, ActionResponse response, boolean prod) {
+    super(application, request, response, prod);
+
+    //
+    this.clientContext = new PortletClientContext(request);
+  }
+
+  public ClientContext getClientContext() {
+    return clientContext;
   }
 
   @Override

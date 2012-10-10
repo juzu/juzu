@@ -23,6 +23,7 @@ import juzu.Response;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.MethodHandle;
+import juzu.request.ClientContext;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -36,6 +37,10 @@ public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
 
   public MockResourceBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
+  }
+
+  public ClientContext getClientContext() {
+    throw new UnsupportedOperationException();
   }
 
   public void assertOk() {

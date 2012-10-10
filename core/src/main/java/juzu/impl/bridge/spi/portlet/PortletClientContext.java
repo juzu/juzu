@@ -17,37 +17,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.request;
+package juzu.impl.bridge.spi.portlet;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
-import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.ResourceBridge;
+import juzu.request.ClientContext;
+
+import javax.portlet.ClientDataRequest;
+import java.io.IOException;
+import java.io.InputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResourceContext extends MimeContext {
+public class PortletClientContext implements ClientContext {
 
   /** . */
-  private ResourceBridge bridge;
+  private final ClientDataRequest request;
 
-  public ResourceContext(Request request, ApplicationContext application, MethodDescriptor method, ResourceBridge bridge) {
-    super(request, application, method);
-
-    //
-    this.bridge = bridge;
+  PortletClientContext(ClientDataRequest request) {
+    this.request = request;
   }
 
-  public ClientContext getClientContext() {
-    return bridge.getClientContext();
+  public String getContentType() {
+    return request.getContentType();
   }
 
-  @Override
-  protected ResourceBridge getBridge() {
-    return bridge;
+  public String getCharacterEncoding() {
+    return request.getCharacterEncoding();
   }
 
-  @Override
-  public Phase getPhase() {
-    return Phase.RESOURCE;
+  public int getContentLenth() {
+    return request.getContentLength();
+  }
+
+  public InputStream getInputStream() throws IOException {
+    return request.getPortletInputStream();
   }
 }

@@ -34,4 +34,9 @@ public class CompilationException extends Exception {
   public List<CompilationError> getErrors() {
     return errors;
   }
+
+  @Override
+  public String toString() {
+    return "CompilationException[" + errors + "]";
+  }
 }

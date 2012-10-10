@@ -57,6 +57,10 @@ public class MockHttpContext implements HttpContext {
     this.contextPath = "";
   }
 
+  public String getMethod() {
+    return "GET";
+  }
+
   public Cookie[] getCookies() {
     Cookie[] c = new Cookie[cookies.size()];
     for (int i = 0;i < cookies.size();i++) {

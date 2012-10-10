@@ -35,6 +35,7 @@ import juzu.impl.common.Tools;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.router.URIWriter;
+import juzu.request.ClientContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
@@ -45,13 +46,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext {
+public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext, ClientContext {
 
   /** . */
   final ApplicationContext application;
@@ -96,6 +98,28 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   }
 
   //
+
+  public String getContentType() {
+    return req.getContentType();
+  }
+
+  public String getCharacterEncoding() {
+    return req.getCharacterEncoding();
+  }
+
+  public int getContentLenth() {
+    return req.getContentLength();
+  }
+
+  public InputStream getInputStream() throws IOException {
+    return req.getInputStream();
+  }
+
+  //
+
+  public String getMethod() {
+    return req.getMethod();
+  }
 
   public MethodHandle getTarget() {
     return target;

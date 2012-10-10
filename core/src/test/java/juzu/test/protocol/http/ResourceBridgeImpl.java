@@ -27,6 +27,7 @@ import juzu.impl.common.Tools;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
+import juzu.request.ClientContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +49,10 @@ public class ResourceBridgeImpl extends MimeBridgeImpl implements ResourceBridge
       MethodHandle target,
       Map<String, String[]> parameters) {
     super(application, req, resp, target, parameters);
+  }
+
+  public ClientContext getClientContext() {
+    return this;
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

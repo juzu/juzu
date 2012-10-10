@@ -19,7 +19,11 @@
 
 package juzu.impl.bridge.spi;
 
+import juzu.request.ClientContext;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface ActionBridge extends RequestBridge {
+
+  ClientContext getClientContext();
 
 }

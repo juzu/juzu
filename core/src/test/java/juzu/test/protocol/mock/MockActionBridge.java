@@ -23,6 +23,7 @@ import juzu.Response;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
+import juzu.request.ClientContext;
 import juzu.test.AbstractTestCase;
 
 import java.io.IOException;
@@ -37,6 +38,10 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
 
   public MockActionBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
+  }
+
+  public ClientContext getClientContext() {
+    throw new UnsupportedOperationException();
   }
 
   public String assertUpdate() {

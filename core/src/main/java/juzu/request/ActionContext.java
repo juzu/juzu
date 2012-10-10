@@ -44,6 +44,10 @@ public class ActionContext extends RequestContext {
     return bridge;
   }
 
+  public ClientContext getClientContext() {
+    return bridge.getClientContext();
+  }
+
   @Override
   public Phase getPhase() {
     return Phase.ACTION;

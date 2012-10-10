@@ -29,6 +29,7 @@ import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
+import juzu.request.ClientContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
@@ -38,13 +39,15 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, WindowContext {
+public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, WindowContext, ClientContext {
 
   /** . */
   final ApplicationContext application;
@@ -79,6 +82,28 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   }
 
   //
+
+  public String getContentType() {
+    return req.getContentType();
+  }
+
+  public String getCharacterEncoding() {
+    return req.getCharacterEncoding();
+  }
+
+  public int getContentLenth() {
+    return req.getContentLength();
+  }
+
+  public InputStream getInputStream() throws IOException {
+    return req.getInputStream();
+  }
+
+  //
+
+  public String getMethod() {
+    return req.getMethod();
+  }
 
   public Cookie[] getCookies() {
     return req.getCookies();

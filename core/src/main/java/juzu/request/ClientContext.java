@@ -19,35 +19,20 @@
 
 package juzu.request;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
-import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.ResourceBridge;
+import java.io.IOException;
+import java.io.InputStream;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResourceContext extends MimeContext {
+/**
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public interface ClientContext {
 
-  /** . */
-  private ResourceBridge bridge;
+  String getContentType();
 
-  public ResourceContext(Request request, ApplicationContext application, MethodDescriptor method, ResourceBridge bridge) {
-    super(request, application, method);
+  String getCharacterEncoding();
 
-    //
-    this.bridge = bridge;
-  }
+  int getContentLenth();
 
-  public ClientContext getClientContext() {
-    return bridge.getClientContext();
-  }
+  InputStream getInputStream() throws IOException;
 
-  @Override
-  protected ResourceBridge getBridge() {
-    return bridge;
-  }
-
-  @Override
-  public Phase getPhase() {
-    return Phase.RESOURCE;
-  }
 }
