@@ -20,6 +20,7 @@
 package juzu.impl.inject.spi;
 
 import juzu.Scope;
+import juzu.impl.common.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
 
 import javax.inject.Provider;
@@ -31,6 +32,12 @@ import java.lang.annotation.Annotation;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 public abstract class InjectBuilder {
+
+  private static final Filter<Class<?>> ALL = new Filter<Class<?>>() {
+    public boolean accept(Class<?> elt) {
+      return true;
+    }
+  };
 
   /**
    * Declares a bean, bound to an optional implementation.
@@ -96,6 +103,10 @@ public abstract class InjectBuilder {
 
   public abstract InjectBuilder setClassLoader(ClassLoader classLoader);
 
-  public abstract <B, I> InjectionContext<B, I> create() throws Exception;
+  public final InjectionContext<?, ?> create() throws Exception {
+    return create(ALL);
+  }
+
+  public abstract InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception;
 
 }

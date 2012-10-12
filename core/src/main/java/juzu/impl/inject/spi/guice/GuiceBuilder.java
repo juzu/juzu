@@ -20,6 +20,7 @@
 package juzu.impl.inject.spi.guice;
 
 import juzu.Scope;
+import juzu.impl.common.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectionContext;
@@ -90,7 +91,7 @@ public class GuiceBuilder extends InjectBuilder {
   }
 
   @Override
-  public InjectionContext<?, ?> create() {
+  public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
     return new GuiceContext(this);
   }
 }

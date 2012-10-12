@@ -20,6 +20,7 @@
 package juzu.impl.inject.spi.cdi;
 
 import juzu.AmbiguousResolutionException;
+import juzu.impl.common.Filter;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.InjectionContext;
 
@@ -54,11 +55,16 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
   /** . */
   final ArrayList<Bean> beans;
 
+  /** . */
+  final Filter<Class<?>> filter;
+
   public CDIContext(
       Container container,
+      Filter<Class<?>> filter,
       ArrayList<AbstractBean> boundBeans) throws Exception {
     this.boundBeans = boundBeans;
     this.beans = new ArrayList<Bean>();
+    this.filter = filter;
 
     //
     boot.set(this);

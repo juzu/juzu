@@ -255,16 +255,13 @@ public class TemplateResolver implements Serializable {
       FileObject classFile = context.createSourceFile(absolute.getFQN(), elements);
       writer = classFile.openWriter();
       writer.append("package ").append(absolute.getQN()).append(";\n");
-      writer.append("import ").append(Tools.getImport(juzu.Path.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(TemplateDescriptor.class)).append(";\n");
-      writer.append("import javax.inject.Inject;\n");
       writer.append("import ").append(Tools.getImport(TemplatePlugin.class)).append(";\n");
-      writer.append("@Generated({})\n");
-      writer.append("@Path(\"").append(path.getValue()).append("\")\n");
+      writer.append("@").append(Generated.class.getName()).append("({})\n");
+      writer.append("@").append(juzu.Path.class.getName()).append("(\"").append(path.getValue()).append("\")\n");
       writer.append("public class ").append(path.getRawName()).append(" extends ").append(juzu.template.Template.class.getName()).append("\n");
       writer.append("{\n");
-      writer.append("@Inject\n");
+      writer.append("@javax.inject.Inject\n");
       writer.append("public ").append(path.getRawName()).append("(").
         append(TemplatePlugin.class.getSimpleName()).append(" templatePlugin").
         append(")\n");
@@ -273,7 +270,12 @@ public class TemplateResolver implements Serializable {
       writer.append("}\n");
 
       //
-      writer.append("public static final TemplateDescriptor DESCRIPTOR = new TemplateDescriptor(").append(absolute.getFQN().getName()).append(".class);\n");
+      writer.
+          append("public static final ").
+          append(TemplateDescriptor.class.getName()).
+          append(" DESCRIPTOR = new ").
+          append(TemplateDescriptor.class.getName()).
+          append("(").append(absolute.getFQN().getName()).append(".class);\n");
 
       //
       String baseBuilderName = Tools.getImport(juzu.template.Template.Builder.class);

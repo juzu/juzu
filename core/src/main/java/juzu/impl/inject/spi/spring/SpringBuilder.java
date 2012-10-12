@@ -20,6 +20,7 @@
 package juzu.impl.inject.spi.spring;
 
 import juzu.Scope;
+import juzu.impl.common.Filter;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
@@ -128,7 +129,7 @@ public class SpringBuilder extends InjectBuilder {
   }
 
   @Override
-  public <B, I> InjectionContext<B, I> create() throws Exception {
+  public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
     DefaultListableBeanFactory factory;
     if (configurationURL != null) {
       factory = new XmlBeanFactory(new UrlResource(configurationURL));
@@ -175,6 +176,6 @@ public class SpringBuilder extends InjectBuilder {
     configurer.postProcessBeanFactory(factory);
 
     //
-    return (InjectionContext<B, I>)new SpringContext(factory, classLoader);
+    return new SpringContext(factory, classLoader);
   }
 }

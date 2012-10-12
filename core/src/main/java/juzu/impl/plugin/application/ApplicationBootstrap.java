@@ -19,7 +19,10 @@
 
 package juzu.impl.plugin.application;
 
+import juzu.Application;
 import juzu.Scope;
+import juzu.impl.common.Filter;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.plugin.Plugin;
@@ -28,6 +31,7 @@ import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class ApplicationBootstrap {
@@ -77,10 +81,44 @@ class ApplicationBootstrap {
       bean.bind(injectBuilder);
     }
 
+    // Filter the classes:
+    // any class beginning with juzu. is refused
+    // any class prefixed with the application package is accepted
+    // any other application class is refused (i.e a class having an ancestor package annotated with @Application)
+    Filter<Class<?>> filter = new Filter<Class<?>>() {
+      HashSet<String> blackList = new HashSet<String>();
+      public boolean accept(Class<?> elt) {
+        if (elt.getName().startsWith("juzu.")) {
+          return false;
+        } else if (elt.getPackage().getName().startsWith(descriptor.getPackageName())) {
+          return true;
+        } else {
+          for (String currentPkg = elt.getPackage().getName();currentPkg != null;currentPkg = Tools.parentPackageOf(currentPkg)) {
+            if (blackList.contains(currentPkg)) {
+              return false;
+            } else {
+              try {
+                Class<?> packageClass = descriptor.getApplicationLoader().loadClass(currentPkg + ".package-info");
+                Application ann = packageClass.getAnnotation(Application.class);
+                if (ann != null) {
+                  blackList.add(currentPkg);
+                  return false;
+                }
+              }
+              catch (ClassNotFoundException e) {
+                // Skip it
+              }
+            }
+          }
+          return true;
+        }
+      }
+    };
+
     //
     InjectionContext<B, I> injectionContext;
     try {
-      injectionContext = injectBuilder.create();
+      injectionContext = (InjectionContext<B, I>)injectBuilder.create(filter);
     }
     catch (Exception e) {
       throw new UnsupportedOperationException("handle me gracefully", e);

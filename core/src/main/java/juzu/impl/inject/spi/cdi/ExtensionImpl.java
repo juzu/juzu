@@ -25,7 +25,6 @@ import juzu.impl.common.Tools;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -34,7 +33,6 @@ import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +43,6 @@ import java.util.List;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 public class ExtensionImpl implements Extension {
-
-  /** . */
-  private final static AnnotationLiteral<Produces> PRODUCES_ANNOTATION_LITERAL = new AnnotationLiteral<Produces>() {
-  };
 
   /** . */
   private final CDIContext manager;
@@ -66,16 +60,17 @@ public class ExtensionImpl implements Extension {
     AnnotatedType<T> annotatedType = pat.getAnnotatedType();
     Class<T> type = annotatedType.getJavaClass();
 
-    // Determine if bean is a singleton bound
-    boolean bound = false;
-    for (AbstractBean boundBean : manager.boundBeans) {
-      if (boundBean.getBeanClass().isAssignableFrom(type)) {
-        bound = true;
+    // Determine if bean should be processed
+    boolean veto = !manager.filter.accept(type);
+    if (!veto) {
+      for (AbstractBean boundBean : manager.boundBeans) {
+        Class<?> beanType = boundBean.getBeanClass();
+        if (beanType.isAssignableFrom(type)) {
+          veto = true;
+          break;
+        }
       }
     }
-
-    //
-    boolean veto = bound || type.getName().startsWith("juzu.");
 
     //
     if (veto) {

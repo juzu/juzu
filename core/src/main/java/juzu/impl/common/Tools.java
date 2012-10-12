@@ -111,6 +111,22 @@ public class Tools {
     }
   }
 
+  /**
+   * Returns the parent package of the provided package. Null is returned if the provided package
+   * was a top level package.
+   *
+   * @param pkgName the package name
+   * @return the parent package
+   */
+  public static String parentPackageOf(String pkgName) {
+    int index = pkgName.lastIndexOf('.');
+    if (index == -1) {
+      return null;
+    } else {
+      return pkgName.substring(0, index);
+    }
+  }
+
   public static void escape(CharSequence s, StringBuilder appendable) {
     for (int i = 0;i < s.length();i++) {
       char c = s.charAt(i);

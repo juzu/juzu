@@ -20,6 +20,7 @@
 package juzu.impl.inject.spi.cdi;
 
 import juzu.Scope;
+import juzu.impl.common.Filter;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
@@ -97,11 +98,11 @@ public class CDIBuilder extends InjectBuilder {
   }
 
   @Override
-  public InjectionContext<?, ?> create() throws Exception {
+  public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
     Container container = new WeldContainer(classLoader, ScopeController.INSTANCE, scopes);
     for (ReadFileSystem<?> fs : fileSystems) {
       container.addFileSystem(fs);
     }
-    return new CDIContext(container, boundBeans);
+    return new CDIContext(container, filter, boundBeans);
   }
 }
