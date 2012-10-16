@@ -19,6 +19,7 @@
 
 package examples.tutorial.weather3;
 
+import examples.tutorial.services.WeatherService;
 import juzu.Path;
 import juzu.View;
 import juzu.template.Template;
