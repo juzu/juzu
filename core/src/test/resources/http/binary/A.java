@@ -35,6 +35,6 @@ public class A {
 
   @Resource
   public Response.Content resource() {
-    return Response.ok("application/octet-stream", new ByteArrayInputStream("hello".getBytes()));
+    return Response.ok(new ByteArrayInputStream("hello".getBytes())).withMimeType("application/octet-stream");
   }
 }

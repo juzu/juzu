@@ -36,6 +36,6 @@ public class A extends Controller {
   @Resource
   @Route("/foo")
   public Response.Content foo() {
-    return Response.render("pass").withHeader("juu", "juu_value");
+    return Response.ok("pass").withMimeType("text/event-stream").withHeader("juu", "juu_value");
   }
 }

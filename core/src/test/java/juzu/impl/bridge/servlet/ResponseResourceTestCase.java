@@ -51,6 +51,7 @@ public class ResponseResourceTestCase extends AbstractStandaloneTestCase {
     URL url = new URL(trigger.getText());
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
     conn.connect();
+    assertEquals("text/event-stream", conn.getContentType().substring(0, "text/event-stream".length()));
     Map<String, String> headers = Tools.responseHeaders(conn);
     assertTrue(headers.containsKey("juu"));
     assertEquals("juu_value", headers.get("juu"));

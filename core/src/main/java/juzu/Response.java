@@ -423,12 +423,8 @@ public abstract class Response {
     return content(200, content);
   }
 
-  public static Content<Stream.Binary> ok(String mimeType, InputStream content) {
-    return content(200, mimeType, content);
-  }
-
   public static Content<Stream.Binary> ok(InputStream content) {
-    return ok(null, content);
+    return content(200, null, content);
   }
 
   public static Content<Stream.Char> notFound(CharSequence content) {
@@ -447,7 +443,11 @@ public abstract class Response {
     return content(code, null, content);
   }
 
-  public static Content<Stream.Binary> content(int code, String mimeType, InputStream content) {
+  private static Content<Stream.Binary> content(int code, String mimeType, InputStream content) {
     return new Content<Stream.Binary>(code, Stream.Binary.class, new Streamable.InputStream(content)).withMimeType(mimeType);
+  }
+
+  private static Content<Stream.Char> content(int code, String mimeType, CharSequence content) {
+    return new Content<Stream.Char>(code, Stream.Char.class, new Streamable.CharSequence(content)).withMimeType(mimeType);
   }
 }
