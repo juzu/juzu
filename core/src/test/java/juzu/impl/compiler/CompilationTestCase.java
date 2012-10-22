@@ -265,8 +265,10 @@ public class CompilationTestCase extends AbstractTestCase {
       assertEquals("/compiler/annotationexception/A.java", error.getSource());
       assertTrue(error.getMessage().contains("the_message"));
       assertNotNull(error.getSourceFile());
-      assertTrue(error.getSourceFile().getAbsolutePath().endsWith("compiler/annotationexception/A.java"));
       assertNotNull(error.getLocation());
+      String absolutePath = error.getSourceFile().getAbsolutePath();
+      String expected = "compiler/annotationexception/A.java";
+      assertTrue("Was expecting " + absolutePath + " to end with " + expected, absolutePath.endsWith(expected));
     }
 
     //
