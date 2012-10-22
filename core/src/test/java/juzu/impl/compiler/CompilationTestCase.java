@@ -267,8 +267,13 @@ public class CompilationTestCase extends AbstractTestCase {
       assertNotNull(error.getSourceFile());
       assertNotNull(error.getLocation());
       String absolutePath = error.getSourceFile().getAbsolutePath();
-      String expected = "compiler/annotationexception/A.java";
-      assertTrue("Was expecting " + absolutePath + " to end with " + expected, absolutePath.endsWith(expected));
+      char separator = File.separatorChar;
+      String[] absoluteNames = Tools.split(absolutePath, separator);
+      assertTrue("Was expecting " + absolutePath + " to have at least three names ", absoluteNames.length > 3);
+      assertEquals(
+          "Was expecting " + absolutePath + " to end with compiler/annotationexceptions/A.java",
+          Arrays.asList("compiler", "annotationexception", "A.java"),
+          Arrays.asList(absoluteNames).subList(absoluteNames.length - 3, absoluteNames.length));
     }
 
     //
