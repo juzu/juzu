@@ -21,11 +21,14 @@ package juzu.impl.bridge.spi.standalone;
 
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.QualifiedName;
 import juzu.impl.plugin.router.RouteDescriptor;
+import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,7 +62,18 @@ class Handler {
       RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPluginDescriptor("router");
       if (routesDesc != null) {
         for (RouteDescriptor child : routesDesc.getChildren()) {
-          Route route = root.append(child.getPath());
+
+          Map<QualifiedName, PathParam.Builder> parameters;
+          if (child.getParameters() != null && child.getParameters().size() > 0) {
+            parameters = new HashMap<QualifiedName, PathParam.Builder>(child.getParameters().size());
+            for (Map.Entry<String, String> parameter : child.getParameters().entrySet()) {
+              parameters.put(QualifiedName.create(parameter.getKey()), PathParam.matching(parameter.getValue()));
+            }
+          } else {
+            parameters = Collections.emptyMap();
+          }
+
+          Route route = root.append(child.getPath(), parameters);
           for (Map.Entry<String, String> entry : child.getTargets().entrySet()) {
             MethodHandle handle = MethodHandle.parse(entry.getValue());
             Phase phase = Phase.valueOf(entry.getKey());

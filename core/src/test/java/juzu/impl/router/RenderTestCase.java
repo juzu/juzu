@@ -70,7 +70,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
   @Test
   public void testSimplePatternPathParam() throws Exception {
     Router router = new Router();
-    Route r = router.append("/{p}", Collections.singletonMap(Names.P, PathParam.builder().matchedBy("a")));
+    Route r = router.append("/{p}", Collections.singletonMap(Names.P, PathParam.matching("a")));
 
     //
     assertEquals("/a", r.matches(Collections.singletonMap(Names.P, "a")).render());
@@ -81,7 +81,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
   public void testPrecedence() throws Exception {
     Router router = new Router();
     Route a = router.append("/a");
-    Route b = router.append("/{p}/b", Collections.singletonMap(Names.P, PathParam.builder().matchedBy("a")));
+    Route b = router.append("/{p}/b", Collections.singletonMap(Names.P, PathParam.matching("a")));
 
     //
     assertEquals("/a", a.matches(Collections.<QualifiedName, String>emptyMap()).render());
@@ -91,7 +91,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
   @Test
   public void testLang() throws Exception {
     Router router = new Router();
-    Route r = router.append("/{a}b", Collections.singletonMap(Names.A, PathParam.builder().matchedBy("(([A-Za-z]{2})/)?").preservePath(true)));
+    Route r = router.append("/{a}b", Collections.singletonMap(Names.A, PathParam.matching("(([A-Za-z]{2})/)?").preservePath(true)));
 
     //
     assertEquals("/fr/b", r.matches(Collections.singletonMap(Names.A, "fr/")).render());
@@ -101,7 +101,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
   @Test
   public void testDisjunction() throws Exception {
     Router router = new Router();
-    Route r = router.append("/{a}", Collections.singletonMap(Names.A, PathParam.builder().matchedBy("a|b")));
+    Route r = router.append("/{a}", Collections.singletonMap(Names.A, PathParam.matching("a|b")));
 
     //
     assertEquals("/b", r.matches(Collections.singletonMap(Names.A, "b")).render());
@@ -110,7 +110,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
   @Test
   public void testCaptureGroup() throws Exception {
     Router router = new Router();
-    Route r = router.append("/{a}", Collections.singletonMap(Names.A, PathParam.builder().matchedBy("a(.)c").captureGroup(true)));
+    Route r = router.append("/{a}", Collections.singletonMap(Names.A, PathParam.matching("a(.)c").captureGroup(true)));
 
     //
     assertEquals("/abc", r.matches(Collections.singletonMap(Names.A, "b")).render());

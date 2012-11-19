@@ -30,9 +30,11 @@ import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
+import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -82,7 +84,16 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
             if (annotation != null) {
               String path = (String)annotation.get("value");
               Integer priority = (Integer)annotation.get("priority");
-              RouteMetaModel route = root.addChild(priority != null ? priority : 0, path);
+              HashMap<String, String> parameters = null;
+              for (ParameterMetaModel parameter : method.getParameters()) {
+                if (parameter.getPattern() != null) {
+                  if (parameters == null) {
+                    parameters = new HashMap<String, String>();
+                  }
+                  parameters.put(parameter.getName(), parameter.getPattern());
+                }
+              }
+              RouteMetaModel route = root.addChild(priority != null ? priority : 0, path, parameters);
               String key = method.getPhase().name();
               if (route.getTarget(key) != null) {
                 throw RouterMetaModel.ROUTER_DUPLICATE_ROUTE.failure(metaModel.processingContext.get(method.getHandle()), path);

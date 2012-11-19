@@ -871,7 +871,7 @@ public class Route {
         //
         PathParam.Builder desc = params.get(paramName);
         if (desc == null) {
-          desc = PathParam.builder();
+          desc = new PathParam.Builder();
         }
 
         //

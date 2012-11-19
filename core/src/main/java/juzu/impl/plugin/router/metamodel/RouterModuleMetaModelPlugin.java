@@ -77,7 +77,7 @@ public class RouterModuleMetaModelPlugin extends ModuleMetaModelPlugin {
         if (annotation != null) {
           String path = (String)annotation.get("value");
           Integer priority = (Integer)annotation.get("priority");
-          RouteMetaModel route = root.addChild(priority != null ? priority : 0, path);
+          RouteMetaModel route = root.addChild(priority != null ? priority : 0, path, null);
           if (route.getTarget("application") != null) {
             throw RouterMetaModel.ROUTER_DUPLICATE_ROUTE.failure(metaModel.processingContext.get(application.getHandle()), path);
           } else {

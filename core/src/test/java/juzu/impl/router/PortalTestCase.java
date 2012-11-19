@@ -38,7 +38,7 @@ public class PortalTestCase extends AbstractControllerTestCase {
   @Test
   public void testLanguage1() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/public/{gtn:lang}", Collections.singletonMap(Names.GTN_LANG, PathParam.builder().matchedBy(LANG_PATTERN).preservePath(true)));
+    router.append("/public/{gtn:lang}", Collections.singletonMap(Names.GTN_LANG, PathParam.matching(LANG_PATTERN).preservePath(true)));
 
     //
     router.assertRoute(Collections.singletonMap(Names.GTN_LANG, ""), "/public");
@@ -49,7 +49,7 @@ public class PortalTestCase extends AbstractControllerTestCase {
   @Test
   public void testLanguage2() throws Exception {
     RouterAssert router = new RouterAssert();
-    Route r = router.append("/{gtn:lang}/public", Collections.singletonMap(Names.GTN_LANG, PathParam.builder().matchedBy(LANG_PATTERN)));
+    Route r = router.append("/{gtn:lang}/public", Collections.singletonMap(Names.GTN_LANG, PathParam.matching(LANG_PATTERN)));
 
     //
     router.assertRoute(Collections.singletonMap(Names.GTN_LANG, ""), "/public");
@@ -65,8 +65,8 @@ public class PortalTestCase extends AbstractControllerTestCase {
   public void testLanguage3() throws Exception {
     RouterAssert router = new RouterAssert();
     Route r = router.
-        append("/public/{gtn:lang}", Collections.singletonMap(Names.GTN_LANG, PathParam.builder().matchedBy(LANG_PATTERN).preservePath(true))).
-        append("{gtn:sitename}{gtn:path}", Collections.singletonMap(Names.GTN_PATH, PathParam.builder().matchedBy(".*").preservePath(true)));
+        append("/public/{gtn:lang}", Collections.singletonMap(Names.GTN_LANG, PathParam.matching(LANG_PATTERN).preservePath(true))).
+        append("{gtn:sitename}{gtn:path}", Collections.singletonMap(Names.GTN_PATH, PathParam.matching(".*").preservePath(true)));
 
     Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
     expectedParameters.put(Names.GTN_LANG, "fr");
@@ -88,7 +88,7 @@ public class PortalTestCase extends AbstractControllerTestCase {
   @Test
   public void testJSMin() throws Exception {
     RouterAssert router = new RouterAssert();
-    Route r = router.append("/foo{gtn:min}.js", Collections.singletonMap(Names.GTN_MIN, PathParam.builder().matchedBy("-(min)|").captureGroup(true)));
+    Route r = router.append("/foo{gtn:min}.js", Collections.singletonMap(Names.GTN_MIN, PathParam.matching("-(min)|").captureGroup(true)));
 
     //
     router.assertRoute(Collections.singletonMap(Names.GTN_MIN, "min"), "/foo-min.js");

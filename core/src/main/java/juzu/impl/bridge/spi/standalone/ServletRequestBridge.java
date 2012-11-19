@@ -312,7 +312,10 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
           }
         };
       } else {
-        throw new UnsupportedOperationException("handle me gracefully");
+        StringBuilder msg = new StringBuilder("The parameters ");
+        Tools.toString(parameters.entrySet(), msg);
+        msg.append(" are not valid");
+        throw new IllegalArgumentException(msg.toString());
       }
     } else {
       throw new UnsupportedOperationException("handle me gracefully method not mapped " + method.getHandle());

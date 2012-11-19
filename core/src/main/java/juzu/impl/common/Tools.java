@@ -792,4 +792,25 @@ public class Tools {
     }
     return null;
   }
+
+  public static StringBuilder toString(Iterable<Map.Entry<String, String[]>> entries, StringBuilder sb) {
+    sb.append('{');
+    for (Iterator<Map.Entry<String, String[]>> i = entries.iterator();i.hasNext();) {
+      Map.Entry<String, String[]> entry = i.next();
+      sb.append(entry.getKey()).append("=[");
+      String[] value = entry.getValue();
+      for (int j = 0;j < value.length;j++) {
+        if (j > 0) {
+          sb.append(',');
+        }
+        sb.append(value[j]);
+      }
+      sb.append(']');
+      if (i.hasNext()) {
+        sb.append(',');
+      }
+    }
+    sb.append('}');
+    return sb;
+  }
 }

@@ -19,8 +19,11 @@
 
 package juzu.impl.metamodel;
 
+import juzu.impl.common.QN;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationError;
+import juzu.impl.compiler.ElementHandle;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.router.metamodel.RouteMetaModel;
 import juzu.impl.plugin.router.metamodel.RouterMetaModel;
@@ -86,5 +89,18 @@ public class RouterTestCase extends AbstractTestCase {
     assertEquals(Arrays.asList("/foo"), error.getArguments());
     String src = error.getSource();
     assertTrue(Pattern.compile("/metamodel/router/duplicate/packageroute/app[12]/package-info\\.java").matcher(src).matches());
+  }
+
+  @Test
+  public void testParamPattern() throws Exception {
+    CompilerAssert<File, File> helper = compiler("metamodel", "router", "param", "pattern").formalErrorReporting(true);
+    helper.assertCompile();
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
+    ApplicationMetaModel application = mm.getChild(Key.of(ElementHandle.Package.create(QN.create("metamodel", "router", "param", "pattern")), ApplicationMetaModel.class));
+    RouterMetaModel router = application.getChild(Key.of(RouterMetaModel.class));
+    RouteMetaModel root = router.getRoot();
+    RouteMetaModel route = root.getChildren(0).get("/{foo}");
+    assertEquals(Collections.singletonMap("foo", ".*"), route.getParameters());
   }
 }

@@ -48,7 +48,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
   public void setUp() throws Exception {
     this.router = new RouterAssert();
 
-    Map<QualifiedName, PathParam.Builder> params = Collections.singletonMap(Names.GTN_PATH, PathParam.builder().matchedBy(".*").preservePath(true));
+    Map<QualifiedName, PathParam.Builder> params = Collections.singletonMap(Names.GTN_PATH, PathParam.matching(".*").preservePath(true));
 
     portal = router.append("/private/{gtn:sitetype}/{gtn:sitename}{gtn:path}", params);
     group = router.append("/groups/{gtn:sitetype}/{gtn:sitename}{gtn:path}", params);

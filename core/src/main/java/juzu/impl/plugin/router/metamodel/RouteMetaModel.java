@@ -22,6 +22,7 @@ package juzu.impl.plugin.router.metamodel;
 import juzu.Route;
 import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
+import juzu.impl.metamodel.AnnotationState;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -46,6 +47,9 @@ public class RouteMetaModel implements Serializable {
 
   /** . */
   TreeMap<Integer, LinkedHashMap<String, RouteMetaModel>> children;
+
+  /** . */
+  HashMap<String, String> parameters;
 
   /**
    * Sets a target if the target is not null otherwise remove it.
@@ -95,7 +99,7 @@ public class RouteMetaModel implements Serializable {
     }
   }
 
-  RouteMetaModel addChild(int priority, String path) {
+  RouteMetaModel addChild(int priority, String path, HashMap<String, String> parameters) {
     if (children == null) {
       children = new TreeMap<Integer, LinkedHashMap<String, RouteMetaModel>>();
     }
@@ -107,6 +111,7 @@ public class RouteMetaModel implements Serializable {
     if (foo == null) {
       child.put(path, foo = new RouteMetaModel());
     }
+    foo.parameters = parameters;
     return foo;
   }
 
@@ -122,25 +127,46 @@ public class RouteMetaModel implements Serializable {
     return children != null ? children.get(priority) : null;
   }
 
+  public Map<String, String> getParameters() {
+    return parameters;
+  }
+
   public JSON toJSON() {
 
-    List<JSON> a = Collections.emptyList();
     if (children != null) {
+    }
+
+    //
+    JSON json = new JSON();
+
+    //
+    if (targets != null && targets.size() > 0) {
+      json.set("targets", targets);
+    }
+
+    //
+    if (children != null && children.size() > 0) {
+      List<JSON> a = new LinkedList<JSON>();
       for (LinkedHashMap<String, RouteMetaModel> b : children.values()) {
         for (Map.Entry<String, RouteMetaModel> entry : b.entrySet()) {
-          if (a.isEmpty()) {
-            a = new LinkedList<JSON>();
-          }
           JSON foo = entry.getValue().toJSON();
           foo.set("path", entry.getKey());
           a.add(foo);
         }
       }
+      json.set("routes", a);
     }
 
-    JSON json = new JSON();
-    json.set("targets", targets != null ? targets : Collections.<String, String>emptyMap());
-    json.set("routes", a);
+    //
+    if (parameters != null && parameters.size() > 0) {
+      JSON b = new JSON();
+      for (Map.Entry<String, String> parameter : parameters.entrySet()) {
+        b.set(parameter.getKey(), new JSON().set("pattern", parameter.getValue()));
+      }
+      json.set("parameters", b);
+    }
+
+    //
     return json;
   }
 }

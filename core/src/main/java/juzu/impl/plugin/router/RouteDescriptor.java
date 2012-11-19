@@ -41,6 +41,9 @@ public class RouteDescriptor extends Descriptor {
   /** . */
   private final List<RouteDescriptor> children;
 
+  /** . */
+  private final HashMap<String, String> parameters;
+
   public RouteDescriptor(JSON json) {
     this(null, json);
   }
@@ -78,8 +81,20 @@ public class RouteDescriptor extends Descriptor {
     }
 
     //
+    HashMap<String, String> parameters = null;
+    JSON foo = json.getJSON("parameters");
+    if (foo != null) {
+      parameters = new HashMap<String, String>();
+      for (String name : foo.names()) {
+        String pattern = foo.getJSON(name).getString("pattern");
+        parameters.put(name, pattern);
+      }
+    }
+
+    //
     this.children = abc;
     this.path = path;
+    this.parameters = parameters;
   }
 
   public String getPath() {
@@ -92,5 +107,9 @@ public class RouteDescriptor extends Descriptor {
 
   public List<RouteDescriptor> getChildren() {
     return children;
+  }
+
+  public HashMap<String, String> getParameters() {
+    return parameters;
   }
 }

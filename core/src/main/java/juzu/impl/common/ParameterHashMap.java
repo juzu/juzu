@@ -21,7 +21,6 @@ package juzu.impl.common;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -103,24 +102,6 @@ public class ParameterHashMap extends HashMap<String, String[]> implements Param
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append('{');
-    for (Iterator<Map.Entry<String, String[]>> i = entrySet().iterator();i.hasNext();) {
-      Map.Entry<String, String[]> entry = i.next();
-      sb.append(entry.getKey()).append("=[");
-      String[] value = entry.getValue();
-      for (int j = 0;j < value.length;j++) {
-        if (j > 0) {
-          sb.append(',');
-        }
-        sb.append(value[j]);
-      }
-      sb.append(']');
-      if (i.hasNext()) {
-        sb.append(',');
-      }
-    }
-    sb.append('}');
-    return sb.toString();
+    return Tools.toString(this.entrySet(), new StringBuilder()).toString();
   }
 }
