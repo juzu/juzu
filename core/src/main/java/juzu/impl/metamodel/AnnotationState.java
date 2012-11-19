@@ -32,6 +32,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -146,11 +147,16 @@ public class AnnotationState extends HashMap<String, Serializable> {
       TypeMirror componentType = ((ArrayType)type).getComponentType();
       if (value instanceof List) {
         List<?> array = (List<?>)value;
-        ArrayList<Object> list = new ArrayList<Object>(array.size());
-        for (Object element : array) {
-          list.add(unwrap(element, componentType));
+        if (array.size() == 0) {
+          // Need to force the cast, javadoc says it is serializable
+          return (Serializable)Collections.<Serializable>emptyList();
+        } else {
+          ArrayList<Object> list = new ArrayList<Object>(array.size());
+          for (Object element : array) {
+            list.add(unwrap(element, componentType));
+          }
+          return list;
         }
-        return list;
       }
       else {
         throw new UnsupportedOperationException("Impossible ? " + value + " " + value.getClass().getName());
