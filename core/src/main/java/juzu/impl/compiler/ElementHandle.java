@@ -35,7 +35,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -200,6 +202,20 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
   }
 
   public static class Method extends ElementHandle<ExecutableElement> {
+
+    public static Method create(String type, String name, String... parameterTypes) {
+      ArrayList<String> tmp = new ArrayList<String>(parameterTypes.length);
+      Collections.addAll(tmp, parameterTypes);
+      return new Method(new FQN(type), name, tmp);
+    }
+
+    public static Method create(java.lang.Class<?> type, String name, java.lang.Class<?>... parameterTypes) {
+      String[] tmp = new String[parameterTypes.length];
+      for (int i = 0;i < parameterTypes.length;i++) {
+        tmp[i] = parameterTypes[i].getName();
+      }
+      return create(type.getName(), name, tmp);
+    }
 
     public static Method create(FQN fqn, String name, Collection<String> parameterTypes) {
       return new Method(fqn, name, new ArrayList<String>(parameterTypes));

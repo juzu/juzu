@@ -116,6 +116,15 @@ public class CompilerAssert<I, O> {
     this(incremental, sourcePath, output, output);
   }
 
+  public CompilerAssert<I, O> with(final Processor processor) {
+    strategy.processorFactory = new Provider<Processor>() {
+      public Processor get() {
+        return processor;
+      }
+    };
+    return this;
+  }
+
   public CompilerAssert<I, O> with(Provider<? extends Processor> processorFactory) {
     strategy.processorFactory = processorFactory;
     return this;
