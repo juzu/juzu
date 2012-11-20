@@ -24,24 +24,25 @@ import juzu.impl.common.MimeType;
 import java.io.IOException;
 
 /**
- * <p>The <code>Dispatch</code> produces URL for a Juzu application. A dispatch can be obtained from a {@link
- * juzu.request.MimeContext} object for building controller methods, however the best way to obtain a builder is to
- * use a controller companion that provides a type safe way for creating fully configured dispatch.</p>
+ * <p>The <code>Dispatch</code> object represents the dispatch to a controller method. It can be used for generating
+ * URL or as a {@link Response.Update} objects. A dispatch object can be obtained from a {@link juzu.request.RequestContext}
+ * object for building controller methods, however the best way to obtain a builder is to use a controller companion
+ * that provides a type safe way for creating fully configured dispatch.</p>
  *
  * <p>Type safe <code>Dispatch</code> factory method are generated for each view, action or resource controller methods. The
- * signature of an dispatch factory is obtained by translating the signature of the controller method and appending
- * the suffix <i>URL</i> after the method name.</p>
+ * signature of a dispatch factory is the same as the original method.</p>
  * <p/>
  * <code><pre>
  *    public void MyController {
- * <p/>
+ *
  *       &#064;Action
- *       public void myAction(String param) { }
- * <p/>
+ *       public Response.Update myAction(String param) {
+ *          return MyController_.myRender();
+ *       }
+ *
  *       &#064;View
  *       public void myRender() {
- *          Dispatch builder = MyController_.myActionURL("hello");
- *          String url = builder.toString();
+ *          String url = MyController_.myAction("hello");
  *       }
  *    }
  * </pre></code>

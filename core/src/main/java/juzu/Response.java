@@ -32,65 +32,84 @@ import java.util.Map;
 
 /**
  * <p>A response object signalling to the portal the action to take after an interaction. This object is usually
- * returned after the invocation of a controller method and instructs the aggregator the action to take.</p> <p/>
- * <h2>Action response</h2> <p/> <h3>Redirection response</h3> <p/> <p>A <code>Response.Process.Action.Redirect</code>
- * response instructs the aggregator to make a redirection to a valid URL after the interaction, this kind of response
- * is created using the factory method {@link Response#redirect(String)}:
+ * returned after the invocation of a controller method and instructs Juzu the action to take.</p>
+ *
+ * <h2>Action response</h2>
+ *
+ * <h3>Redirection response</h3>
+ * <p>A <code>Response.Process.Action.Redirect</code> response instructs Juzu to make a redirection to a valid
+ * URL after the interaction, this kind of response is created using the factory method {@link Response#redirect(String)}:
  * <code><pre>
  *    return Response.redirect("http://www.exoplatform.org");
  * </pre></code>
- * </p> <p/> <h3>Proceed to render phase</h3> <p/> <p>A <code>Response.Update</code> response instructs the aggreator to
- * proceed to the render phase of a valid view controller, this kind of response can be created using an {@link
- * juzu.request.ActionContext}, however the the preferred way is to use a controller companion class that carries method
- * factories for creating render responses.</p> <p/> <p>Type safe {@link juzu.Response.Update} factory method are
- * generated for each view or resource controller methods. The signature of an render factory is obtained by using the
- * same signature of the controller method.</p> <p/>
+ * </p>
+ *
+ * <h3>Proceed to render phase</h3>
+ * <p>A <code>Response.Update</code> response instructs Juzu to proceed to the render phase of a valid view
+ * controller, this kind of response can be created using an {@link juzu.request.ActionContext}, however the best
+ * way is to use a controller companion class that carries method factories for creating render responses.</p>
+ *
+ * <p>Type safe {@link juzu.Response.Update} factory method are generated for each view or resource controller
+ * methods. The signature of an render factory is obtained by using the same signature of the controller method.</p> <p/>
+ *
  * <code><pre>
  *    public class MyController {
- * <p/>
+ *
  *       &#064;Action
  *       public {@link juzu.Response.Update} myAction() {
  *          return MyController_.myRender("hello");
  *       }
- * <p/>
+ *
  *       &#064;View
  *       public void myRender(String param) {
  *       }
  *    }
  * </pre></code>
- * <p/> <h2>Mime response</h2> <p/> <p>Mime response are used by the {@link juzu.request.Phase#VIEW} and the {@link
- * juzu.request.Phase#RESOURCE} phases. Both contains a content to be streamed to the client but still they have some
- * noticeable differences.</p> <p/> <p>The {@link juzu.Response.Content} class is the base response class which will
- * work well for the two phases. However the {@link juzu.request.Phase#VIEW} can specify an optional title and the
- * {@link juzu.request.Phase#RESOURCE} can specify an optional status code for the user agent response.</p> <p/>
- * <p>Responses are created using the {@link Response} factory methods such as</p> <p/> <ul> <li>{@link
- * Response#ok} creates an ok response</li> <li>{@link Response#notFound} creates a not found response</li> </ul>
- * <p/> <p>Response can also created from {@link juzu.template.Template} directly:</p> <p/>
+ *
+ * <h2>Mime response</h2>
+ *
+ * <p>Mime response are used by the {@link juzu.request.Phase#VIEW} and the {@link juzu.request.Phase#RESOURCE} phases.
+ * Both contains a content to be streamed to the client but still they have some noticeable differences.<p/>
+ *
+ * <p>The {@link juzu.Response.Content} class is the base response class which will work well for the two phases.
+ * However the {@link juzu.request.Phase#VIEW} can specify an optional title and the {@link juzu.request.Phase#RESOURCE}
+ * can specify an optional status code for the user agent response.</p>
+ *
+ * <p>Responses are created using the {@link Response} factory methods such as</p>
+ *
+ * <ul>
+ *   <li>{@link Response#ok} creates an ok response</li>
+ *   <li>{@link Response#notFound} creates a not found response</li>
+ * </ul>
+ *
+ * <p>Response can also created from {@link juzu.template.Template} directly:</p>
+ *
  * <code><pre>
  *    public class MyController {
- * <p/>
+ *
  *       &#064;Inject &#064;Path("index.gtmpl") {@link juzu.template.Template} index;
- * <p/>
+ *
  *       &#064;View
  *       public {@link juzu.Response.Render} myView() {
  *          return index.render();
  *       }
- * <p/>
+ *
  *       &#064;Inject &#064;Path("error.gtmpl")  {@link juzu.template.Template} error;
- * <p/>
+ *
  *       &#064;Resource
  *       public {@link juzu.Response.Content} myView() {
  *          return error.notFound();
  *       }
  *    }
  * </pre></code>
- * <p/> <p>The {@link juzu.template.Template.Builder} can also create responses:</p>
- * <p/>
+ *
+ * <p>The {@link juzu.template.Template.Builder} can also create responses:</p>
+ *
  * <code><pre>
  *    public class MyController {
- * <p/>
+ *
  *       &#064;Inject &#064;Path("index.gtmpl") index index;
- * <p/>
+ *
  *       &#064;View
  *       public {@link juzu.Response.Content} myView() {
  *          return index.with().label("hello").render();

@@ -25,7 +25,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An embedded annotation describing a route parameter.
+ * An annotation describing a parameter.
+ *
+ * <h2>Annotating a route parameter</h2>
+ *
+ * <p>Route parameters can be annotated to provide constrain the value of a parameter, for instance:</p>
+ *
+ * <code><pre>
+ *    public class MyController {
+ *
+ *       &#064;{@link View}
+ *       &#064;{@link Route}("/myview/{id}")
+ *       public {@link juzu.Response.Render} myView(&#064;{@link Param}(pattern = "[0-9]+") String id) { ... }
+ *    }
+ * </pre></code>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
@@ -34,7 +47,7 @@ import java.lang.annotation.Target;
 public @interface Param {
 
   /**
-   * The route parameter pattern as a valid regular expression.
+   * The parameter pattern as a valid regular expression.
    *
    * @return the pattern value
    */

@@ -24,7 +24,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A path.
+ * Defines the path to a resource that can be injected in Juzu.
+ *
+ * <h2>Injecting templates</h2>
+ *
+ * <p>Templates can be injected in a Juzu applications, the templates will be located thanks to the path
+ * {@link #value()} of the annotation and injected as a {@link juzu.template.Template} class. For example, a
+ * template can be injected in a controller:</p>
+ *
+ * <code><pre>
+ *    public class MyController {
+ *
+ *       &#064;Inject &#064;{@link Path}("index.gtmpl") {@link juzu.template.Template} index;
+ *
+ *       &#064;{@link View}
+ *       public {@link juzu.Response.Render} myView() {
+ *          return index.render();
+ *       }
+ *    }
+ * </pre></code>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
@@ -32,6 +50,11 @@ import java.lang.annotation.RetentionPolicy;
 @Qualifier
 public @interface Path {
 
+  /**
+   * The path value.
+   *
+   * @return the path value
+   */
   String value();
 
 }

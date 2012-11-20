@@ -24,7 +24,13 @@ import juzu.impl.common.Tools;
 import java.util.HashMap;
 import java.util.Iterator;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * A map that holds properties as expressed by {@link PropertyType}. The map can delegate to an optional
+ * another properties (thus forming a chain) in order to provide a modified version of an existing map
+ * by wrapping it with a map.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 public class PropertyMap implements Iterable<PropertyType<?>> {
 
   /** . */
