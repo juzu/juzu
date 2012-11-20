@@ -27,6 +27,7 @@ import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.JSON;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QN;
+import juzu.impl.common.QualifiedName;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -42,6 +43,7 @@ import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.router.Router;
+import juzu.impl.router.URIWriter;
 import juzu.request.Phase;
 
 import javax.servlet.RequestDispatcher;
@@ -343,7 +345,29 @@ public class ServletBridge extends HttpServlet {
             resp.sendError(404);
             return;
           } else {
-            targetHandler = defaultHandler;
+            if (defaultHandler.root.getParent() == null) {
+              targetHandler = defaultHandler;
+            } else {
+              Map<QualifiedName, String> empty = Collections.emptyMap();
+              RouteMatch match = defaultHandler.root.matches(empty);
+              if (match != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(req.getScheme());
+                sb.append("://");
+                sb.append(req.getServerName());
+                int port = req.getServerPort();
+                if (port != 80) {
+                  sb.append(':').append(Integer.toString(port));
+                }
+                sb.append(req.getContextPath());
+                match.render(new URIWriter(sb));
+                resp.sendRedirect(sb.toString());
+                return;
+              } else {
+                resp.sendError(404);
+                return;
+              }
+            }
           }
         }
 
