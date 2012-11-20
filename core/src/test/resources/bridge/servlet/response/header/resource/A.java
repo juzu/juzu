@@ -30,7 +30,7 @@ public class A extends Controller {
 
   @View
   public Response.Content index() {
-    return Response.render("" + A_.fooURL());
+    return Response.render("" + A_.foo());
   }
 
   @Resource

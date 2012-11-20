@@ -21,8 +21,6 @@ package juzu;
 
 import juzu.asset.Asset;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.ParameterHashMap;
-import juzu.impl.common.ParameterMap;
 import juzu.impl.common.Tools;
 import juzu.io.Stream;
 import juzu.io.Streamable;
@@ -151,41 +149,11 @@ public abstract class Response {
   /**
    * A response instructing to execute a render phase of a controller method after the current interaction.
    */
-  public static class Update extends Response {
+  public static abstract class Update extends Response {
 
-    /** . */
-    private final MethodHandle target;
+    public abstract MethodHandle getTarget();
 
-    /** . */
-    private ParameterMap parameterMap;
-
-    public Update(MethodHandle target) {
-      this.target = target;
-      this.parameterMap = new ParameterHashMap();
-    }
-
-    public MethodHandle getTarget() {
-      return target;
-    }
-
-    public Update setParameter(String name, String value) throws NullPointerException {
-      parameterMap.setParameter(name, value);
-      return this;
-    }
-
-    public Update setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException {
-      parameterMap.setParameter(name, value);
-      return this;
-    }
-
-    public Update setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-      parameterMap.setParameters(parameters);
-      return this;
-    }
-
-    public Map<String, String[]> getParameters() {
-      return parameterMap;
-    }
+    public abstract Map<String, String[]> getParameters();
 
     @Override
     public <T> Update with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
@@ -204,14 +172,14 @@ public abstract class Response {
       }
       if (obj instanceof Update) {
         Update that = (Update)obj;
-        return parameterMap.equals(that.parameterMap) && properties.equals(that.properties);
+        return getParameters().equals(that.getParameters()) && properties.equals(that.properties);
       }
       return false;
     }
 
     @Override
     public String toString() {
-      return "Response.Update[parameters" + parameterMap + ",properties=" + properties + "]";
+      return "Response.Update[target=" + getTarget() + ",parameters" + getParameters() + ",properties=" + properties + "]";
     }
   }
 

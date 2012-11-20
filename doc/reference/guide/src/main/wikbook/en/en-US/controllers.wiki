@@ -38,15 +38,14 @@ the //_// character:
 
 {{java}}
 public class Controller_ {
-  public static URLBuilder indexURL() { /* Generated code */ }
-  public static URLBuilder indexURL(String person) { /* Generated code */ }
+  public static Dispatch index() { /* Generated code */ }
+  public static Dispatch index(String person) { /* Generated code */ }
 }
 {{/java}}
 
-Each ##index## methods generated a corresponding ##indexURL## url companion. When any ##indexURL## method is invoked
-it returns an ##URLBuilder## object that represents the URL invoking the corresponding phase. When parameters are
-provided they are already encoded in the returned URL. Calling the ##toString()## method of the URLBuilder returns
-the URL.
+Each ##index## methods generated a corresponding ##index## method companion. When any ##index## method is invoked
+it returns an ##juzu.Dispatch## object that generates the URL dispatching to the corresponding phase when
+the ##toString()## method is invoked. When parameters are provided they will be encoded in the generated URL.
 
 {{java}}
 @View public Response.Content index() {
@@ -91,9 +90,9 @@ is invoked.
 {@include juzu.Response.Content#send(juzu.io.Stream)}
 {{/java}}
 
-During the view phase a controller can generate URLs to other phases (except the event phase) by using companion
- url methods. Companion url methods returns a ##juzu.URLBuilder## object to represent the URL. The final
- URL is returned by the ##toString()## method of the builder.
+During the view phase a controller can generate URLs to other phases (except the event phase) by using controller companion
+ methods. Companion methods returns a ##juzu.Dispatch## object to represent the URL. The final
+ URL is returned by the ##toString()## method of the dispatch object.
 
 == Action controllers ==
 

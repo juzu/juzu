@@ -35,7 +35,7 @@ public class A extends Controller {
   public Response.Content index() {
     if (count == 0) {
       count = 1;
-      String url = A_.indexURL().toString();
+      String url = A_.index().toString();
       return Response.render("<a id='trigger' href='" + url + "'>click</div>");
     } else {
       return Response.render("ok");

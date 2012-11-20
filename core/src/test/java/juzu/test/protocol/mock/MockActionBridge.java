@@ -29,6 +29,7 @@ import juzu.test.AbstractTestCase;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -63,11 +64,21 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
     assertResponse(new Response.Redirect(location));
   }
 
-  public void assertRender(MethodHandle expectedTarget, Map<String, String> expectedArguments) {
-    Response.Update resp = new Response.Update(expectedTarget);
+  public void assertRender(final MethodHandle expectedTarget, Map<String, String> expectedArguments) {
+    final HashMap<String, String[]> a = new HashMap<String, String[]>();
     for (Map.Entry<String, String> entry : expectedArguments.entrySet()) {
-      resp.setParameter(entry.getKey(), entry.getValue());
+      a.put(entry.getKey(), new String[]{entry.getValue()});
     }
+    Response.Update resp = new Response.Update() {
+      @Override
+      public MethodHandle getTarget() {
+        return expectedTarget;
+      }
+      @Override
+      public Map<String, String[]> getParameters() {
+        return a;
+      }
+    };
     assertResponse(resp);
   }
 

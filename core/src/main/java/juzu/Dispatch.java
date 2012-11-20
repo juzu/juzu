@@ -22,7 +22,6 @@ package juzu;
 import juzu.impl.common.MimeType;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * <p>The <code>Dispatch</code> produces URL for a Juzu application. A dispatch can be obtained from a {@link
@@ -49,7 +48,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Dispatch {
+public abstract class Dispatch extends Response.Update {
 
   /** . */
   private PropertyMap properties;
@@ -97,8 +96,6 @@ public abstract class Dispatch {
     properties.setValue(propertyType, propertyValue);
     return this;
   }
-
-  public abstract Map<String, String[]> getParameters();
 
   /**
    * @param propertyType  the property type

@@ -19,8 +19,12 @@
 
 package juzu.request;
 
+import juzu.Dispatch;
 import juzu.PropertyType;
+import juzu.impl.common.ParameterHashMap;
+import juzu.impl.common.ParameterMap;
 import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -29,6 +33,9 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class RequestContext {
+
+  /** . */
+  private static final Object[] EMPTY = new Object[0];
 
   /** . */
   protected final ApplicationContext application;
@@ -73,4 +80,27 @@ public abstract class RequestContext {
 
   protected abstract RequestBridge getBridge();
 
+  public Dispatch createDispatch(MethodDescriptor method) {
+    return createDispatch(method, EMPTY, ParameterMap.EMPTY);
+  }
+
+  public Dispatch createDispatch(MethodDescriptor method, Object arg) {
+    return createDispatch(method, new Object[]{arg}, new ParameterHashMap());
+  }
+
+  public Dispatch createDispatch(MethodDescriptor method, Object[] args) {
+    return createDispatch(method, args, new ParameterHashMap());
+  }
+
+  private Dispatch createDispatch(MethodDescriptor method, Object[] args, ParameterMap parameters) {
+    method.setArgs(args, parameters);
+    Dispatch builder = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
+
+    // Bridge escape XML value
+    ApplicationDescriptor desc = application.getDescriptor();
+    builder.escapeXML(desc.getControllers().getEscapeXML());
+
+    //
+    return builder;
+  }
 }

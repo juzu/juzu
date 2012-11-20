@@ -247,7 +247,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     }
   }
 
-  public final Dispatch createDispatch(Phase phase, MethodHandle target, final Map<String, String[]> parameters) {
+  public final Dispatch createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) {
     MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
@@ -284,6 +284,11 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
           @Override
           public Map<String, String[]> getParameters() {
             return parameters;
+          }
+
+          @Override
+          public MethodHandle getTarget() {
+            return target;
           }
 
           @Override

@@ -45,7 +45,7 @@ public class A extends Controller {
 
   @View(id = "a")
   public Response.Content a() {
-    return Response.render(A_.mAURL(bean).toString());
+    return Response.render(A_.mA(bean).toString());
   }
 
   @View
@@ -55,7 +55,7 @@ public class A extends Controller {
 
   @View(id = "aAction")
   public Response.Content aAction() {
-    return Response.ok(A_.mAActionURL(bean).toString());
+    return Response.ok(A_.mAAction(bean).toString());
   }
 
   @Action
@@ -68,7 +68,7 @@ public class A extends Controller {
 
   @View(id = "b")
   public Response.Content b() {
-    return Response.render(A_.mBURL(bean).toString());
+    return Response.render(A_.mB(bean).toString());
   }
 
   @View
@@ -78,7 +78,7 @@ public class A extends Controller {
 
   @View(id = "bAction")
   public Response.Content bAction() {
-    return Response.ok(A_.mBActionURL(bean).toString());
+    return Response.ok(A_.mBAction(bean).toString());
   }
 
   @Action
@@ -91,7 +91,7 @@ public class A extends Controller {
 
   @View(id = "c")
   public Response.Content c() {
-    return Response.render(A_.mCURL(bean).toString());
+    return Response.render(A_.mC(bean).toString());
   }
 
   @View
@@ -101,7 +101,7 @@ public class A extends Controller {
 
   @View(id = "cAction")
   public Response.Content cAction() {
-    return Response.ok(A_.mCActionURL(bean).toString());
+    return Response.ok(A_.mCAction(bean).toString());
   }
 
   @Action
@@ -114,7 +114,7 @@ public class A extends Controller {
 
   @View(id = "d")
   public Response.Content d() {
-    return Response.render(A_.mDURL(bean).toString());
+    return Response.render(A_.mD(bean).toString());
   }
 
   @View
@@ -124,7 +124,7 @@ public class A extends Controller {
 
   @View(id = "dAction")
   public Response.Content dAction() {
-    return Response.ok(A_.mDActionURL(bean).toString());
+    return Response.ok(A_.mDAction(bean).toString());
   }
 
   @Action
@@ -137,7 +137,7 @@ public class A extends Controller {
 
   @View(id = "e")
   public Response.Content e() {
-    return Response.render(A_.mEURL(bean).toString());
+    return Response.render(A_.mE(bean).toString());
   }
 
   @View
@@ -147,7 +147,7 @@ public class A extends Controller {
 
   @View(id = "eAction")
   public Response.Content eAction() {
-    return Response.ok(A_.mEActionURL(bean).toString());
+    return Response.ok(A_.mEAction(bean).toString());
   }
 
   @Action
@@ -160,7 +160,7 @@ public class A extends Controller {
 
   @View(id = "f")
   public Response.Content f() {
-    return Response.render(A_.mFURL(bean).toString());
+    return Response.render(A_.mF(bean).toString());
   }
 
   @View
@@ -170,7 +170,7 @@ public class A extends Controller {
 
   @View(id = "fAction")
   public Response.Content fAction() {
-    return Response.ok(A_.mFActionURL(bean).toString());
+    return Response.ok(A_.mFAction(bean).toString());
   }
 
   @Action
@@ -183,7 +183,7 @@ public class A extends Controller {
 
   @View(id = "g")
   public Response.Content g() {
-    return Response.render(A_.mGURL("s_value", bean).toString());
+    return Response.render(A_.mG("s_value", bean).toString());
   }
 
   @View
@@ -193,7 +193,7 @@ public class A extends Controller {
 
   @View(id = "gAction")
   public Response.Content gAction() {
-    return Response.ok(A_.mGActionURL("s_value", bean).toString());
+    return Response.ok(A_.mGAction("s_value", bean).toString());
   }
 
   @Action
@@ -206,7 +206,7 @@ public class A extends Controller {
 
   @View(id = "h")
   public Response.Content h() {
-    return Response.render(A_.mHURL("s_value", bean).toString());
+    return Response.render(A_.mH("s_value", bean).toString());
   }
 
   @View
@@ -216,7 +216,7 @@ public class A extends Controller {
 
   @View(id = "hAction")
   public Response.Content hAction() {
-    return Response.ok(A_.mHActionURL("s_value", bean).toString());
+    return Response.ok(A_.mHAction("s_value", bean).toString());
   }
 
   @Action
@@ -229,7 +229,7 @@ public class A extends Controller {
 
   @View(id = "i")
   public Response.Content i() {
-    return Response.render(A_.mIURL("s_value", bean).toString());
+    return Response.render(A_.mI("s_value", bean).toString());
   }
 
   @View
@@ -239,7 +239,7 @@ public class A extends Controller {
 
   @View(id = "iAction")
   public Response.Content iAction() {
-    return Response.ok(A_.mIActionURL("s_value", bean).toString());
+    return Response.ok(A_.mIAction("s_value", bean).toString());
   }
 
   @Action

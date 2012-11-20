@@ -181,6 +181,11 @@ public abstract class MockRequestBridge implements RequestBridge {
       }
 
       @Override
+      public MethodHandle getTarget() {
+        return target;
+      }
+
+      @Override
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
         //
         MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);

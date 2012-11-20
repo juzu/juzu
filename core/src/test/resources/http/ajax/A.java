@@ -36,7 +36,7 @@ public class A extends Controller {
         "$(function() {\n" +
         "  $('#trigger').click(function() {\n" +
         "    $.ajax({\n" +
-        "      url:'" + A_.resourceURL() + "',\n" +
+        "      url:'" + A_.resource() + "',\n" +
         "      async: false,\n" +
         "      success: function(html) {\n" +
         "        $('#foo').html(html);\n" +

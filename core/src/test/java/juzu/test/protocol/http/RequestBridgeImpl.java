@@ -244,6 +244,11 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
       }
 
       @Override
+      public MethodHandle getTarget() {
+        return target;
+      }
+
+      @Override
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
         //

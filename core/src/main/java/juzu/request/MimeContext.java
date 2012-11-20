@@ -19,12 +19,8 @@
 
 package juzu.request;
 
-import juzu.Dispatch;
 import juzu.Response;
-import juzu.impl.common.ParameterHashMap;
-import juzu.impl.common.ParameterMap;
 import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.MimeBridge;
@@ -35,45 +31,13 @@ import java.io.IOException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MimeContext extends RequestContext {
 
-  /** . */
-  private final ApplicationContext application;
-
   protected MimeContext(Request request, ApplicationContext application, MethodDescriptor method) {
     super(request, application, method);
-
-    //
-    this.application = application;
   }
 
   @Override
   protected abstract MimeBridge getBridge();
 
-  /** . */
-  private static final Object[] EMPTY = new Object[0];
-
-  public Dispatch createURLBuilder(MethodDescriptor method) {
-    return createURLBuilder(method, EMPTY, ParameterMap.EMPTY);
-  }
-
-  public Dispatch createURLBuilder(MethodDescriptor method, Object arg) {
-    return createURLBuilder(method, new Object[]{arg}, new ParameterHashMap());
-  }
-
-  public Dispatch createURLBuilder(MethodDescriptor method, Object[] args) {
-    return createURLBuilder(method, args, new ParameterHashMap());
-  }
-
-  private Dispatch createURLBuilder(MethodDescriptor method, Object[] args, ParameterMap parameters) {
-    method.setArgs(args, parameters);
-    Dispatch builder = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
-
-    // Bridge escape XML value
-    ApplicationDescriptor desc = application.getDescriptor();
-    builder.escapeXML(desc.getControllers().getEscapeXML());
-
-    //
-    return builder;
-  }
 
   public void setResponse(Response.Content response) throws IOException, IllegalStateException {
     // Consume response here

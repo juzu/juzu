@@ -19,26 +19,6 @@
 
 package juzu.impl.bridge.spi;
 
-import juzu.Dispatch;
-import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
-import juzu.request.Phase;
-
-import java.util.Map;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface MimeBridge extends RequestBridge {
-
-  /**
-   * Create a dispatch for the specified phase, target and parameters.
-   *
-   * @param phase the dispatch phase
-   * @param target the dispatch target
-   * @param parameters the dispatch parameters
-   * @return the dispatch object
-   * @throws IllegalArgumentException if any parameter is not valid
-   * @throws NullPointerException if any argument is null
-   */
-  Dispatch createDispatch(Phase phase, MethodHandle target, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
-
 }

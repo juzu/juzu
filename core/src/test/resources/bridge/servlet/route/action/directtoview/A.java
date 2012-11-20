@@ -32,7 +32,7 @@ public class A extends Controller {
   @View
   public Response.Content index() {
     return Response.render(
-        "<form id='form' action='" + A_.fooURL() + "' method='post'>" +
+        "<form id='form' action='" + A_.foo() + "' method='post'>" +
             "<input id='trigger' type='submit' name='click'/>" +
             "</form>");
   }

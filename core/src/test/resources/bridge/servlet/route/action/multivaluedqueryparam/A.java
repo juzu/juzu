@@ -32,7 +32,7 @@ public class A extends Controller {
 
   @View
   public Response.Content index() {
-    return Response.render("<a id='trigger' href='" + A_.fooURL(new String[]{"bar1","bar2"}) + "'>click</div>");
+    return Response.render("<a id='trigger' href='" + A_.foo(new String[]{"bar1","bar2"}) + "'>click</div>");
   }
 
   @Action

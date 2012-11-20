@@ -84,7 +84,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   private static final String TOOLS = Tools.class.getSimpleName();
 
   /** . */
-  private static final String RESPONSE = Response.Update.class.getSimpleName();
+  private static final String DISPATCH = Dispatch.class.getSimpleName();
 
   /** . */
   public static final String CARDINALITY = Cardinality.class.getSimpleName();
@@ -288,40 +288,8 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         writer.append(")");
         writer.append(");\n");
 
-        // Render builder literal
-        if (method.getPhase() == Phase.VIEW) {
-          writer.append("public static ").append(RESPONSE).append(" ").append(method.getName()).append("(");
-          for (int j = 0;j < method.getParameters().size();j++) {
-            if (j > 0) {
-              writer.append(',');
-            }
-            ParameterMetaModel param = method.getParameter(j);
-            writer.append(param.declaredType).append(" ").append(param.getName());
-          }
-          writer.append(") { return ((ActionContext)Request.getCurrent().getContext()).createResponse(").append(methodRef);
-          switch (method.getParameters().size()) {
-            case 0:
-              break;
-            case 1:
-              writer.append(",(Object)").append(method.getParameter(0).getName());
-              break;
-            default:
-              writer.append(",new Object[]{");
-              for (int j = 0;j < method.getParameters().size();j++) {
-                if (j > 0) {
-                  writer.append(",");
-                }
-                ParameterMetaModel param = method.getParameter(j);
-                writer.append(param.getName());
-              }
-              writer.append("}");
-              break;
-          }
-          writer.append("); }\n");
-        }
-
-        // URL builder literal
-        writer.append("public static Dispatch ").append(method.getName()).append("URL").append("(");
+        // Dispatch literal
+        writer.append("public static ").append(DISPATCH).append(" ").append(method.getName()).append("(");
         for (int j = 0;j < method.getParameters().size();j++) {
           if (j > 0) {
             writer.append(',');
@@ -329,7 +297,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
           ParameterMetaModel param = method.getParameter(j);
           writer.append(param.declaredType).append(" ").append(param.getName());
         }
-        writer.append(") { return ((MimeContext)Request.getCurrent().getContext()).createURLBuilder(").append(methodRef);
+        writer.append(") { return (Request.getCurrent().getContext()).createDispatch(").append(methodRef);
         switch (method.getParameters().size()) {
           case 0:
             break;
@@ -342,7 +310,8 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
               if (j > 0) {
                 writer.append(",");
               }
-              writer.append(method.getParameter(j).getName());
+              ParameterMetaModel param = method.getParameter(j);
+              writer.append(param.getName());
             }
             writer.append("}");
             break;

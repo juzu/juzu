@@ -34,7 +34,7 @@ public class A extends Controller {
   @View
   public Response.Content index() {
     count = 0;
-    return Response.render("" + A_.fooActionURL());
+    return Response.render("" + A_.fooAction());
   }
 
   @Action
