@@ -22,7 +22,7 @@ package juzu.impl.plugin.controller.metamodel;
 import juzu.Action;
 import juzu.Application;
 import juzu.Dispatch;
-import juzu.Param;
+import juzu.Mapped;
 import juzu.Resource;
 import juzu.Response;
 import juzu.View;
@@ -203,7 +203,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         for (ParameterMetaModel parameter : method.parameters) {
           VariableElement ve = i.next();
           TypeElement te = application.model.processingContext.get(parameter.getType());
-          if (!te.toString().equals("java.lang.String") && te.getAnnotation(Param.class) == null) {
+          if (!te.toString().equals("java.lang.String") && te.getAnnotation(Mapped.class) == null) {
             throw ControllerMetaModel.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(ve, ve.getSimpleName());
           }
         }

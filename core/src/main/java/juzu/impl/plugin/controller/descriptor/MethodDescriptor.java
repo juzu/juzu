@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller.descriptor;
 
-import juzu.Param;
+import juzu.Mapped;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.ParameterMap;
 import juzu.impl.common.Tools;
@@ -173,7 +173,7 @@ public final class MethodDescriptor {
         String name = parameter.getName();
         switch (parameter.getCardinality()) {
           case SINGLE: {
-            if (parameter.getType().isAnnotationPresent(Param.class)) {
+            if (parameter.getType().isAnnotationPresent(Mapped.class)) {
               Map<String, String[]> p = buildBeanParameter(name, value);
               parameterMap.setParameters(p);
             }
@@ -267,7 +267,7 @@ public final class MethodDescriptor {
     for (int i = 0;i < args.length;i++) {
       ParameterDescriptor parameter = argumentList.get(i);
       Object[] values;
-      if (paramsType[i].isAnnotationPresent(Param.class)) {
+      if (paramsType[i].isAnnotationPresent(Mapped.class)) {
         // build bean parameter
         Object o = null;
         try {

@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  *       &#064;View public Response.Render display(User user) { ...}
  *    }
  * <p/>
- *    &#064;Param
+ *    &#064;Mapped
  *    public class User {
  *       ...
  *    }
@@ -42,5 +42,5 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Param {
+public @interface Mapped {
 }

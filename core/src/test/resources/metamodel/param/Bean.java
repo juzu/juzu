@@ -19,9 +19,9 @@
 
 package metamodel.param;
 
-import juzu.Param;
+import juzu.Mapped;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@Param
+@Mapped
 public class Bean {
 }

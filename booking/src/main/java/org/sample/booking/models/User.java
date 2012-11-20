@@ -19,7 +19,7 @@
 
 package org.sample.booking.models;
 
-import juzu.Param;
+import juzu.Mapped;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 // @Entity
 // @Table(name="Customer")
-@Param
+@Mapped
 public class User {
 
   //    @Required

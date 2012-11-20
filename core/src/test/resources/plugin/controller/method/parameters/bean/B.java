@@ -19,12 +19,12 @@
 
 package plugin.controller.method.parameters.bean;
 
-import juzu.Param;
+import juzu.Mapped;
 
 import java.util.List;
 
 /** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
-@Param
+@Mapped
 public class B {
   private String a;
   private String[] b;
