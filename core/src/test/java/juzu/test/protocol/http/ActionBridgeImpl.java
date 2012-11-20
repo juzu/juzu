@@ -24,6 +24,7 @@ import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.request.ClientContext;
+import juzu.request.Phase;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,7 +62,7 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
     try {
       if (response instanceof Response.Update) {
         Response.Update update = (Response.Update)response;
-        String url = renderURL(update.getTarget(), update.getParameters(), update.getProperties());
+        String url = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters()).with(update.getProperties()).toString();
         resp.sendRedirect(url);
       }
       else if (response instanceof Response.Redirect) {

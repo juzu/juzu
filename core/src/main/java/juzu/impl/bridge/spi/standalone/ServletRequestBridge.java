@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.spi.standalone;
 
+import juzu.Dispatch;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
@@ -246,29 +247,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     }
   }
 
-  public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
-    // For now we don't validate anything
-    return null;
-  }
-
-  public final String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
-    return renderURL(target, parameters, properties, MimeType.XHTML);
-  }
-
-  public final String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties, MimeType mimeType) {
-    StringBuilder buffer = new StringBuilder();
-    buffer.append(req.getScheme());
-    buffer.append("://");
-    buffer.append(req.getServerName());
-    int port = req.getServerPort();
-    if (port != 80) {
-      buffer.append(':').append(port);
-    }
-
-    // Add context path
-    buffer.append(req.getContextPath());
-
-    //
+  public final Dispatch createDispatch(Phase phase, MethodHandle target, final Map<String, String[]> parameters) {
     MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
@@ -290,30 +269,54 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
           params.put(QualifiedName.create(entry.getKey()), entry.getValue()[0]);
         }
       }
-      RouteMatch match = route.matches(params);
+
+      //
+      final RouteMatch match = route.matches(params);
       if (match != null) {
-        try {
-          URIWriter writer = new URIWriter(buffer, mimeType);
-          match.render(writer);
-          for (Map.Entry<QualifiedName, String> entry : match.getUnmatched().entrySet()) {
-            String[] values = parameters.get(entry.getKey().getValue());
-            for (String value : values) {
-              writer.appendQueryParameter(entry.getKey().getName(), value);
+        return new Dispatch() {
+
+          @Override
+          protected <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+            // For now we don't validate anything
+            return null;
+          }
+
+          @Override
+          public Map<String, String[]> getParameters() {
+            return parameters;
+          }
+
+          @Override
+          public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
+
+            //
+            appendable.append(req.getScheme());
+            appendable.append("://");
+            appendable.append(req.getServerName());
+            int port = req.getServerPort();
+            if (port != 80) {
+              appendable.append(':').append(Integer.toString(port));
+            }
+
+            // Add context path
+            appendable.append(req.getContextPath());
+
+            URIWriter writer = new URIWriter(appendable, mimeType);
+            match.render(writer);
+            for (Map.Entry<QualifiedName, String> entry : match.getUnmatched().entrySet()) {
+              String[] values = parameters.get(entry.getKey().getValue());
+              for (String value : values) {
+                writer.appendQueryParameter(entry.getKey().getName(), value);
+              }
             }
           }
-        }
-        catch (IOException e) {
-          throw new AssertionError("Should not happend");
-        }
+        };
       } else {
         throw new UnsupportedOperationException("handle me gracefully");
       }
     } else {
       throw new UnsupportedOperationException("handle me gracefully method not mapped " + method.getHandle());
     }
-
-    //
-    return buffer.toString();
   }
 
   protected final ScopedContext getRequestContext(boolean create) {

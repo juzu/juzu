@@ -19,12 +19,14 @@
 
 package juzu.impl.bridge.spi.portlet;
 
+import juzu.Dispatch;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.impl.common.MethodHandle;
+import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
-import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
@@ -55,7 +57,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
     super(application, request, response, prod);
   }
 
-  public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
+  private <T> String _checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
     if (propertyType == JuzuPortlet.PORTLET_MODE) {
       if (phase == Phase.RESOURCE) {
         return "Resource URL don't have portlet modes";
@@ -88,89 +90,99 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
     }
   }
 
-  public String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
+  public Dispatch createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    return new Dispatch() {
 
-    //
-    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
-
-    //
-    BaseURL url;
-    switch (method.getPhase()) {
-      case ACTION:
-        url = resp.createActionURL();
-        break;
-      case VIEW:
-        url = resp.createRenderURL();
-        break;
-      case RESOURCE:
-        url = resp.createResourceURL();
-        break;
-      default:
-        throw new AssertionError("Unexpected phase " + method.getPhase());
-    }
-
-    // Set generic parameters
-    url.setParameters(parameters);
-
-    //
-    boolean escapeXML = false;
-    if (properties != null) {
-      Boolean escapeXMLProperty = properties.getValue(PropertyType.ESCAPE_XML);
-      if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty)) {
-        escapeXML = true;
+      @Override
+      protected <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+        return _checkPropertyValidity(phase, propertyType, propertyValue);
       }
 
-      // Handle portlet mode
-      PortletMode portletModeProperty = properties.getValue(JuzuPortlet.PORTLET_MODE);
-      if (portletModeProperty != null) {
-        if (url instanceof PortletURL) {
-          try {
-            ((PortletURL)url).setPortletMode(portletModeProperty);
+      @Override
+      public Map<String, String[]> getParameters() {
+        return parameters;
+      }
+
+      @Override
+      public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
+
+        //
+        MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+
+        //
+        BaseURL url;
+        switch (method.getPhase()) {
+          case ACTION:
+            url = resp.createActionURL();
+            break;
+          case VIEW:
+            url = resp.createRenderURL();
+            break;
+          case RESOURCE:
+            url = resp.createResourceURL();
+            break;
+          default:
+            throw new AssertionError("Unexpected phase " + method.getPhase());
+        }
+
+        // Set generic parameters
+        url.setParameters(parameters);
+
+        //
+        boolean escapeXML = false;
+        if (properties != null) {
+          Boolean escapeXMLProperty = properties.getValue(PropertyType.ESCAPE_XML);
+          if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty)) {
+            escapeXML = true;
           }
-          catch (PortletModeException e) {
-            throw new IllegalArgumentException(e);
+
+          // Handle portlet mode
+          PortletMode portletModeProperty = properties.getValue(JuzuPortlet.PORTLET_MODE);
+          if (portletModeProperty != null) {
+            if (url instanceof PortletURL) {
+              try {
+                ((PortletURL)url).setPortletMode(portletModeProperty);
+              }
+              catch (PortletModeException e) {
+                throw new IllegalArgumentException(e);
+              }
+            }
+            else {
+              throw new IllegalArgumentException();
+            }
           }
+
+          // Handle window state
+          WindowState windowStateProperty = properties.getValue(JuzuPortlet.WINDOW_STATE);
+          if (windowStateProperty != null) {
+            if (url instanceof PortletURL) {
+              try {
+                ((PortletURL)url).setWindowState(windowStateProperty);
+              }
+              catch (WindowStateException e) {
+                throw new IllegalArgumentException(e);
+              }
+            }
+            else {
+              throw new IllegalArgumentException();
+            }
+          }
+
+          // Set method id
+          url.setParameter("juzu.op", method.getId());
+        }
+
+        //
+        if (escapeXML) {
+          StringWriter writer = new StringWriter();
+          url.write(writer, true);
+          appendable.append(writer.toString());
         }
         else {
-          throw new IllegalArgumentException();
+          appendable.append(url.toString());
         }
       }
-
-      // Handle window state
-      WindowState windowStateProperty = properties.getValue(JuzuPortlet.WINDOW_STATE);
-      if (windowStateProperty != null) {
-        if (url instanceof PortletURL) {
-          try {
-            ((PortletURL)url).setWindowState(windowStateProperty);
-          }
-          catch (WindowStateException e) {
-            throw new IllegalArgumentException(e);
-          }
-        }
-        else {
-          throw new IllegalArgumentException();
-        }
-      }
-
-      // Set method id
-      url.setParameter("juzu.op", method.getId());
-    }
-
-    //
-    if (escapeXML) {
-      try {
-        StringWriter writer = new StringWriter();
-        url.write(writer, true);
-        return writer.toString();
-      }
-      catch (IOException ignore) {
-        // This should not happen
-        return "";
-      }
-    }
-    else {
-      return url.toString();
-    }
+    };
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

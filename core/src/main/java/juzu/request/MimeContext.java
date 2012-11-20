@@ -19,8 +19,10 @@
 
 package juzu.request;
 
+import juzu.Dispatch;
 import juzu.Response;
-import juzu.URLBuilder;
+import juzu.impl.common.ParameterHashMap;
+import juzu.impl.common.ParameterMap;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
@@ -46,26 +48,30 @@ public abstract class MimeContext extends RequestContext {
   @Override
   protected abstract MimeBridge getBridge();
 
-  public URLBuilder createURLBuilder(MethodDescriptor method) {
-    URLBuilder builder = new URLBuilder(getBridge(), method);
+  /** . */
+  private static final Object[] EMPTY = new Object[0];
+
+  public Dispatch createURLBuilder(MethodDescriptor method) {
+    return createURLBuilder(method, EMPTY, ParameterMap.EMPTY);
+  }
+
+  public Dispatch createURLBuilder(MethodDescriptor method, Object arg) {
+    return createURLBuilder(method, new Object[]{arg}, new ParameterHashMap());
+  }
+
+  public Dispatch createURLBuilder(MethodDescriptor method, Object[] args) {
+    return createURLBuilder(method, args, new ParameterHashMap());
+  }
+
+  private Dispatch createURLBuilder(MethodDescriptor method, Object[] args, ParameterMap parameters) {
+    method.setArgs(args, parameters);
+    Dispatch builder = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
 
     // Bridge escape XML value
     ApplicationDescriptor desc = application.getDescriptor();
     builder.escapeXML(desc.getControllers().getEscapeXML());
 
     //
-    return builder;
-  }
-
-  public URLBuilder createURLBuilder(MethodDescriptor method, Object arg) {
-    URLBuilder builder = createURLBuilder(method);
-    method.setArgs(new Object[]{arg}, builder.getParameters());
-    return builder;
-  }
-
-  public URLBuilder createURLBuilder(MethodDescriptor method, Object[] args) {
-    URLBuilder builder = createURLBuilder(method);
-    method.setArgs(args, builder.getParameters());
     return builder;
   }
 

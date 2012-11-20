@@ -25,6 +25,7 @@ import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.request.ClientContext;
+import juzu.request.Phase;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,7 +65,7 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
   void send() throws IOException {
     if (response instanceof Response.Update) {
       Response.Update update = (Response.Update)response;
-      String url = renderURL(update.getTarget(), update.getParameters(), update.getProperties(), MimeType.PLAIN);
+      String url = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters()).with(MimeType.PLAIN).with(update.getProperties()).toString();
       for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
         resp.setHeader(entry.getKey(), entry.getValue()[0]);
       }

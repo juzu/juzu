@@ -19,9 +19,9 @@
 
 package plugin.controller.url.invalidproperty;
 
+import juzu.Dispatch;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.URLBuilder;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -32,7 +32,7 @@ public class A {
 
   @View
   public Response index() {
-    URLBuilder builder = A_.indexURL();
+    Dispatch builder = A_.indexURL();
     try {
       builder.setProperty(new MyPropertyType(), "foo");
       return Response.render("fail");

@@ -21,10 +21,10 @@ package juzu.impl.plugin.controller.metamodel;
 
 import juzu.Action;
 import juzu.Application;
+import juzu.Dispatch;
 import juzu.Param;
 import juzu.Resource;
 import juzu.Response;
-import juzu.URLBuilder;
 import juzu.View;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
@@ -236,7 +236,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("import ").append(Tools.getImport(Tools.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(URLBuilder.class)).append(";\n");
+      writer.append("import ").append(Tools.getImport(Dispatch.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
       writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
@@ -321,7 +321,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         }
 
         // URL builder literal
-        writer.append("public static URLBuilder ").append(method.getName()).append("URL").append("(");
+        writer.append("public static Dispatch ").append(method.getName()).append("URL").append("(");
         for (int j = 0;j < method.getParameters().size();j++) {
           if (j > 0) {
             writer.append(',');

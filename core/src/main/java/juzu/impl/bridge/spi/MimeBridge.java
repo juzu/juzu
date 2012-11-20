@@ -19,9 +19,9 @@
 
 package juzu.impl.bridge.spi;
 
-import juzu.PropertyMap;
-import juzu.PropertyType;
+import juzu.Dispatch;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.request.Phase;
 
 import java.util.Map;
@@ -30,26 +30,15 @@ import java.util.Map;
 public interface MimeBridge extends RequestBridge {
 
   /**
-   * @param phase         the phase
-   * @param propertyType  the property type
-   * @param propertyValue the property value
-   * @param <T>           the property generic type
-   * @return null when the property is valid, an error message otherwise
-   */
-  <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue);
-
-  /**
-   * Renders an URL.
+   * Create a dispatch for the specified phase, target and parameters.
    *
-   * @param target     the target
-   * @param parameters the url parameters
-   * @param properties the url properties
-   * @return the rendered URL
-   * @throws IllegalArgumentException if any argument is not valid
+   * @param phase the dispatch phase
+   * @param target the dispatch target
+   * @param parameters the dispatch parameters
+   * @return the dispatch object
+   * @throws IllegalArgumentException if any parameter is not valid
+   * @throws NullPointerException if any argument is null
    */
-  String renderURL(
-      MethodHandle target,
-      Map<String, String[]> parameters,
-      PropertyMap properties) throws IllegalArgumentException;
+  Dispatch createDispatch(Phase phase, MethodHandle target, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
 
 }

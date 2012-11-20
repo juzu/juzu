@@ -19,8 +19,10 @@
 
 package juzu.test.protocol.http;
 
+import juzu.Dispatch;
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
@@ -227,48 +229,58 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     }
   }
 
-  public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
-    // For now we don't validate anything
-    return null;
-  }
+  public final Dispatch createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    return new Dispatch() {
 
-  public final String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
+      @Override
+      protected <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+        // For now we don't validate anything
+        return null;
+      }
 
-    //
-    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+      @Override
+      public Map<String, String[]> getParameters() {
+        return parameters;
+      }
 
-    //
-    StringBuilder buffer = new StringBuilder();
-    buffer.append(req.getScheme());
-    buffer.append("://");
-    buffer.append(req.getServerName());
-    int port = req.getServerPort();
-    if (port != 80) {
-      buffer.append(':').append(port);
-    }
-    buffer.append(req.getContextPath());
-    buffer.append(req.getServletPath());
-    buffer.append("?juzu.phase=").append(method.getPhase());
+      @Override
+      public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
-    //
-    buffer.append("&juzu.op=").append(method.getId());
+        //
+        MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
-    //
-    for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
-      String name = parameter.getKey();
-      try {
-        String encName = URLEncoder.encode(name, "UTF-8");
-        for (String value : parameter.getValue()) {
-          String encValue = URLEncoder.encode(value, "UTF-8");
-          buffer.append("&").append(encName).append('=').append(encValue);
+        //
+        appendable.append(req.getScheme());
+        appendable.append("://");
+        appendable.append(req.getServerName());
+        int port = req.getServerPort();
+        if (port != 80) {
+          appendable.append(':').append(Integer.toString(port));
+        }
+        appendable.append(req.getContextPath());
+        appendable.append(req.getServletPath());
+        appendable.append("?juzu.phase=").append(method.getPhase().name());
+
+        //
+        appendable.append("&juzu.op=").append(method.getId());
+
+        //
+        for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
+          String name = parameter.getKey();
+          try {
+            String encName = URLEncoder.encode(name, "UTF-8");
+            for (String value : parameter.getValue()) {
+              String encValue = URLEncoder.encode(value, "UTF-8");
+              appendable.append("&").append(encName).append('=').append(encValue);
+            }
+          }
+          catch (UnsupportedEncodingException e) {
+            // Should not happen
+            throw new AssertionError(e);
+          }
         }
       }
-      catch (UnsupportedEncodingException e) {
-        // Should not happen
-        throw new AssertionError(e);
-      }
-    }
-    return buffer.toString();
+    };
   }
 
   protected final ScopedContext getRequestContext(boolean create) {
