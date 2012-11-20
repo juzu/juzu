@@ -41,17 +41,6 @@ public class A extends Controller {
     catch (IllegalArgumentException ignore) {
     }
 
-    // First check when it does not match the pattern
-    // todo : support this
-/*
-    try {
-      A_.foo("bar");
-      throw AbstractTestCase.failure("Was expecting a failure");
-    }
-    catch (IllegalArgumentException ignore) {
-    }
-*/
-
     //
     return Response.render("<a id='trigger' href='" + A_.foo("juu") + "'>click</div>");
   }
