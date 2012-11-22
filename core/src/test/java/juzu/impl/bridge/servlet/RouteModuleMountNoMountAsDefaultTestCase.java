@@ -34,7 +34,7 @@ public class RouteModuleMountNoMountAsDefaultTestCase extends AbstractStandalone
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.module.mountnomount.app2", "bridge.servlet.route.module.mountnomount");
+    return createServletDeployment(true, "bridge.servlet.route.module.mountnomount.app2", "bridge.servlet.route.module.mountnomount.app1");
   }
 
   @Drone

@@ -39,8 +39,6 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedList;
 
@@ -49,41 +47,91 @@ import java.util.LinkedList;
 public abstract class AbstractWebTestCase extends AbstractTestCase {
 
   /** . */
-  private static String applicationName;
+  private static QN applicationName;
+
+  /** . */
+  private static boolean asDefault;
 
   /**
    * Returns the currently deployed application name.
    *
    * @return the application name
    */
-  public static String getApplicationName() {
+  public static QN getApplicationName() {
     return applicationName;
   }
 
-  public static WebArchive createServletDeployment(String pkgName) {
-    return createServletDeployment(pkgName, pkgName);
+  /**
+   * Returns true if the currently application name should be the defaulted.
+   *
+   * @return the as default value
+   */
+  public static boolean asDefault() {
+    return asDefault;
   }
 
-  public static WebArchive createServletDeployment(String applicationName, String pkgName) {
+  public static WebArchive createServletDeployment(String applicationName) {
+    return createServletDeployment(applicationName, false);
+  }
+
+  public static WebArchive createServletDeployment(String applicationName, boolean asDefault) {
+    return createServletDeployment(applicationName, applicationName, asDefault);
+  }
+
+  public static WebArchive createServletDeployment(String packageName, String applicationName, boolean asDefault) {
+
+    //
+    QN applicationQN = QN.parse(applicationName);
+    QN packageQN = QN.parse(packageName);
 
     // Create war
-    final WebArchive war = createDeployment(pkgName);
+    final WebArchive war = createDeployment(packageQN);
 
     // Descriptor
     URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
     war.setWebXML(descriptor);
 
     // Set application name (maybe remove that)
-    AbstractWebTestCase.applicationName = applicationName;
+    AbstractWebTestCase.applicationName = applicationQN;
+    AbstractWebTestCase.asDefault = asDefault;
 
     //
     return war;
   }
 
-  public static WebArchive createPortletDeployment(String pkgName) {
+  public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
+
+    //
+    QN[] applicationQNs = new QN[applicationNames.length];
+    QN packageQN = null;
+    for (int i = 0;i < applicationNames.length;i++) {
+      QN applicationQN = QN.parse(applicationNames[i]);
+      applicationQNs[i] = applicationQN;
+      packageQN = packageQN == null ? applicationQN : packageQN.getPrefix(applicationQN);
+    }
 
     // Create war
-    WebArchive war = createDeployment(pkgName);
+    WebArchive war = createDeployment(packageQN);
+
+    // Descriptor
+    URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
+    war.setWebXML(descriptor);
+
+    // Set application name (maybe remove that)
+    AbstractWebTestCase.applicationName = applicationQNs.length > 0 ? applicationQNs[0] : null;
+    AbstractWebTestCase.asDefault = asDefault;
+
+    //
+    return war;
+  }
+
+  public static WebArchive createPortletDeployment(String packageName) {
+
+    //
+    QN packageQN = QN.parse(packageName);
+
+    // Create war
+    WebArchive war = createDeployment(packageQN);
 
     // Descriptor
     war.setWebXML(AbstractPortletTestCase.class.getResource("web.xml"));
@@ -99,16 +147,16 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
 */
 
     // Set application name (maybe remove that)
-    applicationName = Tools.join('.', pkgName);
+    applicationName = packageQN;
 
     //
     return war;
   }
 
-  private static WebArchive createDeployment(String pkgName) {
+  private static WebArchive createDeployment(QN pkgName) {
 
     // Compile classes
-    DiskFileSystem sourcePath = diskFS(QN.parse(pkgName));
+    DiskFileSystem sourcePath = diskFS(pkgName);
     RAMFileSystem sourceOutput = new RAMFileSystem();
     RAMFileSystem classOutput = new RAMFileSystem();
     CompilerAssert<File, RAMPath> compiler = new CompilerAssert<File, RAMPath>(
@@ -186,6 +234,19 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public UserAgent assertInitialPage() {
-    return new UserAgent(deploymentURL);
+    return new UserAgent(applicationURL());
+  }
+
+  public URL applicationURL() {
+    return applicationURL("");
+  }
+
+  public URL applicationURL(String path) {
+    try {
+      return deploymentURL.toURI().resolve(getApplicationName().getLastName() + path).toURL();
+    }
+    catch (Exception e) {
+      throw failure("Could not build application url " + path, e);
+    }
   }
 }

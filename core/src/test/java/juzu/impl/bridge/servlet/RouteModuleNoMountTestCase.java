@@ -33,7 +33,7 @@ public class RouteModuleNoMountTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment(null, "bridge.servlet.route.module.nomount");
+    return createServletDeployment(false, "bridge.servlet.route.module.nomount");
   }
 
   @Drone

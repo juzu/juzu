@@ -47,6 +47,6 @@ public class A extends Controller {
   @Route("/bar")
   public Response.Content bar(String juu) {
     String path = renderContext.getProperty(PropertyType.PATH);
-    return Response.ok("/juzu/foo".equals(path) && "juu".equals(juu) ? "pass" : "fail");
+    return Response.ok("/juzu/directtoview/foo".equals(path) && "juu".equals(juu) ? "pass" : "fail");
   }
 }

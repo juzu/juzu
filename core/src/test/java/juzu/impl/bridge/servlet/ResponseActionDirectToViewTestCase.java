@@ -46,7 +46,7 @@ public class ResponseActionDirectToViewTestCase extends AbstractStandaloneTestCa
 
   @Test
   public void testPathParam() throws Exception {
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     URL url = new URL(trigger.getText());
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();

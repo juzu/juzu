@@ -36,7 +36,7 @@ public class RouteModuleMountAsDefaultTestCase extends AbstractStandaloneTestCas
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.module.mount");
+    return createServletDeployment(true, "bridge.servlet.route.module.mount");
   }
 
   @Drone

@@ -36,11 +36,11 @@ public abstract class AbstractRoutePathMappingTestCase extends AbstractStandalon
 
   @Test
   public void testRender() throws Exception {
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     String href = trigger.getAttribute("href");
     URL url = new URL(href);
-    assertEquals("/juzu/foo", url.getPath());
+    assertEquals(applicationURL("/foo").getPath(), url.getPath());
     assertNull(url.getQuery());
     trigger.click();
     String pass = driver.findElement(By.tagName("body")).getText();

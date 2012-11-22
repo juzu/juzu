@@ -829,7 +829,16 @@ public class Route {
   public Route append(
       String path,
       final RouteKind kind,
-      final Map<QualifiedName, PathParam.Builder> params) {
+      final Map<QualifiedName, PathParam.Builder> params) throws NullPointerException {
+    if (path == null) {
+      throw new NullPointerException("No null route path accepted");
+    }
+    if (kind == null) {
+      throw new NullPointerException("No null route kind accepted");
+    }
+    if (params == null) {
+      throw new NullPointerException("No null route params accepted");
+    }
 
     //
     class Assembler implements RouteParserHandler {

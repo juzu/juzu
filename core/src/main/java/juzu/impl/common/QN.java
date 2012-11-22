@@ -88,6 +88,41 @@ public class QN implements CharSequence, Serializable, Iterable<String> {
     this.size = size;
   }
 
+  QN(String[] names, int size) {
+    int length = 0;
+    for (int i = 0;i < size;i++) {
+      String name = names[i];
+      if (name == null) {
+        throw new IllegalArgumentException("No null name accepted");
+      }
+      if (name.isEmpty()) {
+        throw new IllegalArgumentException("No empty name accepted");
+      }
+      if (name.indexOf('.') != -1) {
+        throw new IllegalArgumentException("A name cannot contain a '.'");
+      }
+      if (i > 0) {
+        length++;
+      }
+      length += name.length();
+    }
+    char[] buffer = new char[length];
+    int last = 0;
+    for (int i = 0;i < size;i++) {
+      if (i > 0) {
+        buffer[last++] = '.';
+      }
+      String name = names[i];
+      name.getChars(0, name.length(), buffer, last);
+      last += name.length();
+    }
+
+    //
+    this.value = new String(buffer);
+    this.names = names;
+    this.size = size;
+  }
+
   public int length() {
     return value.length();
   }
@@ -164,25 +199,10 @@ public class QN implements CharSequence, Serializable, Iterable<String> {
       return this;
     }
     else {
-      StringBuilder sb = new StringBuilder(value);
-      for (int i = 0;i < size;i++) {
-        String s = suffix[i];
-        if (s == null) {
-          throw new IllegalArgumentException("No null name accepted");
-        }
-        if (s.isEmpty()) {
-          throw new IllegalArgumentException("No empty name accepted");
-        }
-        if (s.indexOf('.') != -1) {
-          throw new IllegalArgumentException("A name cannot contain a '.'");
-        }
-        sb.append('.');
-        sb.append(s);
-      }
-      String[] foo = new String[this.size + suffix.length];
+      String[] foo = new String[this.size + size];
       System.arraycopy(names, 0, foo, 0, this.size);
-      System.arraycopy(suffix, 0, foo, this.size, suffix.length);
-      return new QN(sb.toString(), foo, foo.length);
+      System.arraycopy(suffix, 0, foo, this.size, size);
+      return new QN(foo, foo.length);
     }
   }
 
@@ -206,6 +226,34 @@ public class QN implements CharSequence, Serializable, Iterable<String> {
     else {
       return false;
     }
+  }
+
+  /**
+   * Returns the last name of the qualified name.
+   *
+   * @return the last name
+   */
+  public String getLastName() {
+    return size > 0 ? names[size - 1] : null;
+  }
+
+  /**
+   * Returns the common prefix between this qualified name and the provided qualified name.
+   *
+   * @param qn the qualified name
+   * @return the common prefix
+   */
+  public QN getPrefix(QN qn) {
+    int size = Math.min(this.size, qn.size);
+    int a = 0;
+    for (int i = 0;i < size;i++) {
+      if (!get(i).equals(qn.get(i))) {
+        break;
+      } else {
+        a++;
+      }
+    }
+    return a == this.size ? this : new QN(names, a);
   }
 
   /**

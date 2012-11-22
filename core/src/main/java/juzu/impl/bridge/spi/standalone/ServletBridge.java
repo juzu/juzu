@@ -37,10 +37,8 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.plugin.module.Module;
-import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.resource.ResourceResolver;
 import juzu.impl.router.PathParam;
-import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.router.Router;
 import juzu.impl.router.URIWriter;
@@ -139,7 +137,6 @@ public class ServletBridge extends HttpServlet {
     Map<String, Bridge> applications = new HashMap<String, Bridge>();
     for (final QN name : desc.getNames()) {
 
-
       //
       BridgeConfig bridgeConfig;
       try {
@@ -188,36 +185,25 @@ public class ServletBridge extends HttpServlet {
       applications.put(name.toString(), bridge);
     }
 
-    // Build first mounted applications
-    RouteDescriptor routesDesc = (RouteDescriptor)module.getDescriptors().get("router");
-    LinkedHashMap<String, Handler> handlers = new LinkedHashMap<String, Handler>();
-    if (routesDesc != null) {
-      Router root = new Router();
-      for (RouteDescriptor child : routesDesc.getChildren()) {
-        Route route = root.append(child.getPath());
-        String application = child.getTargets().get("application");
-        Bridge bridge = applications.get(application);
-        handlers.put(application, new Handler(route, bridge));
-      }
-      this.root = root;
-    } else {
-      this.root = null;
-    }
-
-    //
-    this.handlers = new ArrayList<Handler>(handlers.values());
-
     //
     String applicationName = getApplicationName(config);
-    if (applicationName != null) {
-      Handler defaultHandler = handlers.get(applicationName);
-      if (defaultHandler == null) {
-        defaultHandler = new Handler(new Router(), applications.get(applicationName));
+
+    // Build first mounted applications
+    LinkedHashMap<String, Handler> handlers = new LinkedHashMap<String, Handler>();
+    Handler defaultHandler = null;
+    Router root = new Router();
+    for (Map.Entry<String, Bridge> entry : applications.entrySet()) {
+      Handler handler = new Handler(root, entry.getValue());
+      if (entry.getKey().equals(applicationName)) {
+        defaultHandler = handler;
       }
-      this.defaultHandler = defaultHandler;
-    } else {
-      this.defaultHandler = null;
+      handlers.put(entry.getKey(), handler);
     }
+
+    //
+    this.root = root;
+    this.handlers = new ArrayList<Handler>(handlers.values());
+    this.defaultHandler = defaultHandler;
   }
 
   static ServletException wrap(Throwable e) {
@@ -248,76 +234,49 @@ public class ServletBridge extends HttpServlet {
     if (path != null) {
 
       //
-      Route abc;
-      List<Handler> def;
-      if (root != null) {
-        abc = root;
-        def = handlers;
-      } else if (defaultHandler != null) {
-        abc = defaultHandler.root;
-        def = Collections.singletonList(defaultHandler);
-      } else {
-        abc = null;
-        def = null;
-      }
+      Iterator<RouteMatch> matches = root.matcher(path, Collections.<String, String[]>emptyMap());
 
       //
-      RouteMatch found;
-      if (abc != null) {
-        found = abc.route(path, Collections.<String, String[]>emptyMap());
-      } else {
-        found = null;
-      }
-
-      //
-      if (found != null) {
-
-        //
+      while (matches.hasNext()) {
+        RouteMatch match = matches.next();
         Map<Phase, MethodHandle> m = null;
-        for (Handler handler : def) {
-          if (handler.root == found.getRoute()) {
+        for (Handler handler : handlers) {
+          if (handler.routes.contains(match.getRoute())) {
             targetHandler = handler;
-            break;
-          } else {
-            m = handler.routeMap2.get(found.getRoute());
+            m = handler.routeMap2.get(match.getRoute());
             if (m != null) {
-              targetHandler = handler;
-              break;
-            }
-          }
-        }
+              Phase[] phases;
+              if ("GET".equals(req.getMethod())) {
+                phases = GET_PHASES;
+              } else if ("POST".equals(req.getMethod())) {
+                phases = POST_PHASES;
+              } else {
+                throw new UnsupportedOperationException("handle me gracefully");
+              }
 
-        //
-        if (m != null) {
+              //
+              MethodHandle handle = null;
+              for (Phase phase : phases) {
+                handle = m.get(phase);
+                if (handle != null) {
+                  break;
+                }
+              }
 
-          //
-          Phase[] phases;
-          if ("GET".equals(req.getMethod())) {
-            phases = GET_PHASES;
-          } else if ("POST".equals(req.getMethod())) {
-            phases = POST_PHASES;
-          } else {
-            throw new UnsupportedOperationException("handle me gracefully");
-          }
-
-          //
-          MethodHandle handle = null;
-          for (Phase phase : phases) {
-            handle = m.get(phase);
-            if (handle != null) {
-              break;
-            }
-          }
-
-          //
-          target =  targetHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
-          if (found.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
-            parameters = new HashMap<String, String[]>();
-            for (Map.Entry<String, String[]> entry : ((Map<String, String[]>)req.getParameterMap()).entrySet()) {
-              parameters.put(entry.getKey(), entry.getValue().clone());
-            }
-            for (Map.Entry<PathParam, String> entry : found.getMatched().entrySet()) {
-              parameters.put(entry.getKey().getName().getName(), new String[]{entry.getValue()});
+              //
+              if (handle != null) {
+                target =  targetHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
+                if (match.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
+                  parameters = new HashMap<String, String[]>();
+                  for (Map.Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
+                    parameters.put(entry.getKey(), entry.getValue().clone());
+                  }
+                  for (Map.Entry<PathParam, String> entry : match.getMatched().entrySet()) {
+                    parameters.put(entry.getKey().getName().getName(), new String[]{entry.getValue()});
+                  }
+                }
+                break;
+              }
             }
           }
         }
@@ -345,28 +304,24 @@ public class ServletBridge extends HttpServlet {
             resp.sendError(404);
             return;
           } else {
-            if (defaultHandler.root.getParent() == null) {
-              targetHandler = defaultHandler;
-            } else {
-              Map<QualifiedName, String> empty = Collections.emptyMap();
-              RouteMatch match = defaultHandler.root.matches(empty);
-              if (match != null) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(req.getScheme());
-                sb.append("://");
-                sb.append(req.getServerName());
-                int port = req.getServerPort();
-                if (port != 80) {
-                  sb.append(':').append(Integer.toString(port));
-                }
-                sb.append(req.getContextPath());
-                match.render(new URIWriter(sb));
-                resp.sendRedirect(sb.toString());
-                return;
-              } else {
-                resp.sendError(404);
-                return;
+            Map<QualifiedName, String> empty = Collections.emptyMap();
+            RouteMatch match = defaultHandler.root.matches(empty);
+            if (match != null) {
+              StringBuilder sb = new StringBuilder();
+              sb.append(req.getScheme());
+              sb.append("://");
+              sb.append(req.getServerName());
+              int port = req.getServerPort();
+              if (port != 80) {
+                sb.append(':').append(Integer.toString(port));
               }
+              sb.append(req.getContextPath());
+              match.render(new URIWriter(sb));
+              resp.sendRedirect(sb.toString());
+              return;
+            } else {
+              resp.sendError(404);
+              return;
             }
           }
         }

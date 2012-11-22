@@ -41,7 +41,7 @@ public class StandaloneTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testRender() throws Exception {
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
     String ok = driver.findElement(By.tagName("body")).getText();

@@ -35,8 +35,8 @@ import java.util.List;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractLocationTestCase extends AbstractStandaloneTestCase {
 
-  public static WebArchive createDeployment(String applicationName, String pkgName) {
-    WebArchive war = AbstractStandaloneTestCase.createDeployment(applicationName, pkgName);
+  public static WebArchive createLocationDeployment(String applicationName) {
+    WebArchive war = AbstractStandaloneTestCase.createDeployment(applicationName);
     URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
     URL test = HttpServletImpl.class.getResource("test.js");
     URL stylesheet = HttpServletImpl.class.getResource("main.css");

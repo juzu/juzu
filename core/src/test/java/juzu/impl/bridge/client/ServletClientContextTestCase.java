@@ -33,11 +33,11 @@ public class ServletClientContextTestCase extends AbstractClientContextTestCase 
 
   @Test
   public void testServletAction() throws Exception {
-    test(deploymentURL, "action");
+    test(applicationURL(), "action");
   }
 
   @Test
   public void testServletResource() throws Exception {
-    test(deploymentURL, "resource");
+    test(applicationURL(), "resource");
   }
 }

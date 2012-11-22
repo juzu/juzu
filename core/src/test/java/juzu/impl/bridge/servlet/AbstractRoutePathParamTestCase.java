@@ -36,11 +36,11 @@ public abstract class AbstractRoutePathParamTestCase extends AbstractStandaloneT
 
   @Test
   public void testPathParam() throws Exception {
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     String href = trigger.getAttribute("href");
     URL url = new URL(href);
-    assertEquals("/juzu/foo/bar", url.getPath());
+    assertEquals(applicationURL("/foo/bar").getPath(), url.getPath());
     assertNull(url.getQuery());
     trigger.click();
     String pass = driver.findElement(By.tagName("body")).getText();

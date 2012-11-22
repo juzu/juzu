@@ -1,5 +1,6 @@
 Various things to do, not exhaustive that needs to go in the roadmap
 
+- try to integrate Dagger DI : http://square.github.com/dagger/
 - bind Juzu scopes to Java EE scopes in CDI
 - implement some kind of completion to see what it gives
 - in dev mode : only compile the package of the application to speed up build

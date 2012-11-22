@@ -71,7 +71,7 @@ public class RouterModuleMetaModelPlugin extends ModuleMetaModelPlugin {
   public void postProcessEvents(ModuleMetaModel metaModel) {
     RouterMetaModel router = getRoutes(metaModel, false);
     if (router != null) {
-      RouteMetaModel root = new RouteMetaModel();
+      RouteMetaModel root = new RouteMetaModel(null, 0);
       for (ApplicationMetaModel application : metaModel.getChildren(ApplicationMetaModel.class)) {
         AnnotationState annotation = router.annotations.get(application.getHandle());
         if (annotation != null) {

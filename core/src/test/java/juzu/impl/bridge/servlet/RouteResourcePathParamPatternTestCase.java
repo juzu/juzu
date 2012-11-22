@@ -27,6 +27,6 @@ public class RouteResourcePathParamPatternTestCase extends AbstractRoutePathPara
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.resource.pathparampattern");
+    return createDeployment("bridge.servlet.route.resource.pathparampattern", false);
   }
 }

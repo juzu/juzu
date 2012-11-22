@@ -34,7 +34,7 @@ public abstract class AbstractRouteActionToViewTestCase extends AbstractStandalo
 
   @Test
   public void testPathParam() throws Exception {
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
     String pass = driver.findElement(By.tagName("body")).getText();

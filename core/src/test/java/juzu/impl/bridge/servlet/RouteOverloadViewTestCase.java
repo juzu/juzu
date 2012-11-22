@@ -41,10 +41,10 @@ public class RouteOverloadViewTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testView() throws Exception {
-    driver.get(deploymentURL.toURI().resolve("foo").toURL().toString());
+    driver.get(applicationURL("/foo").toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     assertEquals("foo", trigger.getText());
-    driver.get(deploymentURL.toURI().resolve("bar").toURL().toString() + "?p=p_value");
+    driver.get(deploymentURL.toURI().resolve(getApplicationName().getLastName() + "/bar").toURL().toString() + "?p=p_value");
     trigger = driver.findElement(By.tagName("body"));
     assertEquals("foo(p_value)", trigger.getText());
   }

@@ -159,4 +159,17 @@ public class QN2TestCase extends AbstractTestCase {
     assertEquals(0, empty.size());
     assertEquals(0, empty.length());
   }
+
+  @Test
+  public void testGetPrefix() {
+    assertGetPrefix("a.b", "a.b", "a.b");
+    assertGetPrefix("a.b", "a.b.c", "a.b");
+    assertGetPrefix("a.b", "a.b.c", "a.b.d");
+  }
+
+  private static void assertGetPrefix(String expected, String a, String b) {
+    QN actual = QN.parse(a).getPrefix(QN.parse(b));
+    assertEquals("Was expecting common prefix between " + a + " and " + b + "  to be equals to " + expected +
+        " instead of " + actual,  QN.parse(expected), actual);
+  }
 }

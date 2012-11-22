@@ -21,15 +21,13 @@ package juzu.impl.bridge.spi.standalone;
 
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.QualifiedName;
 import juzu.impl.plugin.router.RouteDescriptor;
-import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -47,7 +45,10 @@ class Handler {
   /** . */
   final HashMap<Route, Map<Phase, MethodHandle>> routeMap2;
 
-  Handler(Route root, Bridge bridge) throws ServletException {
+  /** All the routes. */
+  final HashSet<Route> routes;
+
+  Handler(Route parent, Bridge bridge) throws ServletException {
     this.bridge = bridge;
 
     //
@@ -57,37 +58,33 @@ class Handler {
       //
       HashMap<MethodHandle, Route> routeMap = new HashMap<MethodHandle, Route>();
       HashMap<Route, Map<Phase, MethodHandle>> routeMap2 = new HashMap<Route, Map<Phase, MethodHandle>>();
+      HashSet<Route> routes = new HashSet<Route>();
+      Route root;
 
       //
       RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPluginDescriptor("router");
       if (routesDesc != null) {
-        for (RouteDescriptor child : routesDesc.getChildren()) {
-
-          Map<QualifiedName, PathParam.Builder> parameters;
-          if (child.getParameters() != null && child.getParameters().size() > 0) {
-            parameters = new HashMap<QualifiedName, PathParam.Builder>(child.getParameters().size());
-            for (Map.Entry<String, String> parameter : child.getParameters().entrySet()) {
-              parameters.put(QualifiedName.create(parameter.getKey()), PathParam.matching(parameter.getValue()));
-            }
-          } else {
-            parameters = Collections.emptyMap();
-          }
-
-          Route route = root.append(child.getPath(), parameters);
-          for (Map.Entry<String, String> entry : child.getTargets().entrySet()) {
-            MethodHandle handle = MethodHandle.parse(entry.getValue());
-            Phase phase = Phase.valueOf(entry.getKey());
-            routeMap.put(handle, route);
-            Map<Phase, MethodHandle> map =  routeMap2.get(route);
+        Map<RouteDescriptor, Route> ret = routesDesc.popupate(parent);
+        root = ret.values().iterator().next();
+        for (Map.Entry<RouteDescriptor, Route> entry : ret.entrySet()) {
+          for (Map.Entry<String, String> entry2 : entry.getKey().getTargets().entrySet()) {
+            MethodHandle handle = MethodHandle.parse(entry2.getValue());
+            Phase phase = Phase.valueOf(entry2.getKey());
+            routeMap.put(handle, entry.getValue());
+            Map<Phase, MethodHandle> map =  routeMap2.get(entry.getValue());
             if (map == null) {
-              routeMap2.put(route, map = new HashMap<Phase, MethodHandle>());
+              routeMap2.put(entry.getValue(), map = new HashMap<Phase, MethodHandle>());
             }
             map.put(phase, handle);
           }
+          routes.add(entry.getValue());
         }
+      } else {
+        routes.add(root = parent.append("/" + bridge.runtime.getName().getLastName()));
       }
 
       //
+      this.routes = routes;
       this.root = root;
       this.routeMap = routeMap;
       this.routeMap2 = routeMap2;

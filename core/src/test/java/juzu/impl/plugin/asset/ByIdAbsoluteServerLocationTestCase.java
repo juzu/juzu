@@ -26,6 +26,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public class ByIdAbsoluteServerLocationTestCase extends AbstractLocationTestCase {
   @Deployment
   public static WebArchive createDeployment() {
-    return createDeployment("plugin.asset.byid.absoluteserver", "plugin.asset.byid");
+    return createLocationDeployment("plugin.asset.byid.absoluteserver");
   }
 }

@@ -26,6 +26,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public class ByValueRelativeServerTestCase extends AbstractLocationTestCase {
   @Deployment
   public static WebArchive createDeployment() {
-    return createDeployment("plugin.asset.byvalue.relativeserver", "plugin.asset.byvalue");
+    return createLocationDeployment("plugin.asset.byvalue.relativeserver");
   }
 }

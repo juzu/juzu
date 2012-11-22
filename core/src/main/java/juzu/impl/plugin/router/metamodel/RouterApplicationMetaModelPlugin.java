@@ -20,6 +20,7 @@
 package juzu.impl.plugin.router.metamodel;
 
 import juzu.Route;
+import juzu.impl.common.QN;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.JSON;
@@ -59,15 +60,25 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    if (key.getType().equals(RouteMetaModel.FQN) && key.getElement() instanceof ElementHandle.Method) {
-      getRoutes(metaModel, true).annotations.put(key.getElement(), added);
+    if (key.getType().equals(RouteMetaModel.FQN)) {
+      if (key.getElement() instanceof ElementHandle.Method) {
+        getRoutes(metaModel, true).annotations.put(key.getElement(), added);
+      } else if (key.getElement().equals(metaModel.getHandle())) {
+        getRoutes(metaModel, true).packageRoute = (String)added.get("value");
+        getRoutes(metaModel, true).packagePriority = (Integer)added.get("priority");
+      }
     }
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().equals(RouteMetaModel.FQN) && key.getElement() instanceof ElementHandle.Method) {
-      getRoutes(metaModel, true).annotations.remove(key.getElement());
+    if (key.getType().equals(RouteMetaModel.FQN)) {
+      if (key.getElement() instanceof ElementHandle.Method) {
+        getRoutes(metaModel, true).annotations.remove(key.getElement());
+      } else if (key.getElement().equals(metaModel.getHandle())) {
+        getRoutes(metaModel, true).packageRoute = null;
+        getRoutes(metaModel, true).packagePriority = null;
+      }
     }
   }
 
@@ -77,7 +88,10 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
     if (router != null) {
       ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
       if (controllers != null) {
-        RouteMetaModel root = new RouteMetaModel();
+        QN abc = metaModel.getName();
+        RouteMetaModel root = new RouteMetaModel(
+            router.packageRoute != null ? router.packageRoute : "/" + abc.get(abc.size() - 1),
+            router.packagePriority != null ? router.packagePriority : 0);
         for (ControllerMetaModel controller : controllers) {
           for (MethodMetaModel method : controller) {
             AnnotationState annotation = router.annotations.get(method.getHandle());

@@ -29,6 +29,6 @@ public class StandalonePortlet extends JuzuPortlet {
 
   @Override
   protected String getApplicationName(PortletConfig config) {
-    return AbstractWebTestCase.getApplicationName();
+    return AbstractWebTestCase.getApplicationName().toString();
   }
 }

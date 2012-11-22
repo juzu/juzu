@@ -43,7 +43,7 @@ public class ResponseHeaderViewTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testPathParam() throws Exception {
-    HttpURLConnection conn = (HttpURLConnection)deploymentURL.openConnection();
+    HttpURLConnection conn = (HttpURLConnection)applicationURL().openConnection();
     conn.connect();
     Map<String, String> headers = Tools.responseHeaders(conn);
     assertTrue(headers.containsKey("foo"));

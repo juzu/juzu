@@ -20,10 +20,14 @@
 package juzu.impl.plugin.router;
 
 import juzu.impl.common.JSON;
+import juzu.impl.common.QualifiedName;
 import juzu.impl.metadata.Descriptor;
+import juzu.impl.router.PathParam;
+import juzu.impl.router.Route;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +49,6 @@ public class RouteDescriptor extends Descriptor {
   private final HashMap<String, String> parameters;
 
   public RouteDescriptor(JSON json) {
-    this(null, json);
-  }
-
-  public RouteDescriptor(String path, JSON json) {
 
     JSON targets = json.getJSON("targets");
     if (targets != null) {
@@ -71,8 +71,7 @@ public class RouteDescriptor extends Descriptor {
     List<? extends JSON> children = json.getList("routes", JSON.class);
     if (children != null) {
       for (JSON child : children) {
-        String childPath = child.getString("path");
-        RouteDescriptor c = new RouteDescriptor(childPath, child);
+        RouteDescriptor c = new RouteDescriptor(child);
         if (abc.isEmpty()) {
           abc = new LinkedList<RouteDescriptor>();
         }
@@ -93,7 +92,7 @@ public class RouteDescriptor extends Descriptor {
 
     //
     this.children = abc;
-    this.path = path;
+    this.path = json.getString("path");
     this.parameters = parameters;
   }
 
@@ -111,5 +110,36 @@ public class RouteDescriptor extends Descriptor {
 
   public HashMap<String, String> getParameters() {
     return parameters;
+  }
+
+  public Map<RouteDescriptor, Route> popupate(Route parent) {
+    Map<RouteDescriptor, Route> ret = new LinkedHashMap<RouteDescriptor, Route>();
+    popupate(parent, ret);
+    return ret;
+  }
+
+  public void popupate(Route parent, Map<RouteDescriptor, Route> ret) {
+
+    //
+    Map<QualifiedName, PathParam.Builder> parameters;
+    if (this.parameters != null && this.parameters.size() > 0) {
+      parameters = new HashMap<QualifiedName, PathParam.Builder>(this.parameters.size());
+      for (Map.Entry<String, String> parameter : this.parameters.entrySet()) {
+        parameters.put(QualifiedName.create(parameter.getKey()), PathParam.matching(parameter.getValue()));
+      }
+    } else {
+      parameters = Collections.emptyMap();
+    }
+
+    //
+    Route route = parent.append(path, parameters);
+
+    //
+    ret.put(this, route);
+
+    //
+    for (RouteDescriptor child : children) {
+      child.popupate(route, ret);
+    }
   }
 }

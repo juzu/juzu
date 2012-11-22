@@ -26,6 +26,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 public class InheritanceTestCase extends AbstractLocationTestCase {
   @Deployment
   public static WebArchive createDeployment() {
-    return createDeployment("plugin.asset.inheritance", "plugin.asset");
+    return createLocationDeployment("plugin.asset.inheritance");
   }
 }

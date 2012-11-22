@@ -28,6 +28,6 @@ import javax.servlet.ServletConfig;
 public class StandaloneServlet extends ServletBridge {
   @Override
   protected String getApplicationName(ServletConfig config) {
-    return AbstractWebTestCase.getApplicationName();
+    return AbstractWebTestCase.asDefault() ? AbstractWebTestCase.getApplicationName().toString() : null;
   }
 }
