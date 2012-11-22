@@ -19,30 +19,10 @@
 
 package juzu.impl.router;
 
-import juzu.impl.common.PercentCodec;
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+class EmptyRoute extends Route {
 
-/**
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- * @version $Revision$
- */
-class SegmentRoute extends Route {
-
-  /** . */
-  final String name;
-
-  /** . */
-  final String encodedName;
-
-  SegmentRoute(Router router, String name, int terminal) {
+  EmptyRoute(Router router, int terminal) {
     super(router, terminal);
-
-    //
-    if (name.length() == 0) {
-      throw new AssertionError();
-    }
-
-    //
-    this.name = name;
-    this.encodedName = PercentCodec.PATH_SEGMENT.encode(name);
   }
 }

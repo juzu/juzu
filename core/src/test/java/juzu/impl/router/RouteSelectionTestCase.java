@@ -29,7 +29,7 @@ public class RouteSelectionTestCase extends AbstractControllerTestCase  {
     Router router = new Router();
     Route a1 = router.append("/{a}");
     Route a2 = router.append("/a");
-    assertSame(a2, router.route("/a").getRoute());
+    assertSame(a1, router.route("/a").getRoute());
     assertSame(a1, router.route("/b").getRoute());
   }
 }

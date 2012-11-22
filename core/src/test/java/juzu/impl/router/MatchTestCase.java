@@ -36,10 +36,11 @@ public class MatchTestCase extends AbstractControllerTestCase {
   @Test
   public void testRoot1() throws Exception {
     RouterAssert router = new RouterAssert();
-    router.append("/");
+    Route foo = router.append("/");
+    assertNotSame(foo, router);
 
     //
-    assertNull(router.route(""));
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "");
     router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/");
     assertNull(router.route("/a"));
     assertNull(router.route("a"));
@@ -52,7 +53,7 @@ public class MatchTestCase extends AbstractControllerTestCase {
 
     //
     router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "");
-    assertNull(router.route("/"));
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/");
     assertNull(router.route("/a"));
     assertNull(router.route("a"));
   }
@@ -67,6 +68,30 @@ public class MatchTestCase extends AbstractControllerTestCase {
     router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/");
     assertNull(router.route("/a"));
     assertNull(router.route("a"));
+  }
+
+  @Test
+  public void testEmpty1() throws Exception {
+    RouterAssert router = new RouterAssert();
+    router.append("/").append("/foo");
+
+    //
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/foo");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "foo");
+  }
+
+  @Test
+  public void testEmpty2() throws Exception {
+    RouterAssert router = new RouterAssert();
+    router.append("/foo").append("/").append("/bar");
+
+    //
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/foo");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "foo");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "foo/bar");
+    router.assertRoute(Collections.<QualifiedName, String>emptyMap(), "/foo/bar");
   }
 
   @Test

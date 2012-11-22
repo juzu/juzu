@@ -43,7 +43,7 @@ public class RouteSelectionSegmentAndPattern2TestCase extends AbstractStandalone
   public void testRender() throws Exception {
     driver.get(deploymentURL.toURI().resolve("./foo/juu").toURL().toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
-    assertEquals("juu", trigger.getText());
+    assertEquals("bar:juu", trigger.getText());
     driver.get(deploymentURL.toURI().resolve("./foo/daa").toURL().toString());
     trigger = driver.findElement(By.tagName("body"));
     assertEquals("bar:daa", trigger.getText());

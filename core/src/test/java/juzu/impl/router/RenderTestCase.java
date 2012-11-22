@@ -31,9 +31,18 @@ import java.util.Collections;
 public class RenderTestCase extends AbstractControllerTestCase {
 
   @Test
-  public void testRoot() throws Exception {
+  public void testRoot1() throws Exception {
     Router router = new Router();
     Route r = router.append("/");
+
+    //
+    assertEquals("/", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
+  }
+
+  @Test
+  public void testRoot2() throws Exception {
+    Router router = new Router();
+    Route r = router.append("");
 
     //
     assertEquals("/", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
