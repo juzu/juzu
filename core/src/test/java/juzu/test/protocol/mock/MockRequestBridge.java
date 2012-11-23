@@ -19,7 +19,6 @@
 
 package juzu.test.protocol.mock;
 
-import juzu.Dispatch;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.common.MimeType;
@@ -32,6 +31,7 @@ import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
 
 import java.io.IOException;
@@ -167,25 +167,21 @@ public abstract class MockRequestBridge implements RequestBridge {
     }
   }
 
-  public final Dispatch createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-    return new Dispatch() {
+  public final DispatchSPI createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchSPI() {
 
-      @Override
-      protected <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
-        return _checkPropertyValidity(phase, propertyType, propertyValue);
-      }
-
-      @Override
-      public Map<String, String[]> getParameters() {
-        return parameters;
-      }
-
-      @Override
       public MethodHandle getTarget() {
         return target;
       }
 
-      @Override
+      public Map<String, String[]> getParameters() {
+        return parameters;
+      }
+
+      public <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+        return _checkPropertyValidity(phase, propertyType, propertyValue);
+      }
+
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
         //
         MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);

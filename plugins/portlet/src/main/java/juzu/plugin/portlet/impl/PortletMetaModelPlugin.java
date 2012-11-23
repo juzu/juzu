@@ -119,7 +119,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       //
       writer.append("package ").append(pkgElt.getQualifiedName()).append(";\n");
-      writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+      writer.append("import ").append(Generated.class.getCanonicalName()).append(";\n");
       writer.append("@Generated(value={})\n");
       writer.append("public class ").append(names[0]).append(" extends ").append(JuzuPortlet.class.getName()).append(" {\n");
       writer.append("@Override\n");

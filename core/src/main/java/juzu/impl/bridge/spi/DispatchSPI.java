@@ -17,29 +17,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.controller.url.invalidproperty;
+package juzu.impl.bridge.spi;
 
-import juzu.request.Dispatch;
+import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.Response;
-import juzu.View;
+import juzu.impl.common.MethodHandle;
+import juzu.impl.common.MimeType;
+
+import java.io.IOException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+public interface DispatchSPI {
 
-  static class MyPropertyType extends PropertyType<String> {
-  }
+  MethodHandle getTarget();
 
-  @View
-  public Response index() {
-    Dispatch builder = A_.index();
-    try {
-      builder.setProperty(new MyPropertyType(), "foo");
-      return Response.render("fail");
-    }
-    catch (IllegalArgumentException e) {
-      // OK
-      return Response.render("pass");
-    }
-  }
+  Map<String, String[]> getParameters();
+
+  /**
+   * @param propertyType  the property type
+   * @param propertyValue the property value
+   * @param <T>           the property generic type
+   * @return null when the property is valid, an error message otherwise
+   */
+  <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue);
+
+  void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException;
+
 }

@@ -21,12 +21,9 @@ package juzu.impl.plugin.controller.metamodel;
 
 import juzu.Action;
 import juzu.Application;
-import juzu.Dispatch;
 import juzu.Mapped;
 import juzu.Resource;
-import juzu.Response;
 import juzu.View;
-import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.metamodel.AnnotationKey;
@@ -44,8 +41,6 @@ import juzu.impl.common.Cardinality;
 import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
-import juzu.request.ActionContext;
-import juzu.request.MimeContext;
 import juzu.request.Phase;
 
 import javax.annotation.Generated;
@@ -61,6 +56,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -84,7 +80,13 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   private static final String TOOLS = Tools.class.getSimpleName();
 
   /** . */
-  private static final String DISPATCH = Dispatch.class.getSimpleName();
+  private static final String ACTION_DISPATCH = Phase.Action.Dispatch.class.getSimpleName();
+
+  /** . */
+  private static final String VIEW_DISPATCH = Phase.View.Dispatch.class.getSimpleName();
+
+  /** . */
+  private static final String RESOURCE_DISPATCH = Phase.Resource.Dispatch.class.getSimpleName();
 
   /** . */
   public static final String CARDINALITY = Cardinality.class.getSimpleName();
@@ -193,6 +195,16 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     return config;
   }
 
+  /** . */
+  private static final HashMap<Phase, String> DISPATCH_TYPE = new HashMap<Phase, String>();
+
+  static
+  {
+    DISPATCH_TYPE.put(Phase.ACTION, Tools.getName(Phase.Action.Dispatch.class));
+    DISPATCH_TYPE.put(Phase.VIEW, Tools.getName(Phase.View.Dispatch.class));
+    DISPATCH_TYPE.put(Phase.RESOURCE, Tools.getName(Phase.Resource.Dispatch.class));
+  }
+
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     // Check everything is OK here
@@ -231,20 +243,15 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("package ").append(fqn.getPackageName()).append(";\n");
 
       // Imports
-      writer.append("import ").append(Tools.getImport(MethodDescriptor.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(ParameterDescriptor.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Tools.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Arrays.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Phase.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Dispatch.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(ApplicationContext.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(MimeContext.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(ActionContext.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Response.Update.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(ControllerDescriptor.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Cardinality.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(Request.class)).append(";\n");
+      writer.append("import ").append(MethodDescriptor.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(ParameterDescriptor.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Tools.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Arrays.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Phase.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(ControllerDescriptor.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Generated.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Cardinality.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Request.class.getCanonicalName()).append(";\n");
 
       // Open class
       writer.append("@Generated(value={})\n");
@@ -256,8 +263,12 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         String methodRef = "method_" + index++;
 
         // Method constant
-        writer.append("private static final ").append(CONTROLLER_METHOD).append(" ").append(methodRef).append(" = ");
-        writer.append("new ").append(CONTROLLER_METHOD).append("(");
+        writer.append("private static final ").append(CONTROLLER_METHOD).append("<");
+        Tools.nameOf(method.getPhase().getClass(), writer);
+        writer.append("> ").append(methodRef).append(" = ");
+        writer.append("new ").append(CONTROLLER_METHOD).append("<");
+        Tools.nameOf(method.getPhase().getClass(), writer);
+        writer.append(">(");
         if (method.getId() != null) {
           writer.append("\"").append(method.getId()).append("\",");
         }
@@ -288,8 +299,11 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         writer.append(")");
         writer.append(");\n");
 
+        //
+        String dispatchType = DISPATCH_TYPE.get(method.getPhase());
+
         // Dispatch literal
-        writer.append("public static ").append(DISPATCH).append(" ").append(method.getName()).append("(");
+        writer.append("public static ").append(dispatchType).append(" ").append(method.getName()).append("(");
         for (int j = 0;j < method.getParameters().size();j++) {
           if (j > 0) {
             writer.append(',');
@@ -297,7 +311,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
           ParameterMetaModel param = method.getParameter(j);
           writer.append(param.declaredType).append(" ").append(param.getName());
         }
-        writer.append(") { return (Request.getCurrent().getContext()).createDispatch(").append(methodRef);
+        writer.append(") { return Request.getCurrent().getContext().create").append(method.getPhase().getClass().getSimpleName()).append("Dispatch(").append(methodRef);
         switch (method.getParameters().size()) {
           case 0:
             break;

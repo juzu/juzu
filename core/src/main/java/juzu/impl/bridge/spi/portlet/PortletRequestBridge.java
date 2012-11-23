@@ -19,7 +19,6 @@
 
 package juzu.impl.bridge.spi.portlet;
 
-import juzu.Dispatch;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
@@ -33,6 +32,7 @@ import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.portlet.JuzuPortlet;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
@@ -335,25 +335,21 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     }
   }
 
-  public Dispatch createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-    return new Dispatch() {
+  public DispatchSPI createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchSPI() {
 
-      @Override
-      protected <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
-        return _checkPropertyValidity(phase, propertyType, propertyValue);
-      }
-
-      @Override
-      public Map<String, String[]> getParameters() {
-        return parameters;
-      }
-
-      @Override
       public MethodHandle getTarget() {
         return target;
       }
 
-      @Override
+      public Map<String, String[]> getParameters() {
+        return parameters;
+      }
+
+      public <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+        return _checkPropertyValidity(phase, propertyType, propertyValue);
+      }
+
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
         if (resp instanceof MimeResponse) {
@@ -364,18 +360,14 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
 
           //
           BaseURL url;
-          switch (method.getPhase()) {
-            case ACTION:
-              url = mimeResp.createActionURL();
-              break;
-            case VIEW:
-              url = mimeResp.createRenderURL();
-              break;
-            case RESOURCE:
-              url = mimeResp.createResourceURL();
-              break;
-            default:
-              throw new AssertionError("Unexpected phase " + method.getPhase());
+          if (method.getPhase() == Phase.ACTION) {
+            url = mimeResp.createActionURL();
+          } else if (method.getPhase() == Phase.VIEW) {
+            url = mimeResp.createRenderURL();
+          } else if (method.getPhase() == Phase.RESOURCE) {
+            url = mimeResp.createResourceURL();
+          } else {
+            throw new AssertionError();
           }
 
           // Set generic parameters

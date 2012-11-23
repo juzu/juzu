@@ -19,7 +19,6 @@
 
 package juzu.impl.bridge.spi;
 
-import juzu.Dispatch;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.common.MethodHandle;
@@ -108,5 +107,5 @@ public interface RequestBridge {
    * @throws IllegalArgumentException if any parameter is not valid
    * @throws NullPointerException if any argument is null
    */
-  Dispatch createDispatch(Phase phase, MethodHandle target, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
+  DispatchSPI createDispatch(Phase phase, MethodHandle target, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
 }

@@ -52,15 +52,15 @@ public class ActionContext extends RequestContext {
     return Phase.ACTION;
   }
 
-  public Response.Update createResponse(MethodDescriptor target) throws IllegalStateException {
-    return createDispatch(target);
+  public Response.Update createResponse(MethodDescriptor<Phase.View> target) throws IllegalStateException {
+    return createViewDispatch(target);
   }
 
-  public Response.Update createResponse(MethodDescriptor target, Object arg) throws IllegalStateException {
-    return createDispatch(target, arg);
+  public Response.Update createResponse(MethodDescriptor<Phase.View> target, Object arg) throws IllegalStateException {
+    return createViewDispatch(target, arg);
   }
 
-  public Response.Update createResponse(MethodDescriptor target, Object[] args) throws IllegalStateException {
-    return createDispatch(target, args);
+  public Response.Update createResponse(MethodDescriptor<Phase.View> target, Object[] args) throws IllegalStateException {
+    return createViewDispatch(target, args);
   }
 }

@@ -17,15 +17,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu;
+package juzu.request;
 
+import juzu.PropertyMap;
+import juzu.PropertyType;
 import juzu.impl.common.MimeType;
-
-import java.io.IOException;
 
 /**
  * <p>The <code>Dispatch</code> object represents the dispatch to a controller method. It can be used for generating
- * URL or as a {@link Response.Update} objects. A dispatch object can be obtained from a {@link juzu.request.RequestContext}
+ * URL or as a {@link juzu.Response.Update} objects. A dispatch object can be obtained from a {@link juzu.request.RequestContext}
  * object for building controller methods, however the best way to obtain a builder is to use a controller companion
  * that provides a type safe way for creating fully configured dispatch.</p>
  *
@@ -49,33 +49,14 @@ import java.io.IOException;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Dispatch extends Response.Update {
+public interface Dispatch  {
 
-  /** . */
-  private PropertyMap properties;
 
-  /** . */
-  private MimeType mimeType;
+  Dispatch with(MimeType mimeType);
 
-  protected Dispatch() {
-    this.properties = null;
-    this.mimeType = null;
-  }
+  Dispatch with(PropertyMap properties);
 
-  public Dispatch with(MimeType mimeType) {
-    this.mimeType = mimeType;
-    return this;
-  }
-
-  public Dispatch with(PropertyMap properties) {
-    this.properties = new PropertyMap(properties);
-    return this;
-  }
-
-  public Dispatch escapeXML(Boolean escapeXML) {
-    setProperty(PropertyType.ESCAPE_XML, escapeXML);
-    return this;
-  }
+  Dispatch escapeXML(Boolean escapeXML);
 
   /**
    * Set or clear a property of the URL.
@@ -86,40 +67,8 @@ public abstract class Dispatch extends Response.Update {
    * @return this URL builder
    * @throws IllegalArgumentException if the property is not valid
    */
-  public <T> Dispatch setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException {
-    String invalid = checkPropertyValidity(propertyType, propertyValue);
-    if (invalid != null) {
-      throw new IllegalArgumentException(invalid);
-    }
-    if (properties == null) {
-      properties = new PropertyMap();
-    }
-    properties.setValue(propertyType, propertyValue);
-    return this;
-  }
+  <T> Dispatch setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException;
 
-  /**
-   * @param propertyType  the property type
-   * @param propertyValue the property value
-   * @param <T>           the property generic type
-   * @return null when the property is valid, an error message otherwise
-   */
-  protected abstract <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue);
-
-  public String toString() {
-    try {
-      StringBuilder builder = new StringBuilder();
-      renderURL(properties, mimeType, builder);
-      return builder.toString();
-    }
-    catch (IOException e) {
-      throw new UndeclaredIOException(e);
-    }
-  }
-
-  public abstract void renderURL(
-      PropertyMap properties,
-      MimeType mimeType,
-      Appendable appendable) throws IOException;
+  String toString();
 
 }

@@ -45,13 +45,13 @@ import java.util.Set;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class MethodDescriptor {
+public final class MethodDescriptor<P extends Phase> {
 
   /** . */
   private final String id;
 
   /** . */
-  private final Phase phase;
+  private final P phase;
 
   /** . */
   private final Class<?> type;
@@ -73,7 +73,7 @@ public final class MethodDescriptor {
 
   public MethodDescriptor(
       String id,
-      Phase phase,
+      P phase,
       Class<?> type,
       Method method,
       List<ParameterDescriptor> argumentList) {
@@ -137,7 +137,7 @@ public final class MethodDescriptor {
     return id;
   }
 
-  public Phase getPhase() {
+  public P getPhase() {
     return phase;
   }
 

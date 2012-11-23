@@ -346,6 +346,29 @@ public class Tools {
     return appendable;
   }
 
+  public static <A extends Appendable> A nameOf(Class<?> clazz, A appendable) throws IOException {
+    if (clazz.isMemberClass()) {
+      nameOf(clazz.getEnclosingClass(), appendable).append('.').append(clazz.getSimpleName());
+    } else {
+      appendable.append(clazz.getSimpleName());
+    }
+    return appendable;
+  }
+
+  public static String getName(Class<?> clazz) {
+    if (clazz.isLocalClass() || clazz.isAnonymousClass()) {
+      throw new IllegalArgumentException("Cannot use local or anonymous class");
+    }
+    else {
+      try {
+        return nameOf(clazz, new StringBuilder()).toString();
+      }
+      catch (IOException e) {
+        throw new AssertionError(e);
+      }
+    }
+  }
+
   public static String getImport(Class<?> clazz) {
     if (clazz.isLocalClass() || clazz.isAnonymousClass()) {
       throw new IllegalArgumentException("Cannot use local or anonymous class");

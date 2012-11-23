@@ -127,7 +127,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
             //
             for (Map.Entry<String, MethodDescriptor> entry : table.entrySet()) {
-              String baseURL = ((RenderContext)request.getContext()).createDispatch(entry.getValue()).toString();
+              String baseURL = request.getContext().createDispatch(entry.getValue()).toString();
               stream.append("<div data-method-id=\"");
               stream.append(entry.getValue().getId());
               stream.append("\" data-url=\"");

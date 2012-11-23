@@ -19,7 +19,6 @@
 
 package juzu.impl.bridge.spi.standalone;
 
-import juzu.Dispatch;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
@@ -36,6 +35,7 @@ import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.common.URIWriter;
 import juzu.request.ClientContext;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
@@ -246,7 +246,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     }
   }
 
-  public final Dispatch createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) {
+  public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) {
     MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
@@ -272,25 +272,21 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       //
       final RouteMatch match = route.matches(params);
       if (match != null) {
-        return new Dispatch() {
+        return new DispatchSPI() {
 
-          @Override
-          protected <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
-            // For now we don't validate anything
-            return null;
-          }
-
-          @Override
-          public Map<String, String[]> getParameters() {
-            return parameters;
-          }
-
-          @Override
           public MethodHandle getTarget() {
             return target;
           }
 
-          @Override
+          public Map<String, String[]> getParameters() {
+            return parameters;
+          }
+
+          public <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+            // For now we don't validate anything
+            return null;
+          }
+
           public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
             //

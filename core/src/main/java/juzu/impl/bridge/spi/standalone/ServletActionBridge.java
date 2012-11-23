@@ -25,6 +25,7 @@ import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.request.ClientContext;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +58,7 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
     if (response instanceof Response.Update || response instanceof Response.Redirect) {
       this.response = response;
     } else {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("Cannot accept response " + response);
     }
   }
 
@@ -65,7 +66,9 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
   void send() throws IOException {
     if (response instanceof Response.Update) {
       Response.Update update = (Response.Update)response;
-      String url = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters()).with(MimeType.PLAIN).with(update.getProperties()).toString();
+      DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
+      Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
+      String url = dispatch.with(MimeType.PLAIN).with(update.getProperties()).toString();
       for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
         resp.setHeader(entry.getKey(), entry.getValue()[0]);
       }

@@ -190,7 +190,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       writer.append("package ").append(fqn.getPackageName()).append(";\n");
 
       // Imports
-      writer.append("import ").append(Tools.getImport(ApplicationDescriptor.class)).append(";\n");
+      writer.append("import ").append(ApplicationDescriptor.class.getCanonicalName()).append(";\n");
 
       // Open class
       writer.append("public class ").append(fqn.getSimpleName()).append(" {\n");

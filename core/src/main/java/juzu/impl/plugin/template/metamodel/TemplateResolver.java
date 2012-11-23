@@ -255,8 +255,8 @@ public class TemplateResolver implements Serializable {
       FileObject classFile = context.createSourceFile(absolute.getFQN(), elements);
       writer = classFile.openWriter();
       writer.append("package ").append(absolute.getQN()).append(";\n");
-      writer.append("import ").append(Tools.getImport(TemplateDescriptor.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(TemplatePlugin.class)).append(";\n");
+      writer.append("import ").append(TemplateDescriptor.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(TemplatePlugin.class.getCanonicalName()).append(";\n");
       writer.append("@").append(Generated.class.getName()).append("({})\n");
       writer.append("@").append(juzu.Path.class.getName()).append("(\"").append(path.getValue()).append("\")\n");
       writer.append("public class ").append(path.getRawName()).append(" extends ").append(juzu.template.Template.class.getName()).append("\n");
@@ -278,7 +278,7 @@ public class TemplateResolver implements Serializable {
           append("(").append(absolute.getFQN().getName()).append(".class);\n");
 
       //
-      String baseBuilderName = Tools.getImport(juzu.template.Template.Builder.class);
+      String baseBuilderName = juzu.template.Template.Builder.class.getCanonicalName();
       if (template.getParameters() != null) {
         // Implement abstract method with this class Builder covariant return type
         writer.append("public Builder with() {\n");
@@ -342,7 +342,7 @@ public class TemplateResolver implements Serializable {
       JavaFileObject stubFile = context.createSourceFile(stubFQN, elements);
       writer = stubFile.openWriter();
       writer.append("package ").append(stubFQN.getPackageName()).append(";\n");
-      writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+      writer.append("import ").append(Generated.class.getCanonicalName()).append(";\n");
       writer.append("@Generated({\"").append(stubFQN.getName()).append("\"})\n");
       writer.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
       writer.append("}");

@@ -19,7 +19,6 @@
 
 package juzu.test.protocol.http;
 
-import juzu.Dispatch;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.common.MimeType;
@@ -32,6 +31,7 @@ import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
 import juzu.request.ClientContext;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
@@ -229,26 +229,22 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     }
   }
 
-  public final Dispatch createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-    return new Dispatch() {
+  public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchSPI() {
 
-      @Override
-      protected <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
-        // For now we don't validate anything
-        return null;
-      }
-
-      @Override
-      public Map<String, String[]> getParameters() {
-        return parameters;
-      }
-
-      @Override
       public MethodHandle getTarget() {
         return target;
       }
 
-      @Override
+      public Map<String, String[]> getParameters() {
+        return parameters;
+      }
+
+      public <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+        // For now we don't validate anything
+        return null;
+      }
+
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
         //

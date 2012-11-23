@@ -24,6 +24,7 @@ import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.request.ClientContext;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
 import juzu.test.AbstractTestCase;
 
@@ -49,7 +50,9 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   public String assertUpdate() {
     if (response instanceof Response.Update) {
       Response.Update update = (Response.Update)response;
-      return createDispatch(Phase.VIEW, update.getTarget(), update.getParameters()).with(update.getProperties()).toString();
+      DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
+      Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
+      return dispatch.with(update.getProperties()).toString();
     }
     else {
       throw AbstractTestCase.failure("Was expecting an update instead of " + response);

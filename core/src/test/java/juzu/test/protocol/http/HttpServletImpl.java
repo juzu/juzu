@@ -82,15 +82,14 @@ public class HttpServletImpl extends HttpServlet {
     }
 
     //
-    switch (phase) {
-      case VIEW:
-        return new RenderBridgeImpl(this, application.getContext(), req, resp, method, parameters);
-      case ACTION:
-        return new ActionBridgeImpl(application.getContext(), req, resp, method, parameters);
-      case RESOURCE:
-        return new ResourceBridgeImpl(application.getContext(), req, resp, method, parameters);
-      default:
-        throw new UnsupportedOperationException("todo");
+    if (phase == Phase.ACTION) {
+      return new ActionBridgeImpl(application.getContext(), req, resp, method, parameters);
+    } else if (phase == Phase.VIEW) {
+      return new RenderBridgeImpl(this, application.getContext(), req, resp, method, parameters);
+    } else if (phase == Phase.RESOURCE) {
+      return new ResourceBridgeImpl(application.getContext(), req, resp, method, parameters);
+    } else {
+      throw new AssertionError();
     }
   }
 

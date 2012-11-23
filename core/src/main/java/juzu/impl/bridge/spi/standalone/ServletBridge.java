@@ -332,19 +332,14 @@ public class ServletBridge extends HttpServlet {
       //
       ServletRequestBridge requestBridge;
       if (target != null) {
-        switch (target.getPhase()) {
-          case VIEW:
-            requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
-            break;
-          case ACTION: {
-            requestBridge = new ServletActionBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
-            break;
-          }
-          case RESOURCE:
-            requestBridge = new ServletResourceBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
-            break;
-          default:
-            throw new ServletException("Cannot decode phase");
+        if (target.getPhase() == Phase.ACTION) {
+          requestBridge = new ServletActionBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
+        } else if (target.getPhase() == Phase.VIEW) {
+          requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
+        } else if (target.getPhase() == Phase.RESOURCE) {
+          requestBridge = new ServletResourceBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
+        } else {
+          throw new ServletException("Cannot decode phase");
         }
       } else {
         requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, null, parameters);
