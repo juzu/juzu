@@ -52,18 +52,6 @@ public class RouterTestCase extends AbstractTestCase {
   }
 
   @Test
-  public void testDuplicatePackageRoute() throws Exception {
-    CompilerAssert<File, File> helper = compiler("metamodel", "router", "duplicate", "packageroute").formalErrorReporting(true);
-    List<CompilationError> errors =  helper.failCompile();
-    assertEquals(1, errors.size());
-    CompilationError error = errors.get(0);
-    assertSame(RouterMetaModel.ROUTER_DUPLICATE_ROUTE, error.getCode());
-    assertEquals(Arrays.asList("/foo"), error.getArguments());
-    String src = error.getSource();
-    assertTrue(Pattern.compile("/metamodel/router/duplicate/packageroute/app[12]/package-info\\.java").matcher(src).matches());
-  }
-
-  @Test
   public void testParamPattern() throws Exception {
     CompilerAssert<File, File> helper = compiler("metamodel", "router", "param", "pattern").formalErrorReporting(true);
     helper.assertCompile();
