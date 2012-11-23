@@ -17,10 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.router;
-
-import juzu.impl.common.MimeType;
-import juzu.impl.common.PercentCodec;
+package juzu.impl.common;
 
 import java.io.IOException;
 

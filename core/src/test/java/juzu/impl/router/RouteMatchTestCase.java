@@ -20,6 +20,7 @@
 package juzu.impl.router;
 
 import juzu.UndeclaredIOException;
+import juzu.impl.common.URIWriter;
 import org.junit.Test;
 
 import java.io.IOException;

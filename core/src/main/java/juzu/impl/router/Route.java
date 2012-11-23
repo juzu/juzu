@@ -21,6 +21,7 @@ package juzu.impl.router;
 
 //import javanet.staxutils.IndentingXMLStreamWriter;
 
+import juzu.impl.common.URIWriter;
 import juzu.impl.router.parser.RouteParser;
 import juzu.impl.router.parser.RouteParserHandler;
 import juzu.impl.router.regex.RE;

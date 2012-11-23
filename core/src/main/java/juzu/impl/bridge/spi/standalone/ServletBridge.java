@@ -40,7 +40,7 @@ import juzu.impl.resource.ResourceResolver;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.router.Router;
-import juzu.impl.router.URIWriter;
+import juzu.impl.common.URIWriter;
 import juzu.request.Phase;
 
 import javax.servlet.RequestDispatcher;

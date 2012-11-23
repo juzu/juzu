@@ -34,7 +34,7 @@ import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
-import juzu.impl.router.URIWriter;
+import juzu.impl.common.URIWriter;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
