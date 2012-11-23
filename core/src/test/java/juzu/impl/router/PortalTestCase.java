@@ -19,7 +19,6 @@
 
 package juzu.impl.router;
 
-import juzu.impl.common.QualifiedName;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -68,13 +67,13 @@ public class PortalTestCase extends AbstractControllerTestCase {
         append("/public/{gtn:lang}", Collections.singletonMap(Names.GTN_LANG, PathParam.matching(LANG_PATTERN).preservePath(true))).
         append("{gtn:sitename}{gtn:path}", Collections.singletonMap(Names.GTN_PATH, PathParam.matching(".*").preservePath(true)));
 
-    Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
+    Map<String, String> expectedParameters = new HashMap<String, String>();
     expectedParameters.put(Names.GTN_LANG, "fr");
     expectedParameters.put(Names.GTN_SITENAME, "classic");
     expectedParameters.put(Names.GTN_PATH, "/home");
 
     //
-//      assertEquals(Collections.<QualifiedName, String>emptyMap(), router.route("/public"));
+//      assertEquals(Collections.<String, String>emptyMap(), router.route("/public"));
     router.assertRoute(expectedParameters, "/public/fr/classic/home");
 
     expectedParameters.put(Names.GTN_PATH, "");

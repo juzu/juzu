@@ -24,7 +24,6 @@ import juzu.impl.router.regex.REParser;
 import juzu.impl.router.regex.RERenderer;
 import juzu.impl.router.regex.REVisitor;
 import juzu.impl.router.regex.SyntaxException;
-import juzu.impl.common.QualifiedName;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,7 +36,7 @@ import java.util.List;
 public class PathParam {
 
   /** . */
-  final QualifiedName name;
+  final String name;
 
   /** . */
   final boolean preservePath;
@@ -55,7 +54,7 @@ public class PathParam {
   final String[] templateSuffixes;
 
   private PathParam(
-      QualifiedName name,
+      String name,
       boolean preservePath,
       String routingRegex,
       RERef[] matchingRegex,
@@ -79,7 +78,7 @@ public class PathParam {
     this.templateSuffixes = templateSuffixes;
   }
 
-  public QualifiedName getName() {
+  public String getName() {
     return name;
   }
 
@@ -123,7 +122,7 @@ public class PathParam {
       this.captureGroup = false;
     }
 
-    PathParam build(Router router, QualifiedName name) {
+    PathParam build(Router router, String name) {
 
       Builder descriptor = this;
 

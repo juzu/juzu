@@ -19,8 +19,6 @@
 
 package juzu.impl.router;
 
-import juzu.impl.common.QualifiedName;
-
 /**
  * Various predefined names for testing purpose.
  *
@@ -28,18 +26,18 @@ import juzu.impl.common.QualifiedName;
  */
 public interface Names {
 
-  QualifiedName Q_A = QualifiedName.parse("q:a");
-  QualifiedName A = QualifiedName.parse("a");
-  QualifiedName B = QualifiedName.parse("b");
-  QualifiedName P = QualifiedName.parse("p");
-  QualifiedName FOO = QualifiedName.parse("foo");
-  QualifiedName BAR = QualifiedName.parse("bar");
-  QualifiedName JUU = QualifiedName.parse("juu");
-  QualifiedName GTN_HANDLER = QualifiedName.parse("gtn:handler");
-  QualifiedName GTN_LANG = QualifiedName.parse("gtn:lang");
-  QualifiedName GTN_SITENAME = QualifiedName.parse("gtn:sitename");
-  QualifiedName GTN_SITETYPE = QualifiedName.parse("gtn:sitetype");
-  QualifiedName GTN_ACCESS = QualifiedName.parse("gtn:access");
-  QualifiedName GTN_PATH = QualifiedName.parse("gtn:path");
-  QualifiedName GTN_MIN = QualifiedName.parse("gtn:min");
+  String Q_A = "q:a";
+  String A = "a";
+  String B = "b";
+  String P = "p";
+  String FOO = "foo";
+  String BAR = "bar";
+  String JUU = "juu";
+  String GTN_HANDLER = "gtn:handler";
+  String GTN_LANG = "gtn:lang";
+  String GTN_SITENAME = "gtn:sitename";
+  String GTN_SITETYPE = "gtn:sitetype";
+  String GTN_ACCESS = "gtn:access";
+  String GTN_PATH = "gtn:path";
+  String GTN_MIN = "gtn:min";
 }

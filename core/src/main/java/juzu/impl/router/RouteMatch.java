@@ -21,7 +21,6 @@ package juzu.impl.router;
 
 import juzu.UndeclaredIOException;
 import juzu.impl.common.MimeType;
-import juzu.impl.common.QualifiedName;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -37,7 +36,7 @@ public class RouteMatch {
   final Map<PathParam, String> matched;
 
   /** The un matched parameters. */
-  final Map<QualifiedName, String> unmatched;
+  final Map<String, String> unmatched;
 
   RouteMatch(Route route, Map<PathParam, String> matched) {
     this.route = route;
@@ -45,7 +44,7 @@ public class RouteMatch {
     this.unmatched = Collections.emptyMap();
   }
 
-  RouteMatch(Route route, Map<QualifiedName, String> unmatched, Map<PathParam, String> matched) {
+  RouteMatch(Route route, Map<String, String> unmatched, Map<PathParam, String> matched) {
     this.route = route;
     this.matched = Collections.unmodifiableMap(matched);
     this.unmatched = Collections.unmodifiableMap(unmatched);
@@ -59,7 +58,7 @@ public class RouteMatch {
     return Collections.unmodifiableMap(matched);
   }
 
-  public Map<QualifiedName, String> getUnmatched() {
+  public Map<String, String> getUnmatched() {
     return unmatched;
   }
 

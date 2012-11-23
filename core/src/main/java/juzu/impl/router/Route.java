@@ -25,7 +25,6 @@ import juzu.impl.router.parser.RouteParser;
 import juzu.impl.router.parser.RouteParserHandler;
 import juzu.impl.router.regex.RE;
 import juzu.impl.router.regex.SyntaxException;
-import juzu.impl.common.QualifiedName;
 import juzu.impl.common.Tools;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -74,7 +73,7 @@ public class Route {
       PatternRoute pr = (PatternRoute)this;
       StringBuilder path = new StringBuilder("/");
       for (int i = 0;i < pr.params.length;i++) {
-        path.append(pr.chunks[i]).append("{").append(pr.params[i].name.getValue()).append("}");
+        path.append(pr.chunks[i]).append("{").append(pr.params[i].name).append("}");
       }
       path.append(pr.chunks[pr.chunks.length - 1]);
       writer.writeStartElement("pattern");
@@ -82,7 +81,7 @@ public class Route {
       writer.writeAttribute("terminal", Integer.toString(terminal));
       for (PathParam param : pr.params) {
         writer.writeStartElement("path-param");
-        writer.writeAttribute("qname", param.name.getValue());
+        writer.writeAttribute("qname", param.name);
         writer.writeAttribute("preservePath", "" + param.preservePath);
         writer.writeAttribute("pattern", param.matchingRegex.toString());
         writer.writeEndElement();
@@ -270,10 +269,10 @@ public class Route {
     return endWithSlash;
   }
 
-  public final RouteMatch matches(Map<QualifiedName, String> parameters) {
+  public final RouteMatch matches(Map<String, String> parameters) {
 
     //
-    HashMap<QualifiedName, String> unmatched = new HashMap<QualifiedName, String>(parameters);
+    HashMap<String, String> unmatched = new HashMap<String, String>(parameters);
     HashMap<PathParam, String> matched = new HashMap<PathParam, String>();
 
     //
@@ -284,11 +283,11 @@ public class Route {
     }
   }
 
-  private boolean _matches(HashMap<QualifiedName, String> context, HashMap<PathParam, String> matched) {
+  private boolean _matches(HashMap<String, String> context, HashMap<PathParam, String> matched) {
     return (parent == null || parent._matches(context, matched)) && matches(context, matched);
   }
 
-  private boolean matches(HashMap<QualifiedName, String> context, HashMap<PathParam, String> abc) {
+  private boolean matches(HashMap<String, String> context, HashMap<PathParam, String> abc) {
 
     // Match any pattern parameter
     if (this instanceof PatternRoute) {
@@ -752,9 +751,9 @@ public class Route {
     return null;
   }
 
-  private PathParam getParam(QualifiedName name) {
+  private PathParam getParam(String name) {
     PathParam param = null;
-    if (param == null && this instanceof PatternRoute) {
+    if (this instanceof PatternRoute) {
       for (PathParam pathParam : ((PatternRoute)this).params) {
         if (pathParam.name.equals(name)) {
           param = pathParam;
@@ -765,7 +764,7 @@ public class Route {
     return param;
   }
 
-  private PathParam findParam(QualifiedName name) {
+  private PathParam findParam(String name) {
     PathParam param = getParam(name);
     if (param == null && parent != null) {
       param = parent.findParam(name);
@@ -792,7 +791,7 @@ public class Route {
    * @param name   the name
    * @param params the list collecting the found params
    */
-  private void findDescendantOrSelfParams(QualifiedName name, List<PathParam> params) {
+  private void findDescendantOrSelfParams(String name, List<PathParam> params) {
     PathParam param = getParam(name);
     if (param != null) {
       params.add(param);
@@ -810,10 +809,10 @@ public class Route {
   }
 
   public Route append(String path, final RouteKind kind) {
-    return append(path, kind, Collections.<QualifiedName, PathParam.Builder>emptyMap());
+    return append(path, kind, Collections.<String, PathParam.Builder>emptyMap());
   }
 
-  public Route append(String path, Map<QualifiedName, PathParam.Builder> params) {
+  public Route append(String path, Map<String, PathParam.Builder> params) {
     return append(path, RouteKind.MATCH, params);
   }
 
@@ -822,14 +821,14 @@ public class Route {
     PatternBuilder builder = new PatternBuilder().expr("");
     List<String> chunks = new ArrayList<String>();
     List<PathParam> parameterPatterns = new ArrayList<PathParam>();
-    QualifiedName paramName = null;
+    String paramName = null;
     boolean lastSegment = false;
   }
 
   public Route append(
       String path,
       final RouteKind kind,
-      final Map<QualifiedName, PathParam.Builder> params) throws NullPointerException {
+      final Map<String, PathParam.Builder> params) throws NullPointerException {
     if (path == null) {
       throw new NullPointerException("No null route path accepted");
     }
@@ -870,7 +869,7 @@ public class Route {
 
       public void exprIdent(CharSequence s, int from, int to) {
         String parameterName = s.subSequence(from, to).toString();
-        datas.peekLast().paramName = QualifiedName.parse(parameterName);
+        datas.peekLast().paramName = parameterName;
       }
 
       public void exprClose() {

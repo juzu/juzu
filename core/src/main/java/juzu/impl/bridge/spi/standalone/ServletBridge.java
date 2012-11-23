@@ -27,7 +27,6 @@ import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.JSON;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QN;
-import juzu.impl.common.QualifiedName;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -272,7 +271,7 @@ public class ServletBridge extends HttpServlet {
                     parameters.put(entry.getKey(), entry.getValue().clone());
                   }
                   for (Map.Entry<PathParam, String> entry : match.getMatched().entrySet()) {
-                    parameters.put(entry.getKey().getName().getName(), new String[]{entry.getValue()});
+                    parameters.put(entry.getKey().getName(), new String[]{entry.getValue()});
                   }
                 }
                 break;
@@ -304,7 +303,7 @@ public class ServletBridge extends HttpServlet {
             resp.sendError(404);
             return;
           } else {
-            Map<QualifiedName, String> empty = Collections.emptyMap();
+            Map<String, String> empty = Collections.emptyMap();
             RouteMatch match = defaultHandler.root.matches(empty);
             if (match != null) {
               StringBuilder sb = new StringBuilder();

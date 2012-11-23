@@ -19,7 +19,6 @@
 
 package juzu.impl.router;
 
-import juzu.impl.common.QualifiedName;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -36,7 +35,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
     Route r = router.append("/");
 
     //
-    assertEquals("/", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/", r.matches(Collections.<String, String>emptyMap()).render());
   }
 
   @Test
@@ -45,7 +44,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
     Route r = router.append("");
 
     //
-    assertEquals("/", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/", r.matches(Collections.<String, String>emptyMap()).render());
   }
 
   @Test
@@ -54,7 +53,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
     Route r = router.append("/a");
 
     //
-    assertEquals("/a", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/a", r.matches(Collections.<String, String>emptyMap()).render());
   }
 
   @Test
@@ -63,7 +62,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
     Route r = router.append("/a/b");
 
     //
-    assertEquals("/a/b", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/a/b", r.matches(Collections.<String, String>emptyMap()).render());
   }
 
   @Test
@@ -73,7 +72,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
 
     //
     assertEquals("/a", r.matches(Collections.singletonMap(Names.P, "a")).render());
-    assertNull(r.matches(Collections.<QualifiedName, String>emptyMap()));
+    assertNull(r.matches(Collections.<String, String>emptyMap()));
   }
 
   @Test
@@ -93,7 +92,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
     Route b = router.append("/{p}/b", Collections.singletonMap(Names.P, PathParam.matching("a")));
 
     //
-    assertEquals("/a", a.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/a", a.matches(Collections.<String, String>emptyMap()).render());
     assertEquals("/a/b", b.matches(Collections.singletonMap(Names.P, "a")).render());
   }
 

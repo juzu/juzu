@@ -19,7 +19,6 @@
 
 package juzu.impl.router;
 
-import juzu.impl.common.QualifiedName;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -48,7 +47,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
   public void setUp() throws Exception {
     this.router = new RouterAssert();
 
-    Map<QualifiedName, PathParam.Builder> params = Collections.singletonMap(Names.GTN_PATH, PathParam.matching(".*").preservePath(true));
+    Map<String, PathParam.Builder> params = Collections.singletonMap(Names.GTN_PATH, PathParam.matching(".*").preservePath(true));
 
     portal = router.append("/private/{gtn:sitetype}/{gtn:sitename}{gtn:path}", params);
     group = router.append("/groups/{gtn:sitetype}/{gtn:sitename}{gtn:path}", params);
@@ -57,7 +56,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testComponent() throws Exception {
-    Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
+    Map<String, String> expectedParameters = new HashMap<String, String>();
     expectedParameters.put(Names.GTN_SITENAME, "classic");
     expectedParameters.put(Names.GTN_SITETYPE, "portal");
     expectedParameters.put(Names.GTN_PATH, "/");
@@ -69,7 +68,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testPrivateClassic() throws Exception {
-    Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
+    Map<String, String> expectedParameters = new HashMap<String, String>();
     expectedParameters.put(Names.GTN_SITENAME, "classic");
     expectedParameters.put(Names.GTN_SITETYPE, "portal");
     expectedParameters.put(Names.GTN_PATH, "");
@@ -81,7 +80,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testPrivateClassicSlash() throws Exception {
-    Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
+    Map<String, String> expectedParameters = new HashMap<String, String>();
     expectedParameters.put(Names.GTN_SITENAME, "classic");
     expectedParameters.put(Names.GTN_SITETYPE, "portal");
     expectedParameters.put(Names.GTN_PATH, "/");
@@ -93,7 +92,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testPrivateClassicHome() throws Exception {
-    Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
+    Map<String, String> expectedParameters = new HashMap<String, String>();
     expectedParameters.put(Names.GTN_SITENAME, "classic");
     expectedParameters.put(Names.GTN_SITETYPE, "portal");
     expectedParameters.put(Names.GTN_PATH, "/home");
@@ -105,7 +104,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
 
   @Test
   public void testSiteType() throws Exception {
-    Map<QualifiedName, String> expectedParameters = new HashMap<QualifiedName, String>();
+    Map<String, String> expectedParameters = new HashMap<String, String>();
     expectedParameters.put(Names.GTN_SITETYPE, "group");
     expectedParameters.put(Names.GTN_SITENAME, "platform");
     expectedParameters.put(Names.GTN_PATH, "/administration/registry");
@@ -114,7 +113,7 @@ public class PortalConfigurationTestCase extends AbstractControllerTestCase {
     router.assertRoute(portal, expectedParameters, "/private/group/platform/administration/registry");
     assertEquals("/private/group/platform/administration/registry", portal.matches(expectedParameters).render());
 
-    Map<QualifiedName, String> expectedParameters1 = new HashMap<QualifiedName, String>();
+    Map<String, String> expectedParameters1 = new HashMap<String, String>();
     expectedParameters1.put(Names.GTN_SITETYPE, "user");
     expectedParameters1.put(Names.GTN_SITENAME, "root");
     expectedParameters1.put(Names.GTN_PATH, "/tab_0");

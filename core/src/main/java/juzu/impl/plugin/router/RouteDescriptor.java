@@ -20,7 +20,6 @@
 package juzu.impl.plugin.router;
 
 import juzu.impl.common.JSON;
-import juzu.impl.common.QualifiedName;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
@@ -121,11 +120,11 @@ public class RouteDescriptor extends Descriptor {
   public void popupate(Route parent, Map<RouteDescriptor, Route> ret) {
 
     //
-    Map<QualifiedName, PathParam.Builder> parameters;
+    Map<String, PathParam.Builder> parameters;
     if (this.parameters != null && this.parameters.size() > 0) {
-      parameters = new HashMap<QualifiedName, PathParam.Builder>(this.parameters.size());
+      parameters = new HashMap<String, PathParam.Builder>(this.parameters.size());
       for (Map.Entry<String, String> parameter : this.parameters.entrySet()) {
-        parameters.put(QualifiedName.create(parameter.getKey()), PathParam.matching(parameter.getValue()));
+        parameters.put(parameter.getKey(), PathParam.matching(parameter.getValue()));
       }
     } else {
       parameters = Collections.emptyMap();

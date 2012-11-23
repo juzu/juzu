@@ -26,7 +26,6 @@ import juzu.Response;
 import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.QualifiedName;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
@@ -260,13 +259,13 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
 
     //
     if (route != null) {
-      Map<QualifiedName, String> params;
+      Map<String, String> params;
       if (parameters.isEmpty()) {
         params = Collections.emptyMap();
       } else {
-        params = new HashMap<QualifiedName, String>(parameters.size());
+        params = new HashMap<String, String>(parameters.size());
         for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
-          params.put(QualifiedName.create(entry.getKey()), entry.getValue()[0]);
+          params.put(entry.getKey(), entry.getValue()[0]);
         }
       }
 
@@ -308,10 +307,10 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
 
             URIWriter writer = new URIWriter(appendable, mimeType);
             match.render(writer);
-            for (Map.Entry<QualifiedName, String> entry : match.getUnmatched().entrySet()) {
-              String[] values = parameters.get(entry.getKey().getValue());
+            for (Map.Entry<String, String> entry : match.getUnmatched().entrySet()) {
+              String[] values = parameters.get(entry.getKey());
               for (String value : values) {
-                writer.appendQueryParameter(entry.getKey().getName(), value);
+                writer.appendQueryParameter(entry.getKey(), value);
               }
             }
           }
