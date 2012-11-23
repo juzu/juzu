@@ -26,16 +26,4 @@ import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
-
-  public static WebArchive createDeployment(String applicationName) {
-    return createServletDeployment(applicationName);
-  }
-
-  public static WebArchive createDeployment(String applicationName, boolean asDefault) {
-    return createServletDeployment(applicationName, asDefault);
-  }
-
-  public static WebArchive createDeployment(String pkgName, String applicationName) {
-    return createServletDeployment(pkgName, applicationName, false);
-  }
 }

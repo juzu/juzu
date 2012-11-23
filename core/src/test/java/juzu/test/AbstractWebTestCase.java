@@ -71,32 +71,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public static WebArchive createServletDeployment(String applicationName) {
-    return createServletDeployment(applicationName, false);
-  }
-
-  public static WebArchive createServletDeployment(String applicationName, boolean asDefault) {
-    return createServletDeployment(applicationName, applicationName, asDefault);
-  }
-
-  public static WebArchive createServletDeployment(String packageName, String applicationName, boolean asDefault) {
-
-    //
-    QN applicationQN = QN.parse(applicationName);
-    QN packageQN = QN.parse(packageName);
-
-    // Create war
-    final WebArchive war = createDeployment(packageQN);
-
-    // Descriptor
-    URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
-    war.setWebXML(descriptor);
-
-    // Set application name (maybe remove that)
-    AbstractWebTestCase.applicationName = applicationQN;
-    AbstractWebTestCase.asDefault = asDefault;
-
-    //
-    return war;
+    return createServletDeployment(false, applicationName);
   }
 
   public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {

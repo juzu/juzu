@@ -33,7 +33,7 @@ public class RouteOverloadViewTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.overload.view");
+    return createServletDeployment("bridge.servlet.route.overload.view");
   }
 
   @Drone

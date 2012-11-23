@@ -21,14 +21,9 @@ package juzu.test.protocol.portlet;
 
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
 public abstract class AbstractPortletTestCase extends AbstractWebTestCase {
-
-  public static WebArchive createDeployment(String pkgName) {
-    return createPortletDeployment(pkgName);
-  }
 }

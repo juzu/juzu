@@ -33,7 +33,7 @@ public class RouteSelectionPatternAndPattern1TestCase extends AbstractStandalone
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.selection.patternandpattern1");
+    return createServletDeployment("bridge.servlet.route.selection.patternandpattern1");
   }
 
   @Drone

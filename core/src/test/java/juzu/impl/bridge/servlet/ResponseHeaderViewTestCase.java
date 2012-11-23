@@ -35,7 +35,7 @@ public class ResponseHeaderViewTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.response.header.view");
+    return createServletDeployment("bridge.servlet.response.header.view");
   }
 
   @Drone

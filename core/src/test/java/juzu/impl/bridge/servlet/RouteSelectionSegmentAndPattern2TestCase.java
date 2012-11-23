@@ -33,7 +33,7 @@ public class RouteSelectionSegmentAndPattern2TestCase extends AbstractStandalone
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.selection.segmentandpattern2");
+    return createServletDeployment("bridge.servlet.route.selection.segmentandpattern2");
   }
 
   @Drone

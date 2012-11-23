@@ -37,7 +37,7 @@ public class RenderTestCase extends AbstractPortletTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.portlet.render");
+    return createPortletDeployment("bridge.portlet.render");
   }
 
   @ArquillianResource

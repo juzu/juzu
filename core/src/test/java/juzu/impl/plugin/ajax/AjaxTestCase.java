@@ -38,7 +38,7 @@ public class AjaxTestCase extends AbstractStandaloneTestCase {
 
   @Deployment
   public static WebArchive createDeployment() {
-    WebArchive war = AbstractStandaloneTestCase.createDeployment("plugin.ajax");
+    WebArchive war = AbstractStandaloneTestCase.createServletDeployment("plugin.ajax");
     URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
     URL test = HttpServletImpl.class.getResource("test.js");
     URL stylesheet = HttpServletImpl.class.getResource("main.css");
