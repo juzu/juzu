@@ -25,9 +25,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import juzu.impl.common.QN;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
-import juzu.impl.fs.spi.disk.DiskFileSystem;
-import juzu.impl.fs.spi.ram.RAMFileSystem;
-import juzu.impl.fs.spi.ram.RAMPath;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.test.protocol.portlet.AbstractPortletTestCase;
 import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.junit.Arquillian;
@@ -38,6 +36,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -131,41 +130,36 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   private static WebArchive createDeployment(QN pkgName) {
 
     // Compile classes
-    DiskFileSystem sourcePath = diskFS(pkgName);
-    RAMFileSystem sourceOutput = new RAMFileSystem();
-    RAMFileSystem classOutput = new RAMFileSystem();
-    CompilerAssert<File, RAMPath> compiler = new CompilerAssert<File, RAMPath>(
-        false,
-        sourcePath,
-        sourceOutput,
-        classOutput);
+    CompilerAssert<File, File> compiler = compiler(false, pkgName, null);
     compiler.assertCompile();
+
+    ReadWriteFileSystem<File> classOutput = compiler.getClassOutput();
 
     // Create war
     final WebArchive war = ShrinkWrap.create(WebArchive.class, "juzu.war");
 
     // Add output to war
     try {
-      classOutput.traverse(new Visitor.Default<RAMPath>() {
+      classOutput.traverse(new Visitor.Default<File>() {
 
         LinkedList<String> path = new LinkedList<String>();
 
         @Override
-        public void enterDir(RAMPath dir, String name) throws IOException {
+        public void enterDir(File dir, String name) throws IOException {
           path.addLast(name.isEmpty() ? "classes" : name);
         }
 
         @Override
-        public void leaveDir(RAMPath dir, String name) throws IOException {
+        public void leaveDir(File dir, String name) throws IOException {
           path.removeLast();
         }
 
         @Override
-        public void file(RAMPath file, String name) throws IOException {
+        public void file(File file, String name) throws IOException {
           path.addLast(name);
           String target = Tools.join('/', path);
           path.removeLast();
-          war.addAsWebInfResource(new ByteArrayAsset(file.getContent().getInputStream()), target);
+          war.addAsWebInfResource(new ByteArrayAsset(new FileInputStream(file)), target);
         }
       });
     }

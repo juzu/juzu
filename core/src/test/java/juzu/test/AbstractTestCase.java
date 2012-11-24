@@ -151,9 +151,13 @@ public abstract class AbstractTestCase extends Assert {
   }
 
   private CompilerAssert<File, File> compiler(boolean incremental, String... packageName) {
-    DiskFileSystem input = diskFS(packageName);
+    String s = name.getMethodName();
+    return compiler(incremental, QN.create(packageName), s);
 
-    if (packageName.length == 0) {
+  }
+
+  public static CompilerAssert<File, File> compiler(boolean incremental, QN packageName, String discriminant) {
+    if (packageName.isEmpty()) {
       throw failure("Cannot compile empty package");
     }
 
@@ -172,8 +176,11 @@ public abstract class AbstractTestCase extends Assert {
     }
 
     // Find
-    String s = name.getMethodName();
-    String pkg = Tools.join('.', packageName) + "#" + s;
+    String pkg = Tools.join('_', packageName);
+    if (discriminant != null && discriminant.length() > 0) {
+      pkg += "#" + discriminant;
+    }
+
     File f2 = new File(a, pkg);
     for (int count = 0;;count++) {
       if (!f2.exists()) {
@@ -200,6 +207,7 @@ public abstract class AbstractTestCase extends Assert {
     DiskFileSystem classOutput = new DiskFileSystem(classOutputDir);
 
     //
+    DiskFileSystem input = diskFS(packageName);
     File sourcePathDir = new File(f2, "source-path");
     assertTrue(sourcePathDir.mkdir());
     DiskFileSystem sourcePath = new DiskFileSystem(sourcePathDir);
