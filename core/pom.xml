@@ -226,6 +226,12 @@
             <compilerArgument>-proc:none</compilerArgument>
           </configuration>
         </plugin>
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <excludePackageNames>juzu.impl.*</excludePackageNames>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
