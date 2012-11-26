@@ -26,8 +26,6 @@ import juzu.impl.common.QN;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.test.protocol.portlet.AbstractPortletTestCase;
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -69,11 +67,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     return asDefault;
   }
 
-  public static WebArchive createServletDeployment(String applicationName) {
-    return createServletDeployment(false, applicationName);
-  }
-
-  public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
+  public static WebArchive createDeployment(boolean asDefault, String... applicationNames) {
 
     //
     QN[] applicationQNs = new QN[applicationNames.length];
@@ -84,47 +78,12 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
       packageQN = packageQN == null ? applicationQN : packageQN.getPrefix(applicationQN);
     }
 
-    // Create war
-    WebArchive war = createDeployment(packageQN);
-
-    // Descriptor
-    URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
-    war.setWebXML(descriptor);
-
     // Set application name (maybe remove that)
     AbstractWebTestCase.applicationName = applicationQNs.length > 0 ? applicationQNs[0] : null;
     AbstractWebTestCase.asDefault = asDefault;
 
     //
-    return war;
-  }
-
-  public static WebArchive createPortletDeployment(String packageName) {
-
-    //
-    QN packageQN = QN.parse(packageName);
-
-    // Create war
-    WebArchive war = createDeployment(packageQN);
-
-    // Descriptor
-    war.setWebXML(AbstractPortletTestCase.class.getResource("web.xml"));
-    war.addAsWebInfResource(AbstractPortletTestCase.class.getResource("portlet.xml"), "portlet.xml");
-
-    // Add libraries we need
-/*
-    war.addAsLibraries(DependencyResolvers.
-        use(MavenDependencyResolver.class).
-        loadEffectivePom("pom.xml")
-        .artifacts("javax.servlet:jstl", "taglibs:standard").
-            resolveAsFiles());
-*/
-
-    // Set application name (maybe remove that)
-    applicationName = packageQN;
-
-    //
-    return war;
+    return createDeployment(packageQN);
   }
 
   private static WebArchive createDeployment(QN pkgName) {

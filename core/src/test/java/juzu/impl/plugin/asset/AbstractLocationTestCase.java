@@ -36,7 +36,7 @@ import java.util.List;
 public abstract class AbstractLocationTestCase extends AbstractStandaloneTestCase {
 
   public static WebArchive createLocationDeployment(String applicationName) {
-    WebArchive war = AbstractStandaloneTestCase.createServletDeployment(applicationName);
+    WebArchive war = createServletDeployment(applicationName);
     URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
     URL test = HttpServletImpl.class.getResource("test.js");
     URL stylesheet = HttpServletImpl.class.getResource("main.css");

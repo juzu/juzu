@@ -31,7 +31,6 @@ import org.openqa.selenium.WebElement;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteOverloadActionAndViewTestCase extends AbstractStandaloneTestCase {

@@ -21,9 +21,31 @@ package juzu.test.protocol.portlet;
 
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
 public abstract class AbstractPortletTestCase extends AbstractWebTestCase {
+  public static WebArchive createPortletDeployment(String packageName) {
+
+    // Create war
+    WebArchive war = createDeployment(true, packageName);
+
+    // Descriptor
+    war.setWebXML(AbstractPortletTestCase.class.getResource("web.xml"));
+    war.addAsWebInfResource(AbstractPortletTestCase.class.getResource("portlet.xml"), "portlet.xml");
+
+    // Add libraries we need
+/*
+    war.addAsLibraries(DependencyResolvers.
+        use(MavenDependencyResolver.class).
+        loadEffectivePom("pom.xml")
+        .artifacts("javax.servlet:jstl", "taglibs:standard").
+            resolveAsFiles());
+*/
+
+    //
+    return war;
+  }
 }

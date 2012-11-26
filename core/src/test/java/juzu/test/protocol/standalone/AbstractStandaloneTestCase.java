@@ -26,4 +26,21 @@ import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
+
+  public static WebArchive createServletDeployment(String applicationName) {
+    return createServletDeployment(false, applicationName);
+  }
+
+  public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
+
+    // Create war
+    WebArchive war = createDeployment(asDefault, applicationNames);
+
+    // Descriptor
+    URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
+    war.setWebXML(descriptor);
+
+    //
+    return war;
+  }
 }
