@@ -37,9 +37,6 @@ public class BridgeConfig {
   public static final int DYNAMIC_MODE = 1;
 
   /** . */
-  public static final int PROVIDED_MODE = 2;
-
-  /** . */
   public static final String RUN_MODE = "juzu.run_mode";
 
   /** . */
@@ -95,8 +92,6 @@ public class BridgeConfig {
     int mode;
     if ("dev".equals(runMode)) {
       mode = DYNAMIC_MODE;
-    } else if ("provided".equals(runMode)) {
-      mode = PROVIDED_MODE;
     } else {
       mode = STATIC_MODE;
     }
