@@ -52,7 +52,7 @@ public class BridgeConfig {
   public static final Set<String> NAMES = Collections.unmodifiableSet(Tools.set(RUN_MODE, INJECT, APP_NAME));
 
   /** . */
-  public final int mode;
+  public final int runMode;
 
   /** . */
   public final QN name;
@@ -60,55 +60,54 @@ public class BridgeConfig {
   /** . */
   public final InjectImplementation injectImpl;
 
-  public BridgeConfig(int mode, QN name, InjectImplementation injectImpl) {
-    this.mode = mode;
+  public BridgeConfig(int runMode, QN name, InjectImplementation injectImpl) {
+    this.runMode = runMode;
     this.name = name;
     this.injectImpl = injectImpl;
   }
 
-  public BridgeConfig(Map<String, String> config) throws Exception {
+  public static QN getApplicationName(Map<String, String> config) {
+    String applicationName = config.get("juzu.app_name");
+    return applicationName != null ? QN.parse(applicationName) : null;
+  }
 
-    //
+  public static int getRunMode(Map<String, String> config) {
     String runMode = config.get("juzu.run_mode");
     runMode = runMode == null ? "prod" : runMode.trim().toLowerCase();
-
-    //
-    String inject = config.get("juzu.inject");
-    InjectImplementation injectImpl;
-    if (inject == null) {
-      injectImpl = InjectImplementation.CDI_WELD;
-    }
-    else {
-      inject = inject.trim().toLowerCase();
-      if ("weld".equals(inject)) {
-        injectImpl = InjectImplementation.CDI_WELD;
-      }
-      else if ("spring".equals(inject)) {
-        injectImpl = InjectImplementation.INJECT_SPRING;
-      }
-      else {
-        throw new Exception("unrecognized inject vendor " + inject);
-      }
-    }
-
-    //
     int mode;
     if ("dev".equals(runMode)) {
       mode = DYNAMIC_MODE;
     } else {
       mode = STATIC_MODE;
     }
+    return mode;
+  }
 
-    //
-    String appName = config.get("juzu.app_name");
+  public static InjectImplementation getInjectImplementation(Map<String, String> config) throws Exception {
+    String inject = config.get("juzu.inject");
+    InjectImplementation implementation;
+    if (inject == null) {
+      implementation = InjectImplementation.CDI_WELD;
+    } else {
+      inject = inject.trim().toLowerCase();
+      if ("weld".equals(inject)) {
+        implementation = InjectImplementation.CDI_WELD;
+      } else if ("spring".equals(inject)) {
+        implementation = InjectImplementation.INJECT_SPRING;
+      } else {
+        throw new Exception("unrecognized inject vendor " + inject);
+      }
+    }
+    return implementation;
+  }
 
-    //
-    this.name = appName != null ? QN.parse(appName) : null;
-    this.mode = mode;
-    this.injectImpl = injectImpl;
+  public BridgeConfig(Map<String, String> config) throws Exception {
+    this.name = getApplicationName(config);
+    this.runMode = getRunMode(config);
+    this.injectImpl = getInjectImplementation(config);
   }
 
   public boolean isProd() {
-    return mode == STATIC_MODE;
+    return runMode == STATIC_MODE;
   }
 }

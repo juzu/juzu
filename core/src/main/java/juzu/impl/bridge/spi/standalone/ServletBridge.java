@@ -24,6 +24,7 @@ import juzu.Response;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.common.DevClassLoader;
 import juzu.impl.common.JSON;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.QN;
@@ -36,6 +37,7 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.plugin.module.Module;
+import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ResourceResolver;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.RouteMatch;
@@ -79,9 +81,17 @@ public class ServletBridge extends HttpServlet {
   /** . */
   Handler defaultHandler;
 
-  protected ClassLoader getClassLoader() {
-    return Thread.currentThread().getContextClassLoader();
-  }
+  /** . */
+  ModuleLifeCycle moduleLifeCycle;
+
+  /** . */
+  AssetServer server;
+
+  /** . */
+  WarFileSystem resources;
+
+  /** . */
+  Logger log;
 
   @Override
   public void init() throws ServletException {
@@ -102,9 +112,6 @@ public class ServletBridge extends HttpServlet {
     };
 
     //
-    ClassLoader loader = getClassLoader();
-
-    //
     AssetServer server = (AssetServer)config.getServletContext().getAttribute("asset.server");
     if (server == null) {
       server = new AssetServer();
@@ -114,95 +121,35 @@ public class ServletBridge extends HttpServlet {
     //
     String srcPath = config.getInitParameter("juzu.src_path");
     ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getServletContext(), "/WEB-INF/src/");
-    WarFileSystem classes = WarFileSystem.create(config.getServletContext(), "/WEB-INF/classes/");
     WarFileSystem resources = WarFileSystem.create(config.getServletContext(), "/WEB-INF/");
 
     //
-    Module module;
-    URL cfg = loader.getResource("juzu/config.json");
-    try {
-      String s = Tools.read(cfg);
-      JSON json = (JSON)JSON.parse(s);
-      module = new Module(loader, json);
-    }
-    catch (Exception e) {
-      throw new ServletException(e);
-    }
-
-    //
-    ApplicationModuleDescriptor desc = (ApplicationModuleDescriptor)module.getDescriptors().get("application");
-
-    //
-    Map<String, Bridge> applications = new HashMap<String, Bridge>();
-    for (final QN name : desc.getNames()) {
-
-      //
-      BridgeConfig bridgeConfig;
-      try {
-        bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
-          @Override
-          protected Iterator<String> keys() {
-            return BridgeConfig.NAMES.iterator();
-          }
-
-          @Override
-          public String get(Object key) {
-            if (BridgeConfig.APP_NAME.equals(key)) {
-              return name.toString();
-            } else if (BridgeConfig.NAMES.contains(key)) {
-              return config.getInitParameter((String)key);
-            } else {
-              return null;
-            }
-          }
-        });
+    int runMode = BridgeConfig.getRunMode(new SimpleMap<String, String>() {
+      @Override
+      protected Iterator<String> keys() {
+        return Tools.iterator(BridgeConfig.RUN_MODE);
       }
-      catch (Exception e) {
-        throw wrap(e);
+      @Override
+      public String get(Object key) {
+        return key.equals(BridgeConfig.RUN_MODE) ? config.getInitParameter(BridgeConfig.RUN_MODE) : null;
       }
+    });
 
-      // Create and configure bridge
-      Bridge bridge = new Bridge();
-      bridge.config = bridgeConfig;
-      bridge.resources = resources;
-      bridge.server = server;
-      bridge.log = log;
-      bridge.sourcePath = sourcePath;
-      bridge.classes = classes;
-      bridge.resolver = new ResourceResolver() {
-        public URL resolve(String uri) {
-          try {
-            return config.getServletContext().getResource(uri);
-          }
-          catch (MalformedURLException e) {
-            return null;
-          }
-        }
-      };
-
-      //
-      applications.put(name.toString(), bridge);
+    // Build module
+    ModuleLifeCycle moduleLifeCycle;
+    switch (runMode) {
+      case BridgeConfig.DYNAMIC_MODE:
+        moduleLifeCycle = new ModuleLifeCycle.Dynamic(log, new DevClassLoader(Thread.currentThread().getContextClassLoader()), sourcePath);
+        break;
+      default:
+        moduleLifeCycle = new ModuleLifeCycle.Static(log, Thread.currentThread().getContextClassLoader(), WarFileSystem.create(config.getServletContext(), "/WEB-INF/classes/"));
     }
 
     //
-    String applicationName = getApplicationName(config);
-
-    // Build first mounted applications
-    LinkedHashMap<String, Handler> handlers = new LinkedHashMap<String, Handler>();
-    Handler defaultHandler = null;
-    Router root = new Router();
-    for (Map.Entry<String, Bridge> entry : applications.entrySet()) {
-      Handler handler = new Handler(root, entry.getValue());
-      if (entry.getKey().equals(applicationName)) {
-        defaultHandler = handler;
-      }
-      handlers.put(entry.getKey(), handler);
-    }
-
-    //
-    this.root = root;
-    this.handlers = new ArrayList<Handler>(handlers.values());
-    this.defaultHandler = defaultHandler;
+    this.moduleLifeCycle = moduleLifeCycle;
+    this.server = server;
+    this.resources = resources;
+    this.log = log;
   }
 
   static ServletException wrap(Throwable e) {
@@ -220,10 +167,117 @@ public class ServletBridge extends HttpServlet {
     return config.getInitParameter("juzu.app_name");
   }
 
+  private void refresh() throws ServletException {
+
+    //
+    try {
+      boolean stale = moduleLifeCycle.refresh();
+      if (stale) {
+        this.root = null;
+        this.handlers = null;
+        this.defaultHandler = null;
+      }
+    }
+    catch (Exception e) {
+      throw wrap(e);
+    }
+
+    //
+    if (root == null) {
+
+      // Create module
+      Module module;
+      try {
+        URL cfg = moduleLifeCycle.getClassLoader().getResource("juzu/config.json");
+        String s = Tools.read(cfg);
+        JSON json = (JSON)JSON.parse(s);
+        module = new Module(moduleLifeCycle.getClassLoader(), json);
+      }
+      catch (Exception e) {
+        throw wrap(e);
+      }
+
+      // Get application descriptor from module
+      ApplicationModuleDescriptor desc = (ApplicationModuleDescriptor)module.getDescriptors().get("application");
+
+      // Build all applications
+      Map<String, Bridge> applications = new HashMap<String, Bridge>();
+      for (final QN name : desc.getNames()) {
+        BridgeConfig bridgeConfig;
+        try {
+          bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
+            @Override
+            protected Iterator<String> keys() {
+              return BridgeConfig.NAMES.iterator();
+            }
+            @Override
+            public String get(Object key) {
+              if (BridgeConfig.APP_NAME.equals(key)) {
+                return name.toString();
+              } else if (BridgeConfig.NAMES.contains(key)) {
+                return getServletConfig().getInitParameter((String)key);
+              } else {
+                return null;
+              }
+            }
+          });
+        }
+        catch (Exception e) {
+          throw wrap(e);
+        }
+
+        //
+
+        // Create and configure bridge
+        Bridge bridge = new Bridge(moduleLifeCycle);
+        bridge.config = bridgeConfig;
+        bridge.resources = resources;
+        bridge.server = server;
+        bridge.log = log;
+        bridge.resolver = new ResourceResolver() {
+          public URL resolve(String uri) {
+            try {
+              return getServletConfig().getServletContext().getResource(uri);
+            }
+            catch (MalformedURLException e) {
+              return null;
+            }
+          }
+        };
+
+        //
+        applications.put(name.toString(), bridge);
+      }
+
+      //
+      String applicationName = getApplicationName(getServletConfig());
+
+      // Build first mounted applications
+      LinkedHashMap<String, Handler> handlers = new LinkedHashMap<String, Handler>();
+      Handler defaultHandler = null;
+      Router root = new Router();
+      for (Map.Entry<String, Bridge> entry : applications.entrySet()) {
+        Handler handler = new Handler(root, entry.getValue());
+        if (entry.getKey().equals(applicationName)) {
+          defaultHandler = handler;
+        }
+        handlers.put(entry.getKey(), handler);
+      }
+
+      //
+      this.root = root;
+      this.handlers = new ArrayList<Handler>(handlers.values());
+      this.defaultHandler = defaultHandler;
+    }
+  }
+
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+    //
+    refresh();
 
+    //
     Handler targetHandler = null;
     MethodDescriptor target = null;
     Map<String, String[]> parameters = Collections.emptyMap();

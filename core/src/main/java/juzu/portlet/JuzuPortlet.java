@@ -23,6 +23,7 @@ import juzu.PropertyType;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.common.DevClassLoader;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
@@ -32,6 +33,7 @@ import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ResourceResolver;
 
 import javax.portlet.ActionRequest;
@@ -132,13 +134,21 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
 
     //
-    Bridge bridge = new Bridge();
+    ModuleLifeCycle module;
+    switch (bridgeConfig.runMode) {
+      case BridgeConfig.DYNAMIC_MODE:
+        module = new ModuleLifeCycle.Dynamic(log, new DevClassLoader(Thread.currentThread().getContextClassLoader()), sourcePath);
+        break;
+      default:
+        module = new ModuleLifeCycle.Static(log, Thread.currentThread().getContextClassLoader(), WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/"));
+    }
+
+    //
+    Bridge bridge = new Bridge(module);
     bridge.config = bridgeConfig;
     bridge.resources = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/");
     bridge.server = server;
     bridge.log = log;
-    bridge.sourcePath = sourcePath;
-    bridge.classes = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/classes/");
     bridge.resolver = new ResourceResolver() {
       public URL resolve(String uri) {
         try {

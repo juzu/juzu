@@ -24,44 +24,33 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.common.FQN;
 import juzu.impl.common.NameLiteral;
 import juzu.impl.common.QN;
-import juzu.impl.compiler.CompilationException;
-import juzu.impl.compiler.Compiler;
-import juzu.impl.fs.Change;
-import juzu.impl.fs.FileSystemScanner;
-import juzu.impl.fs.Filter;
 import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;
-import juzu.impl.fs.spi.ram.RAMFileSystem;
-import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.spring.SpringBuilder;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ClassLoaderResolver;
 import juzu.impl.resource.ResourceResolver;
-import juzu.processor.MainProcessor;
 
 import javax.portlet.PortletException;
 import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collections;
-import java.util.Map;
 import java.util.jar.JarFile;
 
 /**
- * The application runtime.
+ * The application life cycle.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ApplicationRuntime<P, R> {
+public class ApplicationLifeCycle<P, R> {
 
   /** . */
   protected final Logger logger;
@@ -96,12 +85,12 @@ public abstract class ApplicationRuntime<P, R> {
   /** . */
   protected ResourceResolver resolver;
 
-  ApplicationRuntime(Logger logger) {
-    this.logger = logger;
-  }
+  /** . */
+  private final ModuleLifeCycle<R, P> module;
 
-  public Logger getLogger() {
-    return logger;
+  public ApplicationLifeCycle(Logger logger, ModuleLifeCycle<R, P> module) {
+    this.logger = logger;
+    this.module = module;
   }
 
   public QN getName() {
@@ -166,153 +155,38 @@ public abstract class ApplicationRuntime<P, R> {
     return descriptor;
   }
 
-  public abstract ClassLoader getClassLoader();
-
-  protected abstract ReadFileSystem<P> getClasses();
-
-  public abstract void start() throws Exception, CompilationException;
-
-  public static class Static<P, R> extends ApplicationRuntime<P, R> {
-
-    /** . */
-    private ReadFileSystem<P> classes;
-
-    /** . */
-    private ClassLoader classLoader;
-
-    public Static(Logger logger) {
-      super(logger);
-    }
-
-    public ReadFileSystem<P> getClasses() {
-      return classes;
-    }
-
-    public void setClasses(ReadFileSystem<P> classes) {
-      this.classes = classes;
-    }
-
-    @Override
-    public ClassLoader getClassLoader() {
-      return classLoader;
-    }
-
-    public void setClassLoader(ClassLoader cl) {
-      this.classLoader = cl;
-    }
-
-    @Override
-    public void start() throws Exception {
-      if (context == null) {
-        doBoot();
-      }
-    }
+  public ModuleLifeCycle<R, P> getModule() {
+    return module;
   }
 
-  public static class Dynamic<R, S> extends ApplicationRuntime<RAMPath, R> {
+  public boolean refresh() throws Exception {
+    boolean changed = getModule().refresh();
 
-    /** . */
-    private FileSystemScanner<S> devScanner;
-
-    /** . */
-    private ClassLoaderFileSystem classLoaderFS;
-
-    /** . */
-    private ReadFileSystem<RAMPath> classes;
-
-    /** . */
-    private ClassLoader classLoader;
-
-    /** . */
-    private ClassLoader baseClassLoader;
-
-    public Dynamic(Logger logger) {
-      super(logger);
-    }
-
-    public void init(ClassLoader baseClassLoader, ReadFileSystem<S> fss) throws Exception {
-      devScanner = FileSystemScanner.createTimestamped(fss);
-      devScanner.scan();
-      logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
-
-      //
-      this.baseClassLoader = baseClassLoader;
-      this.classLoaderFS = new ClassLoaderFileSystem(baseClassLoader);
-    }
-
-    public void init(ClassLoaderFileSystem baseClassPath, ReadFileSystem<S> fss) throws Exception {
-      devScanner = FileSystemScanner.createTimestamped(fss);
-      devScanner.scan();
-      logger.log("Dev mode scanner monitoring " + fss.getFile(fss.getRoot()));
-
-      //
-      this.baseClassLoader = baseClassPath.getClassLoader();
-      this.classLoaderFS = baseClassPath;
-    }
-
-    @Override
-    protected ReadFileSystem<RAMPath> getClasses() {
-      return classes;
-    }
-
-    public void start() throws Exception {
-      Map<String, Change> changes = devScanner.scan();
-      if (context != null) {
-        if (changes.size() > 0) {
-          logger.log("Detected changes : " + changes);
-          context = null;
-        }
-        else {
-          logger.log("No changes detected");
-        }
-      }
-
-      //
-      if (context == null) {
-        logger.log("Building application");
-
-        //
-        ReadFileSystem<S> sourcePath = devScanner.getFileSystem();
-
-        // Copy everything that is not a java source
-        RAMFileSystem classOutput = new RAMFileSystem();
-        sourcePath.copy(new Filter.Default() {
-          @Override
-          public boolean acceptFile(Object file, String name) throws IOException {
-            return !name.endsWith(".java");
-          }
-        }, classOutput);
-
-
-        //
-        Compiler compiler = Compiler.
-          builder().
-          sourcePath(sourcePath).
-          sourceOutput(classOutput).
-          classOutput(classOutput).
-          addClassPath(classLoaderFS).build();
-        compiler.addAnnotationProcessor(new MainProcessor());
-        compiler.compile();
-        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
-        this.classes = classOutput;
-        doBoot();
+    //
+    if (context != null) {
+      if (changed) {
+        context = null;
       }
     }
 
-    @Override
-    public ClassLoader getClassLoader() {
-      return classLoader;
+    //
+    if (context == null) {
+      logger.log("Building application");
+      doBoot();
+      return true;
+    } else {
+      return false;
     }
   }
 
   protected final void doBoot() throws Exception {
-    ReadFileSystem<P> classes = getClasses();
+    ReadFileSystem<P> classes = getModule().getClasses();
 
     //
     FQN fqn = new FQN(name, "Application");
 
     //
-    Class<?> clazz = getClassLoader().loadClass(fqn.toString());
+    Class<?> clazz = getModule().getClassLoader().loadClass(fqn.toString());
     ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
 
     // Find the juzu jar
@@ -335,7 +209,7 @@ public abstract class ApplicationRuntime<P, R> {
     InjectBuilder injectBuilder = injectImplementation.builder();
     injectBuilder.addFileSystem(classes);
     injectBuilder.addFileSystem(libs);
-    injectBuilder.setClassLoader(getClassLoader());
+    injectBuilder.setClassLoader(getModule().getClassLoader());
 
     //
     if (injectBuilder instanceof SpringBuilder) {
@@ -347,7 +221,7 @@ public abstract class ApplicationRuntime<P, R> {
     }
 
     // Bind the resolver
-    ClassLoaderResolver resolver = new ClassLoaderResolver(getClassLoader());
+    ClassLoaderResolver resolver = new ClassLoaderResolver(getModule().getClassLoader());
     injectBuilder.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.classpath")), resolver);
     injectBuilder.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.server")), this.resolver);
 

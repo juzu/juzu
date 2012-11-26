@@ -5,6 +5,14 @@
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.test.protocol.standalone.StandaloneServlet</servlet-class>
+    <init-param>
+      <param-name>juzu.run_mode</param-name>
+      <param-value>%s</param-value>
+    </init-param>
+    <init-param>
+      <param-name>juzu.src_path</param-name>
+      <param-value>%s</param-value>
+    </init-param>
   </servlet>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>

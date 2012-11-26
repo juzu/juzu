@@ -17,54 +17,56 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.portlet;
+package juzu.impl.bridge.servlet;
 
-import juzu.impl.common.Tools;
 import juzu.test.JavaFile;
-import juzu.test.protocol.portlet.AbstractPortletTestCase;
+import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.net.URL;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LiveModeTestCase extends AbstractPortletTestCase {
+public class LiveModeTestCase extends AbstractStandaloneTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createPortletDeployment(true, "bridge.portlet.render");
+    return createServletDeployment(true, false, "bridge.servlet.render");
   }
-
-  @ArquillianResource
-  URL deploymentURL;
 
   @Drone
   WebDriver driver;
 
   @Test
-  public void testChange() throws Exception {
-    URL url = deploymentURL.toURI().resolve("embed/StandalonePortlet").toURL();
-    driver.get(url.toString());
-    WebElement body = driver.findElement(By.tagName("body"));
-    assertEquals(1, Tools.count(body.getText(), "pass"));
+  public void testRender() throws Exception {
+    driver.get(applicationURL().toString());
+    WebElement trigger = driver.findElement(By.id("trigger"));
+    trigger.click();
+    String ok = driver.findElement(By.tagName("body")).getText();
+    assertEquals("ok", ok);
 
     //
-    JavaFile pkgFile = getCompiler().assertJavaFile("bridge", "portlet", "render", "A.java");
-    pkgFile.assertSave(pkgFile.assertContent().replace("pass", "pass2"));
-    driver.get(url.toString());
-    body = driver.findElement(By.tagName("body"));
-    assertEquals(1, Tools.count(body.getText(), "pass2"));
+    JavaFile pkgFile = getCompiler().assertJavaFile("bridge", "servlet", "render", "A.java");
+    pkgFile.assertSave(pkgFile.assertContent().replace("ok", "OK"));
 
     //
-    pkgFile.assertSave(pkgFile.assertContent().replace("pass2", "pass3"));
-    driver.get(url.toString());
-    body = driver.findElement(By.tagName("body"));
-    assertEquals(1, Tools.count(body.getText(), "pass3"));
+    driver.get(applicationURL().toString());
+    trigger = driver.findElement(By.id("trigger"));
+    trigger.click();
+    ok = driver.findElement(By.tagName("body")).getText();
+    assertEquals("OK", ok);
+
+    //
+    pkgFile.assertSave(pkgFile.assertContent().replace("OK", "Ok"));
+
+    //
+    driver.get(applicationURL().toString());
+    trigger = driver.findElement(By.id("trigger"));
+    trigger.click();
+    ok = driver.findElement(By.tagName("body")).getText();
+    assertEquals("Ok", ok);
   }
 }

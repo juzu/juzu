@@ -19,9 +19,12 @@
 
 package juzu.test.protocol.standalone;
 
+import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
+import java.io.IOException;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -32,13 +35,40 @@ public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
   }
 
   public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
+    return createServletDeployment(false, asDefault, applicationNames);
+  }
+
+  public static WebArchive createServletDeployment(boolean incremental, boolean asDefault, String... applicationNames) {
 
     // Create war
     WebArchive war = createDeployment(asDefault, applicationNames);
 
+    //
+    String runModeValue;
+    String sourcePath;
+    try {
+      runModeValue = incremental ? "dev" : "prod";
+      sourcePath = incremental ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
+    }
+    catch (IOException e) {
+      throw failure("Could not read obtain source path", e);
+    }
+
     // Descriptor
-    URL descriptor = AbstractStandaloneTestCase.class.getResource("web.xml");
-    war.setWebXML(descriptor);
+    String servlet;
+    try {
+      servlet = Tools.read(AbstractStandaloneTestCase.class.getResourceAsStream("web.xml"));
+    }
+    catch (IOException e) {
+      throw failure("Could not read portlet xml deployment descriptor", e);
+    }
+    servlet = String.format(
+        servlet,
+        runModeValue,
+        sourcePath);
+
+    // Descriptor
+    war.setWebXML(new StringAsset(servlet));
 
     //
     return war;
