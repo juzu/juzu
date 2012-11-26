@@ -104,6 +104,8 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
         public String get(Object key) {
           if (BridgeConfig.APP_NAME.equals(key)) {
             return getApplicationName(config);
+          } else if (BridgeConfig.RUN_MODE.equals(key)) {
+            return getRunMode(config);
           } else if (BridgeConfig.NAMES.contains(key)) {
             return config.getInitParameter((String)key);
           } else {
@@ -126,7 +128,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     }
 
     //
-    String srcPath = config.getInitParameter("juzu.src_path");
+    String srcPath = config.getInitParameter(BridgeConfig.SOURCE_PATH);
     ReadFileSystem<?> sourcePath = srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(config.getPortletContext(), "/WEB-INF/src/");
 
     //
@@ -162,7 +164,18 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
    * @return the application name
    */
   protected String getApplicationName(PortletConfig config) {
-    return config.getInitParameter("juzu.app_name");
+    return config.getInitParameter(BridgeConfig.APP_NAME);
+  }
+
+  /**
+   * Returns the run mode to use using the <code>juzu.run_mode</code> init parameter of the portlet deployment
+   * descriptor. Subclass can override it to provide their own run mode.
+   *
+   * @param config the portlet config
+   * @return the run mode
+   */
+  protected String getRunMode(PortletConfig config) {
+    return config.getInitParameter(BridgeConfig.RUN_MODE);
   }
 
   private void rethrow(Throwable e) throws PortletException, IOException {

@@ -49,6 +49,9 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   /** . */
   private static boolean asDefault;
 
+  /** . */
+  private static CompilerAssert<File, File> compiler;
+
   /**
    * Returns the currently deployed application name.
    *
@@ -67,7 +70,20 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     return asDefault;
   }
 
+  /**
+   * Returns the compiler for the currently deployed web application.
+   *
+   * @return the compiler
+   */
+  public static CompilerAssert<File, File> getCompiler() {
+    return compiler;
+  }
+
   public static WebArchive createDeployment(boolean asDefault, String... applicationNames) {
+    return createDeployment(asDefault, false, applicationNames);
+  }
+
+  public static WebArchive createDeployment(boolean asDefault, boolean incremental, String... applicationNames) {
 
     //
     QN[] applicationQNs = new QN[applicationNames.length];
@@ -78,20 +94,11 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
       packageQN = packageQN == null ? applicationQN : packageQN.getPrefix(applicationQN);
     }
 
-    // Set application name (maybe remove that)
-    AbstractWebTestCase.applicationName = applicationQNs.length > 0 ? applicationQNs[0] : null;
-    AbstractWebTestCase.asDefault = asDefault;
-
-    //
-    return createDeployment(packageQN);
-  }
-
-  private static WebArchive createDeployment(QN pkgName) {
-
     // Compile classes
-    CompilerAssert<File, File> compiler = compiler(false, pkgName, null);
+    CompilerAssert<File, File> compiler = compiler(incremental, packageQN, null);
     compiler.assertCompile();
 
+    //
     ReadWriteFileSystem<File> classOutput = compiler.getClassOutput();
 
     // Create war
@@ -101,6 +108,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     try {
       classOutput.traverse(new Visitor.Default<File>() {
 
+        /** . */
         LinkedList<String> path = new LinkedList<String>();
 
         @Override
@@ -125,6 +133,11 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     catch (IOException e) {
       throw failure(e);
     }
+
+    // Set static state that we may need later
+    AbstractWebTestCase.applicationName = applicationQNs.length > 0 ? applicationQNs[0] : null;
+    AbstractWebTestCase.asDefault = asDefault;
+    AbstractWebTestCase.compiler = compiler;
 
     //
     return war;

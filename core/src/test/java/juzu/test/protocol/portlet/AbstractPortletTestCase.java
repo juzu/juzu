@@ -19,22 +19,60 @@
 
 package juzu.test.protocol.portlet;
 
+import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Formatter;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
 public abstract class AbstractPortletTestCase extends AbstractWebTestCase {
-  public static WebArchive createPortletDeployment(String packageName) {
 
-    // Create war
-    WebArchive war = createDeployment(true, packageName);
+  public static WebArchive createPortletDeployment(String packageName) {
+    return createPortletDeployment(false, packageName);
+  }
+
+  public static WebArchive createPortletDeployment(boolean incremental, String packageName) {
+
+    //
+    WebArchive war = createDeployment(true, incremental, packageName);
+
+    //
+    String runModeValue;
+    String sourcePath;
+    try {
+      runModeValue = incremental ? "dev" : "prod";
+      sourcePath = incremental ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
+    }
+    catch (IOException e) {
+      throw failure("Could not read obtain source path", e);
+    }
 
     // Descriptor
+    String portlet;
+    try {
+      portlet = Tools.read(AbstractPortletTestCase.class.getResourceAsStream("portlet.xml"));
+    }
+    catch (IOException e) {
+      throw failure("Could not read portlet xml deployment descriptor", e);
+    }
+    portlet = String.format(
+        portlet,
+        "weld",
+        runModeValue,
+        sourcePath);
+
+    //
     war.setWebXML(AbstractPortletTestCase.class.getResource("web.xml"));
-    war.addAsWebInfResource(AbstractPortletTestCase.class.getResource("portlet.xml"), "portlet.xml");
+    war.addAsWebInfResource(new StringAsset(portlet), "portlet.xml");
 
     // Add libraries we need
 /*

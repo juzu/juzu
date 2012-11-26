@@ -62,6 +62,16 @@ public class JavaFile<I> {
     return cu;
   }
 
+  public String assertContent() {
+    try {
+      Content content = sourcePath.getContent(path);
+      return content.getCharSequence().toString();
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
+
   public ClassOrInterfaceDeclaration assertDeclaration() {
     List<TypeDeclaration> decls = assertCompilationUnit().getTypes();
     AbstractTestCase.assertEquals(1, decls.size());
@@ -84,9 +94,12 @@ public class JavaFile<I> {
   }
 
   public void assertSave() {
+    assertSave(cu.toString());
+  }
+
+  public void assertSave(String content) {
     try {
-      String s = cu.toString();
-      sourcePath.setContent(path, new Content(0, s));
+      sourcePath.setContent(path, new Content(0, content));
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);

@@ -46,6 +46,9 @@ public class BridgeConfig {
   public static final String APP_NAME = "juzu.app_name";
 
   /** . */
+  public static final String SOURCE_PATH = "juzu.src_path";
+
+  /** . */
   public static final Set<String> NAMES = Collections.unmodifiableSet(Tools.set(RUN_MODE, INJECT, APP_NAME));
 
   /** . */

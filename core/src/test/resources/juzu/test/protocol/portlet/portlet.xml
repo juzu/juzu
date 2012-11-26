@@ -12,10 +12,15 @@
      <portlet-class>juzu.test.protocol.portlet.StandalonePortlet</portlet-class>
      <init-param>
        <name>juzu.inject</name>
-       <value>weld</value>
-       <!--
-       <value>spring</value>
-       -->
+       <value>%s</value>
+     </init-param>
+     <init-param>
+       <name>juzu.run_mode</name>
+       <value>%s</value>
+     </init-param>
+     <init-param>
+       <name>juzu.src_path</name>
+       <value>%s</value>
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
