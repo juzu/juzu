@@ -33,13 +33,13 @@ public class PortletPluginTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testClass() throws Exception {
-    MockApplication<?> app = application("plugin", "portlet", "base").init();
+    MockApplication<?> app = application("plugin.portlet.base").init();
     Class<?> portletClass = app.getContext().getClassLoader().loadClass("plugin.portlet.base.BasePortlet");
   }
 
   @Test
   public void testName() throws Exception {
-    MockApplication<?> app = application("plugin", "portlet", "name").init();
+    MockApplication<?> app = application("plugin.portlet.name").init();
     Class<?> portletClass = app.getContext().getClassLoader().loadClass("plugin.portlet.name.Foo");
   }
 }

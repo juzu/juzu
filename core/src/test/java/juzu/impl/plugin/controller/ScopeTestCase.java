@@ -40,7 +40,7 @@ public class ScopeTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRequestScope() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "scope", "request").init();
+    MockApplication<?> app = application("plugin.controller.scope.request").init();
 
     //
     MockClient client = app.client();
@@ -87,7 +87,7 @@ public class ScopeTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testFlashScope() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "scope", "flash").init();
+    MockApplication<?> app = application("plugin.controller.scope.flash").init();
 
     //
     MockClient client = app.client();
@@ -127,7 +127,7 @@ public class ScopeTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testSessionScope() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "scope", "session").init();
+    MockApplication<?> app = application("plugin.controller.scope.session").init();
 
     //
     MockClient client = app.client();

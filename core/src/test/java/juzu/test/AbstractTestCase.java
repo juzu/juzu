@@ -130,7 +130,7 @@ public abstract class AbstractTestCase extends Assert {
     return new DiskFileSystem(root, packageName);
   }
 
-  public static DiskFileSystem diskFS(String... packageName) {
+  public static DiskFileSystem diskFS(String packageName) {
     File root = new File(System.getProperty("test.resources"));
     return new DiskFileSystem(root, packageName);
   }
@@ -142,17 +142,17 @@ public abstract class AbstractTestCase extends Assert {
     return name.getMethodName();
   }
 
-  public final CompilerAssert<File, File> compiler(String... packageName) {
+  public final CompilerAssert<File, File> compiler(String packageName) {
     return compiler(false, packageName);
   }
 
-  public final CompilerAssert<File, File> incrementalCompiler(String... packageName) {
+  public final CompilerAssert<File, File> incrementalCompiler(String packageName) {
     return compiler(true, packageName);
   }
 
-  private CompilerAssert<File, File> compiler(boolean incremental, String... packageName) {
+  private CompilerAssert<File, File> compiler(boolean incremental, String packageName) {
     String s = name.getMethodName();
-    return compiler(incremental, QN.create(packageName), s);
+    return compiler(incremental, QN.parse(packageName), s);
 
   }
 
@@ -222,7 +222,7 @@ public abstract class AbstractTestCase extends Assert {
     return new CompilerAssert<File, File>(incremental, sourcePath, sourceOutput, classOutput);
   }
 
-  public MockApplication<?> application(InjectImplementation injectImplementation, String... packageName) {
+  public MockApplication<?> application(InjectImplementation injectImplementation, String packageName) {
     CompilerAssert<File, File> helper = compiler(packageName);
     helper.assertCompile();
     return helper.application(injectImplementation, QN.create(packageName));

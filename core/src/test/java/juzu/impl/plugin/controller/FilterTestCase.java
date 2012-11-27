@@ -38,7 +38,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
   public void testLifeCycle() throws Exception {
     Registry.unset("request.filter.lifecycle");
 
-    MockApplication<?> app = application("plugin", "controller", "filter", "lifecycle").init();
+    MockApplication<?> app = application("plugin.controller.filter.lifecycle").init();
 
     //
     app.getContext().getLifecycles();
@@ -52,7 +52,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testFailure() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "filter", "failure").init();
+    MockApplication<?> app = application("plugin.controller.filter.failure").init();
 
     //
     MockClient client = app.client();

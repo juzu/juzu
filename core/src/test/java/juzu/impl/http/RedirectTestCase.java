@@ -36,7 +36,7 @@ public class RedirectTestCase extends AbstractHttpTestCase {
 
   @Test
   public void testRedirect() throws Exception {
-    assertDeploy("http", "redirect");
+    assertDeploy("http.redirect");
     driver.get(deploymentURL.toString());
     String actionURL = driver.findElement(By.tagName("body")).getText();
     assertTrue(actionURL.length() > 0);

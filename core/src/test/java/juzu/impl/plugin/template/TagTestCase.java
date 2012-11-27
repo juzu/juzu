@@ -46,7 +46,7 @@ public class TagTestCase extends AbstractInjectTestCase {
   }
 
   public void _testSimple() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "tag", "simple").init();
+    MockApplication<?> app = application("plugin.template.tag.simple").init();
     app.init();
 
     //
@@ -58,7 +58,7 @@ public class TagTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testDecorate() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "tag", "decorate").init();
+    MockApplication<?> app = application("plugin.template.tag.decorate").init();
 
     //
     MockClient client = app.client();
@@ -69,7 +69,7 @@ public class TagTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testInclude() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "tag", "include").init();
+    MockApplication<?> app = application("plugin.template.tag.include").init();
 
     //
     MockClient client = app.client();
@@ -80,7 +80,7 @@ public class TagTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testTitle() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "tag", "title").init();
+    MockApplication<?> app = application("plugin.template.tag.title").init();
 
     //
     MockClient client = app.client();
@@ -94,7 +94,7 @@ public class TagTestCase extends AbstractInjectTestCase {
   @Test
   public void testParam() throws Exception {
     if (getDI() != InjectImplementation.INJECT_GUICE) {
-      MockApplication<?> app = application("plugin", "template", "tag", "param").init();
+      MockApplication<?> app = application("plugin.template.tag.param").init();
 
       //
       MockClient client = app.client();
@@ -106,7 +106,7 @@ public class TagTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRecompileTemplate() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "tag", "decorate").init();
+    MockApplication<?> app = application("plugin.template.tag.decorate").init();
 
     // Manufacture a template
     // to be removed later when we improve this

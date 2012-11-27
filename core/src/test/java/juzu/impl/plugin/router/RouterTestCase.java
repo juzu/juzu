@@ -36,7 +36,7 @@ public class RouterTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testDeclaration() throws Exception {
-    MockApplication<?> application = application("plugin", "router", "declaration").init();
+    MockApplication<?> application = application("plugin.router.declaration").init();
 
     //
     ApplicationDescriptor descriptor = application.getContext().getDescriptor();

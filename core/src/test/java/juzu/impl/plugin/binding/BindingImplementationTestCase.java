@@ -39,7 +39,7 @@ public class BindingImplementationTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotAssignable() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "implementation", "notassignable");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.implementation.notassignable");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -50,7 +50,7 @@ public class BindingImplementationTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "implementation", "notclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.implementation.notclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -61,7 +61,7 @@ public class BindingImplementationTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testAbstractClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "implementation", "abstractclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.implementation.abstractclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -72,7 +72,7 @@ public class BindingImplementationTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testCreate() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "implementation", "create").init();
+    MockApplication<?> app = application("plugin.binding.implementation.create").init();
 
     //
     MockClient client = app.client();

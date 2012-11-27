@@ -36,7 +36,7 @@ public class ResourceTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotFound() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "resource", "notfound").init();
+    MockApplication<?> app = application("plugin.controller.resource.notfound").init();
 
     //
     MockClient client = app.client();
@@ -47,7 +47,7 @@ public class ResourceTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testBinary() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "resource", "binary").init();
+    MockApplication<?> app = application("plugin.controller.resource.binary").init();
 
     //
     MockClient client = app.client();

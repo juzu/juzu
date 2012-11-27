@@ -37,7 +37,7 @@ public class URLTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testSimple() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "url", "simple");
+    MockApplication<?> app = application("plugin.controller.url.simple");
     app.init();
 
     //
@@ -49,7 +49,7 @@ public class URLTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testEscapeXML() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "url", "escapexml");
+    MockApplication<?> app = application("plugin.controller.url.escapexml");
     app.init();
 
     //
@@ -61,7 +61,7 @@ public class URLTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testInvalidProperty() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "url", "invalidproperty");
+    MockApplication<?> app = application("plugin.controller.url.invalidproperty");
     app.init();
 
     //

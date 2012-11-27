@@ -40,7 +40,7 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNoPublicCtor() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "provider", "factory", "nopublicctor");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.nopublicctor");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -51,7 +51,7 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNoZeroCtor() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "provider", "factory", "nozeroargctor");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.nozeroargctor");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -62,7 +62,7 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testAbstractClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "provider", "factory", "abstractclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.abstractclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -73,7 +73,7 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotPublicClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "provider", "factory", "notpublicclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.notpublicclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -84,7 +84,7 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "provider", "factory", "notclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.notclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -95,7 +95,7 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testCreate() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "provider", "factory", "create").init();
+    MockApplication<?> app = application("plugin.binding.provider.factory.create").init();
 
     //
     MockClient client = app.client();
@@ -105,7 +105,7 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testGetProviderThrowable() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "provider", "factory", "throwable");
+    MockApplication<?> app = application("plugin.binding.provider.factory.throwable");
 
     //
     try {

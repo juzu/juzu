@@ -38,7 +38,7 @@ public class BinaryTestCase extends AbstractHttpTestCase {
 
   @Test
   public void testBinary() throws Exception {
-    assertDeploy("http", "binary");
+    assertDeploy("http.binary");
     driver.get(deploymentURL.toString());
     String url = driver.findElement(By.tagName("body")).getText();
     URLConnection conn = new URL(url).openConnection();

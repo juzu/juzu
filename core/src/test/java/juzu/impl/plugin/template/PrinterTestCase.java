@@ -35,7 +35,7 @@ public class PrinterTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testImplicit() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "printer").init();
+    MockApplication<?> app = application("plugin.template.printer").init();
 
     //
     MockClient client = app.client();

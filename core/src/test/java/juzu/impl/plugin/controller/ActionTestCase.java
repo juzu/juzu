@@ -38,7 +38,7 @@ public class ActionTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNoOp() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "noop").init();
+    MockApplication<?> app = application("plugin.controller.action.noop").init();
 
     //
     MockClient client = app.client();
@@ -49,7 +49,7 @@ public class ActionTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRedirect() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "redirect").init();
+    MockApplication<?> app = application("plugin.controller.action.redirect").init();
 
     //
     MockClient client = app.client();
@@ -60,7 +60,7 @@ public class ActionTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRender() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "render").init();
+    MockApplication<?> app = application("plugin.controller.action.render").init();
 
     //
     MockClient client = app.client();

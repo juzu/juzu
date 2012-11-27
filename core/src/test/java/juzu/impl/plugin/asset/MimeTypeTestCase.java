@@ -35,7 +35,7 @@ public class MimeTypeTestCase extends AbstractHttpTestCase {
 
   @Test
   public void testSatisfied() throws Exception {
-    assertDeploy("plugin", "asset", "mimetype");
+    assertDeploy("plugin.asset.mimetype");
 
     //
     UserAgent ua = assertInitialPage();

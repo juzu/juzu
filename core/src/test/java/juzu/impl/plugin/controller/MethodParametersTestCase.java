@@ -38,7 +38,7 @@ public class MethodParametersTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testStringArray() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "method", "parameters", "string", "array").init();
+    MockApplication<?> app = application("plugin.controller.method.parameters.string.array").init();
 
     //
     MockClient client = app.client();
@@ -66,7 +66,7 @@ public class MethodParametersTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testStringList() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "method", "parameters", "string", "list").init();
+    MockApplication<?> app = application("plugin.controller.method.parameters.string.list").init();
 
     //
     MockClient client = app.client();
@@ -94,7 +94,7 @@ public class MethodParametersTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testBean() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "method", "parameters", "bean").init();
+    MockApplication<?> app = application("plugin.controller.method.parameters.bean").init();
 
     //
     MockClient client = app.client();

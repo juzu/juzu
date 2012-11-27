@@ -203,7 +203,7 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public void assertRemove(String... names) {
+  public void assertRemove(String names) {
     try {
       I path = strategy.sourcePath.getPath(names);
       if (path == null) {

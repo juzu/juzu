@@ -35,7 +35,7 @@ public class ELTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResolveBean() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "el").init();
+    MockApplication<?> app = application("plugin.template.el").init();
 
     //
     MockClient client = app.client();

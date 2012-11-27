@@ -36,7 +36,7 @@ public class RequestContextTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testInjection() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "context").init();
+    MockApplication<?> app = application("plugin.controller.context").init();
 
     //
     MockClient client = app.client();

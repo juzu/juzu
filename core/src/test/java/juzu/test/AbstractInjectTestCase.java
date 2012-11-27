@@ -52,7 +52,7 @@ public abstract class AbstractInjectTestCase extends AbstractTestCase {
     return di;
   }
 
-  public MockApplication<?> application(String... packageName) {
+  public MockApplication<?> application(String packageName) {
     return application(di, packageName);
   }
 }

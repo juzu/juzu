@@ -39,7 +39,7 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testCreate() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "create").init();
+    MockApplication<?> app = application("plugin.binding.create").init();
 
     //
     MockClient client = app.client();
@@ -49,7 +49,7 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testAbstractClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "abstractclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.abstractclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -60,7 +60,7 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "notclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.notclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -71,7 +71,7 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testScope() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "scope").init();
+    MockApplication<?> app = application("plugin.binding.scope").init();
 
     //
     MockClient client = app.client();

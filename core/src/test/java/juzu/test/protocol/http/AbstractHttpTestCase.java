@@ -82,7 +82,7 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
     app.getRuntime().shutdown();
   }
 
-  public final MockApplication<?> assertDeploy(String... packageName) {
+  public final MockApplication<?> assertDeploy(String packageName) {
     try {
       return application = application(InjectImplementation.CDI_WELD, packageName);
     }

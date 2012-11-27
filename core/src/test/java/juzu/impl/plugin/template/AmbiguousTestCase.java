@@ -39,9 +39,9 @@ public class AmbiguousTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResolveBean() throws Exception {
-    CompilerAssert<File, File> helper = compiler("plugin", "template", "ambiguous");
+    CompilerAssert<File, File> helper = compiler("plugin.template.ambiguous");
     helper.assertCompile();
-    MockApplication<?> app = helper.application(di, QN.create("plugin", "template", "ambiguous", "app1")).init();
+    MockApplication<?> app = helper.application(di, QN.parse("plugin.template.ambiguous.app1")).init();
 
     //
     MockClient client = app.client();

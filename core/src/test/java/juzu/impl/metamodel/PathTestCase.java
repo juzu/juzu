@@ -36,12 +36,12 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testBuild() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.path");
     helper.assertCompile();
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -60,7 +60,7 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testChangeValue() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.path");
     helper.assertCompile();
 
     //
@@ -73,7 +73,7 @@ public class PathTestCase extends AbstractTestCase {
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -92,7 +92,7 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.path");
     helper.assertCompile();
 
     //
@@ -102,7 +102,7 @@ public class PathTestCase extends AbstractTestCase {
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -118,7 +118,7 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testPathRemoveApplication() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.path");
     helper.assertCompile();
 
     //
@@ -127,7 +127,7 @@ public class PathTestCase extends AbstractTestCase {
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json().
@@ -141,13 +141,13 @@ public class PathTestCase extends AbstractTestCase {
 
   @Test
   public void testRefactorApplication() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "path");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.path");
     helper.assertCompile();
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 

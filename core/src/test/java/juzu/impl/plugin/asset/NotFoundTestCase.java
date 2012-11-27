@@ -33,7 +33,7 @@ public class NotFoundTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testSatisfied() throws Exception {
-    MockApplication<?> app  = application("plugin", "asset", "notfound");
+    MockApplication<?> app  = application("plugin.asset.notfound");
     try {
       app.init();
       fail();

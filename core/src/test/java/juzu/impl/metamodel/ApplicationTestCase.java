@@ -46,7 +46,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testAdd() throws Exception {
-    CompilerAssert<File, File> helper = compiler("metamodel", "application");
+    CompilerAssert<File, File> helper = compiler("metamodel.application");
     helper.assertCompile();
 
     //
@@ -71,7 +71,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testUpdate() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.application");
     helper.assertCompile();
 
     //
@@ -118,7 +118,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testRemove() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.application");
     helper.assertCompile();
 
     //
@@ -152,7 +152,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.application");
     helper.assertCompile();
 
     //

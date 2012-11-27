@@ -64,18 +64,18 @@ public class ParamTestCase extends AbstractTestCase {
 
   @Test
   public void testBuild() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "param");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.param");
     helper.assertCompile();
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
     assertEquals(expectedJSON, mm.toJSON());
   }
 
   @Test
   public void testParam() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "param");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.param");
     helper.assertCompile();
 
     // Remove @Param
@@ -100,7 +100,7 @@ public class ParamTestCase extends AbstractTestCase {
 
     // Check
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
     assertEquals(expectedJSON, mm.toJSON());
   }
 }

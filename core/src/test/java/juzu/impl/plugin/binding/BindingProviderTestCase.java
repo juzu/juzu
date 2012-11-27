@@ -39,7 +39,7 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testProvider() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "provider", "create").init();
+    MockApplication<?> app = application("plugin.binding.provider.create").init();
 
     //
     MockClient client = app.client();
@@ -49,7 +49,7 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotAssignable() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "provider", "notassignable");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.notassignable");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -60,7 +60,7 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "provider", "notclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.notclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -71,7 +71,7 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testAbstractClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "provider", "abstractclass");
+    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.abstractclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
@@ -82,7 +82,7 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testQualifiedProvider() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "provider", "qualified").init();
+    MockApplication<?> app = application("plugin.binding.provider.qualified").init();
 
     //
     MockClient client = app.client();

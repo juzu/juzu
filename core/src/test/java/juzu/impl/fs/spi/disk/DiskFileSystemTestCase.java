@@ -37,7 +37,7 @@ public class DiskFileSystemTestCase extends AbstractTestCase {
     assertNotNull(root.isDirectory());
 
     //
-    doTest(new DiskFileSystem(root, "compiler", "disk"), root);
+    doTest(new DiskFileSystem(root, "compiler.disk"), root);
   }
 
   private <P> void doTest(ReadFileSystem<P> fs, P root) throws IOException {

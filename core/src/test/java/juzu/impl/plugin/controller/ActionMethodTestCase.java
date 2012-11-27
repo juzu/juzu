@@ -36,7 +36,7 @@ public class ActionMethodTestCase extends AbstractTestCase {
 
   @Override
   public void setUp() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "method", "action");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.method.action");
     compiler.assertCompile();
     aClass = compiler.assertClass("plugin.controller.method.action.A");
     compiler.assertClass("plugin.controller.method.action.A_");

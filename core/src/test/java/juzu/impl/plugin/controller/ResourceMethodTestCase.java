@@ -36,7 +36,7 @@ public class ResourceMethodTestCase extends AbstractTestCase {
 
   @Override
   public void setUp() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "method", "resource");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.method.resource");
     compiler.assertCompile();
 
     //

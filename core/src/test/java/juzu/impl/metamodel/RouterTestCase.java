@@ -42,7 +42,7 @@ public class RouterTestCase extends AbstractTestCase {
 
   @Test
   public void testDuplicateMethodRoute() throws Exception {
-    CompilerAssert<File, File> helper = compiler("metamodel", "router", "duplicate", "methodroute").formalErrorReporting(true);
+    CompilerAssert<File, File> helper = compiler("metamodel.router.duplicate.methodroute").formalErrorReporting(true);
     List<CompilationError> errors =  helper.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
@@ -53,7 +53,7 @@ public class RouterTestCase extends AbstractTestCase {
 
   @Test
   public void testParamPattern() throws Exception {
-    CompilerAssert<File, File> helper = compiler("metamodel", "router", "param", "pattern").formalErrorReporting(true);
+    CompilerAssert<File, File> helper = compiler("metamodel.router.param.pattern").formalErrorReporting(true);
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;

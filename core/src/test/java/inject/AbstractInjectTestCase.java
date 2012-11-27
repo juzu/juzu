@@ -52,10 +52,10 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
   }
 
   protected final void init() throws Exception {
-    init(Tools.split(getClass().getPackage().getName(), '.'));
+    init(getClass().getPackage().getName());
   }
 
-  protected final void init(String... pkg) throws Exception {
+  protected final void init(String pkg) throws Exception {
     File root = new File(AbstractInjectTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
     assertTrue(root.exists());
     assertTrue(root.isDirectory());

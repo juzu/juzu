@@ -67,7 +67,7 @@ public class TemplateTestCase extends AbstractTestCase {
   }
 
   public void _testSimpleIncremental() throws Exception {
-    DiskFileSystem fs = diskFS("processor", "simple");
+    DiskFileSystem fs = diskFS("processor.simple");
 
     //
     RAMFileSystem sourcePath = new RAMFileSystem();
@@ -120,7 +120,7 @@ public class TemplateTestCase extends AbstractTestCase {
   }
 
   public void _testModifyTemplate() throws Exception {
-    DiskFileSystem fs = diskFS("processor", "simple");
+    DiskFileSystem fs = diskFS("processor.simple");
 
     //
     RAMFileSystem sourcePath = new RAMFileSystem();
@@ -169,7 +169,7 @@ public class TemplateTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveTemplate() throws Exception {
-    CompilerAssert<File, File> helper = compiler("metamodel", "template");
+    CompilerAssert<File, File> helper = compiler("metamodel.template");
     helper.assertCompile();
 
     //
@@ -181,7 +181,7 @@ public class TemplateTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = compiler("metamodel", "template");
+    CompilerAssert<File, File> helper = compiler("metamodel.template");
     helper.assertCompile();
 
     //

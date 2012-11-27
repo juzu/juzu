@@ -87,7 +87,7 @@ public class CompilationTestCase extends AbstractTestCase {
 
   @Test
   public void testBar() throws Exception {
-    CompilerAssert<File, File> helper = compiler("compiler", "disk");
+    CompilerAssert<File, File> helper = compiler("compiler.disk");
     helper.with((Provider<? extends Processor>)null);
     helper.assertCompile();
     assertEquals(1, helper.getClassOutput().size(ReadFileSystem.FILE));
@@ -95,7 +95,7 @@ public class CompilationTestCase extends AbstractTestCase {
 
   @Test
   public void testGetResourceFromProcessor() throws Exception {
-    DiskFileSystem input = diskFS("compiler", "getresource");
+    DiskFileSystem input = diskFS("compiler.getresource");
 
     //
     @javax.annotation.processing.SupportedAnnotationTypes({"*"})
@@ -217,7 +217,7 @@ public class CompilationTestCase extends AbstractTestCase {
 
   @Test
   public void testProcessor() throws Exception {
-    DiskFileSystem ramFS = diskFS("compiler", "processor");
+    DiskFileSystem ramFS = diskFS("compiler.processor");
     RAMFileSystem sourceOutput = new RAMFileSystem();
     RAMFileSystem classOutput = new RAMFileSystem();
     Compiler compiler = Compiler.builder().sourcePath(ramFS).sourceOutput(sourceOutput).classOutput(classOutput).build();
@@ -231,13 +231,13 @@ public class CompilationTestCase extends AbstractTestCase {
 
   @Test
   public void testCompilationFailure() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("compiler", "failure");
+    CompilerAssert<?, ?> compiler = compiler("compiler.failure");
     assertEquals(1, compiler.failCompile().size());
   }
 
   @Test
   public void testAnnotationException() throws Exception {
-    DiskFileSystem fs = diskFS("compiler", "annotationexception");
+    DiskFileSystem fs = diskFS("compiler.annotationexception");
 
     //
     Compiler compiler = Compiler.builder().sourcePath(fs).output(new RAMFileSystem()).build();
@@ -324,7 +324,7 @@ public class CompilationTestCase extends AbstractTestCase {
       }
     }
 
-    DiskFileSystem fs = diskFS("compiler", "errorcode");
+    DiskFileSystem fs = diskFS("compiler.errorcode");
     Compiler compiler = Compiler.
       builder().
       config(new CompilerConfig().withProcessorOption("juzu.error_reporting", "formal")).
@@ -433,7 +433,7 @@ public class CompilationTestCase extends AbstractTestCase {
   }
 
   private void testResource(StandardLocation location) throws IOException, CompilationException {
-    DiskFileSystem fs = diskFS("compiler", "missingresource");
+    DiskFileSystem fs = diskFS("compiler.missingresource");
     RAMFileSystem sourceOutput = new RAMFileSystem();
     RAMFileSystem classOutput = new RAMFileSystem();
     RAMFileSystem output;
@@ -474,7 +474,7 @@ public class CompilationTestCase extends AbstractTestCase {
   @Test
   public void testAnnotationState() {
     CaptureAnnotationProcessor processor = new CaptureAnnotationProcessor().with(StringArray.class);
-    compiler("compiler", "annotationstate", "multivalued").with(processor).assertCompile();
+    compiler("compiler.annotationstate.multivalued").with(processor).assertCompile();
 
     //
     AnnotationState m1 = processor.get(ElementHandle.Method.create("compiler.annotationstate.multivalued.A", "m1"), StringArray.class);

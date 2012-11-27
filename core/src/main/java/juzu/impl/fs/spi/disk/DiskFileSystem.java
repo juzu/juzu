@@ -66,12 +66,12 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
     this(root, new FilterImpl(root, path));
   }
 
-  public DiskFileSystem(final File root, final String... path) {
-    this(root, new FilterImpl(root, QN.create(path)));
+  public DiskFileSystem(final File root, final String path) {
+    this(root, new FilterImpl(root, QN.parse(path)));
   }
 
-  public void applyFilter(String... path) {
-    filter = new FilterImpl(root, QN.create(path));
+  public void applyFilter(String path) {
+    filter = new FilterImpl(root, QN.parse(path));
   }
 
   @Override

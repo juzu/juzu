@@ -42,7 +42,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testIndex() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "index").init();
+    MockApplication<?> app = application("plugin.controller.render.index").init();
 
     //
     MockClient client = app.client();
@@ -52,7 +52,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testParameterizedIndex() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "parameterizedindex").init();
+    MockApplication<?> app = application("plugin.controller.render.parameterizedindex").init();
 
     //
     MockClient client = app.client();
@@ -72,7 +72,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testOverridenIndex() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "overridenindex").init();
+    MockApplication<?> app = application("plugin.controller.render.overridenindex").init();
 
     //
     MockClient client = app.client();
@@ -92,7 +92,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResponse() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "response").init();
+    MockApplication<?> app = application("plugin.controller.render.response").init();
 
     MockClient client = app.client();
     MockRenderBridge render = client.render();
@@ -101,7 +101,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testUpdate() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "update").init();
+    MockApplication<?> app = application("plugin.controller.render.update").init();
 
     //
     MockClient client = app.client();

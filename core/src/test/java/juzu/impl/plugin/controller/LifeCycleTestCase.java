@@ -36,7 +36,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
   @Test
   public void testRenderPhase() throws Exception {
     if (getDI() == InjectImplementation.CDI_WELD) {
-      MockApplication<?> app = application("plugin", "controller", "lifecycle").init();
+      MockApplication<?> app = application("plugin.controller.lifecycle").init();
 
       //
       MockClient client = app.client();
