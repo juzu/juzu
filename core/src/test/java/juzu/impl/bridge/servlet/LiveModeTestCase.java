@@ -20,7 +20,7 @@
 package juzu.impl.bridge.servlet;
 
 import juzu.test.JavaFile;
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.protocol.servlet.AbstractServletTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -30,11 +30,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LiveModeTestCase extends AbstractStandaloneTestCase {
+public class LiveModeTestCase extends AbstractServletTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, false, "bridge.servlet.render");
+    return createServletDeployment(true, false, "bridge.servlet.livemode");
   }
 
   @Drone
@@ -49,7 +49,7 @@ public class LiveModeTestCase extends AbstractStandaloneTestCase {
     assertEquals("ok", ok);
 
     //
-    JavaFile pkgFile = getCompiler().assertJavaFile("bridge", "servlet", "render", "A.java");
+    JavaFile pkgFile = getCompiler().assertJavaFile("bridge", "servlet", "livemode", "A.java");
     pkgFile.assertSave(pkgFile.assertContent().replace("ok", "OK"));
 
     //

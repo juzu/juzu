@@ -49,7 +49,7 @@ public class LiveModeTestCase extends AbstractPortletTestCase {
 
   @Test
   public void testChange() throws Exception {
-    URL url = deploymentURL.toURI().resolve("embed/StandalonePortlet").toURL();
+    URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
     driver.get(url.toString());
     WebElement body = driver.findElement(By.tagName("body"));
     assertEquals(1, Tools.count(body.getText(), "pass"));

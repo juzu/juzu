@@ -20,7 +20,7 @@
 package juzu.impl.bridge.servlet;
 
 import juzu.impl.common.Tools;
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.protocol.servlet.AbstractServletTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -34,7 +34,7 @@ import java.net.URL;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseResourceTestCase extends AbstractStandaloneTestCase {
+public class ResponseResourceTestCase extends AbstractServletTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {

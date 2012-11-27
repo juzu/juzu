@@ -153,7 +153,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
    */
   public URL getPortletURL() {
     try {
-      return deploymentURL.toURI().resolve("embed/StandalonePortlet").toURL();
+      return deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
     }
     catch (Exception e) {
       throw failure(e);

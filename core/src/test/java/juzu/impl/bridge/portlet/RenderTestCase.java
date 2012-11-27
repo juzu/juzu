@@ -48,7 +48,7 @@ public class RenderTestCase extends AbstractPortletTestCase {
 
   @Test
   public void testFoo() throws Exception {
-    URL url = deploymentURL.toURI().resolve("embed/StandalonePortlet").toURL();
+    URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
     driver.get(url.toString());
     WebElement body = driver.findElement(By.tagName("body"));
     assertEquals(1, Tools.count(body.getText(), "pass"));

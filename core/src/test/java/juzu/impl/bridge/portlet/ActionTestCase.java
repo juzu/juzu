@@ -48,7 +48,7 @@ public class ActionTestCase extends AbstractPortletTestCase {
 
   @Test
   public void testFoo() throws Exception {
-    URL url = deploymentURL.toURI().resolve("embed/StandalonePortlet").toURL();
+    URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
     driver.get(url.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();

@@ -4,7 +4,7 @@
 <web-app>
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
-    <servlet-class>juzu.test.protocol.standalone.StandaloneServlet</servlet-class>
+    <servlet-class>juzu.test.protocol.servlet.JuzuServlet</servlet-class>
     <init-param>
       <param-name>juzu.run_mode</param-name>
       <param-value>%s</param-value>

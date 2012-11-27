@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.test.protocol.standalone;
+package juzu.test.protocol.servlet;
 
 import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
@@ -25,10 +25,9 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.io.IOException;
-import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
+public abstract class AbstractServletTestCase extends AbstractWebTestCase {
 
   public static WebArchive createServletDeployment(String applicationName) {
     return createServletDeployment(false, applicationName);
@@ -57,7 +56,7 @@ public abstract class AbstractStandaloneTestCase extends AbstractWebTestCase {
     // Descriptor
     String servlet;
     try {
-      servlet = Tools.read(AbstractStandaloneTestCase.class.getResourceAsStream("web.xml"));
+      servlet = Tools.read(AbstractServletTestCase.class.getResourceAsStream("web.xml"));
     }
     catch (IOException e) {
       throw failure("Could not read portlet xml deployment descriptor", e);

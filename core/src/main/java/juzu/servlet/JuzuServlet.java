@@ -17,17 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.test.protocol.standalone;
+package juzu.servlet;
 
-import juzu.impl.bridge.spi.standalone.ServletBridge;
-import juzu.test.AbstractWebTestCase;
-
-import javax.servlet.ServletConfig;
+import juzu.impl.bridge.spi.servlet.ServletBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class StandaloneServlet extends ServletBridge {
-  @Override
-  protected String getApplicationName(ServletConfig config) {
-    return AbstractWebTestCase.asDefault() ? AbstractWebTestCase.getApplicationName().toString() : null;
-  }
+public class JuzuServlet extends ServletBridge {
+
 }

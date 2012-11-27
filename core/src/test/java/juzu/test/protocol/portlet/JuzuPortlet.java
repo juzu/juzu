@@ -17,26 +17,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.standalone;
+package juzu.test.protocol.portlet;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.bridge.spi.MimeBridge;
-import juzu.impl.common.MethodHandle;
+import juzu.test.AbstractWebTestCase;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import javax.portlet.PortletConfig;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
+public class JuzuPortlet extends juzu.portlet.JuzuPortlet {
 
-  ServletMimeBridge(
-      ApplicationContext application,
-      Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      MethodHandle target,
-      Map<String, String[]> parameters) {
-    super(application, handler, req, resp, target, parameters);
+  @Override
+  protected String getApplicationName(PortletConfig config) {
+    return AbstractWebTestCase.getApplicationName().toString();
   }
 }
