@@ -180,7 +180,7 @@ public class RouteMetaModel implements Serializable {
       RouteMetaModel[] routes = children.toArray(new RouteMetaModel[children.size()]);
       Arrays.sort(routes, new Comparator<RouteMetaModel>() {
         public int compare(RouteMetaModel o1, RouteMetaModel o2) {
-          return - o1.priority.compareTo(o2.priority);
+          return o1.priority.compareTo(o2.priority);
         }
       });
       List<JSON> a = new LinkedList<JSON>();

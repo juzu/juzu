@@ -40,6 +40,7 @@ import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ResourceResolver;
 import juzu.impl.router.PathParam;
+import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.router.Router;
 import juzu.impl.common.URIWriter;
@@ -284,19 +285,14 @@ public class ServletBridge extends HttpServlet {
 
     //
     String path = req.getRequestURI().substring(req.getContextPath().length());
+    RouteMatch match;
     if (path != null) {
-
-      //
-      Iterator<RouteMatch> matches = root.matcher(path, Collections.<String, String[]>emptyMap());
-
-      //
-      while (matches.hasNext()) {
-        RouteMatch match = matches.next();
-        Map<Phase, MethodHandle> m = null;
+      match = root.route(path, Collections.<String, String[]>emptyMap());
+      if (match != null) {
         for (Handler handler : handlers) {
           if (handler.routes.contains(match.getRoute())) {
             targetHandler = handler;
-            m = handler.routeMap2.get(match.getRoute());
+            Map<Phase, MethodHandle> m = handler.routeMap2.get(match.getRoute());
             if (m != null) {
               Phase[] phases;
               if ("GET".equals(req.getMethod())) {
@@ -306,34 +302,32 @@ public class ServletBridge extends HttpServlet {
               } else {
                 throw new UnsupportedOperationException("handle me gracefully");
               }
-
-              //
-              MethodHandle handle = null;
               for (Phase phase : phases) {
-                handle = m.get(phase);
+                MethodHandle handle = m.get(phase);
                 if (handle != null) {
+                  target =  targetHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
+                  if (match.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
+                    parameters = new HashMap<String, String[]>();
+                    for (Map.Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
+                      parameters.put(entry.getKey(), entry.getValue().clone());
+                    }
+                    for (Map.Entry<PathParam, String> entry : match.getMatched().entrySet()) {
+                      parameters.put(entry.getKey().getName(), new String[]{entry.getValue()});
+                    }
+                  }
                   break;
                 }
-              }
-
-              //
-              if (handle != null) {
-                target =  targetHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
-                if (match.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
-                  parameters = new HashMap<String, String[]>();
-                  for (Map.Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
-                    parameters.put(entry.getKey(), entry.getValue().clone());
-                  }
-                  for (Map.Entry<PathParam, String> entry : match.getMatched().entrySet()) {
-                    parameters.put(entry.getKey().getName(), new String[]{entry.getValue()});
-                  }
-                }
-                break;
               }
             }
           }
         }
       }
+      if (targetHandler == null) {
+        targetHandler = defaultHandler;
+      }
+    } else {
+      targetHandler = defaultHandler;
+      match = null;
     }
 
     //
@@ -349,54 +343,58 @@ public class ServletBridge extends HttpServlet {
     if (dispatcher != null) {
       dispatcher.include(req, resp);
     } else {
-      if (target == null) {
 
-        //
-        if (targetHandler == null) {
-          if (defaultHandler == null) {
+      //
+      if (target == null) {
+        if (targetHandler != null) {
+          target = targetHandler.bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+          if (target != null) {
+            Route route = targetHandler.routeMap.get(target.getHandle());
+            if (route == null && match == null) {
+              route = targetHandler.root;
+            }
+            if (route != null) {
+              Map<String, String> empty = Collections.emptyMap();
+              match = route.matches(empty);
+              if (match != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(req.getScheme());
+                sb.append("://");
+                sb.append(req.getServerName());
+                int port = req.getServerPort();
+                if (port != 80) {
+                  sb.append(':').append(Integer.toString(port));
+                }
+                sb.append(req.getContextPath());
+                match.render(new URIWriter(sb));
+                resp.sendRedirect(sb.toString());
+                return;
+              } else {
+                // ?
+              }
+            } else {
+              //
+            }
+          } else {
             resp.sendError(404);
             return;
-          } else {
-            Map<String, String> empty = Collections.emptyMap();
-            RouteMatch match = defaultHandler.root.matches(empty);
-            if (match != null) {
-              StringBuilder sb = new StringBuilder();
-              sb.append(req.getScheme());
-              sb.append("://");
-              sb.append(req.getServerName());
-              int port = req.getServerPort();
-              if (port != 80) {
-                sb.append(':').append(Integer.toString(port));
-              }
-              sb.append(req.getContextPath());
-              match.render(new URIWriter(sb));
-              resp.sendRedirect(sb.toString());
-              return;
-            } else {
-              resp.sendError(404);
-              return;
-            }
           }
+        } else {
+          resp.sendError(404);
+          return;
         }
-
-        //
-        target = targetHandler.bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
       }
 
       //
       ServletRequestBridge requestBridge;
-      if (target != null) {
-        if (target.getPhase() == Phase.ACTION) {
-          requestBridge = new ServletActionBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
-        } else if (target.getPhase() == Phase.VIEW) {
-          requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
-        } else if (target.getPhase() == Phase.RESOURCE) {
-          requestBridge = new ServletResourceBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
-        } else {
-          throw new ServletException("Cannot decode phase");
-        }
+      if (target.getPhase() == Phase.ACTION) {
+        requestBridge = new ServletActionBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
+      } else if (target.getPhase() == Phase.VIEW) {
+        requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
+      } else if (target.getPhase() == Phase.RESOURCE) {
+        requestBridge = new ServletResourceBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
       } else {
-        requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, null, parameters);
+        throw new ServletException("Cannot decode phase");
       }
 
       //

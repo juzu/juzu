@@ -53,6 +53,7 @@ public class RouteModuleMountAsDefaultTestCase extends AbstractServletTestCase {
     assertEquals("/juzu/foo", url.getPath());
   }
 
+/*
   @Test
   public void testRenderIndex() throws Exception {
     URL url = deploymentURL.toURI().resolve("foo").toURL();
@@ -70,4 +71,5 @@ public class RouteModuleMountAsDefaultTestCase extends AbstractServletTestCase {
     assertEquals("bar", bar);
     assertEquals(url, new URL((String)Registry.get("url")));
   }
+*/
 }
