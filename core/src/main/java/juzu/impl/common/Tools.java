@@ -693,6 +693,13 @@ public class Tools {
     }
   }
 
+  public static <T extends Serializable> T clone(T value) throws IOException, ClassNotFoundException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    Tools.serialize(value, baos);
+    byte[] bytes = baos.toByteArray();
+    return (T)unserialize(Object.class, new ByteArrayInputStream(bytes));
+  }
+
   public static int unsignedByteToInt(byte b) {
     return (int)b & 0xFF;
   }

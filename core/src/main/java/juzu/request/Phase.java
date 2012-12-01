@@ -42,6 +42,23 @@ import java.util.Map;
  */
 public abstract class Phase implements Serializable {
 
+  /**
+   * Ensure singleton.
+   *
+   * @return the resolved object
+   */
+  protected final Object readResolve() {
+    if (this instanceof Action) {
+      return ACTION;
+    } else if (this instanceof View) {
+      return VIEW;
+    } else if (this instanceof Resource) {
+      return RESOURCE;
+    } else {
+      return this;
+    }
+  }
+
   public static final class Action extends Phase {
 
     public Action() {
