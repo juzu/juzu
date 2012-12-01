@@ -33,11 +33,11 @@ parameter value: Juzu use the declared method parameter name to match against th
 
 Any controller class (any class containing at least one controller method) generates a //companion// class during the
 compilation of the project. Such companion class extends the original controller class to provider companion methods
-for the controller method. The companion class has the same name than the original class appended with
-the //_// character:
+for the controller method. The companion class has the same name than the original class prefixed with
+the $ character:
 
 {{java}}
-public class Controller_ {
+public class $Controller {
   public static Dispatch index() { /* Generated code */ }
   public static Dispatch index(String person) { /* Generated code */ }
 }
@@ -49,12 +49,9 @@ the ##toString()## method is invoked. When parameters are provided they will be 
 
 {{java}}
 @View public Response.Content index() {
-  return Response.render("Hello word. <a href='" + Controller_.index("Juzu") + "'>Say hello to Juzu</a>";
+  return Response.render("Hello word. <a href='" + $Controller.index("Juzu") + "'>Say hello to Juzu</a>";
 }
 {{/java}}
-
-URL companion methods have the name of the originating method appended with the //URL// suffix. The method parameter
- types are the same.
 
 = Controller phases =
 
@@ -109,7 +106,7 @@ object that will tell Juzu to use the ##showUser## view controller during the ne
 @Action
 public Response.Update addUser(String userName, String password) {
   orgService.createUser(userName, password);
-  return Controller_.showUser(userName);
+  return $Controller.showUser(userName);
 }
 {{/java}}
 

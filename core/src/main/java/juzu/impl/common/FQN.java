@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
 public class FQN implements Serializable, Iterable<String> {
 
   /** . */
-  private final String name;
+  private final String value;
 
   /** . */
   private final QN packageName;
@@ -39,21 +39,21 @@ public class FQN implements Serializable, Iterable<String> {
     this(type.getName());
   }
 
-  public FQN(String name) {
+  public FQN(String value) {
     QN packageName;
     String simpleName;
-    int pos = name.lastIndexOf('.');
+    int pos = value.lastIndexOf('.');
     if (pos == -1) {
       packageName = QN.EMPTY;
-      simpleName = name;
+      simpleName = value;
     }
     else {
-      packageName = QN.parse(name.substring(0, pos));
-      simpleName = name.substring(pos + 1);
+      packageName = QN.parse(value.substring(0, pos));
+      simpleName = value.substring(pos + 1);
     }
 
     //
-    this.name = name;
+    this.value = value;
     this.packageName = packageName;
     this.simpleName = simpleName;
   }
@@ -69,11 +69,11 @@ public class FQN implements Serializable, Iterable<String> {
   public FQN(QN packageName, String simpleName) {
     this.packageName = packageName;
     this.simpleName = simpleName;
-    this.name = packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
+    this.value = packageName.isEmpty() ? simpleName : packageName + "." + simpleName;
   }
 
-  public String getName() {
-    return name;
+  public String getValue() {
+    return value;
   }
 
   public QN getPackageName() {
@@ -134,7 +134,7 @@ public class FQN implements Serializable, Iterable<String> {
 
   @Override
   public int hashCode() {
-    return name.hashCode();
+    return value.hashCode();
   }
 
   @Override
@@ -151,6 +151,6 @@ public class FQN implements Serializable, Iterable<String> {
 
   @Override
   public String toString() {
-    return name;
+    return value;
   }
 }

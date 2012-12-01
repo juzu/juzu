@@ -103,7 +103,7 @@ public class TemplateTestCase extends AbstractTestCase {
     //
     fs.copy(sourcePath);
     sourcePath.getPath("processor", "simple", "A.java").del();
-//      sourceOutput.getPath("processor", "simple", "A_.java").del();
+//      sourceOutput.getPath("processor", "simple", "$A.java").del();
     classOutput.getPath("processor", "simple", "A.class").del();
     helper = new CompilerAssert<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
 
@@ -116,7 +116,7 @@ public class TemplateTestCase extends AbstractTestCase {
 //      assertNotNull(classOutput.getPath("processor", "simple", "package-info.class"));
 //      assertNotNull(classOutput.getPath("processor", "simple", "SimpleApplication.class"));
 //      assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
-//      assertNotNull(classOutput.getPath("processor", "simple", "A_.class"));
+//      assertNotNull(classOutput.getPath("processor", "simple", "$A.class"));
   }
 
   public void _testModifyTemplate() throws Exception {
@@ -142,13 +142,13 @@ public class TemplateTestCase extends AbstractTestCase {
     assertNotNull(classOutput.getPath("processor", "simple", "package-info.class"));
     assertNotNull(classOutput.getPath("processor", "simple", "SimpleApplication.class"));
     assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
-    assertNotNull(classOutput.getPath("processor", "simple", "A_.class"));
+    assertNotNull(classOutput.getPath("processor", "simple", "$A.class"));
 
     // We force a regeneration of the template by removing the class A
     Content c1 = classOutput.getPath("processor", "simple", "templates", "index.groovy").getContent();
     sourcePath.getPath("processor", "simple", "templates", "index.gtmpl").update("foo");
     classOutput.getPath("processor", "simple", "A.class").del();
-    classOutput.getPath("processor", "simple", "A_.class").del();
+    classOutput.getPath("processor", "simple", "$A.class").del();
 
     //
     compiler = new CompilerAssert<RAMPath, RAMPath>(sourcePath, sourceOutput, classOutput);
@@ -160,7 +160,7 @@ public class TemplateTestCase extends AbstractTestCase {
     assertNotNull(classOutput.getPath("processor", "simple", "package-info.class"));
     assertNotNull(classOutput.getPath("processor", "simple", "SimpleApplication.class"));
     assertNotNull(classOutput.getPath("processor", "simple", "A.class"));
-    assertNotNull(classOutput.getPath("processor", "simple", "A_.class"));
+    assertNotNull(classOutput.getPath("processor", "simple", "$A.class"));
 
     //
     Content c2 = classOutput.getPath("processor", "simple", "templates", "index.groovy").getContent();

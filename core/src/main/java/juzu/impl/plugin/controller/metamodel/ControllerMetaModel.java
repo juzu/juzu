@@ -20,6 +20,7 @@
 package juzu.impl.plugin.controller.metamodel;
 
 import juzu.Param;
+import juzu.impl.common.FQN;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -67,9 +68,13 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
   /** . */
   final ElementHandle.Class handle;
 
+  /** . */
+  final FQN companionName;
+
   public ControllerMetaModel(ElementHandle.Class handle) {
     this.handle = handle;
     this.modified = false;
+    this.companionName = new FQN(handle.getFQN().getPackageName(), "$" + handle.getFQN().getSimpleName());
   }
 
   public Iterator<MethodMetaModel> iterator() {
@@ -81,6 +86,14 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
     json.set("handle", handle);
     json.map("methods", getMethods());
     return json;
+  }
+
+  public FQN getName() {
+    return handle.getFQN();
+  }
+
+  public FQN getCompanionName() {
+    return companionName;
   }
 
   public ControllersMetaModel getControllers() {

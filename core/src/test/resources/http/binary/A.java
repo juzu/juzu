@@ -30,7 +30,7 @@ public class A {
 
   @View
   public Response.Content index(String p) {
-    return Response.render("" + A_.resource());
+    return Response.render("" + $A.resource());
   }
 
   @Resource

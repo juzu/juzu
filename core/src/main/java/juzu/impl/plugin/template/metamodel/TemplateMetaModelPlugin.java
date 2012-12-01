@@ -160,7 +160,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
     for (Template template : metaModel.resolver.getTemplates()) {
       Path resolved = metaModel.resolve(template.getPath());
-      list.add(resolved.getFQN().getName());
+      list.add(resolved.getFQN().getValue());
     }
     config.map("templates", list);
     config.set("package", metaModel.getQN().toString());

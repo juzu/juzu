@@ -35,20 +35,20 @@ public class A extends Controller {
 
     // First check when it does not match the pattern
     try {
-      A_.foo("bar");
+      $A.foo("bar");
       throw AbstractTestCase.failure("Was expecting a failure");
     }
     catch (IllegalArgumentException ignore) {
     }
 
     //
-    return Response.render("<a id='trigger' href='" + A_.foo("juu") + "'>click</div>");
+    return Response.render("<a id='trigger' href='" + $A.foo("juu") + "'>click</div>");
   }
 
   @Action
   @Route("/foo/{juu}")
   public Response.Update foo(@Param(pattern = "juu") String juu) {
-    return A_.bar(juu);
+    return $A.bar(juu);
   }
 
   @View

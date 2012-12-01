@@ -31,13 +31,13 @@ public class A extends Controller {
 
   @View()
   public Response.Content index() {
-    return Response.render("" + A_.foo());
+    return Response.render("" + $A.foo());
   }
 
   @Action
   @Route("/foo")
   public Response.Update foo() {
-    return A_.bar().withHeader("juu", "juu_value").with(PropertyType.REDIRECT_AFTER_ACTION, false);
+    return $A.bar().withHeader("juu", "juu_value").with(PropertyType.REDIRECT_AFTER_ACTION, false);
   }
 
   @View

@@ -37,12 +37,12 @@ import juzu.impl.common.MimeType;
  *
  *       &#064;Action
  *       public Response.Update myAction(String param) {
- *          return MyController_.myRender();
+ *          return $MyController.myRender();
  *       }
  *
  *       &#064;View
  *       public void myRender() {
- *          String url = MyController_.myAction("hello");
+ *          String url = $MyController.myAction("hello");
  *       }
  *    }
  * </pre></code>

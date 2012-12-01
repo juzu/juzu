@@ -31,12 +31,12 @@ public class A extends Controller {
 
   @View
   public Response.Content index() throws IOException {
-    return Response.ok(A_.action().toString());
+    return Response.ok($A.action().toString());
   }
 
   @Action
   public Response.Update action() {
-    return A_.render("arg_value");
+    return $A.render("arg_value");
   }
 
   @View(id = "render")

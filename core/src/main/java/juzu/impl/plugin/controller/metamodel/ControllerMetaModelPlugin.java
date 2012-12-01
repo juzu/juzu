@@ -182,12 +182,12 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     // Build routes configuration
     ArrayList<String> controllers = new ArrayList<String>();
     for (ControllerMetaModel controller : ac) {
-      controllers.add(controller.getHandle().getFQN().getName() + "_");
+      controllers.add(controller.getCompanionName().getValue());
     }
 
     //
     JSON config = new JSON();
-    config.set("default", ac.defaultController != null ? ac.defaultController.getName() : null);
+    config.set("default", ac.defaultController != null ? ac.defaultController.getValue() : null);
     config.set("escapeXML", ac.escapeXML);
     config.map("controllers", controllers);
 
@@ -231,16 +231,15 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   private void emitController(ProcessingContext env, ControllerMetaModel controller) throws ProcessingException {
-    FQN fqn = controller.getHandle().getFQN();
     Element origin = env.get(controller.getHandle());
     Collection<MethodMetaModel> methods = controller.getMethods();
     Writer writer = null;
     try {
-      JavaFileObject file = env.createSourceFile(fqn.getName() + "_", origin);
+      JavaFileObject file = env.createSourceFile(controller.getCompanionName(), origin);
       writer = file.openWriter();
 
       //
-      writer.append("package ").append(fqn.getPackageName()).append(";\n");
+      writer.append("package ").append(controller.getCompanionName().getPackageName()).append(";\n");
 
       // Imports
       writer.append("import ").append(MethodDescriptor.class.getCanonicalName()).append(";\n");
@@ -255,7 +254,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       // Open class
       writer.append("@Generated(value={})\n");
-      writer.append("public class ").append(fqn.getSimpleName()).append("_ {\n");
+      writer.append("public class ").append(controller.getCompanionName().getSimpleName()).append(" {\n");
 
       //
       int index = 0;
@@ -276,8 +275,8 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
           writer.append("null,");
         }
         writer.append(PHASE).append(".").append(method.getPhase().name()).append(",");
-        writer.append(fqn.getName()).append(".class").append(",");
-        writer.append(TOOLS).append(".safeGetMethod(").append(fqn.getName()).append(".class,\"").append(method.getName()).append("\"");
+        writer.append(controller.getName().getValue()).append(".class").append(",");
+        writer.append(TOOLS).append(".safeGetMethod(").append(controller.getName().getValue()).append(".class,\"").append(method.getName()).append("\"");
         for (ParameterMetaModel param : method.getParameters()) {
           writer.append(",").append(param.declaredType).append(".class");
         }
@@ -335,7 +334,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       //
       writer.append("public static final ").append(CONTROLLER_DESCRIPTOR).append(" DESCRIPTOR = new ").append(CONTROLLER_DESCRIPTOR).append("(");
-      writer.append(fqn.getSimpleName()).append(".class,Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
+      writer.append(controller.getName().getSimpleName()).append(".class,Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
       for (int j = 0;j < methods.size();j++) {
         if (j > 0) {
           writer.append(',');
@@ -349,7 +348,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("}\n");
 
       //
-      env.log("Generated controller companion " + fqn.getName() + "_" + " as " + file.toUri());
+      env.log("Generated controller companion " + controller.getName().getValue() + "_" + " as " + file.toUri());
     }
     catch (IOException e) {
       throw ControllerMetaModel.CANNOT_WRITE_CONTROLLER_COMPANION.failure(e, origin, controller.getHandle().getFQN());

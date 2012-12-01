@@ -30,14 +30,14 @@ public class A extends Controller {
 
   @View
   public Response.Content index() {
-    Registry.set("url", "" + A_.index());
+    Registry.set("url", "" + $A.index());
     return Response.render("index");
   }
 
   @View
   @Route("/bar")
   public Response.Content bar() {
-    Registry.set("url", "" + A_.bar());
+    Registry.set("url", "" + $A.bar());
     return Response.render("bar");
   }
 }

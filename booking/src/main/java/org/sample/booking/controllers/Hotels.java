@@ -131,18 +131,18 @@ public class Hotels // extends Application
 
     // Errors or revise
     if (/*validation.hasErrors() || */revise != null) {
-      return Hotels_.book(id, booking);
+      return $Hotels.book(id, booking);
     }
     else if (confirm != null) {
       // Confirm
       booking.create();
       flash.setSuccess("Thank you, " + login.getUserName() + ", your confimation number for " + hotel.name
         + " is " + booking.id);
-      return Application_.index();
+      return $Application.index();
     }
     else {
       // Display booking
-      return Hotels_.confirmBooking(id, booking).with(PropertyType.REDIRECT_AFTER_ACTION, false);
+      return $Hotels.confirmBooking(id, booking).with(PropertyType.REDIRECT_AFTER_ACTION, false);
     }
   }
 
@@ -158,7 +158,7 @@ public class Hotels // extends Application
     Booking booking = Booking.find(id);
     booking.delete();
     flash.setSuccess("Booking cancelled for confirmation number " + id);
-    return Application_.index();
+    return $Application.index();
   }
 
   @View

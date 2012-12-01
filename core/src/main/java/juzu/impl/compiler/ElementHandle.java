@@ -35,7 +35,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -175,7 +174,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
     @Override
     protected TypeElement doGet(ProcessingEnvironment env) {
-      return env.getElementUtils().getTypeElement(fqn.getName());
+      return env.getElementUtils().getTypeElement(fqn.getValue());
     }
 
     @Override
@@ -267,7 +266,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
     @Override
     protected ExecutableElement doGet(ProcessingEnvironment env) {
-      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
+      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getValue());
       if (typeElt != null) {
         next:
         for (ExecutableElement executableElement : ElementFilter.methodsIn(typeElt.getEnclosedElements())) {
@@ -310,7 +309,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     }
 
     public MethodHandle getMethodHandle() {
-      return new MethodHandle(fqn.getName(), name, parameterTypes.toArray(new String[parameterTypes.size()]));
+      return new MethodHandle(fqn.getValue(), name, parameterTypes.toArray(new String[parameterTypes.size()]));
     }
 
     @Override
@@ -362,7 +361,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
     @Override
     protected VariableElement doGet(ProcessingEnvironment env) {
-      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
+      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getValue());
       if (typeElt != null) {
         for (VariableElement variableElt : ElementFilter.fieldsIn(typeElt.getEnclosedElements())) {
           if (variableElt.getSimpleName().contentEquals(name)) {

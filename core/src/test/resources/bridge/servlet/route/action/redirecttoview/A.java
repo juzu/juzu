@@ -32,7 +32,7 @@ public class A extends Controller {
   @View
   public Response.Content index() {
     return Response.render(
-        "<form id='form' action='" + A_.foo() + "' method='post'>" +
+        "<form id='form' action='" + $A.foo() + "' method='post'>" +
             "<input id='trigger' type='submit' name='click'/>" +
             "</form>");
   }
@@ -40,7 +40,7 @@ public class A extends Controller {
   @Action
   @Route("/foo")
   public Response.Update foo() {
-    return A_.bar("juu");
+    return $A.bar("juu");
   }
 
   @View

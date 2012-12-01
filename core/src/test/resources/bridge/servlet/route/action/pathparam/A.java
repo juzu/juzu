@@ -30,13 +30,13 @@ public class A extends Controller {
 
   @View
   public Response.Content index() {
-    return Response.render("<a id='trigger' href='" + A_.foo("bar") + "'>click</div>");
+    return Response.render("<a id='trigger' href='" + $A.foo("bar") + "'>click</div>");
   }
 
   @Action
   @Route("/foo/{juu}")
   public Response.Update foo(String juu) {
-    return A_.bar(juu);
+    return $A.bar(juu);
   }
 
   @View

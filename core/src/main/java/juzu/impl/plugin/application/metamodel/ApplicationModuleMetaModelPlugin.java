@@ -212,7 +212,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       writer.append("}\n");
 
       //
-      env.log("Generated application " + fqn.getName() + " as " + applicationFile.toUri());
+      env.log("Generated application " + fqn.getValue() + " as " + applicationFile.toUri());
     }
     catch (IOException e) {
       throw TemplateMetaModel.CANNOT_WRITE_APPLICATION.failure(e, elt, application.getName());

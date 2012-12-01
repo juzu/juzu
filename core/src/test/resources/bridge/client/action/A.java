@@ -61,8 +61,8 @@ public class A extends Controller {
   @Route("/index")
   public Response.Content index() {
     return Response.ok(
-        "<a id='action' href='" + A_.action() + "'>link</a>" +
-        "<a id='resource' href='" + A_.resource() + "'>link</a>"
+        "<a id='action' href='" + $A.action() + "'>link</a>" +
+        "<a id='resource' href='" + $A.resource() + "'>link</a>"
     );
   }
 }

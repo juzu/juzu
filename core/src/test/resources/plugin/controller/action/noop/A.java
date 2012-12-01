@@ -31,7 +31,7 @@ public class A extends Controller {
 
   @View
   public Response.Content index() throws IOException {
-    return Response.ok(A_.action().toString());
+    return Response.ok($A.action().toString());
   }
 
   @Action

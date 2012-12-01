@@ -32,7 +32,7 @@ public class A {
 
   @View
   public Response index() {
-    Dispatch builder = A_.index();
+    Dispatch builder = $A.index();
     try {
       builder.setProperty(new MyPropertyType(), "foo");
       return Response.render("fail");

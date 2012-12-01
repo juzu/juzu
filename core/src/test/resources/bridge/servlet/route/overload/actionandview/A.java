@@ -34,14 +34,14 @@ public class A extends Controller {
   @View
   public Response.Content index() {
     count = 0;
-    return Response.render("" + A_.fooAction());
+    return Response.render("" + $A.fooAction());
   }
 
   @Action
   @Route("/foo")
   public Response.Update fooAction() {
     count = 1;
-    return A_.fooView();
+    return $A.fooView();
   }
 
   @View

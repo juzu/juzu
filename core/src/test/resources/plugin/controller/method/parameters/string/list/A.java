@@ -33,22 +33,22 @@ public class A extends Controller {
 
   @View(id = "none")
   public Response.Content none() throws IOException {
-    return Response.ok(A_.mv(null).toString());
+    return Response.ok($A.mv(null).toString());
   }
 
   @View(id = "0")
   public Response.Content zero() throws IOException {
-    return Response.ok(A_.mv(Collections.emptyList()).toString());
+    return Response.ok($A.mv(Collections.emptyList()).toString());
   }
 
   @View(id = "1")
   public Response.Content one() throws IOException {
-    return Response.ok(A_.mv(Arrays.asList("bar")).toString());
+    return Response.ok($A.mv(Arrays.asList("bar")).toString());
   }
 
   @View(id = "2")
   public Response.Content two() throws IOException {
-    return Response.ok(A_.mv(Arrays.asList("bar_1", "bar_2")).toString());
+    return Response.ok($A.mv(Arrays.asList("bar_1", "bar_2")).toString());
   }
 
   @View

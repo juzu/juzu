@@ -29,18 +29,18 @@ public class A {
 
   @Action
   public Response.Update action() {
-    return A_.done("d");
+    return $A.done("d");
   }
 
   @View
   public Response.Content index() {
-    return Response.render(A_.action().toString());
+    return Response.render($A.action().toString());
   }
 
   @View
   public Response.Content done(String p) {
     if ("d".equals(p)) {
-      return Response.render(A_.resource().toString());
+      return Response.render($A.resource().toString());
     }
     else {
       return Response.render("<html><body>fail</body></html>");

@@ -64,6 +64,6 @@ public class Weather {
   @Action
   public Response add(String location) {
     locations.add(location);
-    return Weather_.index(location);
+    return $Weather.index(location);
   }
 }

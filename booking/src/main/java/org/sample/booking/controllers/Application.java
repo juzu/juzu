@@ -103,7 +103,7 @@ public class Application {
     User.create(user);
     login.setUserName(user.username);
     flash.setSuccess("Welcome, " + user.name);
-    return Application_.index();
+    return $Application.index();
   }
 
 
@@ -115,7 +115,7 @@ public class Application {
     if (user != null) {
       login.setUserName(user.username);
       flash.setSuccess("Welcome, " + user.name);
-      return Application_.index();
+      return $Application.index();
     }
     else {
       // Oops
@@ -129,6 +129,6 @@ public class Application {
   @Route("/logout")
   public Response logout() {
     login.setUserName(null);
-    return Application_.index();
+    return $Application.index();
   }
 }
