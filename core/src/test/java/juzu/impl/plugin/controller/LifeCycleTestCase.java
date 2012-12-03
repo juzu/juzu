@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.Registry;
 import juzu.test.protocol.mock.MockApplication;
@@ -29,13 +29,13 @@ import org.junit.Test;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LifeCycleTestCase extends AbstractInjectTestCase {
 
-  public LifeCycleTestCase(InjectImplementation di) {
+  public LifeCycleTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testRenderPhase() throws Exception {
-    if (getDI() == InjectImplementation.CDI_WELD) {
+    if (getDI() == InjectorProvider.CDI_WELD) {
       MockApplication<?> app = application("plugin.controller.lifecycle").init();
 
       //

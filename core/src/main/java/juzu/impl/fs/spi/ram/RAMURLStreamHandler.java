@@ -21,6 +21,7 @@ package juzu.impl.fs.spi.ram;
 
 import juzu.impl.common.Content;
 import juzu.impl.common.Spliterator;
+import juzu.impl.common.Timestamped;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,12 +41,13 @@ public class RAMURLStreamHandler extends URLStreamHandler {
   @Override
   protected URLConnection openConnection(URL u) throws IOException {
     Iterable<String> names = Spliterator.split(u.getPath().substring(1), '/');
-    RAMPath path = fs.getPath(names);
-    if (path instanceof RAMFile) {
-      Content content = ((RAMFile)path).getContent();
-      if (content != null) {
-        return new RAMURLConnection(u, content);
-      }
+    String[] path = fs.getPath(names);
+    Timestamped<Content> content = null;
+    if (path != null) {
+      content = fs.getContent(path);
+    }
+    if (content != null) {
+      return new RAMURLConnection(u, content);
     }
     throw new IOException("Could not connect to non existing content " + names);
   }

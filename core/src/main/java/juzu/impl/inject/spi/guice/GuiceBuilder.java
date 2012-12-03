@@ -22,7 +22,7 @@ package juzu.impl.inject.spi.guice;
 import juzu.Scope;
 import juzu.impl.common.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.inject.spi.InjectBuilder;
+import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectionContext;
 
 import javax.inject.Provider;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceBuilder extends InjectBuilder {
+public class GuiceBuilder extends Injector {
 
   /** . */
   final List<BeanBinding> bindings;
@@ -50,42 +50,42 @@ public class GuiceBuilder extends InjectBuilder {
   }
 
   @Override
-  public <T> InjectBuilder declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType) {
+  public <T> Injector declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType) {
     bindings.add(new BeanBinding.ToType<T>(type, beanScope, qualifiers, implementationType));
     return this;
   }
 
   @Override
-  public <T> InjectBuilder declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider) {
+  public <T> Injector declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider) {
     bindings.add(new BeanBinding.ToProviderType<T>(type, beanScope, qualifiers, provider));
     return this;
   }
 
   @Override
-  public <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs) {
+  public <P> Injector addFileSystem(ReadFileSystem<P> fs) {
     return this;
   }
 
   @Override
-  public InjectBuilder addScope(Scope scope) {
+  public Injector addScope(Scope scope) {
     scopes.add(scope);
     return this;
   }
 
   @Override
-  public InjectBuilder setClassLoader(ClassLoader classLoader) {
+  public Injector setClassLoader(ClassLoader classLoader) {
     this.classLoader = classLoader;
     return this;
   }
 
   @Override
-  public <T> InjectBuilder bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance) {
+  public <T> Injector bindBean(Class<T> type, Iterable<Annotation> qualifiers, T instance) {
     bindings.add(new BeanBinding.ToInstance<T>(type, qualifiers, instance));
     return this;
   }
 
   @Override
-  public <T> InjectBuilder bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider) {
+  public <T> Injector bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider) {
     bindings.add(new BeanBinding.ToProviderInstance<T>(beanType, beanScope, beanQualifiers, provider));
     return this;
   }

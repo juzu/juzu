@@ -19,9 +19,9 @@
 
 package juzu.impl.plugin.binding;
 
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
@@ -29,68 +29,74 @@ import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
-  public BindingProviderFactoryTestCase(InjectImplementation di) {
+  public BindingProviderFactoryTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testNoPublicCtor() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.nopublicctor");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.factory.nopublicctor");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.PROVIDER_FACTORY_NO_PUBLIC_CTOR, error.getCode());
-    assertEquals("/plugin/binding/provider/factory/nopublicctor/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "factory", "nopublicctor", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test
   public void testNoZeroCtor() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.nozeroargctor");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.factory.nozeroargctor");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.PROVIDER_FACTORY_NO_ZERO_ARG_CTOR, error.getCode());
-    assertEquals("/plugin/binding/provider/factory/nozeroargctor/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "factory", "nozeroargctor", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test
   public void testAbstractClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.abstractclass");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.factory.abstractclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.IMPLEMENTATION_NOT_ABSTRACT, error.getCode());
-    assertEquals("/plugin/binding/provider/factory/abstractclass/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "factory", "abstractclass", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test
   public void testNotPublicClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.notpublicclass");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.factory.notpublicclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.PROVIDER_FACTORY_NOT_PUBLIC, error.getCode());
-    assertEquals("/plugin/binding/provider/factory/notpublicclass/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "factory", "notpublicclass", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test
   public void testNotClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.factory.notclass");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.factory.notclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.IMPLEMENTATION_INVALID_TYPE, error.getCode());
-    assertEquals("/plugin/binding/provider/factory/notclass/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "factory", "notclass", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test

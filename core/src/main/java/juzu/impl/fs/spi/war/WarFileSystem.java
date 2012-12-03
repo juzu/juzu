@@ -19,6 +19,8 @@
 
 package juzu.impl.fs.spi.war;
 
+import juzu.impl.common.Timestamped;
+import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
@@ -57,6 +59,11 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
   }
 
   @Override
+  public Class<String> getType() {
+    return String.class;
+  }
+
+  @Override
   public boolean equals(String left, String right) {
     return left.equals(right);
   }
@@ -64,26 +71,6 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
   @Override
   public String getRoot() {
     return "/";
-  }
-
-  @Override
-  public String getParent(String path) throws IOException {
-    // It's a directory, remove the trailing '/'
-    if (path.endsWith("/")) {
-      path = path.substring(0, path.length() - 1);
-    }
-
-    // Get index of last '/'
-    int index = path.lastIndexOf('/');
-
-    //
-    if (index == -1) {
-      return null;
-    }
-    else {
-      // Return the parent that ends with a '/'
-      return path.substring(0, index + 1);
-    }
   }
 
   @Override
@@ -118,17 +105,21 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
   }
 
   @Override
-  public boolean isDir(String path) throws IOException {
-    return path.endsWith("/");
+  public PathType typeOf(String path) throws IOException {
+    if (path.endsWith("/")) {
+      return PathType.DIR;
+    } else {
+      URL url = getResource(path);
+      if (url != null) {
+        return PathType.FILE;
+      } else {
+        return null;
+      }
+    }
   }
 
   @Override
-  public boolean isFile(String path) throws IOException {
-    return !isDir(path);
-  }
-
-  @Override
-  public Content getContent(String file) throws IOException {
+  public Timestamped<Content> getContent(String file) throws IOException {
     URL url = getResource(file);
     if (url != null) {
       URLConnection conn = url.openConnection();
@@ -140,7 +131,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
         for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
           content.write(buffer, 0, l);
         }
-        return new Content(lastModified, content.toByteArray(), Charset.defaultCharset());
+        return new Timestamped<Content>(lastModified, new Content(content.toByteArray(), Charset.defaultCharset()));
       }
       finally {
         Tools.safeClose(in);
@@ -167,7 +158,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
 
   protected abstract URL doGetResource(String path) throws IOException;
 
-  protected abstract String doGetRealPath(String path) throws IOException;
+  protected abstract String doGetRealPath(String path);
 
   private Collection<String> getResourcePaths(String path) throws IOException {
     Set<String> resourcePaths = doGetResourcePaths(mountPoint + path);
@@ -184,7 +175,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
   }
 
   @Override
-  public File getFile(String path) throws IOException {
+  public File getFile(String path) {
     String realPath = doGetRealPath(mountPoint + path);
     return realPath == null ? null : new File(realPath);
   }
@@ -221,7 +212,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
       }
 
       @Override
-      protected String doGetRealPath(String path) throws IOException {
+      protected String doGetRealPath(String path) {
         return servletContext.getRealPath(path);
       }
     };
@@ -255,7 +246,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
       }
 
       @Override
-      protected String doGetRealPath(String path) throws IOException {
+      protected String doGetRealPath(String path) {
         return portletContext.getRealPath(path);
       }
     };

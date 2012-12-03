@@ -19,11 +19,13 @@
 
 package juzu.impl.compiler.file;
 
+import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.common.Spliterator;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
 
 import javax.tools.JavaFileObject;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,23 +36,30 @@ import java.util.Set;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class SimpleFileManager<P> extends FileManager {
 
-  public static <P> SimpleFileManager<P> wrap(SimpleFileSystem<P> fs) {
+  public static <P> SimpleFileManager<P> wrap(ReadFileSystem<P> fs) {
     return new SimpleFileManager<P>(fs);
   }
 
   /** . */
-  final SimpleFileSystem<P> fs;
+  final ReadFileSystem<P> fs;
 
   /** . */
   final Map<FileKey, JavaFileObjectImpl<P>> entries;
 
-  public SimpleFileManager(SimpleFileSystem<P> fs) {
+  public SimpleFileManager(ReadFileSystem<P> fs) {
     this.fs = fs;
     this.entries = new HashMap<FileKey, JavaFileObjectImpl<P>>();
   }
 
-  public SimpleFileSystem<P> getFileSystem() {
+  public ReadFileSystem<P> getFileSystem() {
     return fs;
+  }
+
+  @Override
+  public void populateRoots(Set<File> roots) throws IOException {
+    if (fs instanceof DiskFileSystem) {
+      roots.add(((DiskFileSystem)fs).getRoot());
+    }
   }
 
   public void clearCache() {
@@ -62,7 +71,7 @@ public class SimpleFileManager<P> extends FileManager {
     if (entry == null) {
       P file = fs.getPath(key.names);
       if (file != null && fs.isFile(file)) {
-        entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
+        entries.put(key, entry = new JavaFileObjectImpl<P>(key, fs, file));
       }
     }
     return entry;
@@ -73,8 +82,8 @@ public class SimpleFileManager<P> extends FileManager {
       ReadWriteFileSystem<P> rwFS = (ReadWriteFileSystem<P>)fs;
       JavaFileObjectImpl<P> entry = entries.get(key);
       if (entry == null) {
-        P file = rwFS.getPath(key.names);
-        entries.put(key, entry = new JavaFileObjectImpl<P>(key, this, file));
+        P file = rwFS.makePath(key.names);
+        entries.put(key, entry = new JavaFileObjectImpl<P>(key, fs, file));
       }
       return entry;
     }
@@ -92,24 +101,23 @@ public class SimpleFileManager<P> extends FileManager {
     Iterable<String> packageNames = Spliterator.split(packageName, '.');
     P dir = fs.getPath(packageNames);
     if (dir != null && fs.isDir(dir)) {
-      list(dir, kinds, recurse, to);
+      list(packageName, dir, kinds, recurse, to);
     }
     return to;
   }
 
   private void list(
+    String packageName,
     P root,
     Set<JavaFileObject.Kind> kinds,
     boolean recurse,
     Collection<JavaFileObject> to) throws IOException {
-    StringBuilder sb = new StringBuilder();
-    fs.packageOf(root, '.', sb);
-    String packageName = sb.toString();
     for (Iterator<P> i = fs.getChildren(root);i.hasNext();) {
       P child = i.next();
       if (fs.isDir(child)) {
         if (recurse) {
-          list(child, kinds, true, to);
+          String name = fs.getName(child);
+          list(packageName.isEmpty() ? name : packageName + "." + name, child, kinds, true, to);
         }
       }
       else {

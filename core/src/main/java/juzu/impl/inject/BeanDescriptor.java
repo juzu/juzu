@@ -20,8 +20,8 @@
 package juzu.impl.inject;
 
 import juzu.Scope;
+import juzu.impl.inject.spi.Injector;
 import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.inject.spi.InjectBuilder;
 import juzu.inject.ProviderFactory;
 
 import javax.inject.Provider;
@@ -95,7 +95,7 @@ public final class BeanDescriptor {
     return implementationType;
   }
 
-  public void bind(InjectBuilder builder) {
+  public void bind(Injector builder) {
     Class<?> type = getDeclaredType();
     Class<?> implementation = getImplementationType();
     if (implementation == null) {

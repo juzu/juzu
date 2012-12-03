@@ -20,13 +20,13 @@
 package inject.bound.bean.supertype;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BoundBeanBeanSuperTypeTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public BoundBeanBeanSuperTypeTestCase(InjectImplementation di) {
+  public BoundBeanBeanSuperTypeTestCase(InjectorProvider di) {
     super(di);
   }
 

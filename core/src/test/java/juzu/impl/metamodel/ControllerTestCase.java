@@ -179,7 +179,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(unserialize, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     decl.getAnnotations().get(0).setName(ASTHelper.createNameExpr(Action.class.getName()));
@@ -235,7 +235,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(unserialize, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     decl.getAnnotations().clear();
@@ -268,7 +268,7 @@ public class ControllerTestCase extends AbstractTestCase {
   @Test
   public void testAddMethod() throws Exception {
     CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     assertTrue(a.getMembers().remove(decl));
@@ -335,7 +335,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(unserialize, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     a.getMembers().clear();
     file.assertSave();
@@ -369,7 +369,7 @@ public class ControllerTestCase extends AbstractTestCase {
     CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
 
     //
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration show = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "show");
     show.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
@@ -421,7 +421,7 @@ public class ControllerTestCase extends AbstractTestCase {
   @Test
   public void testRemoveOverloadedMethod() throws Exception {
     CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration index = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "index");
     ASTHelper.addParameter(index, ASTHelper.createParameter(new ClassOrInterfaceType(String.class.getName()), "s"));
@@ -491,7 +491,7 @@ public class ControllerTestCase extends AbstractTestCase {
     assertTrue(sub.mkdir());
     File tmp = new File(sub, file.getName());
     assertTrue(file.renameTo(tmp));
-    JavaFile javaFile = helper.assertJavaFile("metamodel", "controller", "sub", "A.java");
+    JavaFile javaFile = helper.assertSource("metamodel", "controller", "sub", "A.java");
     javaFile.assertCompilationUnit().getPackage().setName(ASTHelper.createNameExpr("metamodel.controller.sub"));
     javaFile.assertSave();
 

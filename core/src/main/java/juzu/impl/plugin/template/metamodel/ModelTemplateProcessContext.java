@@ -19,6 +19,8 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.Timestamped;
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -33,6 +35,8 @@ import juzu.impl.common.Content;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
 
+import javax.tools.FileObject;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -96,9 +100,20 @@ class ModelTemplateProcessContext extends ProcessContext {
     return new MethodInvocation(method.getController().getCompanionName().getValue(), method.getName(), args);
   }
 
-  protected Content resolveResource(Path path) {
+  protected Timestamped<Content> resolveResource(Path path) {
     TemplatesMetaModel tmm = templateMetaModel.getTemplates();
     ElementHandle.Package context = tmm.getApplication().getHandle();
-    return env.resolveResource(context, tmm.resolve(path));
+    FileObject resource = env.resolveResource(context, tmm.resolve(path));
+    if (resource != null) {
+      try {
+        byte[] bytes = Tools.bytes(resource.openInputStream());
+        long lastModified = resource.getLastModified();
+        return new Timestamped<Content>(lastModified, new Content(bytes, Charset.defaultCharset()));
+      }
+      catch (Exception e) {
+        env.log("Could not get resource content " + path.getCanonical(), e);
+      }
+    }
+    return null;
   }
 }

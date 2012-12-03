@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.template;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
@@ -41,7 +41,7 @@ import java.util.HashMap;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TagTestCase extends AbstractInjectTestCase {
 
-  public TagTestCase(InjectImplementation di) {
+  public TagTestCase(InjectorProvider di) {
     super(di);
   }
 
@@ -93,7 +93,7 @@ public class TagTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testParam() throws Exception {
-    if (getDI() != InjectImplementation.INJECT_GUICE) {
+    if (getDI() != InjectorProvider.INJECT_GUICE) {
       MockApplication<?> app = application("plugin.template.tag.param").init();
 
       //

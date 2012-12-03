@@ -19,8 +19,8 @@
 
 package juzu.impl.plugin.controller;
 
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
@@ -32,7 +32,7 @@ import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ThrowableTestCase extends AbstractInjectTestCase {
-  public ThrowableTestCase(InjectImplementation di) {
+  public ThrowableTestCase(InjectorProvider di) {
     super(di);
   }
 

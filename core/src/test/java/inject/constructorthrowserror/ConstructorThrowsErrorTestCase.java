@@ -20,7 +20,7 @@
 package inject.constructorthrowserror;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ConstructorThrowsErrorTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public ConstructorThrowsErrorTestCase(InjectImplementation di) {
+  public ConstructorThrowsErrorTestCase(InjectorProvider di) {
     super(di);
   }
 

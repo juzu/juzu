@@ -26,22 +26,24 @@ import juzu.impl.compiler.file.JavaFileObjectImpl;
 import juzu.impl.compiler.file.SimpleFileManager;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.fs.spi.SimpleFileSystem;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager> {
+class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager> implements StandardJavaFileManager {
 
   /** . */
   final SimpleFileManager<?> sourcePath;
@@ -58,7 +60,7 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager> {
   public VirtualFileManager(
     JavaFileManager fileManager,
     ReadFileSystem<?> sourcePath,
-    Collection<SimpleFileSystem<?>> classPath,
+    Collection<ReadFileSystem<?>> classPath,
     ReadWriteFileSystem<?> sourceOutput,
     ReadWriteFileSystem<?> classOutput) {
     super(fileManager);
@@ -85,6 +87,45 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager> {
           return classOutput;
         case CLASS_PATH:
           return classPath;
+      }
+    }
+    return null;
+  }
+
+  //
+
+  public Iterable<? extends JavaFileObject> getJavaFileObjectsFromFiles(Iterable<? extends File> files) {
+    throw new UnsupportedOperationException();
+  }
+
+  public Iterable<? extends JavaFileObject> getJavaFileObjects(File... files) {
+    throw new UnsupportedOperationException();
+  }
+
+  public Iterable<? extends JavaFileObject> getJavaFileObjectsFromStrings(Iterable<String> names) {
+    throw new UnsupportedOperationException();
+  }
+
+  public Iterable<? extends JavaFileObject> getJavaFileObjects(String... names) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setLocation(Location location, Iterable<? extends File> path) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  public Iterable<? extends File> getLocation(Location location) {
+    if (location == StandardLocation.CLASS_PATH) {
+      FileManager manager = getFiles(location);
+      if (manager != null) {
+        try {
+          HashSet<File> files = new HashSet<File>();
+          manager.populateRoots(files);
+          return files;
+        }
+        catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
     return null;

@@ -751,6 +751,22 @@ public class Tools {
     return -1;
   }
 
+  public static int lastIndexOf(CharSequence s, char c) {
+    return lastIndexOf(s, c, s.length() - 1);
+  }
+
+  public static int lastIndexOf(CharSequence s, char c, int from) {
+    from = Math.min(from, s.length() - 1);
+    while (from >= 0) {
+      if (s.charAt(from) == c) {
+        return from;
+      } else {
+        from--;
+      }
+    }
+    return -1;
+  }
+
   /**
    * Count the occurence of the separator string in the specified string with no overlapping.
    *

@@ -20,13 +20,13 @@
 package inject.lifecycle.unscoped;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LifeCycleUnscopedTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public LifeCycleUnscopedTestCase(InjectImplementation di) {
+  public LifeCycleUnscopedTestCase(InjectorProvider di) {
     super(di);
   }
 

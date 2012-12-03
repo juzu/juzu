@@ -216,6 +216,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
           VariableElement ve = i.next();
           TypeElement te = application.model.processingContext.get(parameter.getType());
           if (!te.toString().equals("java.lang.String") && te.getAnnotation(Mapped.class) == null) {
+            // We should find out who was compiled the bean or the type containing a ref to the class
             throw ControllerMetaModel.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(ve, ve.getSimpleName());
           }
         }
@@ -278,7 +279,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         writer.append(controller.getName().getValue()).append(".class").append(",");
         writer.append(TOOLS).append(".safeGetMethod(").append(controller.getName().getValue()).append(".class,\"").append(method.getName()).append("\"");
         for (ParameterMetaModel param : method.getParameters()) {
-          writer.append(",").append(param.declaredType).append(".class");
+          writer.append(",").append(param.typeLiteral).append(".class");
         }
         writer.append(")");
         writer.append(", Arrays.<").append(CONTROLLER_PARAMETER).append(">asList(");
@@ -292,7 +293,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
             append('"').append(param.getName()).append('"').append(',').
             append(CARDINALITY).append('.').append(param.getCardinality().name()).append(',').
             append("null,").
-            append(param.declaredType).append(".class").
+            append(param.typeLiteral).append(".class").
             append(')');
         }
         writer.append(")");
@@ -308,7 +309,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
             writer.append(',');
           }
           ParameterMetaModel param = method.getParameter(j);
-          writer.append(param.declaredType).append(" ").append(param.getName());
+          writer.append(param.typeLiteral).append(" ").append(param.getName());
         }
         writer.append(") { return Request.getCurrent().getContext().create").append(method.getPhase().getClass().getSimpleName()).append("Dispatch(").append(methodRef);
         switch (method.getParameters().size()) {

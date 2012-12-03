@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
@@ -30,7 +30,7 @@ import org.junit.Test;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RequestContextTestCase extends AbstractInjectTestCase {
 
-  public RequestContextTestCase(InjectImplementation di) {
+  public RequestContextTestCase(InjectorProvider di) {
     super(di);
   }
 

@@ -21,13 +21,13 @@ package inject.bound.bean.injected.field;
 
 import juzu.Scope;
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FieldInjectedTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public FieldInjectedTestCase(InjectImplementation di) {
+  public FieldInjectedTestCase(InjectorProvider di) {
     super(di);
   }
 

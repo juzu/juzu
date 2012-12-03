@@ -19,11 +19,12 @@
 
 package juzu.test;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -32,27 +33,34 @@ import java.util.Collection;
 public abstract class AbstractInjectTestCase extends AbstractTestCase {
 
   /** . */
-  protected final InjectImplementation di;
+  protected final InjectorProvider di;
 
-  protected AbstractInjectTestCase(InjectImplementation di) {
+  protected AbstractInjectTestCase(InjectorProvider di) {
     this.di = di;
   }
 
   @Parameterized.Parameters
   public static Collection<Object[]> data() {
     Object[][] data = new Object[][]{
-      {InjectImplementation.CDI_WELD},
-      {InjectImplementation.INJECT_SPRING},
-      {InjectImplementation.INJECT_GUICE}
+      {InjectorProvider.CDI_WELD},
+      {InjectorProvider.INJECT_SPRING},
+      {InjectorProvider.INJECT_GUICE}
     };
     return Arrays.asList(data);
   }
 
-  public InjectImplementation getDI() {
+  public InjectorProvider getDI() {
     return di;
   }
 
   public MockApplication<?> application(String packageName) {
     return application(di, packageName);
+  }
+
+  @Override
+  protected ArrayList<String> getQualifiers() {
+    ArrayList<String> ret = super.getQualifiers();
+    ret.add(di.getValue());
+    return ret;
   }
 }

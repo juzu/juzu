@@ -29,7 +29,6 @@ import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.Template;
 import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
-import juzu.impl.common.Content;
 import juzu.impl.common.FQN;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Path;
@@ -117,13 +116,13 @@ public class TemplateResolver implements Serializable {
     for (Iterator<Template<?>> i = templates.values().iterator();i.hasNext();) {
       Template<?> template = i.next();
       Path.Absolute absolute = metaModel.resolve(template.getPath());
-      Content content = context.resolveResource(application.getHandle(), absolute);
-      if (content == null) {
+      FileObject resource = context.resolveResource(application.getHandle(), absolute);
+      if (resource == null) {
         // That will generate a template not found error
         i.remove();
         log.log("Detected template removal " + template.getPath());
       }
-      else if (content.getLastModified() > template.getLastModified()) {
+      else if (resource.getLastModified() > template.getLastModified()) {
         // That will force the regeneration of the template
         i.remove();
         log.log("Detected stale template " + template.getPath());

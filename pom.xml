@@ -27,8 +27,11 @@
     <!-- Encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Juzu -->
+    <!-- Wikbook -->
     <wikbook.version>0.9.41</wikbook.version>
+
+    <!-- Test settings -->
+    <juzu.test.compiler>javac</juzu.test.compiler>
 
   </properties>
 
@@ -624,16 +627,12 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.10</version>
           <configuration>
-            <systemProperties>
-              <property>
-                <name>test.resources</name>
-                <value>${basedir}/src/test/resources</value>
-              </property>
-              <property>
-                <name>test.generated.classes</name>
-                <value>${project.build.directory}/generated-test-classes</value>
-              </property>
-            </systemProperties>
+          <systemPropertyVariables>
+            <targetDir>${project.build.directory}</targetDir>
+            <juzu.test.compiler>${juzu.test.compiler}</juzu.test.compiler>
+            <juzu.test.resources.path>${basedir}/src/test/resources</juzu.test.resources.path>
+            <juzu.test.workspace.path>${project.build.directory}/workspace</juzu.test.workspace.path>
+          </systemPropertyVariables>
           </configuration>
         </plugin>
         <plugin>
@@ -704,6 +703,14 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>ejc</id>
+      <properties>
+        <juzu.test.compiler>ejc</juzu.test.compiler>
+      </properties>
+    </profile>
+
   </profiles>
 
 </project>

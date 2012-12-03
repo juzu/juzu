@@ -19,7 +19,9 @@
 
 package juzu.impl.fs.spi.disk;
 
+import juzu.impl.fs.spi.AbstractReadWriteFileSystemTestCase;
 import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
@@ -28,11 +30,20 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DiskFileSystemTestCase extends AbstractTestCase {
+public class DiskFileSystemTestCase extends AbstractReadWriteFileSystemTestCase<File> {
+
+  @Override
+  protected ReadWriteFileSystem<File> create() throws IOException {
+    File root = File.createTempFile("juzu", "test");
+    assertTrue(root.delete());
+    assertTrue(root.mkdir());
+    root.deleteOnExit();
+    return new DiskFileSystem(root);
+  }
 
   @Test
   public void testFoo() throws Exception {
-    File root = new File(System.getProperty("test.resources"));
+    File root = new File(System.getProperty("juzu.test.resources.path"));
     assertNotNull(root);
     assertNotNull(root.isDirectory());
 
@@ -48,7 +59,6 @@ public class DiskFileSystemTestCase extends AbstractTestCase {
     assertTrue(fs.isDir(root));
     assertFalse(fs.isFile(root));
     assertEquals("", fs.getName(root));
-    assertEquals(null, fs.getParent(root));
     Iterator<P> rootChildren = fs.getChildren(root);
     assertTrue(rootChildren.hasNext());
     P compiler = rootChildren.next();
@@ -58,7 +68,6 @@ public class DiskFileSystemTestCase extends AbstractTestCase {
     assertTrue(fs.isDir(compiler));
     assertFalse(fs.isFile(compiler));
     assertEquals("compiler", fs.getName(compiler));
-    assertEquals(root, fs.getParent(compiler));
     Iterator<P> compilerChildren = fs.getChildren(compiler);
     assertTrue(compilerChildren.hasNext());
     P disk = compilerChildren.next();
@@ -68,7 +77,6 @@ public class DiskFileSystemTestCase extends AbstractTestCase {
     assertTrue(fs.isDir(disk));
     assertFalse(fs.isFile(disk));
     assertEquals("disk", fs.getName(disk));
-    assertEquals(compiler, fs.getParent(disk));
     Iterator<P> diskChildren = fs.getChildren(disk);
     assertTrue(diskChildren.hasNext());
     P a = diskChildren.next();
@@ -78,6 +86,5 @@ public class DiskFileSystemTestCase extends AbstractTestCase {
     assertFalse(fs.isDir(a));
     assertTrue(fs.isFile(a));
     assertEquals("A.java", fs.getName(a));
-    assertEquals(disk, fs.getParent(a));
   }
 }

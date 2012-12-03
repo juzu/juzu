@@ -20,7 +20,7 @@
 package juzu.impl.plugin.binding;
 
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
@@ -28,12 +28,13 @@ import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BindingProviderTestCase extends AbstractInjectTestCase {
 
-  public BindingProviderTestCase(InjectImplementation di) {
+  public BindingProviderTestCase(InjectorProvider di) {
     super(di);
   }
 
@@ -49,35 +50,38 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testNotAssignable() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.notassignable");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.notassignable");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.PROVIDER_NOT_ASSIGNABLE, error.getCode());
-    assertEquals("/plugin/binding/provider/notassignable/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "notassignable", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test
   public void testNotClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.notclass");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.notclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.IMPLEMENTATION_INVALID_TYPE, error.getCode());
-    assertEquals("/plugin/binding/provider/notclass/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "notclass", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test
   public void testAbstractClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin.binding.provider.abstractclass");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.abstractclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.IMPLEMENTATION_NOT_ABSTRACT, error.getCode());
-    assertEquals("/plugin/binding/provider/abstractclass/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "abstractclass", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test

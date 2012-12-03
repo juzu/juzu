@@ -19,12 +19,12 @@
 
 package juzu.test.protocol.mock;
 
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.common.QN;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.module.ModuleLifeCycle;
@@ -44,7 +44,7 @@ public class MockApplication<P> {
   public <L> MockApplication(
       ReadFileSystem<P> classes,
       ClassLoader classLoader,
-      InjectImplementation implementation,
+      InjectorProvider implementation,
       QN name) throws Exception {
 
     /** . */

@@ -17,47 +17,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.inject.spi;
-
-import juzu.impl.inject.spi.cdi.CDIBuilder;
-import juzu.impl.inject.spi.guice.GuiceBuilder;
-import juzu.impl.inject.spi.spring.SpringBuilder;
+package compiler.incremental;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum InjectImplementation {
-
-  CDI_WELD("cdi/weld") {
-    @Override
-    public InjectBuilder builder() {
-      return new CDIBuilder();
-    }
-  },
-
-  INJECT_GUICE("inject/guice") {
-    @Override
-    public InjectBuilder builder() {
-      return new GuiceBuilder();
-    }
-  },
-
-  INJECT_SPRING("inject/spring") {
-    @Override
-    public InjectBuilder builder() {
-      return new SpringBuilder();
-    }
-  };
-
-  /** . */
-  final String value;
-
-  private InjectImplementation(String value) {
-    this.value = value;
-  }
-
-  public String getValue() {
-    return value;
-  }
-
-  public abstract InjectBuilder builder();
-
+public class A {
 }

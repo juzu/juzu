@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
@@ -36,7 +36,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   private static final Pattern P = Pattern.compile("([0-9]+)\\[(.*)\\]");
 
-  public RenderTestCase(InjectImplementation di) {
+  public RenderTestCase(InjectorProvider di) {
     super(di);
   }
 

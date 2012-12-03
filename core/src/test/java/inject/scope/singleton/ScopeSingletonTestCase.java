@@ -20,13 +20,13 @@
 package inject.scope.singleton;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ScopeSingletonTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public ScopeSingletonTestCase(InjectImplementation di) {
+  public ScopeSingletonTestCase(InjectorProvider di) {
     super(di);
   }
 

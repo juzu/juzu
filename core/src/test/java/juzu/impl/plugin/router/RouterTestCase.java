@@ -19,8 +19,8 @@
 
 package juzu.impl.plugin.router;
 
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import java.util.List;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouterTestCase extends AbstractInjectTestCase {
 
-  public RouterTestCase(InjectImplementation di) {
+  public RouterTestCase(InjectorProvider di) {
     super(di);
   }
 

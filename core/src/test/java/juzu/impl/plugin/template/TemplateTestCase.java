@@ -20,7 +20,7 @@
 package juzu.impl.plugin.template;
 
 import juzu.impl.compiler.Compiler;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
@@ -30,7 +30,7 @@ import org.junit.Test;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateTestCase extends AbstractInjectTestCase {
 
-  public TemplateTestCase(InjectImplementation di) {
+  public TemplateTestCase(InjectorProvider di) {
     super(di);
   }
 
@@ -72,7 +72,7 @@ public class TemplateTestCase extends AbstractInjectTestCase {
   @Test
   public void testTyped() throws Exception {
     // Does not work with Guice at the moment
-    if (getDI() != InjectImplementation.INJECT_GUICE) {
+    if (getDI() != InjectorProvider.INJECT_GUICE) {
       MockApplication<?> app = application("plugin.template.typed").init();
       MockClient client = app.client();
       assertEquals("typed_template", client.render().assertStringResult());

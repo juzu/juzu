@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
@@ -32,7 +32,7 @@ import java.util.Collections;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ActionTestCase extends AbstractInjectTestCase {
 
-  public ActionTestCase(InjectImplementation di) {
+  public ActionTestCase(InjectorProvider di) {
     super(di);
   }
 

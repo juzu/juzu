@@ -19,9 +19,8 @@
 
 package juzu.impl.fs;
 
-import juzu.impl.fs.spi.ram.RAMFile;
+import juzu.impl.common.Content;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
-import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
@@ -34,55 +33,62 @@ public class ScannerTestCase extends AbstractTestCase {
   @Test
   public void testFoo() throws IOException {
     RAMFileSystem fs = new RAMFileSystem();
-    FileSystemScanner<RAMPath> scanner = FileSystemScanner.createTimestamped(fs);
+    FileSystemScanner<String[]> scanner = FileSystemScanner.createTimestamped(fs);
 
     //
     assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
 
     //
-    RAMPath foo = fs.addDir(fs.getRoot(), "foo");
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
-
-    //
-    RAMFile bar = fs.addFile(foo, "bar.txt");
+    String[] foo = fs.makePath(fs.getRoot(), "foo");
     waitForOneMillis();
-    assertEquals(Collections.singletonMap("foo/bar.txt", Change.ADD), scanner.scan());
     assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
 
     //
-    bar.update("value");
+    String[] bar = fs.makePath(foo, "bar.txt");
+    fs.setContent(bar, new Content(""));
     waitForOneMillis();
-    assertEquals(Collections.singletonMap("foo/bar.txt", Change.UPDATE), scanner.scan());
+    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.ADD), scanner.scan());
+    waitForOneMillis();
     assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
 
     //
-    bar.del();
+    fs.setContent(bar, new Content("value"));
     waitForOneMillis();
-    assertEquals(Collections.singletonMap("foo/bar.txt", Change.REMOVE), scanner.scan());
+    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.UPDATE), scanner.scan());
+    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+
+    //
+    fs.removePath(bar);
+    waitForOneMillis();
+    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.REMOVE), scanner.scan());
+    waitForOneMillis();
     assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
   }
 
   @Test
   public void testIgnoreHiddenFile() throws IOException {
     RAMFileSystem fs = new RAMFileSystem();
-    FileSystemScanner<RAMPath> scanner = FileSystemScanner.createTimestamped(fs);
+    FileSystemScanner<String[]> scanner = FileSystemScanner.createTimestamped(fs);
 
     //
     assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
-    fs.addFile(fs.getRoot(), ".foo");
+    String[] foo = fs.makePath(fs.getRoot(), ".foo");
+    fs.setContent(foo, new Content(""));
     waitForOneMillis();
-    assertEquals(Collections.emptyMap(), scanner.scan());
+    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
   }
 
   @Test
   public void testIgnoreHiddenDir() throws IOException {
     RAMFileSystem fs = new RAMFileSystem();
-    FileSystemScanner<RAMPath> scanner = FileSystemScanner.createTimestamped(fs);
+    FileSystemScanner<String[]> scanner = FileSystemScanner.createTimestamped(fs);
 
     //
     assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
-    fs.addFile(fs.addDir(fs.getRoot(), ".foo"), "bar.txt");
+    String[] bar = fs.makePath(fs.makePath(fs.getRoot(), ".foo"), "bar.txt");
+    fs.setContent(bar, new Content(""));
     waitForOneMillis();
-    assertEquals(Collections.emptyMap(), scanner.scan());
+    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
   }
 }

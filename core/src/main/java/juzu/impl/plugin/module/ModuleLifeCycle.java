@@ -26,10 +26,8 @@ import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
-import juzu.impl.fs.spi.ram.RAMPath;
 import juzu.processor.MainProcessor;
 
 import java.io.IOException;
@@ -48,17 +46,17 @@ public abstract class ModuleLifeCycle<R, C> {
   protected final Logger logger;
 
   /** . */
-  protected SimpleFileSystem<R> resources;
+  protected ReadFileSystem<R> resources;
 
   protected ModuleLifeCycle(Logger logger) {
     this.logger = logger;
   }
 
-  public SimpleFileSystem<R> getResources() {
+  public ReadFileSystem<R> getResources() {
     return resources;
   }
 
-  public void setResources(SimpleFileSystem<R> resources) {
+  public void setResources(ReadFileSystem<R> resources) {
     this.resources = resources;
   }
 
@@ -78,7 +76,7 @@ public abstract class ModuleLifeCycle<R, C> {
    */
   public abstract ReadFileSystem<C> getClasses();
 
-  public static class Dynamic<R, S> extends ModuleLifeCycle<R, RAMPath> {
+  public static class Dynamic<R, S> extends ModuleLifeCycle<R, String[]> {
 
     /** . */
     private final ReadFileSystem<S> source;
@@ -96,7 +94,7 @@ public abstract class ModuleLifeCycle<R, C> {
     private ClassLoader classLoader;
 
     /** . */
-    private ReadFileSystem<RAMPath> classes;
+    private ReadFileSystem<String[]> classes;
 
     /** . */
     private boolean initialized;
@@ -170,7 +168,7 @@ public abstract class ModuleLifeCycle<R, C> {
     }
 
     @Override
-    public ReadFileSystem<RAMPath> getClasses() {
+    public ReadFileSystem<String[]> getClasses() {
       return classes;
     }
   }

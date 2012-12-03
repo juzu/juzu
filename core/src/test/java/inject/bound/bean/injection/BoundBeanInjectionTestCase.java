@@ -20,13 +20,13 @@
 package inject.bound.bean.injection;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BoundBeanInjectionTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public BoundBeanInjectionTestCase(InjectImplementation di) {
+  public BoundBeanInjectionTestCase(InjectorProvider di) {
     super(di);
   }
 

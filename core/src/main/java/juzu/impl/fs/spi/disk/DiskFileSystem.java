@@ -20,6 +20,8 @@
 package juzu.impl.fs.spi.disk;
 
 import juzu.impl.common.QN;
+import juzu.impl.common.Timestamped;
+import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
@@ -75,6 +77,11 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
+  public Class<File> getType() {
+    return File.class;
+  }
+
+  @Override
   public String getDescription() {
     return "disk[" + root.getAbsolutePath() + "]";
   }
@@ -90,23 +97,14 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
-  public File getParent(File path) throws IOException {
-    if (path.equals(root)) {
+  public PathType typeOf(File path) throws IOException {
+    if (path.isDirectory()) {
+      return PathType.DIR;
+    } else if (path.isFile()) {
+      return PathType.FILE;
+    } else {
       return null;
     }
-    else {
-      return path.getParentFile();
-    }
-  }
-
-  @Override
-  public boolean isDir(File path) throws IOException {
-    return path.isDirectory();
-  }
-
-  @Override
-  public boolean isFile(File path) throws IOException {
-    return path.isFile();
   }
 
   @Override
@@ -121,7 +119,8 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
 
   @Override
   public Iterator<File> getChildren(File dir) throws IOException {
-    return Arrays.asList(dir.listFiles(filter)).iterator();
+    File[] children = dir.listFiles(filter);
+    return children == null ? Tools.<File>emptyIterator() : Arrays.asList(children).iterator();
   }
 
   @Override
@@ -136,7 +135,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
-  public Content getContent(File file) throws IOException {
+  public Timestamped<Content> getContent(File file) throws IOException {
     FileInputStream in = new FileInputStream(file);
     try {
       ByteArrayOutputStream content = new ByteArrayOutputStream();
@@ -144,7 +143,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
       for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
         content.write(buffer, 0, l);
       }
-      return new Content(file.lastModified(), content.toByteArray(), encoding);
+      return new Timestamped<Content>(file.lastModified(), new Content(content.toByteArray(), encoding));
     }
     finally {
       Tools.safeClose(in);
@@ -162,24 +161,42 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
-  public File getFile(File path) throws IOException {
+  public File getFile(File path) {
     return path;
   }
 
   @Override
-  public File addDir(File parent, String name) throws IOException {
-    File dir = new File(parent, name);
-    dir.mkdir();
-    return dir;
-  }
-
-  @Override
-  public File addFile(File parent, String name) throws IOException {
+  public File makePath(File parent, String name) throws IOException {
     return new File(parent, name);
   }
 
   @Override
-  public void setContent(File file, Content content) throws IOException {
+  public void createDir(File dir) throws IOException {
+    if (dir.exists()) {
+      if (dir.isDirectory()) {
+        // Ok
+      } else {
+        throw new IOException("Dir already exists and is a file " + dir.getCanonicalPath());
+      }
+    } else {
+      if (dir.mkdirs()) {
+        // Ok
+      } else {
+        throw new IOException("Could not create dir " + dir.getCanonicalPath());
+      }
+    }
+  }
+
+  @Override
+  public long setContent(File file, Content content) throws IOException {
+    File parent = file.getParentFile();
+    if (parent != null) {
+      if (!parent.exists()) {
+        if (!parent.mkdirs()) {
+          throw new IOException("Could not create parent directory " + parent.getCanonicalPath());
+        }
+      }
+    }
     InputStream in = content.getInputStream();
     FileOutputStream out = new FileOutputStream(file);
     try {
@@ -188,6 +205,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
     finally {
       Tools.safeClose(out);
     }
+    return file.lastModified();
   }
 
   @Override

@@ -51,7 +51,7 @@ public class JavaFile<I> {
   public CompilationUnit assertCompilationUnit() {
     if (cu == null) {
       try {
-        Content content = sourcePath.getContent(path);
+        Content content = sourcePath.getContent(path).getObject();
         InputStream in = content.getInputStream();
         cu = JavaParser.parse(in);
       }
@@ -64,7 +64,7 @@ public class JavaFile<I> {
 
   public String assertContent() {
     try {
-      Content content = sourcePath.getContent(path);
+      Content content = sourcePath.getContent(path).getObject();
       return content.getCharSequence().toString();
     }
     catch (Exception e) {
@@ -85,7 +85,7 @@ public class JavaFile<I> {
 
   public void assertTouch() {
     try {
-      Content content = sourcePath.getContent(path);
+      Content content = sourcePath.getContent(path).getObject();
       sourcePath.setContent(path, content);
     }
     catch (Exception e) {
@@ -99,7 +99,7 @@ public class JavaFile<I> {
 
   public void assertSave(String content) {
     try {
-      sourcePath.setContent(path, new Content(0, content));
+      sourcePath.setContent(path, new Content(content));
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);

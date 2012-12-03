@@ -19,6 +19,8 @@
 
 package juzu.impl.compiler.file;
 
+import juzu.impl.common.Timestamped;
+import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.common.Content;
 
@@ -39,23 +41,28 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
   final FileKey key;
 
   /** . */
-  final SimpleFileManager<P> manager;
+  final ReadFileSystem<P> fs;
 
-  /** The file, might not exist when this object will create. */
-  private P file;
+  /** The file. */
+  private final P file;
 
   /** . */
-  Content content;
+  Timestamped<Content> content;
 
   /** . */
   private boolean writing;
 
-  public JavaFileObjectImpl(FileKey key, SimpleFileManager<P> manager, P file) {
+  public JavaFileObjectImpl(FileKey key, ReadFileSystem<P> fs, P file) throws NullPointerException {
     super(key.uri, key.kind);
 
     //
+    if (file == null) {
+      throw new NullPointerException("No null file accepted for " + key);
+    }
+
+    //
     this.key = key;
-    this.manager = manager;
+    this.fs = fs;
     this.file = file;
     this.writing = false;
   }
@@ -64,25 +71,34 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
     return key;
   }
 
-  private Content getContent() throws IOException {
+  private Timestamped<Content> assertContent() throws IOException {
     if (writing) {
       throw new IllegalStateException("Opened for writing");
+    } else {
+      if (content == null) {
+        content = fs.getContent(file);
+        if (content == null) {
+          throw new FileNotFoundException("File " + key + " cannot be found");
+        }
+      }
+      return content;
     }
-    if (file == null) {
-      throw new FileNotFoundException("File " + key + " cannot be found");
-    }
-    if (content == null) {
-      content = manager.fs.getContent(file);
-    }
-    return content;
   }
 
   public File getFile() throws IOException {
-    return manager.fs.getFile(file);
+    return fs.getFile(file);
   }
 
   @Override
   public String getName() {
+    File f = fs.getFile(file);
+    if (f != null) {
+      try {
+        return f.getCanonicalPath();
+      }
+      catch (IOException ignore) {
+      }
+    }
     return key.rawName;
   }
 
@@ -99,7 +115,7 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
   @Override
   public long getLastModified() {
     try {
-      return getContent().getLastModified();
+      return assertContent().getTime();
     }
     catch (IOException e) {
       // We return 0 as the javadoc say to do
@@ -109,12 +125,12 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
 
   @Override
   public final CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
-    return getContent().getCharSequence();
+    return assertContent().getObject().getCharSequence();
   }
 
   @Override
   public final InputStream openInputStream() throws IOException {
-    return getContent().getInputStream();
+    return assertContent().getObject().getInputStream();
   }
 
   @Override
@@ -122,15 +138,14 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
     if (writing) {
       throw new IllegalStateException("Opened for writing");
     }
-    if (manager.fs instanceof ReadWriteFileSystem<?>) {
-      final ReadWriteFileSystem<P> fs = (ReadWriteFileSystem<P>)manager.fs;
+    if (fs instanceof ReadWriteFileSystem<?>) {
+      final ReadWriteFileSystem<P> fs = (ReadWriteFileSystem<P>)this.fs;
       return new ByteArrayOutputStream() {
         @Override
         public void close() throws IOException {
-          content = new Content(System.currentTimeMillis(), toByteArray(), null);
-          P file = fs.makeFile(key.packageNames, key.name);
-          fs.setContent(file, content);
-          JavaFileObjectImpl.this.file = file;
+          Content content = new Content(toByteArray(), null);
+          long lastModified = fs.setContent(file, content);
+          JavaFileObjectImpl.this.content = new Timestamped<Content>(lastModified, content);
           JavaFileObjectImpl.this.writing = false;
         }
       };
@@ -145,15 +160,14 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
     if (writing) {
       throw new IllegalStateException("Opened for writing");
     }
-    if (manager.fs instanceof ReadWriteFileSystem<?>) {
-      final ReadWriteFileSystem<P> fs = (ReadWriteFileSystem<P>)manager.fs;
+    if (fs instanceof ReadWriteFileSystem<?>) {
+      final ReadWriteFileSystem<P> fs = (ReadWriteFileSystem<P>)this.fs;
       return new StringWriter() {
         @Override
         public void close() throws IOException {
-          content = new Content(System.currentTimeMillis(), getBuffer());
-          P file = fs.makeFile(key.packageNames, key.name);
-          fs.setContent(file, content);
-          JavaFileObjectImpl.this.file = file;
+          Content content = new Content(getBuffer());
+          long lastModified = fs.setContent(file, content);
+          JavaFileObjectImpl.this.content = new Timestamped<Content>(lastModified, content);
           JavaFileObjectImpl.this.writing = false;
         }
       };

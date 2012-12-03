@@ -48,7 +48,8 @@ public class RouterTestCase extends AbstractTestCase {
     CompilationError error = errors.get(0);
     assertSame(RouterMetaModel.ROUTER_DUPLICATE_ROUTE, error.getCode());
     assertEquals(Arrays.asList("/foo"), error.getArguments());
-    assertEquals("/metamodel/router/duplicate/methodroute/A.java", error.getSource());
+    File f = helper.getSourcePath().getPath("metamodel", "router", "duplicate", "methodroute", "A.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test

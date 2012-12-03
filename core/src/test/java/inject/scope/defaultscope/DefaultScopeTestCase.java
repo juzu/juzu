@@ -20,13 +20,13 @@
 package inject.scope.defaultscope;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class DefaultScopeTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public DefaultScopeTestCase(InjectImplementation di) {
+  public DefaultScopeTestCase(InjectorProvider di) {
     super(di);
   }
 

@@ -137,8 +137,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
           for (int i = 0;i < parameterTypeMirrors.size();i++) {
             VariableElement parameterVariableElt = parameterVariableElements.get(i);
             TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i);
-            TypeMirror erasedParameterTypeMirror = context.processingContext.erasure(parameterTypeMirror);
-            String parameterType = erasedParameterTypeMirror.toString();
+            String typeLiteral = context.processingContext.getLiteralName(parameterTypeMirror);
 
             //
             String pattern = null;
@@ -195,7 +194,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
             ElementHandle.Class a = ElementHandle.Class.create(te);
 
             //
-            parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, parameterType, pattern));
+            parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral, pattern));
           }
 
           //

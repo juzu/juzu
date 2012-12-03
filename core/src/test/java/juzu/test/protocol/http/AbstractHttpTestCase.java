@@ -19,7 +19,7 @@
 
 package juzu.test.protocol.http;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.protocol.mock.MockApplication;
@@ -84,7 +84,7 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
 
   public final MockApplication<?> assertDeploy(String packageName) {
     try {
-      return application = application(InjectImplementation.CDI_WELD, packageName);
+      return application = application(InjectorProvider.CDI_WELD, packageName);
     }
     catch (Exception e) {
       throw failure("Could not deploy application " + Arrays.asList(packageName), e);

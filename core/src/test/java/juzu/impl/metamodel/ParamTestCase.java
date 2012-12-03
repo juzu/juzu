@@ -79,7 +79,7 @@ public class ParamTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     // Remove @Param
-    JavaFile file = helper.assertJavaFile("metamodel", "param", "Bean.java");
+    JavaFile file = helper.assertSource("metamodel", "param", "Bean.java");
     ClassOrInterfaceDeclaration bean = file.assertDeclaration();
     AnnotationExpr annotation = bean.getAnnotations().get(0);
     bean.getAnnotations().clear();

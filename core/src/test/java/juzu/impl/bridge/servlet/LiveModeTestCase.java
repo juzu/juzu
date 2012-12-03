@@ -49,7 +49,7 @@ public class LiveModeTestCase extends AbstractServletTestCase {
     assertEquals("ok", ok);
 
     //
-    JavaFile pkgFile = getCompiler().assertJavaFile("bridge", "servlet", "livemode", "A.java");
+    JavaFile pkgFile = getCompiler().assertSource("bridge", "servlet", "livemode", "A.java");
     pkgFile.assertSave(pkgFile.assertContent().replace("ok", "OK"));
 
     //

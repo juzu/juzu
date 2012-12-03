@@ -55,7 +55,7 @@ public class LiveModeTestCase extends AbstractPortletTestCase {
     assertEquals(1, Tools.count(body.getText(), "pass"));
 
     //
-    JavaFile pkgFile = getCompiler().assertJavaFile("bridge", "portlet", "render", "A.java");
+    JavaFile pkgFile = getCompiler().assertSource("bridge", "portlet", "render", "A.java");
     pkgFile.assertSave(pkgFile.assertContent().replace("pass", "pass2"));
     driver.get(url.toString());
     body = driver.findElement(By.tagName("body"));

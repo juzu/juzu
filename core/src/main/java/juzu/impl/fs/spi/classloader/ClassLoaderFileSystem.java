@@ -19,10 +19,11 @@
 
 package juzu.impl.fs.spi.classloader;
 
-import juzu.impl.fs.spi.SimpleFileSystem;
+import juzu.impl.common.Timestamped;
+import juzu.impl.fs.spi.PathType;
+import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
-import juzu.impl.common.Trie;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -30,12 +31,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ClassLoaderFileSystem extends SimpleFileSystem<Trie<String, URL>> {
+public class ClassLoaderFileSystem extends ReadFileSystem<Node> {
 
   /** . */
   private final URLCache cache;
@@ -59,54 +59,59 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<Trie<String, URL>> {
   }
 
   @Override
+  public Class<Node> getType() {
+    return null;
+  }
+
+  @Override
   public String getDescription() {
     return "ClassLoader[]";
   }
 
   @Override
-  public Trie<String, URL> getPath(Iterable<String> names) throws IOException {
-    return cache.get(names);
+  public boolean equals(Node left, Node right) {
+    return left == right;
   }
 
   @Override
-  public String getName(Trie<String, URL> path) throws IOException {
+  public Node getRoot() throws IOException {
+    return cache.root;
+  }
+
+  @Override
+  public Node getChild(Node dir, String name) throws IOException {
+    return dir.get(name);
+  }
+
+  @Override
+  public long getLastModified(Node path) throws IOException {
+    return 1;
+  }
+
+  @Override
+  public String getName(Node path) throws IOException {
     return path.getKey();
   }
 
   @Override
-  public void packageOf(Trie<String, URL> path, Collection<String> to) throws IOException {
-    Trie<String, URL> trie = cache.get(path.getPath());
-    if (trie == null) {
-      throw new IOException();
-    }
-    Iterator<String> iterator = path.getPath().iterator();
-    while (iterator.hasNext()) {
-      String next = iterator.next();
-      if (trie.value() == null || iterator.hasNext()) {
-        to.add(next);
-      }
-    }
-  }
-
-  @Override
-  public Iterator<Trie<String, URL>> getChildren(Trie<String, URL> dir) throws IOException {
-    final Iterator<Trie<String, URL>> entries = dir.getEntries();
-    return new Iterator<Trie<String, URL>>() {
+  public Iterator<Node> getChildren(Node dir) throws IOException {
+    final Iterator<Node> entries = dir.getEntries();
+    return new Iterator<Node>() {
 
       /** . */
-      private Trie<String, URL> next;
+      private Node next;
 
       public boolean hasNext() {
         while (next == null && entries.hasNext()) {
-          Trie<String, URL> next = entries.next();
-          if (next.value() != null) {
+          Node next = entries.next();
+          if (next.url != null) {
             this.next = next;
           }
         }
         return next != null;
       }
 
-      public Trie<String, URL> next() {
+      public Node next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
@@ -125,36 +130,30 @@ public class ClassLoaderFileSystem extends SimpleFileSystem<Trie<String, URL>> {
   }
 
   @Override
-  public boolean isDir(Trie<String, URL> path) throws IOException {
-    return path.value() == null;
+  public PathType typeOf(Node path) throws IOException {
+    return path.url == null ? PathType.DIR : PathType.FILE;
   }
 
   @Override
-  public boolean isFile(Trie<String, URL> path) throws IOException {
-    return !isDir(path);
-  }
-
-  @Override
-  public Content getContent(Trie<String, URL> file) throws IOException {
-    URL url = file.value();
-    if (url == null) {
-      throw new IOException("Cannot find file " + url);
+  public Timestamped<Content> getContent(Node file) throws IOException {
+    if (file.url == null) {
+      throw new IOException("Cannot find file " + file.getPath());
     }
 
     //
-    URLConnection conn = url.openConnection();
+    URLConnection conn = file.url.openConnection();
     long lastModified = conn.getLastModified();
     byte[] bytes = Tools.bytes(conn.getInputStream());
-    return new Content(lastModified, bytes, Charset.defaultCharset());
+    return new Timestamped<Content>(lastModified, new Content(bytes, Charset.defaultCharset()));
   }
 
   @Override
-  public File getFile(Trie<String, URL> path) throws IOException {
-    throw new UnsupportedOperationException();
+  public File getFile(Node path){
+    return null;
   }
 
   @Override
-  public URL getURL(Trie<String, URL> path) throws NullPointerException, IOException {
-    return path.value();
+  public URL getURL(Node path) throws NullPointerException, IOException {
+    return path.url;
   }
 }

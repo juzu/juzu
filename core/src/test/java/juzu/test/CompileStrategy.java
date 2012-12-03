@@ -27,11 +27,11 @@ import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.common.Tools;
 
 import javax.annotation.processing.Processor;
 import javax.inject.Provider;
+import javax.tools.JavaCompiler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 public abstract class CompileStrategy<I, O> {
 
   /** . */
-  final SimpleFileSystem<?> classPath;
+  final ReadFileSystem<?> classPath;
 
   /** . */
   final ReadWriteFileSystem<I> sourcePath;
@@ -56,27 +56,31 @@ public abstract class CompileStrategy<I, O> {
   final ReadWriteFileSystem<O> classOutput;
 
   /** . */
+  JavaCompilerProvider javaCompilerProvider;
+
+  /** . */
   Provider<? extends Processor> processorFactory;
 
   /** . */
   final CompilerConfig config;
 
   public CompileStrategy(
-    SimpleFileSystem<?> classPath,
+      ReadFileSystem<?> classPath,
     ReadWriteFileSystem<I> sourcePath,
     ReadWriteFileSystem<O> sourceOutput,
-    ReadWriteFileSystem<O> classOutput,
-    Provider<? extends Processor> processorFactory) {
+    ReadWriteFileSystem<O> classOutput) {
     this.classPath = classPath;
     this.sourcePath = sourcePath;
     this.sourceOutput = sourceOutput;
     this.classOutput = classOutput;
-    this.processorFactory = processorFactory;
     this.config = new CompilerConfig().force(true);
   }
 
-  final Compiler.Builder compiler() {
+  final Compiler.Builder builder() {
     Compiler.Builder builder = Compiler.builder();
+    JavaCompiler abc = javaCompilerProvider.get();
+    builder.javaCompiler(abc);
+    builder.processor(processorFactory);
     builder.addClassPath(classPath);
     builder.sourcePath(sourcePath);
     builder.sourceOutput(sourceOutput);
@@ -102,8 +106,12 @@ public abstract class CompileStrategy<I, O> {
     /** . */
     final FileSystemScanner<I> scanner;
 
-    public Incremental(SimpleFileSystem<?> classPath, ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput, Provider<? extends Processor> processorFactory) {
-      super(classPath, sourcePath, sourceOutput, classOutput, processorFactory);
+    public Incremental(
+        ReadFileSystem<?> classPath,
+        ReadWriteFileSystem<I> sourcePath,
+        ReadWriteFileSystem<O> sourceOutput,
+        ReadWriteFileSystem<O> classOutput) {
+      super(classPath, sourcePath, sourceOutput, classOutput);
 
       //
       this.classPath = new LinkedList<ReadFileSystem<?>>();
@@ -111,7 +119,7 @@ public abstract class CompileStrategy<I, O> {
     }
 
     void compile() throws IOException, CompilationException {
-      Compiler.Builder builder = compiler();
+      Compiler.Builder builder = builder();
 
       //
       List<String> toCompile = new ArrayList<String>();
@@ -154,8 +162,7 @@ public abstract class CompileStrategy<I, O> {
       }
 
       //
-      System.out.println("Compiling " + toCompile);
-      compiler = builder.build(processorFactory != null ? processorFactory.get() : null);
+      compiler = builder.build();
       compiler.compile(toCompile.toArray(new String[toCompile.size()]));
     }
 
@@ -166,13 +173,16 @@ public abstract class CompileStrategy<I, O> {
   }
 
   public static class Batch<I, O> extends CompileStrategy<I, O> {
-    public Batch(SimpleFileSystem<?> classPath, ReadWriteFileSystem<I> sourcePath, ReadWriteFileSystem<O> sourceOutput, ReadWriteFileSystem<O> classOutput, Provider<? extends Processor> processorFactory) {
-      super(classPath, sourcePath, sourceOutput, classOutput, processorFactory);
+    public Batch(
+        ReadFileSystem<?> classPath,
+        ReadWriteFileSystem<I> sourcePath,
+        ReadWriteFileSystem<O> sourceOutput,
+        ReadWriteFileSystem<O> classOutput) {
+      super(classPath, sourcePath, sourceOutput, classOutput);
     }
 
     void compile() throws IOException, CompilationException {
-      Compiler.Builder builder = compiler();
-      compiler = builder.build(processorFactory != null ? processorFactory.get() : null);
+      compiler = builder().build();
       compiler.compile();
     }
 

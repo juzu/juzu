@@ -21,7 +21,7 @@ package juzu.impl.inject.spi.cdi;
 
 import juzu.AmbiguousResolutionException;
 import juzu.impl.common.Filter;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -81,8 +81,8 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
     this.container = container;
   }
 
-  public InjectImplementation getImplementation() {
-    return InjectImplementation.CDI_WELD;
+  public InjectorProvider getImplementation() {
+    return InjectorProvider.CDI_WELD;
   }
 
   public ClassLoader getClassLoader() {

@@ -20,13 +20,13 @@
 package inject.implementationtype;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ImplementationTypeTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public ImplementationTypeTestCase(InjectImplementation di) {
+  public ImplementationTypeTestCase(InjectorProvider di) {
     super(di);
   }
 

@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
@@ -32,7 +32,7 @@ import java.util.Arrays;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MethodParametersTestCase extends AbstractInjectTestCase {
 
-  public MethodParametersTestCase(InjectImplementation di) {
+  public MethodParametersTestCase(InjectorProvider di) {
     super(di);
   }
 

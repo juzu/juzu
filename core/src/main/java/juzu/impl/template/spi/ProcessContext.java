@@ -19,6 +19,7 @@
 
 package juzu.impl.template.spi;
 
+import juzu.impl.common.Timestamped;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.Content;
@@ -38,7 +39,7 @@ public class ProcessContext {
     this.templates = templates;
   }
 
-  protected Content resolveResource(Path path) {
+  protected Timestamped<Content> resolveResource(Path path) {
     return null;
   }
 
@@ -58,7 +59,7 @@ public class ProcessContext {
     //
     if (template == null) {
       // Get source
-      Content content = resolveResource(path);
+      Timestamped<Content> content = resolveResource(path);
       if (content == null) {
         throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
       }
@@ -69,7 +70,7 @@ public class ProcessContext {
       // Parse to AST
       M templateAST;
       try {
-        templateAST = provider.parse(new ParseContext(), content.getCharSequence());
+        templateAST = provider.parse(new ParseContext(), content.getObject().getCharSequence());
       }
       catch (TemplateException e) {
         throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path);
@@ -80,7 +81,7 @@ public class ProcessContext {
         originPath,
         templateAST,
         path,
-        content.getLastModified());
+        content.getTime());
 
       //
       templates.put(path, template);

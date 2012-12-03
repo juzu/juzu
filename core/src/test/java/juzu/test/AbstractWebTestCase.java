@@ -23,7 +23,6 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import juzu.impl.common.QN;
-import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import org.jboss.arquillian.junit.Arquillian;
@@ -37,7 +36,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
@@ -95,7 +93,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     }
 
     // Compile classes
-    CompilerAssert<File, File> compiler = compiler(incremental, packageQN, null);
+    CompilerAssert<File, File> compiler = compiler(incremental, packageQN);
     compiler.assertCompile();
 
     //
@@ -109,23 +107,32 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
       classOutput.traverse(new Visitor.Default<File>() {
 
         /** . */
-        LinkedList<String> path = new LinkedList<String>();
+//        LinkedList<String> path = new LinkedList<String>();
+        StringBuffer path = new StringBuffer();
 
         @Override
         public void enterDir(File dir, String name) throws IOException {
-          path.addLast(name.isEmpty() ? "classes" : name);
+          if (name.isEmpty()) {
+            path.append("classes/");
+          } else {
+            path.append(name).append('/');
+          }
         }
 
         @Override
         public void leaveDir(File dir, String name) throws IOException {
-          path.removeLast();
+          if (name.isEmpty()) {
+            path.setLength(0);
+          } else {
+            path.setLength(path.length() - name.length() - 1);
+          }
         }
 
         @Override
         public void file(File file, String name) throws IOException {
-          path.addLast(name);
-          String target = Tools.join('/', path);
-          path.removeLast();
+          path.append(name);
+          String target = path.toString();
+          path.setLength(path.length() - name.length());
           war.addAsWebInfResource(new ByteArrayAsset(new FileInputStream(file)), target);
         }
       });

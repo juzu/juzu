@@ -29,7 +29,7 @@ public abstract class InjectionContext<B, I> {
    *
    * @return the implementation
    */
-  public abstract InjectImplementation getImplementation();
+  public abstract InjectorProvider getImplementation();
 
   public abstract ClassLoader getClassLoader();
 

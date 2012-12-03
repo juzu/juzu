@@ -24,12 +24,11 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.common.FQN;
 import juzu.impl.common.NameLiteral;
 import juzu.impl.common.QN;
-import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;
-import juzu.impl.inject.spi.InjectBuilder;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.Injector;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringBuilder;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
@@ -59,10 +58,10 @@ public class ApplicationLifeCycle<P, R> {
   protected QN name;
 
   /** . */
-  protected InjectImplementation injectImplementation;
+  protected InjectorProvider injectImplementation;
 
   /** . */
-  protected SimpleFileSystem<R> resources;
+  protected ReadFileSystem<R> resources;
 
   /** . */
   protected ApplicationContext context;
@@ -101,19 +100,19 @@ public class ApplicationLifeCycle<P, R> {
     this.name = name;
   }
 
-  public InjectImplementation getInjectImplementation() {
+  public InjectorProvider getInjectImplementation() {
     return injectImplementation;
   }
 
-  public void setInjectImplementation(InjectImplementation injectImplementation) {
+  public void setInjectImplementation(InjectorProvider injectImplementation) {
     this.injectImplementation = injectImplementation;
   }
 
-  public SimpleFileSystem<R> getResources() {
+  public ReadFileSystem<R> getResources() {
     return resources;
   }
 
-  public void setResources(SimpleFileSystem<R> resources) {
+  public void setResources(ReadFileSystem<R> resources) {
     this.resources = resources;
   }
 
@@ -206,28 +205,28 @@ public class ApplicationLifeCycle<P, R> {
     }
 
     //
-    InjectBuilder injectBuilder = injectImplementation.builder();
-    injectBuilder.addFileSystem(classes);
-    injectBuilder.addFileSystem(libs);
-    injectBuilder.setClassLoader(getModule().getClassLoader());
+    Injector injector = injectImplementation.get();
+    injector.addFileSystem(classes);
+    injector.addFileSystem(libs);
+    injector.setClassLoader(getModule().getClassLoader());
 
     //
-    if (injectBuilder instanceof SpringBuilder) {
+    if (injector instanceof SpringBuilder) {
       R springName = resources.getPath("spring.xml");
       if (springName != null) {
         URL configurationURL = resources.getURL(springName);
-        ((SpringBuilder)injectBuilder).setConfigurationURL(configurationURL);
+        ((SpringBuilder)injector).setConfigurationURL(configurationURL);
       }
     }
 
     // Bind the resolver
     ClassLoaderResolver resolver = new ClassLoaderResolver(getModule().getClassLoader());
-    injectBuilder.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.classpath")), resolver);
-    injectBuilder.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.server")), this.resolver);
+    injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.classpath")), resolver);
+    injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.server")), this.resolver);
 
     //
     ApplicationBootstrap bootstrap = new ApplicationBootstrap(
-      injectBuilder,
+        injector,
       descriptor
     );
 

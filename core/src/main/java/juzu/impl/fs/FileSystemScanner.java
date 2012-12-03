@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -67,9 +68,9 @@ public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
     @Override
     protected long createValue(P file) throws IOException {
       try {
-        Content content = fs.getContent(file);
+        juzu.impl.common.Timestamped<Content> content = fs.getContent(file);
         MessageDigest digest = MessageDigest.getInstance("MD5");
-        InputStream in = content.getInputStream();
+        InputStream in = content.getObject().getInputStream();
         byte[] bytes = Tools.bytes(in);
         byte[] md5 = digest.digest(bytes);
         long value = 0;
@@ -93,7 +94,7 @@ public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
   protected final ReadFileSystem<P> fs;
 
   /** . */
-  private StringBuilder sb = new StringBuilder();
+  private ArrayList<String> stack = new ArrayList<String>();
 
   /** . */
   private Map<String, Data> snapshot;
@@ -156,13 +157,14 @@ public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
   }
 
   public void enterDir(P dir, String name) throws IOException {
+    stack.add(name);
   }
 
   public void file(P file, String name) throws IOException {
     long lastModified = createValue(file);
-    fs.pathOf(file, '/', sb);
-    String id = sb.toString();
-    sb.setLength(0);
+    stack.add(name);
+    String id = Tools.join('/', stack);
+    stack.remove(stack.size() - 1);
     Data data = snapshot.get(id);
     if (data == null) {
       snapshot.put(id, new Data(lastModified));
@@ -179,6 +181,7 @@ public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
   }
 
   public void leaveDir(P dir, String name) throws IOException {
+    stack.remove(stack.size() - 1);
   }
 
   protected abstract long createValue(P file) throws IOException;

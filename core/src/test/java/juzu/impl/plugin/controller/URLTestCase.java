@@ -20,7 +20,7 @@
 package juzu.impl.plugin.controller;
 
 import juzu.PropertyType;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.JSON;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
@@ -31,7 +31,7 @@ import org.junit.Test;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class URLTestCase extends AbstractInjectTestCase {
 
-  public URLTestCase(InjectImplementation di) {
+  public URLTestCase(InjectorProvider di) {
     super(di);
   }
 

@@ -20,7 +20,6 @@
 package juzu.impl.fs.spi.classloader;
 
 import juzu.impl.common.Tools;
-import juzu.impl.common.Trie;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,10 +36,10 @@ import java.util.zip.ZipInputStream;
 class URLCache {
 
   /** . */
-  private final Trie<String, URL> root;
+  final Node root;
 
   public URLCache() {
-    this.root = new Trie<String, URL>();
+    this.root = new Node();
   }
 
   void add(ClassLoader classLoader) throws IOException {
@@ -87,11 +86,11 @@ class URLCache {
     }
   }
 
-  Trie<String, URL> get(Iterable<String> names) throws IOException {
+  Node get(Iterable<String> names) throws IOException {
     return root.get(names.iterator());
   }
 
-  private static void add(Trie<String, URL> root, URL url) throws IOException {
+  private static void add(Node root, URL url) throws IOException {
     if ("file".equals(url.getProtocol())) {
       // The fast way (but that requires a File object)
       try {
@@ -120,25 +119,24 @@ class URLCache {
     }
   }
 
-  private static void add(Trie<String, URL> trie, File f) throws IOException {
+  private static void add(Node node, File f) throws IOException {
     for (File file : f.listFiles()) {
-      Trie<String, URL> child = trie.add(file.getName());
+      Node child = node.add(file.getName());
       if (file.isDirectory()) {
         add(child, file);
       }
       else {
-        child.value(file.toURI().toURL());
+        child.url =  file.toURI().toURL();
       }
     }
   }
 
-  private static void add(Trie<String, URL> root, URL baseURL, ZipEntry entry) throws IOException {
+  private static void add(Node root, URL baseURL, ZipEntry entry) throws IOException {
     String name = entry.getName();
     if (!entry.isDirectory()) {
       String[] names = Tools.split(name, '/');
-      Trie<String, URL> trie = root.add(names);
-      URL entryURL = new URL("jar:" + baseURL + "!/" + name);
-      trie.value(entryURL);
+      Node node = root.add(names);
+      node.url = new URL("jar:" + baseURL + "!/" + name);
     }
   }
 }

@@ -22,7 +22,7 @@ package inject.declared.bean.qualifier.declared;
 import inject.AbstractInjectTestCase;
 import inject.Color;
 import inject.ColorizedLiteral;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 import java.lang.annotation.Annotation;
@@ -31,7 +31,7 @@ import java.util.Collections;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class DeclaredQualifierDeclaredBeanTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public DeclaredQualifierDeclaredBeanTestCase(InjectImplementation di) {
+  public DeclaredQualifierDeclaredBeanTestCase(InjectorProvider di) {
     super(di);
   }
 

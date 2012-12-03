@@ -31,7 +31,7 @@ import java.lang.annotation.Annotation;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class InjectBuilder {
+public abstract class Injector {
 
   private static final Filter<Class<?>> ALL = new Filter<Class<?>>() {
     public boolean accept(Class<?> elt) {
@@ -48,7 +48,7 @@ public abstract class InjectBuilder {
    * @param implementationType the bean implementation type
    * @return this builder
    */
-  public abstract <T> InjectBuilder declareBean(
+  public abstract <T> Injector declareBean(
     Class<T> beanType,
     Scope beanScope,
     Iterable<Annotation> beanQualifiers,
@@ -63,7 +63,7 @@ public abstract class InjectBuilder {
    * @param providerType   the bean provider type
    * @return this builder
    */
-  public abstract <T> InjectBuilder declareProvider(
+  public abstract <T> Injector declareProvider(
     Class<T> beanType,
     Scope beanScope,
     Iterable<Annotation> beanQualifiers,
@@ -78,7 +78,7 @@ public abstract class InjectBuilder {
    * @param provider       the bean provider
    * @return this builder
    */
-  public abstract <T> InjectBuilder bindProvider(
+  public abstract <T> Injector bindProvider(
     Class<T> beanType,
     Scope beanScope,
     Iterable<Annotation> beanQualifiers,
@@ -92,16 +92,16 @@ public abstract class InjectBuilder {
    * @param instance       the bean instance
    * @return this builder
    */
-  public abstract <T> InjectBuilder bindBean(
+  public abstract <T> Injector bindBean(
       Class<T> beanType,
       Iterable<Annotation> beanQualifiers,
       T instance);
 
-  public abstract <P> InjectBuilder addFileSystem(ReadFileSystem<P> fs);
+  public abstract <P> Injector addFileSystem(ReadFileSystem<P> fs);
 
-  public abstract InjectBuilder addScope(Scope scope);
+  public abstract Injector addScope(Scope scope);
 
-  public abstract InjectBuilder setClassLoader(ClassLoader classLoader);
+  public abstract Injector setClassLoader(ClassLoader classLoader);
 
   public final InjectionContext<?, ?> create() throws Exception {
     return create(ALL);

@@ -26,52 +26,33 @@ import java.io.IOException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P> {
 
-  public final P makeFile(Iterable<String> path, String name) throws IOException {
-    return makeFile(getRoot(), path, name);
+  public final P makePath(Iterable<String> path) throws IOException {
+    return makePath(getRoot(), path);
   }
 
-  public final P makeFile(P dir, Iterable<String> path, String name) throws IllegalArgumentException, IOException {
-    dir = makeDir(dir, path);
-    P child = getChild(dir, name);
-    if (child == null) {
-      return addFile(dir, name);
-    }
-    else if (isFile(child)) {
-      return child;
-    }
-    else {
-      throw new UnsupportedOperationException("handle me gracefully");
-    }
-  }
-
-  public final P makeDir(Iterable<String> path) throws IOException {
-    return makeDir(getRoot(), path);
-  }
-
-  public final P makeDir(P dir, Iterable<String> path) throws IllegalArgumentException, IOException {
+  public final P makePath(P dir, Iterable<String> path) throws IllegalArgumentException, IOException {
     if (!isDir(dir)) {
       throw new IllegalArgumentException("Dir is not an effective dir");
     }
     for (String name : path) {
-      P child = getChild(dir, name);
-      if (child == null) {
-        dir = addDir(dir, name);
-      }
-      else if (isDir(child)) {
-        dir = child;
-      }
-      else {
-        throw new UnsupportedOperationException("handle me gracefully");
-      }
+      dir = makePath(dir, name);
     }
     return dir;
   }
 
-  public abstract P addDir(P parent, String name) throws IOException;
+  /**
+   * Create and return a new path representation.
+   *
+   * @param parent the parent path
+   * @param name the path name
+   * @return the path
+   * @throws IOException any io exception
+   */
+  public abstract P makePath(P parent, String name) throws IOException;
 
-  public abstract P addFile(P parent, String name) throws IOException;
+  public abstract void createDir(P dir) throws IOException;
 
-  public abstract void setContent(P file, Content content) throws IOException;
+  public abstract long setContent(P file, Content content) throws IOException;
 
   public abstract void removePath(P path) throws IOException;
 

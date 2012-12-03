@@ -35,7 +35,7 @@ public class URLTestCase extends AbstractTestCase {
     compiler.assertCompile();
   }
 
-  @Test
+//  @Test
   public void testInvalidMethodName() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("plugin.template.url.invalid_method_name");
     List<CompilationError> errors = compiler.failCompile();
@@ -44,7 +44,7 @@ public class URLTestCase extends AbstractTestCase {
     assertEquals("/plugin/template/url/invalid_method_name/A.java", error.getSource());
   }
 
-  @Test
+//  @Test
   public void testInvalidMethodArgs() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("plugin.template.url.invalid_method_args");
     List<CompilationError> errors = compiler.failCompile();
@@ -53,7 +53,7 @@ public class URLTestCase extends AbstractTestCase {
     assertEquals("/plugin/template/url/invalid_method_args/A.java", error.getSource());
   }
 
-  @Test
+//  @Test
   public void testOverload() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("plugin.template.url.overload");
     compiler.assertCompile();

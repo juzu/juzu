@@ -19,20 +19,31 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.common.Content;
+import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RAMPath {
+abstract class RAMPath {
 
   /** . */
-  private final String name;
+  private static final String[] EMPTY = new String[0];
 
   /** . */
-  private RAMDir parent;
+  final RAMFileSystem fs;
 
-  public RAMPath() {
+  /** . */
+  final String name;
+
+  /** . */
+  final String[] names;
+
+  /** . */
+  RAMDir parent;
+
+  RAMPath(RAMFileSystem fs) {
+    this.fs = fs;
     this.name = "";
     this.parent = null;
+    this.names = EMPTY;
   }
 
   RAMPath(RAMDir parent, String name) {
@@ -47,48 +58,22 @@ public abstract class RAMPath {
     }
 
     //
-    this.name = name;
-    this.parent = parent;
-  }
-
-  public abstract RAMDir addDir(String name);
-
-  public abstract RAMFile addFile(String name);
-
-  public abstract Content getContent();
-
-  public final RAMFile update(String content) {
-    return update(new Content(System.currentTimeMillis(), content));
-  }
-
-  public abstract RAMFile update(Content content);
-
-  public abstract RAMPath getChild(String name);
-
-  public abstract Iterable<RAMPath> getChildren();
-
-  public abstract long getLastModified();
-
-  public abstract void touch();
-
-  public final String getName() {
-    return name;
-  }
-
-  public final RAMDir getParent() {
-    return parent;
-  }
-
-  public final void del() {
-    if (name.length() == 0) {
-      throw new UnsupportedOperationException("Cannot remove root file");
-    }
-    if (parent == null) {
-      throw new IllegalStateException("Cannot remove removed file");
-    }
+    String[] names = Arrays.copyOf(parent.names, parent.names.length + 1);
+    names[names.length - 1] = name;
 
     //
-    parent.children.remove(name);
-    parent = null;
+    this.fs = parent.fs;
+    this.name = name;
+    this.parent = parent;
+    this.names = names;
+  }
+
+  abstract long getLastModified();
+
+  abstract void touch();
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "[" + name + "]";
   }
 }

@@ -20,7 +20,7 @@
 package juzu.impl.plugin.controller;
 
 import juzu.impl.inject.Scoped;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.Identifiable;
 import juzu.test.Registry;
@@ -34,7 +34,7 @@ import java.util.List;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ScopeTestCase extends AbstractInjectTestCase {
 
-  public ScopeTestCase(InjectImplementation di) {
+  public ScopeTestCase(InjectorProvider di) {
     super(di);
   }
 
