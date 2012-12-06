@@ -31,7 +31,7 @@ public class A extends Controller {
 
   @View
   public Response.Content.Render index() throws IOException {
-    return Response.render($A.action().toString(), "render_phase");
+    return Response.render(A_.action().toString(), "render_phase");
   }
 
   @Action

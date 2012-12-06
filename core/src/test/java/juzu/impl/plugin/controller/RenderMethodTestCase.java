@@ -39,7 +39,7 @@ public class RenderMethodTestCase extends AbstractTestCase {
     CompilerAssert<?, ?> compiler = compiler("plugin.controller.method.render");
     compiler.assertCompile();
     aClass = compiler.assertClass("plugin.controller.method.render.A");
-    compiler.assertClass("plugin.controller.method.render.$A");
+    compiler.assertClass("plugin.controller.method.render.A_");
 
     //
     Class<?> appClass = compiler.assertClass("plugin.controller.method.render.Application");

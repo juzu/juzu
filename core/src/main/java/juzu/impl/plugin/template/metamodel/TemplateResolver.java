@@ -164,7 +164,7 @@ public class TemplateResolver implements Serializable {
       final Element[] elements = new Element[types.size()];
       int index = 0;
       for (FQN type : types) {
-        elements[index++] = context.getTypeElement(type.getValue());
+        elements[index++] = context.getTypeElement(type.getName());
       }
 
       // Resolve the stub
@@ -274,7 +274,7 @@ public class TemplateResolver implements Serializable {
           append(TemplateDescriptor.class.getName()).
           append(" DESCRIPTOR = new ").
           append(TemplateDescriptor.class.getName()).
-          append("(").append(absolute.getFQN().getValue()).append(".class);\n");
+          append("(").append(absolute.getFQN().getName()).append(".class);\n");
 
       //
       String baseBuilderName = juzu.template.Template.Builder.class.getCanonicalName();
@@ -333,7 +333,7 @@ public class TemplateResolver implements Serializable {
     Path absolute = metaModel.resolve(template.getPath());
 
     //
-    FQN stubFQN = new FQN(absolute.getFQN().getValue() + "_");
+    FQN stubFQN = new FQN(absolute.getFQN().getName() + "_");
     TemplateProvider provider = plugin.providers.get(template.getPath().getExt());
     Writer writer = null;
     try {
@@ -342,7 +342,7 @@ public class TemplateResolver implements Serializable {
       writer = stubFile.openWriter();
       writer.append("package ").append(stubFQN.getPackageName()).append(";\n");
       writer.append("import ").append(Generated.class.getCanonicalName()).append(";\n");
-      writer.append("@Generated({\"").append(stubFQN.getValue()).append("\"})\n");
+      writer.append("@Generated({\"").append(stubFQN.getName()).append("\"})\n");
       writer.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
       writer.append("}");
 
@@ -350,7 +350,7 @@ public class TemplateResolver implements Serializable {
       stubCache.put(template.getPath().getFQN(), stubFile);
 
       //
-      log.log("Generating template stub " + stubFQN.getValue() + " as " + stubFile.toUri() +
+      log.log("Generating template stub " + stubFQN.getName() + " as " + stubFile.toUri() +
         " with originating elements " + Arrays.asList(elements));
     }
     catch (IOException e) {

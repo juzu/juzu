@@ -41,7 +41,7 @@ public class ResourceMethodTestCase extends AbstractTestCase {
 
     //
     aClass = compiler.assertClass("plugin.controller.method.resource.A");
-    compiler.assertClass("plugin.controller.method.resource.$A");
+    compiler.assertClass("plugin.controller.method.resource.A_");
     Class<?> appClass = compiler.assertClass("plugin.controller.method.resource.Application");
     descriptor = ApplicationDescriptor.create(appClass);
   }

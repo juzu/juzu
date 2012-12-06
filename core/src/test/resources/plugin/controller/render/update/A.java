@@ -31,12 +31,12 @@ public class A extends Controller {
 
   @Action
   public Response.Update process() {
-    return $A.done();
+    return A_.done();
   }
 
   @View
   public Response.Content index() throws IOException {
-    return Response.ok($A.process().toString());
+    return Response.ok(A_.process().toString());
   }
 
   @View

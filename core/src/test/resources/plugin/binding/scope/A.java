@@ -39,7 +39,7 @@ public class A extends Controller {
   public Response.Content index() throws IOException {
     if (bean != null) {
       serial = bean.getSerial();
-      return Response.ok($A.done().toString());
+      return Response.ok(A_.done().toString());
     }
     else {
       return Response.ok("");

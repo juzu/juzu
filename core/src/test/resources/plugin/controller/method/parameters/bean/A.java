@@ -45,7 +45,7 @@ public class A extends Controller {
 
   @View(id = "a")
   public Response.Content a() {
-    return Response.render($A.mA(bean).toString());
+    return Response.render(A_.mA(bean).toString());
   }
 
   @View
@@ -55,12 +55,12 @@ public class A extends Controller {
 
   @View(id = "aAction")
   public Response.Content aAction() {
-    return Response.ok($A.mAAction(bean).toString());
+    return Response.ok(A_.mAAction(bean).toString());
   }
 
   @Action
   public Response.Update mAAction(B foo) throws IOException {
-    Response.Update r = $A.mA(foo);
+    Response.Update r = A_.mA(foo);
     return r;
   }
 
@@ -68,7 +68,7 @@ public class A extends Controller {
 
   @View(id = "b")
   public Response.Content b() {
-    return Response.render($A.mB(bean).toString());
+    return Response.render(A_.mB(bean).toString());
   }
 
   @View
@@ -78,12 +78,12 @@ public class A extends Controller {
 
   @View(id = "bAction")
   public Response.Content bAction() {
-    return Response.ok($A.mBAction(bean).toString());
+    return Response.ok(A_.mBAction(bean).toString());
   }
 
   @Action
   public Response.Update mBAction(B foo) throws IOException {
-    Response.Update r = $A.mB(foo);
+    Response.Update r = A_.mB(foo);
     return r;
   }
 
@@ -91,7 +91,7 @@ public class A extends Controller {
 
   @View(id = "c")
   public Response.Content c() {
-    return Response.render($A.mC(bean).toString());
+    return Response.render(A_.mC(bean).toString());
   }
 
   @View
@@ -101,12 +101,12 @@ public class A extends Controller {
 
   @View(id = "cAction")
   public Response.Content cAction() {
-    return Response.ok($A.mCAction(bean).toString());
+    return Response.ok(A_.mCAction(bean).toString());
   }
 
   @Action
   public Response.Update mCAction(B foo) throws IOException {
-    Response.Update r = $A.mC(foo);
+    Response.Update r = A_.mC(foo);
     return r;
   }
 
@@ -114,7 +114,7 @@ public class A extends Controller {
 
   @View(id = "d")
   public Response.Content d() {
-    return Response.render($A.mD(bean).toString());
+    return Response.render(A_.mD(bean).toString());
   }
 
   @View
@@ -124,12 +124,12 @@ public class A extends Controller {
 
   @View(id = "dAction")
   public Response.Content dAction() {
-    return Response.ok($A.mDAction(bean).toString());
+    return Response.ok(A_.mDAction(bean).toString());
   }
 
   @Action
   public Response.Update mDAction(B foo) throws IOException {
-    Response.Update r = $A.mD(foo);
+    Response.Update r = A_.mD(foo);
     return r;
   }
 
@@ -137,7 +137,7 @@ public class A extends Controller {
 
   @View(id = "e")
   public Response.Content e() {
-    return Response.render($A.mE(bean).toString());
+    return Response.render(A_.mE(bean).toString());
   }
 
   @View
@@ -147,12 +147,12 @@ public class A extends Controller {
 
   @View(id = "eAction")
   public Response.Content eAction() {
-    return Response.ok($A.mEAction(bean).toString());
+    return Response.ok(A_.mEAction(bean).toString());
   }
 
   @Action
   public Response.Update mEAction(B foo) throws IOException {
-    Response.Update r = $A.mE(foo);
+    Response.Update r = A_.mE(foo);
     return r;
   }
 
@@ -160,7 +160,7 @@ public class A extends Controller {
 
   @View(id = "f")
   public Response.Content f() {
-    return Response.render($A.mF(bean).toString());
+    return Response.render(A_.mF(bean).toString());
   }
 
   @View
@@ -170,12 +170,12 @@ public class A extends Controller {
 
   @View(id = "fAction")
   public Response.Content fAction() {
-    return Response.ok($A.mFAction(bean).toString());
+    return Response.ok(A_.mFAction(bean).toString());
   }
 
   @Action
   public Response.Update mFAction(B foo) throws IOException {
-    Response.Update r = $A.mF(foo);
+    Response.Update r = A_.mF(foo);
     return r;
   }
 
@@ -183,7 +183,7 @@ public class A extends Controller {
 
   @View(id = "g")
   public Response.Content g() {
-    return Response.render($A.mG("s_value", bean).toString());
+    return Response.render(A_.mG("s_value", bean).toString());
   }
 
   @View
@@ -193,12 +193,12 @@ public class A extends Controller {
 
   @View(id = "gAction")
   public Response.Content gAction() {
-    return Response.ok($A.mGAction("s_value", bean).toString());
+    return Response.ok(A_.mGAction("s_value", bean).toString());
   }
 
   @Action
   public Response.Update mGAction(String s, B foo) throws IOException {
-    Response.Update r = $A.mG(s, foo);
+    Response.Update r = A_.mG(s, foo);
     return r;
   }
 
@@ -206,7 +206,7 @@ public class A extends Controller {
 
   @View(id = "h")
   public Response.Content h() {
-    return Response.render($A.mH("s_value", bean).toString());
+    return Response.render(A_.mH("s_value", bean).toString());
   }
 
   @View
@@ -216,12 +216,12 @@ public class A extends Controller {
 
   @View(id = "hAction")
   public Response.Content hAction() {
-    return Response.ok($A.mHAction("s_value", bean).toString());
+    return Response.ok(A_.mHAction("s_value", bean).toString());
   }
 
   @Action
   public Response.Update mHAction(String a, B foo) throws IOException {
-    Response.Update r = $A.mH(a, foo);
+    Response.Update r = A_.mH(a, foo);
     return r;
   }
 
@@ -229,7 +229,7 @@ public class A extends Controller {
 
   @View(id = "i")
   public Response.Content i() {
-    return Response.render($A.mI("s_value", bean).toString());
+    return Response.render(A_.mI("s_value", bean).toString());
   }
 
   @View
@@ -239,12 +239,12 @@ public class A extends Controller {
 
   @View(id = "iAction")
   public Response.Content iAction() {
-    return Response.ok($A.mIAction("s_value", bean).toString());
+    return Response.ok(A_.mIAction("s_value", bean).toString());
   }
 
   @Action
   public Response.Update mIAction(String d, B foo) throws IOException {
-    Response.Update r = $A.mI(d, foo);
+    Response.Update r = A_.mI(d, foo);
     return r;
   }
 }

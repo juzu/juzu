@@ -519,7 +519,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
   // Filer implementation *********************************************************************************************
 
   public JavaFileObject createSourceFile(FQN name, Element... originatingElements) throws IOException {
-    return createSourceFile(name.getValue(), originatingElements);
+    return createSourceFile(name.getName(), originatingElements);
   }
 
   public JavaFileObject createSourceFile(CharSequence name, Element... originatingElements) throws IOException {

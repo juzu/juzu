@@ -29,12 +29,12 @@ public class A extends Controller {
 
   @View
   public Response.Content index() {
-    return Response.render("<a id='trigger' href='" + $A.action() + "'>click</a>");
+    return Response.render("<a id='trigger' href='" + A_.action() + "'>click</a>");
   }
 
   @Action
   public Response.Update action() {
-    return $A.done();
+    return A_.done();
   }
 
   @View

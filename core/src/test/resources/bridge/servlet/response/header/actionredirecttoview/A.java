@@ -30,13 +30,13 @@ public class A extends Controller {
 
   @View()
   public Response.Content index() {
-    return Response.render("" + $A.foo());
+    return Response.render("" + A_.foo());
   }
 
   @Action
   @Route("/foo")
   public Response.Update foo() {
-    return $A.bar().withHeader("juu", "juu_value");
+    return A_.bar().withHeader("juu", "juu_value");
   }
 
   @View

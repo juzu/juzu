@@ -72,12 +72,12 @@ public class Weather {
     javax.portlet.PortletException {
     preferences.setValue("grade", grade);
     preferences.store();
-    return $Weather.index(location);
+    return Weather_.index(location);
   }
 
   @Action
   public Response add(String location) {
     locations.add(location);
-    return $Weather.index(location);
+    return Weather_.index(location);
   }
 }

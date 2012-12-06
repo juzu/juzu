@@ -39,7 +39,7 @@ public class ActionMethodTestCase extends AbstractTestCase {
     CompilerAssert<?, ?> compiler = compiler("plugin.controller.method.action");
     compiler.assertCompile();
     aClass = compiler.assertClass("plugin.controller.method.action.A");
-    compiler.assertClass("plugin.controller.method.action.$A");
+    compiler.assertClass("plugin.controller.method.action.A_");
 
     //
     Class<?> appClass = compiler.assertClass("plugin.controller.method.action.Application");

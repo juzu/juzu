@@ -57,7 +57,7 @@ import java.util.Map;
  *
  *       &#064;Action
  *       public {@link juzu.Response.Update} myAction() {
- *          return $MyController.myRender("hello");
+ *          return MyController_.myRender("hello");
  *       }
  *
  *       &#064;View
