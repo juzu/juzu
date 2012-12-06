@@ -30,7 +30,7 @@ import juzu.asset.AssetLocation;
 public class A extends Controller {
 
   @View
-  public Response.Content index(String p) {
+  public Response.Content<?> index(String p) {
     String content =
       "<script>\n" +
         "$(function() {\n" +
@@ -51,7 +51,7 @@ public class A extends Controller {
   }
 
   @Resource
-  public Response.Content resource() {
+  public Response.Content<?> resource() {
     return Response.ok("bar");
   }
 }

@@ -29,13 +29,13 @@ public class A extends Controller {
 
   @View
   @Route("/foo")
-  public Response.Content foo() {
+  public Response.Content<?> foo() {
     return Response.ok("foo");
   }
 
   @View
   @Route("/bar")
-  public Response.Content foo(String p) {
+  public Response.Content<?> foo(String p) {
     return Response.ok("foo(" + p + ")");
   }
 }

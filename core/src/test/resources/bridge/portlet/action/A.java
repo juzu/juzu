@@ -28,7 +28,7 @@ import juzu.View;
 public class A extends Controller {
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     return Response.render("<a id='trigger' href='" + A_.action() + "'>click</a>");
   }
 
@@ -38,7 +38,7 @@ public class A extends Controller {
   }
 
   @View
-  public Response.Content done() {
+  public Response.Content<?> done() {
     return Response.render("pass");
   }
 }

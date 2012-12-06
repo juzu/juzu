@@ -30,7 +30,7 @@ import java.io.IOException;
 public class A extends Controller {
 
   @View
-  public Response.Content index() throws IOException {
+  public Response.Content<?> index() throws IOException {
     return Response.ok(A_.action().toString());
   }
 

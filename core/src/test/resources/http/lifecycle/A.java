@@ -33,12 +33,12 @@ public class A {
   }
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     return Response.render(A_.action().toString());
   }
 
   @View
-  public Response.Content done(String p) {
+  public Response.Content<?> done(String p) {
     if ("d".equals(p)) {
       return Response.render(A_.resource().toString());
     }
@@ -48,7 +48,7 @@ public class A {
   }
 
   @Resource
-  public Response.Content resource() {
+  public Response.Content<?> resource() {
     return Response.content(200, "<html><body>done</body></html>");
   }
 }

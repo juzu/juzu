@@ -28,13 +28,13 @@ import juzu.View;
 public class A extends Controller {
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     return Response.render("app1:index");
   }
 
   @View
   @Route("/bar")
-  public Response.Content bar() {
+  public Response.Content<?> bar() {
     return Response.render("app1:bar");
   }
 }

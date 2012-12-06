@@ -29,13 +29,13 @@ import juzu.View;
 public class A extends Controller {
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     return Response.render("<a id='trigger' href='" + A_.foo() + "'>click</div>");
   }
 
   @Resource
   @Route("/foo")
-  public Response.Content foo() {
+  public Response.Content<?> foo() {
     return Response.ok("pass");
   }
 }

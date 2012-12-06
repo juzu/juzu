@@ -39,7 +39,7 @@ public class A extends Controller {
   }
 
   @View
-  public Response.Content index() throws IOException {
+  public Response.Content<?> index() throws IOException {
     return Response.ok(A_.resource().toString());
   }
 }

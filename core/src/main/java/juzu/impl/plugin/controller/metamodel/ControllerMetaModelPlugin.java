@@ -65,7 +65,7 @@ import java.util.Set;
 public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private static final String CONTROLLER_METHOD = MethodDescriptor.class.getSimpleName();
+  private static final String METHOD_DESCRIPTOR = MethodDescriptor.class.getSimpleName();
 
   /** . */
   private static final String CONTROLLER_DESCRIPTOR = ControllerDescriptor.class.getSimpleName();
@@ -264,10 +264,10 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         String methodRef = "method_" + index++;
 
         // Method constant
-        writer.append("private static final ").append(CONTROLLER_METHOD).append("<");
+        writer.append("private static final ").append(METHOD_DESCRIPTOR).append("<");
         Tools.nameOf(method.getPhase().getClass(), writer);
         writer.append("> ").append(methodRef).append(" = ");
-        writer.append("new ").append(CONTROLLER_METHOD).append("<");
+        writer.append("new ").append(METHOD_DESCRIPTOR).append("<");
         Tools.nameOf(method.getPhase().getClass(), writer);
         writer.append(">(");
         if (method.getId() != null) {
@@ -336,7 +336,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       //
       writer.append("public static final ").append(CONTROLLER_DESCRIPTOR).append(" DESCRIPTOR = new ").append(CONTROLLER_DESCRIPTOR).append("(");
-      writer.append(fqn.getSimpleName()).append(".class,Arrays.<").append(CONTROLLER_METHOD).append(">asList(");
+      writer.append(fqn.getSimpleName()).append(".class,Arrays.<").append(METHOD_DESCRIPTOR).append("<?>>asList(");
       for (int j = 0;j < methods.size();j++) {
         if (j > 0) {
           writer.append(',');

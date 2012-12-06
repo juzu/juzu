@@ -31,7 +31,7 @@ import java.util.Arrays;
 public class A extends Controller {
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     return Response.render("<a id='trigger' href='" + A_.foo(new String[]{"bar1","bar2"}) + "'>click</div>");
   }
 
@@ -43,7 +43,7 @@ public class A extends Controller {
 
   @View
   @Route("/bar")
-  public Response.Content bar(String[] juu) {
+  public Response.Content<?> bar(String[] juu) {
     return Response.ok("" + Arrays.asList(juu));
   }
 }

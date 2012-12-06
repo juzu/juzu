@@ -30,7 +30,7 @@ import juzu.View;
 public class A extends Controller {
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     return Response.render(
         "<form id='form' action='" + A_.foo() + "' method='post'>" +
             "<input id='trigger' type='submit' name='click'/>" +
@@ -45,7 +45,7 @@ public class A extends Controller {
 
   @View
   @Route("/bar")
-  public Response.Content bar(String juu) {
+  public Response.Content<?> bar(String juu) {
     String path = renderContext.getProperty(PropertyType.PATH);
     return Response.ok("/juzu/redirecttoview/bar".equals(path) && "juu".equals(juu) ? "pass" : "fail");
   }

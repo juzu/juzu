@@ -32,7 +32,7 @@ public class A extends Controller {
 
   @View
   @Route("/foo")
-  public Response.Content index() {
+  public Response.Content<?> index() {
     if (count == 0) {
       count = 1;
       String url = A_.index().toString();

@@ -29,12 +29,12 @@ import java.io.ByteArrayInputStream;
 public class A {
 
   @View
-  public Response.Content index(String p) {
+  public Response.Content<?> index(String p) {
     return Response.render("" + A_.resource());
   }
 
   @Resource
-  public Response.Content resource() {
+  public Response.Content<?> resource() {
     return Response.ok(new ByteArrayInputStream("hello".getBytes())).withMimeType("application/octet-stream");
   }
 }

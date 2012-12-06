@@ -83,14 +83,14 @@ public class A extends Controller {
   @Ajax
   @Resource
   @Route("/resource")
-  public Response.Content resource() {
+  public Response.Content<?> resource() {
     return Response.content(200, "OK MEN");
   }
 
   @Ajax
   @Resource
   @Route("/resource2")
-  public Response.Content resource2() {
+  public Response.Content<?> resource2() {
     return Response.content(200, "OK MEN 2");
   }
 }

@@ -29,9 +29,9 @@ public class ControllerDescriptor {
   private final Class<?> type;
 
   /** . */
-  private final List<MethodDescriptor> methods;
+  private final List<MethodDescriptor<?>> methods;
 
-  public ControllerDescriptor(Class<?> type, List<MethodDescriptor> methods) {
+  public ControllerDescriptor(Class<?> type, List<MethodDescriptor<?>> methods) {
     this.type = type;
     this.methods = Collections.unmodifiableList(methods);
   }
@@ -44,7 +44,7 @@ public class ControllerDescriptor {
     return type;
   }
 
-  public List<MethodDescriptor> getMethods() {
+  public List<MethodDescriptor<?>> getMethods() {
     return methods;
   }
 }

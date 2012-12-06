@@ -29,12 +29,12 @@ import java.io.IOException;
 public class A extends Controller {
 
   @View
-  public Response.Content index() throws IOException {
+  public Response.Content<?> index() throws IOException {
     return Response.ok("0[" + A_.index("foo").toString() + "]");
   }
 
   @View
-  public Response.Content index(String param) throws IOException {
+  public Response.Content<?> index(String param) throws IOException {
     if (param != null) {
       return Response.ok("1[" + A_.index(null).toString() + "]");
     }

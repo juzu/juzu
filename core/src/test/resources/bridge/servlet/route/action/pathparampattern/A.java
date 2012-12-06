@@ -31,7 +31,7 @@ import juzu.test.AbstractTestCase;
 public class A extends Controller {
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
 
     // First check when it does not match the pattern
     try {
@@ -53,7 +53,7 @@ public class A extends Controller {
 
   @View
   @Route("/bar")
-  public Response.Content bar(String juu) {
+  public Response.Content<?> bar(String juu) {
     return Response.ok("" + juu);
   }
 }
