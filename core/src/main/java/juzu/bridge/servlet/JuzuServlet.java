@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.servlet;
+package juzu.bridge.servlet;
 
 import juzu.impl.bridge.spi.servlet.ServletBridge;
 

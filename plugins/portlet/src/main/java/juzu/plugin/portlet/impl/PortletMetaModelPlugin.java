@@ -31,7 +31,7 @@ import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.plugin.portlet.Portlet;
-import juzu.portlet.JuzuPortlet;
+import juzu.bridge.portlet.JuzuPortlet;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.AnnotationMirror;

@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.portlet;
+package juzu.bridge.portlet;
 
 import juzu.PropertyType;
 import juzu.impl.asset.AssetServer;

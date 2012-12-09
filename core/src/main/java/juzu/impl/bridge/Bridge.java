@@ -35,7 +35,7 @@ import juzu.impl.common.Tools;
 import juzu.impl.common.TrimmingException;
 import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ResourceResolver;
-import juzu.portlet.JuzuPortlet;
+import juzu.bridge.portlet.JuzuPortlet;
 
 import java.io.BufferedReader;
 import java.io.File;

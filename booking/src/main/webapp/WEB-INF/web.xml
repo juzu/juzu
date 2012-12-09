@@ -4,7 +4,7 @@
 <web-app>
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
-    <servlet-class>juzu.servlet.JuzuServlet</servlet-class>
+    <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
     <init-param>
       <param-name>juzu.app_name</param-name>
       <param-value>org.sample.booking</param-value></init-param>
