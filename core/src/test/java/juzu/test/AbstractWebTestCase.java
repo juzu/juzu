@@ -54,6 +54,9 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   /** . */
   private static CompilerAssert<File, File> compiler;
 
+  /** . */
+  private static boolean servlet;
+
   /**
    * Returns the currently deployed application name.
    *
@@ -81,11 +84,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     return compiler;
   }
 
-  public static WebArchive createDeployment(boolean asDefault, String... applicationNames) {
-    return createDeployment(asDefault, false, applicationNames);
-  }
-
-  public static WebArchive createDeployment(boolean asDefault, boolean incremental, String... applicationNames) {
+  private static WebArchive createDeployment(boolean servlet, boolean asDefault, boolean incremental, String... applicationNames) {
 
     //
     QN[] applicationQNs = new QN[applicationNames.length];
@@ -149,13 +148,11 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     AbstractWebTestCase.applicationName = applicationQNs.length > 0 ? applicationQNs[0] : null;
     AbstractWebTestCase.asDefault = asDefault;
     AbstractWebTestCase.compiler = compiler;
+    AbstractWebTestCase.servlet = servlet;
 
     //
     return war;
   }
-
-  @ArquillianResource
-  protected URL deploymentURL;
 
   public static WebArchive createServletDeployment(String applicationName) {
     return createServletDeployment(false, applicationName);
@@ -168,7 +165,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   public static WebArchive createServletDeployment(boolean incremental, boolean asDefault, String... applicationNames) {
 
     // Create war
-    WebArchive war = createDeployment(asDefault, applicationNames);
+    WebArchive war = createDeployment(true, asDefault, false, applicationNames);
 
     //
     String runModeValue;
@@ -208,7 +205,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   public static WebArchive createPortletDeployment(boolean incremental, String packageName) {
 
     //
-    WebArchive war = createDeployment(true, incremental, packageName);
+    WebArchive war = createDeployment(false, true, incremental, packageName);
 
     //
     String runModeValue;
@@ -252,8 +249,11 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     return war;
   }
 
+  @ArquillianResource
+  protected URL deploymentURL;
+
   /**
-   * Returns the portlet URL for standalone portlet unit test.
+   * Returns the URL for portlet unit test.
    *
    * @return the base portlet URL
    */
@@ -263,6 +263,29 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     }
     catch (Exception e) {
       throw failure(e);
+    }
+  }
+
+  /**
+   * Returns the URL for servlet unit test.
+   *
+   * @return the base servlet URL
+   */
+  public URL getServletURL() {
+    return getServletURL("");
+  }
+
+  /**
+   * Returns the URL for servlet unit test and the specified path.
+   *
+   * @return the base servlet URL
+   */
+  public URL getServletURL(String path) {
+    try {
+      return deploymentURL.toURI().resolve(getApplicationName().getLastName() + path).toURL();
+    }
+    catch (Exception e) {
+      throw failure("Could not build application url " + path, e);
     }
   }
 
@@ -285,15 +308,18 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public URL applicationURL() {
-    return applicationURL("");
+    if (servlet) {
+      return getServletURL();
+    } else {
+      return getPortletURL();
+    }
   }
 
   public URL applicationURL(String path) {
-    try {
-      return deploymentURL.toURI().resolve(getApplicationName().getLastName() + path).toURL();
-    }
-    catch (Exception e) {
-      throw failure("Could not build application url " + path, e);
+    if (servlet) {
+      return getServletURL(path);
+    } else {
+      throw failure("Cannot invoke portlet test with a path: " + path);
     }
   }
 }
