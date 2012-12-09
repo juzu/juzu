@@ -189,8 +189,8 @@ public class JarFileSystem extends ReadFileSystem<String> {
       if (path.length() > 0 && path.charAt(path.length() - 1) == '/') {
         from--;
       }
-      int index = path.lastIndexOf('/', from);
-      return index == -1 ? path.substring(0, from) : path.substring(index, from);
+      int index = path.lastIndexOf('/', from - 1);
+      return index == -1 ? path.substring(0, from) : path.substring(index + 1, from);
     }
   }
 
