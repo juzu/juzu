@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <extension qualifier="webdriver-registration">
+    <property name="implementationClass">org.openqa.selenium.firefox.FirefoxDriver</property>
+  </extension>
+
+  <extension qualifier="webdriver-authentication">
+    <property name="implementationClass">org.openqa.selenium.firefox.FirefoxDriver</property>
+  </extension>
+
+  <extension qualifier="webdriver-booking">
+    <property name="implementationClass">org.openqa.selenium.firefox.FirefoxDriver</property>
+  </extension>
+
+</arquillian>
