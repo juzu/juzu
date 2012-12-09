@@ -31,11 +31,13 @@ public class A extends Controller {
   @View
   public Response.Render index() {
     String content = "" +
+
+      //
       "<script>\n" +
       "$(function() {\n" +
-      "  $('#trigger').click(function() {\n" +
+      "  $('#trigger1').click(function() {\n" +
       "    $(this).jzAjax({\n" +
-      "      url:'A.resource()',\n" +
+      "      url:'A.m1()',\n" +
       "      success:function(content) {\n" +
       "        alert(content);\n" +
       "      }\n" +
@@ -43,38 +45,42 @@ public class A extends Controller {
       "  });\n" +
       "});\n" +
       "</script>\n" +
+      "<a id='trigger1' href='#'>click</a>\n" +
 
       //
-      "<a id='trigger' href='#'>click</a>\n" +
-      "<div id='target' href='#'>OK MEN 2</div>\n" +
       "<script>\n" +
       "$(function() {\n" +
       "  $('#trigger2').click(function() {\n" +
-      "    var a = $('#target').jzLoad('A.resource2()', function(data) { alert(data); });\n" +
+      "    $(this).jzAjax({\n" +
+      "      url:'A.m2()',\n" +
+      "      data:{p:'foo'},\n" +
+      "      success:function(content) {\n" +
+      "        alert(content);\n" +
+      "      }\n" +
+      "    });\n" +
       "  });\n" +
       "});\n" +
       "</script>\n" +
-      "<a id='trigger2' href='#'>click</a>" +
+      "<a id='trigger2' href='#'>click</a>\n" +
 
       //
+      "<div id='target' href='#'>click</div>\n" +
       "<script>\n" +
+      "$(function() {\n" +
+      "  $('#trigger3').click(function() {\n" +
+      "    var a = $('#target').jzLoad('A.m3()', function(data) { alert(data); });\n" +
+      "  });\n" +
+      "});\n" +
+      "</script>\n" +
+      "<a id='trigger3' href='#'>click</a>" +
 
       // Configure ajax default for unit test
+      "<script>\n" +
       "$(function() {\n" +
       "$.ajaxSetup({\n" +
       "async:false\n" +
       "});\n" +
       "});\n" +
-
-      // Do request method
-      "doRequest = function(elt, mid) {\n" +
-      "  elt.ajax({\n" +
-      "    url:mid,\n" +
-      "    success:function(content) {\n" +
-      "      alert(content);\n" +
-      "    }\n" +
-      "  });\n" +
-      "}\n" +
       "</script>\n";
 
     return Response.render(content);
@@ -82,15 +88,22 @@ public class A extends Controller {
 
   @Ajax
   @Resource
-  @Route("/resource")
-  public Response.Content<?> resource() {
-    return Response.content(200, "OK MEN");
+  @Route("/m1")
+  public Response.Content<?> m1() {
+    return Response.content(200, "m1()");
   }
 
   @Ajax
   @Resource
-  @Route("/resource2")
-  public Response.Content<?> resource2() {
-    return Response.content(200, "OK MEN 2");
+  @Route("/m2")
+  public Response.Content<?> m2(String p) {
+    return Response.content(200, "m2(" + p + ")");
+  }
+
+  @Ajax
+  @Resource
+  @Route("/m3")
+  public Response.Content<?> m3() {
+    return Response.content(200, "m3()");
   }
 }

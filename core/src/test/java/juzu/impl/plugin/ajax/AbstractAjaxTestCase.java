@@ -51,13 +51,22 @@ public abstract class AbstractAjaxTestCase extends AbstractWebTestCase {
     UserAgent ua = assertInitialPage();
     HtmlPage page = ua.getHomePage();
 
-    HtmlAnchor trigger = (HtmlAnchor)page.getElementById("trigger");
-    trigger.click();
+    //
+    HtmlAnchor trigger1 = (HtmlAnchor)page.getElementById("trigger1");
+    trigger1.click();
+    List<String> alerts = ua.getAlerts(page);
+    assertEquals(Arrays.asList("m1()"), alerts);
 
+    //
     HtmlAnchor trigger2 = (HtmlAnchor)page.getElementById("trigger2");
     trigger2.click();
+    alerts = ua.getAlerts(page);
+    assertEquals(Arrays.asList("m1()", "m2(foo)"), alerts);
 
-    List<String> alerts = ua.getAlerts(page);
-    assertEquals(Arrays.asList("OK MEN", "OK MEN 2"), alerts);
+    //
+    HtmlAnchor trigger3 = (HtmlAnchor)page.getElementById("trigger3");
+    trigger3.click();
+    alerts = ua.getAlerts(page);
+    assertEquals(Arrays.asList("m1()", "m2(foo)", "m3()"), alerts);
   }
 }

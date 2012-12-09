@@ -80,8 +80,15 @@ public abstract class RequestContext {
 
   protected abstract RequestBridge getBridge();
 
+  /**
+   * Create a dispatch object with unset parameters.
+   *
+   * @param method the method descriptor
+   * @return the corresponding dispatch object
+   */
   public Dispatch createDispatch(MethodDescriptor<?> method) {
-    return createDispatch(method, EMPTY, ParameterMap.EMPTY);
+    DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), ParameterMap.EMPTY);
+    return createDispatch(method, spi);
   }
 
   public Phase.Action.Dispatch createActionDispatch(MethodDescriptor<Phase.Action> method) {
@@ -123,25 +130,24 @@ public abstract class RequestContext {
   private Dispatch createDispatch(MethodDescriptor<?> method, Object[] args, ParameterMap parameters) {
     method.setArgs(args, parameters);
     DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
+    return createDispatch(method, spi);
+  }
 
-    // Bridge escape XML value
+  private Dispatch createDispatch(MethodDescriptor<?> method, DispatchSPI spi) {
     ApplicationDescriptor desc = application.getDescriptor();
-
-    //
+    Dispatch dispatch;
     if (method.getPhase() == Phase.ACTION) {
-      Phase.Action.Dispatch dispatch = new Phase.Action.Dispatch(spi);
-      dispatch.escapeXML(desc.getControllers().getEscapeXML());
-      return dispatch;
+      dispatch = new Phase.Action.Dispatch(spi);
     } else if (method.getPhase() == Phase.VIEW) {
-      Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
+      dispatch = new Phase.View.Dispatch(spi);
       dispatch.escapeXML(desc.getControllers().getEscapeXML());
-      return dispatch;
     } else if (method.getPhase() == Phase.RESOURCE) {
-      Phase.Resource.Dispatch dispatch = new Phase.Resource.Dispatch(spi);
+      dispatch = new Phase.Resource.Dispatch(spi);
       dispatch.escapeXML(desc.getControllers().getEscapeXML());
-      return dispatch;
     } else {
       throw new AssertionError();
     }
+    dispatch.escapeXML(desc.getControllers().getEscapeXML());
+    return dispatch;
   }
 }
