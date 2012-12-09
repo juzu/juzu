@@ -23,12 +23,16 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import juzu.impl.common.QN;
+import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
+import juzu.test.protocol.portlet.JuzuPortlet;
+import juzu.test.protocol.servlet.JuzuServlet;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
@@ -152,6 +156,101 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
 
   @ArquillianResource
   protected URL deploymentURL;
+
+  public static WebArchive createServletDeployment(String applicationName) {
+    return createServletDeployment(false, applicationName);
+  }
+
+  public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
+    return createServletDeployment(false, asDefault, applicationNames);
+  }
+
+  public static WebArchive createServletDeployment(boolean incremental, boolean asDefault, String... applicationNames) {
+
+    // Create war
+    WebArchive war = createDeployment(asDefault, applicationNames);
+
+    //
+    String runModeValue;
+    String sourcePath;
+    try {
+      runModeValue = incremental ? "dev" : "prod";
+      sourcePath = incremental ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
+    }
+    catch (IOException e) {
+      throw failure("Could not read obtain source path", e);
+    }
+
+    // Descriptor
+    String servlet;
+    try {
+      servlet = Tools.read(JuzuServlet.class.getResourceAsStream("web.xml"));
+    }
+    catch (IOException e) {
+      throw failure("Could not read portlet xml deployment descriptor", e);
+    }
+    servlet = String.format(
+        servlet,
+        runModeValue,
+        sourcePath);
+
+    // Descriptor
+    war.setWebXML(new StringAsset(servlet));
+
+    //
+    return war;
+  }
+
+  public static WebArchive createPortletDeployment(String packageName) {
+    return createPortletDeployment(false, packageName);
+  }
+
+  public static WebArchive createPortletDeployment(boolean incremental, String packageName) {
+
+    //
+    WebArchive war = createDeployment(true, incremental, packageName);
+
+    //
+    String runModeValue;
+    String sourcePath;
+    try {
+      runModeValue = incremental ? "dev" : "prod";
+      sourcePath = incremental ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
+    }
+    catch (IOException e) {
+      throw failure("Could not read obtain source path", e);
+    }
+
+    // Descriptor
+    String portlet;
+    try {
+      portlet = Tools.read(JuzuPortlet.class.getResourceAsStream("portlet.xml"));
+    }
+    catch (IOException e) {
+      throw failure("Could not read portlet xml deployment descriptor", e);
+    }
+    portlet = String.format(
+        portlet,
+        "weld",
+        runModeValue,
+        sourcePath);
+
+    //
+    war.setWebXML(JuzuPortlet.class.getResource("web.xml"));
+    war.addAsWebInfResource(new StringAsset(portlet), "portlet.xml");
+
+    // Add libraries we need
+/*
+    war.addAsLibraries(DependencyResolvers.
+        use(MavenDependencyResolver.class).
+        loadEffectivePom("pom.xml")
+        .artifacts("javax.servlet:jstl", "taglibs:standard").
+            resolveAsFiles());
+*/
+
+    //
+    return war;
+  }
 
   /**
    * Returns the portlet URL for standalone portlet unit test.

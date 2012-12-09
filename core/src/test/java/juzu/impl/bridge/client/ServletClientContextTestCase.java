@@ -19,7 +19,6 @@
 
 package juzu.impl.bridge.client;
 
-import juzu.test.protocol.servlet.AbstractServletTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class ServletClientContextTestCase extends AbstractClientContextTestCase 
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return AbstractServletTestCase.createServletDeployment("bridge.client.action");
+    return createServletDeployment("bridge.client.action");
   }
 
   @Test

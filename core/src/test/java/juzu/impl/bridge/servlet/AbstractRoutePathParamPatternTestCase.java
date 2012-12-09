@@ -19,7 +19,7 @@
 
 package juzu.impl.bridge.servlet;
 
-import juzu.test.protocol.servlet.AbstractServletTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -30,7 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractRoutePathParamPatternTestCase extends AbstractServletTestCase {
+public abstract class AbstractRoutePathParamPatternTestCase extends AbstractWebTestCase {
 
   @Drone
   WebDriver driver;

@@ -20,7 +20,7 @@
 package juzu.impl.bridge.portlet;
 
 import juzu.impl.common.Tools;
-import juzu.test.protocol.portlet.AbstractPortletTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -33,7 +33,7 @@ import org.openqa.selenium.WebElement;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderTestCase extends AbstractPortletTestCase {
+public class RenderTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {

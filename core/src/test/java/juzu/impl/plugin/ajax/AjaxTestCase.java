@@ -21,9 +21,9 @@ package juzu.impl.plugin.ajax;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import juzu.test.AbstractWebTestCase;
 import juzu.test.UserAgent;
 import juzu.test.protocol.http.HttpServletImpl;
-import juzu.test.protocol.servlet.AbstractServletTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxTestCase extends AbstractServletTestCase {
+public class AjaxTestCase extends AbstractWebTestCase {
 
   @Deployment
   public static WebArchive createDeployment() {

@@ -19,7 +19,6 @@
 
 package juzu.impl.bridge.client;
 
-import juzu.test.protocol.portlet.AbstractPortletTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class PortletClientContextTestCase extends AbstractClientContextTestCase 
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return AbstractPortletTestCase.createPortletDeployment("bridge.client.action");
+    return createPortletDeployment("bridge.client.action");
   }
 
   @Test

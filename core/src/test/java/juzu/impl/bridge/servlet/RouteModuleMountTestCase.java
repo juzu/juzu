@@ -19,8 +19,8 @@
 
 package juzu.impl.bridge.servlet;
 
+import juzu.test.AbstractWebTestCase;
 import juzu.test.Registry;
-import juzu.test.protocol.servlet.AbstractServletTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -32,7 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteModuleMountTestCase extends AbstractServletTestCase {
+public class RouteModuleMountTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
