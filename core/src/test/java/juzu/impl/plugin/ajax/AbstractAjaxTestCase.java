@@ -24,7 +24,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.UserAgent;
 import juzu.test.protocol.http.HttpServletImpl;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -34,11 +33,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxTestCase extends AbstractWebTestCase {
+public abstract class AbstractAjaxTestCase extends AbstractWebTestCase {
 
-  @Deployment
-  public static WebArchive createDeployment() {
-    WebArchive war = createServletDeployment("plugin.ajax");
+  protected static WebArchive createDeployment(WebArchive war) {
     URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
     URL test = HttpServletImpl.class.getResource("test.js");
     URL stylesheet = HttpServletImpl.class.getResource("main.css");
