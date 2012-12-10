@@ -126,6 +126,11 @@
       <artifactId>selenium-htmlunit-driver</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.opera</groupId>
+      <artifactId>operadriver</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- -->
     <dependency>
