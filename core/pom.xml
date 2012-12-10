@@ -81,11 +81,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jboss.weld</groupId>
-      <artifactId>weld-core-test-arquillian</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.shrinkwrap</groupId>
       <artifactId>shrinkwrap-api</artifactId>
       <scope>test</scope>
