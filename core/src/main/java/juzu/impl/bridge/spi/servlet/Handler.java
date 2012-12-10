@@ -23,6 +23,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.router.Route;
+import juzu.impl.router.Router;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;
@@ -64,7 +65,12 @@ class Handler {
       //
       RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPluginDescriptor("router");
       if (routesDesc != null) {
-        Map<RouteDescriptor, Route> ret = routesDesc.popupate(parent);
+        Map<RouteDescriptor, Route> ret;
+        if (routesDesc.getPath() != null) {
+          ret = routesDesc.popupate(parent);
+        } else {
+          ret = routesDesc.create();
+        }
         root = ret.values().iterator().next();
         for (Map.Entry<RouteDescriptor, Route> entry : ret.entrySet()) {
           for (Map.Entry<String, String> entry2 : entry.getKey().getTargets().entrySet()) {

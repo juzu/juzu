@@ -33,7 +33,7 @@ public class RouteOverloadViewTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.servlet.route.overload.view");
+    return createServletDeployment(true, "bridge.servlet.route.overload.view");
   }
 
   @Drone
@@ -44,7 +44,7 @@ public class RouteOverloadViewTestCase extends AbstractWebTestCase {
     driver.get(applicationURL("/foo").toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     assertEquals("foo", trigger.getText());
-    driver.get(deploymentURL.toURI().resolve(getApplicationName().getLastName() + "/bar").toURL().toString() + "?p=p_value");
+    driver.get(applicationURL("/bar") + "?p=p_value");
     trigger = driver.findElement(By.tagName("body"));
     assertEquals("foo(p_value)", trigger.getText());
   }

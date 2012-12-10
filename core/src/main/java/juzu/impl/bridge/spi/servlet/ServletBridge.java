@@ -279,127 +279,126 @@ public class ServletBridge extends HttpServlet {
     refresh();
 
     //
-    Handler targetHandler = null;
-    MethodDescriptor target = null;
-    Map<String, String[]> parameters = Collections.emptyMap();
+    String path = req.getRequestURI().substring(req.getContextPath().length());
 
     //
-    String path = req.getRequestURI().substring(req.getContextPath().length());
-    RouteMatch match;
+    Handler requestHandler = null;
+    RouteMatch requestMatch = null;
+
+    // Determine first a possible match from the root route
     if (path != null) {
-      match = root.route(path, Collections.<String, String[]>emptyMap());
-      if (match != null) {
+      RouteMatch match_ = root.route(path, Collections.<String, String[]>emptyMap());
+      if (match_ != null) {
         for (Handler handler : handlers) {
-          if (handler.routes.contains(match.getRoute())) {
-            targetHandler = handler;
-            Map<Phase, MethodHandle> m = handler.routeMap2.get(match.getRoute());
-            if (m != null) {
-              Phase[] phases;
-              if ("GET".equals(req.getMethod())) {
-                phases = GET_PHASES;
-              } else if ("POST".equals(req.getMethod())) {
-                phases = POST_PHASES;
-              } else {
-                throw new UnsupportedOperationException("handle me gracefully");
-              }
-              for (Phase phase : phases) {
-                MethodHandle handle = m.get(phase);
-                if (handle != null) {
-                  target =  targetHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
-                  if (match.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
-                    parameters = new HashMap<String, String[]>();
-                    for (Map.Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
-                      parameters.put(entry.getKey(), entry.getValue().clone());
-                    }
-                    for (Map.Entry<PathParam, String> entry : match.getMatched().entrySet()) {
-                      parameters.put(entry.getKey().getName(), new String[]{entry.getValue()});
-                    }
-                  }
-                  break;
-                }
-              }
-            }
+          if (handler.routes.contains(match_.getRoute())) {
+            requestMatch = match_;
+            requestHandler = handler;
+            break;
           }
         }
       }
-      if (targetHandler == null) {
-        targetHandler = defaultHandler;
-      }
-    } else {
-      targetHandler = defaultHandler;
-      match = null;
     }
 
-    //
-    RequestDispatcher dispatcher = null;
-    if (target == null && path != null && path.length() > 1 && !path.startsWith("/WEB-INF/")) {
-      URL url = getServletContext().getResource(path);
-      if (url != null) {
-        dispatcher = getServletContext().getNamedDispatcher("default");
+    // If the handler is nul it means we have no match
+    if (requestHandler == null) {
+      if (defaultHandler != null) {
+        requestHandler = defaultHandler;
+        requestMatch = defaultHandler.root.route(path, Collections.<String, String[]>emptyMap());
       }
     }
 
-    //
-    if (dispatcher != null) {
-      dispatcher.include(req, resp);
-    } else {
-
-      //
-      if (target == null) {
-        if (targetHandler != null) {
-          target = targetHandler.bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
-          if (target != null) {
-            Route route = targetHandler.routeMap.get(target.getHandle());
-            if (route == null && match == null) {
-              route = targetHandler.root;
-            }
-            if (route != null) {
-              Map<String, String> empty = Collections.emptyMap();
-              match = route.matches(empty);
-              if (match != null) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(req.getScheme());
-                sb.append("://");
-                sb.append(req.getServerName());
-                int port = req.getServerPort();
-                if (port != 80) {
-                  sb.append(':').append(Integer.toString(port));
-                }
-                sb.append(req.getContextPath());
-                match.render(new URIWriter(sb));
-                resp.sendRedirect(sb.toString());
-                return;
-              } else {
-                // ?
+    // Determine a method + parameters if we have a match
+    MethodDescriptor requestMethod = null;
+    Map<String, String[]> requestParameters = Collections.emptyMap();
+    if (requestMatch != null) {
+      Map<Phase, MethodHandle> m = requestHandler.routeMap2.get(requestMatch.getRoute());
+      if (m != null) {
+        Phase[] phases;
+        if ("GET".equals(req.getMethod())) {
+          phases = GET_PHASES;
+        } else if ("POST".equals(req.getMethod())) {
+          phases = POST_PHASES;
+        } else {
+          throw new UnsupportedOperationException("handle me gracefully");
+        }
+        for (Phase phase : phases) {
+          MethodHandle handle = m.get(phase);
+          if (handle != null) {
+            requestMethod =  requestHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
+            if (requestMatch.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
+              requestParameters = new HashMap<String, String[]>();
+              for (Map.Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
+                requestParameters.put(entry.getKey(), entry.getValue().clone());
               }
-            } else {
-              //
+              for (Map.Entry<PathParam, String> entry : requestMatch.getMatched().entrySet()) {
+                requestParameters.put(entry.getKey().getName(), new String[]{entry.getValue()});
+              }
             }
-          } else {
-            resp.sendError(404);
+            break;
+          }
+        }
+      }
+    }
+
+    // No method means we either send a server resource
+    // or we look for the handler method
+    if (requestMethod == null) {
+
+      // Do we need to send a server resource ?
+      if (path != null && path.length() > 1 && !path.startsWith("/WEB-INF/")) {
+        URL url = getServletContext().getResource(path);
+        if (url != null) {
+          RequestDispatcher dispatcher = getServletContext().getNamedDispatcher("default");
+          dispatcher.include(req, resp);
+          return;
+        }
+      }
+
+      // If we have an handler we locate the index method
+      if (requestHandler != null) {
+        requestMethod = requestHandler.bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+      }
+    }
+
+    // No method -> not found
+    if (requestMethod == null) {
+      resp.sendError(404);
+    } else {
+      if (requestMatch == null) {
+        Route requestRoute = requestHandler.routeMap.get(requestMethod.getHandle());
+        if (requestRoute == null) {
+          requestRoute = requestHandler.root;
+        }
+        requestMatch = requestRoute.matches(Collections.<String, String>emptyMap());
+        if (requestMatch != null) {
+          StringBuilder sb = new StringBuilder();
+          requestMatch.render(new URIWriter(sb));
+          if (!sb.toString().equals(path)) {
+            String redirect =
+                req.getScheme() + "://" + req.getServerName() + (req.getServerPort() != 80 ? (":" + req.getServerPort()) : "") +
+                req.getContextPath() +
+                sb;
+            resp.sendRedirect(redirect);
             return;
           }
-        } else {
-          resp.sendError(404);
-          return;
         }
       }
 
       //
       ServletRequestBridge requestBridge;
-      if (target.getPhase() == Phase.ACTION) {
-        requestBridge = new ServletActionBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
-      } else if (target.getPhase() == Phase.VIEW) {
-        requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
-      } else if (target.getPhase() == Phase.RESOURCE) {
-        requestBridge = new ServletResourceBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, target.getHandle(), parameters);
+      if (requestMethod.getPhase() == Phase.ACTION) {
+        requestBridge = new ServletActionBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod.getHandle(), requestParameters);
+      } else if (requestMethod.getPhase() == Phase.VIEW) {
+        requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod.getHandle(), requestParameters);
+      } else if (requestMethod.getPhase() == Phase.RESOURCE) {
+        requestBridge = new ServletResourceBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod.getHandle(), requestParameters);
       } else {
         throw new ServletException("Cannot decode phase");
       }
 
       //
       try {
-        targetHandler.bridge.invoke(requestBridge);
+        requestHandler.bridge.invoke(requestBridge);
       }
       catch (Throwable throwable) {
         throw ServletBridge.wrap(throwable);
@@ -412,9 +411,9 @@ public class ServletBridge extends HttpServlet {
           Response.Update update = (Response.Update)response;
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
-            requestBridge = new ServletRenderBridge(targetHandler.bridge.runtime.getContext(), targetHandler, req, resp, update.getTarget(), update.getParameters());
+            requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, update.getTarget(), update.getParameters());
             try {
-              targetHandler.bridge.invoke(requestBridge);
+              requestHandler.bridge.invoke(requestBridge);
             }
             catch (Throwable throwable) {
               throw ServletBridge.wrap(throwable);

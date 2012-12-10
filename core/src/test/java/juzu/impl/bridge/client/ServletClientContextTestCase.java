@@ -28,7 +28,7 @@ public class ServletClientContextTestCase extends AbstractClientContextTestCase 
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.client.action");
+    return createServletDeployment(true, "bridge.client.action");
   }
 
   @Test

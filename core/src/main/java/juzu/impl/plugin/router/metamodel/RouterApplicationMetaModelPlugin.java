@@ -88,9 +88,8 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
     if (router != null) {
       ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
       if (controllers != null) {
-        QN abc = metaModel.getName();
         RouteMetaModel root = new RouteMetaModel(
-            router.packageRoute != null ? router.packageRoute : "/" + abc.get(abc.size() - 1),
+            router.packageRoute != null ? router.packageRoute : null,
             router.packagePriority != null ? router.packagePriority : 0);
         for (ControllerMetaModel controller : controllers) {
           for (MethodMetaModel method : controller) {

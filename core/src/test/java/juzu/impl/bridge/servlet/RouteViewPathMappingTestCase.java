@@ -29,7 +29,7 @@ public class RouteViewPathMappingTestCase extends AbstractRoutePathMappingTestCa
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.servlet.route.view.pathmapping");
+    return createServletDeployment(true, "bridge.servlet.route.view.pathmapping");
   }
 
   @Drone

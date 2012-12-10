@@ -27,6 +27,6 @@ public class RouteResourcePathMappingTestCase extends AbstractRoutePathMappingTe
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.servlet.route.resource.pathmapping");
+    return createServletDeployment(true, "bridge.servlet.route.resource.pathmapping");
   }
 }
