@@ -30,11 +30,8 @@ import java.util.Collections;
  */
 public class Descriptor {
 
-  /** . */
-  public static Descriptor EMPTY = new Descriptor();
-
   /**
-   * Returns the associated plugin class.
+   * Returns the list of bean to install.
    *
    * @return the list of bean ot install
    */
