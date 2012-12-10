@@ -20,7 +20,6 @@
 package juzu.impl.router;
 
 import junit.framework.Assert;
-import juzu.impl.common.QualifiedName;
 import juzu.test.AbstractTestCase;
 
 import java.util.Arrays;
@@ -31,10 +30,10 @@ import java.util.Map;
  * @version $Revision$
  */
 public abstract class AbstractControllerTestCase extends AbstractTestCase {
-  public static void assertEquals(Map<QualifiedName, String> expectedParameters, Map<QualifiedName, String> parameters) {
+  public static void assertEquals(Map<String, String> expectedParameters, Map<String, String> parameters) {
     assertNotNull("Was not expecting a null parameter set", parameters);
     Assert.assertEquals(expectedParameters.keySet(), parameters.keySet());
-    for (Map.Entry<QualifiedName, String> expectedEntry : expectedParameters.entrySet()) {
+    for (Map.Entry<String, String> expectedEntry : expectedParameters.entrySet()) {
       Assert.assertEquals(expectedEntry.getValue(), parameters.get(expectedEntry.getKey()));
     }
   }

@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.template;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
@@ -29,13 +29,13 @@ import org.junit.Test;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ELTestCase extends AbstractInjectTestCase {
 
-  public ELTestCase(InjectImplementation di) {
+  public ELTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testResolveBean() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "el").init();
+    MockApplication<?> app = application("plugin.template.el").init();
 
     //
     MockClient client = app.client();

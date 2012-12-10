@@ -33,7 +33,7 @@ public class LifeCycleTestCase extends AbstractHttpTestCase {
 
   @Test
   public void testLifeCycle() throws Exception {
-    assertDeploy("http", "lifecycle");
+    assertDeploy("http.lifecycle");
     driver.get(deploymentURL.toString());
     String actionURL = driver.findElement(By.tagName("body")).getText();
     assertTrue(actionURL.length() > 0);

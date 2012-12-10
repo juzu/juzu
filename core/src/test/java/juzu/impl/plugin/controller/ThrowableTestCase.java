@@ -19,8 +19,8 @@
 
 package juzu.impl.plugin.controller;
 
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
@@ -32,13 +32,13 @@ import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ThrowableTestCase extends AbstractInjectTestCase {
-  public ThrowableTestCase(InjectImplementation di) {
+  public ThrowableTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testConstructorChecked() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "constructor", "throwable", "checked").init();
+    MockApplication<?> app = application("plugin.controller.constructor.throwable.checked").init();
 
     //
     MockClient client = app.client();
@@ -53,7 +53,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testConstructorRuntime() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "constructor", "throwable", "runtime").init();
+    MockApplication<?> app = application("plugin.controller.constructor.throwable.runtime").init();
 
     //
     MockClient client = app.client();
@@ -68,7 +68,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testConstructorError() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "constructor", "throwable", "error").init();
+    MockApplication<?> app = application("plugin.controller.constructor.throwable.error").init();
 
     //
     MockClient client = app.client();
@@ -83,7 +83,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRenderChecked() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "throwable", "checked").init();
+    MockApplication<?> app = application("plugin.controller.render.throwable.checked").init();
 
     //
     MockClient client = app.client();
@@ -98,7 +98,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRenderRuntime() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "throwable", "runtime").init();
+    MockApplication<?> app = application("plugin.controller.render.throwable.runtime").init();
 
     //
     MockClient client = app.client();
@@ -113,7 +113,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRenderError() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "throwable", "error").init();
+    MockApplication<?> app = application("plugin.controller.render.throwable.error").init();
 
     //
     MockClient client = app.client();
@@ -128,7 +128,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testActionChecked() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "throwable", "checked").init();
+    MockApplication<?> app = application("plugin.controller.action.throwable.checked").init();
 
     //
     MockClient client = app.client();
@@ -144,7 +144,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testActionRuntime() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "throwable", "runtime").init();
+    MockApplication<?> app = application("plugin.controller.action.throwable.runtime").init();
 
     //
     MockClient client = app.client();
@@ -160,7 +160,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testActionError() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "throwable", "error").init();
+    MockApplication<?> app = application("plugin.controller.action.throwable.error").init();
 
     //
     MockClient client = app.client();
@@ -176,7 +176,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResourceChecked() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "resource", "throwable", "checked").init();
+    MockApplication<?> app = application("plugin.controller.resource.throwable.checked").init();
 
     //
     MockClient client = app.client();
@@ -192,7 +192,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResourceRuntime() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "resource", "throwable", "runtime").init();
+    MockApplication<?> app = application("plugin.controller.resource.throwable.runtime").init();
 
     //
     MockClient client = app.client();
@@ -208,7 +208,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResourceError() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "resource", "throwable", "error").init();
+    MockApplication<?> app = application("plugin.controller.resource.throwable.error").init();
 
     //
     MockClient client = app.client();

@@ -23,11 +23,11 @@ import juzu.impl.common.QN;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.common.Tools;
 import juzu.processor.MainProcessor;
 import juzu.test.protocol.mock.MockApplication;
@@ -89,13 +89,15 @@ public class CompilerAssert<I, O> {
       classPath,
       sourcePath,
       sourceOutput,
-      classOutput,
-      META_MODEL_PROCESSOR_FACTORY) : new CompileStrategy.Batch<I, O>(
+      classOutput) : new CompileStrategy.Batch<I, O>(
       classPath,
       sourcePath,
       sourceOutput,
-      classOutput,
-      META_MODEL_PROCESSOR_FACTORY);
+      classOutput);
+
+    //
+    this.strategy.processorFactory = META_MODEL_PROCESSOR_FACTORY;
+    this.strategy.javaCompilerProvider = JavaCompilerProvider.DEFAULT;
 
     //
     this.baseClassLoader = baseClassLoader;
@@ -116,8 +118,22 @@ public class CompilerAssert<I, O> {
     this(incremental, sourcePath, output, output);
   }
 
+  public CompilerAssert<I, O> with(final Processor processor) {
+    strategy.processorFactory = new Provider<Processor>() {
+      public Processor get() {
+        return processor;
+      }
+    };
+    return this;
+  }
+
   public CompilerAssert<I, O> with(Provider<? extends Processor> processorFactory) {
     strategy.processorFactory = processorFactory;
+    return this;
+  }
+
+  public CompilerAssert<I, O> with(JavaCompilerProvider javaCompilerProvider) {
+    strategy.javaCompilerProvider = javaCompilerProvider;
     return this;
   }
 
@@ -165,7 +181,7 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public MockApplication<?> application(InjectImplementation injectImplementation, QN name) {
+  public MockApplication<?> application(InjectorProvider injectImplementation, QN name) {
     try {
       return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation, name);
     }
@@ -194,7 +210,7 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public void assertRemove(String... names) {
+  public void assertRemove(String names) {
     try {
       I path = strategy.sourcePath.getPath(names);
       if (path == null) {
@@ -207,7 +223,7 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public JavaFile<I> assertJavaFile(String... names) {
+  public JavaFile<I> assertSource(String... names) {
     I path;
     try {
       path = strategy.sourcePath.getPath(names);

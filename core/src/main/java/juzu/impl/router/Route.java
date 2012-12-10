@@ -21,11 +21,11 @@ package juzu.impl.router;
 
 //import javanet.staxutils.IndentingXMLStreamWriter;
 
+import juzu.impl.common.URIWriter;
 import juzu.impl.router.parser.RouteParser;
 import juzu.impl.router.parser.RouteParserHandler;
 import juzu.impl.router.regex.RE;
 import juzu.impl.router.regex.SyntaxException;
-import juzu.impl.common.QualifiedName;
 import juzu.impl.common.Tools;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -53,16 +53,16 @@ import java.util.Set;
 public class Route {
 
   /** . */
-  private static final int TERMINATION_NONE = 0;
+  static final int TERMINATION_NONE = 0;
 
   /** . */
-  private static final int TERMINATION_SEGMENT = 1;
+  static final int TERMINATION_SEGMENT = 1;
 
   /** . */
-  private static final int TERMINATION_SEPARATOR = 2;
+  static final int TERMINATION_SEPARATOR = 2;
 
   /** . */
-  private static final int TERMINATION_ANY = 3;
+  static final int TERMINATION_ANY = 3;
 
   void writeTo(XMLStreamWriter writer) throws XMLStreamException {
     if (this instanceof SegmentRoute) {
@@ -74,7 +74,7 @@ public class Route {
       PatternRoute pr = (PatternRoute)this;
       StringBuilder path = new StringBuilder("/");
       for (int i = 0;i < pr.params.length;i++) {
-        path.append(pr.chunks[i]).append("{").append(pr.params[i].name.getValue()).append("}");
+        path.append(pr.chunks[i]).append("{").append(pr.params[i].name).append("}");
       }
       path.append(pr.chunks[pr.chunks.length - 1]);
       writer.writeStartElement("pattern");
@@ -82,7 +82,7 @@ public class Route {
       writer.writeAttribute("terminal", Integer.toString(terminal));
       for (PathParam param : pr.params) {
         writer.writeStartElement("path-param");
-        writer.writeAttribute("qname", param.name.getValue());
+        writer.writeAttribute("qname", param.name);
         writer.writeAttribute("preservePath", "" + param.preservePath);
         writer.writeAttribute("pattern", param.matchingRegex.toString());
         writer.writeEndElement();
@@ -138,18 +138,18 @@ public class Route {
   private final Router router;
 
   /** . */
+  private final int terminal;
+
+  /** . */
   private Route parent;
 
   /** . */
   private List<Route> path;
 
   /** . */
-  private int terminal;
-
-  /** . */
   private Route[] children;
 
-  Route(Router router) {
+  Route(Router router, int terminal) {
 
     // Invoked by Router subclass ... not pretty but simple and does the work
     if (router == null) {
@@ -162,7 +162,7 @@ public class Route {
     //
     this.path = Collections.singletonList(this);
     this.parent = null;
-    this.terminal = TERMINATION_NONE;
+    this.terminal = terminal;
     this.children = EMPTY_ROUTE_ARRAY;
   }
 
@@ -192,25 +192,24 @@ public class Route {
   }
 
   final boolean renderPath(RouteMatch match, URIWriter writer, boolean hasChildren) throws IOException {
-    boolean endWithSlash;
-    if (parent != null) {
-      endWithSlash = parent.renderPath(match, writer, true);
-    }
-    else {
-      endWithSlash = false;
-    }
+
+    //
+    boolean endWithSlash = parent != null && parent.renderPath(match, writer, true);
 
     //
     if (this instanceof SegmentRoute) {
       SegmentRoute sr = (SegmentRoute)this;
       if (!endWithSlash) {
         writer.append('/');
-        endWithSlash = true;
       }
       String name = sr.encodedName;
       writer.append(name);
-      if (name.length() > 0) {
-        endWithSlash = false;
+      endWithSlash = false;
+    }
+    else if (this instanceof EmptyRoute) {
+      if (!endWithSlash) {
+        writer.append('/');
+        endWithSlash = true;
       }
     }
     else if (this instanceof PatternRoute) {
@@ -271,10 +270,10 @@ public class Route {
     return endWithSlash;
   }
 
-  public final RouteMatch matches(Map<QualifiedName, String> parameters) {
+  public final RouteMatch matches(Map<String, String> parameters) {
 
     //
-    HashMap<QualifiedName, String> unmatched = new HashMap<QualifiedName, String>(parameters);
+    HashMap<String, String> unmatched = new HashMap<String, String>(parameters);
     HashMap<PathParam, String> matched = new HashMap<PathParam, String>();
 
     //
@@ -285,11 +284,11 @@ public class Route {
     }
   }
 
-  private boolean _matches(HashMap<QualifiedName, String> context, HashMap<PathParam, String> matched) {
+  private boolean _matches(HashMap<String, String> context, HashMap<PathParam, String> matched) {
     return (parent == null || parent._matches(context, matched)) && matches(context, matched);
   }
 
-  private boolean matches(HashMap<QualifiedName, String> context, HashMap<PathParam, String> abc) {
+  private boolean matches(HashMap<String, String> context, HashMap<PathParam, String> abc) {
 
     // Match any pattern parameter
     if (this instanceof PatternRoute) {
@@ -327,46 +326,7 @@ public class Route {
 
   public final RouteMatch route(String path, Map<String, String[]> queryParams) {
     Iterator<RouteMatch> matcher = matcher(path, queryParams);
-    RouteMatch found = null;
-    if (matcher.hasNext()) {
-      found = matcher.next();
-
-      //Select a route if more than one
-      while (matcher.hasNext()) {
-        RouteMatch match = matcher.next();
-        Iterator<Route> foundI = found.getRoute().getPath().iterator();
-        Iterator<Route> matchI = match.getRoute().getPath().iterator();
-
-        // Drop the root route
-        foundI.next();
-        matchI.next();
-
-        //
-        while (foundI.hasNext()) {
-          Route foundR = foundI.next();
-          if (matchI.hasNext()) {
-            Route matchR = matchI.next();
-            if (foundR instanceof SegmentRoute) {
-              if (matchR instanceof SegmentRoute) {
-                // Continue
-              } else {
-                break;
-              }
-            } else {
-              if (matchR instanceof SegmentRoute) {
-                found = match;
-                break;
-              } else {
-                // Continue
-              }
-            }
-          } else {
-            break;
-          }
-        }
-      }
-    }
-    return found;
+    return matcher.hasNext() ? matcher.next() : null;
   }
 
   /**
@@ -377,6 +337,13 @@ public class Route {
    * @return the route matcher
    */
   public final Iterator<RouteMatch> matcher(String path, Map<String, String[]> requestParams) {
+
+    // Always start with a '/'
+    if (!path.startsWith("/")) {
+      path = "/" + path;
+    }
+
+    //
     return new RouteMatcher(this, Path.parse(path), requestParams);
   }
 
@@ -387,6 +354,8 @@ public class Route {
       BEGIN,
 
       PROCESS_CHILDREN,
+
+      DO_CHECK,
 
       MATCHED,
 
@@ -510,7 +479,10 @@ public class Route {
           RouteFrame next;
 
           //
-          if (child instanceof SegmentRoute) {
+          if (child instanceof EmptyRoute) {
+            next = new RouteFrame(current, child, current.path);
+          }
+          else if (child instanceof SegmentRoute) {
             SegmentRoute segmentRoute = (SegmentRoute)child;
 
             // Remove any leading slashes
@@ -615,20 +587,23 @@ public class Route {
           }
         }
         else {
+          current.status = RouteFrame.Status.DO_CHECK;
+        }
+      }
+      else if (current.status == RouteFrame.Status.DO_CHECK) {
 
-          //
-          RouteFrame.Status next;
+        // Find the index of the first char that is not a '/'
+        int pos = 0;
+        while (pos < current.path.length() && current.path.charAt(pos) == '/') {
+          pos++;
+        }
 
-          // Anything that does not begin with '/' returns null
-
-
-          int pos = 0;
-          while (pos < current.path.length() && current.path.charAt(pos) == '/') {
-            pos++;
-          }
-
-          // Are we done ?
-          if (pos == current.path.length()) {
+        // Are we done ?
+        RouteFrame.Status next;
+        if (pos == current.path.length()) {
+          if (current.route instanceof EmptyRoute) {
+            next = RouteFrame.Status.MATCHED;
+          } else {
             switch (current.route.terminal) {
               case TERMINATION_NONE:
                 next = RouteFrame.Status.END;
@@ -645,13 +620,13 @@ public class Route {
               default:
                 throw new AssertionError();
             }
-          } else {
-            next = RouteFrame.Status.END;
           }
-
-          //
-          current.status = next;
+        } else {
+          next = RouteFrame.Status.END;
         }
+
+        //
+        current.status = next;
       }
       else if (current.status == RouteFrame.Status.MATCHED) {
         // We found a solution
@@ -695,7 +670,7 @@ public class Route {
     }
 
     //
-    if (route instanceof PatternRoute || route instanceof SegmentRoute) {
+    if (route instanceof PatternRoute || route instanceof SegmentRoute || route instanceof EmptyRoute) {
       children = Tools.appendTo(children, route);
 
       // Compute path
@@ -777,128 +752,9 @@ public class Route {
     return null;
   }
 
-  public Route append(String path) {
-    return append(path, RouteKind.MATCH);
-  }
-
-  public Route append(String path, final RouteKind kind) {
-    return append(path, kind, Collections.<QualifiedName, PathParam.Builder>emptyMap());
-  }
-
-  public Route append(String path, Map<QualifiedName, PathParam.Builder> params) {
-    return append(path, RouteKind.MATCH, params);
-  }
-
-  public Route append(
-      String path,
-      final RouteKind kind,
-      final Map<QualifiedName, PathParam.Builder> params) {
-
-    //
-    class Assembler implements RouteParserHandler {
-
-      Route current = Route.this;
-      PatternBuilder builder = new PatternBuilder();
-      List<String> chunks = new ArrayList<String>();
-      List<PathParam> parameterPatterns = new ArrayList<PathParam>();
-      QualifiedName paramName;
-      boolean lastSegment;
-
-      public void segmentOpen() {
-        builder.clear().expr("");
-        chunks.clear();
-        parameterPatterns.clear();
-        lastSegment = false;
-      }
-
-      public void segmentChunk(CharSequence s, int from, int to) {
-        builder.litteral(s, from, to);
-        chunks.add(s.subSequence(from, to).toString());
-        lastSegment = true;
-      }
-
-      public void segmentClose() {
-        if (!lastSegment) {
-          chunks.add("");
-        }
-
-        Route next;
-        if (parameterPatterns.isEmpty()) {
-          next = new SegmentRoute(router, chunks.get(0));
-        } else {
-          // We want to satisfy one of the following conditions
-          // - the next char after the matched expression is '/'
-          // - the expression matched until the end
-          // - the match expression is the empty expression
-          builder.expr("(?:(?<=^)|(?=/)|$)");
-          next = new PatternRoute(router, router.compile(builder.build()), parameterPatterns, chunks);
-        }
-
-        //
-        current.add(next);
-        current = next;
-      }
-
-      public void pathClose(boolean slash) {
-        // Set terminal status
-        switch (kind) {
-          case CONNECT:
-            current.terminal = TERMINATION_NONE;
-            break;
-          case MATCH:
-            current.terminal = slash ? TERMINATION_SEPARATOR : TERMINATION_SEGMENT;
-            break;
-          case MATCH_ANY:
-            current.terminal = TERMINATION_ANY;
-            break;
-        }
-      }
-
-      public void exprOpen() {
-        if (!lastSegment) {
-          chunks.add("");
-        }
-      }
-
-      public void exprIdent(CharSequence s, int from, int to) {
-        String parameterName = s.subSequence(from, to).toString();
-        paramName = QualifiedName.parse(parameterName);
-      }
-
-      public void exprClose() {
-        lastSegment = false;
-
-        //
-        PathParam.Builder desc = params.get(paramName);
-        if (desc == null) {
-          desc = PathParam.builder();
-        }
-
-        //
-        PathParam param = desc.build(router, paramName);
-        // Append routing regex to the route regex surrounded by a non capturing regex
-        // to isolate routingRegex like a|b or a(.)b
-        builder.expr("(?:").expr(param.routingRegex).expr(")");
-        parameterPatterns.add(param);
-      }
-    }
-
-    //
-    Assembler asm = new Assembler();
-    try {
-      RouteParser.parse(path, asm);
-    }
-    catch (SyntaxException e) {
-      throw new MalformedRouteException(e);
-    }
-
-    //
-    return asm.current;
-  }
-
-  private PathParam getParam(QualifiedName name) {
+  private PathParam getParam(String name) {
     PathParam param = null;
-    if (param == null && this instanceof PatternRoute) {
+    if (this instanceof PatternRoute) {
       for (PathParam pathParam : ((PatternRoute)this).params) {
         if (pathParam.name.equals(name)) {
           param = pathParam;
@@ -909,7 +765,7 @@ public class Route {
     return param;
   }
 
-  private PathParam findParam(QualifiedName name) {
+  private PathParam findParam(String name) {
     PathParam param = getParam(name);
     if (param == null && parent != null) {
       param = parent.findParam(name);
@@ -936,10 +792,142 @@ public class Route {
    * @param name   the name
    * @param params the list collecting the found params
    */
-  private void findDescendantOrSelfParams(QualifiedName name, List<PathParam> params) {
+  private void findDescendantOrSelfParams(String name, List<PathParam> params) {
     PathParam param = getParam(name);
     if (param != null) {
       params.add(param);
     }
+  }
+
+
+
+
+
+
+
+  public Route append(String path) {
+    return append(path, RouteKind.MATCH);
+  }
+
+  public Route append(String path, final RouteKind kind) {
+    return append(path, kind, Collections.<String, PathParam.Builder>emptyMap());
+  }
+
+  public Route append(String path, Map<String, PathParam.Builder> params) {
+    return append(path, RouteKind.MATCH, params);
+  }
+
+  static class Data {
+
+    PatternBuilder builder = new PatternBuilder().expr("");
+    List<String> chunks = new ArrayList<String>();
+    List<PathParam> parameterPatterns = new ArrayList<PathParam>();
+    String paramName = null;
+    boolean lastSegment = false;
+  }
+
+  public Route append(
+      String path,
+      final RouteKind kind,
+      final Map<String, PathParam.Builder> params) throws NullPointerException {
+    if (path == null) {
+      throw new NullPointerException("No null route path accepted");
+    }
+    if (kind == null) {
+      throw new NullPointerException("No null route kind accepted");
+    }
+    if (params == null) {
+      throw new NullPointerException("No null route params accepted");
+    }
+
+    //
+    class Assembler implements RouteParserHandler {
+
+      LinkedList<Data> datas = new LinkedList<Data>();
+      Route last = null;
+
+      public void segmentOpen() {
+        datas.add(new Data());
+      }
+
+      public void segmentChunk(CharSequence s, int from, int to) {
+        datas.peekLast().builder.litteral(s, from, to);
+        datas.peekLast().chunks.add(s.subSequence(from, to).toString());
+        datas.peekLast().lastSegment = true;
+      }
+
+      public void segmentClose() {
+        if (!datas.peekLast().lastSegment) {
+          datas.peekLast().chunks.add("");
+        }
+      }
+
+      public void exprOpen() {
+        if (!datas.peekLast().lastSegment) {
+          datas.peekLast().chunks.add("");
+        }
+      }
+
+      public void exprIdent(CharSequence s, int from, int to) {
+        String parameterName = s.subSequence(from, to).toString();
+        datas.peekLast().paramName = parameterName;
+      }
+
+      public void exprClose() {
+        datas.peekLast().lastSegment = false;
+
+        //
+        PathParam.Builder desc = params.get(datas.peekLast().paramName);
+        if (desc == null) {
+          desc = new PathParam.Builder();
+        }
+
+        //
+        PathParam param = desc.build(router, datas.peekLast().paramName);
+        // Append routing regex to the route regex surrounded by a non capturing regex
+        // to isolate routingRegex like a|b or a(.)b
+        datas.peekLast().builder.expr("(?:").expr(param.routingRegex).expr(")");
+        datas.peekLast().parameterPatterns.add(param);
+      }
+
+      public void pathClose(boolean slash) {
+
+        // The path was empty or /
+        if (datas.isEmpty()) {
+          Route.this.add(last = new EmptyRoute(router, kind.getTerminal(slash)));
+        } else {
+          last = Route.this;
+          while (datas.size() > 0) {
+            Data data = datas.removeFirst();
+            int terminal = datas.isEmpty() ? kind.getTerminal(slash) : TERMINATION_NONE;
+            Route next;
+            if (data.parameterPatterns.isEmpty()) {
+              next = new SegmentRoute(router, data.chunks.get(0), terminal);
+            } else {
+              // We want to satisfy one of the following conditions
+              // - the next char after the matched expression is '/'
+              // - the expression matched until the end
+              // - the match expression is the empty expression
+              data.builder.expr("(?:(?<=^)|(?=/)|$)");
+              next = new PatternRoute(router, router.compile(data.builder.build()), data.parameterPatterns, data.chunks, terminal);
+            }
+            last.add(next);
+            last = next;
+          }
+        }
+      }
+    }
+
+    //
+    Assembler asm = new Assembler();
+    try {
+      RouteParser.parse(path, asm);
+    }
+    catch (SyntaxException e) {
+      throw new MalformedRouteException(e);
+    }
+
+    //
+    return asm.last;
   }
 }

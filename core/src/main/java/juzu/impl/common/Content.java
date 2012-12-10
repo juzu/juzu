@@ -27,37 +27,28 @@ import java.nio.charset.Charset;
 public class Content {
 
   /** . */
-  private long lastModified;
-
-  /** . */
   private byte[] data;
 
   /** . */
   private Charset encoding;
 
-  public Content(long lastModified, byte[] data, Charset encoding) {
+  public Content(byte[] data, Charset encoding) {
     if (data == null) {
       throw new NullPointerException("No null data accepted");
     }
 
     //
-    this.lastModified = lastModified;
     this.data = data;
     this.encoding = encoding;
   }
 
-  public Content(long lastModified, CharSequence s) {
-    this(lastModified, s, Charset.defaultCharset());
+  public Content(CharSequence s) {
+    this(s, Charset.defaultCharset());
   }
 
-  public Content(long lastModified, CharSequence s, Charset encoding) {
+  public Content(CharSequence s, Charset encoding) {
     this.encoding = encoding;
-    this.lastModified = lastModified;
     this.data = s.toString().getBytes(encoding);
-  }
-
-  public long getLastModified() {
-    return lastModified;
   }
 
   public Charset getEncoding() {
@@ -77,11 +68,6 @@ public class Content {
       throw new IllegalStateException("No encoding set");
     }
     return new String(data, encoding);
-  }
-
-  public Content touch() {
-    lastModified = System.currentTimeMillis();
-    return this;
   }
 
   public int getSize() {

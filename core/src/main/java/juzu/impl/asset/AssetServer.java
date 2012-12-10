@@ -19,7 +19,7 @@
 
 package juzu.impl.asset;
 
-import juzu.impl.plugin.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.common.Tools;
 
 import javax.servlet.ServletContext;
@@ -34,22 +34,22 @@ import java.util.HashSet;
 public class AssetServer {
 
   /** . */
-  HashSet<ApplicationRuntime<?, ?>> runtimes = new HashSet<ApplicationRuntime<?, ?>>();
+  HashSet<ApplicationLifeCycle<?, ?>> runtimes = new HashSet<ApplicationLifeCycle<?, ?>>();
 
   public AssetServer() {
   }
 
-  public void register(ApplicationRuntime<?, ?> assetManager) {
+  public void register(ApplicationLifeCycle<?, ?> assetManager) {
     runtimes.add(assetManager);
   }
 
-  public void unregister(ApplicationRuntime<?, ?> assetManager) {
+  public void unregister(ApplicationLifeCycle<?, ?> assetManager) {
     runtimes.remove(assetManager);
   }
 
   public boolean doGet(String path, ServletContext ctx, HttpServletResponse resp) throws ServletException, IOException {
     if (path != null && path.length() > 0) {
-      for (ApplicationRuntime<?, ?> runtime : runtimes) {
+      for (ApplicationLifeCycle<?, ?> runtime : runtimes) {
         String contentType;
         InputStream in;
         URL url = runtime.getScriptManager().resolveAsset(path);

@@ -23,7 +23,7 @@ import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import juzu.impl.common.QN;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.test.protocol.mock.MockApplication;
@@ -34,6 +34,8 @@ import org.junit.rules.TestName;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -126,12 +128,12 @@ public abstract class AbstractTestCase extends Assert {
   }
 
   public static DiskFileSystem diskFS(QN packageName) {
-    File root = new File(System.getProperty("test.resources"));
+    File root = new File(System.getProperty("juzu.test.resources.path"));
     return new DiskFileSystem(root, packageName);
   }
 
-  public static DiskFileSystem diskFS(String... packageName) {
-    File root = new File(System.getProperty("test.resources"));
+  public static DiskFileSystem diskFS(String packageName) {
+    File root = new File(System.getProperty("juzu.test.resources.path"));
     return new DiskFileSystem(root, packageName);
   }
 
@@ -142,23 +144,44 @@ public abstract class AbstractTestCase extends Assert {
     return name.getMethodName();
   }
 
-  public final CompilerAssert<File, File> compiler(String... packageName) {
+  public final CompilerAssert<File, File> compiler(String packageName) {
     return compiler(false, packageName);
   }
 
-  public final CompilerAssert<File, File> incrementalCompiler(String... packageName) {
+  public final CompilerAssert<File, File> incrementalCompiler(String packageName) {
     return compiler(true, packageName);
   }
 
-  private CompilerAssert<File, File> compiler(boolean incremental, String... packageName) {
-    DiskFileSystem input = diskFS(packageName);
+  private CompilerAssert<File, File> compiler(boolean incremental, String packageName) {
+    return compiler(incremental, QN.parse(packageName), getQualifiers());
 
-    if (packageName.length == 0) {
+  }
+
+  /**
+   * Override to append additional qualifiers.
+   *
+   * @return the qualifiers
+   */
+  protected ArrayList<String> getQualifiers() {
+    ArrayList<String> qualifiers = new ArrayList<String>();
+    String methodName = name.getMethodName();
+    if (methodName != null) {
+      qualifiers.add(methodName);
+    }
+    return qualifiers;
+  }
+
+  public static CompilerAssert<File, File> compiler(boolean incremental, QN packageName, String... qualifiers) {
+    return compiler(incremental, packageName, Arrays.asList(qualifiers));
+  }
+
+  private static CompilerAssert<File, File> compiler(boolean incremental, QN packageName, List<String> qualifiers) {
+    if (packageName.isEmpty()) {
       throw failure("Cannot compile empty package");
     }
 
     //
-    String outputPath = System.getProperty("test.generated.classes");
+    String outputPath = System.getProperty("juzu.test.workspace.path");
     File a = new File(outputPath);
     if (a.exists()) {
       if (a.isFile()) {
@@ -172,9 +195,14 @@ public abstract class AbstractTestCase extends Assert {
     }
 
     // Find
-    String s = name.getMethodName();
-    String pkg = Tools.join('.', packageName) + "#" + s;
-    File f2 = new File(a, pkg);
+    StringBuilder pkg = Tools.join(new StringBuilder(), '_', packageName);
+    if (qualifiers != null) {
+      for (String qualifier : qualifiers) {
+        pkg.append('#').append(qualifier);
+      }
+    }
+
+    File f2 = new File(a, pkg.toString());
     for (int count = 0;;count++) {
       if (!f2.exists()) {
         break;
@@ -200,6 +228,7 @@ public abstract class AbstractTestCase extends Assert {
     DiskFileSystem classOutput = new DiskFileSystem(classOutputDir);
 
     //
+    DiskFileSystem input = diskFS(packageName);
     File sourcePathDir = new File(f2, "source-path");
     assertTrue(sourcePathDir.mkdir());
     DiskFileSystem sourcePath = new DiskFileSystem(sourcePathDir);
@@ -214,7 +243,7 @@ public abstract class AbstractTestCase extends Assert {
     return new CompilerAssert<File, File>(incremental, sourcePath, sourceOutput, classOutput);
   }
 
-  public MockApplication<?> application(InjectImplementation injectImplementation, String... packageName) {
+  public MockApplication<?> application(InjectorProvider injectImplementation, String packageName) {
     CompilerAssert<File, File> helper = compiler(packageName);
     helper.assertCompile();
     return helper.application(injectImplementation, QN.create(packageName));

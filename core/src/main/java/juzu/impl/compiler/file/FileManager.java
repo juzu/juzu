@@ -20,12 +20,15 @@
 package juzu.impl.compiler.file;
 
 import javax.tools.JavaFileObject;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class FileManager {
+
+  public abstract void populateRoots(Set<File> roots) throws IOException;
 
   public abstract JavaFileObject getReadable(FileKey key) throws IOException;
 

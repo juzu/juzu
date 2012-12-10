@@ -34,7 +34,7 @@ public class AjaxTestCase extends AbstractHttpTestCase {
 
   @Test
   public void testAjax() throws Exception {
-    assertDeploy("http", "ajax");
+    assertDeploy("http.ajax");
     driver.get(deploymentURL.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();

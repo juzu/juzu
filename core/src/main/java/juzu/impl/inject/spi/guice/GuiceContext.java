@@ -37,7 +37,7 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import juzu.Scope;
 import juzu.impl.inject.ScopeController;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
 
 import javax.annotation.PreDestroy;
@@ -170,8 +170,8 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
     this.classLoader = bootstrap.classLoader;
   }
 
-  public InjectImplementation getImplementation() {
-    return InjectImplementation.INJECT_GUICE;
+  public InjectorProvider getImplementation() {
+    return InjectorProvider.INJECT_GUICE;
   }
 
   public ClassLoader getClassLoader() {

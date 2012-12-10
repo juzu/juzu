@@ -20,7 +20,7 @@
 package juzu.impl.bridge.servlet;
 
 import juzu.impl.common.Tools;
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,14 +31,13 @@ import org.openqa.selenium.WebElement;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteOverloadActionAndViewTestCase extends AbstractStandaloneTestCase {
+public class RouteOverloadActionAndViewTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.overload.actionandview");
+    return createServletDeployment("bridge.servlet.route.overload.actionandview");
   }
 
   @Drone
@@ -46,10 +45,10 @@ public class RouteOverloadActionAndViewTestCase extends AbstractStandaloneTestCa
 
   @Test
   public void testRender() throws Exception {
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     URL url = new URL(trigger.getText());
-    assertEquals("/juzu/foo", url.getPath());
+    assertEquals(applicationURL("/foo").getPath(), url.getPath());
     assertNull(url.getQuery());
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
     conn.setInstanceFollowRedirects(false);
@@ -57,7 +56,11 @@ public class RouteOverloadActionAndViewTestCase extends AbstractStandaloneTestCa
     conn.connect();
     assertEquals(302, conn.getResponseCode());
     url = new URL(Tools.responseHeaders(conn).get("Location"));
-    assertEquals("/juzu/foo", url.getPath());
+    System.out.println("url = " + url);
+    System.out.println("url = " + url);
+    System.out.println("url = " + url);
+    System.out.println("url = " + url);
+    assertEquals(applicationURL("/foo").getPath(), url.getPath());
     assertNull(url.getQuery());
     driver.get(url.toString());
     String pass = driver.findElement(By.tagName("body")).getText();

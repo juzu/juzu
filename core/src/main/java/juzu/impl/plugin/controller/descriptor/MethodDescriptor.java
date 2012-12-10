@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller.descriptor;
 
-import juzu.Param;
+import juzu.Mapped;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.ParameterMap;
 import juzu.impl.common.Tools;
@@ -45,13 +45,13 @@ import java.util.Set;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class MethodDescriptor {
+public final class MethodDescriptor<P extends Phase> {
 
   /** . */
   private final String id;
 
   /** . */
-  private final Phase phase;
+  private final P phase;
 
   /** . */
   private final Class<?> type;
@@ -73,7 +73,7 @@ public final class MethodDescriptor {
 
   public MethodDescriptor(
       String id,
-      Phase phase,
+      P phase,
       Class<?> type,
       Method method,
       List<ParameterDescriptor> argumentList) {
@@ -137,7 +137,7 @@ public final class MethodDescriptor {
     return id;
   }
 
-  public Phase getPhase() {
+  public P getPhase() {
     return phase;
   }
 
@@ -173,7 +173,7 @@ public final class MethodDescriptor {
         String name = parameter.getName();
         switch (parameter.getCardinality()) {
           case SINGLE: {
-            if (parameter.getType().isAnnotationPresent(Param.class)) {
+            if (parameter.getType().isAnnotationPresent(Mapped.class)) {
               Map<String, String[]> p = buildBeanParameter(name, value);
               parameterMap.setParameters(p);
             }
@@ -210,7 +210,7 @@ public final class MethodDescriptor {
 
 
         // Yeah OK nasty cast, we'll see later
-        parameter.setValue(parameterMap, value);
+        // parameter.setValue(parameterMap, value);
       }
     }
   }
@@ -267,7 +267,7 @@ public final class MethodDescriptor {
     for (int i = 0;i < args.length;i++) {
       ParameterDescriptor parameter = argumentList.get(i);
       Object[] values;
-      if (paramsType[i].isAnnotationPresent(Param.class)) {
+      if (paramsType[i].isAnnotationPresent(Mapped.class)) {
         // build bean parameter
         Object o = null;
         try {

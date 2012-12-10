@@ -19,7 +19,7 @@
 
 package juzu.impl.bridge.servlet;
 
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -29,11 +29,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteSelectionPatternAndPattern2TestCase extends AbstractStandaloneTestCase {
+public class RouteSelectionPatternAndPattern2TestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.selection.patternandpattern2");
+    return createServletDeployment("bridge.servlet.route.selection.patternandpattern2");
   }
 
   @Drone
@@ -41,7 +41,7 @@ public class RouteSelectionPatternAndPattern2TestCase extends AbstractStandalone
 
   @Test
   public void testRender() throws Exception {
-    driver.get(deploymentURL.toURI().resolve("./foo").toURL().toString());
+    driver.get(applicationURL("/foo").toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     assertEquals("foo1", trigger.getText());
   }

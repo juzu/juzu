@@ -20,7 +20,7 @@
 package juzu.test.protocol.http;
 
 import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.plugin.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodHandle;
@@ -41,7 +41,7 @@ public class HttpServletImpl extends HttpServlet {
 
 
   /** . */
-  private ApplicationRuntime<?, ?> application;
+  private ApplicationLifeCycle<?, ?> application;
 
   /** . */
   private AssetServer assetServer;
@@ -82,25 +82,24 @@ public class HttpServletImpl extends HttpServlet {
     }
 
     //
-    switch (phase) {
-      case VIEW:
-        return new RenderBridgeImpl(this, application.getContext(), req, resp, method, parameters);
-      case ACTION:
-        return new ActionBridgeImpl(application.getContext(), req, resp, method, parameters);
-      case RESOURCE:
-        return new ResourceBridgeImpl(application.getContext(), req, resp, method, parameters);
-      default:
-        throw new UnsupportedOperationException("todo");
+    if (phase == Phase.ACTION) {
+      return new ActionBridgeImpl(application.getContext(), req, resp, method, parameters);
+    } else if (phase == Phase.VIEW) {
+      return new RenderBridgeImpl(this, application.getContext(), req, resp, method, parameters);
+    } else if (phase == Phase.RESOURCE) {
+      return new ResourceBridgeImpl(application.getContext(), req, resp, method, parameters);
+    } else {
+      throw new AssertionError();
     }
   }
 
   @Override
   public void init() throws ServletException {
     try {
-      ApplicationRuntime<?, ?> application = AbstractHttpTestCase.getCurrentApplication();
+      ApplicationLifeCycle<?, ?> application = AbstractHttpTestCase.getCurrentApplication();
 
       //
-      application.start();
+      application.refresh();
 
       // Bind the asset managers
       assetServer = new AssetServer();

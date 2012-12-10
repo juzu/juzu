@@ -61,6 +61,10 @@ public class MetaModel<P extends MetaModelPlugin<M, P>, M extends MetaModel<P, M
     }
   }
 
+  public ProcessingContext getProcessingContext() {
+    return processingContext;
+  }
+
   public void init(ProcessingContext env) {}
 
   public Set<Class<? extends Annotation>> getSupportedAnnotations() { return Collections.emptySet(); }

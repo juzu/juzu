@@ -37,13 +37,22 @@ public class ParameterMetaModel extends MetaModelObject {
   final ElementHandle.Class type;
 
   /** . */
-  final String declaredType;
+  final String typeLiteral;
 
-  public ParameterMetaModel(String name, Cardinality cardinality, ElementHandle.Class type, String declaredType) {
+  /** . */
+  final String pattern;
+
+  public ParameterMetaModel(
+      String name,
+      Cardinality cardinality,
+      ElementHandle.Class type,
+      String typeLiteral,
+      String pattern) {
     this.name = name;
     this.cardinality = cardinality;
     this.type = type;
-    this.declaredType = declaredType;
+    this.typeLiteral = typeLiteral;
+    this.pattern = pattern;
   }
 
   public String getName() {
@@ -58,12 +67,17 @@ public class ParameterMetaModel extends MetaModelObject {
     return type;
   }
 
+  public String getPattern() {
+    return pattern;
+  }
+
   @Override
   public JSON toJSON() {
     return new JSON().
       set("name", name).
       set("type", type).
-      set("declaredType", declaredType).
-      set("cardinality", cardinality);
+      set("typeLiteral", typeLiteral).
+      set("cardinality", cardinality).
+      set("pattern", pattern);
   }
 }

@@ -19,7 +19,7 @@
 
 package juzu.templating.mustache;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
@@ -29,7 +29,7 @@ import org.junit.Test;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MustacheTestCase extends AbstractInjectTestCase {
 
-  public MustacheTestCase(InjectImplementation di) {
+  public MustacheTestCase(InjectorProvider di) {
     super(di);
   }
 
@@ -67,7 +67,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testParameterDeclaration() throws Exception {
-    if (getDI() != InjectImplementation.INJECT_GUICE) {
+    if (getDI() != InjectorProvider.INJECT_GUICE) {
       MockApplication<?> app = application("parameterdeclaration").init();
       MockClient client = app.client();
       MockRenderBridge render = client.render();

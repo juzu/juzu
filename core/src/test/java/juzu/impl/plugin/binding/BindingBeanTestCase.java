@@ -20,7 +20,7 @@
 package juzu.impl.plugin.binding;
 
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
@@ -28,18 +28,19 @@ import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BindingBeanTestCase extends AbstractInjectTestCase {
 
-  public BindingBeanTestCase(InjectImplementation di) {
+  public BindingBeanTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testCreate() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "create").init();
+    MockApplication<?> app = application("plugin.binding.create").init();
 
     //
     MockClient client = app.client();
@@ -49,29 +50,31 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testAbstractClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "abstractclass");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.abstractclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.BEAN_ABSTRACT_TYPE, error.getCode());
-    assertEquals("/plugin/binding/abstractclass/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "abstractclass", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test
   public void testNotClass() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "binding", "notclass");
+    CompilerAssert<File, File> compiler = compiler("plugin.binding.notclass");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(BindingMetaModelPlugin.BEAN_INVALID_TYPE, error.getCode());
-    assertEquals("/plugin/binding/notclass/package-info.java", error.getSource());
+    File f = compiler.getSourcePath().getPath("plugin", "binding", "notclass", "package-info.java");
+    assertEquals(f, error.getSourceFile());
   }
 
   @Test
   public void testScope() throws Exception {
-    MockApplication<?> app = application("plugin", "binding", "scope").init();
+    MockApplication<?> app = application("plugin.binding.scope").init();
 
     //
     MockClient client = app.client();
@@ -83,6 +86,5 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
     render = (MockRenderBridge)client.invoke(url);
     String result = render.assertStringResult();
     assertEquals("pass", result);
-
   }
 }

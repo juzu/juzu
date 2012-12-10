@@ -19,94 +19,40 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.common.Content;
-
 import java.util.LinkedHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMDir extends RAMPath {
+class RAMDir extends RAMPath {
 
   /** . */
   final LinkedHashMap<String, RAMPath> children;
 
   /** . */
-  private long lastModified;
+  long lastModified;
 
-  public RAMDir() {
+  RAMDir(RAMFileSystem fs) {
+    super(fs);
+
+    //
     this.children = new LinkedHashMap<String, RAMPath>();
     this.lastModified = System.currentTimeMillis();
   }
 
-  public RAMDir(RAMDir parent, String name) {
+  RAMDir(RAMDir parent, String name, long lastModified) {
     super(parent, name);
 
     //
     this.children = new LinkedHashMap<String, RAMPath>();
-  }
-
-  public RAMFile addFile(String name) {
-    if (name == null) {
-      throw new NullPointerException();
-    }
-    if (name.indexOf('/') != -1) {
-      throw new IllegalArgumentException("Name must not container '/'");
-    }
-    if (children.containsKey(name)) {
-      throw new IllegalStateException();
-    }
-
-    //
-    RAMFile dir = new RAMFile(this, name);
-    children.put(name, dir);
-    return dir;
-  }
-
-  public RAMDir addDir(String name) {
-    if (name == null) {
-      throw new NullPointerException();
-    }
-    if (name.indexOf('/') != -1) {
-      throw new IllegalArgumentException("Name must not container '/'");
-    }
-    if (children.containsKey(name)) {
-      throw new IllegalStateException();
-    }
-
-    //
-    RAMDir dir = new RAMDir(this, name);
-    children.put(name, dir);
-    return dir;
+    this.lastModified = lastModified;
   }
 
   @Override
-  public void touch() {
-    this.lastModified = System.currentTimeMillis();
-  }
-
-  @Override
-  public long getLastModified() {
+  long getLastModified() {
     return lastModified;
   }
 
-  public RAMPath getChild(String name) {
-    return children.get(name);
-  }
-
   @Override
-  public RAMFile update(Content content) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Content getContent() {
-    return null;
-  }
-
-  public Iterable<RAMPath> getChildren() {
-    return children.values();
-  }
-
-  public void clear() {
-    children.clear();
+  void touch() {
+    this.lastModified = System.currentTimeMillis();
   }
 }

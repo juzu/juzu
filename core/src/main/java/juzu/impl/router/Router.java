@@ -78,7 +78,7 @@ public class Router extends Route {
   }
 
   public Router(char separatorEscape, REFactory regexFactory) throws RouterConfigException {
-    super(null);
+    super(null, Route.TERMINATION_NONE);
 
     //
     int i = separatorEscape & ~0x7F;

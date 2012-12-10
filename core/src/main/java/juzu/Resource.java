@@ -26,11 +26,11 @@ import java.lang.annotation.Target;
 
 /**
  * Annotate a method for declaring a resource serving controller method.
- * <p/>
+ *
  * <code><pre>
  *    public void MyController {
- * <p/>
- *       &#064;Resource
+ *
+ *       &#064;{@link Resource}
  *       public void myResource() {
  *          ...
  *       }

@@ -19,7 +19,7 @@
 
 package juzu.impl.fs.spi.classloader;
 
-import juzu.impl.fs.spi.SimpleFileSystem;
+import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -149,20 +149,18 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase {
     assertFS(new ClassLoaderFileSystem(classLoader));
   }
 
-  private <P> void assertFS(SimpleFileSystem<P> fs) throws Exception {
+
+  private <P> void assertFS(ReadFileSystem<P> fs) throws Exception {
     P foo = fs.getPath("foo");
     assertEquals("foo", fs.getName(foo));
-    assertEquals("foo", fs.packageOf(foo, '.', new StringBuilder()).toString());
     ArrayList<? extends P> fooChildren = Tools.list(fs.getChildren(foo));
     assertEquals(1, fooChildren.size());
     P fooChild = fooChildren.get(0);
-    assertEquals("foo", fs.packageOf(fooChild, '/', new StringBuilder()).toString());
     assertEquals("bar.txt", fs.getName(fooChild));
 
     //
     P fooBar = fs.getPath("foo", "bar.txt");
     assertEquals("bar.txt", fs.getName(fooBar));
-    assertEquals("foo", fs.packageOf(fooBar, '.', new StringBuilder()).toString());
     URL fooBarURL = fs.getURL(fooBar);
     String fooBarContent = Tools.read(fooBarURL);
     assertEquals("foo/bar.txt_value", fooBarContent);
@@ -170,7 +168,6 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase {
     //
     P fooBarJuu = fs.getPath("foo", "bar", "juu.txt");
     assertEquals("juu.txt", fs.getName(fooBarJuu));
-    assertEquals("foo.bar", fs.packageOf(fooBarJuu, '.', new StringBuilder()).toString());
     URL fooBarJuuURL = fs.getURL(fooBarJuu);
     String fooBarJuuContent = Tools.read(fooBarJuuURL);
     assertEquals("foo/bar/juu.txt_value", fooBarJuuContent);

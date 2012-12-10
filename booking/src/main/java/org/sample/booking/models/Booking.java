@@ -19,7 +19,7 @@
 
 package org.sample.booking.models;
 
-import juzu.Param;
+import juzu.Mapped;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 // @Entity
-@Param
+@Mapped
 public class Booking {
 
   public String id;

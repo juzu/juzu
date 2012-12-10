@@ -36,10 +36,10 @@ public class A extends Controller {
   Bean bean;
 
   @View
-  public Response.Content index() throws IOException {
+  public Response.Content<?> index() throws IOException {
     if (bean != null) {
       serial = bean.getSerial();
-      return Response.ok(A_.doneURL().toString());
+      return Response.ok(A_.done().toString());
     }
     else {
       return Response.ok("");
@@ -47,7 +47,7 @@ public class A extends Controller {
   }
 
   @View
-  public Response.Content done() throws IOException {
+  public Response.Content<?> done() throws IOException {
     if (bean != null) {
       if (serial + 1 == bean.getSerial()) {
         return Response.ok("pass");

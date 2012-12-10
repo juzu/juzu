@@ -20,7 +20,7 @@
 package juzu.impl.bridge.servlet;
 
 import juzu.impl.common.Tools;
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,11 +31,11 @@ import java.net.HttpURLConnection;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseHeaderViewTestCase extends AbstractStandaloneTestCase {
+public class ResponseHeaderViewTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.response.header.view");
+    return createServletDeployment("bridge.servlet.response.header.view");
   }
 
   @Drone
@@ -43,7 +43,7 @@ public class ResponseHeaderViewTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testPathParam() throws Exception {
-    HttpURLConnection conn = (HttpURLConnection)deploymentURL.openConnection();
+    HttpURLConnection conn = (HttpURLConnection)applicationURL().openConnection();
     conn.connect();
     Map<String, String> headers = Tools.responseHeaders(conn);
     assertTrue(headers.containsKey("foo"));

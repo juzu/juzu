@@ -42,7 +42,21 @@ public class RouterMetaModel extends MetaModelObject {
   /** . */
   RouteMetaModel root;
 
+  /** . */
+  String packageRoute;
+
+  /** . */
+  Integer packagePriority;
+
   public RouteMetaModel getRoot() {
     return root;
+  }
+
+  public String getPackageRoute() {
+    return packageRoute;
+  }
+
+  public Integer getPackagePriority() {
+    return packagePriority;
   }
 }

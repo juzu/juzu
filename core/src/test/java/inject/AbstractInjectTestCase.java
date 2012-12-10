@@ -25,9 +25,8 @@ import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.Scoped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
-import juzu.impl.common.Tools;
-import juzu.impl.inject.spi.InjectBuilder;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.Injector;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
 
 import java.io.File;
@@ -36,7 +35,7 @@ import java.io.File;
 public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInjectTestCase {
 
   /** . */
-  protected InjectBuilder bootstrap;
+  protected Injector bootstrap;
 
   /** . */
   protected InjectionContext<B, I> mgr;
@@ -47,15 +46,15 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
   /** . */
   protected ScopingContextImpl scopingContext;
 
-  public AbstractInjectTestCase(InjectImplementation di) {
+  public AbstractInjectTestCase(InjectorProvider di) {
     super(di);
   }
 
   protected final void init() throws Exception {
-    init(Tools.split(getClass().getPackage().getName(), '.'));
+    init(getClass().getPackage().getName());
   }
 
-  protected final void init(String... pkg) throws Exception {
+  protected final void init(String pkg) throws Exception {
     File root = new File(AbstractInjectTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
     assertTrue(root.exists());
     assertTrue(root.isDirectory());
@@ -63,7 +62,7 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
   }
 
   protected final void init(ReadFileSystem<?> fs, ClassLoader classLoader) throws Exception {
-    InjectBuilder bootstrap = getManager();
+    Injector bootstrap = getManager();
     bootstrap.addFileSystem(fs);
     bootstrap.setClassLoader(classLoader);
 
@@ -123,7 +122,7 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
     scopingContext = null;
   }
 
-  protected final InjectBuilder getManager() throws Exception {
-    return getDI().builder();
+  protected final Injector getManager() throws Exception {
+    return getDI().get();
   }
 }

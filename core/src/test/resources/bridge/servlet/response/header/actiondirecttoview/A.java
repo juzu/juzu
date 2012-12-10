@@ -30,8 +30,8 @@ import juzu.View;
 public class A extends Controller {
 
   @View()
-  public Response.Content index() {
-    return Response.render("" + A_.fooURL());
+  public Response.Content<?> index() {
+    return Response.render("" + A_.foo());
   }
 
   @Action
@@ -42,7 +42,7 @@ public class A extends Controller {
 
   @View
   @Route("/bar")
-  public Response.Content bar() {
+  public Response.Content<?> bar() {
     return Response.render("pass").withHeader("daa", "daa_value");
   }
 }

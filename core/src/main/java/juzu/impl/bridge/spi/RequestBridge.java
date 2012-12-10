@@ -25,6 +25,7 @@ import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
 import juzu.impl.request.Request;
 import juzu.request.HttpContext;
+import juzu.request.Phase;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 
@@ -96,4 +97,15 @@ public interface RequestBridge {
    */
   void close();
 
+  /**
+   * Create a dispatch for the specified phase, target and parameters.
+   *
+   * @param phase the dispatch phase
+   * @param target the dispatch target
+   * @param parameters the dispatch parameters
+   * @return the dispatch object
+   * @throws IllegalArgumentException if any parameter is not valid
+   * @throws NullPointerException if any argument is null
+   */
+  DispatchSPI createDispatch(Phase phase, MethodHandle target, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
 }

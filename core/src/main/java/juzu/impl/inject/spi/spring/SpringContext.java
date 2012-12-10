@@ -20,7 +20,7 @@
 package juzu.impl.inject.spi.spring;
 
 import juzu.AmbiguousResolutionException;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -54,8 +54,8 @@ public class SpringContext extends InjectionContext<String, Object> {
     this.classLoader = classLoader;
   }
 
-  public InjectImplementation getImplementation() {
-    return InjectImplementation.INJECT_SPRING;
+  public InjectorProvider getImplementation() {
+    return InjectorProvider.INJECT_SPRING;
   }
 
   public ClassLoader getClassLoader() {

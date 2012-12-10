@@ -19,8 +19,8 @@
 
 package juzu.impl.plugin.template;
 
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.template.TemplateExecutionException;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
@@ -33,13 +33,13 @@ import java.util.ConcurrentModificationException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ThrowableTestCase extends AbstractInjectTestCase {
 
-  public ThrowableTestCase(InjectImplementation di) {
+  public ThrowableTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testChecked() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "throwable", "checked").init();
+    MockApplication<?> app = application("plugin.template.throwable.checked").init();
 
     //
     MockClient client = app.client();
@@ -53,7 +53,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRuntime() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "throwable", "runtime").init();
+    MockApplication<?> app = application("plugin.template.throwable.runtime").init();
 
     //
     MockClient client = app.client();
@@ -67,7 +67,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testError() throws Exception {
-    MockApplication<?> app = application("plugin", "template", "throwable", "error").init();
+    MockApplication<?> app = application("plugin.template.throwable.error").init();
 
     //
     MockClient client = app.client();

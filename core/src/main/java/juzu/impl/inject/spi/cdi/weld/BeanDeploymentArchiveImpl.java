@@ -19,6 +19,7 @@
 
 package juzu.impl.inject.spi.cdi.weld;
 
+import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
@@ -61,24 +62,33 @@ class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     List<ReadFileSystem<?>> fileSystems) throws IOException {
 
     // A bit unchecked but well it's ok here
-    List<URL> xmlURLs = new ArrayList<URL>();
-    List<URL> fsURLs = new ArrayList<URL>();
+    ArrayList<URL> xmlURLs = new ArrayList<URL>();
+    final StringBuilder buffer = new StringBuilder();
     final ArrayList<String> beanClasses = new ArrayList<String>();
     for (final ReadFileSystem fileSystem : fileSystems) {
       fileSystem.traverse(new Visitor.Default() {
         @Override
+        public void enterDir(Object dir, String name) throws IOException {
+          if (name.length() > 0) {
+            buffer.append(name).append('.');
+          }
+        }
+        @Override
         public void file(Object file, String name) throws IOException {
           if (name.endsWith(".class")) {
-            StringBuilder buf = new StringBuilder();
-            fileSystem.packageOf(file, '.', buf);
-            if (buf.length() > 0) {
-              buf.append('.');
-            }
-            buf.append(name, 0, name.length() - ".class".length());
-            String fqn = buf.toString();
+            int len = name.length() - ".class".length();
+            buffer.append(name, 0, len);
+            String fqn = buffer.toString();
+            buffer.setLength(buffer.length() - len);
             if (!fqn.startsWith("juzu.impl.inject.spi.guice.") && !fqn.startsWith("juzu.impl.inject.spi.spring.")) {
               beanClasses.add(fqn);
             }
+          }
+        }
+        @Override
+        public void leaveDir(Object dir, String name) throws IOException {
+          if (name.length() > 0) {
+            buffer.setLength(buffer.length() - name.length() - 1);
           }
         }
       });

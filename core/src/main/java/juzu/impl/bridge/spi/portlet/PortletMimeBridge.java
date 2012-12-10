@@ -19,30 +19,16 @@
 
 package juzu.impl.bridge.spi.portlet;
 
-import juzu.PropertyMap;
-import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.MimeBridge;
-import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
-import juzu.portlet.JuzuPortlet;
-import juzu.request.Phase;
 
-import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletModeException;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
-import javax.portlet.WindowState;
-import javax.portlet.WindowStateException;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Enumeration;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -53,124 +39,6 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
 
   PortletMimeBridge(ApplicationContext application, Rq request, Rs response, boolean prod) {
     super(application, request, response, prod);
-  }
-
-  public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
-    if (propertyType == JuzuPortlet.PORTLET_MODE) {
-      if (phase == Phase.RESOURCE) {
-        return "Resource URL don't have portlet modes";
-      }
-      PortletMode portletMode = (PortletMode)propertyValue;
-      for (Enumeration<PortletMode> e = req.getPortalContext().getSupportedPortletModes();e.hasMoreElements();) {
-        PortletMode next = e.nextElement();
-        if (next.equals(portletMode)) {
-          return null;
-        }
-      }
-      return "Unsupported portlet mode " + portletMode;
-    }
-    else if (propertyType == JuzuPortlet.WINDOW_STATE) {
-      if (phase == Phase.RESOURCE) {
-        return "Resource URL don't have windwo state";
-      }
-      WindowState windowState = (WindowState)propertyValue;
-      for (Enumeration<WindowState> e = req.getPortalContext().getSupportedWindowStates();e.hasMoreElements();) {
-        WindowState next = e.nextElement();
-        if (next.equals(windowState)) {
-          return null;
-        }
-      }
-      return "Unsupported window state " + windowState;
-    }
-    else {
-      // For now we ignore other properties
-      return null;
-    }
-  }
-
-  public String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
-
-    //
-    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
-
-    //
-    BaseURL url;
-    switch (method.getPhase()) {
-      case ACTION:
-        url = resp.createActionURL();
-        break;
-      case VIEW:
-        url = resp.createRenderURL();
-        break;
-      case RESOURCE:
-        url = resp.createResourceURL();
-        break;
-      default:
-        throw new AssertionError("Unexpected phase " + method.getPhase());
-    }
-
-    // Set generic parameters
-    url.setParameters(parameters);
-
-    //
-    boolean escapeXML = false;
-    if (properties != null) {
-      Boolean escapeXMLProperty = properties.getValue(PropertyType.ESCAPE_XML);
-      if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty)) {
-        escapeXML = true;
-      }
-
-      // Handle portlet mode
-      PortletMode portletModeProperty = properties.getValue(JuzuPortlet.PORTLET_MODE);
-      if (portletModeProperty != null) {
-        if (url instanceof PortletURL) {
-          try {
-            ((PortletURL)url).setPortletMode(portletModeProperty);
-          }
-          catch (PortletModeException e) {
-            throw new IllegalArgumentException(e);
-          }
-        }
-        else {
-          throw new IllegalArgumentException();
-        }
-      }
-
-      // Handle window state
-      WindowState windowStateProperty = properties.getValue(JuzuPortlet.WINDOW_STATE);
-      if (windowStateProperty != null) {
-        if (url instanceof PortletURL) {
-          try {
-            ((PortletURL)url).setWindowState(windowStateProperty);
-          }
-          catch (WindowStateException e) {
-            throw new IllegalArgumentException(e);
-          }
-        }
-        else {
-          throw new IllegalArgumentException();
-        }
-      }
-
-      // Set method id
-      url.setParameter("juzu.op", method.getId());
-    }
-
-    //
-    if (escapeXML) {
-      try {
-        StringWriter writer = new StringWriter();
-        url.write(writer, true);
-        return writer.toString();
-      }
-      catch (IOException ignore) {
-        // This should not happen
-        return "";
-      }
-    }
-    else {
-      return url.toString();
-    }
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

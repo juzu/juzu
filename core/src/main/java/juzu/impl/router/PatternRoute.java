@@ -45,8 +45,9 @@ class PatternRoute extends Route {
       Router router,
       RERef pattern,
       List<PathParam> params,
-      List<String> chunks) {
-    super(router);
+      List<String> chunks,
+      int terminal) {
+    super(router, terminal);
 
     //
     if (chunks.size() != params.size() + 1) {

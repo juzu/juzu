@@ -20,6 +20,7 @@
 package juzu.impl.plugin.router.metamodel;
 
 import juzu.Route;
+import juzu.impl.common.QN;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.JSON;
@@ -30,9 +31,11 @@ import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
+import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -57,15 +60,25 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    if (key.getType().equals(RouteMetaModel.FQN) && key.getElement() instanceof ElementHandle.Method) {
-      getRoutes(metaModel, true).annotations.put(key.getElement(), added);
+    if (key.getType().equals(RouteMetaModel.FQN)) {
+      if (key.getElement() instanceof ElementHandle.Method) {
+        getRoutes(metaModel, true).annotations.put(key.getElement(), added);
+      } else if (key.getElement().equals(metaModel.getHandle())) {
+        getRoutes(metaModel, true).packageRoute = (String)added.get("value");
+        getRoutes(metaModel, true).packagePriority = (Integer)added.get("priority");
+      }
     }
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().equals(RouteMetaModel.FQN) && key.getElement() instanceof ElementHandle.Method) {
-      getRoutes(metaModel, true).annotations.remove(key.getElement());
+    if (key.getType().equals(RouteMetaModel.FQN)) {
+      if (key.getElement() instanceof ElementHandle.Method) {
+        getRoutes(metaModel, true).annotations.remove(key.getElement());
+      } else if (key.getElement().equals(metaModel.getHandle())) {
+        getRoutes(metaModel, true).packageRoute = null;
+        getRoutes(metaModel, true).packagePriority = null;
+      }
     }
   }
 
@@ -75,14 +88,26 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
     if (router != null) {
       ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
       if (controllers != null) {
-        RouteMetaModel root = new RouteMetaModel();
+        QN abc = metaModel.getName();
+        RouteMetaModel root = new RouteMetaModel(
+            router.packageRoute != null ? router.packageRoute : "/" + abc.get(abc.size() - 1),
+            router.packagePriority != null ? router.packagePriority : 0);
         for (ControllerMetaModel controller : controllers) {
           for (MethodMetaModel method : controller) {
             AnnotationState annotation = router.annotations.get(method.getHandle());
             if (annotation != null) {
               String path = (String)annotation.get("value");
               Integer priority = (Integer)annotation.get("priority");
-              RouteMetaModel route = root.addChild(priority != null ? priority : 0, path);
+              HashMap<String, String> parameters = null;
+              for (ParameterMetaModel parameter : method.getParameters()) {
+                if (parameter.getPattern() != null) {
+                  if (parameters == null) {
+                    parameters = new HashMap<String, String>();
+                  }
+                  parameters.put(parameter.getName(), parameter.getPattern());
+                }
+              }
+              RouteMetaModel route = root.addChild(priority != null ? priority : 0, path, parameters);
               String key = method.getPhase().name();
               if (route.getTarget(key) != null) {
                 throw RouterMetaModel.ROUTER_DUPLICATE_ROUTE.failure(metaModel.processingContext.get(method.getHandle()), path);

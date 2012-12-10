@@ -27,7 +27,7 @@ import juzu.View;
 public class A extends Controller {
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     return Response.render("pass");
   }
 }

@@ -25,8 +25,8 @@ import juzu.impl.common.Filter;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.inject.spi.BeanLifeCycle;
+import juzu.impl.inject.spi.Injector;
 import juzu.impl.plugin.Plugin;
-import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 
@@ -37,7 +37,7 @@ import java.util.HashSet;
 class ApplicationBootstrap {
 
   /** . */
-  public final InjectBuilder injectBuilder;
+  public final Injector injector;
 
   /** . */
   public final ApplicationDescriptor descriptor;
@@ -48,8 +48,8 @@ class ApplicationBootstrap {
   /** . */
   private InjectionContext<?, ?> injectionContext;
 
-  ApplicationBootstrap(InjectBuilder injectBuilder, ApplicationDescriptor descriptor) {
-    this.injectBuilder = injectBuilder;
+  ApplicationBootstrap(Injector injector, ApplicationDescriptor descriptor) {
+    this.injector = injector;
     this.descriptor = descriptor;
   }
 
@@ -59,26 +59,26 @@ class ApplicationBootstrap {
 
   private <B, I> void _start() throws ApplicationException {
     // Bind the application descriptor
-    injectBuilder.bindBean(ApplicationDescriptor.class, null, descriptor);
+    injector.bindBean(ApplicationDescriptor.class, null, descriptor);
 
     // Bind the application context
-    injectBuilder.declareBean(ApplicationContext.class, null, null, null);
+    injector.declareBean(ApplicationContext.class, null, null, null);
 
     // Bind the scopes
     for (Scope scope : Scope.values()) {
-      injectBuilder.addScope(scope);
+      injector.addScope(scope);
     }
 
     // Bind the plugins
     for (Plugin plugin : descriptor.getPlugins().values()) {
       Class aClass = plugin.getClass();
       Object o = plugin;
-      injectBuilder.bindBean(aClass, null, o);
+      injector.bindBean(aClass, null, o);
     }
 
     // Bind the beans
     for (BeanDescriptor bean : descriptor.getBeans()) {
-      bean.bind(injectBuilder);
+      bean.bind(injector);
     }
 
     // Filter the classes:
@@ -118,7 +118,7 @@ class ApplicationBootstrap {
     //
     InjectionContext<B, I> injectionContext;
     try {
-      injectionContext = (InjectionContext<B, I>)injectBuilder.create(filter);
+      injectionContext = (InjectionContext<B, I>)injector.create(filter);
     }
     catch (Exception e) {
       throw new UnsupportedOperationException("handle me gracefully", e);

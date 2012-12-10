@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
@@ -32,13 +32,13 @@ import java.util.Collections;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ActionTestCase extends AbstractInjectTestCase {
 
-  public ActionTestCase(InjectImplementation di) {
+  public ActionTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testNoOp() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "noop").init();
+    MockApplication<?> app = application("plugin.controller.action.noop").init();
 
     //
     MockClient client = app.client();
@@ -49,7 +49,7 @@ public class ActionTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRedirect() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "redirect").init();
+    MockApplication<?> app = application("plugin.controller.action.redirect").init();
 
     //
     MockClient client = app.client();
@@ -60,7 +60,7 @@ public class ActionTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRender() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "action", "render").init();
+    MockApplication<?> app = application("plugin.controller.action.render").init();
 
     //
     MockClient client = app.client();

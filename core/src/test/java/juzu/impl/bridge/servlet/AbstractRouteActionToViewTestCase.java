@@ -19,7 +19,7 @@
 
 package juzu.impl.bridge.servlet;
 
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -27,14 +27,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractRouteActionToViewTestCase extends AbstractStandaloneTestCase {
+public abstract class AbstractRouteActionToViewTestCase extends AbstractWebTestCase {
 
   @Drone
   WebDriver driver;
 
   @Test
   public void testPathParam() throws Exception {
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
     String pass = driver.findElement(By.tagName("body")).getText();

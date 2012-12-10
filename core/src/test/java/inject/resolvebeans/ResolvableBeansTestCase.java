@@ -20,7 +20,7 @@
 package inject.resolvebeans;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.Tools;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ import java.util.HashSet;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ResolvableBeansTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public ResolvableBeansTestCase(InjectImplementation di) {
+  public ResolvableBeansTestCase(InjectorProvider di) {
     super(di);
   }
 

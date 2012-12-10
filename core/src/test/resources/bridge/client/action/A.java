@@ -59,10 +59,10 @@ public class A extends Controller {
 
   @View
   @Route("/index")
-  public Response.Content index() {
+  public Response.Content<?> index() {
     return Response.ok(
-        "<a id='action' href='" + A_.actionURL() + "'>link</a>" +
-        "<a id='resource' href='" + A_.resourceURL() + "'>link</a>"
+        "<a id='action' href='" + A_.action() + "'>link</a>" +
+        "<a id='resource' href='" + A_.resource() + "'>link</a>"
     );
   }
 }

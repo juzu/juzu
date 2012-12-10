@@ -19,14 +19,15 @@
 
 package juzu.test.protocol.mock;
 
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.plugin.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.common.QN;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Logger;
+import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ResourceResolver;
 
 import java.net.URL;
@@ -38,30 +39,13 @@ public class MockApplication<P> {
   final ClassLoader classLoader;
 
   /** . */
-  private final ApplicationRuntime<P, ?> runtime;
+  private final ApplicationLifeCycle<P, ?> runtime;
 
   public <L> MockApplication(
       ReadFileSystem<P> classes,
       ClassLoader classLoader,
-      InjectImplementation implementation,
+      InjectorProvider implementation,
       QN name) throws Exception {
-/*
-    P f = classes.getPath(Arrays.asList("juzu", "config.json"));
-    if (f == null) {
-      throw new Exception("Cannot find config properties");
-    }
-
-    //
-    URL url = classes.getURL(f);
-    String s = Tools.read(url);
-    JSON props = (JSON)JSON.parse(s);
-
-    //
-    if (props.names().size() != 1) {
-      throw AbstractTestCase.failure("Could not find an application to start " + props);
-    }
-    final String name = props.names().iterator().next();
-*/
 
     /** . */
     Logger log = new Logger() {
@@ -78,10 +62,11 @@ public class MockApplication<P> {
     };
 
     //
-    ApplicationRuntime.Static<P, P> runtime = new ApplicationRuntime.Static<P, P>(log);
-    runtime.setClasses(classes);
+    ModuleLifeCycle<P, P> module = new ModuleLifeCycle.Static<P, P>(log, classLoader, classes);
+
+    //
+    ApplicationLifeCycle<P, P> runtime = new ApplicationLifeCycle<P, P>(log, module);
     runtime.setResources(classes);
-    runtime.setClassLoader(classLoader);
     runtime.setName(name);
     runtime.setInjectImplementation(implementation);
     runtime.setResolver(new ResourceResolver() {
@@ -96,11 +81,11 @@ public class MockApplication<P> {
   }
 
   public MockApplication<P> init() throws Exception {
-    runtime.start();
+    runtime.refresh();
     return this;
   }
 
-  public ApplicationRuntime<P, ?> getRuntime() {
+  public ApplicationLifeCycle<P, ?> getRuntime() {
     return runtime;
   }
 

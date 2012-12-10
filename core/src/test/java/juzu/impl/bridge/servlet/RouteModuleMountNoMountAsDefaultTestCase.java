@@ -19,7 +19,7 @@
 
 package juzu.impl.bridge.servlet;
 
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -30,11 +30,11 @@ import org.openqa.selenium.WebDriver;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteModuleMountNoMountAsDefaultTestCase extends AbstractStandaloneTestCase {
+public class RouteModuleMountNoMountAsDefaultTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.module.mountnomount.app2", "bridge.servlet.route.module.mountnomount");
+    return createServletDeployment(true, "bridge.servlet.route.module.mountnomount.app2", "bridge.servlet.route.module.mountnomount.app1");
   }
 
   @Drone

@@ -29,13 +29,13 @@ import juzu.View;
 public class A extends Controller {
 
   @View
-  public Response.Content index() {
-    return Response.render("" + A_.fooURL());
+  public Response.Content<?> index() {
+    return Response.render("" + A_.foo());
   }
 
   @Resource
   @Route("/foo")
-  public Response.Content foo() {
+  public Response.Content<?> foo() {
     return Response.ok("pass").withMimeType("text/event-stream").withHeader("juu", "juu_value");
   }
 }

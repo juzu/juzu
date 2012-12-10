@@ -50,4 +50,9 @@ public class UndeclaredIOException extends UndeclaredThrowableException {
   public UndeclaredIOException(IOException undeclaredIO) {
     super(undeclaredIO);
   }
+
+  @Override
+  public IOException getCause() {
+    return (IOException)super.getCause();
+  }
 }

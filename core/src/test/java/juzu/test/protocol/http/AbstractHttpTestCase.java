@@ -19,8 +19,8 @@
 
 package juzu.test.protocol.http;
 
-import juzu.impl.inject.spi.InjectImplementation;
-import juzu.impl.plugin.application.ApplicationRuntime;
+import juzu.impl.inject.spi.InjectorProvider;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -39,7 +39,7 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
   /** The currently deployed application. */
   private MockApplication<?> application;
 
-  public static ApplicationRuntime<?, ?> getCurrentApplication() throws IllegalStateException {
+  public static ApplicationLifeCycle<?, ?> getCurrentApplication() throws IllegalStateException {
     if (currentTest == null) {
       throw new IllegalStateException("No deployed test");
     }
@@ -82,9 +82,9 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
     app.getRuntime().shutdown();
   }
 
-  public final MockApplication<?> assertDeploy(String... packageName) {
+  public final MockApplication<?> assertDeploy(String packageName) {
     try {
-      return application = application(InjectImplementation.CDI_WELD, packageName);
+      return application = application(InjectorProvider.CDI_WELD, packageName);
     }
     catch (Exception e) {
       throw failure("Could not deploy application " + Arrays.asList(packageName), e);

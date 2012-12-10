@@ -40,7 +40,7 @@ public class ResolverTestCase extends AbstractTestCase {
    */
   @Test
   public void testResolveIndex() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "resolver", "default_method");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.resolver.default_method");
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.default_method.Application");
 
@@ -58,7 +58,7 @@ public class ResolverTestCase extends AbstractTestCase {
    */
   @Test
   public void testResolveAmbiguousIndex() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "resolver", "ambiguous_method");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.resolver.ambiguous_method");
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.ambiguous_method.Application");
 
@@ -80,7 +80,7 @@ public class ResolverTestCase extends AbstractTestCase {
    */
   @Test
   public void testDefaultControllerResolveIndex() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "resolver", "default_controller");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.resolver.default_controller");
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.default_controller.Application");
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.default_controller.A");
@@ -101,7 +101,7 @@ public class ResolverTestCase extends AbstractTestCase {
    */
   @Test
   public void testOverload() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "resolver", "overload");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.resolver.overload");
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.overload.Application");
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.overload.A");
@@ -141,7 +141,7 @@ public class ResolverTestCase extends AbstractTestCase {
 
   @Test
   public void testResolution() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "resolver", "method");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.resolver.method");
     compiler.assertCompile();
 
     //
@@ -165,7 +165,7 @@ public class ResolverTestCase extends AbstractTestCase {
 
   @Test
   public void testTemplate() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "resolver", "default_controller");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.resolver.default_controller");
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.default_controller.Application");
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.default_controller.A");
@@ -191,7 +191,7 @@ public class ResolverTestCase extends AbstractTestCase {
 
   @Test
   public void testTemplateResolveMethod() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "resolver", "method");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.resolver.method");
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.controller.resolver.method.Application");
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.method.A");

@@ -20,9 +20,7 @@
 package juzu.request;
 
 import juzu.Response;
-import juzu.URLBuilder;
 import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.MimeBridge;
@@ -33,41 +31,13 @@ import java.io.IOException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MimeContext extends RequestContext {
 
-  /** . */
-  private final ApplicationContext application;
-
   protected MimeContext(Request request, ApplicationContext application, MethodDescriptor method) {
     super(request, application, method);
-
-    //
-    this.application = application;
   }
 
   @Override
   protected abstract MimeBridge getBridge();
 
-  public URLBuilder createURLBuilder(MethodDescriptor method) {
-    URLBuilder builder = new URLBuilder(getBridge(), method);
-
-    // Bridge escape XML value
-    ApplicationDescriptor desc = application.getDescriptor();
-    builder.escapeXML(desc.getControllers().getEscapeXML());
-
-    //
-    return builder;
-  }
-
-  public URLBuilder createURLBuilder(MethodDescriptor method, Object arg) {
-    URLBuilder builder = createURLBuilder(method);
-    method.setArgs(new Object[]{arg}, builder.getParameters());
-    return builder;
-  }
-
-  public URLBuilder createURLBuilder(MethodDescriptor method, Object[] args) {
-    URLBuilder builder = createURLBuilder(method);
-    method.setArgs(args, builder.getParameters());
-    return builder;
-  }
 
   public void setResponse(Response.Content response) throws IOException, IllegalStateException {
     // Consume response here

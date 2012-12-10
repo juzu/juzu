@@ -46,7 +46,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testAdd() throws Exception {
-    CompilerAssert<File, File> helper = compiler("metamodel", "application");
+    CompilerAssert<File, File> helper = compiler("metamodel.application");
     helper.assertCompile();
 
     //
@@ -71,7 +71,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testUpdate() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.application");
     helper.assertCompile();
 
     //
@@ -82,7 +82,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     Tools.serialize(b, ser);
 
     //
-    JavaFile pkgFile = helper.assertJavaFile("metamodel", "application", "package-info.java");
+    JavaFile pkgFile = helper.assertSource("metamodel", "application", "package-info.java");
     PackageDeclaration pkg = pkgFile.assertPackage();
     pkg.getAnnotations().clear();
     List<AnnotationExpr> a = Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(
@@ -118,7 +118,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testRemove() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.application");
     helper.assertCompile();
 
     //
@@ -152,11 +152,11 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "application");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.application");
     helper.assertCompile();
 
     //
-    JavaFile pkgFile = helper.assertJavaFile("metamodel", "application", "package-info.java");
+    JavaFile pkgFile = helper.assertSource("metamodel", "application", "package-info.java");
     PackageDeclaration pkg = pkgFile.assertPackage();
     pkg.getAnnotations().clear();
     pkgFile.assertSave();

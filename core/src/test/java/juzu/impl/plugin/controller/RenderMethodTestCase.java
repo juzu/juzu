@@ -36,7 +36,7 @@ public class RenderMethodTestCase extends AbstractTestCase {
 
   @Override
   public void setUp() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "controller", "method", "render");
+    CompilerAssert<?, ?> compiler = compiler("plugin.controller.method.render");
     compiler.assertCompile();
     aClass = compiler.assertClass("plugin.controller.method.render.A");
     compiler.assertClass("plugin.controller.method.render.A_");

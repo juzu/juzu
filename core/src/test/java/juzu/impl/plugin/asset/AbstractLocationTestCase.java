@@ -21,9 +21,9 @@ package juzu.impl.plugin.asset;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import juzu.test.AbstractWebTestCase;
 import juzu.test.UserAgent;
 import juzu.test.protocol.http.HttpServletImpl;
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -33,10 +33,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractLocationTestCase extends AbstractStandaloneTestCase {
+public abstract class AbstractLocationTestCase extends AbstractWebTestCase {
 
-  public static WebArchive createDeployment(String applicationName, String pkgName) {
-    WebArchive war = AbstractStandaloneTestCase.createDeployment(applicationName, pkgName);
+  public static WebArchive createLocationDeployment(String applicationName) {
+    WebArchive war = createServletDeployment(applicationName);
     URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
     URL test = HttpServletImpl.class.getResource("test.js");
     URL stylesheet = HttpServletImpl.class.getResource("main.css");

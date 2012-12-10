@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.Registry;
 import juzu.test.protocol.mock.MockApplication;
@@ -30,7 +30,7 @@ import org.junit.Test;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FilterTestCase extends AbstractInjectTestCase {
 
-  public FilterTestCase(InjectImplementation di) {
+  public FilterTestCase(InjectorProvider di) {
     super(di);
   }
 
@@ -38,7 +38,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
   public void testLifeCycle() throws Exception {
     Registry.unset("request.filter.lifecycle");
 
-    MockApplication<?> app = application("plugin", "controller", "filter", "lifecycle").init();
+    MockApplication<?> app = application("plugin.controller.filter.lifecycle").init();
 
     //
     app.getContext().getLifecycles();
@@ -52,7 +52,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testFailure() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "filter", "failure").init();
+    MockApplication<?> app = application("plugin.controller.filter.failure").init();
 
     //
     MockClient client = app.client();

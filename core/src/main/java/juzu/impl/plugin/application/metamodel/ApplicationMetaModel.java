@@ -51,9 +51,6 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   /** . */
   final String baseName;
 
-  /** . */
-  private ModuleMetaModel applications;
-
   ApplicationMetaModel(
     ElementHandle.Package handle,
     String baseName) {
@@ -94,9 +91,8 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   @Override
   protected void postAttach(MetaModelObject parent) {
     if (parent instanceof ModuleMetaModel) {
-      applications = (ModuleMetaModel)parent;
-      model = applications;
-      applications.queue(MetaModelEvent.createAdded(this));
+      model = (ModuleMetaModel)parent;
+      model.queue(MetaModelEvent.createAdded(this));
     }
   }
 
@@ -106,7 +102,6 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
       ModuleMetaModel applications = (ModuleMetaModel)parent;
       applications.queue(MetaModelEvent.createRemoved(this));
       this.model = null;
-      this.applications = null;
     }
   }
 }

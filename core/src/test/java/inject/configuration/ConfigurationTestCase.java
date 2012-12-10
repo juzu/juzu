@@ -20,7 +20,7 @@
 package inject.configuration;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringBuilder;
 import juzu.impl.common.Tools;
 import org.junit.Test;
@@ -31,13 +31,13 @@ import java.net.URL;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ConfigurationTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public ConfigurationTestCase(InjectImplementation di) {
+  public ConfigurationTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testURL() throws Exception {
-    if (di == InjectImplementation.INJECT_SPRING) {
+    if (di == InjectorProvider.INJECT_SPRING) {
       URL configurationURL = Bean.class.getResource("spring.xml");
       assertNotNull(configurationURL);
       InputStream in = configurationURL.openStream();

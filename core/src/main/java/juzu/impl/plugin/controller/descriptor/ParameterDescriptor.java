@@ -20,8 +20,6 @@
 package juzu.impl.plugin.controller.descriptor;
 
 import juzu.impl.common.Cardinality;
-import juzu.impl.common.ParameterMap;
-import juzu.impl.common.Tools;
 
 /**
  * A parameter of a controller
@@ -35,9 +33,6 @@ public class ParameterDescriptor {
 
   /** . */
   private final Cardinality cardinality;
-
-  /** . */
-  private final String value;
 
   /** . */
   private final Class<?> type;
@@ -61,7 +56,6 @@ public class ParameterDescriptor {
     //
     this.name = name;
     this.cardinality = cardinality;
-    this.value = value;
     this.type = type;
   }
 
@@ -83,20 +77,8 @@ public class ParameterDescriptor {
     return cardinality;
   }
 
-  /**
-   * Returns the value matched by a controller parameter or null if the parameter can match any value.
-   *
-   * @return the parameter value
-   */
-  public String getValue() {
-    return value;
-  }
-
   public Class<?> getType() {
     return type;
-  }
-
-  void setValue(ParameterMap builder, Object value) {
   }
 
   @Override
@@ -106,7 +88,7 @@ public class ParameterDescriptor {
     }
     else if (obj instanceof ParameterDescriptor) {
       ParameterDescriptor that = (ParameterDescriptor)obj;
-      return name.equals(that.name) && Tools.safeEquals(value, that.value);
+      return name.equals(that.name);
     }
     else {
       return false;
@@ -115,6 +97,6 @@ public class ParameterDescriptor {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "[name=" + name + ",value=" + value + "]";
+    return getClass().getSimpleName() + "[name=" + name + "]";
   }
 }

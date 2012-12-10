@@ -71,7 +71,7 @@ public class BuildRouteTestCase extends AbstractTestCase {
   @Test
   public void testPatternSegment() throws Exception {
     Router router = new Router();
-    router.append("/{a}", Collections.singletonMap(Names.A, PathParam.builder().matchedBy(".*")));
+    router.append("/{a}", Collections.singletonMap(Names.A, PathParam.matching(".*")));
 
     //
     assertEquals(0, router.getSegmentNames().size());

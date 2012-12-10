@@ -19,9 +19,10 @@
 
 package juzu.impl.compiler;
 
+import juzu.impl.compiler.file.FileKey;
+import juzu.impl.compiler.file.JavaFileObjectImpl;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
-import juzu.impl.common.Content;
 import juzu.impl.common.FQN;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Path;
@@ -47,6 +48,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
@@ -59,7 +61,6 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,9 +70,11 @@ import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProcessingContext implements Filer, Elements, Logger {
+public class ProcessingContext implements Filer, Elements, Logger, Types {
 
   /** . */
   private static final MessageCode UNEXPECTED_ERROR = new MessageCode("UNEXPECTED_ERROR", "Unexpected error: %1$s");
@@ -97,6 +100,9 @@ public class ProcessingContext implements Filer, Elements, Logger {
 
   /** The classloader for loading service via ServiceLoader. */
   private final ClassLoader serviceCL;
+
+  /** The resources accessed, we need to have this map because some resources may only open one time (cf eclipse filer). */
+  private Map<Key, FileObject> resources;
 
   public ProcessingContext(ProcessingEnvironment env) {
     ProcessingTool tool;
@@ -173,6 +179,7 @@ public class ProcessingContext implements Filer, Elements, Logger {
     this.sourcePath = sourcePath;
     this.tool = tool;
     this.serviceCL = serviceCL;
+    this.resources = null;
   }
 
   // Various stuff ****************************************************************************************************
@@ -290,7 +297,7 @@ public class ProcessingContext implements Filer, Elements, Logger {
    * @throws NullPointerException if any argument is null
    * @throws IllegalArgumentException if the context package is not valid
    */
-  public Content resolveResource(ElementHandle.Package context, Path.Absolute path) throws NullPointerException, IllegalArgumentException {
+  public FileObject resolveResource(ElementHandle.Package context, Path.Absolute path) throws NullPointerException, IllegalArgumentException {
     if (context == null) {
       throw new NullPointerException("No null package accepted");
     }
@@ -307,7 +314,8 @@ public class ProcessingContext implements Filer, Elements, Logger {
         File f = sourcePath.getPath(list);
         if (f != null) {
           log.log("Resolved " + path + " to " + f.getAbsolutePath());
-          return sourcePath.getContent(f);
+          FileKey key = FileKey.newResourceName(path.getQN().getValue(), path.getName());
+          return new JavaFileObjectImpl<File>(key, sourcePath, f);
         }
         else {
           log.log("Resolving " + path.getCanonical() + " from source path gave no result");
@@ -322,8 +330,9 @@ public class ProcessingContext implements Filer, Elements, Logger {
         try {
           log.log("Attempt to resolve " + path.getCanonical() + " from " + location.getName());
           FileObject resource = getResource(location, path);
-          byte[] bytes = Tools.bytes(resource.openInputStream());
-          return new Content(resource.getLastModified(), bytes, Charset.defaultCharset());
+          if (resource != null && resource.getLastModified() > 0) {
+            return resource;
+          }
         }
         catch (Exception e) {
           log.log("Could not resolve resource " + path.getCanonical() + " from " + location.getName(), e);
@@ -435,6 +444,20 @@ public class ProcessingContext implements Filer, Elements, Logger {
     return env.getTypeUtils().asMemberOf(containing, element);
   }
 
+  public String getLiteralName(TypeMirror typeMirror) {
+    TypeMirror erasedParameterTypeMirror = erasure(typeMirror);
+    CharSequence typeLiteral = erasedParameterTypeMirror.toString();
+
+    int index = Tools.indexOf(typeLiteral, '<', 0);
+    if (index >= 0) {
+      // In Eclipse java.util.List generates java.util.List<E>
+      // so we must remove this to get a usable literal name
+      return typeLiteral.subSequence(0, index).toString();
+    } else {
+      return typeLiteral.toString();
+    }
+  }
+
   // Elements implementation ******************************************************************************************
 
   public PackageElement getPackageElement(CharSequence name) {
@@ -514,8 +537,21 @@ public class ProcessingContext implements Filer, Elements, Logger {
   }
 
   public FileObject createResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName, Element... originatingElements) throws IOException {
-    log.log("Creating resource file for location=" + location + " pkg=" + pkg + " relativeName=" + relativeName + " elements=" + Arrays.asList(originatingElements));
-    return env.getFiler().createResource(location, pkg, relativeName, originatingElements);
+    if (tool.getOverwriteReadingResource()) {
+      Key key = new Key(location, pkg.toString(), relativeName.toString());
+      FileObject resource = resources != null ? resources.get(key) : null;
+      if (resource == null) {
+        log.log("Creating resource file for location=" + location + " pkg=" + pkg + " relativeName=" + relativeName + " elements=" + Arrays.asList(originatingElements));
+        resource = env.getFiler().createResource(location, pkg, relativeName, originatingElements);
+        if (resources == null) {
+          resources = new HashMap<Key, FileObject>();
+        }
+        resources.put(new Key(location, pkg.toString(), relativeName.toString()), resource);
+      }
+      return resource;
+    } else {
+      return env.getFiler().createResource(location, pkg, relativeName, originatingElements);
+    }
   }
 
   public FileObject getResource(JavaFileManager.Location location, Path path) throws IOException {
@@ -523,7 +559,27 @@ public class ProcessingContext implements Filer, Elements, Logger {
   }
 
   public FileObject getResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName) throws IOException {
-    return env.getFiler().getResource(location, pkg, relativeName);
+    Key key = new Key(location, pkg.toString(), relativeName.toString());
+    FileObject resource = resources != null ? resources.get(key) : null;
+    if (resource == null) {
+      try {
+        resource = env.getFiler().getResource(location, pkg, relativeName);
+      }
+      catch (IOException e) {
+        // Likely to happen in ECJ
+      }
+      if (resource != null) {
+        if (resource.getLastModified() > 0) {
+          if (resources == null) {
+            resources = new HashMap<Key, FileObject>();
+          }
+          resources.put(key, resource);
+        } else {
+          resource = null;
+        }
+      }
+    }
+    return resource;
   }
 
   // Logger implementation
@@ -534,5 +590,36 @@ public class ProcessingContext implements Filer, Elements, Logger {
 
   public void log(CharSequence msg, Throwable t) {
     log.log(msg, t);
+  }
+
+  /**
+   * A cache key.
+   */
+  private static final class Key {
+    final JavaFileManager.Location location;
+    final String pkg;
+    final String relativeName;
+    private Key(JavaFileManager.Location location, String pkg, String relativeName) {
+      this.location = location;
+      this.pkg = pkg;
+      this.relativeName = relativeName;
+    }
+
+    @Override
+    public int hashCode() {
+      return 13 * (13 * location.hashCode() + pkg.hashCode()) + relativeName.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
+      } else if (obj instanceof Key) {
+        Key that = (Key)obj;
+        return location.equals(that.location) && pkg.equals(that.pkg) && relativeName.equals(that.relativeName);
+      } else {
+        return false;
+      }
+    }
   }
 }

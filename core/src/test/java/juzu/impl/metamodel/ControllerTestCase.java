@@ -56,12 +56,12 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testBuild() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
     helper.assertCompile();
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
-    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -98,11 +98,11 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveApplication() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -111,7 +111,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json().
@@ -133,11 +133,11 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveController() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -146,7 +146,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -170,7 +170,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testChangeAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
@@ -179,7 +179,7 @@ public class ControllerTestCase extends AbstractTestCase {
     Tools.serialize(unserialize, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     decl.getAnnotations().get(0).setName(ASTHelper.createNameExpr(Action.class.getName()));
@@ -187,7 +187,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -226,16 +226,16 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveAnnotation() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     decl.getAnnotations().clear();
@@ -267,8 +267,8 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testAddMethod() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration decl = (MethodDeclaration)a.getMembers().get(0);
     assertTrue(a.getMembers().remove(decl));
@@ -278,7 +278,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(1, events.size());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
@@ -291,7 +291,7 @@ public class ControllerTestCase extends AbstractTestCase {
     helper.addClassPath(helper.getClassOutput()).assertCompile();
 
     //
-    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -326,23 +326,23 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveSingleMethod() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
     //
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     a.getMembers().clear();
     file.assertSave();
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -366,10 +366,10 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveMethod() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
 
     //
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration show = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "show");
     show.setAnnotations(Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(View.class.getName()), Collections.<MemberValuePair>emptyList())));
@@ -381,7 +381,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -389,7 +389,7 @@ public class ControllerTestCase extends AbstractTestCase {
     assertTrue(a.getMembers().remove(show));
     file.assertSave();
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -420,8 +420,8 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRemoveOverloadedMethod() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
-    JavaFile file = helper.assertJavaFile("metamodel", "controller", "A.java");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     MethodDeclaration index = new MethodDeclaration(Modifier.PUBLIC, ASTHelper.VOID_TYPE, "index");
     ASTHelper.addParameter(index, ASTHelper.createParameter(new ClassOrInterfaceType(String.class.getName()), "s"));
@@ -434,7 +434,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -444,7 +444,7 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     JSON expected = json()
@@ -475,13 +475,13 @@ public class ControllerTestCase extends AbstractTestCase {
 
   @Test
   public void testRefactorPackageName() throws Exception {
-    CompilerAssert<File, File> helper = incrementalCompiler("metamodel", "controller");
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller");
     helper.assertCompile();
 
     //
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
-    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;;
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
     mm.getQueue().clear();
     Tools.serialize(unserialize, ser);
 
@@ -491,13 +491,13 @@ public class ControllerTestCase extends AbstractTestCase {
     assertTrue(sub.mkdir());
     File tmp = new File(sub, file.getName());
     assertTrue(file.renameTo(tmp));
-    JavaFile javaFile = helper.assertJavaFile("metamodel", "controller", "sub", "A.java");
+    JavaFile javaFile = helper.assertSource("metamodel", "controller", "sub", "A.java");
     javaFile.assertCompilationUnit().getPackage().setName(ASTHelper.createNameExpr("metamodel.controller.sub"));
     javaFile.assertSave();
 
     //
     helper.addClassPath(helper.getClassOutput()).assertCompile();
-    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;;
+    mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
     List<MetaModelEvent> events = mm.getQueue().clear();

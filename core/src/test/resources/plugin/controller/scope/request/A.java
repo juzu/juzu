@@ -48,8 +48,8 @@ public class A {
   public void index() {
     Registry.set("car", car.getIdentityHashCode());
     Registry.set("status", car.getStatus());
-    Registry.set("action", A_.actionURL().toString());
-    Registry.set("resource", A_.resourceURL().toString());
+    Registry.set("action", A_.action().toString());
+    Registry.set("resource", A_.resource().toString());
   }
 
   @Resource

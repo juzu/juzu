@@ -20,7 +20,7 @@
 package juzu.impl.bridge.servlet;
 
 import juzu.impl.common.Tools;
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -34,11 +34,11 @@ import java.net.URL;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseActionDirectToViewTestCase extends AbstractStandaloneTestCase {
+public class ResponseActionDirectToViewTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.response.header.actiondirecttoview");
+    return createServletDeployment("bridge.servlet.response.header.actiondirecttoview");
   }
 
   @Drone
@@ -46,7 +46,7 @@ public class ResponseActionDirectToViewTestCase extends AbstractStandaloneTestCa
 
   @Test
   public void testPathParam() throws Exception {
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     URL url = new URL(trigger.getText());
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();

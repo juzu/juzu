@@ -33,12 +33,12 @@ class SegmentRoute extends Route {
   /** . */
   final String encodedName;
 
-  SegmentRoute(Router router, String name) {
-    super(router);
+  SegmentRoute(Router router, String name, int terminal) {
+    super(router, terminal);
 
     //
     if (name.length() == 0) {
-      throw new AssertionError("Should not happen");
+      throw new AssertionError();
     }
 
     //

@@ -21,13 +21,13 @@ package inject.filter;
 
 import inject.AbstractInjectTestCase;
 import juzu.impl.common.Filter;
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FilterTestCase<B, I> extends AbstractInjectTestCase<B, I> {
 
-  public FilterTestCase(InjectImplementation di) {
+  public FilterTestCase(InjectorProvider di) {
     super(di);
   }
 

@@ -21,10 +21,12 @@ package juzu.plugin.less.impl;
 
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.common.Content;
 import juzu.impl.common.Path;
 import juzu.impl.common.QN;
 import juzu.plugin.less.impl.lesser.LessContext;
+
+import javax.tools.FileObject;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class CompilerLessContext implements LessContext {
@@ -54,9 +56,14 @@ class CompilerLessContext implements LessContext {
   public String load(String ref) {
     try {
       Path.Absolute path = pkgPath.append(ref);
-      Content c = processingContext.resolveResource(context, path);
+      FileObject c = processingContext.resolveResource(context, path);
       if (c != null) {
-        return c.getCharSequence().toString();
+        try {
+          return c.getCharContent(true).toString();
+        }
+        catch (IOException e) {
+          processingContext.log("Could not get content of " + path, e);
+        }
       }
     }
     catch (IllegalArgumentException e) {

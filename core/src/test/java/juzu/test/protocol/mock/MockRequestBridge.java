@@ -21,6 +21,7 @@ package juzu.test.protocol.mock;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
@@ -30,8 +31,10 @@ import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -154,10 +157,6 @@ public abstract class MockRequestBridge implements RequestBridge {
   public void close() {
   }
 
-  public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
-    return _checkPropertyValidity(phase, propertyType, propertyValue);
-  }
-
   public String _checkPropertyValidity(Phase phase, PropertyType<?> propertyType, Object propertyValue) {
     if (propertyType == PropertyType.ESCAPE_XML) {
       // OK
@@ -168,32 +167,50 @@ public abstract class MockRequestBridge implements RequestBridge {
     }
   }
 
-  public String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
+  public final DispatchSPI createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchSPI() {
 
-    //
-    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
-
-    //
-    JSON props = new JSON();
-    if (properties != null) {
-      for (PropertyType<?> property : properties) {
-        Object value = properties.getValue(property);
-        String valid = _checkPropertyValidity(method.getPhase(), property, value);
-        if (valid != null) {
-          throw new IllegalArgumentException(valid);
-        }
-        else {
-          props.set(property.getClass().getName(), value);
-        }
+      public MethodHandle getTarget() {
+        return target;
       }
-    }
 
-    //
-    JSON url = new JSON();
-    url.set("target", target.toString());
-    url.map("parameters", parameters);
-    url.set("properties", props);
-    return url.toString();
+      public Map<String, String[]> getParameters() {
+        return parameters;
+      }
+
+      public <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+        return _checkPropertyValidity(phase, propertyType, propertyValue);
+      }
+
+      public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
+        //
+        MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+
+        //
+        JSON props = new JSON();
+        if (properties != null) {
+          for (PropertyType<?> property : properties) {
+            Object value = properties.getValue(property);
+            String valid = _checkPropertyValidity(method.getPhase(), property, value);
+            if (valid != null) {
+              throw new IllegalArgumentException(valid);
+            }
+            else {
+              props.set(property.getClass().getName(), value);
+            }
+          }
+        }
+
+        //
+        JSON url = new JSON();
+        url.set("target", target.toString());
+        url.map("parameters", parameters);
+        url.set("properties", props);
+
+        //
+        url.toString(appendable);
+      }
+    };
   }
 
   public void begin(Request request) {

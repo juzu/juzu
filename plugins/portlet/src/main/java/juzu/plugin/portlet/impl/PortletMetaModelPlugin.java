@@ -31,7 +31,7 @@ import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.plugin.portlet.Portlet;
-import juzu.portlet.JuzuPortlet;
+import juzu.bridge.portlet.JuzuPortlet;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.AnnotationMirror;
@@ -119,7 +119,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       //
       writer.append("package ").append(pkgElt.getQualifiedName()).append(";\n");
-      writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+      writer.append("import ").append(Generated.class.getCanonicalName()).append(";\n");
       writer.append("@Generated(value={})\n");
       writer.append("public class ").append(names[0]).append(" extends ").append(JuzuPortlet.class.getName()).append(" {\n");
       writer.append("@Override\n");

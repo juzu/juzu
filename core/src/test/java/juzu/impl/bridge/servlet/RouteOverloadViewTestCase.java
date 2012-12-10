@@ -19,7 +19,7 @@
 
 package juzu.impl.bridge.servlet;
 
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -29,11 +29,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteOverloadViewTestCase extends AbstractStandaloneTestCase {
+public class RouteOverloadViewTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.overload.view");
+    return createServletDeployment("bridge.servlet.route.overload.view");
   }
 
   @Drone
@@ -41,10 +41,10 @@ public class RouteOverloadViewTestCase extends AbstractStandaloneTestCase {
 
   @Test
   public void testView() throws Exception {
-    driver.get(deploymentURL.toURI().resolve("foo").toURL().toString());
+    driver.get(applicationURL("/foo").toString());
     WebElement trigger = driver.findElement(By.tagName("body"));
     assertEquals("foo", trigger.getText());
-    driver.get(deploymentURL.toURI().resolve("bar").toURL().toString() + "?p=p_value");
+    driver.get(deploymentURL.toURI().resolve(getApplicationName().getLastName() + "/bar").toURL().toString() + "?p=p_value");
     trigger = driver.findElement(By.tagName("body"));
     assertEquals("foo(p_value)", trigger.getText());
   }

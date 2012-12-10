@@ -23,7 +23,13 @@ import juzu.asset.Asset;
 
 import java.util.Map;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * A property type describe a property associated with a generic type for providing type safetyness when
+ * dealing with properties.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ * @param <T> the property generic type
+ */
 public abstract class PropertyType<T> {
 
   /** Script. */

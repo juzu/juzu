@@ -86,7 +86,8 @@ public abstract class MetaModelProcessor extends BaseProcessor {
           out.writeObject(state);
           state = null;
         }
-        catch (IOException e) {
+        catch (Exception e) {
+          e.printStackTrace();
           log.log("Could not passivate model ", e);
         }
         finally {

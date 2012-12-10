@@ -22,11 +22,14 @@ package juzu.impl.plugin.router.metamodel;
 import juzu.Route;
 import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
+import juzu.impl.metamodel.AnnotationState;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -45,7 +48,25 @@ public class RouteMetaModel implements Serializable {
   HashMap<String, String> targets;
 
   /** . */
-  TreeMap<Integer, LinkedHashMap<String, RouteMetaModel>> children;
+  ArrayList<RouteMetaModel> children;
+
+  /** . */
+  final String path;
+
+  /** . */
+  final Integer priority;
+
+  /** . */
+  HashMap<String, String> parameters;
+
+  public RouteMetaModel(String path, Integer priority) {
+    this.path = path;
+    this.priority = priority;
+  }
+
+  public String getPath() {
+    return path;
+  }
 
   /**
    * Sets a target if the target is not null otherwise remove it.
@@ -95,52 +116,81 @@ public class RouteMetaModel implements Serializable {
     }
   }
 
-  RouteMetaModel addChild(int priority, String path) {
+  RouteMetaModel addChild(int priority, String path, HashMap<String, String> parameters) {
     if (children == null) {
-      children = new TreeMap<Integer, LinkedHashMap<String, RouteMetaModel>>();
+      children = new ArrayList<RouteMetaModel>();
     }
-    LinkedHashMap<String, RouteMetaModel> child = children.get(priority);
-    if (child == null) {
-      children.put(priority, child = new LinkedHashMap<String, RouteMetaModel>());
+    RouteMetaModel found = null;
+    for (RouteMetaModel child : children) {
+      if (child.path.equals(path) && child.priority == priority) {
+        found = child;
+        break;
+      }
     }
-    RouteMetaModel foo = child.get(path);
-    if (foo == null) {
-      child.put(path, foo = new RouteMetaModel());
+    if (found == null) {
+      children.add(found = new RouteMetaModel(path, priority));
     }
-    return foo;
+    if (parameters != null && parameters.size() > 0) {
+      if (found.parameters == null) {
+        found.parameters = new LinkedHashMap<String, String>();
+      }
+      found.parameters.putAll(parameters);
+    }
+    return found;
+  }
+
+  public List<RouteMetaModel> getChildren() {
+    return children;
   }
 
   public Map<String, String> getTargets() {
     return targets;
   }
 
-  public Collection<Integer> getPriorities() {
-    return children != null ? children.keySet() : null;
-  }
-
-  public Map<String, RouteMetaModel> getChildren(int priority) {
-    return children != null ? children.get(priority) : null;
+  public Map<String, String> getParameters() {
+    return parameters;
   }
 
   public JSON toJSON() {
 
-    List<JSON> a = Collections.emptyList();
-    if (children != null) {
-      for (LinkedHashMap<String, RouteMetaModel> b : children.values()) {
-        for (Map.Entry<String, RouteMetaModel> entry : b.entrySet()) {
-          if (a.isEmpty()) {
-            a = new LinkedList<JSON>();
-          }
-          JSON foo = entry.getValue().toJSON();
-          foo.set("path", entry.getKey());
-          a.add(foo);
-        }
-      }
+    //
+    JSON json = new JSON();
+
+    //
+    if (path != null) {
+      json.set("path", path);
     }
 
-    JSON json = new JSON();
-    json.set("targets", targets != null ? targets : Collections.<String, String>emptyMap());
-    json.set("routes", a);
+    //
+    if (targets != null && targets.size() > 0) {
+      json.set("targets", targets);
+    }
+
+    //
+    if (parameters != null && parameters.size() > 0) {
+      JSON b = new JSON();
+      for (Map.Entry<String, String> parameter : parameters.entrySet()) {
+        b.set(parameter.getKey(), new JSON().set("pattern", parameter.getValue()));
+      }
+      json.set("parameters", b);
+    }
+
+    //
+    if (children != null && children.size() > 0) {
+      RouteMetaModel[] routes = children.toArray(new RouteMetaModel[children.size()]);
+      Arrays.sort(routes, new Comparator<RouteMetaModel>() {
+        public int compare(RouteMetaModel o1, RouteMetaModel o2) {
+          return o1.priority.compareTo(o2.priority);
+        }
+      });
+      List<JSON> a = new LinkedList<JSON>();
+      for (RouteMetaModel route : routes) {
+        a.add(route.toJSON());
+      }
+      json.set("routes", a);
+    }
+
+    //
     return json;
   }
 }

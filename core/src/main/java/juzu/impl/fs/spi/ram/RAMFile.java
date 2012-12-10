@@ -20,63 +20,28 @@
 package juzu.impl.fs.spi.ram;
 
 import juzu.impl.common.Content;
+import juzu.impl.common.Timestamped;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RAMFile extends RAMPath {
+class RAMFile extends RAMPath {
 
   /** . */
-  private Content content;
+  Timestamped<Content> content;
 
-  public RAMFile(RAMDir parent, String name) {
+  RAMFile(RAMDir parent, String name, Content content) {
     super(parent, name);
 
     //
-    this.content = new Content(System.currentTimeMillis(), "");
+    this.content = new Timestamped<Content>(System.currentTimeMillis(), content);
   }
 
   @Override
-  public long getLastModified() {
-    return content.getLastModified();
+  long getLastModified() {
+    return content.getTime();
   }
 
   @Override
-  public void touch() {
+  void touch() {
     content = content.touch();
-  }
-
-  public RAMFile update(Content content) {
-    if (content == null) {
-      throw new NullPointerException();
-    }
-
-    //
-    this.content = content;
-
-    //
-    return this;
-  }
-
-  @Override
-  public RAMDir addDir(String name) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public RAMFile addFile(String name) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public RAMPath getChild(String name) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Iterable<RAMPath> getChildren() {
-    throw new UnsupportedOperationException();
-  }
-
-  public Content getContent() {
-    return content;
   }
 }

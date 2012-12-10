@@ -25,22 +25,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation declares a java type to be a valid controller method parameter type:
- * <p/>
+ * An annotation describing a parameter.
+ *
+ * <h2>Annotating a route parameter</h2>
+ *
+ * <p>Route parameters can be annotated to provide constrain the value of a parameter, for instance:</p>
+ *
  * <code><pre>
- *    public class Controller {
- *       &#064;View public Response.Render display(User user) { ...}
- *    }
- * <p/>
- *    &#064;Param
- *    public class User {
- *       ...
+ *    public class MyController {
+ *
+ *       &#064;{@link View}
+ *       &#064;{@link Route}("/myview/{id}")
+ *       public {@link juzu.Response.Render} myView(&#064;{@link Param}(pattern = "[0-9]+") String id) { ... }
  *    }
  * </pre></code>
  *
- * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.PARAMETER})
 public @interface Param {
+
+  /**
+   * The parameter pattern as a valid regular expression.
+   *
+   * @return the pattern value
+   */
+  String pattern() default "";
+
 }

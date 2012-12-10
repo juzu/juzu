@@ -346,6 +346,29 @@ public class Tools {
     return appendable;
   }
 
+  public static <A extends Appendable> A nameOf(Class<?> clazz, A appendable) throws IOException {
+    if (clazz.isMemberClass()) {
+      nameOf(clazz.getEnclosingClass(), appendable).append('.').append(clazz.getSimpleName());
+    } else {
+      appendable.append(clazz.getSimpleName());
+    }
+    return appendable;
+  }
+
+  public static String getName(Class<?> clazz) {
+    if (clazz.isLocalClass() || clazz.isAnonymousClass()) {
+      throw new IllegalArgumentException("Cannot use local or anonymous class");
+    }
+    else {
+      try {
+        return nameOf(clazz, new StringBuilder()).toString();
+      }
+      catch (IOException e) {
+        throw new AssertionError(e);
+      }
+    }
+  }
+
   public static String getImport(Class<?> clazz) {
     if (clazz.isLocalClass() || clazz.isAnonymousClass()) {
       throw new IllegalArgumentException("Cannot use local or anonymous class");
@@ -670,6 +693,13 @@ public class Tools {
     }
   }
 
+  public static <T extends Serializable> T clone(T value) throws IOException, ClassNotFoundException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    Tools.serialize(value, baos);
+    byte[] bytes = baos.toByteArray();
+    return (T)unserialize(Object.class, new ByteArrayInputStream(bytes));
+  }
+
   public static int unsignedByteToInt(byte b) {
     return (int)b & 0xFF;
   }
@@ -716,6 +746,22 @@ public class Tools {
           return fromIndex;
         }
         fromIndex++;
+      }
+    }
+    return -1;
+  }
+
+  public static int lastIndexOf(CharSequence s, char c) {
+    return lastIndexOf(s, c, s.length() - 1);
+  }
+
+  public static int lastIndexOf(CharSequence s, char c, int from) {
+    from = Math.min(from, s.length() - 1);
+    while (from >= 0) {
+      if (s.charAt(from) == c) {
+        return from;
+      } else {
+        from--;
       }
     }
     return -1;
@@ -791,5 +837,26 @@ public class Tools {
       }
     }
     return null;
+  }
+
+  public static StringBuilder toString(Iterable<Map.Entry<String, String[]>> entries, StringBuilder sb) {
+    sb.append('{');
+    for (Iterator<Map.Entry<String, String[]>> i = entries.iterator();i.hasNext();) {
+      Map.Entry<String, String[]> entry = i.next();
+      sb.append(entry.getKey()).append("=[");
+      String[] value = entry.getValue();
+      for (int j = 0;j < value.length;j++) {
+        if (j > 0) {
+          sb.append(',');
+        }
+        sb.append(value[j]);
+      }
+      sb.append(']');
+      if (i.hasNext()) {
+        sb.append(',');
+      }
+    }
+    sb.append('}');
+    return sb;
   }
 }

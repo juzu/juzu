@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
@@ -32,13 +32,13 @@ import java.util.Arrays;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MethodParametersTestCase extends AbstractInjectTestCase {
 
-  public MethodParametersTestCase(InjectImplementation di) {
+  public MethodParametersTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testStringArray() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "method", "parameters", "string", "array").init();
+    MockApplication<?> app = application("plugin.controller.method.parameters.string.array").init();
 
     //
     MockClient client = app.client();
@@ -66,7 +66,7 @@ public class MethodParametersTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testStringList() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "method", "parameters", "string", "list").init();
+    MockApplication<?> app = application("plugin.controller.method.parameters.string.list").init();
 
     //
     MockClient client = app.client();
@@ -94,7 +94,7 @@ public class MethodParametersTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testBean() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "method", "parameters", "bean").init();
+    MockApplication<?> app = application("plugin.controller.method.parameters.bean").init();
 
     //
     MockClient client = app.client();

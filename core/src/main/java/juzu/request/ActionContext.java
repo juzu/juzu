@@ -24,7 +24,6 @@ import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.ActionBridge;
-import juzu.impl.common.ParameterMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ActionContext extends RequestContext {
@@ -53,23 +52,15 @@ public class ActionContext extends RequestContext {
     return Phase.ACTION;
   }
 
-  public Response.Update createResponse(MethodDescriptor target) throws IllegalStateException {
-    return new Response.Update(target.getHandle());
+  public Response.Update createResponse(MethodDescriptor<Phase.View> target) throws IllegalStateException {
+    return createViewDispatch(target);
   }
 
-  public Response.Update createResponse(MethodDescriptor method, Object arg) throws IllegalStateException {
-    Response.Update response = createResponse(method);
-    if (arg != null) {
-      // Yeah OK nasty cast, we'll see later
-      method.setArgs(new Object[]{arg}, (ParameterMap)response.getParameters());
-    }
-    return response;
+  public Response.Update createResponse(MethodDescriptor<Phase.View> target, Object arg) throws IllegalStateException {
+    return createViewDispatch(target, arg);
   }
 
-  public Response.Update createResponse(MethodDescriptor method, Object[] args) throws IllegalStateException {
-    Response.Update response = createResponse(method);
-    // Yeah OK nasty cast, we'll see later
-    method.setArgs(args, (ParameterMap)response.getParameters());
-    return response;
+  public Response.Update createResponse(MethodDescriptor<Phase.View> target, Object[] args) throws IllegalStateException {
+    return createViewDispatch(target, args);
   }
 }

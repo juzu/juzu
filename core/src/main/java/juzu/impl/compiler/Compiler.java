@@ -19,6 +19,7 @@
 
 package juzu.impl.compiler;
 
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.file.FileKey;
 import juzu.impl.compiler.file.JavaFileObjectImpl;
 import juzu.impl.compiler.file.SimpleFileManager;
@@ -26,12 +27,12 @@ import juzu.impl.fs.Filter;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.fs.spi.SimpleFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.common.Location;
 import juzu.impl.common.Spliterator;
 
 import javax.annotation.processing.Processor;
+import javax.inject.Provider;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
@@ -46,6 +47,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,7 +56,7 @@ import java.util.regex.Pattern;
 public class Compiler {
 
   public static Builder builder() {
-    return new Builder(null, null, null, new ArrayList<SimpleFileSystem<?>>());
+    return new Builder(null, null, null, new ArrayList<ReadFileSystem<?>>());
   }
 
   public static class Builder {
@@ -69,7 +71,13 @@ public class Compiler {
     private ReadWriteFileSystem<?> sourceOutput;
 
     /** . */
-    private List<SimpleFileSystem<?>> classPaths;
+    private List<ReadFileSystem<?>> classPaths;
+
+    /** . */
+    private Provider<? extends Processor> processor;
+
+    /** . */
+    private JavaCompiler javaCompiler;
 
     /** . */
     private CompilerConfig config;
@@ -78,12 +86,24 @@ public class Compiler {
       ReadFileSystem<?> sourcePath,
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput,
-      List<SimpleFileSystem<?>> classPaths) {
+      List<ReadFileSystem<?>> classPaths) {
+      this.processor = null;
+      this.javaCompiler = ToolProvider.getSystemJavaCompiler();
       this.sourcePath = sourcePath;
       this.sourceOutput = sourceOutput;
       this.classOutput = classOutput;
       this.classPaths = classPaths;
       this.config = new CompilerConfig();
+    }
+
+    public Builder javaCompiler(JavaCompiler javaCompiler) {
+      this.javaCompiler = javaCompiler;
+      return this;
+    }
+
+    public Builder processor(Provider<? extends Processor> processor) {
+      this.processor = processor;
+      return this;
     }
 
     public Builder classOutput(ReadWriteFileSystem<?> classOutput) {
@@ -106,13 +126,13 @@ public class Compiler {
       return this;
     }
 
-    public Builder addClassPath(SimpleFileSystem<?> classPath) {
+    public Builder addClassPath(ReadFileSystem<?> classPath) {
       classPaths.add(classPath);
       return this;
     }
 
-    public Builder addClassPath(Iterable<SimpleFileSystem<?>> classPaths) {
-      for (SimpleFileSystem<?> classPath : classPaths) {
+    public Builder addClassPath(Iterable<ReadFileSystem<?>> classPaths) {
+      for (ReadFileSystem<?> classPath : classPaths) {
         addClassPath(classPath);
       }
       return this;
@@ -124,10 +144,6 @@ public class Compiler {
     }
 
     public Compiler build() {
-      return build(null);
-    }
-
-    public Compiler build(Processor processor) {
       if (sourcePath == null) {
         throw new IllegalStateException("No null source path");
       }
@@ -138,6 +154,7 @@ public class Compiler {
         throw new IllegalStateException("No null source output");
       }
       Compiler compiler = new Compiler(
+        javaCompiler,
         sourcePath,
         classPaths,
         sourceOutput,
@@ -145,7 +162,7 @@ public class Compiler {
         config
       );
       if (processor != null) {
-        compiler.addAnnotationProcessor(processor);
+        compiler.addAnnotationProcessor(processor.get());
       }
       return compiler;
     }
@@ -155,7 +172,7 @@ public class Compiler {
   static final Pattern PATTERN = Pattern.compile("\\[" + "([^\\]]+)" + "\\]\\(" + "([^\\)]*)" + "\\)");
 
   /** . */
-  private JavaCompiler compiler;
+  private JavaCompiler javaCompiler;
 
   /** . */
   private Set<Processor> processors;
@@ -170,7 +187,7 @@ public class Compiler {
   private ReadWriteFileSystem<?> sourceOutput;
 
   /** . */
-  private Collection<SimpleFileSystem<?>> classPaths;
+  private Collection<ReadFileSystem<?>> classPaths;
 
   /** . */
   private CompilerConfig config;
@@ -187,21 +204,31 @@ public class Compiler {
     ReadWriteFileSystem<?> sourceOutput,
     ReadWriteFileSystem<?> classOutput,
     CompilerConfig config) {
-    this(sourcePath, Collections.<SimpleFileSystem<?>>emptyList(), sourceOutput, classOutput, config);
+    this(sourcePath, Collections.<ReadFileSystem<?>>emptyList(), sourceOutput, classOutput, config);
   }
 
   public Compiler(
     ReadFileSystem<?> sourcePath,
-    SimpleFileSystem<?> classPath,
+    ReadFileSystem<?> classPath,
     ReadWriteFileSystem<?> sourceOutput,
     ReadWriteFileSystem<?> classOutput,
     CompilerConfig config) {
-    this(sourcePath, Collections.<SimpleFileSystem<?>>singletonList(classPath), sourceOutput, classOutput, config);
+    this(sourcePath, Collections.<ReadFileSystem<?>>singletonList(classPath), sourceOutput, classOutput, config);
   }
 
   public Compiler(
+      ReadFileSystem<?> sourcePath,
+      Collection<ReadFileSystem<?>> classPaths,
+      ReadWriteFileSystem<?> sourceOutput,
+      ReadWriteFileSystem<?> classOutput,
+      CompilerConfig config) {
+    this(ToolProvider.getSystemJavaCompiler(), sourcePath, classPaths, sourceOutput, classOutput, config);
+  }
+
+  public Compiler(
+    JavaCompiler javaCompiler,
     ReadFileSystem<?> sourcePath,
-    Collection<SimpleFileSystem<?>> classPaths,
+    Collection<ReadFileSystem<?>> classPaths,
     ReadWriteFileSystem<?> sourceOutput,
     ReadWriteFileSystem<?> classOutput,
     CompilerConfig config) {
@@ -209,7 +236,7 @@ public class Compiler {
     this.classPaths = classPaths;
     this.sourceOutput = sourceOutput;
     this.classOutput = classOutput;
-    this.compiler = ToolProvider.getSystemJavaCompiler();
+    this.javaCompiler = javaCompiler;
     this.processors = new HashSet<Processor>();
     this.config = config;
   }
@@ -236,7 +263,7 @@ public class Compiler {
 
     //
     VirtualFileManager fileManager = new VirtualFileManager(
-      compiler.getStandardFileManager(null, null, null),
+      javaCompiler.getStandardFileManager(null, null, null),
       sourcePath1,
       classPaths,
       sourceOutput,
@@ -265,9 +292,9 @@ public class Compiler {
       if (file == null) {
         throw new IllegalArgumentException("Could not find compilation unit: " + compilationUnit);
       }
-      StringBuilder sb = new StringBuilder();
-      manager.getFileSystem().packageOf(file, '.', sb);
-      FileKey key = FileKey.newJavaName(sb.toString(), name.substring(0, name.length()));
+      names.remove(names.size() - 1);
+      String pkg = Tools.join('.', names);
+      FileKey key = FileKey.newJavaName(pkg, name);
       javaFiles.add(manager.getReadable(key));
     }
     return javaFiles;
@@ -275,7 +302,7 @@ public class Compiler {
 
   public void compile() throws IOException, CompilationException {
     VirtualFileManager fileManager = new VirtualFileManager(
-      compiler.getStandardFileManager(null, null, null),
+      javaCompiler.getStandardFileManager(null, null, null),
       sourcePath,
       classPaths,
       sourceOutput,
@@ -286,13 +313,27 @@ public class Compiler {
 
   private <P> Collection<JavaFileObject> getFromSourcePath(final SimpleFileManager<P> fileManager) throws IOException {
     final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
+    final StringBuilder buffer = new StringBuilder();
     ((ReadFileSystem<P>)fileManager.getFileSystem()).traverse(new Visitor.Default<P>() {
+      @Override
+      public void enterDir(Object dir, String name) throws IOException {
+        if (name.length() > 0) {
+          buffer.append(name).append('.');
+        }
+      }
+
       public void file(P file, String name) throws IOException {
         if (name.endsWith(".java")) {
-          StringBuilder sb = new StringBuilder();
-          fileManager.getFileSystem().packageOf(file, '.', sb);
-          FileKey key = FileKey.newJavaName(sb.toString(), name);
-          javaFiles.add(fileManager.getReadable(key));
+          FileKey key = FileKey.newJavaName(buffer.substring(0, buffer.length() - 1), name);
+          JavaFileObject fileObject = fileManager.getReadable(key);
+          javaFiles.add(fileObject);
+        }
+      }
+
+      @Override
+      public void leaveDir(Object dir, String name) throws IOException {
+        if (name.length() > 0) {
+          buffer.setLength(buffer.length() - name.length() - 1);
         }
       }
     });
@@ -326,8 +367,8 @@ public class Compiler {
           int lineNumber = (int)diagnostic.getLineNumber();
           Location location = (columnNumber > 0 && lineNumber > 0) ? new Location(columnNumber, lineNumber) : null;
 
-          //
-          String message = diagnostic.getMessage(null);
+          // We pass the default locale instead of null as ECJ has issues with null
+          String message = diagnostic.getMessage(Locale.getDefault());
 
           //
           MessageCode code = null;
@@ -346,12 +387,13 @@ public class Compiler {
             }
           }
 
-          //
+          // Best effort to get a java.io.File
           JavaFileObject obj = diagnostic.getSource();
           String source = null;
           File resolvedFile = null;
           if (obj != null) {
-            source = obj.toUri().getPath();
+            URI uri = obj.toUri();
+            source = uri.getPath();
             if (obj instanceof JavaFileObjectImpl) {
               JavaFileObjectImpl foo = (JavaFileObjectImpl)obj;
               try {
@@ -359,7 +401,11 @@ public class Compiler {
               }
               catch (Exception ignore) {
               }
-
+            } else {
+              // We are likely in eclipse (with its JavaFileObject wrapper) and we should get the file from the URI
+              if (uri.getScheme().equals("file")) {
+                resolvedFile = new File(uri);
+              }
             }
           }
 
@@ -379,7 +425,7 @@ public class Compiler {
     }
 
     //
-    JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, listener, options, null, compilationUnits);
+    JavaCompiler.CompilationTask task = javaCompiler.getTask(null, fileManager, listener, options, null, compilationUnits);
     task.setProcessors(processors);
 
     // We don't use the return value because sometime it says it is failed although

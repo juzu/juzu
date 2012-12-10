@@ -33,7 +33,7 @@ public class ApplicationTestCase extends AbstractTestCase {
 
   @Test
   public void testDefaultController() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "application", "default_controller");
+    CompilerAssert<?, ?> compiler = compiler("plugin.application.default_controller");
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.application.default_controller.Application");
     Class<?> aClass = compiler.assertClass("plugin.application.default_controller.A");
@@ -44,7 +44,7 @@ public class ApplicationTestCase extends AbstractTestCase {
   }
 
   public void _testMethodId() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "application", "method", "id");
+    CompilerAssert<?, ?> compiler = compiler("plugin.application.method.id");
     compiler.assertCompile();
     Class<?> appClass = compiler.assertClass("plugin.application.method.id.Application");
     Class<?> aClass = compiler.assertClass("plugin.application.method.id.A");
@@ -67,20 +67,20 @@ public class ApplicationTestCase extends AbstractTestCase {
   }
 
   public void _testDuplicateMethod() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "application", "method", "duplicate");
+    CompilerAssert<?, ?> compiler = compiler("plugin.application.method.duplicate");
     List<CompilationError> errors = compiler.failCompile();
     assertEquals("Was expecting a single error instead of " + errors, 1, errors.size());
     assertEquals("/plugin/application/method/duplicate/A.java", errors.get(0).getSource());
   }
 
   public void _testPrefix() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "application", "prefix");
+    CompilerAssert<?, ?> compiler = compiler("plugin.application.prefix");
     compiler.assertCompile();
   }
 
   @Test
   public void testMultiple() throws Exception {
-    CompilerAssert<?, ?> compiler = compiler("plugin", "application", "multiple");
+    CompilerAssert<?, ?> compiler = compiler("plugin.application.multiple");
     compiler.assertCompile();
 
     //

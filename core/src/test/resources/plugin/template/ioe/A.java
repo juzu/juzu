@@ -38,7 +38,7 @@ public class A extends Controller {
   Template index;
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     String ret = "";
     AppendableStream printer = new AppendableStream(new Appendable() {
       public Appendable append(CharSequence csq) throws IOException {

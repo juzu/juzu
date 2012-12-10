@@ -53,12 +53,25 @@ public enum ProcessingTool {
         messager.printMessage(Diagnostic.Kind.ERROR, msg, element, annotation);
       }
     }
+
+    @Override
+    public boolean getOverwriteReadingResource() {
+      return false;
+    }
   },
 
   ECLIPSE_IDE() {
     @Override
     public void report(Messager messager, Diagnostic.Kind kind, CharSequence msg, Element element, AnnotationMirror annotation, AnnotationValue value) {
-      if (element.getKind() == ElementKind.PACKAGE) {
+      if (element == null) {
+        // ECJ does not like reporting null elements (i.e call to messager.printMessage(Kind,CharSequence)
+        // java.lang.NullPointerException
+        // at java.lang.String.<init>(String.java:177)
+        // at org.eclipse.jdt.internal.compiler.tool.EclipseCompilerImpl$4.getSource(EclipseCompilerImpl.java:546)
+        // at org.eclipse.jdt.internal.compiler.tool.EclipseCompilerImpl$4.getSource(EclipseCompilerImpl.java:1)
+        System.err.println(kind.name() + ": " + msg);
+      }
+      else if (element.getKind() == ElementKind.PACKAGE) {
         report(messager, kind, msg, (PackageElement)element, annotation, value);
       }
       else {
@@ -69,6 +82,7 @@ public enum ProcessingTool {
     private void report(Messager messager, Diagnostic.Kind kind, CharSequence msg, PackageElement pkgElt, AnnotationMirror annotation, AnnotationValue value) {
       try {
         // package-info
+
 
         Class c = pkgElt.getClass();
 
@@ -205,21 +219,50 @@ public enum ProcessingTool {
         log.log("Apt problem " + aptProblem);
 
         //
+        Field _processingEnvField = messager.getClass().getDeclaredField("_processingEnv");
+        _processingEnvField.setAccessible(true);
+        Object _processingEnv = _processingEnvField.get(messager);
         Class<?> categorizedProblemClass = compilationResultClass.getClassLoader().loadClass("org.eclipse.jdt.core.compiler.CategorizedProblem");
 
         //
-        Method recordMethod = compilationResultClass.getMethod(
-          "record",
-          categorizedProblemClass,
-          referenceContextType);
-        recordMethod.invoke(compilationResult, aptProblem, referenceContext);
-        log.log("Recorded problem");
+        Field _compilerField = messager.getClass().getDeclaredField("_compiler");
+        _compilerField.setAccessible(true);
+        Object _compiler = _compilerField.get(messager);
+        Method addExtraProblemsMethod = _compiler.getClass().getMethod("addExtraProblems", categorizedProblemClass);
+        Method setErrorRaisedMethod = _processingEnv.getClass().getMethod("setErrorRaised", boolean.class);
+
+        // if (kind == Kind.ERROR) {
+        //   _processingEnv.setErrorRaised(true);
+        // }
+        if (kind == Diagnostic.Kind.ERROR) {
+          setErrorRaisedMethod.invoke(_processingEnv, true);
+        }
+
+        // _compiler.addExtraProblems(problem);
+        addExtraProblemsMethod.invoke(_compiler, aptProblem);
+
+
+        // OLD WAY / WE KEEP HERE IF WE NEED IT
+//        Class<?> categorizedProblemClass = compilationResultClass.getClassLoader().loadClass("org.eclipse.jdt.core.compiler.CategorizedProblem");
+//        Method recordMethod = compilationResultClass.getMethod(
+//          "record",
+//          categorizedProblemClass,
+//          referenceContextType);
+//        recordMethod.invoke(compilationResult, aptProblem, referenceContext);
+//        log.log("Recorded problem");
+
+        //
 
 
       }
       catch (Exception e) {
         log.log("Could not make it work", e);
       }
+    }
+
+    @Override
+    public boolean getOverwriteReadingResource() {
+      return true;
     }
   };
 
@@ -233,5 +276,12 @@ public enum ProcessingTool {
     Element element,
     AnnotationMirror annotation,
     AnnotationValue value);
+
+  /**
+   * Returns true if the processing context should reuse a cached resource when writing a resource.
+   *
+   * @return the write cached resource value
+   */
+  public abstract boolean getOverwriteReadingResource();
 
 }

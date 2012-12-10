@@ -21,6 +21,7 @@ package juzu.test.protocol.http;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
@@ -30,6 +31,7 @@ import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
 import juzu.request.ClientContext;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
@@ -227,48 +229,59 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     }
   }
 
-  public <T> String checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
-    // For now we don't validate anything
-    return null;
-  }
+  public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchSPI() {
 
-  public final String renderURL(MethodHandle target, Map<String, String[]> parameters, PropertyMap properties) {
+      public MethodHandle getTarget() {
+        return target;
+      }
 
-    //
-    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+      public Map<String, String[]> getParameters() {
+        return parameters;
+      }
 
-    //
-    StringBuilder buffer = new StringBuilder();
-    buffer.append(req.getScheme());
-    buffer.append("://");
-    buffer.append(req.getServerName());
-    int port = req.getServerPort();
-    if (port != 80) {
-      buffer.append(':').append(port);
-    }
-    buffer.append(req.getContextPath());
-    buffer.append(req.getServletPath());
-    buffer.append("?juzu.phase=").append(method.getPhase());
+      public <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+        // For now we don't validate anything
+        return null;
+      }
 
-    //
-    buffer.append("&juzu.op=").append(method.getId());
+      public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
-    //
-    for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
-      String name = parameter.getKey();
-      try {
-        String encName = URLEncoder.encode(name, "UTF-8");
-        for (String value : parameter.getValue()) {
-          String encValue = URLEncoder.encode(value, "UTF-8");
-          buffer.append("&").append(encName).append('=').append(encValue);
+        //
+        MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+
+        //
+        appendable.append(req.getScheme());
+        appendable.append("://");
+        appendable.append(req.getServerName());
+        int port = req.getServerPort();
+        if (port != 80) {
+          appendable.append(':').append(Integer.toString(port));
+        }
+        appendable.append(req.getContextPath());
+        appendable.append(req.getServletPath());
+        appendable.append("?juzu.phase=").append(method.getPhase().name());
+
+        //
+        appendable.append("&juzu.op=").append(method.getId());
+
+        //
+        for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
+          String name = parameter.getKey();
+          try {
+            String encName = URLEncoder.encode(name, "UTF-8");
+            for (String value : parameter.getValue()) {
+              String encValue = URLEncoder.encode(value, "UTF-8");
+              appendable.append("&").append(encName).append('=').append(encValue);
+            }
+          }
+          catch (UnsupportedEncodingException e) {
+            // Should not happen
+            throw new AssertionError(e);
+          }
         }
       }
-      catch (UnsupportedEncodingException e) {
-        // Should not happen
-        throw new AssertionError(e);
-      }
-    }
-    return buffer.toString();
+    };
   }
 
   protected final ScopedContext getRequestContext(boolean create) {

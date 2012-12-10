@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
@@ -36,13 +36,13 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   private static final Pattern P = Pattern.compile("([0-9]+)\\[(.*)\\]");
 
-  public RenderTestCase(InjectImplementation di) {
+  public RenderTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testIndex() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "index").init();
+    MockApplication<?> app = application("plugin.controller.render.index").init();
 
     //
     MockClient client = app.client();
@@ -52,7 +52,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testParameterizedIndex() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "parameterizedindex").init();
+    MockApplication<?> app = application("plugin.controller.render.parameterizedindex").init();
 
     //
     MockClient client = app.client();
@@ -72,7 +72,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testOverridenIndex() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "overridenindex").init();
+    MockApplication<?> app = application("plugin.controller.render.overridenindex").init();
 
     //
     MockClient client = app.client();
@@ -92,7 +92,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResponse() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "response").init();
+    MockApplication<?> app = application("plugin.controller.render.response").init();
 
     MockClient client = app.client();
     MockRenderBridge render = client.render();
@@ -101,7 +101,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testUpdate() throws Exception {
-    MockApplication<?> app = application("plugin", "controller", "render", "update").init();
+    MockApplication<?> app = application("plugin.controller.render.update").init();
 
     //
     MockClient client = app.client();

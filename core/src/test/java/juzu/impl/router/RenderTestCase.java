@@ -19,7 +19,6 @@
 
 package juzu.impl.router;
 
-import juzu.impl.common.QualifiedName;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -31,12 +30,21 @@ import java.util.Collections;
 public class RenderTestCase extends AbstractControllerTestCase {
 
   @Test
-  public void testRoot() throws Exception {
+  public void testRoot1() throws Exception {
     Router router = new Router();
     Route r = router.append("/");
 
     //
-    assertEquals("/", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/", r.matches(Collections.<String, String>emptyMap()).render());
+  }
+
+  @Test
+  public void testRoot2() throws Exception {
+    Router router = new Router();
+    Route r = router.append("");
+
+    //
+    assertEquals("/", r.matches(Collections.<String, String>emptyMap()).render());
   }
 
   @Test
@@ -45,7 +53,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
     Route r = router.append("/a");
 
     //
-    assertEquals("/a", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/a", r.matches(Collections.<String, String>emptyMap()).render());
   }
 
   @Test
@@ -54,7 +62,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
     Route r = router.append("/a/b");
 
     //
-    assertEquals("/a/b", r.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/a/b", r.matches(Collections.<String, String>emptyMap()).render());
   }
 
   @Test
@@ -64,13 +72,13 @@ public class RenderTestCase extends AbstractControllerTestCase {
 
     //
     assertEquals("/a", r.matches(Collections.singletonMap(Names.P, "a")).render());
-    assertNull(r.matches(Collections.<QualifiedName, String>emptyMap()));
+    assertNull(r.matches(Collections.<String, String>emptyMap()));
   }
 
   @Test
   public void testSimplePatternPathParam() throws Exception {
     Router router = new Router();
-    Route r = router.append("/{p}", Collections.singletonMap(Names.P, PathParam.builder().matchedBy("a")));
+    Route r = router.append("/{p}", Collections.singletonMap(Names.P, PathParam.matching("a")));
 
     //
     assertEquals("/a", r.matches(Collections.singletonMap(Names.P, "a")).render());
@@ -81,17 +89,17 @@ public class RenderTestCase extends AbstractControllerTestCase {
   public void testPrecedence() throws Exception {
     Router router = new Router();
     Route a = router.append("/a");
-    Route b = router.append("/{p}/b", Collections.singletonMap(Names.P, PathParam.builder().matchedBy("a")));
+    Route b = router.append("/{p}/b", Collections.singletonMap(Names.P, PathParam.matching("a")));
 
     //
-    assertEquals("/a", a.matches(Collections.<QualifiedName, String>emptyMap()).render());
+    assertEquals("/a", a.matches(Collections.<String, String>emptyMap()).render());
     assertEquals("/a/b", b.matches(Collections.singletonMap(Names.P, "a")).render());
   }
 
   @Test
   public void testLang() throws Exception {
     Router router = new Router();
-    Route r = router.append("/{a}b", Collections.singletonMap(Names.A, PathParam.builder().matchedBy("(([A-Za-z]{2})/)?").preservePath(true)));
+    Route r = router.append("/{a}b", Collections.singletonMap(Names.A, PathParam.matching("(([A-Za-z]{2})/)?").preservePath(true)));
 
     //
     assertEquals("/fr/b", r.matches(Collections.singletonMap(Names.A, "fr/")).render());
@@ -101,7 +109,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
   @Test
   public void testDisjunction() throws Exception {
     Router router = new Router();
-    Route r = router.append("/{a}", Collections.singletonMap(Names.A, PathParam.builder().matchedBy("a|b")));
+    Route r = router.append("/{a}", Collections.singletonMap(Names.A, PathParam.matching("a|b")));
 
     //
     assertEquals("/b", r.matches(Collections.singletonMap(Names.A, "b")).render());
@@ -110,7 +118,7 @@ public class RenderTestCase extends AbstractControllerTestCase {
   @Test
   public void testCaptureGroup() throws Exception {
     Router router = new Router();
-    Route r = router.append("/{a}", Collections.singletonMap(Names.A, PathParam.builder().matchedBy("a(.)c").captureGroup(true)));
+    Route r = router.append("/{a}", Collections.singletonMap(Names.A, PathParam.matching("a(.)c").captureGroup(true)));
 
     //
     assertEquals("/abc", r.matches(Collections.singletonMap(Names.A, "b")).render());

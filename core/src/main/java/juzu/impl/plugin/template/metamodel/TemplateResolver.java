@@ -29,7 +29,6 @@ import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.Template;
 import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
-import juzu.impl.common.Content;
 import juzu.impl.common.FQN;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Path;
@@ -117,13 +116,13 @@ public class TemplateResolver implements Serializable {
     for (Iterator<Template<?>> i = templates.values().iterator();i.hasNext();) {
       Template<?> template = i.next();
       Path.Absolute absolute = metaModel.resolve(template.getPath());
-      Content content = context.resolveResource(application.getHandle(), absolute);
-      if (content == null) {
+      FileObject resource = context.resolveResource(application.getHandle(), absolute);
+      if (resource == null) {
         // That will generate a template not found error
         i.remove();
         log.log("Detected template removal " + template.getPath());
       }
-      else if (content.getLastModified() > template.getLastModified()) {
+      else if (resource.getLastModified() > template.getLastModified()) {
         // That will force the regeneration of the template
         i.remove();
         log.log("Detected stale template " + template.getPath());
@@ -255,8 +254,8 @@ public class TemplateResolver implements Serializable {
       FileObject classFile = context.createSourceFile(absolute.getFQN(), elements);
       writer = classFile.openWriter();
       writer.append("package ").append(absolute.getQN()).append(";\n");
-      writer.append("import ").append(Tools.getImport(TemplateDescriptor.class)).append(";\n");
-      writer.append("import ").append(Tools.getImport(TemplatePlugin.class)).append(";\n");
+      writer.append("import ").append(TemplateDescriptor.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(TemplatePlugin.class.getCanonicalName()).append(";\n");
       writer.append("@").append(Generated.class.getName()).append("({})\n");
       writer.append("@").append(juzu.Path.class.getName()).append("(\"").append(path.getValue()).append("\")\n");
       writer.append("public class ").append(path.getRawName()).append(" extends ").append(juzu.template.Template.class.getName()).append("\n");
@@ -278,7 +277,7 @@ public class TemplateResolver implements Serializable {
           append("(").append(absolute.getFQN().getName()).append(".class);\n");
 
       //
-      String baseBuilderName = Tools.getImport(juzu.template.Template.Builder.class);
+      String baseBuilderName = juzu.template.Template.Builder.class.getCanonicalName();
       if (template.getParameters() != null) {
         // Implement abstract method with this class Builder covariant return type
         writer.append("public Builder with() {\n");
@@ -342,7 +341,7 @@ public class TemplateResolver implements Serializable {
       JavaFileObject stubFile = context.createSourceFile(stubFQN, elements);
       writer = stubFile.openWriter();
       writer.append("package ").append(stubFQN.getPackageName()).append(";\n");
-      writer.append("import ").append(Tools.getImport(Generated.class)).append(";\n");
+      writer.append("import ").append(Generated.class.getCanonicalName()).append(";\n");
       writer.append("@Generated({\"").append(stubFQN.getName()).append("\"})\n");
       writer.append("public class ").append(stubFQN.getSimpleName()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
       writer.append("}");

@@ -27,6 +27,6 @@ public class RouteViewQueryParamTestCase extends AbstractRouteQueryParamTestCase
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("bridge.servlet.route.view.queryparam");
+    return createServletDeployment("bridge.servlet.route.view.queryparam");
   }
 }

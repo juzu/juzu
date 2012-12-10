@@ -26,11 +26,11 @@ import java.lang.annotation.Target;
 
 /**
  * Annotate a method for declaring a view controller method.
- * <p/>
+ *
  * <code><pre>
  *    public void MyController {
- * <p/>
- *       &#064;Action
+ *
+ *       &#064;{@link Action}
  *       public void myAction() {
  *          ...
  *       }

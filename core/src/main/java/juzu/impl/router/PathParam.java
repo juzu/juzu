@@ -24,9 +24,9 @@ import juzu.impl.router.regex.REParser;
 import juzu.impl.router.regex.RERenderer;
 import juzu.impl.router.regex.REVisitor;
 import juzu.impl.router.regex.SyntaxException;
-import juzu.impl.common.QualifiedName;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ import java.util.List;
 public class PathParam {
 
   /** . */
-  final QualifiedName name;
+  final String name;
 
   /** . */
   final boolean preservePath;
@@ -54,7 +54,7 @@ public class PathParam {
   final String[] templateSuffixes;
 
   private PathParam(
-      QualifiedName name,
+      String name,
       boolean preservePath,
       String routingRegex,
       RERef[] matchingRegex,
@@ -78,16 +78,31 @@ public class PathParam {
     this.templateSuffixes = templateSuffixes;
   }
 
-  public QualifiedName getName() {
+  public String getName() {
     return name;
   }
 
   @Override
   public String toString() {
-    return "PathParam[name=" + name + ",preservePath=" + preservePath + ",pattern=" + matchingRegex + "]";
+    return "PathParam[name=" + name + ",preservePath=" + preservePath + ",pattern=" + Arrays.asList(matchingRegex) + "]";
   }
 
-  public static Builder builder() {
+  /**
+   * Returns a builder matching the the specified regex.
+   *
+   * @param regex the regex to match
+   * @return the builder
+   */
+  public static Builder matching(String regex) {
+    return new Builder().matching(regex);
+  }
+
+  /**
+   * Returns a builder matching any expression.
+   *
+   * @return the builder
+   */
+  public static Builder matchingAny() {
     return new Builder();
   }
 
@@ -102,12 +117,12 @@ public class PathParam {
     /** . */
     private boolean captureGroup;
 
-    private Builder() {
+    public Builder() {
       this.preservePath = false;
       this.captureGroup = false;
     }
 
-    PathParam build(Router router, QualifiedName name) {
+    PathParam build(Router router, String name) {
 
       Builder descriptor = this;
 
@@ -189,7 +204,7 @@ public class PathParam {
           templateSuffixes);
     }
 
-    public Builder matchedBy(String pattern) {
+    public Builder matching(String pattern) {
       this.pattern = pattern;
       return this;
     }

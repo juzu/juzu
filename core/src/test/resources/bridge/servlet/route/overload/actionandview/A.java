@@ -32,9 +32,9 @@ public class A extends Controller {
   static int count = 0;
 
   @View
-  public Response.Content index() {
+  public Response.Content<?> index() {
     count = 0;
-    return Response.render("" + A_.fooActionURL());
+    return Response.render("" + A_.fooAction());
   }
 
   @Action
@@ -46,7 +46,7 @@ public class A extends Controller {
 
   @View
   @Route("/foo")
-  public Response.Content fooView() {
+  public Response.Content<?> fooView() {
     return Response.ok(count == 1 ? "pass" : "fail");
   }
 }

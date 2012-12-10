@@ -27,8 +27,11 @@
     <!-- Encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Juzu -->
+    <!-- Wikbook -->
     <wikbook.version>0.9.41</wikbook.version>
+
+    <!-- Test settings -->
+    <juzu.test.compiler>javac</juzu.test.compiler>
 
   </properties>
 
@@ -417,68 +420,62 @@
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-container-spi</artifactId>
-        <version>1.0.0.CR7</version>
+        <version>1.0.2.Final</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.junit</groupId>
         <artifactId>arquillian-junit-container</artifactId>
-        <version>1.0.0.CR7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.weld</groupId>
-        <artifactId>weld-core-test-arquillian</artifactId>
-        <version>1.1.8.Final</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>1.0.2.Final</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.shrinkwrap</groupId>
         <artifactId>shrinkwrap-api</artifactId>
-        <version>1.0.0-cr-1</version>
+        <version>1.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.shrinkwrap</groupId>
         <artifactId>shrinkwrap-impl-base</artifactId>
-        <version>1.0.0-cr-1</version>
+        <version>1.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.shrinkwrap.resolver</groupId>
         <artifactId>shrinkwrap-resolver-api-maven</artifactId>
-        <version>2.0.0-alpha-1</version>
+        <version>2.0.0-alpha-5</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.shrinkwrap.resolver</groupId>
         <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-        <version>2.0.0-alpha-1</version>
+        <version>2.0.0-alpha-5</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.extension</groupId>
         <artifactId>arquillian-drone-impl</artifactId>
-        <version>1.0.0.CR4</version>
+        <version>1.1.0.Final</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.extension</groupId>
         <artifactId>arquillian-drone-selenium</artifactId>
-        <version>1.0.0.CR4</version>
+        <version>1.1.0.Final</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.arquillian.extension</groupId>
         <artifactId>arquillian-drone-webdriver</artifactId>
-        <version>1.0.0.CR4</version>
+        <version>1.1.0.Final</version>
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-java</artifactId>
-        <version>2.20.0</version>
+        <version>2.25.0</version>
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-htmlunit-driver</artifactId>
-        <version>2.20.0</version>
+        <version>2.25.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.opera</groupId>
+        <artifactId>operadriver</artifactId>
+        <version>1.1</version>
       </dependency>
 
       <!-- Arquillian tomcat container -->
@@ -624,16 +621,12 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.10</version>
           <configuration>
-            <systemProperties>
-              <property>
-                <name>test.resources</name>
-                <value>${basedir}/src/test/resources</value>
-              </property>
-              <property>
-                <name>test.generated.classes</name>
-                <value>${project.build.directory}/generated-test-classes</value>
-              </property>
-            </systemProperties>
+          <systemPropertyVariables>
+            <targetDir>${project.build.directory}</targetDir>
+            <juzu.test.compiler>${juzu.test.compiler}</juzu.test.compiler>
+            <juzu.test.resources.path>${basedir}/src/test/resources</juzu.test.resources.path>
+            <juzu.test.workspace.path>${project.build.directory}/workspace</juzu.test.workspace.path>
+          </systemPropertyVariables>
           </configuration>
         </plugin>
         <plugin>
@@ -704,6 +697,14 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>ejc</id>
+      <properties>
+        <juzu.test.compiler>ejc</juzu.test.compiler>
+      </properties>
+    </profile>
+
   </profiles>
 
 </project>

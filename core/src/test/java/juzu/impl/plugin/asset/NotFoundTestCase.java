@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.asset;
 
-import juzu.impl.inject.spi.InjectImplementation;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.Test;
@@ -27,13 +27,13 @@ import org.junit.Test;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class NotFoundTestCase extends AbstractInjectTestCase {
 
-  public NotFoundTestCase(InjectImplementation di) {
+  public NotFoundTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testSatisfied() throws Exception {
-    MockApplication<?> app  = application("plugin", "asset", "notfound");
+    MockApplication<?> app  = application("plugin.asset.notfound");
     try {
       app.init();
       fail();

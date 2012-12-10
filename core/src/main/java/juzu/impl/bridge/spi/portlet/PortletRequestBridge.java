@@ -19,8 +19,10 @@
 
 package juzu.impl.bridge.spi.portlet;
 
+import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerResolver;
@@ -29,17 +31,27 @@ import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
-import juzu.portlet.JuzuPortlet;
+import juzu.bridge.portlet.JuzuPortlet;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 
+import javax.portlet.BaseURL;
+import javax.portlet.MimeResponse;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletModeException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
+import javax.portlet.PortletURL;
+import javax.portlet.WindowState;
+import javax.portlet.WindowStateException;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -288,5 +300,136 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
         resp.addProperty(entry.getKey(), entry.getValue()[0]);
       }
     }
+  }
+
+  private <T> String _checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
+    if (propertyType == JuzuPortlet.PORTLET_MODE) {
+      if (phase == Phase.RESOURCE) {
+        return "Resource URL don't have portlet modes";
+      }
+      PortletMode portletMode = (PortletMode)propertyValue;
+      for (Enumeration<PortletMode> e = req.getPortalContext().getSupportedPortletModes();e.hasMoreElements();) {
+        PortletMode next = e.nextElement();
+        if (next.equals(portletMode)) {
+          return null;
+        }
+      }
+      return "Unsupported portlet mode " + portletMode;
+    }
+    else if (propertyType == JuzuPortlet.WINDOW_STATE) {
+      if (phase == Phase.RESOURCE) {
+        return "Resource URL don't have windwo state";
+      }
+      WindowState windowState = (WindowState)propertyValue;
+      for (Enumeration<WindowState> e = req.getPortalContext().getSupportedWindowStates();e.hasMoreElements();) {
+        WindowState next = e.nextElement();
+        if (next.equals(windowState)) {
+          return null;
+        }
+      }
+      return "Unsupported window state " + windowState;
+    }
+    else {
+      // For now we ignore other properties
+      return null;
+    }
+  }
+
+  public DispatchSPI createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchSPI() {
+
+      public MethodHandle getTarget() {
+        return target;
+      }
+
+      public Map<String, String[]> getParameters() {
+        return parameters;
+      }
+
+      public <T> String checkPropertyValidity(PropertyType<T> propertyType, T propertyValue) {
+        return _checkPropertyValidity(phase, propertyType, propertyValue);
+      }
+
+      public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
+
+        if (resp instanceof MimeResponse) {
+          MimeResponse mimeResp = (MimeResponse)resp;
+
+          //
+          MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+
+          //
+          BaseURL url;
+          if (method.getPhase() == Phase.ACTION) {
+            url = mimeResp.createActionURL();
+          } else if (method.getPhase() == Phase.VIEW) {
+            url = mimeResp.createRenderURL();
+          } else if (method.getPhase() == Phase.RESOURCE) {
+            url = mimeResp.createResourceURL();
+          } else {
+            throw new AssertionError();
+          }
+
+          // Set generic parameters
+          url.setParameters(parameters);
+
+          //
+          boolean escapeXML = false;
+          if (properties != null) {
+            Boolean escapeXMLProperty = properties.getValue(PropertyType.ESCAPE_XML);
+            if (escapeXMLProperty != null && Boolean.TRUE.equals(escapeXMLProperty)) {
+              escapeXML = true;
+            }
+
+            // Handle portlet mode
+            PortletMode portletModeProperty = properties.getValue(JuzuPortlet.PORTLET_MODE);
+            if (portletModeProperty != null) {
+              if (url instanceof PortletURL) {
+                try {
+                  ((PortletURL)url).setPortletMode(portletModeProperty);
+                }
+                catch (PortletModeException e) {
+                  throw new IllegalArgumentException(e);
+                }
+              }
+              else {
+                throw new IllegalArgumentException();
+              }
+            }
+
+            // Handle window state
+            WindowState windowStateProperty = properties.getValue(JuzuPortlet.WINDOW_STATE);
+            if (windowStateProperty != null) {
+              if (url instanceof PortletURL) {
+                try {
+                  ((PortletURL)url).setWindowState(windowStateProperty);
+                }
+                catch (WindowStateException e) {
+                  throw new IllegalArgumentException(e);
+                }
+              }
+              else {
+                throw new IllegalArgumentException();
+              }
+            }
+
+            // Set method id
+            url.setParameter("juzu.op", method.getId());
+          }
+
+          //
+          if (escapeXML) {
+            StringWriter writer = new StringWriter();
+            url.write(writer, true);
+            appendable.append(writer.toString());
+          }
+          else {
+            appendable.append(url.toString());
+          }
+        } else {
+          throw new IllegalStateException("Cannot render an URL during phase " + phase);
+        }
+      }
+    };
   }
 }

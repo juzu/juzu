@@ -162,12 +162,12 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       if (location == AssetLocation.CLASSPATH) {
         url = classPathResolver.resolve(script.getValue());
         if (url == null) {
-          throw new Exception("Could not resolve classpath assets " + url);
+          throw new Exception("Could not resolve classpath assets " + script.getValue());
         }
       } else if (location == AssetLocation.SERVER && !script.getValue().startsWith("/")) {
         url = serverResolver.resolve("/" + script.getValue());
         if (url == null) {
-          throw new Exception("Could not resolve server assets " + url);
+          throw new Exception("Could not resolve server assets " + script.getValue());
         }
       } else {
         url = null;

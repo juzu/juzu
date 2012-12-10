@@ -21,7 +21,7 @@ package juzu.impl.bridge;
 
 import juzu.Response;
 import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.plugin.application.ApplicationRuntime;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.RenderBridge;
@@ -30,13 +30,12 @@ import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
-import juzu.impl.common.DevClassLoader;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Tools;
 import juzu.impl.common.TrimmingException;
+import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ResourceResolver;
-import juzu.portlet.JuzuPortlet;
+import juzu.bridge.portlet.JuzuPortlet;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,39 +60,28 @@ public class Bridge {
   public BridgeConfig config;
 
   /** . */
-  public ReadFileSystem classes;
-
-  /** . */
   public ReadFileSystem<?> resources;
-
-  /** . */
-  public ReadFileSystem<?> sourcePath;
 
   /** . */
   public ClassLoader classLoader;
 
   /** . */
-  public ApplicationRuntime runtime;
+  public ApplicationLifeCycle runtime;
 
   /** . */
   public ResourceResolver resolver;
 
+  /** . */
+  private ModuleLifeCycle module;
+
+  public Bridge(ModuleLifeCycle module) {
+    this.module = module;
+  }
+
   public void boot() throws Exception, CompilationException {
 
     if (runtime == null) {
-      switch (config.mode) {
-        case BridgeConfig.DYNAMIC_MODE:
-          ClassLoaderFileSystem classPath = new ClassLoaderFileSystem(new DevClassLoader(Thread.currentThread().getContextClassLoader()));
-          ApplicationRuntime.Dynamic dynamic = new ApplicationRuntime.Dynamic<String, String>(log);
-          dynamic.init(classPath, sourcePath);
-          runtime = dynamic;
-          break;
-        default:
-          ApplicationRuntime.Static<String, String> ss = new ApplicationRuntime.Static<String, String>(log);
-          ss.setClasses(classes);
-          ss.setClassLoader(Thread.currentThread().getContextClassLoader());
-          runtime = ss;
-      }
+      runtime = new ApplicationLifeCycle(log, module);
 
       // Configure the runtime
       runtime.setResources(resources);
@@ -104,7 +92,7 @@ public class Bridge {
     }
 
     //
-    runtime.start();
+    runtime.refresh();
   }
 
   public void invoke(RequestBridge requestBridge) throws Throwable {
@@ -159,7 +147,6 @@ public class Bridge {
       if (errors != null) {
         requestBridge.purgeSession();
       }
-
 
       //
       try {

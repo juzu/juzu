@@ -19,6 +19,7 @@
 
 package juzu.impl.plugin.controller.metamodel;
 
+import juzu.Param;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -31,6 +32,7 @@ import juzu.impl.common.Cardinality;
 import juzu.impl.common.JSON;
 import juzu.request.Phase;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -122,8 +124,18 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
           for (int i = 0;i < parameterTypeMirrors.size();i++) {
             VariableElement parameterVariableElt = parameterVariableElements.get(i);
             TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i);
-            TypeMirror erasedParameterTypeMirror = context.processingContext.erasure(parameterTypeMirror);
-            String parameterType = erasedParameterTypeMirror.toString();
+            String typeLiteral = context.processingContext.getLiteralName(parameterTypeMirror);
+
+            //
+            String pattern = null;
+            for (AnnotationMirror annotationMirror : parameterVariableElt.getAnnotationMirrors()) {
+              boolean match = ((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().toString().equals(Param.class.getName());
+              if (match) {
+                AnnotationState state = AnnotationState.create(annotationMirror);
+                pattern = (String)state.get("pattern");
+              }
+            }
+
             //
             String parameterName = parameterVariableElt.getSimpleName().toString();
 
@@ -169,7 +181,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
             ElementHandle.Class a = ElementHandle.Class.create(te);
 
             //
-            parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, parameterType));
+            parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral, pattern));
           }
 
           //

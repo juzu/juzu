@@ -38,7 +38,7 @@ public class ResourceOrderTestCase extends AbstractHttpTestCase {
 
   @Test
   public void testResourceOrder() throws Exception {
-    assertDeploy("http", "resource");
+    assertDeploy("http.resource");
     driver.get(deploymentURL.toString());
     List<WebElement> elts = driver.findElements(By.xpath("//head/*"));
     List<String> previous = new ArrayList<String>();

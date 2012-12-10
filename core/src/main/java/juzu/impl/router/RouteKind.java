@@ -22,10 +22,27 @@ package juzu.impl.router;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum RouteKind {
 
-  CONNECT,
+  CONNECT() {
+    @Override
+    int getTerminal(boolean slash) {
+      return Route.TERMINATION_NONE;
+    }
+  },
 
-  MATCH,
+  MATCH() {
+    @Override
+    int getTerminal(boolean slash) {
+      return slash ? Route.TERMINATION_SEPARATOR : Route.TERMINATION_SEGMENT;
+    }
+  },
 
-  MATCH_ANY,
+  MATCH_ANY() {
+    @Override
+    int getTerminal(boolean slash) {
+      return Route.TERMINATION_ANY;
+    }
+  };
+
+  abstract int getTerminal(boolean slash);
 
 }

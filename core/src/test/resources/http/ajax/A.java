@@ -30,13 +30,13 @@ import juzu.asset.AssetLocation;
 public class A extends Controller {
 
   @View
-  public Response.Content index(String p) {
+  public Response.Content<?> index(String p) {
     String content =
       "<script>\n" +
         "$(function() {\n" +
         "  $('#trigger').click(function() {\n" +
         "    $.ajax({\n" +
-        "      url:'" + A_.resourceURL() + "',\n" +
+        "      url:'" + A_.resource() + "',\n" +
         "      async: false,\n" +
         "      success: function(html) {\n" +
         "        $('#foo').html(html);\n" +
@@ -51,7 +51,7 @@ public class A extends Controller {
   }
 
   @Resource
-  public Response.Content resource() {
+  public Response.Content<?> resource() {
     return Response.ok("bar");
   }
 }

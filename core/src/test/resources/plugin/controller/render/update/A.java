@@ -35,12 +35,12 @@ public class A extends Controller {
   }
 
   @View
-  public Response.Content index() throws IOException {
-    return Response.ok(A_.processURL().toString());
+  public Response.Content<?> index() throws IOException {
+    return Response.ok(A_.process().toString());
   }
 
   @View
-  public Response.Content done() throws IOException {
+  public Response.Content<?> done() throws IOException {
     return Response.ok("done");
   }
 }

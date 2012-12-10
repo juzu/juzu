@@ -27,6 +27,7 @@ import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
+import juzu.request.Phase;
 import juzu.test.AbstractTestCase;
 
 import java.util.Collections;
@@ -65,18 +66,14 @@ public class MockClient {
 
       //
       if (method != null) {
-        switch (method.getPhase()) {
-          case ACTION:
-            request = new MockActionBridge(application.getContext(), this, method.getHandle(), parameters);
-            break;
-          case VIEW:
-            request = new MockRenderBridge(application.getContext(), this, method.getHandle(), parameters);
-            break;
-          case RESOURCE:
-            request = new MockResourceBridge(application.getContext(), this, method.getHandle(), parameters);
-            break;
-          default:
-            throw AbstractTestCase.failure("Not yet supported " + method.getPhase());
+        if (method.getPhase() == Phase.ACTION) {
+          request = new MockActionBridge(application.getContext(), this, method.getHandle(), parameters);
+        } else if (method.getPhase() == Phase.VIEW) {
+          request = new MockRenderBridge(application.getContext(), this, method.getHandle(), parameters);
+        } else if (method.getPhase() == Phase.RESOURCE) {
+          request = new MockResourceBridge(application.getContext(), this, method.getHandle(), parameters);
+        } else {
+          throw new AssertionError();
         }
       } else {
         request = new MockRenderBridge(application.getContext(), this, null, parameters);

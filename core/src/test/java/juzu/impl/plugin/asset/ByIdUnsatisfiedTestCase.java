@@ -27,7 +27,7 @@ import org.junit.Test;
 public class ByIdUnsatisfiedTestCase extends AbstractHttpTestCase {
   @Test
   public void testRequestFail() {
-    MockApplication<?> app = assertDeploy("plugin", "asset", "byid", "unsatisfied");
+    MockApplication<?> app = assertDeploy("plugin.asset.byid.unsatisfied");
 
     //
     assertInternalError();

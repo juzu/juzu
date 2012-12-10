@@ -32,7 +32,7 @@ public class A {
   }
 
   @View
-  public Response.Content index(String p) {
-    return Response.render(A_.actionURL().toString());
+  public Response.Content<?> index(String p) {
+    return Response.render(A_.action().toString());
   }
 }

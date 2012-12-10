@@ -21,7 +21,6 @@ package juzu.impl.bridge.client;
 
 import junit.framework.Assert;
 import juzu.test.AbstractWebTestCase;
-import juzu.test.protocol.standalone.AbstractStandaloneTestCase;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

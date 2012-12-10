@@ -23,7 +23,7 @@ import juzu.Response;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
-import juzu.portlet.JuzuPortlet;
+import juzu.bridge.portlet.JuzuPortlet;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
 

@@ -19,11 +19,13 @@
 
 package juzu.impl.compiler.file;
 
-import juzu.impl.fs.spi.SimpleFileSystem;
+import juzu.impl.fs.spi.ReadFileSystem;
 
 import javax.tools.JavaFileObject;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -32,15 +34,22 @@ public class CompositeFileManager extends FileManager {
   /** . */
   private FileManager[] components;
 
-  public CompositeFileManager(Collection<SimpleFileSystem<?>> fsList) {
+  public CompositeFileManager(Collection<ReadFileSystem<?>> fsList) {
     FileManager[] components = new FileManager[fsList.size()];
     int index = 0;
-    for (SimpleFileSystem<?> fs : fsList) {
+    for (ReadFileSystem<?> fs : fsList) {
       components[index++] = SimpleFileManager.wrap(fs);
     }
 
     //
     this.components = components;
+  }
+
+  @Override
+  public void populateRoots(Set<File> roots) throws IOException {
+    for (FileManager component : components) {
+      component.populateRoots(roots);
+    }
   }
 
   @Override
