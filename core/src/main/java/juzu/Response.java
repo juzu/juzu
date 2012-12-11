@@ -165,6 +165,20 @@ public abstract class Response {
     return this;
   }
 
+  public Response withMetaTag(String name, String value) {
+    Iterable<Map.Entry<String, String>> values = properties.getValues(PropertyType.METATAG);
+    if (values != null) {
+      for (Map.Entry<String, String> meta : values) {
+        if (meta.getKey().equals(name)) {
+          meta.setValue(value);
+          return this;
+        }
+      }
+    }
+    properties.addValue(PropertyType.METATAG, new AbstractMap.SimpleEntry<String, String>(name, value));
+    return this;
+  }
+
   /**
    * A response instructing to execute a render phase of a controller method after the current interaction.
    */
@@ -182,6 +196,11 @@ public abstract class Response {
     @Override
     public Update withHeader(String name, String... value) {
       return (Update)super.withHeader(name, value);
+    }
+
+    @Override
+    public Update withMetaTag(String name, String value) {
+      return (Update)super.withMetaTag(name, value);
     }
 
     @Override
@@ -226,6 +245,11 @@ public abstract class Response {
     @Override
     public Redirect withHeader(String name, String... value) {
       return (Redirect)super.withHeader(name, value);
+    }
+
+    @Override
+    public Redirect withMetaTag(String name, String value) {
+      return (Redirect)super.withMetaTag(name, value);
     }
 
     @Override
@@ -309,6 +333,11 @@ public abstract class Response {
       return (Content<S>)super.withHeader(name, value);
     }
 
+    @Override
+    public Content<S> withMetaTag(String name, String value) {
+      return (Content<S>)super.withMetaTag(name, value);
+    }
+
     public Integer getStatus() {
       return status;
     }
@@ -383,9 +412,20 @@ public abstract class Response {
       return this;
     }
 
+    public Iterable<Map.Entry<String, String>> getMetaTags() {
+      Iterable<Map.Entry<String, String>> metas = properties.getValues(PropertyType.METATAG);
+      return metas != null ? metas : Tools.<Map.Entry<String, String>>emptyIterable();
+    }
+
+
     @Override
     public Render withHeader(String name, String... value) {
       return (Render)super.withHeader(name, value);
+    }
+
+    @Override
+    public Render withMetaTag(String name, String value) {
+      return (Render)super.withMetaTag(name, value);
     }
 
     @Override
