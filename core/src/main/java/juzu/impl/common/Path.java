@@ -226,6 +226,10 @@ public abstract class Path implements Serializable, Iterable<String> {
 
   public abstract boolean isAbsolute();
 
+  public final boolean isRelative() {
+    return !isAbsolute();
+  }
+
   public QN getQN() {
     return fqn.getPackageName();
   }

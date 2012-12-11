@@ -52,8 +52,9 @@ public class LessPluginTestCase extends AbstractInjectTestCase {
     List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
     assertEquals(1, errors.size());
     assertEquals(LessMetaModelPlugin.COMPILATION_ERROR, errors.get(0).getCode());
-    assertEquals("/plugin/less/fail/package-info.java", errors.get(0).getSource());
-    File f = ca.getClassOutput().getPath("plugin", "less", "fail", "assets", "stylesheet.css");
+    File f = ca.getSourcePath().getPath("plugin", "less", "fail", "package-info.java");
+    assertEquals(f, errors.get(0).getSourceFile());
+    f = ca.getClassOutput().getPath("plugin", "less", "fail", "assets", "stylesheet.css");
     assertNull(f);
   }
 
@@ -63,8 +64,9 @@ public class LessPluginTestCase extends AbstractInjectTestCase {
     List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
     assertEquals(1, errors.size());
     assertEquals(LessMetaModelPlugin.COMPILATION_ERROR, errors.get(0).getCode());
-    assertEquals("/plugin/less/notfound/package-info.java", errors.get(0).getSource());
-    File f = ca.getClassOutput().getPath("plugin", "less", "notfound", "assets", "stylesheet.css");
+    File f = ca.getSourcePath().getPath("plugin", "less", "notfound", "package-info.java");
+    assertEquals(f, errors.get(0).getSourceFile());
+    f = ca.getClassOutput().getPath("plugin", "less", "notfound", "assets", "stylesheet.css");
     assertNull(f);
   }
 
@@ -94,8 +96,9 @@ public class LessPluginTestCase extends AbstractInjectTestCase {
     List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
     assertEquals(1, errors.size());
     assertEquals(LessMetaModelPlugin.COMPILATION_ERROR, errors.get(0).getCode());
-    assertEquals("/plugin/less/cannotresolve/package-info.java", errors.get(0).getSource());
-    File f = ca.getClassOutput().getPath("plugin", "less", "cannotresolve", "assets", "stylesheet.css");
+    File f = ca.getSourcePath().getPath("plugin", "less", "cannotresolve", "package-info.java");
+    assertEquals(f, errors.get(0).getSourceFile());
+    f = ca.getClassOutput().getPath("plugin", "less", "cannotresolve", "assets", "stylesheet.css");
     assertNull(f);
   }
 
@@ -105,8 +108,9 @@ public class LessPluginTestCase extends AbstractInjectTestCase {
     List<CompilationError> errors = ca.formalErrorReporting(true).failCompile();
     assertEquals(1, errors.size());
     assertEquals(LessMetaModelPlugin.MALFORMED_PATH, errors.get(0).getCode());
-    assertEquals("/plugin/less/malformedpath/package-info.java", errors.get(0).getSource());
-    File f = ca.getClassOutput().getPath("plugin", "less", "malformedpath", "assets", "stylesheet.css");
+    File f = ca.getSourcePath().getPath("plugin", "less", "malformedpath", "package-info.java");
+    assertEquals(f, errors.get(0).getSourceFile());
+    f = ca.getClassOutput().getPath("plugin", "less", "malformedpath", "assets", "stylesheet.css");
     assertNull(f);
   }
 
