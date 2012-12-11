@@ -1,23 +1,38 @@
 #{param name=location/}
 #{param name=temperature/}
 #{param name=locations/}
-#{param name=grade/}
 
-<form style="float:right" action="@{updateGrade()}" method="post">
-    <select name="grade" onChange="javascript:this.form.submit();">
-        <option value="c" <%=grade=='c'?'selected':''%>>celsius</option>
-        <option value="f" <%=grade=='f'?'selected':''%>>fahrenheit</option>
-    </select>
-</form>
+<div class="tutorial" style="padding: 10px">
 
-The weather temperature in ${location} is ${temperature} degrees.
+    <div>
 
-<ul><% locations.each() { location -> %>
-    <li><a href="@{index(location = location)}">${location}</a></li>
-    <% } %>
-</ul>
+        <form action="@{add()}" method="post" style="float:left">
+            <fieldset>
+                <div class="controls">
+                    <div class="input-append">
+                        <input class="span2" type="text" size="16"name="location" value=""/><button type="submit" class="btn">Add</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
 
-<form action="@{add()}" method="post">
-    <input type="text" name="location" value=""/>
-    <input type="submit"/>
-</form>
+        <div style="clear:both"/>
+
+    </div>
+
+    <div class="accordion">
+
+        <% locations.each() { current -> %>
+        <div class="accordion-group">
+            <div class="accordion-heading"><a class="accordion-toggle" href="@{index(location = current)}">${current}</a></div>
+            <% if (current == location) { %>
+            <div class="accordion-body">
+                <div class="accordion-inner">The weather temperature in ${current} is ${temperature}&deg; C.</div>
+            </div>
+            <% } %>
+        </div>
+        <% } %>
+
+    </div>
+
+</div>

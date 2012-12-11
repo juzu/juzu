@@ -18,9 +18,11 @@
  */
 
 @Application
+@Route("/weather4")
 @Portlet
 package examples.tutorial.weather4;
 
 import juzu.Application;
+import juzu.Route;
 import juzu.plugin.portlet.Portlet;
 

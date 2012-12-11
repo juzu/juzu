@@ -109,24 +109,8 @@
   </portlet>
   <portlet>
     <portlet-name>Weather7Portlet</portlet-name>
-    <display-name xml:lang="EN">Juzu Preferences</display-name>
-    <portlet-class>examples.tutorial.weather7.Weather7Portlet</portlet-class>
-    <init-param>
-      <name>juzu.run_mode</name>
-      <value>prod</value>
-    </init-param>
-    <supports>
-      <mime-type>text/html</mime-type>
-    </supports>
-    <portlet-info>
-      <title>Weather 7</title>
-      <keywords>juzu,sample</keywords>
-    </portlet-info>
-  </portlet>
-  <portlet>
-    <portlet-name>Weather8Portlet</portlet-name>
     <display-name xml:lang="EN">Juzu Styled</display-name>
-    <portlet-class>examples.tutorial.weather8.Weather8Portlet</portlet-class>
+    <portlet-class>examples.tutorial.weather7.Weather7Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
       <value>prod</value>
@@ -140,12 +124,12 @@
     </portlet-info>
   </portlet>
   <portlet>
-    <portlet-name>Weather9Portlet</portlet-name>
+    <portlet-name>Weather8Portlet</portlet-name>
     <display-name xml:lang="EN">Juzu Ajaxified</display-name>
-    <portlet-class>examples.tutorial.weather9.Weather9Portlet</portlet-class>
+    <portlet-class>examples.tutorial.weather8.Weather8Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
-      <value>dev</value>
+      <value>prod</value>
     </init-param>
     <supports>
       <mime-type>text/html</mime-type>

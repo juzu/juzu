@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<arquillian>
+
+  <extension qualifier="webdriver">
+    <!-- Needed for html unit web driver -->
+    <property name="useJavaScript">true</property>
+  </extension>
+
+</arquillian>

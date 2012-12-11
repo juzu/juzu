@@ -1,5 +1,0 @@
-#{param name=location/}
-#{param name=temperature/}
-#{param name=grade/}
-The weather temperature in ${location} is ${temperature}&deg;
-${grade.toUpperCase()}.

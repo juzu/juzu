@@ -1,40 +1,175 @@
-A portlet provides a ##PortletPreferences## object for loading and saveing user preferences, it
-is a collection of key and values of type string, very much like a map. Juzu does not wrap the preferences
-object, instead it can be injected via the ##@Inject## annotation:
+Our application is almost complete, in this section we will work on the look and feel to make the application
+appealing. We will use the famous [[Twitter Bootstrap>>http://twitter.github.com/bootstrap/]] framework and show how
+it integrates well in Juzu applications.
+
+= The style =
+
+Bootstrap provides a solid fundation for building quickly attractive applications. However the default look and feel
+does not perfectly fit our needs:
+
+* The default stylesheet does not work very well in a portal application as it applies to the entire screen and we need to
+operate only on our application
+* We don't need all the out of the box components and only a subset providing a smaller stylesheet than the default stylesheet
+
+Fortunately Bootstrap is based on the dynamic stylesheet language [[Less>>http://lesscss.org/]] and provides a very modular
+organization. We will perform trivial modifications to a subset of the Less files and integrate them in our application.
+
+== A la carte ==
+
+We will then modify the ##bootstrap.less## file to keep only what is necessary for our application:
+
+{{example title="The necessary Bootstrap less files"}}
+{{code href="examples/tutorial/assets/bootstrap.less"/}}
+{{/example}}
+
+This version of bootstrap.less is a trimmed down of the original files.
+
+== Scoping the styles  ==
+
+By default, the Bootstrap rules will affect the entire page, we want it to affect only our application. We can modify
+the CSS rules to operate on a portion of the page based on a specific class name with a very simple pattern: add
+a class prefix to a rule to reduce the scope of that rule. For example:
+
+{{example title="The rule to scope"}}
+{{code}}
+div.red { color:red; }
+{{/code}}
+{{/example}}
+
+Adding to the rule the ##.tutorial## prefix transforms the rule and reduce its scope to an area
+boxed by the ##tutorial## class name:
+
+{{example title="The rule scoped"}}
+{{code}}
+.tutorial div.red { color:red; }
+{{/code}}
+{{/example}}
+
+In the previous example we modified a single CSS rule, in reality we should modify all the rules of a stylesheet,
+which means many rules. To achieve our goal we need a global approach, here again the Less framework provides what we need:
+great power at a very tiny cost.
+
+Indeed the Less language provides [[nested rules>>http://lesscss.org/#-nested-rules]], our previous example can be rewritten
+in the Less language as:
+
+{{example title="The rule scoped"}}
+{{code}}
+.tutorial {
+  div.red { color:red; }
+}
+{{/code}}
+{{/example}}
+
+This approach allows us to encapsulate an entire stylesheet and mass prefix all the rules contained within the scope of the
+outter rule. For this reason all the Bootstrap less sources have been modified to be scoped with the ##tutorial## class name.
+
+= Plugins in action =
+
+Juzu can be extended with plugins, in this section we will use two of them
+
+* The Less plugin compiles less files into css files
+* The Asset plugin inject asset such as stylesheet or javascript in the application page
+
+== Less compilation ==
+
+Juzu provides native support for the Less language via the Less plugin and the ##@Less## annotation. It allows a set of less
+files to be transformed into the corresponding css files during the java compilation, achieving two important steps during
+the compilation phase:
+
+* The less files are transformed into ready to use css files
+* It ensures a maximum of safety: the Less parser will report any error in the source
+
+Our first step is to create the ##examples.tutorial.assets## package, we copy the Bootstrap Less files into this package and
+annotate the ##examples.tutorial## package with the ##@Less## annotation to trigger the compilation of the stylesheet
+ in the ##assets## package:
 
 {{java}}
-{@include examples.tutorial.weather7.Weather#preferences}
+@Less(value = "bootstrap.less", minify = true)
+package examples.tutorial;
+
+import juzu.plugin.less.Less;
 {{/java}}
 
-The preferences object is available during the various phases of the application and can be used to retrieve and
-store user preferences, but keep in mind that storing preferences can only be done an action phase.
+This annotation triggers the compilation of the ##bootstrap.less## in the ##assets## package, the ##minified## parameter
+instruct Less to minify the resulting css.
 
-{{note}}The preferences object is bound in the IOC container with the request scope, since the validity
-of the preferences object is associated with a portlet request. There is no need to declared the request
-scope in the preferences injection.{{/note}}
+== Injecting CSS ==
 
-= Reading preferences =
+Now that we have worked out the CSS details we need to make our stylesheet available in the application page. The //asset//
+plugin will achieve this result for us. This plugin provides declarative configuration for the various assets required
+by an application. It works both for stylesheets and javascript, in this section we use it for stylesheet:
 
-To use the preferences in the templates we have modified the template to contain an additional ##grade## parameter
-that will be configured by the ##index## method when it renders the template. The grade value is obtained from
-the ##preferences## field at the beginning of the ##index## method:
-
+{{example title="Injecting Bootstrap CSS in our application"}}
 {{java}}
-{@include examples.tutorial.weather7.Weather#index(java.lang.String)}
+@Application
+@Assets(stylesheets = @Stylesheet(
+  src = "/examples/tutorial/assets/bootstrap.css",
+  location = AssetLocation.CLASSPATH)
+)
+package examples.tutorial.weather7;
 {{/java}}
+{{/example}}
 
-= Writing preferences =
+The usage is fairly straightforward with the ##@Assets## and ##Stylesheet## annotations. We configure the ##location## parameter
+to be ##CLASSPATH## because the Less plugin created it there.
 
-Preferences can be updated during the action phase of the application. The action phase is triggered by a form
-in the template:
+== Bringing CSS to life ==
 
-{{code href=examples/tutorial/weather7/templates/index.gtmpl/}}
+After this step we need to modify our application template to use the various styles provided by Bootstrap:
 
-The form action value is set to ##@{updateGrade()}## URL that will invoke the corresponding method in the controller:
+[[image:images/bootstrap.png||title="The Bootstrapized application" align="center" html:scale="70" fo:width="70mm]]
 
-{{java}}
-{@include examples.tutorial.weather7.Weather#updateGrade(java.lang.String)}
-{{/java}}
+We will not explain that in details, however we will study the important modifications:
 
-The ##updateGrade## action updates the preferences and then invoke the ##store()## method to persist the changes.
+=== Scoping the rules ===
 
+As seen previously we need to scope our markup with the ##tutorial## class, it is achieved by wrapping our application
+markup with a ##div## tag:
+
+{{code}}
+<div class="tutorial">
+  ...
+</div>
+{{/code}}
+
+=== Accordion ===
+
+The Bootstrap provides the [[Collapse component>>http://twitter.github.com/bootstrap/javascript.html#collapse]]. We will
+not use the entire Collapse component here but instead reuse the CSS rules to display the available cities:
+
+{{code}}
+<div class="accordion-group">
+  <div class="accordion-heading"><a class="accordion-toggle" href="@{index(location = current)}">${current}</a></div>
+  <div class="accordion-body">
+    <div class="accordion-inner">The weather temperature in ${current} is ${temperature}&deg; ${grade.toUpperCase()}.</div>
+  </div>
+</div>
+{{/code}}
+
+=== Temperature selection ===
+
+The switch between Celsius and Fahrenheit is done thanks to Boostrap //button groups// and //inverse// rules:
+
+{{code}}
+  <a class="btn <%=grade=='c'?'btn-inverse':''%>"
+    href="@{updateGrade(grade='c',location=location)}">C</a>
+  <a class="btn <%=grade=='f'?'btn-inverse':''%>"
+    href="@{updateGrade(grade='f',location=location)}">F</a>
+{{/code}}
+
+=== Adding a city ===
+
+Finally the form for adding is modified to reuse [[Bootstrap form support>>http://twitter.github.com/bootstrap/base-css.html#forms]]:
+
+{{code}}
+<form action="@{add()}" method="post">
+  <fieldset>
+    <div class="controls">
+      <div class="input-append">
+         <input class="span2" type="text" size="16"name="location" value=""/>
+         <button type="submit" class="btn">Add</button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+{{/code}}

@@ -19,21 +19,23 @@
 
 package examples.tutorial.weather8;
 
-import examples.tutorial.weather3.WeatherService;
+import examples.tutorial.WeatherService;
 import juzu.Action;
 import juzu.Path;
+import juzu.Resource;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
+import juzu.plugin.ajax.Ajax;
 
 import javax.inject.Inject;
-import javax.portlet.PortletPreferences;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Weather {
 
-  static Set<String> locations = new HashSet<String>();
+  static List<String> locations = new ArrayList<String>();
 
   static {
     locations.add("marseille");
@@ -44,11 +46,12 @@ public class Weather {
   WeatherService weatherService;
 
   @Inject
-  PortletPreferences preferences;
-
-  @Inject
   @Path("index.gtmpl")
   examples.tutorial.weather8.templates.index index;
+
+  @Inject
+  @Path("fragment.gtmpl")
+  examples.tutorial.weather8.templates.fragment fragment;
 
   @View
   public void index() {
@@ -56,28 +59,33 @@ public class Weather {
   }
 
   @View
+  @Route("/show/{location}")
   public void index(String location) {
-    String grade = preferences.getValue("grade", "c");
     index.
       with().
       location(location).
-      temperature(weatherService.getTemperature(location, grade)).
-      grade(grade).
+      temperature(weatherService.getTemperature(location)).
       locations(locations).
       render();
   }
 
   @Action
-  public Response updateGrade(String grade, String location) throws java.io.IOException,
-    javax.portlet.PortletException {
-    preferences.setValue("grade", grade);
-    preferences.store();
+  @Route("/add")
+  public Response add(String location) {
+    if (!locations.contains(location)) {
+      locations.add(location);
+    }
     return Weather_.index(location);
   }
 
-  @Action
-  public Response add(String location) {
-    locations.add(location);
-    return Weather_.index(location);
+  @Ajax
+  @Resource
+  @Route("/fragment")
+  public void getFragment(String location) {
+    fragment.
+      with().
+      location(location).
+      temperature(weatherService.getTemperature(location)).
+      render();
   }
 }

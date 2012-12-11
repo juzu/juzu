@@ -37,7 +37,7 @@ public class Weather {
   @View
   public void index() {
     Map<String, Object> parameters = new HashMap<String, Object>();
-    parameters.put("location", "Marseille");
+    parameters.put("location", "marseille");
     parameters.put("temperature", "20");
     index.render(parameters);
   }

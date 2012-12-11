@@ -18,8 +18,13 @@
  */
 
 @Application
+@Route("/weather7")
 @Portlet
+@Assets(stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css"))
 package examples.tutorial.weather7;
 
 import juzu.Application;
+import juzu.Route;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.portlet.Portlet;

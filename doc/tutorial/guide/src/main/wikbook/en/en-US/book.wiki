@@ -30,17 +30,13 @@ in several steps, each step introducing a new feature to gradually improve the a
 
 {{include document=tutorial/weather6.wiki/}}
 
-= Using portlet preferences {{anchor id=preferences /}} =
+= Styling the application {{anchor id=styled /}} =
 
 {{include document=tutorial/weather7.wiki/}}
 
-= Styling the application {{anchor id=styled /}} =
-
-{{include document=tutorial/weather8.wiki/}}
-
 = Adding Ajax {{anchor id=ajax /}} =
 
-{{include document=tutorial/weather9.wiki/}}
+{{include document=tutorial/weather8.wiki/}}
 
 = Wrap up =
 

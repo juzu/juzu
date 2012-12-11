@@ -1,175 +1,175 @@
-Our application is almost complete, in this section we will work on the look and feel to make the application
-appealing. We will use the famous [[Twitter Bootstrap>>http://twitter.github.com/bootstrap/]] framework and show how
-it integrates well in Juzu applications.
+Now that our application look great, we are going to add a final touch to our application and make it more dynamic.
 
-= The style =
+In the previous section we introduced the accordion user interface component, but it was used in a static way. In this
+section we will make it dynamic and introduce the Ajax plugin.
 
-Bootstrap provides a solid fundation for building quickly attractive applications. However the default look and feel
-does not perfectly fit our needs:
+The accordion component can be combined to the JQuery collapse plugin providing the capability to unfold an item to
+display the weather of the location. When the item is unfolded an ajax request is performed to the application to
+retrieve the markup that will be inserted.
 
-* The default stylesheet does not work very well in a portal application as it applies to the entire screen and we need to
-operate only on our application
-* We don't need all the out of the box components and only a subset providing a smaller stylesheet than the default stylesheet
+= Javascript to the rescue =
 
-Fortunately Bootstrap is based on the dynamic stylesheet language [[Less>>http://lesscss.org/]] and provides a very modular
-organization. We will perform trivial modifications to a subset of the Less files and integrate them in our application.
+The application will use several Javascript libraries:
 
-== A la carte ==
+* The JQuery library provides the fundations for building our application
+* The Bootstrap accordion component provides scripts as a JQuery plugin
+* Juzu provides Ajax helpers as a JQuery plugin
+* A small custom script to setup the accordion plugin with the ajax plugin
 
-We will then modify the ##bootstrap.less## file to keep only what is necessary for our application:
+== Adding scripts ==
 
-{{example title="The necessary Bootstrap less files"}}
-{{code href="examples/tutorial/assets/bootstrap.less"/}}
-{{/example}}
+The Asset plugin was introduced in the previous section to handle the serving of the Bootstrap stylesheets. The ##@Asset##
+annotation can be used also for embedding scripts, but it provides more control about the script, in particular
+a dependency mechanism to control the order of scripts that we will use: indeed JQuery plugins have to be loaded after the
+JQuery library is loaded.
 
-This version of bootstrap.less is a trimmed down of the original files.
-
-== Scoping the styles  ==
-
-By default, the Bootstrap rules will affect the entire page, we want it to affect only our application. We can modify
-the CSS rules to operate on a portion of the page based on a specific class name with a very simple pattern: add
-a class prefix to a rule to reduce the scope of that rule. For example:
-
-{{example title="The rule to scope"}}
-{{code}}
-div.red { color:red; }
-{{/code}}
-{{/example}}
-
-Adding to the rule the ##.tutorial## prefix transforms the rule and reduce its scope to an area
-boxed by the ##tutorial## class name:
-
-{{example title="The rule scoped"}}
-{{code}}
-.tutorial div.red { color:red; }
-{{/code}}
-{{/example}}
-
-In the previous example we modified a single CSS rule, in reality we should modify all the rules of a stylesheet,
-which means many rules. To achieve our goal we need a global approach, here again the Less framework provides what we need:
-great power at a very tiny cost.
-
-Indeed the Less language provides [[nested rules>>http://lesscss.org/#-nested-rules]], our previous example can be rewritten
-in the Less language as:
-
-{{example title="The rule scoped"}}
-{{code}}
-.tutorial {
-  div.red { color:red; }
-}
-{{/code}}
-{{/example}}
-
-This approach allows us to encapsulate an entire stylesheet and mass prefix all the rules contained within the scope of the
-outter rule. For this reason all the Bootstrap less sources have been modified to be scoped with the ##tutorial## class name.
-
-= Plugins in action =
-
-Juzu can be extended with plugins, in this section we will use two of them
-
-* The Less plugin compiles less files into css files
-* The Asset plugin inject asset such as stylesheet or javascript in the application page
-
-== Less compilation ==
-
-Juzu provides native support for the Less language via the Less plugin and the ##@Less## annotation. It allows a set of less
-files to be transformed into the corresponding css files during the java compilation, achieving two important steps during
-the compilation phase:
-
-* The less files are transformed into ready to use css files
-* It ensures a maximum of safety: the Less parser will report any error in the source
-
-Our first step is to create the ##examples.tutorial.assets## package, we copy the Bootstrap Less files into this package and
-annotate the ##examples.tutorial## package with the ##@Less## annotation to trigger the compilation of the stylesheet
- in the ##assets## package:
+We extend the ##@Asset## annotation to add our scripts:
 
 {{java}}
-@Less(value = "bootstrap.less", minify = true)
-package examples.tutorial;
-
-import juzu.plugin.less.Less;
-{{/java}}
-
-This annotation triggers the compilation of the ##bootstrap.less## in the ##assets## package, the ##minified## parameter
-instruct Less to minify the resulting css.
-
-== Injecting CSS ==
-
-Now that we have worked out the CSS details we need to make our stylesheet available in the application page. The //asset//
-plugin will achieve this result for us. This plugin provides declarative configuration for the various assets required
-by an application. It works both for stylesheets and javascript, in this section we use it for stylesheet:
-
-{{example title="Injecting Bootstrap CSS in our application"}}
-{{java}}
-@Application
-@Assets(stylesheets = @Stylesheet(
-  src = "/examples/tutorial/assets/bootstrap.css",
-  location = AssetLocation.CLASSPATH)
+@Assets(
+   scripts = {
+      @Script(
+         id = "jquery", // <1>
+         src = "jquery-1.7.1.min.js",
+         location = AssetLocation.CLASSPATH),
+      @Script(
+         id = "transition",
+         src = "bootstrap-transition.js", // <2>
+         location = AssetLocation.CLASSPATH,
+         depends = "jquery"), // <1>
+      @Script(
+         id = "collapse",
+         src = "bootstrap-collapse.js",
+         location = AssetLocation.CLASSPATH,
+         depends = {
+            "jquery", // 1
+            "transition"}), // <2>
+      @Script(
+         src = "weather.js",
+         location = AssetLocation.CLASSPATH,
+         depends = {
+            "jquery",  // <1>
+            "collapse"}) // <3>
+   },
+   stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css", location = AssetLocation.CLASSPATH)
 )
 package examples.tutorial.weather8;
+// =1= All other scripts than JQuery depends on JQuery
+// =2= The //collapse// JQuery plugin depends on the //transition// script
+// =3= Our //weather// script depends also on the JQuery //collapse// plugin
 {{/java}}
-{{/example}}
 
-The usage is fairly straightforward with the ##@Assets## and ##Stylesheet## annotations. We configure the ##location## parameter
-to be ##CLASSPATH## because the Less plugin created it there.
+The declaration is straightforward, any ##@Script## annotation may configure
 
-== Bringing CSS to life ==
+* an optional ##id## used for creating dependencies between scripts
+* a mandatory ##src## for the script name
+* an optional ##location## for resolving the script
+* an optional ##depends## that declares the ids a script depends on
 
-After this step we need to modify our application template to use the various styles provided by Bootstrap:
+== The collapse plugin ==
 
-[[image:images/bootstrap.png||title="The Bootstrapized application" align="center" html:scale="70" fo:width="70mm]]
-
-We will not explain that in details, however we will study the important modifications:
-
-=== Scoping the rules ===
-
-As seen previously we need to scope our markup with the ##tutorial## class, it is achieved by wrapping our application
-markup with a ##div## tag:
-
-{{code}}
-<div class="tutorial">
-  ...
-</div>
-{{/code}}
-
-=== Accordion ===
-
-The Bootstrap provides the [[Collapse component>>http://twitter.github.com/bootstrap/javascript.html#collapse]]. We will
-not use the entire Collapse component here but instead reuse the CSS rules to display the available cities:
+The Bootstrap collapse plugin allows the user to unfold a city to display its weather, you can see how it works
+in the [[Bootstrap manual>>http://twitter.github.com/bootstrap/javascript.html#collapse]]. In our case we modify
+the ##index.gtmpl## to use it, in particular the ##accordion-group## part:
 
 {{code}}
 <div class="accordion-group">
-  <div class="accordion-heading"><a class="accordion-toggle" href="@{index(location = current)}">${current}</a></div>
-  <div class="accordion-body">
-    <div class="accordion-inner">The weather temperature in ${current} is ${temperature}&deg; ${grade.toUpperCase()}.</div>
+  <div class="accordion-heading">
+    <a class="accordion-toggle" href="#${current}" data-parent="${id}" data-toggle="collapse">${current}</a>
+  </div>
+  <% def expanded = i != index ? 'in' : ''; %>
+  <div id="${current}" class="accordion-body collapse ${expanded}">
+    <div class="accordion-inner">
+    </div>
   </div>
 </div>
 {{/code}}
 
-=== Temperature selection ===
+There are two noticeable points to explain:
 
-The switch between Celsius and Fahrenheit is done thanks to Boostrap //button groups// and //inverse// rules:
+* The ##accordion-inner## is empty now, the reason is that the weather will be loaded using JQuery ajax capabilities
+* The ##div.collapse## element id is set to the current item location, this value will be reused during an ajax
+interaction, we will see more about this later.
+
+= Bridge the gap with Ajax =
+
+Now our application loads a set of dynamic tabs managed by JQuery and the collapse plugin, it's time to develop the ajax
+part: our goal is to load a markup fragment to insert in an accordion item when it is unfolded. We will develop a bit
+of client side Javascript and a resource controller on the Weather controller.
+
+== Resource controller ==
+
+We need a controller method to server the markup of the weather of a particular city. Until now we have studied view
+and action controllers, for this use case we will use a new type of controller : the //resource// controller.
+
+Resource controllers are pretty much like a view controllers except that they must produce the entire response sent to the
+client and that is precisely what we want to achieve on the server side.
+
+Our application requires a single resource controller method that we will call ##getFragment##, it will render a markup
+fragment for a specific city location:
+
+{{java}}
+{@include examples.tutorial.weather8.Weather#fragment}
+
+{@include examples.tutorial.weather8.Weather#getFragment(java.lang.String)}
+{{/java}}
+
+The fragment template is very simple and only renders the portion of the screen that will be updated by the client
+side javascript code when an item is unfolded:
+
+{{code language=java href="examples/tutorial/weather8/templates/fragment.gtmpl"/}}
+
+== JQuery ==
+
+The last part of our application is the javascript part that will react on the collapse plugin component to load
+the markup from the ##getFragment## controller when the item is unfolded. We create the javascript file ##weather.js##
+in the ##examples.tutorial.weather8.assets##:
+
+{{code language=java href="examples/tutorial/weather8/assets/weather.js"/}}
+
+The following construct is important because it ensures that the code inside the function will be executed
+ when JQuery is loaded:
 
 {{code}}
-  <a class="btn <%=grade=='c'?'btn-inverse':''%>"
-    href="@{updateGrade(grade='c',location=location)}">C</a>
-  <a class="btn <%=grade=='f'?'btn-inverse':''%>"
-    href="@{updateGrade(grade='f',location=location)}">F</a>
+$(function() {
+  //
+});
 {{/code}}
 
-=== Adding a city ===
+If you take time to read the collapse plugin component [[documentation>>http://twitter.github.com/bootstrap/javascript.html#collapse]]
+you will see that there are two important things to do for integrating it in our application:
 
-Finally the form for adding is modified to reuse [[Bootstrap form support>>http://twitter.github.com/bootstrap/base-css.html#forms]]:
+* We must setup an event listener on ##.collapse## elements to react to the ##shown## event
+* The collapase component is setup with the ##$(".collapse").collapse()## code
+
+The important code is inside the ##show## event listener:
+
+* The location to display is extracted from the element ##id## on the ##div.collapse## component
+* We find the appropriate element to update with the ##$(this).closest(".accordion-group").find(".accordion-inner")## selectors
+* On the ##.accordion-inner## element we invoke the resource controller with the ##jzLoad(...)## function
+
+The ##jzLoad## function is a JQuery plugin provided by the Juzu ajax plugin. It allows to invoke a controller method using
+ ajax and cares about propagating the call to the resource controller method. It replaces the standard JQuery ##load## function
+ and accepts the same argument. However the url part is replaced by a controller method, ##Weather.getFragment()## in our case.
+
+The Juzu ajax plugin takes care of finding the right URL for invoking the controller method. It is designed to work in a
+standalone javascript file without requiring ##<script>## tags in the page and works even when multiples instances of the
+portlets are on the same page.
+
+When the ajax plugin operates on ##@Ajax## controller method, it wraps the markup with a DOM structure that contains the
+URL for the ##@Ajax## method of the application:
 
 {{code}}
-<form action="@{add()}" method="post">
-  <fieldset>
-    <div class="controls">
-      <div class="input-append">
-         <input class="span2" type="text" size="16"name="location" value=""/>
-         <button type="submit" class="btn">Add</button>
-      </div>
-    </div>
-  </fieldset>
-</form>
+<div class="jz">
+  <div data-method-id="Weather.getFragment()## data-url="http://localhost:8080/....."/>
+  ...
+</div>
 {{/code}}
+
+The ##jzLoad## function is invoked on a portion of the DOM that is wrapped by the ##div.jz## element and this
+function will simply locate the correct URL using the ##data-method-id## attribute. This makes the same script
+work with different portlets on the same page.
+
+Note also that in our code we never used any JQuery selector containing id in order to allow several instances of the
+same application to work without conflicts.
+

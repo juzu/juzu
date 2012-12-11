@@ -1,0 +1,3 @@
+#{param name=location/}
+#{param name=temperature/}
+<p>The weather temperature in ${location} is ${temperature} degrees C</p>

@@ -19,14 +19,14 @@
 
 package examples.tutorial.weather7;
 
-import examples.tutorial.weather3.WeatherService;
+import examples.tutorial.WeatherService;
 import juzu.Action;
 import juzu.Path;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 
 import javax.inject.Inject;
-import javax.portlet.PortletPreferences;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,9 +44,6 @@ public class Weather {
   WeatherService weatherService;
 
   @Inject
-  PortletPreferences preferences;
-
-  @Inject
   @Path("index.gtmpl")
   examples.tutorial.weather7.templates.index index;
 
@@ -56,25 +53,18 @@ public class Weather {
   }
 
   @View
+  @Route("/show/{location}")
   public void index(String location) {
-    String grade = preferences.getValue("grade", "c");
     index.
       with().
       location(location).
-      temperature(weatherService.getTemperature(location, grade)).
-      grade(grade).
+      temperature(weatherService.getTemperature(location)).
       locations(locations).
       render();
   }
 
   @Action
-  public void updateGrade(String grade) throws java.io.IOException,
-    javax.portlet.PortletException {
-    preferences.setValue("grade", grade);
-    preferences.store();
-  }
-
-  @Action
+  @Route("/add")
   public Response add(String location) {
     locations.add(location);
     return Weather_.index(location);

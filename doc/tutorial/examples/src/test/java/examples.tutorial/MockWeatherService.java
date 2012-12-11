@@ -17,21 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Portlet
-@Assets(
-  scripts = {
-    @Script(id = "jquery", src = "jquery-1.7.1.min.js"),
-    @Script(id = "transition", src = "bootstrap-transition.js", depends = "jquery"),
-    @Script(id = "collapse", src = "bootstrap-collapse.js", depends = {"jquery", "transition"}),
-    @Script(src = "weather.js", depends = {"jquery", "collapse"})
-  },
-  stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css")
-)
-package examples.tutorial.weather9;
+package examples.tutorial;
 
-import juzu.Application;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;
-import juzu.plugin.portlet.Portlet;
+import javax.enterprise.inject.Specializes;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@Specializes
+public class MockWeatherService extends WeatherService {
+
+  @Override
+  public String getTemperature(String location, String grade) {
+    return "10";
+  }
+}

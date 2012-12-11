@@ -19,10 +19,11 @@
 
 package examples.tutorial.weather6;
 
-import examples.tutorial.weather3.WeatherService;
+import examples.tutorial.WeatherService;
 import juzu.Action;
 import juzu.Path;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 
 import javax.inject.Inject;
@@ -62,6 +63,7 @@ public class Weather {
   }
 
   @Action
+  @Route("/add")
   public Response add(String location) {
     locations.add(location);
     return Weather_.index(location);

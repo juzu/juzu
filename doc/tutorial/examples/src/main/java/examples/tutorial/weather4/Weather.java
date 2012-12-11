@@ -19,8 +19,9 @@
 
 package examples.tutorial.weather4;
 
-import examples.tutorial.weather3.WeatherService;
+import examples.tutorial.WeatherService;
 import juzu.Path;
+import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
 
@@ -44,10 +45,11 @@ public class Weather {
   }
 
   @View
+  @Route("/show/{location}")
   public void index(String location) {
     Map<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("location", location);
-    parameters.put("temperature", weatherService.getTemperature("marseille"));
+    parameters.put("temperature", weatherService.getTemperature(location));
     index.render(parameters);
   }
 }

@@ -18,11 +18,22 @@
  */
 
 @Application
+@Route("/weather8")
 @Portlet
-@Assets(stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css"))
+@Assets(
+  scripts = {
+    @Script(id = "jquery", src = "jquery-1.7.1.min.js"),
+    @Script(id = "transition", src = "bootstrap-transition.js", depends = "jquery"),
+    @Script(id = "collapse", src = "bootstrap-collapse.js", depends = {"jquery", "transition"}),
+    @Script(src = "weather.js", depends = {"jquery", "collapse"})
+  },
+  stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css")
+)
 package examples.tutorial.weather8;
 
 import juzu.Application;
+import juzu.Route;
 import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.portlet.Portlet;

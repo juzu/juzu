@@ -35,9 +35,8 @@ As we can notice, there are 7 applications deployed, one for each of the topic o
 * Weather4Application: [[#views]]
 * Weather5Application: [[#actions]]
 * Weather6Application: [[#type_safe_templating]]
-* Weather7Application: [[#preferences]]
-* Weather8Application: [[#styled]]
-* Weather9Application: [[#ajax]]
+* Weather7Application: [[#styled]]
+* Weather8Application: [[#ajax]]
 
 = Interacting with the application =
 
