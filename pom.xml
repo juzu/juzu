@@ -104,6 +104,17 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
+        <artifactId>juzu-bom-arquillian</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <version>0.6.0-SNAPSHOT</version>
       </dependency>
@@ -671,6 +682,7 @@
     <module>templating</module>
     <module>plugins</module>
     <module>builder</module>
+    <module>bom</module>
     <module>archetype</module>
     <module>booking</module>
     <module>doc</module>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+  <packaging>jar</packaging>
+
+  <parent>
+    <groupId>org.juzu</groupId>
+    <artifactId>juzu-bom</artifactId>
+    <version>0.6.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
+  <version>0.6.0-SNAPSHOT</version>
+
+  <name>Juzu Arquillian Tomcat7 BOM</name>
+  <description>The Juzu BOM for Arquillian testing with Tomcat7</description>
+
+  <dependencies>
+
+    <!-- Shrinkwrap/Arquillian -->
+<!--
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-bom-arquillian</artifactId>
+    </dependency>
+-->
+
+    <!-- Arquillian Tomcat 7 -->
+    <dependency>
+      <groupId>org.jboss.arquillian.container</groupId>
+      <artifactId>arquillian-tomcat-embedded-7</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-jasper</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-logging-juli</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>
