@@ -1,5 +1,7 @@
 Various things to do, not exhaustive that needs to go in the roadmap
 
+- ENFORCE
+
 - http://code.google.com/p/acris/wiki/AnnotationProcessing_Testing
 - http://www.pingtimeout.fr/2012/10/debugging-annotation-processor-in-every.html
 - http://acris.googlecode.com/svn-history/r5773/sesam/branches/1.1.0/sesam-annotations-support/src/test/java/sk/seges/sesam/core/pap/AnnotationTest.java
