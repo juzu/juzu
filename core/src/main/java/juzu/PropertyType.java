@@ -50,6 +50,9 @@ public abstract class PropertyType<T> {
   /** Header. */
   public static final PropertyType<Map.Entry<String, String[]>> HEADER = new PropertyType<Map.Entry<String, String[]>>(){};
 
+  /** Header. */
+  public static final PropertyType<Map.Entry<String, String>> META_TAG = new PropertyType<Map.Entry<String, String>>(){};
+
   /** Mime type. */
   public static PropertyType<String> MIME_TYPE = new PropertyType<String>(){};
 

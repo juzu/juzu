@@ -19,6 +19,8 @@
 
 package juzu.impl.bridge.spi.servlet;
 
+import juzu.PropertyMap;
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.impl.plugin.application.ApplicationContext;
@@ -32,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -45,6 +49,9 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
 
   /** . */
   private Iterable<Asset.Value> stylesheets;
+
+  /** . */
+  private Map<String, String> responseMetaTags;
 
   /** Unused for now. */
   private String title;
@@ -66,18 +73,48 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
   public void setResponse(Response response) throws IllegalStateException, IOException {
     super.setResponse(response);
     if (response instanceof Response.Content) {
-      if (response instanceof Response.Render) {
-        Response.Render render = (Response.Render)response;
-        try {
-          Iterable<Asset.Value> scripts = handler.bridge.runtime.getScriptManager().resolveAssets(render.getScripts());
-          Iterable<Asset.Value> stylesheets = handler.bridge.runtime.getStylesheetManager().resolveAssets(render.getStylesheets());
-          this.scripts = scripts;
-          this.stylesheets = stylesheets;
+      Response.Content content = (Response.Content)response;
+      try {
+
+        //
+        PropertyMap properties = response.getProperties();
+        Iterable<Map.Entry<String, String>> metaProps = properties.getValues(PropertyType.META_TAG);
+        Iterable<Asset> scriptsProp = properties.getValues(PropertyType.SCRIPT);
+        Iterable<Asset> stylesheetProps = properties.getValues(PropertyType.STYLESHEET);
+
+        //
+        Map<String, String > metaTags = Collections.emptyMap();
+        if (metaProps != null) {
+          for (Map.Entry<String, String> entry : metaProps) {
+            if (metaTags.isEmpty()) {
+              metaTags = new HashMap<String, String>();
+            }
+            metaTags.put(entry.getKey(), entry.getValue());
+          }
         }
-        catch (IllegalArgumentException e) {
-          response = Response.content(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+
+        //
+        Iterable<Asset.Value> stylesheets = Collections.emptyList();
+        if (stylesheetProps != null) {
+          stylesheets = handler.bridge.runtime.getStylesheetManager().resolveAssets(stylesheetProps);
         }
+
+        //
+        Iterable<Asset.Value> scripts = Collections.emptyList();
+        if (scriptsProp != null) {
+          scripts = handler.bridge.runtime.getScriptManager().resolveAssets(scriptsProp);
+        }
+
+        //
+        this.scripts = scripts;
+        this.stylesheets = stylesheets;
+        this.responseMetaTags = metaTags;
       }
+      catch (IllegalArgumentException e) {
+        response = Response.content(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+      }
+
+      //
       this.response = (Response.Content)response;
     } else {
       throw new IllegalArgumentException();
@@ -136,6 +173,10 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
   void send() throws IOException {
     if (response != null) {
 
+      //
+      resp.setContentType(response.getMimeType());
+
+      //
       Integer status = response.getStatus();
       if (status != null) {
         resp.setStatus(status);
@@ -154,8 +195,6 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         //
         writer.println("<!DOCTYPE html>");
         writer.println("<html>");
-
-        //
         writer.println("<head>");
 
         //
@@ -166,35 +205,35 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         }
 
         //
-        if (response instanceof Response.Render) {
-          for (Asset.Value stylesheet : stylesheets) {
-            String path = stylesheet.getURI();
-            int pos = path.lastIndexOf('.');
-            String ext = pos == -1 ? "css" : path.substring(pos + 1);
-            writer.print("<link rel=\"stylesheet\" type=\"text/");
-            writer.print(ext);
-            writer.print("\" href=\"");
-            writer.append(getAssetURL(stylesheet));
-            writer.println("\"></link>");
-          }
+        for (Map.Entry<String, String> meta : responseMetaTags.entrySet()) {
+          writer.print("<meta name=\"");
+          writer.append(meta.getKey());
+          writer.append("\" content=\"");
+          writer.append(meta.getValue());
+          writer.println("\">");
+        }
 
-          //
-          for (Asset.Value script : scripts) {
-            writer.print("<script type=\"text/javascript\" src=\"");
-            writer.append(getAssetURL(script));
-            writer.println("\"></script>");
-          }
+        //
+        for (Asset.Value stylesheet : stylesheets) {
+          String path = stylesheet.getURI();
+          int pos = path.lastIndexOf('.');
+          String ext = pos == -1 ? "css" : path.substring(pos + 1);
+          writer.print("<link rel=\"stylesheet\" type=\"text/");
+          writer.print(ext);
+          writer.print("\" href=\"");
+          writer.append(getAssetURL(stylesheet));
+          writer.println("\"></link>");
+        }
 
-          //
+        //
+        for (Asset.Value script : scripts) {
+          writer.print("<script type=\"text/javascript\" src=\"");
+          writer.append(getAssetURL(script));
+          writer.println("\"></script>");
         }
 
         //
         writer.println("</head>");
-
-        //
-        resp.setContentType(response.getMimeType());
-
-        //
         writer.println("<body>");
 
         // Send response

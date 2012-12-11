@@ -348,6 +348,11 @@ public abstract class Response {
       super(200, Stream.Char.class, streamable);
     }
 
+    @Override
+    public Render withHeader(String name, String... value) {
+      return (Render)super.withHeader(name, value);
+    }
+
     public String getTitle() {
       return properties.getValue(PropertyType.TITLE);
     }
@@ -383,9 +388,24 @@ public abstract class Response {
       return this;
     }
 
-    @Override
-    public Render withHeader(String name, String... value) {
-      return (Render)super.withHeader(name, value);
+
+    public Iterable<Map.Entry<String, String>> getMetaTags() {
+      Iterable<Map.Entry<String, String>> metas = properties.getValues(PropertyType.META_TAG);
+      return metas != null ? metas : Tools.<Map.Entry<String, String>>emptyIterable();
+    }
+
+    public Render withMetaTag(String name, String value) {
+      Iterable<Map.Entry<String, String>> values = properties.getValues(PropertyType.META_TAG);
+      if (values != null) {
+        for (Map.Entry<String, String> meta : values) {
+          if (meta.getKey().equals(name)) {
+            meta.setValue(value);
+            return this;
+          }
+        }
+      }
+      properties.addValue(PropertyType.META_TAG, new AbstractMap.SimpleEntry<String, String>(name, value));
+      return this;
     }
 
     @Override
