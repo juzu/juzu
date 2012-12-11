@@ -21,9 +21,13 @@ package juzu.impl.common;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class Path implements Serializable, Iterable<String> {
+
+  /** The name validator. */
+  public static final Pattern NAME_VALIDATOR = Pattern.compile("(?!\\.)" + "[^/]+" + "(?<!\\.)");
 
   /** . */
   private static final int PARSE_CANONICAL = 0;
@@ -50,39 +54,32 @@ public abstract class Path implements Serializable, Iterable<String> {
    * @param off the first char to parse
    * @param size the current array size
    * @return the parsed path as a String[]
+   * @throws IllegalArgumentException if the path is not valid
    */
-  private static String[] parse(int mode, int padding, String path, int off, int size) {
+  private static String[] parse(int mode, int padding, String path, int off, int size) throws IllegalArgumentException {
     int len = path.length();
     int at = padding + size;
     if (off < len) {
       int pos = path.indexOf('/', off);
       if (pos == -1) {
 
-        // Find the last index of '.'
-        int cur = path.indexOf('.', off);
-
         //
+        String name = path.substring(off);
+        if (!NAME_VALIDATOR.matcher(name).matches()) {
+          throw new IllegalArgumentException("The name " + name + " is not valid");
+        }
+
+        // Find the last index of '.'
+        int cur = name.lastIndexOf('.');
         if (cur == -1) {
           String[] ret = new String[padding + size + 2];
-          ret[at] = path.substring(off);
+          ret[at] = name;
           return ret;
         } else {
-
-          // Validate the dot position
-          if (cur - off < 1 || len - cur < 2) {
-            throw new IllegalArgumentException("The path " + path + " contains an illegal '.' char at the index " + cur);
-          }
-
-          // Validate the extension does not contain any '.'
-          int dotPos = path.indexOf('.', cur + 1);
-          if (dotPos != -1) {
-            throw new IllegalArgumentException("The path " + path + " contains an illegal '.' char at the index " + dotPos);
-          } else {
-            String[] ret = new String[padding + size + 2];
-            ret[at] = path.substring(off, cur);
-            ret[padding + size + 1] = path.substring(cur + 1);
-            return ret;
-          }
+          String[] ret = new String[padding + size + 2];
+          ret[at] = name.substring(0, cur);
+          ret[at + 1] = name.substring(cur + 1);
+          return ret;
         }
       }
       else {

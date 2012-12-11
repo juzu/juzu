@@ -22,6 +22,7 @@ package juzu.impl.common;
 import junit.framework.Assert;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
+import static junit.framework.Assert.*;
 
 import java.util.Arrays;
 
@@ -29,12 +30,21 @@ import java.util.Arrays;
 public class PathTestCase {
 
   @Test
+  public void testNameValidator() {
+    assertTrue(Path.NAME_VALIDATOR.matcher("a").matches());
+    assertTrue(Path.NAME_VALIDATOR.matcher("ab").matches());
+    assertTrue(Path.NAME_VALIDATOR.matcher("a.b").matches());
+    assertFalse(Path.NAME_VALIDATOR.matcher(".").matches());
+    assertFalse(Path.NAME_VALIDATOR.matcher(".a").matches());
+    assertFalse(Path.NAME_VALIDATOR.matcher("a.").matches());
+  }
+
+  @Test
   public void testParseIAE() {
     assertIAE(".");
     assertIAE(".a");
     assertIAE("a.");
     assertIAE("ab.");
-    assertIAE("a.b.c");
     assertIAE("/.a");
     assertIAE("a/.b");
     assertIAE("a/b.");
