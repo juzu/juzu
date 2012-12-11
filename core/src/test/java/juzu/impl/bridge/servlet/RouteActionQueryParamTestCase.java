@@ -27,6 +27,6 @@ public class RouteActionQueryParamTestCase extends AbstractRouteQueryParamTestCa
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.servlet.route.action.queryparam");
+    return createServletDeployment(true, "bridge.servlet.route.action.queryparam");
   }
 }

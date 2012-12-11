@@ -37,7 +37,7 @@ public class RouteOverloadActionAndViewTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.servlet.route.overload.actionandview");
+    return createServletDeployment(true, "bridge.servlet.route.overload.actionandview");
   }
 
   @Drone
@@ -56,10 +56,6 @@ public class RouteOverloadActionAndViewTestCase extends AbstractWebTestCase {
     conn.connect();
     assertEquals(302, conn.getResponseCode());
     url = new URL(Tools.responseHeaders(conn).get("Location"));
-    System.out.println("url = " + url);
-    System.out.println("url = " + url);
-    System.out.println("url = " + url);
-    System.out.println("url = " + url);
     assertEquals(applicationURL("/foo").getPath(), url.getPath());
     assertNull(url.getQuery());
     driver.get(url.toString());

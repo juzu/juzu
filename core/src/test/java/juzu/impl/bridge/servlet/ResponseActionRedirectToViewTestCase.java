@@ -38,7 +38,7 @@ public class ResponseActionRedirectToViewTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.servlet.response.header.actionredirecttoview");
+    return createServletDeployment(true, "bridge.servlet.response.header.actionredirecttoview");
   }
 
   @Drone

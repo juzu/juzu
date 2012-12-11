@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -281,8 +282,22 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
    * @return the base servlet URL
    */
   public URL getServletURL(String path) {
+
+    // Remove any leading /
+    if (path.startsWith("/")) {
+      path = path.substring(1);
+    }
+
+    //
+    URI base;
     try {
-      return deploymentURL.toURI().resolve(getApplicationName().getLastName() + path).toURL();
+      if (asDefault) {
+        base = deploymentURL.toURI();
+      } else {
+        base = deploymentURL.toURI().resolve(getApplicationName().getLastName());
+      }
+      base = base.resolve(path);
+      return base.toURL();
     }
     catch (Exception e) {
       throw failure("Could not build application url " + path, e);

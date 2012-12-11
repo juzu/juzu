@@ -48,6 +48,6 @@ public abstract class AbstractRoutePathParamPatternTestCase extends AbstractWebT
     assertEquals("juu", pass);
     url = applicationURL("/foo/bar");
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-    assertEquals(404, conn.getResponseCode());
+    assertEquals(200, conn.getResponseCode());
   }
 }

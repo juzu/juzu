@@ -34,7 +34,7 @@ public class LiveModeTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, false, "bridge.servlet.livemode");
+    return createServletDeployment(true, true, "bridge.servlet.livemode");
   }
 
   @Drone

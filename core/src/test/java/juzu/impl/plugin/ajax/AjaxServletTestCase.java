@@ -27,6 +27,6 @@ public class AjaxServletTestCase extends AbstractAjaxTestCase {
 
   @Deployment
   public static WebArchive createDeployment() {
-    return createDeployment(createServletDeployment("plugin.ajax"));
+    return createDeployment(createServletDeployment(true, "plugin.ajax"));
   }
 }

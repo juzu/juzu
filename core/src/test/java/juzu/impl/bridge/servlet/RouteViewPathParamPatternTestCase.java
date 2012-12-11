@@ -27,6 +27,6 @@ public class RouteViewPathParamPatternTestCase extends AbstractRoutePathParamPat
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.servlet.route.view.pathparampattern");
+    return createServletDeployment(true, "bridge.servlet.route.view.pathparampattern");
   }
 }

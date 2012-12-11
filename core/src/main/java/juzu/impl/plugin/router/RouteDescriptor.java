@@ -23,6 +23,7 @@ import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
+import juzu.impl.router.Router;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -111,6 +112,14 @@ public class RouteDescriptor extends Descriptor {
     return parameters;
   }
 
+  public Map<RouteDescriptor, Route> create() {
+    Map<RouteDescriptor, Route> ret = new LinkedHashMap<RouteDescriptor, Route>();
+    Router router = new Router();
+    ret.put(this, router);
+    populateChildren(router, ret);
+    return ret;
+  }
+
   public Map<RouteDescriptor, Route> popupate(Route parent) {
     Map<RouteDescriptor, Route> ret = new LinkedHashMap<RouteDescriptor, Route>();
     popupate(parent, ret);
@@ -118,8 +127,6 @@ public class RouteDescriptor extends Descriptor {
   }
 
   public void popupate(Route parent, Map<RouteDescriptor, Route> ret) {
-
-    //
     Map<String, PathParam.Builder> parameters;
     if (this.parameters != null && this.parameters.size() > 0) {
       parameters = new HashMap<String, PathParam.Builder>(this.parameters.size());
@@ -129,14 +136,14 @@ public class RouteDescriptor extends Descriptor {
     } else {
       parameters = Collections.emptyMap();
     }
-
-    //
     Route route = parent.append(path, parameters);
-
-    //
     ret.put(this, route);
 
     //
+    populateChildren(route, ret);
+  }
+
+  private void populateChildren(Route route, Map<RouteDescriptor, Route> ret) {
     for (RouteDescriptor child : children) {
       child.popupate(route, ret);
     }

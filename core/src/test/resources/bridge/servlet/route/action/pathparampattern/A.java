@@ -31,6 +31,7 @@ import juzu.test.AbstractTestCase;
 public class A extends Controller {
 
   @View
+  @Route("/")
   public Response.Content<?> index() {
 
     // First check when it does not match the pattern

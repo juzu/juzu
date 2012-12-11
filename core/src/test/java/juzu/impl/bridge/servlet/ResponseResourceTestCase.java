@@ -38,7 +38,7 @@ public class ResponseResourceTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment("bridge.servlet.response.header.resource");
+    return createServletDeployment(true, "bridge.servlet.response.header.resource");
   }
 
   @Drone
