@@ -315,7 +315,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         if (f != null) {
           log.log("Resolved " + path + " to " + f.getAbsolutePath());
           FileKey key = FileKey.newResourceName(path.getQN().getValue(), path.getName());
-          return new JavaFileObjectImpl<File>(key, sourcePath, f);
+          return new JavaFileObjectImpl<File>(StandardLocation.SOURCE_PATH, key, sourcePath, f);
         }
         else {
           log.log("Resolving " + path.getCanonical() + " from source path gave no result");

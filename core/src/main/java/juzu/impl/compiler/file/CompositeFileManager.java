@@ -22,6 +22,7 @@ package juzu.impl.compiler.file;
 import juzu.impl.fs.spi.ReadFileSystem;
 
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -34,11 +35,11 @@ public class CompositeFileManager extends FileManager {
   /** . */
   private FileManager[] components;
 
-  public CompositeFileManager(Collection<ReadFileSystem<?>> fsList) {
+  public CompositeFileManager(StandardLocation location, Collection<ReadFileSystem<?>> fsList) {
     FileManager[] components = new FileManager[fsList.size()];
     int index = 0;
     for (ReadFileSystem<?> fs : fsList) {
-      components[index++] = SimpleFileManager.wrap(fs);
+      components[index++] = SimpleFileManager.wrap(location, fs);
     }
 
     //

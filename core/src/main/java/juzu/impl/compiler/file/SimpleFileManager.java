@@ -25,6 +25,7 @@ import juzu.impl.common.Spliterator;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -36,9 +37,12 @@ import java.util.Set;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class SimpleFileManager<P> extends FileManager {
 
-  public static <P> SimpleFileManager<P> wrap(ReadFileSystem<P> fs) {
-    return new SimpleFileManager<P>(fs);
+  public static <P> SimpleFileManager<P> wrap(StandardLocation location, ReadFileSystem<P> fs) {
+    return new SimpleFileManager<P>(location, fs);
   }
+
+  /** . */
+  final StandardLocation location;
 
   /** . */
   final ReadFileSystem<P> fs;
@@ -46,7 +50,8 @@ public class SimpleFileManager<P> extends FileManager {
   /** . */
   final Map<FileKey, JavaFileObjectImpl<P>> entries;
 
-  public SimpleFileManager(ReadFileSystem<P> fs) {
+  public SimpleFileManager(StandardLocation location, ReadFileSystem<P> fs) {
+    this.location = location;
     this.fs = fs;
     this.entries = new HashMap<FileKey, JavaFileObjectImpl<P>>();
   }
@@ -71,7 +76,7 @@ public class SimpleFileManager<P> extends FileManager {
     if (entry == null) {
       P file = fs.getPath(key.names);
       if (file != null && fs.isFile(file)) {
-        entries.put(key, entry = new JavaFileObjectImpl<P>(key, fs, file));
+        entries.put(key, entry = new JavaFileObjectImpl<P>(location, key, fs, file));
       }
     }
     return entry;
@@ -83,7 +88,7 @@ public class SimpleFileManager<P> extends FileManager {
       JavaFileObjectImpl<P> entry = entries.get(key);
       if (entry == null) {
         P file = rwFS.makePath(key.names);
-        entries.put(key, entry = new JavaFileObjectImpl<P>(key, fs, file));
+        entries.put(key, entry = new JavaFileObjectImpl<P>(location, key, fs, file));
       }
       return entry;
     }

@@ -66,14 +66,14 @@ class VirtualFileManager extends ForwardingJavaFileManager<JavaFileManager> impl
     super(fileManager);
 
     //
-    this.sourcePath = safeWrap(sourcePath);
-    this.classPath = new CompositeFileManager(classPath);
-    this.classOutput = safeWrap(classOutput);
-    this.sourceOutput = safeWrap(sourceOutput);
+    this.sourcePath = safeWrap(StandardLocation.SOURCE_PATH, sourcePath);
+    this.classPath = new CompositeFileManager(StandardLocation.CLASS_PATH, classPath);
+    this.classOutput = safeWrap(StandardLocation.CLASS_OUTPUT, classOutput);
+    this.sourceOutput = safeWrap(StandardLocation.SOURCE_OUTPUT, sourceOutput);
   }
 
-  private <P> SimpleFileManager<P> safeWrap(ReadFileSystem<P> fs) {
-    return fs != null ? new SimpleFileManager<P>(fs) : null;
+  private <P> SimpleFileManager<P> safeWrap(StandardLocation location, ReadFileSystem<P> fs) {
+    return fs != null ? new SimpleFileManager<P>(location, fs) : null;
   }
 
   private FileManager getFiles(Location location) {

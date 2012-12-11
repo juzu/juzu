@@ -38,6 +38,7 @@ import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
+import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
@@ -278,7 +279,7 @@ public class Compiler {
   }
 
   private <P> Collection<JavaFileObject> getFromSourcePath(ReadFileSystem<P> fs, String... compilationUnits) throws IOException {
-    SimpleFileManager<P> manager = new SimpleFileManager<P>(fs);
+    SimpleFileManager<P> manager = new SimpleFileManager<P>(StandardLocation.SOURCE_PATH, fs);
     ArrayList<String> tmp = new ArrayList<String>();
     final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
     for (String compilationUnit : compilationUnits) {

@@ -24,6 +24,7 @@ import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.common.Content;
 
+import javax.tools.JavaFileManager;
 import javax.tools.SimpleJavaFileObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,9 +34,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
+
+  private static URI toURI(JavaFileManager.Location location, FileKey key) throws IOException {
+    try {
+      return new URI("/" + location.getName() + key.uri.getPath());
+    }
+    catch (URISyntaxException e) {
+      throw new IOException("Could not build location related URI for " + key);
+    }
+  }
 
   /***/
   final FileKey key;
@@ -52,8 +64,8 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
   /** . */
   private boolean writing;
 
-  public JavaFileObjectImpl(FileKey key, ReadFileSystem<P> fs, P file) throws NullPointerException {
-    super(key.uri, key.kind);
+  public JavaFileObjectImpl(JavaFileManager.Location location, FileKey key, ReadFileSystem<P> fs, P file) throws NullPointerException, IOException {
+    super(toURI(location, key), key.kind);
 
     //
     if (file == null) {
