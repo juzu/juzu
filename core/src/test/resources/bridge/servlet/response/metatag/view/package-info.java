@@ -17,23 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Portlet
-@Assets(
-  location = AssetLocation.SERVER,
-  scripts = {
-    @Script(id = "jquery", src = "js/jquery-1.7.1.min.js"),
-    @Script(id = "transition", src = "js/bootstrap-transition.js", depends = "jquery"),
-    @Script(id = "collapse", src = "js/bootstrap-collapse.js", depends = {"jquery", "transition"}),
-    @Script(src = "js/weather.js", depends = {"jquery", "collapse"})
-  },
-  stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css", location = AssetLocation.CLASSPATH)
-)
-package examples.tutorial.weather9;
+@Application package bridge.servlet.response.metatag.view;
 
 import juzu.Application;
-import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;
-import juzu.plugin.portlet.Portlet;

@@ -19,7 +19,7 @@
 
 package examples.tutorial.weather9;
 
-import examples.tutorial.weather3.WeatherService;
+import examples.tutorial.services.WeatherService;
 import juzu.Action;
 import juzu.Path;
 import juzu.Resource;

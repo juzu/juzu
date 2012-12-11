@@ -145,7 +145,7 @@
     <portlet-class>examples.tutorial.weather9.Weather9Portlet</portlet-class>
     <init-param>
       <name>juzu.run_mode</name>
-      <value>dev</value>
+      <value>prod</value>
     </init-param>
     <supports>
       <mime-type>text/html</mime-type>

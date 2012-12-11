@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package examples.tutorial.weather3;
+package examples.tutorial.services;
 
 import org.xml.sax.InputSource;
 

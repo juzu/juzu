@@ -2,7 +2,7 @@ The next step is to make our application obtain real data instead of the hardcod
 previous section. For this matter we use a remote service that we encapsulate into the ##WeatherService##.
 
 {{java}}
-{@include examples.tutorial.weather3.WeatherService}
+{@include examples.tutorial.services.WeatherService}
 {{/java}}
 
 Juzu uses dependency injection to interact with a service layer. The [[JSR-330>>http://jcp.org/en/jsr/detail?id=330]],

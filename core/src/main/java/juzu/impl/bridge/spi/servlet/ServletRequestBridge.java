@@ -79,6 +79,9 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   /** . */
   protected Map<String, String[]> responseHeaders;
 
+  /** . */
+  protected Map<String, String> responseMetaTags;
+
   ServletRequestBridge(
       ApplicationContext application,
       Handler handler,
@@ -363,6 +366,17 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
           responseHeaders = new HashMap<String, String[]>();
         }
         responseHeaders.put(entry.getKey(), entry.getValue());
+      }
+    }
+
+    responseMetaTags = Collections.emptyMap();
+    Iterable<Map.Entry<String, String>> metas = response.getProperties().getValues(PropertyType.METATAG);
+    if (metas != null) {
+      for (Map.Entry<String, String> entry : metas) {
+        if (responseMetaTags.isEmpty()) {
+          responseMetaTags = new HashMap<String, String>();
+        }
+        responseMetaTags.put(entry.getKey(), entry.getValue());
       }
     }
   }

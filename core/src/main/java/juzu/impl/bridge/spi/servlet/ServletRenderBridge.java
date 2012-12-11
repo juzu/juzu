@@ -166,6 +166,16 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         }
 
         //
+        for (Map.Entry<String, String> meta : responseMetaTags.entrySet()) {
+          writer.print("<meta name=\"");
+          writer.append(meta.getKey());
+          writer.append("\" content=\"");
+          writer.append(meta.getValue());
+          writer.println("\">");
+        }
+
+
+        //
         if (response instanceof Response.Render) {
           for (Asset.Value stylesheet : stylesheets) {
             String path = stylesheet.getURI();
