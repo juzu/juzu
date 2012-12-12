@@ -161,7 +161,7 @@ URL for the ##@Ajax## method of the application:
 
 {{code}}
 <div class="jz">
-  <div data-method-id="Weather.getFragment()## data-url="http://localhost:8080/....."/>
+  <div data-method-id="Weather.getFragment()" data-url="http://localhost:8080/....."/>
   ...
 </div>
 {{/code}}

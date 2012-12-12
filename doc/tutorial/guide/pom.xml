@@ -30,6 +30,12 @@
       <artifactId>juzu-doc-tutorial-examples</artifactId>
       <classifier>sources</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
+      <type>war</type>
+      <classifier>tomcat</classifier>
+    </dependency>
 
     <dependency>
       <groupId>org.wikbook</groupId>

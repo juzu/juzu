@@ -1,5 +1,5 @@
 
-Juzu is a web framework based on MVC concepts for developing Portlet applications. Juzu is an
+Juzu is a web framework based on MVC concepts for developing applications. Juzu is an
 open source project developed on GitHub [[project>>https://github.com/juzu/juzu]] licensed under the
 [[LGPL 2.1>>http://www.gnu.org/licenses/lgpl-2.1.html]] license.
 
@@ -37,6 +37,10 @@ in several steps, each step introducing a new feature to gradually improve the a
 = Adding Ajax {{anchor id=ajax /}} =
 
 {{include document=tutorial/weather8.wiki/}}
+
+= Testing our application {{anchor id=testing /}} =
+
+{{include document=tutorial/testing.wiki/}}
 
 = Wrap up =
 

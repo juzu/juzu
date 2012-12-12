@@ -1,29 +1,30 @@
-We have seen previously how render templates from a controller by passing them parameters. Templates use ##${ }## expressions
-that often refers to parameters passed by the controller when it renders the template. For this purpose we used an ##HashMap##
-in which we put the various parameters that the template will use during rendering.
+We have seen previously how to render templates from a controller and how we can pass parameters for rendering
+a template. Templates use ##${ }## expressions that often refers to parameters passed by the controller. For this purpose
+we used an ##HashMap## for storing the various parameters used during rendering.
 
-This syntax is a generic way to do by using an untyped syntax, indeed if a template parameter name changes the controller
+This syntax is a generic way and uses an untyped syntax, indeed if a template parameter name changes the controller
 will continue to compile because of the generic parameter map.  To improve this situation, parameters can be declared
 thanks to a ##param## tag inside the template:
 
 {{code href=examples/tutorial/weather6/templates/index.gtmpl/}}
 
-For instance the ##location## parameter is declared by the ###{param name=location/}## tag. During the Java compilation,
-Juzu leverage those parameter declarations to provide a more convenient way to render a template.
+For example the ##location## parameter is declared by the ###{param name=location/}## tag. During the Java compilation,
+Juzu leverage such parameter declarations to provide a more convenient way to render a template.
 
-Indeed the tight integration with the Java compiler allows Juzu to generate a template class for each template
-of the application, such template class inherits the ##Template## class and adds specific methods for passing parameters
-to a template in a safe manner.
+The tight integration with the Java compiler allows Juzu to generate a template class for each template
+of the application, those template classes inherits the ##Template## class and adds specific methods for passing them
+parameters in a safe manner.
 
 {{java}}
 {@include examples.tutorial.weather6.Weather#index(java.lang.String)}
 {{/java}}
 
-As we can see, the ##HashMap## is not used anymore and now we use a type safe and compact expression for rendering the template.
-Each declared parameter generates a method named by the parameter name, for the ##location## parameter, we do have now a
-##location(String location)## method that can be used. To make the syntax fluent, the parameter methods can be chained,
-finally the ##render()## method is invoked to render the template, however it does not require any parameter since all
-parameters where passed thanks to the parameter methods.
+As we can see, the ##HashMap## is not used anymore and now we use a type safe and compact expression for rendering the
+template. Each declared parameter generates a method named by the parameter name, for the ##location## parameter,
+we do have now a ##location(String location)## method that can be used.
+
+To make the syntax fluent, the parameter methods can be chained, finally the ##render()## method is invoked to render
+the template, however it does not require any parameter since all parameters where passed thanks to the parameter methods.
 
 The Java name of the generated template class is the name of the template in the ##templates## package of the application.
 In our case we do obtain the ##examples.tutorial.weather6.templates.index## class name. It is very easy to use our

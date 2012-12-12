@@ -189,6 +189,13 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
+        <classifier>tomcat</classifier>
+        <type>war</type>
+        <version>0.6.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-doc-tutorial-examples</artifactId>
         <classifier>gatein</classifier>
         <type>war</type>
         <version>0.6.0-SNAPSHOT</version>

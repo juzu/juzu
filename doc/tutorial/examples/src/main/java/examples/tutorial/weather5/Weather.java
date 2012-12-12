@@ -67,7 +67,7 @@ public class Weather {
 
   @Action
   @Route("/add")
-  public Response add(String location) {
+  public Response.Update add(String location) {
     locations.add(location);
     return Weather_.index(location);
   }

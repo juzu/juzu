@@ -26,7 +26,7 @@ import javax.enterprise.inject.Specializes;
 public class MockWeatherService extends WeatherService {
 
   @Override
-  public String getTemperature(String location, String grade) {
+  protected String retrieveTemperature(String location) {
     return "10";
   }
 }

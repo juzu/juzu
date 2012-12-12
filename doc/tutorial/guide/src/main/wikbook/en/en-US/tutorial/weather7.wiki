@@ -4,15 +4,9 @@ it integrates well in Juzu applications.
 
 = The style =
 
-Bootstrap provides a solid fundation for building quickly attractive applications. However the default look and feel
-does not perfectly fit our needs:
-
-* The default stylesheet does not work very well in a portal application as it applies to the entire screen and we need to
-operate only on our application
-* We don't need all the out of the box components and only a subset providing a smaller stylesheet than the default stylesheet
-
-Fortunately Bootstrap is based on the dynamic stylesheet language [[Less>>http://lesscss.org/]] and provides a very modular
-organization. We will perform trivial modifications to a subset of the Less files and integrate them in our application.
+Bootstrap provides a solid fundation for building quickly attractive applications.  Bootstrap is based on the dynamic
+stylesheet language [[Less>>http://lesscss.org/]] and provides a very modular organization. We will perform trivial
+modifications to a subset of the Less files and integrate them in our application.
 
 == A la carte ==
 
@@ -23,45 +17,6 @@ We will then modify the ##bootstrap.less## file to keep only what is necessary f
 {{/example}}
 
 This version of bootstrap.less is a trimmed down of the original files.
-
-== Scoping the styles  ==
-
-By default, the Bootstrap rules will affect the entire page, we want it to affect only our application. We can modify
-the CSS rules to operate on a portion of the page based on a specific class name with a very simple pattern: add
-a class prefix to a rule to reduce the scope of that rule. For example:
-
-{{example title="The rule to scope"}}
-{{code}}
-div.red { color:red; }
-{{/code}}
-{{/example}}
-
-Adding to the rule the ##.tutorial## prefix transforms the rule and reduce its scope to an area
-boxed by the ##tutorial## class name:
-
-{{example title="The rule scoped"}}
-{{code}}
-.tutorial div.red { color:red; }
-{{/code}}
-{{/example}}
-
-In the previous example we modified a single CSS rule, in reality we should modify all the rules of a stylesheet,
-which means many rules. To achieve our goal we need a global approach, here again the Less framework provides what we need:
-great power at a very tiny cost.
-
-Indeed the Less language provides [[nested rules>>http://lesscss.org/#-nested-rules]], our previous example can be rewritten
-in the Less language as:
-
-{{example title="The rule scoped"}}
-{{code}}
-.tutorial {
-  div.red { color:red; }
-}
-{{/code}}
-{{/example}}
-
-This approach allows us to encapsulate an entire stylesheet and mass prefix all the rules contained within the scope of the
-outter rule. For this reason all the Bootstrap less sources have been modified to be scoped with the ##tutorial## class name.
 
 = Plugins in action =
 
@@ -121,17 +76,6 @@ After this step we need to modify our application template to use the various st
 
 We will not explain that in details, however we will study the important modifications:
 
-=== Scoping the rules ===
-
-As seen previously we need to scope our markup with the ##tutorial## class, it is achieved by wrapping our application
-markup with a ##div## tag:
-
-{{code}}
-<div class="tutorial">
-  ...
-</div>
-{{/code}}
-
 === Accordion ===
 
 The Bootstrap provides the [[Collapse component>>http://twitter.github.com/bootstrap/javascript.html#collapse]]. We will
@@ -144,17 +88,6 @@ not use the entire Collapse component here but instead reuse the CSS rules to di
     <div class="accordion-inner">The weather temperature in ${current} is ${temperature}&deg; ${grade.toUpperCase()}.</div>
   </div>
 </div>
-{{/code}}
-
-=== Temperature selection ===
-
-The switch between Celsius and Fahrenheit is done thanks to Boostrap //button groups// and //inverse// rules:
-
-{{code}}
-  <a class="btn <%=grade=='c'?'btn-inverse':''%>"
-    href="@{updateGrade(grade='c',location=location)}">C</a>
-  <a class="btn <%=grade=='f'?'btn-inverse':''%>"
-    href="@{updateGrade(grade='f',location=location)}">F</a>
 {{/code}}
 
 === Adding a city ===

@@ -1,0 +1,34 @@
+The last chapter of our tutorial will teach you how a Juzu application can be tested. Juzu applications can be tested
+using existing tools, we will show you in this chapter how to test the weather application with:
+
+* [[JUnit 4>>http://www.junit.org]]
+* [[Arquillian>>http://arquillian.org]] : a framework for managing web containers
+* [[ShrinkWrap>>http://www.jboss.org/shrinkwrap]]: Arquillian little brother for creating Java archives easily
+* [[Selenium WebDriver>>http://seleniumhq.org/docs/03_webdriver.html]] : a simple API for simulating browser behavior
+
+For making testing easy, Juzu provides a  Maven dependencies containing all the required dependencies for
+testing an application:
+
+{{xml}}
+<dependency>
+  <groupId>junit</groupId>
+  <artifactId>junit</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-bom-arquillian</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
+  <scope>test</scope>
+</dependency>
+{{/xml}}
+
+The //juzu-bom-arquillian// and //juzu-bom-arquillian-tomcat7// provides setup for Arquillian and Selenium for Tomcat7
+based testing.
+
+
+

@@ -1,4 +1,4 @@
-Until now we have seen a basic view controller, in this section we will study more in depth view controllers. A view
+So far we seen a basic view controller, in this section we will study more in depth view controllers. A view
 controller is invoked by Juzu when the application needs to be rendered, which can happen anytime during the lifecycle
 of an application.
 
@@ -9,13 +9,17 @@ method that accept a ##location## argument as a view parameter.
 {@include examples.tutorial.weather4.Weather#index(java.lang.String)}
 {{/java}}
 
+The ##@Route("/show/{location}")## annotation binds the the ##index## controller method to the ///show/*// route.
+Since our our application package is annotated with the ##@Route("/weather4")## annotation, an URL like
+///weather4/show/marseille// invokes this controller method with the //marseille// location.
+
 View parameters are bound to the current navigation of the application and their value are managed by the framework.
 At this point it is normal to wonder how a view parameter value can change. Let's have a closer look at the
 ##index.gtmpl## application template.
 
 {{code href=examples/tutorial/weather4/templates/index.gtmpl/}}
 
-The template now has two links that change the view parameters when they are processed. The links are created by a
+The template now has two links changing view parameters when they are processed. Such links are created by a
 special syntax that references the view method, for instance the script fragment ##@{index(location = 'paris')}##
 generates an url that updates the ##location## view parameter to the ##paris## value when it is processed.
 

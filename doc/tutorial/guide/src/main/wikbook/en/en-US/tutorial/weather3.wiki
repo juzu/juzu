@@ -29,17 +29,30 @@ There is a preliminary support for [[Google Guice 3.0>>http://code.google.com/p/
 yet available. In the future more container support could be achieved.
 
 By default it uses the //Weld// container, if you want instead to use //Spring// container instead the configuration
-is done by a portlet init param defined in the deployment descriptor of the portlet:
+is done by a init param defined in the deployment descriptor:
 
+{{example title="Using Spring IOC in a servlet"}}
+{{xml indent=2}}
+<init-param>
+  <param-name>juzu.inject</param-name>
+  <param-value>spring</param-value>
+</init-param>
+{{/xml}}
+{{/example}}
+
+The same can be achieved for a portlet of course:
+
+{{example title="Using Spring IOC in a portlet"}}
 {{xml indent=2}}
 <init-param>
   <name>juzu.inject</name>
   <value>spring</value>
 </init-param>
 {{/xml}}
+{{/example}}
 
-In the case of //Spring//, the file ##spring.xml## file is needed, it contains the service declarations for the Spring
-container.
+In the case of //Spring// injection, the file //spring.xml// file is needed, it contains the service declarations for
+the Spring container.
 
 Juzu provides more advanced dependency injection, in particular it uses the ##Qualifier## and ##Scope## features defined
-  by the JSR-330 specification that will be studied later.
+  by the JSR-330 specification, however they are not covered in this tutorial.
