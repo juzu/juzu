@@ -1,6 +1,7 @@
 Various things to do, not exhaustive that needs to go in the roadmap
 
-- ENFORCE
+- Enforce controller response to have the good return type: @Action -> Response.Update, @View -> Response.Content, etc...
+- Rename Response.Update -> Response.View
 
 - http://code.google.com/p/acris/wiki/AnnotationProcessing_Testing
 - http://www.pingtimeout.fr/2012/10/debugging-annotation-processor-in-every.html
