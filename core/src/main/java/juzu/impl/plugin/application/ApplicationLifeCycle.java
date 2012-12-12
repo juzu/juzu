@@ -37,7 +37,6 @@ import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ClassLoaderResolver;
 import juzu.impl.resource.ResourceResolver;
 
-import javax.portlet.PortletException;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.net.URL;
@@ -191,10 +190,10 @@ public class ApplicationLifeCycle<P, R> {
     // Find the juzu jar
     URL mainURL = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
     if (mainURL == null) {
-      throw new PortletException("Cannot find juzu jar");
+      throw new Exception("Cannot find juzu jar");
     }
     if (!mainURL.getProtocol().equals("file")) {
-      throw new PortletException("Cannot handle " + mainURL);
+      throw new Exception("Cannot handle " + mainURL);
     }
     File file = new File(mainURL.toURI());
     ReadFileSystem<?> libs;
