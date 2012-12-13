@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.application.metamodel;
 
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.metamodel.MetaModelEvent;
@@ -56,7 +56,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
     String baseName) {
     //
     if (baseName == null) {
-      String s = handle.getQN().getValue();
+      String s = handle.getQN().toString();
       int index = s.lastIndexOf('.');
       baseName = Character.toUpperCase(s.charAt(index + 1)) + s.substring(index + 2);
     }
@@ -67,7 +67,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
     this.baseName = baseName;
   }
 
-  public QN getName() {
+  public Name getName() {
     return handle.getQN();
   }
 

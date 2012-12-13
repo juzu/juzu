@@ -20,7 +20,7 @@
 package juzu.impl.plugin.application.descriptor;
 
 import juzu.impl.common.JSON;
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.metadata.Descriptor;
 
 import java.util.LinkedHashSet;
@@ -30,19 +30,19 @@ import java.util.Set;
 public class ApplicationModuleDescriptor extends Descriptor {
 
   /** . */
-  private LinkedHashSet<QN> names;
+  private LinkedHashSet<Name> names;
 
   public ApplicationModuleDescriptor(JSON json) {
-    LinkedHashSet<QN> names = new LinkedHashSet<QN>();
+    LinkedHashSet<Name> names = new LinkedHashSet<Name>();
     for (String name : json.names()) {
-      names.add(QN.parse(name));
+      names.add(Name.parse(name));
     }
 
     //
     this.names = names;
   }
 
-  public Set<QN> getNames() {
+  public Set<Name> getNames() {
     return names;
   }
 }

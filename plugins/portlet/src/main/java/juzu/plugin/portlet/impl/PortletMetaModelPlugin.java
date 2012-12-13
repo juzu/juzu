@@ -19,6 +19,7 @@
 
 package juzu.plugin.portlet.impl;
 
+import juzu.impl.common.Name;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.metamodel.AnnotationKey;
@@ -27,7 +28,6 @@ import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.plugin.portlet.Portlet;
@@ -51,7 +51,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final MessageCode CANNOT_WRITE_PORTLET_CLASS = new MessageCode("CANNOT_WRITE_PORTLET_CLASS", "The portlet class %1$s cannot be written");
 
   /** . */
-  private static final FQN PORTLET = new FQN(Portlet.class);
+  private static final Name PORTLET = Name.create(Portlet.class);
 
   /** . */
   private final HashMap<ElementHandle.Package, String[]> enabledMap = new HashMap<ElementHandle.Package, String[]>();
@@ -112,7 +112,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
     PackageElement pkgElt,
     String[] names) throws ProcessingException {
     Writer writer = null;
-    FQN fqn = new FQN(pkgElt.getQualifiedName(), names[0]);
+    Name fqn = Name.parse(pkgElt.getQualifiedName()).append(names[0]);
     try {
       JavaFileObject file = env.createSourceFile(fqn, pkgElt);
       writer = file.openWriter();

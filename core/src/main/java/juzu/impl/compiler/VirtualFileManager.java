@@ -20,7 +20,7 @@
 package juzu.impl.compiler;
 
 import juzu.impl.compiler.file.CompositeFileManager;
-import juzu.impl.compiler.file.FileKey;
+import juzu.impl.common.FileKey;
 import juzu.impl.compiler.file.FileManager;
 import juzu.impl.compiler.file.JavaFileObjectImpl;
 import juzu.impl.compiler.file.SimpleFileManager;

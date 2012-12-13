@@ -20,29 +20,24 @@
 package juzu.impl.plugin.router.metamodel;
 
 import juzu.Route;
-import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
-import juzu.impl.metamodel.AnnotationState;
+import juzu.impl.common.Name;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteMetaModel implements Serializable {
 
   /** . */
-  static final FQN FQN = new FQN(Route.class);
+  static final Name FQN = Name.create(Route.class);
 
   /** . */
   HashMap<String, String> targets;

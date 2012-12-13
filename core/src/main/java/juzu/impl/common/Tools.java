@@ -273,6 +273,10 @@ public class Tools {
     return join(new StringBuilder(), separator, names).toString();
   }
 
+  public static String join(char separator, String[] names, int from, int end) {
+    return join(new StringBuilder(), separator, names, from, end).toString();
+  }
+
   public static String join(char separator, Iterator<String> names) {
     return join(new StringBuilder(), separator, names).toString();
   }
@@ -282,8 +286,12 @@ public class Tools {
   }
 
   public static StringBuilder join(StringBuilder sb, char separator, String... names) {
+    return join(sb, separator, names, 0, names.length);
+  }
+
+  public static StringBuilder join(StringBuilder sb, char separator, String[] names, int from, int end) {
     try {
-      join((Appendable)sb, separator, names);
+      join((Appendable)sb, separator, names, from, end);
       return sb;
     }
     catch (IOException e) {
@@ -312,16 +320,20 @@ public class Tools {
   }
 
   public static <A extends Appendable> Appendable join(A appendable, char separator, String... names) throws IOException {
-    int length = names.length;
+    return join(appendable, separator, names, 0, names.length);
+  }
+
+  public static <A extends Appendable> Appendable join(A appendable, char separator, String[] names, int from, int end) throws IOException {
+    int length = end - from;
     switch (length) {
       case 0:
         break;
       case 1:
-        appendable.append(names[0]);
+        appendable.append(names[from]);
         break;
       default:
-        for (int i = 0;i < length;i++) {
-          if (i > 0) {
+        for (int i = from;i < end;i++) {
+          if (i > from) {
             appendable.append(separator);
           }
           appendable.append(names[i]);
@@ -517,6 +529,34 @@ public class Tools {
     };
   }
 
+  public static <E> Iterable<E> iterable(final E element) throws NullPointerException {
+    return new Iterable<E>() {
+      public Iterator<E> iterator() {
+        return Tools.iterator(element);
+      }
+    };
+  }
+
+  public static <E> Iterator<E> iterator(final E element) throws NullPointerException {
+    return new Iterator<E>() {
+      boolean hasNext = true;
+      public boolean hasNext() {
+        return hasNext;
+      }
+      public E next() {
+        if (hasNext) {
+          hasNext = false;
+          return element;
+        } else {
+          throw new NoSuchElementException();
+        }
+      }
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    };
+  }
+
   public static <E> Iterable<E> iterable(final E... elements) throws NullPointerException {
     return new Iterable<E>() {
       public Iterator<E> iterator() {
@@ -534,6 +574,14 @@ public class Tools {
       throw new NullPointerException("No null element array accepted");
     }
     return iterator(from, elements.length, elements);
+  }
+
+  public static <E> Iterable<E> iterable(final int from, final int to, final E... elements) throws NullPointerException, IndexOutOfBoundsException {
+    return new Iterable<E>() {
+      public Iterator<E> iterator() {
+        return Tools.iterator(from, to, elements);
+      }
+    };
   }
 
   public static <E> Iterator<E> iterator(final int from, final int to, final E... elements) throws NullPointerException, IndexOutOfBoundsException {
@@ -735,17 +783,20 @@ public class Tools {
     return hash;
   }
 
-  public static int indexOf(CharSequence s, char c, int fromIndex) {
-    int len = s.length();
-    if (fromIndex < len) {
-      if (fromIndex < 0) {
-        fromIndex = 0;
+  public static int indexOf(CharSequence s, char c, int from) {
+    return indexOf(s, c, from, s.length());
+  }
+
+  public static int indexOf(CharSequence s, char c, int from, int end) {
+    if (from < end) {
+      if (from < 0) {
+        from = 0;
       }
-      while (fromIndex < len) {
-        if (s.charAt(fromIndex) == c) {
-          return fromIndex;
+      while (from < end) {
+        if (s.charAt(from) == c) {
+          return from;
         }
-        fromIndex++;
+        from++;
       }
     }
     return -1;

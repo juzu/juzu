@@ -19,7 +19,7 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.common.FQN;
+import juzu.impl.common.Name;
 import juzu.impl.compiler.ElementHandle;
 
 import javax.lang.model.element.Element;
@@ -32,14 +32,14 @@ public class AnnotationKey implements Serializable {
   final ElementHandle<?> element;
 
   /** . */
-  final FQN type;
+  final Name type;
 
-  public AnnotationKey(Element element, FQN type) {
+  public AnnotationKey(Element element, Name type) {
     this.element = ElementHandle.create(element);
     this.type = type;
   }
 
-  public AnnotationKey(ElementHandle<?> element, FQN type) {
+  public AnnotationKey(ElementHandle<?> element, Name type) {
     this.element = element;
     this.type = type;
   }
@@ -48,7 +48,7 @@ public class AnnotationKey implements Serializable {
     return element;
   }
 
-  public FQN getType() {
+  public Name getType() {
     return type;
   }
 

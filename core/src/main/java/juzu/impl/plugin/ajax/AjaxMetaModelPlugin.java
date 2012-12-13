@@ -19,9 +19,9 @@
 
 package juzu.impl.plugin.ajax;
 
+import juzu.impl.common.Name;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ElementHandle;
@@ -37,7 +37,7 @@ import java.util.Set;
 public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private static final FQN AJAX = new FQN(Ajax.class);
+  private static final Name AJAX = Name.create(Ajax.class);
 
   /** . */
   private final HashMap<ElementHandle.Package, Boolean> enabledMap = new HashMap<ElementHandle.Package, Boolean>();

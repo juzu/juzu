@@ -22,7 +22,7 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
@@ -47,7 +47,7 @@ import java.net.URL;
 public abstract class AbstractWebTestCase extends AbstractTestCase {
 
   /** . */
-  private static QN applicationName;
+  private static Name applicationName;
 
   /** . */
   private static boolean asDefault;
@@ -63,7 +63,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
    *
    * @return the application name
    */
-  public static QN getApplicationName() {
+  public static Name getApplicationName() {
     return applicationName;
   }
 
@@ -88,10 +88,10 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   private static WebArchive createDeployment(boolean servlet, boolean asDefault, boolean incremental, String... applicationNames) {
 
     //
-    QN[] applicationQNs = new QN[applicationNames.length];
-    QN packageQN = null;
+    Name[] applicationQNs = new Name[applicationNames.length];
+    Name packageQN = null;
     for (int i = 0;i < applicationNames.length;i++) {
-      QN applicationQN = QN.parse(applicationNames[i]);
+      Name applicationQN = Name.parse(applicationNames[i]);
       applicationQNs[i] = applicationQN;
       packageQN = packageQN == null ? applicationQN : packageQN.getPrefix(applicationQN);
     }
@@ -294,7 +294,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
       if (asDefault) {
         base = deploymentURL.toURI();
       } else {
-        base = deploymentURL.toURI().resolve(getApplicationName().getLastName());
+        base = deploymentURL.toURI().resolve(getApplicationName().getIdentifier());
       }
       base = base.resolve(path);
       return base.toURL();

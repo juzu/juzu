@@ -20,8 +20,8 @@
 package juzu.impl.plugin.application.metamodel;
 
 import juzu.Application;
+import juzu.impl.common.Name;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
-import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ElementHandle;
@@ -52,7 +52,7 @@ import java.util.Set;
 public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
 
   /** . */
-  private static final FQN APPLICATION = new FQN(Application.class);
+  private static final Name APPLICATION = Name.create(Application.class);
 
   /** . */
   private static final String APPLICATION_DESCRIPTOR = ApplicationDescriptor.class.getSimpleName();
@@ -179,7 +179,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
 
   void emitApplication(ProcessingContext env, ApplicationMetaModel application) throws ProcessingException {
     PackageElement elt = env.get(application.getHandle());
-    FQN fqn = new FQN(application.getName(), "Application");
+    Name fqn = application.getName().append("Application");
 
     //
     Writer writer = null;
@@ -187,19 +187,19 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       JavaFileObject applicationFile = env.createSourceFile(fqn, elt);
       writer = applicationFile.openWriter();
 
-      writer.append("package ").append(fqn.getPackageName()).append(";\n");
+      writer.append("package ").append(fqn.getParent()).append(";\n");
 
       // Imports
       writer.append("import ").append(ApplicationDescriptor.class.getCanonicalName()).append(";\n");
 
       // Open class
-      writer.append("public class ").append(fqn.getSimpleName()).append(" {\n");
+      writer.append("public class ").append(fqn.getIdentifier()).append(" {\n");
 
       // Field
       writer.append("private final ").append(APPLICATION_DESCRIPTOR).append(" descriptor;\n");
 
       // Constructor
-      writer.append("public ").append(fqn.getSimpleName()).append("() throws Exception {\n");
+      writer.append("public ").append(fqn.getIdentifier()).append("() throws Exception {\n");
       writer.append("this.descriptor = ").append(APPLICATION_DESCRIPTOR).append(".create(getClass());\n");
       writer.append("}\n");
 
@@ -212,7 +212,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       writer.append("}\n");
 
       //
-      env.log("Generated application " + fqn.getName() + " as " + applicationFile.toUri());
+      env.log("Generated application " + fqn + " as " + applicationFile.toUri());
     }
     catch (IOException e) {
       throw TemplateMetaModel.CANNOT_WRITE_APPLICATION.failure(e, elt, application.getName());

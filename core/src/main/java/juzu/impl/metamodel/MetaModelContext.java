@@ -19,7 +19,7 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.common.FQN;
+import juzu.impl.common.Name;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ProcessingException;
 
@@ -166,7 +166,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
       } else {
         AnnotationMirror found = null;
         for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
-          FQN f = new FQN(((TypeElement)mirror.getAnnotationType().asElement()).getQualifiedName().toString());
+          Name f = Name.parse(((TypeElement)mirror.getAnnotationType().asElement()).getQualifiedName().toString());
           if (key.getType().equals(f)) {
             found = mirror;
             break;

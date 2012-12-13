@@ -20,7 +20,7 @@
 package juzu.impl.compiler;
 
 import juzu.impl.common.Tools;
-import juzu.impl.compiler.file.FileKey;
+import juzu.impl.common.FileKey;
 import juzu.impl.compiler.file.JavaFileObjectImpl;
 import juzu.impl.compiler.file.SimpleFileManager;
 import juzu.impl.fs.Filter;
@@ -284,7 +284,7 @@ public class Compiler {
     final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
     for (String compilationUnit : compilationUnits) {
       tmp.clear();
-      ArrayList<String> names = Spliterator.split(compilationUnit, '/', tmp);
+      ArrayList<String> names = Spliterator.split(compilationUnit.substring(1), '/', tmp);
       String name = tmp.get(tmp.size() - 1);
       if (!name.endsWith(".java")) {
         throw new IllegalArgumentException("Illegal compilation unit: " + compilationUnit);

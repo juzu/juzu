@@ -19,9 +19,8 @@
 
 package juzu.impl.compiler;
 
-import juzu.impl.common.FQN;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -35,7 +34,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -85,7 +83,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
   protected abstract E doGet(ProcessingEnvironment env);
 
-  public abstract QN getPackage();
+  public abstract Name getPackage();
 
   public abstract boolean equals(Object obj);
 
@@ -95,27 +93,27 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
   public static class Package extends ElementHandle<PackageElement> {
 
-    public static Package create(QN packageName) {
+    public static Package create(Name packageName) {
       return new Package(packageName);
     }
 
     public static Package create(PackageElement elt) {
-      return new Package(QN.parse(elt.getQualifiedName()));
+      return new Package(Name.parse(elt.getQualifiedName()));
     }
 
     /** . */
-    private final QN qn;
+    private final Name qn;
 
-    private Package(QN qn) {
+    private Package(Name qn) {
       this.qn = qn;
     }
 
-    public QN getQN() {
+    public Name getQN() {
       return qn;
     }
 
     @Override
-    public QN getPackage() {
+    public Name getPackage() {
       return qn;
     }
 
@@ -149,33 +147,33 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
 
   public static class Class extends ElementHandle<TypeElement> {
 
-    public static Class create(FQN fqn) {
+    public static Class create(Name fqn) {
       return new Class(fqn);
     }
 
     public static Class create(TypeElement elt) {
-      return new Class(new FQN(elt.getQualifiedName().toString()));
+      return new Class(Name.parse(elt.getQualifiedName().toString()));
     }
 
     /** . */
-    private final FQN fqn;
+    private final Name fqn;
 
-    private Class(FQN fqn) {
+    private Class(Name fqn) {
       this.fqn = fqn;
     }
 
-    public FQN getFQN() {
+    public Name getFQN() {
       return fqn;
     }
 
     @Override
-    public QN getPackage() {
-      return fqn.getPackageName();
+    public Name getPackage() {
+      return fqn.getParent();
     }
 
     @Override
     protected TypeElement doGet(ProcessingEnvironment env) {
-      return env.getElementUtils().getTypeElement(fqn.getName());
+      return env.getElementUtils().getTypeElement(fqn);
     }
 
     @Override
@@ -206,7 +204,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     public static Method create(String type, String name, String... parameterTypes) {
       ArrayList<String> tmp = new ArrayList<String>(parameterTypes.length);
       Collections.addAll(tmp, parameterTypes);
-      return new Method(new FQN(type), name, tmp);
+      return new Method(Name.parse(type), name, tmp);
     }
 
     public static Method create(java.lang.Class<?> type, String name, java.lang.Class<?>... parameterTypes) {
@@ -217,14 +215,14 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
       return create(type.getName(), name, tmp);
     }
 
-    public static Method create(FQN fqn, String name, Collection<String> parameterTypes) {
+    public static Method create(Name fqn, String name, Collection<String> parameterTypes) {
       return new Method(fqn, name, new ArrayList<String>(parameterTypes));
     }
 
     public static Method create(ExecutableElement elt) {
       TypeElement typeElt = (TypeElement)elt.getEnclosingElement();
       String name = elt.getSimpleName().toString();
-      FQN fqn = new FQN(typeElt.getQualifiedName().toString());
+      Name fqn = Name.parse(typeElt.getQualifiedName().toString());
       ArrayList<String> parameterTypes = new ArrayList<String>();
       for (TypeMirror parameterType : ((ExecutableType)elt.asType()).getParameterTypes()) {
         parameterTypes.add(parameterType.toString());
@@ -233,14 +231,14 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
       return new Method(fqn, name, parameterTypes);
     }
 
-    private Method(FQN fqn, String name, ArrayList<String> parameterTypes) {
+    private Method(Name fqn, String name, ArrayList<String> parameterTypes) {
       this.fqn = fqn;
       this.name = name;
       this.parameterTypes = parameterTypes;
     }
 
     /** . */
-    private final FQN fqn;
+    private final Name fqn;
 
     /** . */
     private final String name;
@@ -248,7 +246,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     /** . */
     private final ArrayList<String> parameterTypes;
 
-    public FQN getFQN() {
+    public Name getFQN() {
       return fqn;
     }
 
@@ -261,13 +259,13 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     }
 
     @Override
-    public QN getPackage() {
-      return fqn.getPackageName();
+    public Name getPackage() {
+      return fqn.getParent();
     }
 
     @Override
     protected ExecutableElement doGet(ProcessingEnvironment env) {
-      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
+      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn);
       if (typeElt != null) {
         next:
         for (ExecutableElement executableElement : ElementFilter.methodsIn(typeElt.getEnclosedElements())) {
@@ -310,7 +308,7 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     }
 
     public MethodHandle getMethodHandle() {
-      return new MethodHandle(fqn.getName(), name, parameterTypes.toArray(new String[parameterTypes.size()]));
+      return new MethodHandle(fqn.toString(), name, parameterTypes.toArray(new String[parameterTypes.size()]));
     }
 
     @Override
@@ -324,30 +322,30 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     public static Field create(VariableElement elt) {
       TypeElement typeElt = (TypeElement)elt.getEnclosingElement();
       String name = elt.getSimpleName().toString();
-      FQN fqn = new FQN(typeElt.getQualifiedName().toString());
+      Name fqn = Name.parse(typeElt.getQualifiedName().toString());
       return new Field(fqn, name);
     }
 
     public static Field create(String fqn, String name) {
-      return new Field(new FQN(fqn), name);
+      return new Field(Name.parse(fqn), name);
     }
 
-    public static Field create(FQN fqn, String name) {
+    public static Field create(Name fqn, String name) {
       return new Field(fqn, name);
     }
 
     /** . */
-    private final FQN fqn;
+    private final Name fqn;
 
     /** . */
     private final String name;
 
-    private Field(FQN fqn, String name) {
+    private Field(Name fqn, String name) {
       this.fqn = fqn;
       this.name = name;
     }
 
-    public FQN getFQN() {
+    public Name getFQN() {
       return fqn;
     }
 
@@ -356,13 +354,13 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     }
 
     @Override
-    public QN getPackage() {
-      return fqn.getPackageName();
+    public Name getPackage() {
+      return fqn.getParent();
     }
 
     @Override
     protected VariableElement doGet(ProcessingEnvironment env) {
-      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn.getName());
+      TypeElement typeElt = env.getElementUtils().getTypeElement(fqn);
       if (typeElt != null) {
         for (VariableElement variableElt : ElementFilter.fieldsIn(typeElt.getEnclosedElements())) {
           if (variableElt.getSimpleName().contentEquals(name)) {

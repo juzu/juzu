@@ -19,10 +19,11 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.Name;
+import juzu.impl.common.FileKey;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
-import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingContext;
@@ -47,7 +48,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final Pattern PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
 
   /** . */
-  private static final FQN PATH = new FQN(juzu.Path.class);
+  private static final Name PATH = Name.create(juzu.Path.class);
 
   /** . */
   Map<String, TemplateProvider> providers;
@@ -159,8 +160,8 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     ArrayList<String> list = new ArrayList<String>();
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
     for (Template template : metaModel.resolver.getTemplates()) {
-      Path resolved = metaModel.resolve(template.getPath());
-      list.add(resolved.getFQN().getName());
+      FileKey resolved = metaModel.resolve(template.getPath());
+      list.add(resolved.fqn);
     }
     config.map("templates", list);
     config.set("package", metaModel.getQN().toString());

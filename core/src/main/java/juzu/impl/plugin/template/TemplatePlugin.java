@@ -70,12 +70,13 @@ public class TemplatePlugin extends ApplicationPlugin {
       //
       try {
         StringBuilder id = new StringBuilder(descriptor.getPackageName());
-        for (String name : path) {
+        for (String name : path.getDirs()) {
           if (id.length() > 0) {
             id.append('.');
           }
           id.append(name);
         }
+        id.append('.').append(path.getRawName());
         id.append("_");
         ClassLoader cl = application.getClassLoader();
         Class<?> stubClass = cl.loadClass(id.toString());

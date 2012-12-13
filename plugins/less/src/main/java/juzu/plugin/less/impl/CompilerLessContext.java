@@ -19,10 +19,11 @@
 
 package juzu.plugin.less.impl;
 
+import juzu.impl.common.FileKey;
+import juzu.impl.common.Name;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.common.Path;
-import juzu.impl.common.QN;
 import juzu.plugin.less.impl.lesser.LessContext;
 
 import javax.tools.FileObject;
@@ -38,31 +39,27 @@ class CompilerLessContext implements LessContext {
   final ElementHandle.Package context;
 
   /** . */
-  final QN pkg;
-
-  /** . */
-  final Path.Absolute pkgPath;
+  final Name pkg;
 
   CompilerLessContext(
     ProcessingContext processingContext,
     ElementHandle.Package context,
-    QN pkg ) {
+    Name pkg ) {
     this.processingContext = processingContext;
     this.context = context;
     this.pkg = pkg;
-    this.pkgPath = Path.Absolute.create(pkg, "", "");
   }
 
   public String load(String ref) {
     try {
-      Path.Absolute path = pkgPath.append(ref);
-      FileObject c = processingContext.resolveResource(context, path);
+      FileKey key = pkg.resolve(ref);
+      FileObject c = processingContext.resolveResource(context, key);
       if (c != null) {
         try {
           return c.getCharContent(true).toString();
         }
         catch (IOException e) {
-          processingContext.log("Could not get content of " + path, e);
+          processingContext.log("Could not get content of " + key, e);
         }
       }
     }

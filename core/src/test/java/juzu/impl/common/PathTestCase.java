@@ -31,12 +31,12 @@ public class PathTestCase {
 
   @Test
   public void testNameValidator() {
-    assertTrue(Path.NAME_VALIDATOR.matcher("a").matches());
-    assertTrue(Path.NAME_VALIDATOR.matcher("ab").matches());
-    assertTrue(Path.NAME_VALIDATOR.matcher("a.b").matches());
-    assertFalse(Path.NAME_VALIDATOR.matcher(".").matches());
-    assertFalse(Path.NAME_VALIDATOR.matcher(".a").matches());
-    assertFalse(Path.NAME_VALIDATOR.matcher("a.").matches());
+    assertTrue(Lexers.NAME_VALIDATOR.matcher("a").matches());
+    assertTrue(Lexers.NAME_VALIDATOR.matcher("ab").matches());
+    assertTrue(Lexers.NAME_VALIDATOR.matcher("a.b").matches());
+    assertFalse(Lexers.NAME_VALIDATOR.matcher(".").matches());
+    assertFalse(Lexers.NAME_VALIDATOR.matcher(".a").matches());
+    assertFalse(Lexers.NAME_VALIDATOR.matcher("a.").matches());
   }
 
   @Test
@@ -119,7 +119,9 @@ public class PathTestCase {
 
   private void assertPath(boolean absolute, String[] names, String name, String extension, Path test) {
     Assert.assertEquals(absolute, test.isAbsolute());
-    Assert.assertEquals(Arrays.asList(names), Tools.list(test.getQN()));
+    Iterable<String> qn = test.getDirs();
+    Assert.assertNotNull(qn);
+    Assert.assertEquals(Arrays.asList(names), Tools.list(qn));
     Assert.assertEquals(name, test.getRawName());
     Assert.assertEquals(extension, test.getExt());
   }

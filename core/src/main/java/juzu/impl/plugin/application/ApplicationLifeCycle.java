@@ -21,9 +21,8 @@ package juzu.impl.plugin.application;
 
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
-import juzu.impl.common.FQN;
+import juzu.impl.common.Name;
 import juzu.impl.common.NameLiteral;
-import juzu.impl.common.QN;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;
@@ -54,7 +53,7 @@ public class ApplicationLifeCycle<P, R> {
   protected final Logger logger;
 
   /** . */
-  protected QN name;
+  protected Name name;
 
   /** . */
   protected InjectorProvider injectImplementation;
@@ -91,11 +90,11 @@ public class ApplicationLifeCycle<P, R> {
     this.module = module;
   }
 
-  public QN getName() {
+  public Name getName() {
     return name;
   }
 
-  public void setName(QN name) {
+  public void setName(Name name) {
     this.name = name;
   }
 
@@ -181,7 +180,7 @@ public class ApplicationLifeCycle<P, R> {
     ReadFileSystem<P> classes = getModule().getClasses();
 
     //
-    FQN fqn = new FQN(name, "Application");
+    Name fqn = name.append("Application");
 
     //
     Class<?> clazz = getModule().getClassLoader().loadClass(fqn.toString());

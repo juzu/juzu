@@ -19,13 +19,14 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.Name;
+import juzu.impl.common.FileKey;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
-import juzu.impl.common.QN;
 
 import java.util.Iterator;
 
@@ -39,7 +40,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
   ApplicationMetaModel application;
 
   /** . */
-  private QN qn;
+  private Name qn;
 
   /** . */
   TemplateResolver resolver;
@@ -55,20 +56,15 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     return json;
   }
 
-  public Path.Absolute resolve(Path path) {
-    if (path instanceof Path.Absolute) {
-      return (Path.Absolute)path;
-    }
-    else {
-      return Path.Absolute.create(qn.append(path.getQN()), path.getRawName(), path.getExt());
-    }
+  public FileKey resolve(Path path) {
+    return qn.resolve(path);
   }
 
   public ApplicationMetaModel getApplication() {
     return application;
   }
 
-  public QN getQN() {
+  public Name getQN() {
     return qn;
   }
 

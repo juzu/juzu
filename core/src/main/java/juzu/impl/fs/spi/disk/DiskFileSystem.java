@@ -19,7 +19,7 @@
 
 package juzu.impl.fs.spi.disk;
 
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
@@ -64,16 +64,16 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
     this.encoding = Charset.defaultCharset();
   }
 
-  public DiskFileSystem(final File root, final QN path) {
+  public DiskFileSystem(final File root, final Name path) {
     this(root, new FilterImpl(root, path));
   }
 
   public DiskFileSystem(final File root, final String path) {
-    this(root, new FilterImpl(root, QN.parse(path)));
+    this(root, new FilterImpl(root, Name.parse(path)));
   }
 
   public void applyFilter(String path) {
-    filter = new FilterImpl(root, QN.parse(path));
+    filter = new FilterImpl(root, Name.parse(path));
   }
 
   @Override

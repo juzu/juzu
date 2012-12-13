@@ -19,9 +19,10 @@
 
 package juzu.plugin.less.impl;
 
+import juzu.impl.common.FileKey;
+import juzu.impl.common.Name;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
-import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.BaseProcessor;
@@ -32,7 +33,6 @@ import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Path;
-import juzu.impl.common.QN;
 import juzu.impl.common.Tools;
 import juzu.plugin.less.Less;
 import juzu.plugin.less.impl.lesser.Compilation;
@@ -68,13 +68,13 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
   public static final MessageCode MALFORMED_PATH = new MessageCode("LESS_MALFORMED_PATH", "The resource path %1$s is malformed");
 
   /** . */
-  private static final FQN LESS = new FQN(Less.class);
+  private static final Name LESS = Name.create(Less.class);
 
   /** . */
   static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);
 
   /** . */
-  private HashMap<QN, AnnotationState> annotations;
+  private HashMap<Name, AnnotationState> annotations;
 
   public LessMetaModelPlugin() {
     super("less");
@@ -82,7 +82,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
 
   @Override
   public void init(ModuleMetaModel metaModel) {
-    annotations = new HashMap<QN, AnnotationState>();
+    annotations = new HashMap<Name, AnnotationState>();
   }
 
   @Override
@@ -93,7 +93,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
   @Override
   public void processAnnotationChange(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
     if (key.getType().equals(LESS)) {
-      QN pkg = key.getElement().getPackage();
+      Name pkg = key.getElement().getPackage();
       log.log("Recording less annotation for package " + pkg);
       annotations.put(pkg, added);
     }
@@ -101,19 +101,19 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
 
   @Override
   public void postActivate(ModuleMetaModel metaModel) {
-    annotations = new HashMap<QN, AnnotationState>();
+    annotations = new HashMap<Name, AnnotationState>();
   }
 
   @Override
   public void prePassivate(ModuleMetaModel metaModel) {
     // First clear annotation map
-    HashMap<QN, AnnotationState> clone = annotations;
+    HashMap<Name, AnnotationState> clone = annotations;
     annotations = null;
 
     //
-    for (Map.Entry<QN, AnnotationState> entry : clone.entrySet()) {
+    for (Map.Entry<Name, AnnotationState> entry : clone.entrySet()) {
       AnnotationState annotation = entry.getValue();
-      QN pkg = entry.getKey();
+      Name pkg = entry.getKey();
       ProcessingContext env = metaModel.processingContext;
       ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
       PackageElement pkgElt = env.get(pkgHandle);
@@ -130,7 +130,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
       if (resources != null && resources.size() > 0) {
 
         // For now we use the hardcoded assets package
-        QN assetPkg = pkg.append("assets");
+        Name assetPkg = pkg.append("assets");
 
         //
         CompilerLessContext clc = new CompilerLessContext(env, pkgHandle, assetPkg);
@@ -149,7 +149,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
           }
 
           //
-          Path.Absolute to = Path.Absolute.create(assetPkg.append(path.getQN()), path.getRawName(), "css");
+          FileKey to = assetPkg.resolve(path.as("css"));
           log.log("Resource " + resource + " destination resolved to " + to);
 
           //

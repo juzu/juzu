@@ -19,9 +19,9 @@
 
 package juzu.impl.plugin.binding;
 
+import juzu.impl.common.Name;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ElementHandle;
@@ -104,7 +104,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
       "The binding implementation provider factory %1$s must provides a public constructor");
 
   /** . */
-  private static final FQN BINDINGS = new FQN(Bindings.class);
+  private static final Name BINDINGS = Name.create(Bindings.class);
 
   /** . */
   private Map<ElementHandle.Package, JSON> state = new HashMap<ElementHandle.Package, JSON>();

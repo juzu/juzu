@@ -19,6 +19,7 @@
 
 package juzu.impl.compiler.file;
 
+import juzu.impl.common.FileKey;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
@@ -42,7 +43,14 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
 
   private static URI toURI(JavaFileManager.Location location, FileKey key) throws IOException {
     try {
-      return new URI("/" + location.getName() + key.uri.getPath());
+      String path;
+      if (key.packageFQN.length() == 0) {
+        path = "/" + key.name;
+      }
+      else {
+        path = "/" + key.packageFQN.replace('.', '/') + '/' + key.name;
+      }
+      return new URI("/" + location.getName() + path);
     }
     catch (URISyntaxException e) {
       throw new IOException("Could not build location related URI for " + key);
@@ -65,7 +73,7 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
   private boolean writing;
 
   public JavaFileObjectImpl(JavaFileManager.Location location, FileKey key, ReadFileSystem<P> fs, P file) throws NullPointerException, IOException {
-    super(toURI(location, key), key.kind);
+    super(toURI(location, key), key.getKind());
 
     //
     if (file == null) {

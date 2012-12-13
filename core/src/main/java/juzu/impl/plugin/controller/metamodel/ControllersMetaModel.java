@@ -20,11 +20,11 @@
 package juzu.impl.plugin.controller.metamodel;
 
 import juzu.AmbiguousResolutionException;
+import juzu.impl.common.Name;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 
 import java.util.Iterator;
@@ -37,7 +37,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
   public final static Key<ControllersMetaModel> KEY = Key.of(ControllersMetaModel.class);
 
   /** . */
-  FQN defaultController;
+  Name defaultController;
 
   /** . */
   Boolean escapeXML;

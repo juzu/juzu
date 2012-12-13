@@ -29,12 +29,12 @@ import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import juzu.Action;
 import juzu.View;
+import juzu.impl.common.Name;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
-import juzu.impl.common.FQN;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
@@ -503,14 +503,14 @@ public class ControllerTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(5, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertEquals(ElementHandle.Method.create(new FQN("metamodel.controller.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(0).getObject()).getHandle());
+    assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(0).getObject()).getHandle());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
-    assertEquals(ElementHandle.Class.create(new FQN("metamodel.controller.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
+    assertEquals(ElementHandle.Class.create(Name.parse("metamodel.controller.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(2).getType());
-    assertEquals(ElementHandle.Class.create(new FQN("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
+    assertEquals(ElementHandle.Class.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(3).getType());
-    assertEquals(ElementHandle.Method.create(new FQN("metamodel.controller.sub.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(3).getObject()).getHandle());
+    assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.sub.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(3).getObject()).getHandle());
     assertEquals(MetaModelEvent.UPDATED, events.get(4).getType());
-    assertEquals(ElementHandle.Class.create(new FQN("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(4).getObject()).getHandle());
+    assertEquals(ElementHandle.Class.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(4).getObject()).getHandle());
   }
 }

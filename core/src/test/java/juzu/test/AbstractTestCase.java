@@ -21,7 +21,7 @@ package juzu.test;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.JSON;
@@ -127,7 +127,7 @@ public abstract class AbstractTestCase extends Assert {
     }
   }
 
-  public static DiskFileSystem diskFS(QN packageName) {
+  public static DiskFileSystem diskFS(Name packageName) {
     File root = new File(System.getProperty("juzu.test.resources.path"));
     return new DiskFileSystem(root, packageName);
   }
@@ -153,7 +153,7 @@ public abstract class AbstractTestCase extends Assert {
   }
 
   private CompilerAssert<File, File> compiler(boolean incremental, String packageName) {
-    return compiler(incremental, QN.parse(packageName), getQualifiers());
+    return compiler(incremental, Name.parse(packageName), getQualifiers());
 
   }
 
@@ -171,11 +171,11 @@ public abstract class AbstractTestCase extends Assert {
     return qualifiers;
   }
 
-  public static CompilerAssert<File, File> compiler(boolean incremental, QN packageName, String... qualifiers) {
+  public static CompilerAssert<File, File> compiler(boolean incremental, Name packageName, String... qualifiers) {
     return compiler(incremental, packageName, Arrays.asList(qualifiers));
   }
 
-  private static CompilerAssert<File, File> compiler(boolean incremental, QN packageName, List<String> qualifiers) {
+  private static CompilerAssert<File, File> compiler(boolean incremental, Name packageName, List<String> qualifiers) {
     if (packageName.isEmpty()) {
       throw failure("Cannot compile empty package");
     }
@@ -246,7 +246,7 @@ public abstract class AbstractTestCase extends Assert {
   public MockApplication<?> application(InjectorProvider injectImplementation, String packageName) {
     CompilerAssert<File, File> helper = compiler(packageName);
     helper.assertCompile();
-    return helper.application(injectImplementation, QN.create(packageName));
+    return helper.application(injectImplementation, Name.parse(packageName));
   }
 
   public static void assertEquals(JSON expected, JSON test) {

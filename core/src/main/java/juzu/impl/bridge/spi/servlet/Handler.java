@@ -86,7 +86,7 @@ class Handler {
           routes.add(entry.getValue());
         }
       } else {
-        routes.add(root = parent.append("/" + bridge.runtime.getName().getLastName()));
+        routes.add(root = parent.append("/" + bridge.runtime.getName().getIdentifier()));
       }
 
       //

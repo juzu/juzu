@@ -19,7 +19,7 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.ElementHandle;
@@ -35,7 +35,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouterTestCase extends AbstractTestCase {
@@ -58,7 +57,7 @@ public class RouterTestCase extends AbstractTestCase {
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
-    ApplicationMetaModel application = mm.getChild(Key.of(ElementHandle.Package.create(QN.create("metamodel", "router", "param", "pattern")), ApplicationMetaModel.class));
+    ApplicationMetaModel application = mm.getChild(Key.of(ElementHandle.Package.create(Name.parse("metamodel.router.param.pattern")), ApplicationMetaModel.class));
     RouterMetaModel router = application.getChild(Key.of(RouterMetaModel.class));
     RouteMetaModel root = router.getRoot();
     RouteMetaModel route = root.getChildren().get(0);

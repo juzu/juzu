@@ -19,6 +19,7 @@
 
 package juzu.impl.compiler.file;
 
+import juzu.impl.common.FileKey;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.common.Spliterator;
@@ -128,7 +129,7 @@ public class SimpleFileManager<P> extends FileManager {
       else {
         String name = fs.getName(child);
         FileKey key = FileKey.newName(packageName, name);
-        if (kinds.contains(key.kind)) {
+        if (kinds.contains(key.getKind())) {
           to.add(getReadable(key));
         }
       }

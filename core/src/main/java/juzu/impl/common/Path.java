@@ -20,170 +20,56 @@
 package juzu.impl.common;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.regex.Pattern;
+import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Path implements Serializable, Iterable<String> {
-
-  /** The name validator. */
-  public static final Pattern NAME_VALIDATOR = Pattern.compile("(?!\\.)" + "[^/]+" + "(?<!\\.)");
+public class Path implements Serializable {
 
   /** . */
-  private static final int PARSE_CANONICAL = 0;
+  private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-  /** . */
-  private static final int PARSE_ANY = 1;
+  public static Path absolute(Name qn, String name, String extension) {
+    return create(true, qn, name, extension);
+  }
 
-  public static Path create(boolean absolute, QN qn, String name, String extension) {
-    return absolute ? new Absolute(null, new FQN(qn, name), extension) : new Relative(null, new FQN(qn, name), extension);
+  public static Path create(boolean absolute, Name qn, String rawName, String ext) {
+    return new Path(absolute, qn, rawName, ext);
   }
 
   public static Path parse(String path) throws NullPointerException, IllegalArgumentException {
     boolean absolute = path.length() > 0 && path.charAt(0) == '/';
-    String[] atoms = parse(PARSE_CANONICAL, 0, path, 0, 0);
-    return absolute ? new Absolute(path, atoms) : new Relative(path, atoms);
-  }
-
-  /**
-   * Path parsing method and returns an array. The last two values of the array are the
-   *
-   * @param mode {@link #PARSE_CANONICAL} : rejects any '.' or '..' / {@link #PARSE_ANY} : accepts '.' or '..'
-   * @param padding the first index that will be written
-   * @param path the path to parse
-   * @param off the first char to parse
-   * @param size the current array size
-   * @return the parsed path as a String[]
-   * @throws IllegalArgumentException if the path is not valid
-   */
-  private static String[] parse(int mode, int padding, String path, int off, int size) throws IllegalArgumentException {
-    int len = path.length();
-    int at = padding + size;
-    if (off < len) {
-      int pos = path.indexOf('/', off);
-      if (pos == -1) {
-
-        //
-        String name = path.substring(off);
-        if (!NAME_VALIDATOR.matcher(name).matches()) {
-          throw new IllegalArgumentException("The name " + name + " is not valid");
-        }
-
-        // Find the last index of '.'
-        int cur = name.lastIndexOf('.');
-        if (cur == -1) {
-          String[] ret = new String[padding + size + 2];
-          ret[at] = name;
-          return ret;
-        } else {
-          String[] ret = new String[padding + size + 2];
-          ret[at] = name.substring(0, cur);
-          ret[at + 1] = name.substring(cur + 1);
-          return ret;
-        }
-      }
-      else {
-        int diff = pos - off;
-        if (diff == 0) {
-          return parse(mode, padding, path, off + 1, size);
-        } else {
-          if (diff == 1 && path.charAt(off) == '.') {
-            switch (mode) {
-              case PARSE_CANONICAL:
-                throw new IllegalArgumentException("No '.' allowed here");
-              case PARSE_ANY:
-                // Skip '.'
-                return parse(mode, padding, path, off + 2, size);
-              default:
-                throw new AssertionError("Should not be here");
-            }
-          } else if (diff == 2 && path.charAt(off) == '.' && path.charAt(off + 1) == '.') {
-            switch (mode) {
-              case PARSE_CANONICAL:
-                throw new IllegalArgumentException("No '.' allowed here");
-              case PARSE_ANY:
-                // Skip '..' ?
-                if (size > 0) {
-                  return parse(mode, padding, path, off + 3, size - 1);
-                } else if (padding > 0) {
-                  return parse(mode, padding - 1, path, off + 3, size);
-                } else {
-                  throw new IllegalArgumentException("Invalid path");
-                }
-              default:
-                throw new AssertionError("Should not be here");
-            }
-          }
-          for (int i = off;i < pos;i++) {
-            if (path.charAt(i) == '.') {
-              throw new IllegalArgumentException("No '.' allowed here");
-            }
-          }
-          String[] ret = parse(mode, padding, path, pos + 1, size + 1);
-          if (ret[at] == null) {
-            ret[at] = path.substring(off, pos);
-          }
-          return ret;
-        }
-      }
-    }
-    else {
-      String[] ret = new String[padding + size + 2];
-      ret[at] = "";
-      return ret;
-    }
+    String[] atoms = Lexers.parsePath(Lexers.PARSE_CANONICAL, EMPTY_STRING_ARRAY, 0, path, 0);
+    return new Path(absolute, atoms);
   }
 
   /** . */
-  protected final FQN fqn;
+  protected final String[] atoms;
+
+  /** . */
+  private final boolean absolute;
 
   /** . */
   private String canonical;
 
-  /** . */
-  private String value;
+  private Path(boolean absolute, Name pkg, String rawName, String ext) {
 
-  /** . */
-  private final String ext;
-
-  /** . */
-  private String name;
-
-  private Path(String value, FQN fqn, String ext) {
-    this.fqn = fqn;
-    this.canonical = null;
-    this.value = value;
-    this.ext = ext;
-    this.name = null;
-  }
-
-  private Path(String path, String[] atoms) {
-
-    int len = atoms.length - 2;
-    QN qn;
-    if (len == 0) {
-      qn = QN.EMPTY;
+    String[] atoms = new String[pkg.size() + 2];
+    for (int i = 0;i < pkg.size();i++) {
+      atoms[i] = pkg.get(i);
     }
-    else if (len == 1) {
-      qn = new QN(atoms[0], atoms, 1);
-    }
-    else {
-      StringBuilder sb = new StringBuilder();
-      for (int i = 0;i < len;i++) {
-        if (i > 0) {
-          sb.append('.');
-        }
-        sb.append(atoms[i]);
-      }
-      qn = new QN(sb.toString(), atoms, len);
-    }
+    atoms[atoms.length - 2] = rawName;
+    atoms[atoms.length - 1] = ext;
 
     //
-    this.fqn = new FQN(qn, atoms[len]);
+    this.absolute = absolute;
     this.canonical = null;
-    this.value = path;
-    this.ext = atoms[atoms.length - 1];
-    this.name = null;
+    this.atoms = atoms;
+  }
+
+  private Path(boolean absolute, String[] atoms) {
+    this.absolute = absolute;
+    this.canonical = null;
+    this.atoms = atoms;
   }
 
   public Path append(String path) throws NullPointerException, IllegalArgumentException {
@@ -193,72 +79,50 @@ public abstract class Path implements Serializable, Iterable<String> {
     if (path.length() > 0 && path.charAt(0) == '/') {
       throw new IllegalArgumentException("Cannot append absolute path " + path);
     }
-    QN pkg = fqn.getPackageName();
-    int len = pkg.size();
-    String[] atoms = parse(PARSE_ANY, len, path, 0, 0);
-    pkg.mergeTo(atoms);
-    StringBuilder sb = new StringBuilder();
-    if (isAbsolute()) {
-      sb.append('/');
-    }
-    for (int i = 0;i < atoms.length - 1;i++) {
-      sb.append(atoms[i]);
-    }
-    String ext = atoms[atoms.length - 1];
-    if (ext != null && ext.length() > 0) {
-      sb.append('.').append(ext);
-    }
-    return isAbsolute() ? new Absolute(sb.toString(), atoms) : new Relative(sb.toString(), atoms);
-  }
-
-  public Iterator<String> iterator() {
-    return fqn.iterator();
+    String[] atoms = Lexers.parsePath(Lexers.PARSE_ANY, this.atoms, this.atoms.length - 2, path, 0);
+    return new Path(absolute, atoms);
   }
 
   public String getValue() {
-    if (value == null) {
-      return getCanonical();
-    }
-    else {
-      return value;
-    }
+    return getCanonical();
   }
 
-  public abstract boolean isAbsolute();
+  public boolean isAbsolute() {
+    return absolute;
+  }
 
   public final boolean isRelative() {
     return !isAbsolute();
   }
 
-  public QN getQN() {
-    return fqn.getPackageName();
-  }
-
-  public FQN getFQN() {
-    return fqn;
+  public Iterable<String> getDirs() {
+    return Tools.iterable(0, atoms.length - 2, atoms);
   }
 
   public String getRawName() {
-    return fqn.getSimpleName();
+    return atoms[atoms.length - 2];
   }
 
   public String getExt() {
-    return ext;
+    return atoms[atoms.length - 1];
   }
 
   public String getName() {
-    if (name == null) {
-      if (ext != null) {
-        name = fqn.getSimpleName() + "." + ext;
-      }
-      else {
-        name = fqn.getSimpleName();
-      }
+    String ext = getExt();
+    String rawName = getRawName();
+    if (ext != null) {
+      return rawName + "." + ext;
     }
-    return name;
+    else {
+      return rawName;
+    }
   }
 
-  public abstract Path as(String ext);
+  public Path as(String ext) {
+    String[] tmp = atoms.clone();
+    tmp[tmp.length - 1] = ext;
+    return new Path(absolute, tmp);
+  }
 
   public String getCanonical() {
     if (canonical == null) {
@@ -266,12 +130,13 @@ public abstract class Path implements Serializable, Iterable<String> {
       if (isAbsolute()) {
         sb.append('/');
       }
-      for (int i = 0;i < fqn.size();i++) {
+      for (int i = 0;i < atoms.length - 1;i++) {
         if (i > 0) {
           sb.append('/');
         }
-        sb.append(fqn.get(i));
+        sb.append(atoms[i]);
       }
+      String ext = getExt();
       if (ext != null) {
         sb.append('.').append(ext);
       }
@@ -282,7 +147,7 @@ public abstract class Path implements Serializable, Iterable<String> {
 
   @Override
   public int hashCode() {
-    return fqn.hashCode() ^ (ext != null ? ext.hashCode() : 0);
+    return Arrays.hashCode(atoms);
   }
 
   @Override
@@ -292,73 +157,13 @@ public abstract class Path implements Serializable, Iterable<String> {
     }
     if (obj.getClass() == getClass()) {
       Path that = (Path)obj;
-      return fqn.equals(that.fqn) && Tools.safeEquals(ext, that.ext);
+      return absolute == that.absolute && Arrays.equals(atoms, that.atoms);
     }
     return false;
   }
 
   @Override
   public String toString() {
-    return "Path[absolute=" + isAbsolute() + ",fqn=" + fqn + ",extension=" + ext + "]";
-  }
-
-  public static class Absolute extends Path {
-
-    public static Absolute create(QN qn, String rawName, String ext) {
-      return new Absolute(null, new FQN(qn, rawName), ext);
-    }
-
-    private Absolute(String value, FQN fqn, String extension) {
-      super(value, fqn, extension);
-    }
-
-    private Absolute(String path, String[] atoms) {
-      super(path, atoms);
-    }
-
-    @Override
-    public Absolute as(String ext) {
-      return new Absolute(null, fqn, ext);
-    }
-
-    @Override
-    public Absolute append(String path) throws NullPointerException, IllegalArgumentException {
-      return (Absolute)super.append(path);
-    }
-
-    @Override
-    public boolean isAbsolute() {
-      return true;
-    }
-  }
-
-  public static class Relative extends Path {
-
-    public static Relative create(QN qn, String name, String extension) {
-      return new Relative(null, new FQN(qn, name), extension);
-    }
-
-    private Relative(String value, FQN fqn, String extension) {
-      super(value, fqn, extension);
-    }
-
-    private Relative(String path, String[] atoms) {
-      super(path, atoms);
-    }
-
-    @Override
-    public Relative as(String ext) {
-      return new Relative(null, fqn, ext);
-    }
-
-    @Override
-    public Relative append(String path) throws NullPointerException, IllegalArgumentException {
-      return (Relative)super.append(path);
-    }
-
-    @Override
-    public boolean isAbsolute() {
-      return false;
-    }
+    return "Path[" + getCanonical() +  "]";
   }
 }

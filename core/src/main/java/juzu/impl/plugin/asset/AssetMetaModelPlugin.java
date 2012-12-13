@@ -19,20 +19,19 @@
 
 package juzu.impl.plugin.asset;
 
+import juzu.impl.common.Name;
 import juzu.impl.common.Path;
-import juzu.impl.common.QN;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ElementHandle;
+import juzu.impl.common.FileKey;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
-import juzu.impl.common.FQN;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.plugin.asset.Assets;
 
-import javax.lang.model.element.PackageElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
@@ -53,7 +52,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   private HashMap<ElementHandle.Package, AnnotationState> annotations = new HashMap<ElementHandle.Package, AnnotationState>();
 
   /** . */
-  private static final FQN ASSETS = new FQN(Assets.class);
+  private static final Name ASSETS = Name.create(Assets.class);
 
   public AssetMetaModelPlugin() {
     super("asset");
@@ -110,11 +109,11 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
             if ((location == null && classpath) || "CLASSPATH".equals(location)) {
               String value = (String)script.get("src");
               Path path = Path.parse(value);
-              Path.Absolute absolute;
+              FileKey absolute;
               if (path.isRelative()) {
                 context.log("Found classpath asset to copy " + value);
-                QN qn = metaModel.getHandle().getQN().append("assets");
-                absolute = (Path.Absolute)Path.create(true, qn, path.getRawName(), path.getExt());
+                Name qn = metaModel.getHandle().getQN().append("assets");
+                absolute = qn.resolve(path);
                 FileObject src = context.resolveResource(metaModel.getHandle(), absolute);
                 if (src != null) {
                   URI srcURI = src.toUri();
@@ -158,7 +157,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       JSON json = new JSON();
       json.set("scripts", build((List<Map<String, Object>>)annotation.get("scripts")));
       json.set("stylesheets", build((List<Map<String, Object>>)annotation.get("stylesheets")));
-      json.set("package", application.getName().append("assets").getValue());
+      json.set("package", application.getName().append("assets").toString());
       json.set("location", annotation.get("location"));
       return json;
     } else {

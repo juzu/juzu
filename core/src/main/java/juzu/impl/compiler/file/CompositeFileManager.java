@@ -19,6 +19,7 @@
 
 package juzu.impl.compiler.file;
 
+import juzu.impl.common.FileKey;
 import juzu.impl.fs.spi.ReadFileSystem;
 
 import javax.tools.JavaFileObject;
@@ -26,7 +27,6 @@ import javax.tools.StandardLocation;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

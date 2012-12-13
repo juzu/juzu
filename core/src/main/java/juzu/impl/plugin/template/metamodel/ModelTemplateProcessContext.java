@@ -97,7 +97,7 @@ class ModelTemplateProcessContext extends ProcessContext {
       String value = parameterMap.get(param.getName());
       args.add(value);
     }
-    return new MethodInvocation(method.getController().getHandle().getFQN().getName() + "_", method.getName(), args);
+    return new MethodInvocation(method.getController().getHandle().getFQN() + "_", method.getName(), args);
   }
 
   protected Timestamped<Content> resolveResource(Path path) {

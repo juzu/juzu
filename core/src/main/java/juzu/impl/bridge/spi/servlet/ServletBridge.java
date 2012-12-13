@@ -27,7 +27,7 @@ import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.DevClassLoader;
 import juzu.impl.common.JSON;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -203,7 +203,7 @@ public class ServletBridge extends HttpServlet {
 
       // Build all applications
       Map<String, Bridge> applications = new HashMap<String, Bridge>();
-      for (final QN name : desc.getNames()) {
+      for (final Name name : desc.getNames()) {
         BridgeConfig bridgeConfig;
         try {
           bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {

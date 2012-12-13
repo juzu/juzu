@@ -19,7 +19,7 @@
 
 package juzu.impl.bridge;
 
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.Tools;
 
@@ -55,20 +55,20 @@ public class BridgeConfig {
   public final int runMode;
 
   /** . */
-  public final QN name;
+  public final Name name;
 
   /** . */
   public final InjectorProvider injectImpl;
 
-  public BridgeConfig(int runMode, QN name, InjectorProvider injectImpl) {
+  public BridgeConfig(int runMode, Name name, InjectorProvider injectImpl) {
     this.runMode = runMode;
     this.name = name;
     this.injectImpl = injectImpl;
   }
 
-  public static QN getApplicationName(Map<String, String> config) {
+  public static Name getApplicationName(Map<String, String> config) {
     String applicationName = config.get("juzu.app_name");
-    return applicationName != null ? QN.parse(applicationName) : null;
+    return applicationName != null ? Name.parse(applicationName) : null;
   }
 
   public static int getRunMode(Map<String, String> config) {

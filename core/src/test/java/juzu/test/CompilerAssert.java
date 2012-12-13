@@ -19,7 +19,7 @@
 
 package juzu.test;
 
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
@@ -181,7 +181,7 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public MockApplication<?> application(InjectorProvider injectImplementation, QN name) {
+  public MockApplication<?> application(InjectorProvider injectImplementation, Name name) {
     try {
       return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation, name);
     }

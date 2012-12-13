@@ -19,7 +19,7 @@
 
 package juzu.impl.plugin.template;
 
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
@@ -41,7 +41,7 @@ public class AmbiguousTestCase extends AbstractInjectTestCase {
   public void testResolveBean() throws Exception {
     CompilerAssert<File, File> helper = compiler("plugin.template.ambiguous");
     helper.assertCompile();
-    MockApplication<?> app = helper.application(di, QN.parse("plugin.template.ambiguous.app1")).init();
+    MockApplication<?> app = helper.application(di, Name.parse("plugin.template.ambiguous.app1")).init();
 
     //
     MockClient client = app.client();

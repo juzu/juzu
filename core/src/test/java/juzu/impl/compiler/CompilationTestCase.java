@@ -20,7 +20,7 @@
 package juzu.impl.compiler;
 
 import junit.framework.AssertionFailedError;
-import juzu.impl.common.QN;
+import juzu.impl.common.Name;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
@@ -369,7 +369,7 @@ public class CompilationTestCase extends AbstractTestCase {
 
   @Test
   public void testIncremental() throws IOException, CompilationException {
-    CompilerAssert<File, File> compiler = compiler(true, QN.parse("compiler.incremental"), "").
+    CompilerAssert<File, File> compiler = compiler(true, Name.parse("compiler.incremental"), "").
         with(compilerProvider).
         with((Provider<? extends Processor>)null);
     compiler.assertCompile();

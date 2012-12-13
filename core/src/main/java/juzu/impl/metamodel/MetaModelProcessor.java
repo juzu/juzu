@@ -19,7 +19,7 @@
 
 package juzu.impl.metamodel;
 
-import juzu.impl.common.FQN;
+import juzu.impl.common.Name;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
@@ -33,7 +33,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -135,7 +134,7 @@ public abstract class MetaModelProcessor extends BaseProcessor {
             if (annotatedElt.getAnnotation(Generated.class) == null) {
               for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
                 if (annotationMirror.getAnnotationType().asElement().equals(annotationElt)) {
-                  AnnotationKey key = new AnnotationKey(annotatedElt, new FQN(((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().toString()));
+                  AnnotationKey key = new AnnotationKey(annotatedElt, Name.parse(((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().toString()));
                   AnnotationState state = AnnotationState.create(annotationMirror);
                   updates.put(key, state);
                 }

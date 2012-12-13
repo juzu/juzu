@@ -19,6 +19,8 @@
 
 package juzu.impl.compiler.file;
 
+import juzu.impl.common.FileKey;
+
 import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
