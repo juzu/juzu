@@ -28,24 +28,22 @@ import java.io.File;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WeatherPortletTestCase extends WeatherTestCase {
+public class WeatherServletTestCase extends WeatherTestCase {
 
   @Deployment
   public static WebArchive deployment() {
-    WebArchive war = Helper.createBasePortletDeployment();
-    war.addAsWebInfResource(new File("src/main/webapp/WEB-INF/portlet.xml"));
-    war.addAsWebInfResource(new File("src/test/resources/spring.xml"));
-    war.addPackages(true, "examples.tutorial");
+    WebArchive war = Helper.createBaseServletDeployment(); // <1> Create the base servlet deployment
+    war.addAsWebInfResource(new File("src/test/resources/spring.xml")); // <2> Add the spring.xml descriptor
+    war.addPackages(true, "examples.tutorial"); // <3> Add the examples.tutorial package
     return war;
   }
 
-  @Override
   public URL getApplicationURL(String application) {
     try {
-      return deploymentURL.toURI().resolve("embed/" + application).toURL();
+      return deploymentURL.toURI().resolve(application).toURL();
     }
     catch (Exception e) {
-      AssertionFailedError afe = new AssertionFailedError("Could not build URL");
+      AssertionFailedError afe = new AssertionFailedError();
       afe.initCause(e);
       throw afe;
     }

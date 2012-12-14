@@ -5,7 +5,7 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
    http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
-     <portlet-name>Weather1Portlet</portlet-name>
+     <portlet-name>weather1</portlet-name>
      <display-name xml:lang="EN">Juzu Kickstart</display-name>
      <portlet-class>examples.tutorial.weather1.Weather1Portlet</portlet-class>
      <init-param>
@@ -21,7 +21,7 @@
      </portlet-info>
    </portlet>
    <portlet>
-     <portlet-name>Weather2Portlet</portlet-name>
+     <portlet-name>weather2</portlet-name>
      <display-name xml:lang="EN">Juzu Template Overview</display-name>
      <portlet-class>examples.tutorial.weather2.Weather2Portlet</portlet-class>
      <init-param>
@@ -37,7 +37,7 @@
      </portlet-info>
    </portlet>
   <portlet>
-    <portlet-name>Weather3Portlet</portlet-name>
+    <portlet-name>weather3</portlet-name>
     <display-name xml:lang="EN">Juzu Dependency Injection</display-name>
     <portlet-class>examples.tutorial.weather3.Weather3Portlet</portlet-class>
     <init-param>
@@ -60,7 +60,7 @@
     </portlet-info>
   </portlet>
   <portlet>
-    <portlet-name>Weather4Portlet</portlet-name>
+    <portlet-name>weather4</portlet-name>
     <display-name xml:lang="EN">Juzu Views</display-name>
     <portlet-class>examples.tutorial.weather4.Weather4Portlet</portlet-class>
     <init-param>
@@ -76,7 +76,7 @@
     </portlet-info>
   </portlet>
   <portlet>
-    <portlet-name>Weather5Portlet</portlet-name>
+    <portlet-name>weather5</portlet-name>
     <display-name xml:lang="EN">Juzu Actions</display-name>
     <portlet-class>examples.tutorial.weather5.Weather5Portlet</portlet-class>
     <init-param>
@@ -92,7 +92,7 @@
     </portlet-info>
   </portlet>
   <portlet>
-    <portlet-name>Weather6Portlet</portlet-name>
+    <portlet-name>weather6</portlet-name>
     <display-name xml:lang="EN">Juzu Type Safe Templating</display-name>
     <portlet-class>examples.tutorial.weather6.Weather6Portlet</portlet-class>
     <init-param>
@@ -108,7 +108,7 @@
     </portlet-info>
   </portlet>
   <portlet>
-    <portlet-name>Weather7Portlet</portlet-name>
+    <portlet-name>weather7</portlet-name>
     <display-name xml:lang="EN">Juzu Styled</display-name>
     <portlet-class>examples.tutorial.weather7.Weather7Portlet</portlet-class>
     <init-param>
@@ -124,7 +124,7 @@
     </portlet-info>
   </portlet>
   <portlet>
-    <portlet-name>Weather8Portlet</portlet-name>
+    <portlet-name>weather8</portlet-name>
     <display-name xml:lang="EN">Juzu Ajaxified</display-name>
     <portlet-class>examples.tutorial.weather8.Weather8Portlet</portlet-class>
     <init-param>

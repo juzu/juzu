@@ -189,6 +189,18 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-doc-tutorial-examples</artifactId>
+        <version>0.6.0-SNAPSHOT</version>
+        <classifier>test-sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-doc-tutorial-examples</artifactId>
         <classifier>tomcat</classifier>
         <type>war</type>
         <version>0.6.0-SNAPSHOT</version>

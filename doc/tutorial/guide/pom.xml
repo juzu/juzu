@@ -33,6 +33,16 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-doc-tutorial-examples</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
+      <classifier>test-sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
       <type>war</type>
       <classifier>tomcat</classifier>
     </dependency>
