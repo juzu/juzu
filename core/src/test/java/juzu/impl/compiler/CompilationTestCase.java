@@ -20,6 +20,7 @@
 package juzu.impl.compiler;
 
 import junit.framework.AssertionFailedError;
+import juzu.impl.common.FileKey;
 import juzu.impl.common.Name;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -43,15 +44,19 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.inject.Provider;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -534,5 +539,44 @@ public class CompilationTestCase extends AbstractTestCase {
     value = assertInstanceOf(List.class, m5.safeGet("value"));
     assertSame(value, m5.get("value"));
     assertEquals(Arrays.asList("warning_value_1", "warning_value_2"), value);
+  }
+
+  @Test
+  public void testDot() throws Exception {
+    CompilerAssert<File, File> compiler = compiler("compiler.dot").with(compilerProvider);
+    compiler.with(new AbstractProcessor() {
+      int count = 0;
+      @Override
+      public Set<String> getSupportedAnnotationTypes() {
+        return Collections.singleton("*");
+      }
+      @Override
+      public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (count++ == 0) {
+          try {
+            ProcessingContext ctx = new ProcessingContext(processingEnv);
+            ElementHandle.Package pkg = ElementHandle.Package.create(ctx.getPackageElement("compiler.dot.foo"));
+            FileObject file = ctx.resolveResource(pkg, FileKey.newName("compiler.dot.foo", "a.b.txt"));
+            InputStream in = file.openInputStream();
+            FileObject o = ctx.createResource(StandardLocation.CLASS_OUTPUT, FileKey.newName("compiler.dot.foo", "a.b.css"));
+            OutputStream out = o.openOutputStream();
+            Tools.copy(in, out);
+            Tools.safeClose(in);
+            Tools.safeClose(out);
+          }
+          catch (Exception e) {
+            throw failure(e);
+          }
+        }
+        return true;
+      }
+    });
+    compiler.assertCompile();
+    ReadWriteFileSystem<File> classOutput = compiler.getClassOutput();
+    File f = new File(classOutput.getRoot(), "compiler/dot/foo/a.b.css");
+    InputStream in = new FileInputStream(f);
+    String content = Tools.read(in);
+    in.close();
+    assertEquals("content", content.trim());
   }
 }
