@@ -20,6 +20,7 @@
 package juzu.impl.inject.spi.spring;
 
 import juzu.AmbiguousResolutionException;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
 import org.springframework.beans.BeanInstantiationException;
@@ -47,7 +48,7 @@ public class SpringContext extends InjectionContext<String, Object> {
   private final ClassLoader classLoader;
 
   public SpringContext(DefaultListableBeanFactory factory, ClassLoader classLoader) {
-    factory.registerSingleton("" + Math.random(), this);
+    factory.registerSingleton(Tools.nextUUID(), this);
 
     //
     this.factory = factory;

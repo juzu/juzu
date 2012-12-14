@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -909,5 +910,9 @@ public class Tools {
     }
     sb.append('}');
     return sb;
+  }
+
+  public static String nextUUID() {
+    return UUID.randomUUID().toString();
   }
 }

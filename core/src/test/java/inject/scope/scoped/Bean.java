@@ -20,6 +20,7 @@
 package inject.scope.scoped;
 
 import juzu.RequestScoped;
+import juzu.impl.common.Tools;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RequestScoped
@@ -29,7 +30,7 @@ public class Bean {
   private String value;
 
   public Bean() {
-    this.value = "" + Math.random();
+    this.value = Tools.nextUUID();
   }
 
   public String getValue() {

@@ -19,11 +19,13 @@
 
 package inject.declared.provider.qualifier.declared;
 
+import juzu.impl.common.Tools;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Bean {
 
   /** . */
-  private final String id = "" + Math.random();
+  private final String id = Tools.nextUUID();
 
   public String getId() {
     return id;

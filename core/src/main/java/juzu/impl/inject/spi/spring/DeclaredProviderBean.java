@@ -20,6 +20,7 @@
 package juzu.impl.inject.spi.spring;
 
 import juzu.Scope;
+import juzu.impl.common.Tools;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -51,10 +52,10 @@ class DeclaredProviderBean extends AbstractBean {
 
   @Override
   void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory) {
-    String _name = "" + Math.random();
-    AnnotatedGenericBeanDefinition _definition = new AnnotatedGenericBeanDefinition(providerType);
-    _definition.setScope("singleton");
-    factory.registerBeanDefinition(_name, _definition);
+    String id = Tools.nextUUID();
+    AnnotatedGenericBeanDefinition def = new AnnotatedGenericBeanDefinition(providerType);
+    def.setScope("singleton");
+    factory.registerBeanDefinition(id, def);
 
     //
     AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
@@ -85,7 +86,7 @@ class DeclaredProviderBean extends AbstractBean {
     }
 
     //
-    definition.setFactoryBeanName(_name);
+    definition.setFactoryBeanName(id);
     definition.setFactoryMethodName("get");
 
     //

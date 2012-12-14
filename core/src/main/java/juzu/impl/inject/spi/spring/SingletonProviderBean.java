@@ -20,6 +20,7 @@
 package juzu.impl.inject.spi.spring;
 
 import juzu.Scope;
+import juzu.impl.common.Tools;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -47,11 +48,11 @@ class SingletonProviderBean extends AbstractBean {
 
   @Override
   void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory) {
-    String _name = "" + Math.random();
-    AnnotatedGenericBeanDefinition _definition = new AnnotatedGenericBeanDefinition(provider.getClass());
-    _definition.setScope("singleton");
-    factory.registerBeanDefinition(_name, _definition);
-    builder.instances.put(_name, provider);
+    String id = Tools.nextUUID();
+    AnnotatedGenericBeanDefinition def = new AnnotatedGenericBeanDefinition(provider.getClass());
+    def.setScope("singleton");
+    factory.registerBeanDefinition(id, def);
+    builder.instances.put(id, provider);
 
     //
     AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
@@ -82,7 +83,7 @@ class SingletonProviderBean extends AbstractBean {
     }
 
     //
-    definition.setFactoryBeanName(_name);
+    definition.setFactoryBeanName(id);
     definition.setFactoryMethodName("get");
 
     //

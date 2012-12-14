@@ -21,6 +21,7 @@ package juzu.impl.inject.spi.spring;
 
 import juzu.Scope;
 import juzu.impl.common.Filter;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.Injector;
@@ -76,7 +77,7 @@ public class SpringBuilder extends Injector {
   }
 
   public <T> Injector declareBean(AbstractBean bean) {
-    String name = "" + Math.random();
+    String name = Tools.nextUUID();
     for (Annotation annotation : bean.type.getDeclaredAnnotations()) {
       if (annotation instanceof Named) {
         Named named = (Named)annotation;
