@@ -45,6 +45,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -241,46 +242,49 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
   }
 
   private void emitConfig(ModuleMetaModel metaModel) {
-    JSON descriptor = new JSON();
-
     // Application configs
-    for (ApplicationMetaModel application : metaModel.getChildren(ApplicationMetaModel.class)) {
+    Collection<ApplicationMetaModel> applications = metaModel.getChildren(ApplicationMetaModel.class);
+    if (applications != null && applications.size() > 0) {
+      for (ApplicationMetaModel application : applications) {
 
-      //
-      metaModel.processingContext.log("Emitting application " + application.getHandle() + " config");
+        //
+        JSON descriptor = new JSON();
+        metaModel.processingContext.log("Emitting application " + application.getHandle() + " config");
 
-      // Recycle
-      descriptor.clear();
-
-      // Emit config
-      for (ApplicationMetaModelPlugin plugin : context.getPlugins()) {
-        JSON pluginDescriptor = plugin.getDescriptor(application);
-        if (pluginDescriptor != null) {
-          descriptor.set(plugin.getName(), pluginDescriptor);
+        // Emit config
+        for (ApplicationMetaModelPlugin plugin : context.getPlugins()) {
+          JSON pluginDescriptor = plugin.getDescriptor(application);
+          if (pluginDescriptor != null) {
+            descriptor.set(plugin.getName(), pluginDescriptor);
+          }
         }
-      }
 
-      //
-      Writer writer = null;
-      try {
-        FileObject fo = metaModel.processingContext.createResource(StandardLocation.CLASS_OUTPUT, application.getName(), "config.json");
-        writer = fo.openWriter();
-        descriptor.toString(writer, 2);
-      }
-      catch (IOException e) {
-        throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, metaModel.processingContext.get(application.getHandle()), application.getName());
-      }
-      finally {
-        Tools.safeClose(writer);
+        //
+        Writer writer = null;
+        try {
+          FileObject fo = metaModel.processingContext.createResource(StandardLocation.CLASS_OUTPUT, application.getName(), "config.json");
+          writer = fo.openWriter();
+          descriptor.toString(writer, 2);
+        }
+        catch (IOException e) {
+          throw ApplicationMetaModel.CANNOT_WRITE_APPLICATION_CONFIG.failure(e, metaModel.processingContext.get(application.getHandle()), application.getName());
+        }
+        finally {
+          Tools.safeClose(writer);
+        }
       }
     }
   }
 
   @Override
   public JSON getDescriptor(ModuleMetaModel metaModel) {
-    JSON json = new JSON();
-    for (ApplicationMetaModel application : metaModel.getChildren(ApplicationMetaModel.class)) {
-      json.set(application.getHandle().getPackage().toString(), new JSON());
+    JSON json = null;
+    Collection<ApplicationMetaModel> applications = metaModel.getChildren(ApplicationMetaModel.class);
+    if (applications != null && applications.size() > 0) {
+      json = new JSON();
+      for (ApplicationMetaModel application : applications) {
+        json.set(application.getHandle().getPackage().toString(), new JSON());
+      }
     }
     return json;
   }

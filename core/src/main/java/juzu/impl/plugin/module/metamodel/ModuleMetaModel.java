@@ -100,25 +100,32 @@ public class ModuleMetaModel extends MetaModel<ModuleMetaModelPlugin, ModuleMeta
   private void emitConfig(ProcessingContext env) {
     env.log("Emitting module config");
 
-    // Module config
-    JSON descriptor = new JSON();
+    // Merge plugins
+    JSON descriptor = null;
     for (ModuleMetaModelPlugin plugin : context.getPlugins()) {
       JSON pluginDesc = plugin.getDescriptor(this);
       if (pluginDesc != null) {
+        if (descriptor == null) {
+          descriptor = new JSON();
+        }
         descriptor.set(plugin.getName(), pluginDesc);
       }
     }
-    Writer writer = null;
-    try {
-      FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, "juzu", "config.json");
-      writer = fo.openWriter();
-      descriptor.toString(writer, 2);
-    }
-    catch (IOException e) {
-      throw ApplicationMetaModel.CANNOT_WRITE_CONFIG.failure(e);
-    }
-    finally {
-      Tools.safeClose(writer);
+
+    // Emit descriptor
+    if (descriptor != null) {
+      Writer writer = null;
+      try {
+        FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, "juzu", "config.json");
+        writer = fo.openWriter();
+        descriptor.toString(writer, 2);
+      }
+      catch (IOException e) {
+        throw ApplicationMetaModel.CANNOT_WRITE_CONFIG.failure(e);
+      }
+      finally {
+        Tools.safeClose(writer);
+      }
     }
   }
 }
