@@ -25,6 +25,7 @@ import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectBuilder;
 import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.utils.Tools;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
@@ -81,7 +82,7 @@ public class SpringBuilder extends InjectBuilder {
   }
 
   public <T> InjectBuilder declareBean(AbstractBean bean) {
-    String name = "" + Math.random();
+    String name = Tools.nextUUID();
     for (Annotation annotation : bean.type.getDeclaredAnnotations()) {
       if (annotation instanceof Named) {
         Named named = (Named)annotation;

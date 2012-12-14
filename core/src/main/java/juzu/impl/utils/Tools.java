@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -593,5 +594,9 @@ public class Tools {
       }
     }
     return null;
+  }
+
+  public static String nextUUID() {
+    return UUID.randomUUID().toString();
   }
 }

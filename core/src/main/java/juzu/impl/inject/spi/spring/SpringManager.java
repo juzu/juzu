@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 eXo Platform SAS.
+ * Copyright (C) 2012 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -22,6 +22,7 @@ package juzu.impl.inject.spi.spring;
 import juzu.AmbiguousResolutionException;
 import juzu.impl.inject.spi.InjectImplementation;
 import juzu.impl.inject.spi.InjectManager;
+import juzu.impl.utils.Tools;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -47,7 +48,7 @@ public class SpringManager extends InjectManager<String, Object> {
   private final ClassLoader classLoader;
 
   public SpringManager(DefaultListableBeanFactory factory, ClassLoader classLoader) {
-    factory.registerSingleton("" + Math.random(), this);
+    factory.registerSingleton(Tools.nextUUID(), this);
 
     //
     this.factory = factory;
