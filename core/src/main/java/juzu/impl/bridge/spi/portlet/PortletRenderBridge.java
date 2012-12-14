@@ -19,6 +19,8 @@
 
 package juzu.impl.bridge.spi.portlet;
 
+import juzu.PropertyMap;
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.impl.plugin.application.ApplicationContext;
@@ -35,6 +37,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge {
@@ -69,14 +72,32 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     super.setResponse(response);
     if (response instanceof Response.Content) {
       Response.Content content = (Response.Content)response;
+      PropertyMap properties = content.getProperties();
 
       //
-      if (content instanceof Response.Render) {
-        Response.Render render = (Response.Render)response;
-        Iterable<Asset.Value> scripts = bridge.runtime.getScriptManager().resolveAssets(render.getScripts());
-        Iterable<Asset.Value> stylesheets = bridge.runtime.getStylesheetManager().resolveAssets(render.getStylesheets());
+      String title = properties.getValue(PropertyType.TITLE);
+      if (title != null) {
+        this.title = title;
+      }
 
-        //
+      //
+      Iterable<Asset> scriptsProp = properties.getValues(PropertyType.SCRIPT);
+      Iterable<Asset> stylesheetsProp = properties.getValues(PropertyType.STYLESHEET);
+      Iterable<Map.Entry<String, String>> metas = properties.getValues(PropertyType.META_TAG);
+
+      //
+      if (metas != null) {
+        for (Map.Entry<String, String> entry : metas) {
+          Element elt = this.resp.createElement("meta");
+          elt.setAttribute("name", entry.getKey());
+          elt.setAttribute("content", entry.getValue());
+          headers.add(elt);
+        }
+      }
+
+      //
+      if (stylesheetsProp != null) {
+        Iterable<Asset.Value> stylesheets = bridge.runtime.getStylesheetManager().resolveAssets(stylesheetsProp);
         for (Asset.Value stylesheet : stylesheets) {
           int pos = stylesheet.getURI().lastIndexOf('.');
           String ext = pos == -1 ? "css" : stylesheet.getURI().substring(pos + 1);
@@ -87,8 +108,11 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           elt.setAttribute("href", getAssetURL(stylesheet));
           headers.add(elt);
         }
+      }
 
-        //
+      //
+      if (scriptsProp != null) {
+        Iterable<Asset.Value> scripts = bridge.runtime.getScriptManager().resolveAssets(scriptsProp);
         for (Asset.Value script : scripts) {
           String url = getAssetURL(script);
           Element elt = this.resp.createElement("script");
@@ -99,12 +123,6 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           Comment comment = elt.getOwnerDocument().createComment(request.getApplication().getName() + " script ");
           elt.appendChild(comment);
           headers.add(elt);
-        }
-
-        //
-        String title = render.getTitle();
-        if (title != null) {
-          this.title = title;
         }
       }
 
