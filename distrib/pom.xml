@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>0.5.3-SNAPSHOT</version>
+    <version>0.5.3</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-distrib</artifactId>
-  <version>0.5.3-SNAPSHOT</version>
+  <version>0.5.3</version>
 
   <name>Juzu Distribution</name>
   <description>Packaging and distribution</description>
