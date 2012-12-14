@@ -407,8 +407,8 @@ public class ServletBridge extends HttpServlet {
       // Implement the two phases in one
       if (requestBridge instanceof ServletActionBridge) {
         Response response = ((ServletActionBridge)requestBridge).response;
-        if (response instanceof Response.Update) {
-          Response.Update update = (Response.Update)response;
+        if (response instanceof Response.View) {
+          Response.View update = (Response.View)response;
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
             requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, update.getTarget(), update.getParameters());

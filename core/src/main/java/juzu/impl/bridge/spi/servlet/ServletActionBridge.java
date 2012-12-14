@@ -55,7 +55,7 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
     super.setResponse(response);
-    if (response instanceof Response.Update || response instanceof Response.Redirect) {
+    if (response instanceof Response.View || response instanceof Response.Redirect) {
       this.response = response;
     } else {
       throw new IllegalArgumentException("Cannot accept response " + response);
@@ -64,8 +64,8 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
 
   @Override
   void send() throws IOException {
-    if (response instanceof Response.Update) {
-      Response.Update update = (Response.Update)response;
+    if (response instanceof Response.View) {
+      Response.View update = (Response.View)response;
       DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
       Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
       String url = dispatch.with(MimeType.PLAIN).with(update.getProperties()).toString();

@@ -24,7 +24,6 @@ import juzu.Action;
 import juzu.Path;
 import juzu.Response;
 import juzu.Route;
-import juzu.View;
 import juzu.template.Template;
 
 import javax.inject.Inject;
@@ -50,12 +49,12 @@ public class Weather {
   @Path("index.gtmpl")
   Template index;
 
-  @View
+  @juzu.View
   public void index() {
     index("marseille");
   }
 
-  @View
+  @juzu.View
   @Route("/show/{location}")
   public void index(String location) {
     Map<String, Object> parameters = new HashMap<String, Object>();
@@ -67,7 +66,7 @@ public class Weather {
 
   @Action
   @Route("/add")
-  public Response.Update add(String location) {
+  public Response.View add(String location) {
     locations.add(location);
     return Weather_.index(location);
   }

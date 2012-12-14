@@ -22,7 +22,6 @@ package plugin.controller.render.update;
 import juzu.Action;
 import juzu.Controller;
 import juzu.Response;
-import juzu.View;
 
 import java.io.IOException;
 
@@ -30,16 +29,16 @@ import java.io.IOException;
 public class A extends Controller {
 
   @Action
-  public Response.Update process() {
+  public Response.View process() {
     return A_.done();
   }
 
-  @View
+  @juzu.View
   public Response.Content<?> index() throws IOException {
     return Response.ok(A_.process().toString());
   }
 
-  @View
+  @juzu.View
   public Response.Content<?> done() throws IOException {
     return Response.ok("done");
   }

@@ -22,22 +22,21 @@ package http.lifecycle;
 import juzu.Action;
 import juzu.Resource;
 import juzu.Response;
-import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
   @Action
-  public Response.Update action() {
+  public Response.View action() {
     return A_.done("d");
   }
 
-  @View
+  @juzu.View
   public Response.Content<?> index() {
     return Response.render(A_.action().toString());
   }
 
-  @View
+  @juzu.View
   public Response.Content<?> done(String p) {
     if ("d".equals(p)) {
       return Response.render(A_.resource().toString());

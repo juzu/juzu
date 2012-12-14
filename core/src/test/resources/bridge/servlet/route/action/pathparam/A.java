@@ -23,23 +23,22 @@ import juzu.Action;
 import juzu.Controller;
 import juzu.Response;
 import juzu.Route;
-import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
 
-  @View
+  @juzu.View
   public Response.Content<?> index() {
     return Response.render("<a id='trigger' href='" + A_.foo("bar") + "'>click</div>");
   }
 
   @Action
   @Route("/foo/{juu}")
-  public Response.Update foo(String juu) {
+  public Response.View foo(String juu) {
     return A_.bar(juu);
   }
 
-  @View
+  @juzu.View
   @Route("/bar")
   public Response.Content<?> bar(String juu) {
     return Response.ok("" + juu);

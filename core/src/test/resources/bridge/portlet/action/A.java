@@ -22,22 +22,21 @@ package bridge.portlet.action;
 import juzu.Action;
 import juzu.Controller;
 import juzu.Response;
-import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
 
-  @View
+  @juzu.View
   public Response.Content<?> index() {
     return Response.render("<a id='trigger' href='" + A_.action() + "'>click</a>");
   }
 
   @Action
-  public Response.Update action() {
+  public Response.View action() {
     return A_.done();
   }
 
-  @View
+  @juzu.View
   public Response.Content<?> done() {
     return Response.render("pass");
   }

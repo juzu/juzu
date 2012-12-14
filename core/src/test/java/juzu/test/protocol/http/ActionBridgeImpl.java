@@ -52,7 +52,7 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
-    if (response instanceof Response.Update || response instanceof Response.Redirect) {
+    if (response instanceof Response.View || response instanceof Response.Redirect) {
       this.response = response;
     } else {
       throw new IllegalArgumentException();
@@ -61,8 +61,8 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
 
   public void close() {
     try {
-      if (response instanceof Response.Update) {
-        Response.Update update = (Response.Update)response;
+      if (response instanceof Response.View) {
+        Response.View update = (Response.View)response;
         DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
         Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
         String url = dispatch.with(update.getProperties()).toString();

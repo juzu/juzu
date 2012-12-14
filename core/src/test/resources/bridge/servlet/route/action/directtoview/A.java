@@ -24,12 +24,11 @@ import juzu.Controller;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.Route;
-import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
 
-  @View
+  @juzu.View
   public Response.Content<?> index() {
     return Response.render(
         "<form id='form' action='" + A_.foo() + "' method='post'>" +
@@ -39,11 +38,11 @@ public class A extends Controller {
 
   @Action
   @Route("/foo")
-  public Response.Update foo() {
+  public Response.View foo() {
     return A_.bar("juu").with(PropertyType.REDIRECT_AFTER_ACTION, false);
   }
 
-  @View
+  @juzu.View
   @Route("/bar")
   public Response.Content<?> bar(String juu) {
     String path = renderContext.getProperty(PropertyType.PATH);

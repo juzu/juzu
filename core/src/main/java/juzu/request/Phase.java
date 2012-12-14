@@ -125,7 +125,7 @@ public abstract class Phase implements Serializable {
       return ((juzu.View)annotation).id();
     }
 
-    public static class Dispatch extends Response.Update implements juzu.request.Dispatch {
+    public static class Dispatch extends Response.View implements juzu.request.Dispatch {
 
       /** . */
       private final AbstractDispatch delegate;

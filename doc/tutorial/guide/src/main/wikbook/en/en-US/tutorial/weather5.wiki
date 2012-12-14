@@ -26,7 +26,7 @@ The method is annotated with two annotations:
 The ##location## parameter is not declared in the route because it can be invoked by a form and the ##location##
 parameter is part of it.
 
-The method returns a ##Response.Update## object. This object instructs Juzu to use the ##index(String location)##
+The method returns a ##Response.View## object. This object instructs Juzu to use the ##index(String location)##
  controller view after the action. The ##Weather_## controller compagnion provides a type safe way for generating
  the response: ##Weather_.index(location)##. Our action just needs to return it, Juzu will take care of showing
  the corresponding view after invoking the action.

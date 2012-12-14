@@ -45,18 +45,18 @@ import java.util.Map;
  * </p>
  *
  * <h3>Proceed to render phase</h3>
- * <p>A <code>Response.Update</code> response instructs Juzu to proceed to the render phase of a valid view
+ * <p>A <code>Response.View</code> response instructs Juzu to proceed to the render phase of a valid view
  * controller, this kind of response can be created using an {@link juzu.request.ActionContext}, however the best
  * way is to use a controller companion class that carries method factories for creating render responses.</p>
  *
- * <p>Type safe {@link juzu.Response.Update} factory method are generated for each view or resource controller
+ * <p>Type safe {@link juzu.Response.View} factory method are generated for each view or resource controller
  * methods. The signature of an render factory is obtained by using the same signature of the controller method.</p> <p/>
  *
  * <code><pre>
  *    public class MyController {
  *
  *       &#064;Action
- *       public {@link juzu.Response.Update} myAction() {
+ *       public {@link juzu.Response.View} myAction() {
  *          return MyController_.myRender("hello");
  *       }
  *
@@ -168,20 +168,20 @@ public abstract class Response {
   /**
    * A response instructing to execute a render phase of a controller method after the current interaction.
    */
-  public static abstract class Update extends Response {
+  public static abstract class View extends Response {
 
     public abstract MethodHandle getTarget();
 
     public abstract Map<String, String[]> getParameters();
 
     @Override
-    public <T> Update with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Update)super.with(propertyType, propertyValue);
+    public <T> View with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (View)super.with(propertyType, propertyValue);
     }
 
     @Override
-    public Update withHeader(String name, String... value) {
-      return (Update)super.withHeader(name, value);
+    public View withHeader(String name, String... value) {
+      return (View)super.withHeader(name, value);
     }
 
     @Override
@@ -189,8 +189,8 @@ public abstract class Response {
       if (obj == this) {
         return true;
       }
-      if (obj instanceof Update) {
-        Update that = (Update)obj;
+      if (obj instanceof View) {
+        View that = (View)obj;
         return getParameters().equals(that.getParameters()) && properties.equals(that.properties);
       }
       return false;
@@ -198,7 +198,7 @@ public abstract class Response {
 
     @Override
     public String toString() {
-      return "Response.Update[target=" + getTarget() + ",parameters" + getParameters() + ",properties=" + properties + "]";
+      return "Response.View[target=" + getTarget() + ",parameters" + getParameters() + ",properties=" + properties + "]";
     }
   }
 

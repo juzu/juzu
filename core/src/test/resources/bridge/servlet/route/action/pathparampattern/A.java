@@ -24,13 +24,12 @@ import juzu.Controller;
 import juzu.Param;
 import juzu.Response;
 import juzu.Route;
-import juzu.View;
 import juzu.test.AbstractTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
 
-  @View
+  @juzu.View
   @Route("/")
   public Response.Content<?> index() {
 
@@ -48,11 +47,11 @@ public class A extends Controller {
 
   @Action
   @Route("/foo/{juu}")
-  public Response.Update foo(@Param(pattern = "juu") String juu) {
+  public Response.View foo(@Param(pattern = "juu") String juu) {
     return A_.bar(juu);
   }
 
-  @View
+  @juzu.View
   @Route("/bar")
   public Response.Content<?> bar(String juu) {
     return Response.ok("" + juu);

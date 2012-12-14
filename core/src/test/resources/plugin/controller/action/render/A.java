@@ -22,24 +22,23 @@ package plugin.controller.action.render;
 import juzu.Action;
 import juzu.Controller;
 import juzu.Response;
-import juzu.View;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Controller {
 
-  @View
+  @juzu.View
   public Response.Content<?> index() throws IOException {
     return Response.ok(A_.action().toString());
   }
 
   @Action
-  public Response.Update action() {
+  public Response.View action() {
     return A_.render("arg_value");
   }
 
-  @View(id = "render")
+  @juzu.View(id = "render")
   public void render(String arg) {
   }
 }

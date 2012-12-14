@@ -48,8 +48,8 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   }
 
   public String assertUpdate() {
-    if (response instanceof Response.Update) {
-      Response.Update update = (Response.Update)response;
+    if (response instanceof Response.View) {
+      Response.View update = (Response.View)response;
       DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
       Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
       return dispatch.with(update.getProperties()).toString();
@@ -72,7 +72,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
     for (Map.Entry<String, String> entry : expectedArguments.entrySet()) {
       a.put(entry.getKey(), new String[]{entry.getValue()});
     }
-    Response.Update resp = new Response.Update() {
+    Response.View resp = new Response.View() {
       @Override
       public MethodHandle getTarget() {
         return expectedTarget;
@@ -90,9 +90,9 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   }
 
   private void assertResponse(Response expectedResponse) {
-    if (expectedResponse instanceof Response.Update) {
-      Response.Update expected = (Response.Update)expectedResponse;
-      Response.Update resp = (Response.Update)response;
+    if (expectedResponse instanceof Response.View) {
+      Response.View expected = (Response.View)expectedResponse;
+      Response.View resp = (Response.View)response;
 
       AbstractTestCase.assertEquals(expected.getParameters().size(), expected.getParameters().size());
       for (String key : resp.getParameters().keySet()) {
@@ -109,7 +109,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
-    if (response instanceof Response.Update || response instanceof Response.Redirect) {
+    if (response instanceof Response.View || response instanceof Response.Redirect) {
       this.response = response;
     } else {
       throw new IllegalArgumentException();
