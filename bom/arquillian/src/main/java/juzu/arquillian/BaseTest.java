@@ -33,23 +33,36 @@ import java.io.InputStream;
 public class BaseTest {
 
   /**
+   * Create a base portlet war file. The returned war file is configured for running the Juzu
+   * servlet.
+   *
+   * @return the base servlet deployment
+   */
+  public static WebArchive createBaseServletDeployment() {
+    return createBaseDeployment("servlet/web.xml");
+  }
+
+  /**
    * Create a base portlet war file. The returned war file is configured for running the GateIn
    * embedded portlet container.
    *
    * @return the base portlet deployment
    */
   public static WebArchive createBasePortletDeployment() {
+    return createBaseDeployment("portlet/web.xml");
+  }
+
+  private static WebArchive createBaseDeployment(String webXML) {
     WebArchive war = ShrinkWrap.create(WebArchive.class);
 
     // Embedded portlet container configuration
-    InputStream in = BaseTest.class.getResourceAsStream("portlet/web.xml");
+    InputStream in = BaseTest.class.getResourceAsStream(webXML);
     if (in == null) {
-      throw new AssertionError("Could not find web.xml for embedded portlet container");
+      throw new AssertionError("Could not find web.xml for juzu portlet testing");
     }
     war.setWebXML(new ByteArrayAsset(in));
 
     //
     return war;
   }
-
 }
