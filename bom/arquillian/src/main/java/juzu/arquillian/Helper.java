@@ -26,11 +26,11 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import java.io.InputStream;
 
 /**
- * The base test provides helper method for setting up an Arquillian based test for Juzu.
+ * An helper class that provides helper methods for setting up an Arquillian based test for Juzu.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class BaseTest {
+public class Helper {
 
   /**
    * Create a base portlet war file. The returned war file is configured for running the Juzu
@@ -56,7 +56,7 @@ public class BaseTest {
     WebArchive war = ShrinkWrap.create(WebArchive.class);
 
     // Embedded portlet container configuration
-    InputStream in = BaseTest.class.getResourceAsStream(webXML);
+    InputStream in = Helper.class.getResourceAsStream(webXML);
     if (in == null) {
       throw new AssertionError("Could not find web.xml for juzu portlet testing");
     }

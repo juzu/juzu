@@ -19,7 +19,7 @@
 
 package org.sample.booking;
 
-import juzu.arquillian.BaseTest;
+import juzu.arquillian.Helper;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,10 +31,10 @@ import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
-public abstract class AbstractBookingTestCase extends BaseTest {
+public abstract class AbstractBookingTestCase {
 
   public static WebArchive createDeployment() {
-    WebArchive war = createBasePortletDeployment();
+    WebArchive war = Helper.createBasePortletDeployment();
     war.addAsWebInfResource(new File("src/main/webapp/WEB-INF/portlet.xml"));
     war.addAsWebResource(new File("src/main/webapp/public/javascripts/jquery-1.7.1.min.js"), "public/javascripts/jquery-1.7.1.min.js");
     war.addAsWebResource(new File("src/main/webapp/public/javascripts/jquery-ui-1.7.2.custom.min.js"), "public/javascripts/jquery-ui-1.7.2.custom.min.js");
