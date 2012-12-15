@@ -24,9 +24,10 @@ import juzu.PropertyType;
 import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
+import juzu.impl.request.Argument;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
@@ -67,6 +68,9 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   final MethodHandle target;
 
   /** . */
+  final Map<String, ? extends Argument> arguments;
+
+  /** . */
   protected Request request;
 
   RequestBridgeImpl(
@@ -75,12 +79,18 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
       HttpServletResponse resp,
       MethodHandle target,
       Map<String, String[]> parameters) {
+
+    Method<?> desc = application.getDescriptor().getControllers().getMethodByHandle(target);
+    Map<String, ? extends Argument> arguments = desc.getArguments(parameters);
+
+    //
     this.application = application;
     this.req = req;
     this.resp = resp;
     this.target = target;
     this.parameters = parameters;
     this.request = null;
+    this.arguments = arguments;
   }
 
   //
@@ -144,6 +154,10 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
 
   public MethodHandle getTarget() {
     return target;
+  }
+
+  public Map<String, ? extends Argument> getArguments() {
+    return arguments;
   }
 
   public final Map<String, String[]> getParameters() {
@@ -248,7 +262,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
         //
-        MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+        Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
         //
         appendable.append(req.getScheme());

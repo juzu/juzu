@@ -21,7 +21,6 @@ package juzu.impl.plugin.controller.metamodel;
 
 import juzu.Action;
 import juzu.Application;
-import juzu.Mapped;
 import juzu.Resource;
 import juzu.View;
 import juzu.impl.common.Name;
@@ -32,9 +31,11 @@ import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
+import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.Method;
+import juzu.impl.request.Parameter;
+import juzu.impl.request.PhaseParameter;
 import juzu.impl.plugin.controller.descriptor.ControllerDescriptor;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
-import juzu.impl.plugin.controller.descriptor.ParameterDescriptor;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.request.Request;
@@ -46,10 +47,7 @@ import juzu.request.Phase;
 import javax.annotation.Generated;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
@@ -65,13 +63,19 @@ import java.util.Set;
 public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private static final String METHOD_DESCRIPTOR = MethodDescriptor.class.getSimpleName();
+  private static final String METHOD_DESCRIPTOR = Method.class.getSimpleName();
 
   /** . */
   private static final String CONTROLLER_DESCRIPTOR = ControllerDescriptor.class.getSimpleName();
 
   /** . */
-  private static final String CONTROLLER_PARAMETER = ParameterDescriptor.class.getSimpleName();
+  private static final String PARAMETER = Parameter.class.getSimpleName();
+
+  /** . */
+  private static final String INVOCATION_PARAMETER = PhaseParameter.class.getSimpleName();
+
+  /** . */
+  private static final String CONTEXTUAL_PARAMETER = ContextualParameter.class.getSimpleName();
 
   /** . */
   private static final String PHASE = Phase.class.getSimpleName();
@@ -208,20 +212,23 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     // Check everything is OK here
-    for (ControllerMetaModel controller : application.getChild(ControllersMetaModel.KEY)) {
-      for (MethodMetaModel method : controller.getMethods()) {
-        ExecutableElement executableElt = application.model.processingContext.get(method.handle);
-        Iterator<? extends VariableElement> i = executableElt.getParameters().iterator();
-        for (ParameterMetaModel parameter : method.parameters) {
-          VariableElement ve = i.next();
-          TypeElement te = application.model.processingContext.get(parameter.getType());
-          if (!te.toString().equals("java.lang.String") && te.getAnnotation(Mapped.class) == null) {
-            // We should find out who was compiled the bean or the type containing a ref to the class
-            throw ControllerMetaModel.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(ve, ve.getSimpleName());
-          }
-        }
-      }
-    }
+//    for (ControllerMetaModel controller : application.getChild(ControllersMetaModel.KEY)) {
+//      for (MethodMetaModel method : controller.getMethods()) {
+//        ExecutableElement executableElt = application.model.processingContext.get(method.handle);
+//        Iterator<? extends VariableElement> i = executableElt.getParameters().iterator();
+//        for (ParameterMetaModel parameter : method.parameters) {
+//          VariableElement ve = i.next();
+//          if (parameter instanceof InvocationParameterMetaModel) {
+//            InvocationParameterMetaModel invocationParameter = (InvocationParameterMetaModel)parameter;
+//            TypeElement te = application.model.processingContext.get(invocationParameter.getType());
+//            if (!te.toString().equals("java.lang.String") && te.getAnnotation(Mapped.class) == null) {
+//              // We should find out who was compiled the bean or the type containing a ref to the class
+//              throw ControllerMetaModel.CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(ve, ve.getSimpleName());
+//            }
+//          }
+//        }
+//      }
+//    }
 
     // Emit controllers
     for (Iterator<ControllerMetaModel> i = written.iterator();i.hasNext();) {
@@ -244,8 +251,10 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("package ").append(fqn.getParent()).append(";\n");
 
       // Imports
-      writer.append("import ").append(MethodDescriptor.class.getCanonicalName()).append(";\n");
-      writer.append("import ").append(ParameterDescriptor.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Method.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Parameter.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(PhaseParameter.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(ContextualParameter.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(Tools.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(Arrays.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(Phase.class.getCanonicalName()).append(";\n");
@@ -263,6 +272,8 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       for (MethodMetaModel method : methods) {
         String methodRef = "method_" + index++;
 
+
+
         // Method constant
         writer.append("private static final ").append(METHOD_DESCRIPTOR).append("<");
         Tools.nameOf(method.getPhase().getClass(), writer);
@@ -279,56 +290,71 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
         writer.append(PHASE).append(".").append(method.getPhase().name()).append(",");
         writer.append(fqn).append(".class").append(",");
         writer.append(TOOLS).append(".safeGetMethod(").append(fqn).append(".class,\"").append(method.getName()).append("\"");
-        for (ParameterMetaModel param : method.getParameters()) {
-          writer.append(",").append(param.typeLiteral).append(".class");
+        for (ParameterMetaModel parameter : method.getParameters()) {
+          writer.append(",").append(parameter.typeLiteral).append(".class");
         }
-        writer.append(")");
-        writer.append(", Arrays.<").append(CONTROLLER_PARAMETER).append(">asList(");
+        writer.append(')');
+        writer.append(", Arrays.<").append(PARAMETER).append(">asList(");
         for (int i = 0;i < method.getParameters().size();i++) {
+          ParameterMetaModel parameter = method.getParameters().get(i);
           if (i > 0) {
-            writer.append(",");
+            writer.append(',');
           }
-          ParameterMetaModel param = method.getParameter(i);
-          writer.append("new ").
-            append(CONTROLLER_PARAMETER).append('(').
-            append('"').append(param.getName()).append('"').append(',').
-            append(CARDINALITY).append('.').append(param.getCardinality().name()).append(',').
-            append("null,").
-            append(param.typeLiteral).append(".class").
-            append(')');
+          if (parameter instanceof PhaseParameterMetaModel) {
+            PhaseParameterMetaModel invocationParameter = (PhaseParameterMetaModel)parameter;
+            writer.append("new ").
+                append(INVOCATION_PARAMETER).append('(').
+                append('"').append(parameter.getName()).append('"').append(',').
+                append(parameter.typeLiteral).append(".class").append(',').
+                append(CARDINALITY).append('.').append(invocationParameter.getCardinality().name()).
+                append(')');
+          } else {
+            writer.append("new ").
+                append(CONTEXTUAL_PARAMETER).append('(').
+                append('"').append(parameter.getName()).append('"').append(',').
+                append(parameter.typeLiteral).append(".class").
+                append(')');
+          }
         }
-        writer.append(")");
+        writer.append(')');
         writer.append(");\n");
 
         //
         String dispatchType = DISPATCH_TYPE.get(method.getPhase());
 
+        // Build list of invocation parameters
+        ArrayList<PhaseParameterMetaModel> parameters = new ArrayList<PhaseParameterMetaModel>(method.getParameters().size());
+        for (ParameterMetaModel parameter : method.getParameters()) {
+          if (parameter instanceof PhaseParameterMetaModel) {
+            parameters.add((PhaseParameterMetaModel)parameter);
+          }
+        }
+
         // Dispatch literal
         writer.append("public static ").append(dispatchType).append(" ").append(method.getName()).append("(");
-        for (int j = 0;j < method.getParameters().size();j++) {
-          if (j > 0) {
+        for (int i = 0;i < parameters.size();i++) {
+          PhaseParameterMetaModel parameter = parameters.get(i);
+          if (i > 0) {
             writer.append(',');
           }
-          ParameterMetaModel param = method.getParameter(j);
-          writer.append(param.typeLiteral).append(" ").append(param.getName());
+          writer.append(parameter.typeLiteral).append(" ").append(parameter.getName());
         }
         writer.append(") { return Request.getCurrent().getContext().create").append(method.getPhase().getClass().getSimpleName()).append("Dispatch(").append(methodRef);
-        switch (method.getParameters().size()) {
+        switch (parameters.size()) {
           case 0:
             break;
           case 1:
-            writer.append(",(Object)").append(method.getParameter(0).getName());
+            writer.append(",(Object)").append(parameters.get(0).getName());
             break;
           default:
             writer.append(",new Object[]{");
-            for (int j = 0;j < method.getParameters().size();j++) {
+            for (int j = 0;j < parameters.size();j++) {
               if (j > 0) {
                 writer.append(",");
               }
-              ParameterMetaModel param = method.getParameter(j);
-              writer.append(param.getName());
+              writer.append(method.getParameter(j).getName());
             }
-            writer.append("}");
+            writer.append('}');
             break;
         }
         writer.append("); }\n");

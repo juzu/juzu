@@ -25,6 +25,7 @@ import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
+import juzu.impl.plugin.controller.metamodel.PhaseParameterMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
@@ -98,11 +99,14 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
               Integer priority = (Integer)annotation.get("priority");
               HashMap<String, String> parameters = null;
               for (ParameterMetaModel parameter : method.getParameters()) {
-                if (parameter.getPattern() != null) {
-                  if (parameters == null) {
-                    parameters = new HashMap<String, String>();
+                if (parameter instanceof PhaseParameterMetaModel) {
+                  PhaseParameterMetaModel invocationParameter = (PhaseParameterMetaModel)parameter;
+                  if (invocationParameter.getPattern() != null) {
+                    if (parameters == null) {
+                      parameters = new HashMap<String, String>();
+                    }
+                    parameters.put(invocationParameter.getName(), invocationParameter.getPattern());
                   }
-                  parameters.put(parameter.getName(), parameter.getPattern());
                 }
               }
               RouteMetaModel route = root.addChild(priority != null ? priority : 0, path, parameters);

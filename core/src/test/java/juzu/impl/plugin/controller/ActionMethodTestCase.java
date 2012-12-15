@@ -20,8 +20,9 @@
 package juzu.impl.plugin.controller;
 
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
-import juzu.impl.plugin.controller.descriptor.ParameterDescriptor;
+import juzu.impl.request.Method;
+import juzu.impl.request.Parameter;
+import juzu.impl.request.PhaseParameter;
 import juzu.impl.common.Cardinality;
 import juzu.request.Phase;
 import juzu.test.AbstractTestCase;
@@ -54,17 +55,17 @@ public class ActionMethodTestCase extends AbstractTestCase {
 
   @Test
   public void testNoArg() throws Exception {
-    MethodDescriptor cm = descriptor.getControllers().getMethod(aClass, "noArg");
+    Method cm = descriptor.getControllers().getMethod(aClass, "noArg");
     assertEquals("noArg", cm.getName());
     assertEquals(Phase.ACTION, cm.getPhase());
-    assertEquals(Collections.<ParameterDescriptor>emptyList(), cm.getArguments());
+    assertEquals(Collections.<Parameter>emptyList(), cm.getParameters());
   }
 
   @Test
   public void testStringArg() throws Exception {
-    MethodDescriptor cm = descriptor.getControllers().getMethod(aClass, "oneArg", String.class);
+    Method cm = descriptor.getControllers().getMethod(aClass, "oneArg", String.class);
     assertEquals("oneArg", cm.getName());
     assertEquals(Phase.ACTION, cm.getPhase());
-    assertEquals(Arrays.asList(new ParameterDescriptor("foo", Cardinality.SINGLE)), cm.getArguments());
+    assertEquals(Arrays.asList(new PhaseParameter("foo", null, Cardinality.SINGLE)), cm.getParameters());
   }
 }

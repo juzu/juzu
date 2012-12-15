@@ -19,6 +19,7 @@
 
 package juzu.impl.plugin.controller.metamodel;
 
+import juzu.Mapped;
 import juzu.Param;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
@@ -181,7 +182,11 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
             ElementHandle.Class a = ElementHandle.Class.create(te);
 
             //
-            parameters.add(new ParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral, pattern));
+            if (te.toString().equals("java.lang.String") || te.getAnnotation(Mapped.class) != null) {
+              parameters.add(new PhaseParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral, pattern));
+            } else {
+              parameters.add(new ContextualParameterMetaModel(parameterName, typeLiteral));
+            }
           }
 
           //

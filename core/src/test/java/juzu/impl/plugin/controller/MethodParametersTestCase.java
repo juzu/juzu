@@ -124,4 +124,21 @@ public class MethodParametersTestCase extends AbstractInjectTestCase {
     MockRenderBridge m2 = (MockRenderBridge)client.invoke(action.assertUpdate());
     assertEquals(expected, m2.assertStringResult());
   }
+
+  public static boolean WAS_NULL;
+
+  @Test
+  public void testUnresolvedContext() throws Exception {
+    MockApplication<?> app = application("plugin.controller.method.parameters.context.unresolved").init();
+
+    //
+    MockClient client = app.client();
+
+    //
+    MockRenderBridge render = client.render("index");
+
+    assertTrue(WAS_NULL);
+
+//    MockRenderBridge mv = (MockRenderBridge)client.invoke(render.assertStringResult());
+  }
 }

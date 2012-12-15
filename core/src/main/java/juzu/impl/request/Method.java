@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.controller.descriptor;
+package juzu.impl.request;
 
 import juzu.Mapped;
 import juzu.impl.common.MethodHandle;
@@ -27,7 +27,6 @@ import juzu.request.Phase;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +44,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class MethodDescriptor<P extends Phase> {
+public final class Method<P extends Phase> {
 
   /** . */
   private final String id;
@@ -57,13 +56,13 @@ public final class MethodDescriptor<P extends Phase> {
   private final Class<?> type;
 
   /** . */
-  private final Method method;
+  private final java.lang.reflect.Method method;
 
   /** . */
-  private final List<ParameterDescriptor> argumentList;
+  private final List<Parameter> parameterList;
 
   /** . */
-  private final Map<String, ParameterDescriptor> argumentMap;
+  private final Map<String, Parameter> parameterMap;
 
   /** . */
   private final boolean requiresPrefix;
@@ -71,23 +70,23 @@ public final class MethodDescriptor<P extends Phase> {
   /** . */
   private final MethodHandle handle;
 
-  public MethodDescriptor(
+  public Method(
       String id,
       P phase,
       Class<?> type,
-      Method method,
-      List<ParameterDescriptor> argumentList) {
+      java.lang.reflect.Method method,
+      List<Parameter> parameterList) {
 
     //
-    LinkedHashMap<String, ParameterDescriptor> argumentMap = new LinkedHashMap<String, ParameterDescriptor>();
-    for (ParameterDescriptor argument : argumentList) {
+    LinkedHashMap<String, Parameter> argumentMap = new LinkedHashMap<String, Parameter>();
+    for (Parameter argument : parameterList) {
       argumentMap.put(argument.getName(), argument);
     }
 
     //
     boolean requiresPrefix = false;
     HashSet<String> set = new HashSet<String>();
-    for (ParameterDescriptor argument : argumentList) {
+    for (Parameter argument : parameterList) {
       if (argument.getType() == String.class) {
         if (!set.add(argument.getName())) {
           requiresPrefix = true;
@@ -101,7 +100,7 @@ public final class MethodDescriptor<P extends Phase> {
             break;
           }
         }
-        for (Method beanMethod : argument.getType().getMethods()) {
+        for (java.lang.reflect.Method beanMethod : argument.getType().getMethods()) {
           String methodName = beanMethod.getName();
           if (methodName.length() > 3 &&
             methodName.startsWith("get") &&
@@ -123,8 +122,8 @@ public final class MethodDescriptor<P extends Phase> {
     this.phase = phase;
     this.type = type;
     this.method = method;
-    this.argumentList = Tools.safeUnmodifiableList(argumentList);
-    this.argumentMap = Collections.unmodifiableMap(argumentMap);
+    this.parameterList = Tools.safeUnmodifiableList(parameterList);
+    this.parameterMap = Collections.unmodifiableMap(argumentMap);
     this.requiresPrefix = requiresPrefix;
     this.handle = new MethodHandle(method);
   }
@@ -145,7 +144,7 @@ public final class MethodDescriptor<P extends Phase> {
     return type;
   }
 
-  public Method getMethod() {
+  public java.lang.reflect.Method getMethod() {
     return method;
   }
 
@@ -153,64 +152,69 @@ public final class MethodDescriptor<P extends Phase> {
     return method.getName();
   }
 
-  public ParameterDescriptor getArgument(String name) {
-    return argumentMap.get(name);
+  public Parameter getParameter(String name) {
+    return parameterMap.get(name);
   }
 
-  public List<ParameterDescriptor> getArguments() {
-    return argumentList;
+  public List<Parameter> getParameters() {
+    return parameterList;
   }
 
-  public Set<String> getArgumentNames() {
-    return argumentMap.keySet();
+  public Set<String> getParameterNames() {
+    return parameterMap.keySet();
   }
 
   public void setArgs(Object[] args, ParameterMap parameterMap) {
-    for (int j = 0;j < argumentList.size();j++) {
-      Object value = args[j];
-      if (value != null) {
-        ParameterDescriptor parameter = argumentList.get(j);
-        String name = parameter.getName();
-        switch (parameter.getCardinality()) {
-          case SINGLE: {
-            if (parameter.getType().isAnnotationPresent(Mapped.class)) {
-              Map<String, String[]> p = buildBeanParameter(name, value);
-              parameterMap.setParameters(p);
+    int index = 0;
+    for (Parameter parameter : parameterList) {
+      if (parameter instanceof PhaseParameter) {
+        PhaseParameter invocationParameter = (PhaseParameter)parameter;
+        Object value = args[index++];
+        if (value != null) {
+          if (parameter instanceof PhaseParameter) {
+            String name = parameter.getName();
+            switch (invocationParameter.getCardinality()) {
+              case SINGLE: {
+                if (parameter.getType().isAnnotationPresent(Mapped.class)) {
+                  Map<String, String[]> p = buildBeanParameter(name, value);
+                  parameterMap.setParameters(p);
+                }
+                else {
+                  parameterMap.setParameter(name, String.valueOf(value));
+                }
+                break;
+              }
+              case ARRAY: {
+                int length = Array.getLength(value);
+                String[] array = new String[length];
+                for (int i = 0;i < length;i++) {
+                  Object component = Array.get(value, i);
+                  array[i] = String.valueOf(component);
+                }
+                parameterMap.setParameter(name, array);
+                break;
+              }
+              case LIST: {
+                Collection<?> c = (Collection<?>)value;
+                int length = c.size();
+                String[] array = new String[length];
+                Iterator<?> iterator = c.iterator();
+                for (int i = 0;i < length;i++) {
+                  Object element = iterator.next();
+                  array[i] = String.valueOf(element);
+                }
+                parameterMap.setParameter(name, array);
+                break;
+              }
+              default:
+                throw new UnsupportedOperationException("Not yet implemented");
             }
-            else {
-              parameterMap.setParameter(name, String.valueOf(value));
-            }
-            break;
           }
-          case ARRAY: {
-            int length = Array.getLength(value);
-            String[] array = new String[length];
-            for (int i = 0;i < length;i++) {
-              Object component = Array.get(value, i);
-              array[i] = String.valueOf(component);
-            }
-            parameterMap.setParameter(name, array);
-            break;
-          }
-          case LIST: {
-            Collection<?> c = (Collection<?>)value;
-            int length = c.size();
-            String[] array = new String[length];
-            Iterator<?> iterator = c.iterator();
-            for (int i = 0;i < length;i++) {
-              Object element = iterator.next();
-              array[i] = String.valueOf(element);
-            }
-            parameterMap.setParameter(name, array);
-            break;
-          }
-          default:
-            throw new UnsupportedOperationException("Not yet implemented");
+
+
+          // Yeah OK nasty cast, we'll see later
+          // parameter.setValue(parameterMap, value);
         }
-
-
-        // Yeah OK nasty cast, we'll see later
-        // parameter.setValue(parameterMap, value);
       }
     }
   }
@@ -229,7 +233,7 @@ public final class MethodDescriptor<P extends Phase> {
         addParameter(parameters, name, f.getType(), v);
       }
 
-      for (Method m : value.getClass().getMethods()) {
+      for (java.lang.reflect.Method m : value.getClass().getMethods()) {
         if (m.getName().startsWith("get") && m.getName().length() > 3 && m.getParameterTypes().length == 0) {
           Object v = m.invoke(value);
           if (v == null) {
@@ -260,41 +264,88 @@ public final class MethodDescriptor<P extends Phase> {
     }
   }
 
+  public Map<String, PhaseArgument> getArguments(Map<String, String[]> parameterMap) {
+    Map<String, PhaseArgument> arguments = new HashMap<String, PhaseArgument>();
+    for (Parameter parameter : this.parameterMap.values()) {
+      if (parameter instanceof PhaseParameter) {
+        PhaseParameter phaseParameter = (PhaseParameter)parameter;
+        Class<?> type = phaseParameter.getType();
+        Object[] values;
+        if (type.isAnnotationPresent(Mapped.class)) {
+          // build bean parameter
+          Object o = null;
+          try {
+            o = createMappedBean(type, parameter.getName(), parameterMap);
+          }
+          catch (Exception e) {
+          }
+          values = new Object[]{o};
+        }
+        else {
+          values = parameterMap.get(parameter.getName());
+        }
+        if (values != null) {
+          Object arg;
+          switch (phaseParameter.getCardinality()) {
+            case SINGLE:
+              arg = (values.length > 0) ? values[0] : null;
+              break;
+            case ARRAY:
+              arg = values.clone();
+              break;
+            case LIST:
+              ArrayList<Object> list = new ArrayList<Object>(values.length);
+              Collections.addAll(list, values);
+              arg = list;
+              break;
+            default:
+              throw new UnsupportedOperationException("Handle me gracefully");
+          }
+          arguments.put(parameter.getName(), new PhaseArgument(phaseParameter, arg));
+        }
+      }
+    }
+    return arguments;
+  }
+
   public Object[] getArgs(Map<String, String[]> parameterMap) {
     // Prepare method parameters
     Class<?>[] paramsType = method.getParameterTypes();
-    Object[] args = new Object[argumentList.size()];
+    Object[] args = new Object[parameterList.size()];
     for (int i = 0;i < args.length;i++) {
-      ParameterDescriptor parameter = argumentList.get(i);
-      Object[] values;
-      if (paramsType[i].isAnnotationPresent(Mapped.class)) {
-        // build bean parameter
-        Object o = null;
-        try {
-          o = createMappedBean(paramsType[i], parameter.getName(), parameterMap);
+      Parameter parameter = parameterList.get(i);
+      if (parameter instanceof PhaseParameter) {
+        PhaseParameter invocationParameter = (PhaseParameter)parameter;
+        Object[] values;
+        if (paramsType[i].isAnnotationPresent(Mapped.class)) {
+          // build bean parameter
+          Object o = null;
+          try {
+            o = createMappedBean(paramsType[i], parameter.getName(), parameterMap);
+          }
+          catch (Exception e) {
+          }
+          values = new Object[]{o};
         }
-        catch (Exception e) {
+        else {
+          values = parameterMap.get(parameter.getName());
         }
-        values = new Object[]{o};
-      }
-      else {
-        values = parameterMap.get(parameter.getName());
-      }
-      if (values != null) {
-        switch (parameter.getCardinality()) {
-          case SINGLE:
-            args[i] = (values.length > 0) ? values[0] : null;
-            break;
-          case ARRAY:
-            args[i] = values.clone();
-            break;
-          case LIST:
-            ArrayList<Object> list = new ArrayList<Object>(values.length);
-            Collections.addAll(list, values);
-            args[i] = list;
-            break;
-          default:
-            throw new UnsupportedOperationException("Handle me gracefully");
+        if (values != null) {
+          switch (invocationParameter.getCardinality()) {
+            case SINGLE:
+              args[i] = (values.length > 0) ? values[0] : null;
+              break;
+            case ARRAY:
+              args[i] = values.clone();
+              break;
+            case LIST:
+              ArrayList<Object> list = new ArrayList<Object>(values.length);
+              Collections.addAll(list, values);
+              args[i] = list;
+              break;
+            default:
+              throw new UnsupportedOperationException("Handle me gracefully");
+          }
         }
       }
     }
@@ -350,7 +401,7 @@ public final class MethodDescriptor<P extends Phase> {
 
   <T> boolean callSetter(String methodName, Class<T> clazz, T target, Object value, Class type) {
     try {
-      Method m = clazz.getMethod(methodName, type);
+      java.lang.reflect.Method m = clazz.getMethod(methodName, type);
       m.invoke(target, value);
       return true;
     }
@@ -369,7 +420,7 @@ public final class MethodDescriptor<P extends Phase> {
       if (i > 0) {
         sb.append(',');
       }
-      sb.append(argumentList.get(i).getName()).append("=").append(types[i].getName());
+      sb.append(parameterList.get(i).getName()).append("=").append(types[i].getName());
     }
     sb.append(")]");
     return sb.toString();

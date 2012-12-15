@@ -17,26 +17,39 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.servlet;
+package juzu.impl.request;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.bridge.spi.MimeBridge;
-import juzu.impl.request.Method;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import juzu.impl.common.Cardinality;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
+public class PhaseParameter extends Parameter {
 
-  ServletMimeBridge(
-      ApplicationContext application,
-      Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      Method<?> target,
-      Map<String, String[]> parameters) {
-    super(application, handler, req, resp, target, parameters);
+  /** . */
+  private final Cardinality cardinality;
+
+  public PhaseParameter(String name, Class<?> type, Cardinality cardinality) throws NullPointerException {
+    super(name, type);
+
+    //
+    if (cardinality == null) {
+      throw new NullPointerException("No null parameter cardinality accepted");
+    }
+
+    //
+    this.cardinality = cardinality;
+  }
+
+  @Override
+  public PhaseArgument create(Object value) {
+    return new PhaseArgument(this, value);
+  }
+
+  /**
+   * Returns the parameter cardinality.
+   *
+   * @return the parameter cardinality
+   */
+  public Cardinality getCardinality() {
+    return cardinality;
   }
 }

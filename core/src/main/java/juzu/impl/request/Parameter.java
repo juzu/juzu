@@ -17,45 +17,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.controller.descriptor;
-
-import juzu.impl.common.Cardinality;
+package juzu.impl.request;
 
 /**
  * A parameter of a controller
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ParameterDescriptor {
+public abstract class Parameter {
 
   /** . */
   private final String name;
 
   /** . */
-  private final Cardinality cardinality;
-
-  /** . */
   private final Class<?> type;
 
-  public ParameterDescriptor(String name, Cardinality cardinality) throws NullPointerException {
-    this(name, cardinality, null);
-  }
-
-  public ParameterDescriptor(String name, Cardinality cardinality, String value) throws NullPointerException {
-    this(name, cardinality, value, null);
-  }
-
-  public ParameterDescriptor(String name, Cardinality cardinality, String value, Class<?> type) throws NullPointerException {
+  public Parameter(String name, Class<?> type) throws NullPointerException {
     if (name == null) {
       throw new NullPointerException("No null parameter name accepted");
-    }
-    if (cardinality == null) {
-      throw new NullPointerException("No null parameter cardinality accepted");
     }
 
     //
     this.name = name;
-    this.cardinality = cardinality;
     this.type = type;
   }
 
@@ -68,26 +51,19 @@ public class ParameterDescriptor {
     return name;
   }
 
-  /**
-   * Returns the parameter cardinality.
-   *
-   * @return the parameter cardinality
-   */
-  public Cardinality getCardinality() {
-    return cardinality;
-  }
-
   public Class<?> getType() {
     return type;
   }
+
+  public abstract Argument create(Object value);
 
   @Override
   public boolean equals(Object obj) {
     if (obj == this) {
       return true;
     }
-    else if (obj instanceof ParameterDescriptor) {
-      ParameterDescriptor that = (ParameterDescriptor)obj;
+    else if (obj instanceof Parameter) {
+      Parameter that = (Parameter)obj;
       return name.equals(that.name);
     }
     else {

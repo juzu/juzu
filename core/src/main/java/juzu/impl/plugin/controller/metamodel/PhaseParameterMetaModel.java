@@ -17,36 +17,57 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.controller.descriptor;
+package juzu.impl.plugin.controller.metamodel;
 
-import juzu.impl.request.Method;
-
-import java.util.Collections;
-import java.util.List;
+import juzu.impl.common.Cardinality;
+import juzu.impl.common.JSON;
+import juzu.impl.compiler.ElementHandle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerDescriptor {
+public class PhaseParameterMetaModel extends ParameterMetaModel {
 
   /** . */
-  private final Class<?> type;
+  final Cardinality cardinality;
 
   /** . */
-  private final List<Method<?>> methods;
+  final ElementHandle.Class type;
 
-  public ControllerDescriptor(Class<?> type, List<Method<?>> methods) {
+  /** . */
+  final String pattern;
+
+  public PhaseParameterMetaModel(
+      String name,
+      Cardinality cardinality,
+      ElementHandle.Class type,
+      String typeLiteral,
+      String pattern) {
+    super(name, typeLiteral);
+
+    //
+    this.cardinality = cardinality;
     this.type = type;
-    this.methods = Collections.unmodifiableList(methods);
+    this.pattern = pattern;
   }
 
-  public String getTypeName() {
-    return type.getName();
+  public Cardinality getCardinality() {
+    return cardinality;
   }
 
-  public Class<?> getType() {
+  public ElementHandle.Class getType() {
     return type;
   }
 
-  public List<Method<?>> getMethods() {
-    return methods;
+  public String getPattern() {
+    return pattern;
+  }
+
+  @Override
+  public JSON toJSON() {
+    return new JSON().
+        set("name", name).
+        set("type", type).
+        set("typeLiteral", typeLiteral).
+        set("cardinality", cardinality).
+        set("pattern", pattern);
   }
 }

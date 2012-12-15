@@ -17,26 +17,22 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.servlet;
+package plugin.controller.contextual;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.bridge.spi.MimeBridge;
+import juzu.impl.plugin.application.ApplicationException;
+import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
+import juzu.impl.request.Request;
+import juzu.impl.request.RequestFilter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import java.io.ByteArrayInputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
-
-  ServletMimeBridge(
-      ApplicationContext application,
-      Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      Method<?> target,
-      Map<String, String[]> parameters) {
-    super(application, handler, req, resp, target, parameters);
+public class Contextualizer implements RequestFilter {
+  public void invoke(Request request) throws ApplicationException {
+    Method m = request.getContext().getMethod();
+    ContextualParameter in = (ContextualParameter)m.getParameter("in");
+    request.setArgument(in, new ByteArrayInputStream("__foo__".getBytes()));
+    request.invoke();
   }
 }

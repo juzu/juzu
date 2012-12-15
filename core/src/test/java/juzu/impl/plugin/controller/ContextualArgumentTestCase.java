@@ -17,33 +17,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.request;
+package juzu.impl.plugin.controller;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.request.Method;
-import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.RenderBridge;
+import junit.framework.Assert;
+import juzu.impl.inject.spi.InjectorProvider;
+import juzu.test.AbstractTestCase;
+import juzu.test.protocol.mock.MockApplication;
+import juzu.test.protocol.mock.MockClient;
+import juzu.test.protocol.mock.MockRenderBridge;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderContext extends MimeContext {
+public class ContextualArgumentTestCase extends AbstractTestCase {
 
-  /** . */
-  private RenderBridge bridge;
-
-  public RenderContext(Request request, ApplicationContext application, Method method, RenderBridge bridge) {
-    super(request, application, method);
-
-    //
-    this.bridge = bridge;
+  public ContextualArgumentTestCase() {
   }
 
-  @Override
-  protected RenderBridge getBridge() {
-    return bridge;
-  }
-
-  @Override
-  public Phase getPhase() {
-    return Phase.VIEW;
+  @Test
+  public void testFoo() throws Exception {
+    // We only use CDI for its capability to discover beans automatically
+    MockApplication<?> application = application(InjectorProvider.CDI_WELD, "plugin.controller.contextual");
+    application.init();
+    MockClient client = application.client();
+    MockRenderBridge request = client.render();
+    Assert.assertEquals("__foo__", request.assertStringResult());
   }
 }
+

@@ -24,7 +24,7 @@ import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;
@@ -77,7 +77,7 @@ public class HttpServletImpl extends HttpServlet {
 
     //
     if (method == null) {
-      MethodDescriptor descriptor = application.getContext().getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+      Method descriptor = application.getContext().getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
       method = descriptor != null ? descriptor.getHandle() : null;
     }
 

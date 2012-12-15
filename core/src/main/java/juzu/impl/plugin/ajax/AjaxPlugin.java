@@ -31,7 +31,7 @@ import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.application.ApplicationPlugin;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.io.Stream;
@@ -51,7 +51,7 @@ import java.util.Map;
 public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
-  Map<String, MethodDescriptor> table;
+  Map<String, Method> table;
 
   @Inject
   ApplicationDescriptor desc;
@@ -88,8 +88,8 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         url);
 
     //
-    Map<String, MethodDescriptor> table = new HashMap<String, MethodDescriptor>();
-    for (MethodDescriptor cm : desc.getControllers().getMethods()) {
+    Map<String, Method> table = new HashMap<String, Method>();
+    for (Method cm : desc.getControllers().getMethods()) {
       Ajax ajax = cm.getMethod().getAnnotation(Ajax.class);
       if (ajax != null) {
         table.put(cm.getName(), cm);
@@ -126,7 +126,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
             stream.append("<div class=\"jz\">\n");
 
             //
-            for (Map.Entry<String, MethodDescriptor> entry : table.entrySet()) {
+            for (Map.Entry<String, Method> entry : table.entrySet()) {
               String baseURL = request.getContext().createDispatch(entry.getValue()).toString();
               stream.append("<div data-method-id=\"");
               stream.append(entry.getValue().getId());

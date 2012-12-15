@@ -24,10 +24,10 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.common.Tools;
+import juzu.impl.request.Method;
 import juzu.io.AppendableStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,7 +61,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,
-      MethodHandle target,
+      Method<?> target,
       Map<String, String[]> parameters) {
     super(application, handler, req, resp, target, parameters);
   }

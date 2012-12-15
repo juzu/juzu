@@ -22,7 +22,7 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.Response;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
@@ -69,7 +69,7 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
       }
 
       //
-      MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
+      Method method = application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
 
       // Method id
       super.resp.setRenderParameter("juzu.op", method.getId());

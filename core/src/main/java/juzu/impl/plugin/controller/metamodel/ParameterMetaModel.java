@@ -19,65 +19,27 @@
 
 package juzu.impl.plugin.controller.metamodel;
 
-import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModelObject;
-import juzu.impl.common.Cardinality;
-import juzu.impl.common.JSON;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ParameterMetaModel extends MetaModelObject {
+public abstract class ParameterMetaModel extends MetaModelObject {
 
   /** . */
   final String name;
 
   /** . */
-  final Cardinality cardinality;
-
-  /** . */
-  final ElementHandle.Class type;
-
-  /** . */
   final String typeLiteral;
 
-  /** . */
-  final String pattern;
-
-  public ParameterMetaModel(
-      String name,
-      Cardinality cardinality,
-      ElementHandle.Class type,
-      String typeLiteral,
-      String pattern) {
+  protected ParameterMetaModel(String name, String typeLiteral) {
     this.name = name;
-    this.cardinality = cardinality;
-    this.type = type;
     this.typeLiteral = typeLiteral;
-    this.pattern = pattern;
   }
 
   public String getName() {
     return name;
   }
 
-  public Cardinality getCardinality() {
-    return cardinality;
-  }
-
-  public ElementHandle.Class getType() {
-    return type;
-  }
-
-  public String getPattern() {
-    return pattern;
-  }
-
-  @Override
-  public JSON toJSON() {
-    return new JSON().
-      set("name", name).
-      set("type", type).
-      set("typeLiteral", typeLiteral).
-      set("cardinality", cardinality).
-      set("pattern", pattern);
+  public String getTypeLiteral() {
+    return typeLiteral;
   }
 }

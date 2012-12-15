@@ -20,7 +20,7 @@
 package juzu.request;
 
 import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.ResourceBridge;
 
@@ -30,7 +30,7 @@ public class ResourceContext extends MimeContext {
   /** . */
   private ResourceBridge bridge;
 
-  public ResourceContext(Request request, ApplicationContext application, MethodDescriptor method, ResourceBridge bridge) {
+  public ResourceContext(Request request, ApplicationContext application, Method method, ResourceBridge bridge) {
     super(request, application, method);
 
     //

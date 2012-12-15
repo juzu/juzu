@@ -17,26 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.servlet;
+package plugin.controller.contextual;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.bridge.spi.MimeBridge;
-import juzu.impl.request.Method;
+import juzu.Response;
+import juzu.View;
+import juzu.impl.common.Tools;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
+public class A {
 
-  ServletMimeBridge(
-      ApplicationContext application,
-      Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      Method<?> target,
-      Map<String, String[]> parameters) {
-    super(application, handler, req, resp, target, parameters);
+  @View
+  public Response.Content.Render index(InputStream in) throws IOException {
+    String s = Tools.read(in);
+    return Response.render(s);
   }
 }

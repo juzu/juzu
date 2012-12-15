@@ -24,7 +24,7 @@ import juzu.UndeclaredIOException;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.request.Request;
@@ -126,7 +126,7 @@ public class ApplicationContext {
 
     //
     MethodHandle handle = bridge.getTarget();
-    MethodDescriptor method = controller.getDescriptor().getMethodByHandle(handle);
+    Method method = controller.getDescriptor().getMethodByHandle(handle);
 
     //
     if (method == null) {
@@ -144,8 +144,7 @@ public class ApplicationContext {
     }
 
     //
-    Object[] args = method.getArgs(parameters);
-    Request request = new Request(this, method, parameters, args, bridge);
+    Request request = new Request(this, method, parameters, bridge);
 
     //
     ClassLoader oldCL = Thread.currentThread().getContextClassLoader();

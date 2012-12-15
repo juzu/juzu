@@ -26,9 +26,10 @@ import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerResolver;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
+import juzu.impl.request.Argument;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.bridge.portlet.JuzuPortlet;
@@ -76,6 +77,9 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   protected final MethodHandle target;
 
   /** . */
+  protected final Map<String, ? extends Argument> arguments;
+
+  /** . */
   protected final Map<String, String[]> parameters;
 
   /** . */
@@ -112,19 +116,23 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
 
     //
     Phase phase = getPhase();
-    ControllerResolver<MethodDescriptor> resolver = application.getDescriptor().getControllers().getResolver();
-    MethodDescriptor target;
+    ControllerResolver<Method> resolver = application.getDescriptor().getControllers().getResolver();
+    Method<?> target;
     if (methodId != null) {
       target = resolver.resolve(phase, methodId, parameters.keySet());
     } else {
       target = resolver.resolve(parameters.keySet());
     }
 
+    // Get argument map
+    Map<String, ? extends Argument> arguments = target.getArguments(parameters);
+
     //
     this.application = application;
     this.req = req;
     this.resp = resp;
     this.target = target.getHandle();
+    this.arguments = arguments;
     this.parameters = parameters;
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
@@ -133,6 +141,10 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   }
 
   protected abstract Phase getPhase();
+
+  public Map<String, ? extends Argument> getArguments() {
+    return arguments;
+  }
 
   public <T> T getProperty(PropertyType<T> propertyType) {
     Object propertyValue = null;
@@ -356,7 +368,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
           MimeResponse mimeResp = (MimeResponse)resp;
 
           //
-          MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+          Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
           //
           BaseURL url;

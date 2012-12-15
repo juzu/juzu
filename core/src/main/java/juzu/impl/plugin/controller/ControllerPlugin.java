@@ -21,7 +21,7 @@ package juzu.impl.plugin.controller;
 
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
 
@@ -39,7 +39,7 @@ public class ControllerPlugin extends ApplicationPlugin {
     return descriptor;
   }
 
-  public ControllerResolver<MethodDescriptor> getResolver() {
+  public ControllerResolver<Method> getResolver() {
     return descriptor != null ? descriptor.getResolver() : null;
   }
 

@@ -21,7 +21,7 @@ package juzu.request;
 
 import juzu.Response;
 import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.ActionBridge;
 
@@ -31,7 +31,7 @@ public class ActionContext extends RequestContext {
   /** . */
   private ActionBridge bridge;
 
-  public ActionContext(Request request, ApplicationContext application, MethodDescriptor method, ActionBridge bridge) {
+  public ActionContext(Request request, ApplicationContext application, Method method, ActionBridge bridge) {
     super(request, application, method);
 
     //
@@ -52,15 +52,15 @@ public class ActionContext extends RequestContext {
     return Phase.ACTION;
   }
 
-  public Response.View createResponse(MethodDescriptor<Phase.View> target) throws IllegalStateException {
+  public Response.View createResponse(Method<Phase.View> target) throws IllegalStateException {
     return createViewDispatch(target);
   }
 
-  public Response.View createResponse(MethodDescriptor<Phase.View> target, Object arg) throws IllegalStateException {
+  public Response.View createResponse(Method<Phase.View> target, Object arg) throws IllegalStateException {
     return createViewDispatch(target, arg);
   }
 
-  public Response.View createResponse(MethodDescriptor<Phase.View> target, Object[] args) throws IllegalStateException {
+  public Response.View createResponse(Method<Phase.View> target, Object[] args) throws IllegalStateException {
     return createViewDispatch(target, args);
   }
 }

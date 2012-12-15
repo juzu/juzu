@@ -24,9 +24,10 @@ import juzu.PropertyType;
 import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
+import juzu.impl.request.Argument;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
@@ -69,7 +70,16 @@ public abstract class MockRequestBridge implements RequestBridge {
   /** . */
   private final List<Scoped> attributesHistory;
 
+  /** . */
+  private final Map<String, ? extends Argument> arguments;
+
   public MockRequestBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+
+    //
+    Method<?> descriptor = application.getDescriptor().getControllers().getMethodByHandle(target);
+    Map<String, ? extends Argument> arguments = descriptor.getArguments(parameters);
+
+    //
     this.application = application;
     this.client = client;
     this.target = target;
@@ -79,6 +89,11 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.securityContext = new MockSecurityContext();
     this.windowContext = new MockWindowContext();
     this.attributesHistory = new ArrayList<Scoped>();
+    this.arguments = arguments;
+  }
+
+  public Map<String, ? extends Argument> getArguments() {
+    return arguments;
   }
 
   public List<Scoped> getAttributesHistory() {
@@ -184,7 +199,7 @@ public abstract class MockRequestBridge implements RequestBridge {
 
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
         //
-        MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+        Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
         //
         JSON props = new JSON();

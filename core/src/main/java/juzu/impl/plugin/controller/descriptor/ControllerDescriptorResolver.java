@@ -20,6 +20,7 @@
 package juzu.impl.plugin.controller.descriptor;
 
 import juzu.impl.plugin.controller.ControllerResolver;
+import juzu.impl.request.Method;
 import juzu.request.Phase;
 
 import java.util.Collection;
@@ -29,46 +30,46 @@ import java.util.Collection;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-class ControllerDescriptorResolver extends ControllerResolver<MethodDescriptor> {
+class ControllerDescriptorResolver extends ControllerResolver<Method> {
 
   /** . */
   private final ControllersDescriptor desc;
 
   /** . */
-  private final MethodDescriptor[] methods;
+  private final Method[] methods;
 
   ControllerDescriptorResolver(ControllersDescriptor desc) throws NullPointerException {
-    this.methods = desc.getMethods().toArray(new MethodDescriptor[desc.getMethods().size()]);
+    this.methods = desc.getMethods().toArray(new Method[desc.getMethods().size()]);
     this.desc = desc;
   }
 
   @Override
-  public MethodDescriptor[] getMethods() {
+  public Method[] getMethods() {
     return methods;
   }
 
   @Override
-  public String getId(MethodDescriptor method) {
+  public String getId(Method method) {
     return method.getId();
   }
 
   @Override
-  public Phase getPhase(MethodDescriptor method) {
+  public Phase getPhase(Method method) {
     return method.getPhase();
   }
 
   @Override
-  public String getName(MethodDescriptor method) {
+  public String getName(Method method) {
     return method.getName();
   }
 
   @Override
-  public boolean isDefault(MethodDescriptor method) {
+  public boolean isDefault(Method method) {
     return method.getType() == desc.getDefault() || desc.getControllers().size() < 2;
   }
 
   @Override
-  public Collection<String> getParameterNames(MethodDescriptor method) {
-    return method.getArgumentNames();
+  public Collection<String> getParameterNames(Method method) {
+    return method.getParameterNames();
   }
 }

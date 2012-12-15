@@ -22,8 +22,8 @@ package juzu.impl.bridge.spi.servlet;
 import juzu.Response;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
+import juzu.impl.request.Method;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
@@ -47,7 +47,7 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,
-      MethodHandle target,
+      Method<?> target,
       Map<String, String[]> parameters) {
     super(application, handler, req, resp, target, parameters);
   }

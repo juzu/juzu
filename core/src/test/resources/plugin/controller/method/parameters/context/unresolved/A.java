@@ -17,26 +17,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.servlet;
+package plugin.controller.method.parameters.context.unresolved;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.bridge.spi.MimeBridge;
-import juzu.impl.request.Method;
+import juzu.Response;
+import juzu.View;
+import juzu.impl.plugin.controller.MethodParametersTestCase;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+/** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
+public class A {
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
-
-  ServletMimeBridge(
-      ApplicationContext application,
-      Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      Method<?> target,
-      Map<String, String[]> parameters) {
-    super(application, handler, req, resp, target, parameters);
+  @View(id = "index")
+  public Response.Render index(Object unresolved) {
+    if (unresolved == null) {
+      MethodParametersTestCase.WAS_NULL = true;
+    }
+    return Response.render("" + A_.index());
   }
 }

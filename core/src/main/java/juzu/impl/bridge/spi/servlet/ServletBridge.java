@@ -35,7 +35,7 @@ import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ResourceResolver;
@@ -308,7 +308,7 @@ public class ServletBridge extends HttpServlet {
     }
 
     // Determine a method + parameters if we have a match
-    MethodDescriptor requestMethod = null;
+    Method requestMethod = null;
     Map<String, String[]> requestParameters = Collections.emptyMap();
     if (requestMatch != null) {
       Map<Phase, MethodHandle> m = requestHandler.routeMap2.get(requestMatch.getRoute());
@@ -387,11 +387,11 @@ public class ServletBridge extends HttpServlet {
       //
       ServletRequestBridge requestBridge;
       if (requestMethod.getPhase() == Phase.ACTION) {
-        requestBridge = new ServletActionBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod.getHandle(), requestParameters);
+        requestBridge = new ServletActionBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.VIEW) {
-        requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod.getHandle(), requestParameters);
+        requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.RESOURCE) {
-        requestBridge = new ServletResourceBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod.getHandle(), requestParameters);
+        requestBridge = new ServletResourceBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod, requestParameters);
       } else {
         throw new ServletException("Cannot decode phase");
       }
@@ -411,7 +411,8 @@ public class ServletBridge extends HttpServlet {
           Response.View update = (Response.View)response;
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
-            requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, update.getTarget(), update.getParameters());
+            Method<?> desc = requestHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
+            requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, desc, update.getParameters());
             try {
               requestHandler.bridge.invoke(requestBridge);
             }

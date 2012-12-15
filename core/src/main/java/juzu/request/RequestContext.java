@@ -25,7 +25,7 @@ import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 
@@ -41,12 +41,12 @@ public abstract class RequestContext {
   protected final ApplicationContext application;
 
   /** . */
-  protected final MethodDescriptor method;
+  protected final Method method;
 
   /** . */
   protected final Request request;
 
-  public RequestContext(Request request, ApplicationContext application, MethodDescriptor method) {
+  public RequestContext(Request request, ApplicationContext application, Method method) {
     this.request = request;
     this.application = application;
     this.method = method;
@@ -56,7 +56,7 @@ public abstract class RequestContext {
     return application;
   }
 
-  public MethodDescriptor getMethod() {
+  public Method getMethod() {
     return method;
   }
 
@@ -86,54 +86,54 @@ public abstract class RequestContext {
    * @param method the method descriptor
    * @return the corresponding dispatch object
    */
-  public Dispatch createDispatch(MethodDescriptor<?> method) {
+  public Dispatch createDispatch(Method<?> method) {
     DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), ParameterMap.EMPTY);
     return createDispatch(method, spi);
   }
 
-  public Phase.Action.Dispatch createActionDispatch(MethodDescriptor<Phase.Action> method) {
+  public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method) {
     return (Phase.Action.Dispatch)createDispatch(method, EMPTY, ParameterMap.EMPTY);
   }
 
-  public Phase.Action.Dispatch createActionDispatch(MethodDescriptor<Phase.Action> method, Object arg) {
+  public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object arg) {
     return (Phase.Action.Dispatch)createDispatch(method, new Object[]{arg}, new ParameterHashMap());
   }
 
-  public Phase.Action.Dispatch createActionDispatch(MethodDescriptor<Phase.Action> method, Object[] args) {
+  public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object[] args) {
     return (Phase.Action.Dispatch)createDispatch(method, args, new ParameterHashMap());
   }
 
-  public Phase.View.Dispatch createViewDispatch(MethodDescriptor<Phase.View> method) {
+  public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method) {
     return (Phase.View.Dispatch)createDispatch(method, EMPTY, ParameterMap.EMPTY);
   }
 
-  public Phase.View.Dispatch createViewDispatch(MethodDescriptor<Phase.View> method, Object arg) {
+  public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object arg) {
     return (Phase.View.Dispatch)createDispatch(method, new Object[]{arg}, new ParameterHashMap());
   }
 
-  public Phase.View.Dispatch createViewDispatch(MethodDescriptor<Phase.View> method, Object[] args) {
+  public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object[] args) {
     return (Phase.View.Dispatch)createDispatch(method, args, new ParameterHashMap());
   }
 
-  public Phase.Resource.Dispatch createResourceDispatch(MethodDescriptor<Phase.Resource> method) {
+  public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method) {
     return (Phase.Resource.Dispatch)createDispatch(method, EMPTY, ParameterMap.EMPTY);
   }
 
-  public Phase.Resource.Dispatch createResourceDispatch(MethodDescriptor<Phase.Resource> method, Object arg) {
+  public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object arg) {
     return (Phase.Resource.Dispatch)createDispatch(method, new Object[]{arg}, new ParameterHashMap());
   }
 
-  public Phase.Resource.Dispatch createResourceDispatch(MethodDescriptor<Phase.Resource> method, Object[] args) {
+  public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
     return (Phase.Resource.Dispatch)createDispatch(method, args, new ParameterHashMap());
   }
 
-  private Dispatch createDispatch(MethodDescriptor<?> method, Object[] args, ParameterMap parameters) {
+  private Dispatch createDispatch(Method<?> method, Object[] args, ParameterMap parameters) {
     method.setArgs(args, parameters);
     DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
     return createDispatch(method, spi);
   }
 
-  private Dispatch createDispatch(MethodDescriptor<?> method, DispatchSPI spi) {
+  private Dispatch createDispatch(Method<?> method, DispatchSPI spi) {
     ApplicationDescriptor desc = application.getDescriptor();
     Dispatch dispatch;
     if (method.getPhase() == Phase.ACTION) {

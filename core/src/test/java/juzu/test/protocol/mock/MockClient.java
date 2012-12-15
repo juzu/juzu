@@ -22,7 +22,7 @@ package juzu.test.protocol.mock;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.common.JSON;
@@ -58,7 +58,7 @@ public class MockClient {
       }
 
       //
-      MethodDescriptor method = null;
+      Method method = null;
       if (json.getString("target") != null) {
         MethodHandle target = MethodHandle.parse(json.getString("target"));
         method = application.getContext().getDescriptor().getControllers().getMethodByHandle(target);
@@ -112,7 +112,7 @@ public class MockClient {
 
   public MockRenderBridge render(String methodId) throws ApplicationException {
     MethodHandle handle = null;
-    MethodDescriptor method = null;
+    Method method = null;
     if (methodId != null) {
       method = controllers.getMethodById(methodId);
     } else {

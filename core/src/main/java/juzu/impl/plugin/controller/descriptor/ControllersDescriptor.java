@@ -23,9 +23,9 @@ import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
+import juzu.impl.request.Method;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +41,7 @@ public class ControllersDescriptor extends Descriptor {
   private final List<ControllerDescriptor> controllers;
 
   /** . */
-  private final ArrayList<MethodDescriptor> methods;
+  private final ArrayList<Method> methods;
 
   /** . */
   private final ArrayList<juzu.impl.inject.BeanDescriptor> beans;
@@ -53,20 +53,20 @@ public class ControllersDescriptor extends Descriptor {
   private ControllerDescriptorResolver resolver;
 
   /** . */
-  private final Map<MethodHandle, MethodDescriptor> byHandle;
+  private final Map<MethodHandle, Method> byHandle;
 
   public ControllersDescriptor(ClassLoader loader, JSON config) throws Exception {
     List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();
-    ArrayList<MethodDescriptor> controllerMethods = new ArrayList<MethodDescriptor>();
+    ArrayList<Method> controllerMethods = new ArrayList<Method>();
     ArrayList<juzu.impl.inject.BeanDescriptor> beans = new ArrayList<juzu.impl.inject.BeanDescriptor>();
-    HashMap<MethodHandle, MethodDescriptor> byHandle = new HashMap<MethodHandle, MethodDescriptor>();
+    HashMap<MethodHandle, Method> byHandle = new HashMap<MethodHandle, Method>();
 
     // Load controllers
     for (String fqn : config.getList("controllers", String.class)) {
       Class<?> clazz = loader.loadClass(fqn);
       Field f = clazz.getField("DESCRIPTOR");
       ControllerDescriptor bean = (ControllerDescriptor)f.get(null);
-      for (MethodDescriptor method : bean.getMethods()) {
+      for (Method method : bean.getMethods()) {
         byHandle.put(method.getHandle(), method);
       }
       controllers.add(bean);
@@ -98,7 +98,7 @@ public class ControllersDescriptor extends Descriptor {
     return beans;
   }
 
-  public ControllerResolver<MethodDescriptor> getResolver() {
+  public ControllerResolver<Method> getResolver() {
     return resolver;
   }
 
@@ -114,14 +114,14 @@ public class ControllersDescriptor extends Descriptor {
     return controllers;
   }
 
-  public List<MethodDescriptor> getMethods() {
+  public List<Method> getMethods() {
     return methods;
   }
 
-  public MethodDescriptor getMethod(Class<?> type, String name, Class<?>... parameterTypes) {
+  public Method getMethod(Class<?> type, String name, Class<?>... parameterTypes) {
     for (int i = 0;i < methods.size();i++) {
-      MethodDescriptor cm = methods.get(i);
-      Method m = cm.getMethod();
+      Method cm = methods.get(i);
+      java.lang.reflect.Method m = cm.getMethod();
       if (type.equals(cm.getType()) && m.getName().equals(name)) {
         Class<?>[] a = m.getParameterTypes();
         if (a.length == parameterTypes.length) {
@@ -137,9 +137,9 @@ public class ControllersDescriptor extends Descriptor {
     return null;
   }
 
-  public MethodDescriptor getMethodById(String methodId) {
+  public Method getMethodById(String methodId) {
     for (int i = 0;i < methods.size();i++) {
-      MethodDescriptor cm = methods.get(i);
+      Method cm = methods.get(i);
       if (cm.getId().equals(methodId)) {
         return cm;
       }
@@ -147,7 +147,7 @@ public class ControllersDescriptor extends Descriptor {
     return null;
   }
 
-  public MethodDescriptor getMethodByHandle(MethodHandle handle) {
+  public Method getMethodByHandle(MethodHandle handle) {
     return byHandle.get(handle);
   }
 }

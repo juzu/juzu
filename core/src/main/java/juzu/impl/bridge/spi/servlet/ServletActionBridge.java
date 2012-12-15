@@ -23,7 +23,7 @@ import juzu.Response;
 import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
-import juzu.impl.common.MethodHandle;
+import juzu.impl.request.Method;
 import juzu.request.ClientContext;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
@@ -44,7 +44,7 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,
-      MethodHandle target,
+      Method<?> target,
       Map<String, String[]> parameters) {
     super(application, handler, req, resp, target, parameters);
   }

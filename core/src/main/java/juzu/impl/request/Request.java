@@ -23,7 +23,6 @@ import juzu.Response;
 import juzu.Scope;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
@@ -38,6 +37,7 @@ import juzu.request.RequestContext;
 import juzu.request.ResourceContext;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -63,18 +63,22 @@ public class Request implements ScopingContext {
   private final Map<String, String[]> parameters;
 
   /** . */
-  private final Object[] args;
+  private final Map<String, Argument> arguments;
 
   /** The response. */
   private Response response;
 
   public Request(
     ApplicationContext application,
-    MethodDescriptor method,
+    Method method,
     Map<String, String[]> parameters,
-    Object[] args,
     RequestBridge bridge) {
     RequestContext context;
+
+    // Make a copy of the original arguments provided by the bridge
+    HashMap<String, Argument> arguments = new HashMap<String, Argument>(bridge.getArguments());
+
+    //
     if (bridge instanceof RenderBridge) {
       context = new RenderContext(this, application, method, (RenderBridge)bridge);
     }
@@ -88,9 +92,9 @@ public class Request implements ScopingContext {
     //
     this.context = context;
     this.bridge = bridge;
-    this.args = args;
     this.parameters = parameters;
     this.application = application;
+    this.arguments = arguments;
   }
 
   public ApplicationContext getApplication() {
@@ -109,16 +113,20 @@ public class Request implements ScopingContext {
     this.response = response;
   }
 
-  public Object[] getArgs() {
-    return args;
-  }
-
   public Map<String, String[]> getParameters() {
     return parameters;
   }
 
   public RequestContext getContext() {
     return context;
+  }
+
+  public Argument getArgument(String name) {
+    return arguments.get(name);
+  }
+
+  public void setArgument(Parameter parameter, Object value) {
+    this.arguments.put(parameter.getName(), parameter.create(value));
   }
 
   public final Scoped getContextualValue(Scope scope, Object key) {
@@ -185,7 +193,19 @@ public class Request implements ScopingContext {
         }
       }
       else if (index == application.getLifecycles().size()) {
-        //
+
+        // Get arguments
+        Method<?> method = context.getMethod();
+        Object[] args = new Object[method.getParameters().size()];
+        for (int i = 0;i < args.length;i++) {
+          Parameter parameter = method.getParameters().get(i);
+          Argument argument = arguments.get(parameter.getName());
+          if (argument != null) {
+            args[i] = argument.getValue();
+          }
+        }
+
+        // Invoke
         Object ret = doInvoke(this, args, application.getInjectionContext());
 
         //

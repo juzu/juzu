@@ -23,6 +23,7 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
+import juzu.impl.request.Argument;
 import juzu.impl.request.Request;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
@@ -35,7 +36,19 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface RequestBridge {
 
+  /**
+   * Returns the request target.
+   *
+   * @return the request target
+   */
   MethodHandle getTarget();
+
+  /**
+   * Returns the request arguments.
+   *
+   * @return the request arguments.
+   */
+  Map<String, ? extends Argument> getArguments();
 
   /**
    * Returns the request parameters.

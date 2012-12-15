@@ -25,9 +25,10 @@ import juzu.Response;
 import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.descriptor.MethodDescriptor;
+import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
+import juzu.impl.request.Argument;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
@@ -48,7 +49,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +71,10 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   final Map<String, String[]> parameters;
 
   /** . */
-  final MethodHandle target;
+  final Method<?> target;
+
+  /** . */
+  final Map<String, ? extends Argument> arguments;
 
   /** . */
   protected Request request;
@@ -84,10 +87,11 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,
-      MethodHandle target,
+      Method<?> target,
       Map<String, String[]> parameters) {
 
     //
+    this.arguments = target.getArguments(parameters);
     this.application = application;
     this.target = target;
     this.handler = handler;
@@ -122,7 +126,11 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   }
 
   public MethodHandle getTarget() {
-    return target;
+    return target.getHandle();
+  }
+
+  public Map<String, ? extends Argument> getArguments() {
+    return arguments;
   }
 
   public Cookie[] getCookies() {
@@ -240,14 +248,14 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   public void purgeSession() {
     HttpSession session = req.getSession(false);
     if (session != null) {
-      for (String key : Tools.list((Enumeration<String>)session.getAttributeNames())) {
+      for (String key : Tools.list(session.getAttributeNames())) {
         session.removeAttribute(key);
       }
     }
   }
 
   public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) {
-    MethodDescriptor method = application.getDescriptor().getControllers().getMethodByHandle(target);
+    Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
     Route route = handler.routeMap.get(method.getHandle());
