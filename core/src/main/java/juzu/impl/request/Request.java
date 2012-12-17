@@ -21,6 +21,7 @@ package juzu.impl.request;
 
 import juzu.Response;
 import juzu.Scope;
+import juzu.impl.bridge.EventBridge;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.inject.Scoped;
@@ -32,6 +33,7 @@ import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.request.ActionContext;
+import juzu.request.EventContext;
 import juzu.request.RenderContext;
 import juzu.request.RequestContext;
 import juzu.request.ResourceContext;
@@ -84,6 +86,9 @@ public class Request implements ScopingContext {
     }
     else if (bridge instanceof ActionBridge) {
       context = new ActionContext(this, application, method, (ActionBridge)bridge);
+    }
+    else if (bridge instanceof EventBridge) {
+      context = new EventContext(this, application, method, (EventBridge)bridge);
     }
     else {
       context = new ResourceContext(this, application, method, (ResourceBridge)bridge);

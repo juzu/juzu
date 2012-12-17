@@ -116,7 +116,7 @@ public class MockClient {
     if (methodId != null) {
       method = controllers.getMethodById(methodId);
     } else {
-      method = controllers.getResolver().resolve(Collections.<String>emptySet());
+      method = controllers.getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
     }
     if (method != null) {
       handle = method.getHandle();

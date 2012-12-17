@@ -19,18 +19,18 @@
 
 package juzu.request;
 
+import juzu.impl.bridge.EventBridge;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.RenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderContext extends MimeContext {
+public class EventContext extends RequestContext {
 
   /** . */
-  private RenderBridge bridge;
+  private final EventBridge bridge;
 
-  public RenderContext(Request request, ApplicationContext application, Method method, RenderBridge bridge) {
+  public EventContext(Request request, ApplicationContext application, Method method, EventBridge bridge) {
     super(request, application, method);
 
     //
@@ -38,12 +38,12 @@ public class RenderContext extends MimeContext {
   }
 
   @Override
-  protected RenderBridge getBridge() {
-    return bridge;
+  public Phase.Event getPhase() {
+    return Phase.EVENT;
   }
 
   @Override
-  public Phase.View getPhase() {
-    return Phase.VIEW;
+  protected EventBridge getBridge() {
+    return bridge;
   }
 }

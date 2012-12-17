@@ -17,33 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.request;
+@Application package bridge.portlet.event.consume;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.request.Method;
-import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.RenderBridge;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderContext extends MimeContext {
-
-  /** . */
-  private RenderBridge bridge;
-
-  public RenderContext(Request request, ApplicationContext application, Method method, RenderBridge bridge) {
-    super(request, application, method);
-
-    //
-    this.bridge = bridge;
-  }
-
-  @Override
-  protected RenderBridge getBridge() {
-    return bridge;
-  }
-
-  @Override
-  public Phase.View getPhase() {
-    return Phase.VIEW;
-  }
-}
+import juzu.Application;

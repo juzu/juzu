@@ -19,6 +19,7 @@
 
 package juzu.request;
 
+import juzu.Consumes;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
@@ -54,6 +55,8 @@ public abstract class Phase implements Serializable {
       return VIEW;
     } else if (this instanceof Resource) {
       return RESOURCE;
+    } else if (this instanceof Event) {
+      return EVENT;
     } else {
       return this;
     }
@@ -107,6 +110,22 @@ public abstract class Phase implements Serializable {
       public String toString() {
         return delegate.toString();
       }
+    }
+  }
+
+  public static final class Event extends Phase {
+
+    public Event() {
+      super(Consumes.class);
+    }
+
+    @Override
+    public String name() {
+      return "EVENT";
+    }
+    @Override
+    public String id(Annotation annotation) throws ClassCastException {
+      throw new UnsupportedOperationException();
     }
   }
 
@@ -225,6 +244,9 @@ public abstract class Phase implements Serializable {
   /** Action phase. */
   public static final Action ACTION = new Action();
 
+  /** Action phase. */
+  public static final Event EVENT = new Event();
+
   /** View phase. */
   public static final View VIEW = new View();
 
@@ -232,7 +254,7 @@ public abstract class Phase implements Serializable {
   public static final Resource RESOURCE = new Resource();
 
   /** . */
-  private static final List<Phase> values = Collections.unmodifiableList(Arrays.asList(ACTION, VIEW, RESOURCE));
+  private static final List<Phase> values = Collections.unmodifiableList(Arrays.asList(ACTION, EVENT, VIEW, RESOURCE));
 
   public static List<Phase> values() {
     return values;
@@ -245,6 +267,8 @@ public abstract class Phase implements Serializable {
       return VIEW;
     } else if ("RESOURCE".equals(s)) {
       return RESOURCE;
+    } else if ("EVENT".equals(s)) {
+      return EVENT;
     } else {
       return null;
     }

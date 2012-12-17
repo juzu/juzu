@@ -21,6 +21,7 @@ package juzu.impl.plugin.application;
 
 import juzu.Response;
 import juzu.UndeclaredIOException;
+import juzu.impl.bridge.EventBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerPlugin;
@@ -113,6 +114,9 @@ public class ApplicationContext {
     }
     else if (bridge instanceof ActionBridge) {
       phase = Phase.ACTION;
+    }
+    else if (bridge instanceof EventBridge) {
+      phase = Phase.EVENT;
     }
     else if (bridge instanceof ResourceBridge) {
       phase = Phase.RESOURCE;

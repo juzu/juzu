@@ -17,33 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.request;
+package juzu;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.request.Method;
-import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.RenderBridge;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderContext extends MimeContext {
+/**
+ * Annotate a method for declaring an event consumer controller method.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Consumes {
 
-  /** . */
-  private RenderBridge bridge;
+  /**
+   * The name used for subscribing to event.
+   *
+   * @return the event name
+   */
+  String value() default "";
 
-  public RenderContext(Request request, ApplicationContext application, Method method, RenderBridge bridge) {
-    super(request, application, method);
-
-    //
-    this.bridge = bridge;
-  }
-
-  @Override
-  protected RenderBridge getBridge() {
-    return bridge;
-  }
-
-  @Override
-  public Phase.View getPhase() {
-    return Phase.VIEW;
-  }
 }

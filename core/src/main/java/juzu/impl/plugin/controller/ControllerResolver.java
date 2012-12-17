@@ -132,13 +132,14 @@ public abstract class ControllerResolver<M> {
   /**
    * A method matches the filter when it has the render phase and the name <code>index</code>.
    *
+   * @param phase the phare to match
    * @param parameterNames the parameter names
    * @return the resolved controller method
    * @throws NullPointerException if the parameter names set is nul
    * @throws juzu.AmbiguousResolutionException
    *                              if more than a single result is found
    */
-  public final M resolve(Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
+  public final M resolve(Phase phase, Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
     if (parameterNames == null) {
       throw new NullPointerException("No null parameter names accepted");
     }
@@ -146,7 +147,44 @@ public abstract class ControllerResolver<M> {
     //
     List<Match> matches = new ArrayList<Match>();
     for (M method : getMethods()) {
-      if (getPhase(method) == Phase.VIEW && getName(method).equals("index")) {
+      if (getPhase(method) == phase) {
+        if (phase == Phase.VIEW) {
+          if (getName(method).equals("index")) {
+            matches.add(new Match(parameterNames, method));
+          }
+        } else {
+          matches.add(new Match(parameterNames, method));
+        }
+      }
+    }
+
+    //
+    return select(matches);
+  }
+
+  /**
+   * A method matches the filter when it matches the phase and the method id.
+   *
+   * @param phase          the phrase
+   * @param methodId       the method id
+   * @param parameterNames the parameter names
+   * @return the resolved controller method
+   * @throws NullPointerException if any parameter is nul
+   * @throws juzu.AmbiguousResolutionException
+   *                              if more than a single result is found
+   */
+  public final M resolveMethod(Phase phase, String methodId, final Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
+    if (parameterNames == null) {
+      throw new NullPointerException("No null parameter names accepted");
+    }
+    if (phase == null) {
+      throw new NullPointerException("Phase parameter cannot be null");
+    }
+
+    //
+    List<Match> matches = new ArrayList<Match>();
+    for (M method : getMethods()) {
+      if (getPhase(method) == phase && (methodId == null || methodId.equals(getId(method)))) {
         matches.add(new Match(parameterNames, method));
       }
     }
@@ -166,27 +204,31 @@ public abstract class ControllerResolver<M> {
    * @throws juzu.AmbiguousResolutionException
    *                              if more than a single result is found
    */
-  public final M resolve(Phase phase, String methodId, final Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
+  public final List<M> resolveMethods(Phase phase, String methodId, final Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
     if (parameterNames == null) {
       throw new NullPointerException("No null parameter names accepted");
     }
     if (phase == null) {
       throw new NullPointerException("Phase parameter cannot be null");
     }
-    if (methodId == null) {
-      throw new NullPointerException("Method id parameter cannot be null");
-    }
 
     //
     List<Match> matches = new ArrayList<Match>();
     for (M method : getMethods()) {
-      if (getPhase(method) == phase && getId(method).equals(methodId)) {
+      if (getPhase(method) == phase && (methodId == null || methodId.equals(getId(method)))) {
         matches.add(new Match(parameterNames, method));
       }
     }
 
     //
-    return select(matches);
+    Collections.sort(matches);
+    ArrayList<M> methods = new ArrayList<M>(matches.size());
+    for (Match match : matches) {
+      methods.add(match.method);
+    }
+
+    //
+    return methods;
   }
 
   /**

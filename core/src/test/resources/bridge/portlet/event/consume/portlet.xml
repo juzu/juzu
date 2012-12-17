@@ -6,22 +6,9 @@
    http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
 
-     <!-- Used by Arquillian to locate this portlet-->
      <portlet-name>JuzuPortlet</portlet-name>
      <display-name xml:lang="EN">Integration Test</display-name>
-     <portlet-class>juzu.test.protocol.portlet.JuzuPortlet</portlet-class>
-     <init-param>
-       <name>juzu.inject</name>
-       <value>%s</value>
-     </init-param>
-     <init-param>
-       <name>juzu.run_mode</name>
-       <value>%s</value>
-     </init-param>
-     <init-param>
-       <name>juzu.src_path</name>
-       <value>%s</value>
-     </init-param>
+     <portlet-class>bridge.portlet.event.consume.TestPortlet</portlet-class>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
@@ -29,12 +16,24 @@
        <title>Integration Test Application</title>
      </portlet-info>
      <supported-processing-event>
-       <qname>the_event</qname>
+       <qname>event1</qname>
+     </supported-processing-event>
+     <supported-processing-event>
+       <qname>event2</qname>
+     </supported-processing-event>
+     <supported-processing-event>
+       <qname>event3</qname>
      </supported-processing-event>
    </portlet>
 
    <event-definition>
-     <qname>the_event</qname>
+     <qname>event1</qname>
+   </event-definition>
+   <event-definition>
+     <qname>event2</qname>
+   </event-definition>
+   <event-definition>
+     <qname>event3</qname>
    </event-definition>
 
 </portlet-app>

@@ -129,6 +129,28 @@ public class Bridge {
     }
   }
 
+  public void processEvent(final EventBridge requestBridge) throws Throwable {
+    try {
+      TrimmingException.invoke(new TrimmingException.Callback() {
+        public void call() throws Throwable {
+          try {
+            runtime.getContext().invoke(requestBridge);
+          }
+          catch (ApplicationException e) {
+            // For now we do that until we find something better specially for the dev mode
+            throw e.getCause();
+          }
+        }
+      });
+    }
+    catch (TrimmingException e) {
+      throw e.getSource();
+    }
+    finally {
+      requestBridge.close();
+    }
+  }
+
   public void render(final RenderBridge requestBridge) throws Throwable {
 
     //

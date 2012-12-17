@@ -47,7 +47,7 @@ public class ResourceContext extends MimeContext {
   }
 
   @Override
-  public Phase getPhase() {
+  public Phase.Resource getPhase() {
     return Phase.RESOURCE;
   }
 }

@@ -19,24 +19,31 @@
 
 package juzu.impl.request;
 
+import java.lang.reflect.Type;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ContextualParameter extends Parameter {
 
-  public ContextualParameter(String name, Class<?> type) throws NullPointerException {
-    super(name, type);
+  /** . */
+  private final Type genericType;
+
+  public ContextualParameter(String name, Class<?> classType) throws NullPointerException {
+    this(name, classType, classType);
+  }
+
+  public ContextualParameter(String name, Class<?> classType, Type genericType) throws NullPointerException {
+    super(name, classType);
+
+    //
+    this.genericType = genericType;
+  }
+
+  public Type getGenericType() {
+    return genericType;
   }
 
   @Override
   public ContextualArgument create(final Object value) {
-    return new ContextualArgument() {
-      @Override
-      public Parameter getParameter() {
-        return ContextualParameter.this;
-      }
-      @Override
-      public Object getValue() {
-        return value;
-      }
-    };
+    return new ContextualArgument(this, value);
   }
 }

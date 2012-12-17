@@ -33,6 +33,7 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.asset.UrlAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
@@ -237,16 +238,18 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     war.setWebXML(JuzuPortlet.class.getResource("web.xml"));
     war.addAsWebInfResource(new StringAsset(portlet), "portlet.xml");
 
-    // Add libraries we need
-/*
-    war.addAsLibraries(DependencyResolvers.
-        use(MavenDependencyResolver.class).
-        loadEffectivePom("pom.xml")
-        .artifacts("javax.servlet:jstl", "taglibs:standard").
-            resolveAsFiles());
-*/
-
     //
+    return war;
+  }
+
+  public static WebArchive createPortletDeployment(String packageName, URL portletXML) {
+    return createPortletDeployment(false, packageName, portletXML);
+  }
+
+  public static WebArchive createPortletDeployment(boolean incremental, String packageName, URL portletXML) {
+    WebArchive war = createDeployment(false, true, incremental, packageName);
+    war.setWebXML(JuzuPortlet.class.getResource("web.xml"));
+    war.addAsWebInfResource(new UrlAsset(portletXML), "portlet.xml");
     return war;
   }
 

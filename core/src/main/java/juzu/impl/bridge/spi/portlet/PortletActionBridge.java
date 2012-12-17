@@ -19,11 +19,15 @@
 
 package juzu.impl.bridge.spi.portlet;
 
+import juzu.EventQueue;
 import juzu.Response;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.bridge.spi.ActionBridge;
+import juzu.impl.request.ContextualArgument;
+import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.bridge.portlet.JuzuPortlet;
+import juzu.impl.request.Parameter;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
 
@@ -44,6 +48,18 @@ public class PortletActionBridge extends PortletRequestBridge<ActionRequest, Act
 
   public PortletActionBridge(ApplicationContext application, ActionRequest request, ActionResponse response, boolean prod) {
     super(application, request, response, prod);
+
+    // Set event producer as contextual argument
+    for (Parameter parameter : target.getParameters()) {
+      if (parameter instanceof ContextualParameter) {
+        final ContextualParameter contextualParameter = (ContextualParameter)parameter;
+        if (EventQueue.class.isAssignableFrom(contextualParameter.getType())) {
+          final PortletEventProducer producer = new PortletEventProducer();
+          arguments.put(contextualParameter.getName(), new ContextualArgument(contextualParameter, producer));
+        }
+      }
+    }
+
 
     //
     this.clientContext = new PortletClientContext(request);

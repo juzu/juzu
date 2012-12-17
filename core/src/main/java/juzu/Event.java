@@ -17,33 +17,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.request;
+package juzu;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.request.Method;
-import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.RenderBridge;
+/**
+ * An event.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public class Event<P> {
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderContext extends MimeContext {
+  /** The event name. */
+  private final String name;
 
-  /** . */
-  private RenderBridge bridge;
+  /** The event payload. */
+  private final P payload;
 
-  public RenderContext(Request request, ApplicationContext application, Method method, RenderBridge bridge) {
-    super(request, application, method);
-
-    //
-    this.bridge = bridge;
+  public Event(String name, P payload) {
+    this.name = name;
+    this.payload = payload;
   }
 
-  @Override
-  protected RenderBridge getBridge() {
-    return bridge;
+  public String getName() {
+    return name;
   }
 
-  @Override
-  public Phase.View getPhase() {
-    return Phase.VIEW;
+  public P getPayload() {
+    return payload;
   }
 }

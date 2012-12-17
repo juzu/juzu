@@ -19,10 +19,12 @@
 
 package juzu.bridge.portlet;
 
+import juzu.Consumes;
 import juzu.PropertyType;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.bridge.spi.portlet.PortletEventBridge;
 import juzu.impl.common.DevClassLoader;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
@@ -33,11 +35,17 @@ import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.plugin.module.ModuleLifeCycle;
+import juzu.impl.request.Method;
 import juzu.impl.resource.ResourceResolver;
+import juzu.request.Phase;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.EventPortlet;
+import javax.portlet.EventRequest;
+import javax.portlet.EventResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
@@ -55,9 +63,10 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JuzuPortlet implements Portlet, ResourceServingPortlet {
+public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortlet {
 
   /** . */
   public static final PropertyType<PortletMode> PORTLET_MODE = new PropertyType<PortletMode>(){};
@@ -206,6 +215,46 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet {
     }
     catch (Throwable e) {
       rethrow(e);
+    }
+  }
+
+  public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException {
+    ControllerResolver<Method> resolver = bridge.runtime.getContext().getDescriptor().getControllers().getResolver();
+    List<Method> methods = resolver.resolveMethods(Phase.EVENT, null, request.getParameterMap().keySet());
+
+    //
+    Method target = null;
+    for (Method method : methods) {
+      Consumes consumes = method.getMethod().getAnnotation(Consumes.class);
+      if (consumes.value().equals("")) {
+        target = method;
+        // we don't break here on purpose because having empty match is less important
+        // than an explicit match
+      } else if (consumes.value().equals(request.getEvent().getName())) {
+        target = method;
+        break;
+      }
+    }
+
+    //
+    if (target != null) {
+      try {
+        PortletEventBridge requestBridge = new PortletEventBridge(
+            bridge.runtime.getContext(),
+            request,
+            response,
+            target,
+            request.getParameterMap(),
+            bridge.config.isProd());
+        bridge.processEvent(requestBridge);
+        requestBridge.send();
+      }
+      catch (Throwable e) {
+        rethrow(e);
+      }
+    } else {
+      // We just don't dispatch however we keep the same render parameters
+      response.setRenderParameters(request);
     }
   }
 

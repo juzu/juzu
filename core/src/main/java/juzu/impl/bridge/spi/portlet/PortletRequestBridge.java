@@ -74,10 +74,10 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   protected final Rs resp;
 
   /** . */
-  protected final MethodHandle target;
+  protected final Method<?> target;
 
   /** . */
-  protected final Map<String, ? extends Argument> arguments;
+  protected final HashMap<String, Argument> arguments;
 
   /** . */
   protected final Map<String, String[]> parameters;
@@ -119,19 +119,37 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     ControllerResolver<Method> resolver = application.getDescriptor().getControllers().getResolver();
     Method<?> target;
     if (methodId != null) {
-      target = resolver.resolve(phase, methodId, parameters.keySet());
+      target = resolver.resolveMethod(phase, methodId, parameters.keySet());
     } else {
-      target = resolver.resolve(parameters.keySet());
+      target = resolver.resolve(phase, parameters.keySet());
     }
 
     // Get argument map
-    Map<String, ? extends Argument> arguments = target.getArguments(parameters);
+    HashMap<String, Argument> arguments = new HashMap<String, Argument>(target.getArguments(parameters));
 
     //
     this.application = application;
     this.req = req;
     this.resp = resp;
-    this.target = target.getHandle();
+    this.target = target;
+    this.arguments = arguments;
+    this.parameters = parameters;
+    this.httpContext = new PortletHttpContext(req);
+    this.securityContext = new PortletSecurityContext(req);
+    this.windowContext = new PortletWindowContext(this);
+    this.prod = prod;
+  }
+
+  PortletRequestBridge(ApplicationContext application, Rq req, Rs resp, Method<?> target, Map<String, String[]> parameters, boolean prod) {
+
+    // Get argument map
+    HashMap<String, Argument> arguments = new HashMap<String, Argument>(target.getArguments(parameters));
+
+    //
+    this.application = application;
+    this.req = req;
+    this.resp = resp;
+    this.target = target;
     this.arguments = arguments;
     this.parameters = parameters;
     this.httpContext = new PortletHttpContext(req);
@@ -158,7 +176,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   }
 
   public MethodHandle getTarget() {
-    return target;
+    return target.getHandle();
   }
 
   public final Map<String, String[]> getParameters() {

@@ -356,7 +356,7 @@ public class ServletBridge extends HttpServlet {
 
       // If we have an handler we locate the index method
       if (requestHandler != null) {
-        requestMethod = requestHandler.bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+        requestMethod = requestHandler.bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
       }
     }
 

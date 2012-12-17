@@ -47,7 +47,7 @@ public class ResolverTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<Method> resolver = desc.getControllers().getResolver();
-    Method method = resolver.resolve(Collections.<String>emptySet());
+    Method method = resolver.resolve(Phase.VIEW, Collections.<String>emptySet());
     assertEquals("index", method.getName());
   }
 
@@ -66,7 +66,7 @@ public class ResolverTestCase extends AbstractTestCase {
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<Method> resolver = desc.getControllers().getResolver();
     try {
-      resolver.resolve(Collections.<String>emptySet());
+      resolver.resolve(Phase.VIEW, Collections.<String>emptySet());
       fail();
     }
     catch (AmbiguousResolutionException e) {
@@ -88,7 +88,7 @@ public class ResolverTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllerResolver<Method> resolver = desc.getControllers().getResolver();
-    Method method = resolver.resolve(Collections.<String>emptySet());
+    Method method = resolver.resolve(Phase.VIEW, Collections.<String>emptySet());
     assertEquals("index", method.getName());
     assertSame(aClass, method.getMethod().getDeclaringClass());
   }
@@ -109,32 +109,32 @@ public class ResolverTestCase extends AbstractTestCase {
     ControllerResolver<Method> resolver = desc.getControllers().getResolver();
 
     //
-    Method method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set());
+    Method method = resolver.resolveMethod(Phase.VIEW, "A.m", Tools.<String>set());
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set(), method.getParameterNames());
 
     //
-    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("foo"));
+    method = resolver.resolveMethod(Phase.VIEW, "A.m", Tools.<String>set("foo"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set("foo"), method.getParameterNames());
 
     //
-    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("foo", "bar"));
+    method = resolver.resolveMethod(Phase.VIEW, "A.m", Tools.<String>set("foo", "bar"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set("foo", "bar"), method.getParameterNames());
 
     //
-    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("bar"));
+    method = resolver.resolveMethod(Phase.VIEW, "A.m", Tools.<String>set("bar"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set("foo", "bar"), method.getParameterNames());
 
     //
-    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("bar"));
+    method = resolver.resolveMethod(Phase.VIEW, "A.m", Tools.<String>set("bar"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set("foo", "bar"), method.getParameterNames());
 
     //
-    method = resolver.resolve(Phase.VIEW, "A.m", Tools.<String>set("daa"));
+    method = resolver.resolveMethod(Phase.VIEW, "A.m", Tools.<String>set("daa"));
     assertEquals("m", method.getName());
     assertEquals(Tools.<String>set(), method.getParameterNames());
   }
@@ -153,12 +153,12 @@ public class ResolverTestCase extends AbstractTestCase {
     Method cm2_ = desc.getControllers().getMethod(aClass, "fooArg", String.class);
 
     //
-    Method cm1 = resolver.resolve(Phase.VIEW, cm1_.getId(), cm1_.getParameterNames());
+    Method cm1 = resolver.resolveMethod(Phase.VIEW, cm1_.getId(), cm1_.getParameterNames());
     assertNotNull(cm1);
     assertEquals("noArg", cm1.getName());
 
     //
-    Method cm2 = resolver.resolve(Phase.VIEW, cm2_.getId(), cm2_.getParameterNames());
+    Method cm2 = resolver.resolveMethod(Phase.VIEW, cm2_.getId(), cm2_.getParameterNames());
     assertNotNull(cm2);
     assertEquals("fooArg", cm2.getName());
   }

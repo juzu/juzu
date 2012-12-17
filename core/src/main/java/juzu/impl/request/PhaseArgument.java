@@ -20,7 +20,7 @@
 package juzu.impl.request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PhaseArgument extends Argument {
+public final class PhaseArgument extends Argument {
 
   /** . */
   private final PhaseParameter descriptor;

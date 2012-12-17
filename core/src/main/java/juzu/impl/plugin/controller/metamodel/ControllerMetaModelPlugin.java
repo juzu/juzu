@@ -21,6 +21,7 @@ package juzu.impl.plugin.controller.metamodel;
 
 import juzu.Action;
 import juzu.Application;
+import juzu.Consumes;
 import juzu.Resource;
 import juzu.View;
 import juzu.impl.common.Name;
@@ -84,19 +85,14 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   private static final String TOOLS = Tools.class.getSimpleName();
 
   /** . */
-  private static final String ACTION_DISPATCH = Phase.Action.Dispatch.class.getSimpleName();
-
-  /** . */
-  private static final String VIEW_DISPATCH = Phase.View.Dispatch.class.getSimpleName();
-
-  /** . */
-  private static final String RESOURCE_DISPATCH = Phase.Resource.Dispatch.class.getSimpleName();
-
-  /** . */
   public static final String CARDINALITY = Cardinality.class.getSimpleName();
 
   /** . */
-  private static final Set<Name> NAMES = Tools.set(Name.create(Action.class), Name.create(View.class), Name.create(Resource.class));
+  private static final Set<Name> NAMES = Tools.set(
+      Name.create(Action.class),
+      Name.create(Consumes.class),
+      Name.create(View.class),
+      Name.create(Resource.class));
 
   /** . */
   private HashSet<ControllerMetaModel> written = new HashSet<ControllerMetaModel>();
@@ -106,7 +102,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
-    return Tools.<Class<? extends java.lang.annotation.Annotation>>set(View.class, Action.class, Resource.class);
+    return Tools.<Class<? extends java.lang.annotation.Annotation>>set(View.class, Action.class, Consumes.class, Resource.class);
   }
 
   @Override
@@ -270,9 +266,9 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       //
       int index = 0;
       for (MethodMetaModel method : methods) {
+
+        //
         String methodRef = "method_" + index++;
-
-
 
         // Method constant
         writer.append("private static final ").append(METHOD_DESCRIPTOR).append("<");
@@ -330,34 +326,37 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
           }
         }
 
-        // Dispatch literal
-        writer.append("public static ").append(dispatchType).append(" ").append(method.getName()).append("(");
-        for (int i = 0;i < parameters.size();i++) {
-          PhaseParameterMetaModel parameter = parameters.get(i);
-          if (i > 0) {
-            writer.append(',');
-          }
-          writer.append(parameter.typeLiteral).append(" ").append(parameter.getName());
-        }
-        writer.append(") { return Request.getCurrent().getContext().create").append(method.getPhase().getClass().getSimpleName()).append("Dispatch(").append(methodRef);
-        switch (parameters.size()) {
-          case 0:
-            break;
-          case 1:
-            writer.append(",(Object)").append(parameters.get(0).getName());
-            break;
-          default:
-            writer.append(",new Object[]{");
-            for (int j = 0;j < parameters.size();j++) {
-              if (j > 0) {
-                writer.append(",");
-              }
-              writer.append(method.getParameter(j).getName());
+        // We don't generate dispatch for event phase
+        if (method.getPhase() != Phase.EVENT) {
+          // Dispatch literal
+          writer.append("public static ").append(dispatchType).append(" ").append(method.getName()).append("(");
+          for (int i = 0;i < parameters.size();i++) {
+            PhaseParameterMetaModel parameter = parameters.get(i);
+            if (i > 0) {
+              writer.append(',');
             }
-            writer.append('}');
-            break;
+            writer.append(parameter.typeLiteral).append(" ").append(parameter.getName());
+          }
+          writer.append(") { return Request.getCurrent().getContext().create").append(method.getPhase().getClass().getSimpleName()).append("Dispatch(").append(methodRef);
+          switch (parameters.size()) {
+            case 0:
+              break;
+            case 1:
+              writer.append(",(Object)").append(parameters.get(0).getName());
+              break;
+            default:
+              writer.append(",new Object[]{");
+              for (int j = 0;j < parameters.size();j++) {
+                if (j > 0) {
+                  writer.append(",");
+                }
+                writer.append(method.getParameter(j).getName());
+              }
+              writer.append('}');
+              break;
+          }
+          writer.append("); }\n");
         }
-        writer.append("); }\n");
       }
 
       //

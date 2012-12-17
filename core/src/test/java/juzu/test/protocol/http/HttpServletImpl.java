@@ -77,7 +77,7 @@ public class HttpServletImpl extends HttpServlet {
 
     //
     if (method == null) {
-      Method descriptor = application.getContext().getDescriptor().getControllers().getResolver().resolve(Collections.<String>emptySet());
+      Method descriptor = application.getContext().getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
       method = descriptor != null ? descriptor.getHandle() : null;
     }
 

@@ -433,17 +433,17 @@
       <dependency>
         <groupId>org.gatein.pc</groupId>
         <artifactId>pc-api</artifactId>
-        <version>2.4.0.Alpha05</version>
+        <version>2.4.1.CR01</version>
       </dependency>
       <dependency>
         <groupId>org.gatein.pc</groupId>
         <artifactId>pc-portlet</artifactId>
-        <version>2.4.0.Alpha05</version>
+        <version>2.4.1.CR01</version>
       </dependency>
       <dependency>
         <groupId>org.gatein.pc</groupId>
         <artifactId>pc-embed</artifactId>
-        <version>2.4.0.Alpha05</version>
+        <version>2.4.1.CR01</version>
       </dependency>
 
       <!-- Arquillian/Shrinkwrap stack -->

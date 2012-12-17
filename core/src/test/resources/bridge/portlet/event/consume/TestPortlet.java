@@ -17,33 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.request;
+package bridge.portlet.event.consume;
 
-import juzu.impl.plugin.application.ApplicationContext;
-import juzu.impl.request.Method;
-import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.RenderBridge;
+import juzu.test.protocol.portlet.JuzuPortlet;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderContext extends MimeContext {
-
-  /** . */
-  private RenderBridge bridge;
-
-  public RenderContext(Request request, ApplicationContext application, Method method, RenderBridge bridge) {
-    super(request, application, method);
-
-    //
-    this.bridge = bridge;
-  }
+public class TestPortlet extends JuzuPortlet {
 
   @Override
-  protected RenderBridge getBridge() {
-    return bridge;
-  }
+  public void processAction(ActionRequest req, ActionResponse resp) throws PortletException, IOException {
+    super.processAction(req, resp);
 
-  @Override
-  public Phase.View getPhase() {
-    return Phase.VIEW;
+    // Send an event
+    resp.setEvent("event1", 3);
+    resp.setEvent("event1", "4");
+    resp.setEvent("event2", 5);
+    resp.setEvent("event3", "6");
   }
 }

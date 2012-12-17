@@ -48,7 +48,7 @@ public class ActionContext extends RequestContext {
   }
 
   @Override
-  public Phase getPhase() {
+  public Phase.Action getPhase() {
     return Phase.ACTION;
   }
 
