@@ -34,13 +34,22 @@ public class ContextualArgumentTestCase extends AbstractTestCase {
   }
 
   @Test
-  public void testFoo() throws Exception {
+  public void testSimple() throws Exception {
     // We only use CDI for its capability to discover beans automatically
-    MockApplication<?> application = application(InjectorProvider.CDI_WELD, "plugin.controller.contextual");
+    MockApplication<?> application = application(InjectorProvider.CDI_WELD, "plugin.controller.contextual.simple");
     application.init();
     MockClient client = application.client();
     MockRenderBridge request = client.render();
     Assert.assertEquals("__foo__", request.assertStringResult());
+  }
+
+  @Test
+  public void testRequest() throws Exception {
+    MockApplication<?> application = application(InjectorProvider.INJECT_GUICE, "plugin.controller.contextual.request");
+    application.init();
+    MockClient client = application.client();
+    MockRenderBridge request = client.render();
+    Assert.assertEquals("pass", request.assertStringResult());
   }
 }
 

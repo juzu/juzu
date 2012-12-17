@@ -17,22 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.controller.contextual;
+package plugin.controller.contextual.simple;
 
-import juzu.impl.plugin.application.ApplicationException;
-import juzu.impl.request.ContextualParameter;
-import juzu.impl.request.Method;
-import juzu.impl.request.Request;
-import juzu.impl.request.RequestFilter;
+import juzu.Response;
+import juzu.View;
+import juzu.impl.common.Tools;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Contextualizer implements RequestFilter {
-  public void invoke(Request request) throws ApplicationException {
-    Method m = request.getContext().getMethod();
-    ContextualParameter in = (ContextualParameter)m.getParameter("in");
-    request.setArgument(in, new ByteArrayInputStream("__foo__".getBytes()));
-    request.invoke();
+public class A {
+
+  @View
+  public Response.Content.Render index(InputStream in) throws IOException {
+    String s = Tools.read(in);
+    return Response.render(s);
   }
 }

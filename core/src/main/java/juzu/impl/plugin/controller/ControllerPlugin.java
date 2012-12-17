@@ -19,14 +19,24 @@
 
 package juzu.impl.plugin.controller;
 
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
+import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
+import juzu.impl.request.Parameter;
+import juzu.impl.request.Request;
+import juzu.impl.request.RequestFilter;
+import juzu.request.ActionContext;
+import juzu.request.MimeContext;
+import juzu.request.RenderContext;
+import juzu.request.RequestContext;
+import juzu.request.ResourceContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerPlugin extends ApplicationPlugin {
+public class ControllerPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   private ControllersDescriptor descriptor;
@@ -47,4 +57,33 @@ public class ControllerPlugin extends ApplicationPlugin {
   public Descriptor init(ClassLoader loader, JSON config) throws Exception {
     return descriptor = new ControllersDescriptor(loader, config);
   }
+
+  public void invoke(Request request) throws ApplicationException {
+    // Inject RequestContext in the arguments
+    RequestContext context = request.getContext();
+    Method<?> method = context.getMethod();
+    for (Parameter parameter : method.getParameters()) {
+      if (parameter instanceof ContextualParameter) {
+        ContextualParameter contextualParameter = (ContextualParameter)parameter;
+        tryInject(request, contextualParameter, context);
+        tryInject(request, contextualParameter, context.getHttpContext());
+        tryInject(request, contextualParameter, context.getSecurityContext());
+        if (context instanceof ResourceContext) {
+          ResourceContext resourceContext = (ResourceContext)context;
+          tryInject(request, contextualParameter, resourceContext.getClientContext());
+        } else if (context instanceof ActionContext) {
+          ActionContext actionContext = (ActionContext)context;
+          tryInject(request, contextualParameter, actionContext.getClientContext());
+        }
+      }
+    }
+    request.invoke();
+  }
+
+  private void tryInject(Request request, ContextualParameter parameter, Object instance) {
+    if (instance != null && parameter.getType().isInstance(instance)) {
+      request.setArgument(parameter, instance);
+    }
+  }
+
 }

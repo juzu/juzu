@@ -17,6 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application package plugin.controller.contextual;
+package plugin.controller.contextual.request;
 
-import juzu.Application;
+import juzu.Response;
+import juzu.View;
+import juzu.request.RequestContext;
+
+import java.io.IOException;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @View
+  public Response.Content.Render index(RequestContext context) throws IOException {
+    return Response.render(context != null ? "pass" : "fail");
+  }
+}
