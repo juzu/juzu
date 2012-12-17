@@ -19,7 +19,6 @@
 
 package plugin.ajax;
 
-import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
@@ -27,7 +26,7 @@ import juzu.View;
 import juzu.plugin.ajax.Ajax;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
   @View
   public Response.Render index() {
     String content = "" +

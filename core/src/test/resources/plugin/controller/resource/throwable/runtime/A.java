@@ -19,7 +19,6 @@
 
 package plugin.controller.resource.throwable.runtime;
 
-import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
 import juzu.View;
@@ -28,7 +27,7 @@ import java.io.IOException;
 import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   public A() {
   }

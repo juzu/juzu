@@ -20,13 +20,13 @@
 package bridge.servlet.route.action.redirecttoview;
 
 import juzu.Action;
-import juzu.Controller;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.Route;
+import juzu.request.RenderContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @juzu.View
   public Response.Content<?> index() {
@@ -44,7 +44,7 @@ public class A extends Controller {
 
   @juzu.View
   @Route("/bar")
-  public Response.Content<?> bar(String juu) {
+  public Response.Content<?> bar(String juu, RenderContext renderContext) {
     String path = renderContext.getProperty(PropertyType.PATH);
     return Response.ok("/juzu/bar".equals(path) && "juu".equals(juu) ? "pass" : "fail");
   }

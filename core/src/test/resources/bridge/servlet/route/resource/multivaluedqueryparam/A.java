@@ -19,7 +19,6 @@
 
 package bridge.servlet.route.resource.multivaluedqueryparam;
 
-import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
@@ -28,7 +27,7 @@ import juzu.View;
 import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @View
   public Response.Content<?> index() {

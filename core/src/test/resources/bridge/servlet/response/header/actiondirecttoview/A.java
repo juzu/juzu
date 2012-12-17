@@ -20,13 +20,12 @@
 package bridge.servlet.response.header.actiondirecttoview;
 
 import juzu.Action;
-import juzu.Controller;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.Route;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @juzu.View()
   public Response.Content<?> index() {

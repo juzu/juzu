@@ -19,7 +19,6 @@
 
 package bridge.servlet.route.view.pathparampattern;
 
-import juzu.Controller;
 import juzu.Param;
 import juzu.Response;
 import juzu.Route;
@@ -27,7 +26,7 @@ import juzu.View;
 import juzu.test.AbstractTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @View
   public Response.Content<?> index() {

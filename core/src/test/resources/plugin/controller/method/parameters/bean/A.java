@@ -20,14 +20,13 @@
 package plugin.controller.method.parameters.bean;
 
 import juzu.Action;
-import juzu.Controller;
 import juzu.Response;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 /** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
-public class A extends Controller {
+public class A {
   private B bean;
 
   public A() {

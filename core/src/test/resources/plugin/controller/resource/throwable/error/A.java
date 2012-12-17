@@ -19,7 +19,6 @@
 
 package plugin.controller.resource.throwable.error;
 
-import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
 import juzu.View;
@@ -27,7 +26,7 @@ import juzu.View;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   public A() {
   }

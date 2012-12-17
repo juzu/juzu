@@ -19,7 +19,6 @@
 
 package plugin.template.ioe;
 
-import juzu.Controller;
 import juzu.Path;
 import juzu.Response;
 import juzu.UndeclaredIOException;
@@ -31,7 +30,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @Inject
   @Path("index.gtmpl")

@@ -19,7 +19,6 @@
 
 package plugin.controller.resource.binary;
 
-import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
 import juzu.View;
@@ -29,7 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   public A() {
   }

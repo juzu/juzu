@@ -19,7 +19,6 @@
 
 package plugin.template.printer;
 
-import juzu.Controller;
 import juzu.Path;
 import juzu.View;
 import juzu.template.Template;
@@ -27,7 +26,7 @@ import juzu.template.Template;
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @Inject
   @Path("implicit.gtmpl")

@@ -20,13 +20,12 @@
 package plugin.controller.render.update;
 
 import juzu.Action;
-import juzu.Controller;
 import juzu.Response;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @Action
   public Response.View process() {

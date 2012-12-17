@@ -20,14 +20,13 @@
 package bridge.servlet.route.action.pathparampattern;
 
 import juzu.Action;
-import juzu.Controller;
 import juzu.Param;
 import juzu.Response;
 import juzu.Route;
 import juzu.test.AbstractTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @juzu.View
   @Route("/")

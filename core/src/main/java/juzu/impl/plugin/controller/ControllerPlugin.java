@@ -30,10 +30,13 @@ import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.ActionContext;
+import juzu.request.ClientContext;
+import juzu.request.HttpContext;
 import juzu.request.MimeContext;
 import juzu.request.RenderContext;
 import juzu.request.RequestContext;
 import juzu.request.ResourceContext;
+import juzu.request.SecurityContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerPlugin extends ApplicationPlugin implements RequestFilter {
@@ -65,25 +68,24 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     for (Parameter parameter : method.getParameters()) {
       if (parameter instanceof ContextualParameter) {
         ContextualParameter contextualParameter = (ContextualParameter)parameter;
-        tryInject(request, contextualParameter, context);
-        tryInject(request, contextualParameter, context.getHttpContext());
-        tryInject(request, contextualParameter, context.getSecurityContext());
+        tryInject(request, contextualParameter, RequestContext.class, context);
+        tryInject(request, contextualParameter, HttpContext.class, context.getHttpContext());
+        tryInject(request, contextualParameter, SecurityContext.class, context.getSecurityContext());
         if (context instanceof ResourceContext) {
           ResourceContext resourceContext = (ResourceContext)context;
-          tryInject(request, contextualParameter, resourceContext.getClientContext());
+          tryInject(request, contextualParameter, ClientContext.class, resourceContext.getClientContext());
         } else if (context instanceof ActionContext) {
           ActionContext actionContext = (ActionContext)context;
-          tryInject(request, contextualParameter, actionContext.getClientContext());
+          tryInject(request, contextualParameter, ClientContext.class, actionContext.getClientContext());
         }
       }
     }
     request.invoke();
   }
 
-  private void tryInject(Request request, ContextualParameter parameter, Object instance) {
-    if (instance != null && parameter.getType().isInstance(instance)) {
+  private <T> void tryInject(Request request, ContextualParameter parameter, Class<T> type, T instance) {
+    if (instance != null && type.isAssignableFrom(parameter.getType())) {
       request.setArgument(parameter, instance);
     }
   }
-
 }

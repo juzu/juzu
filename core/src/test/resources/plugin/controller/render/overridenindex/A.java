@@ -19,14 +19,13 @@
 
 package plugin.controller.render.overridenindex;
 
-import juzu.Controller;
 import juzu.Response;
 import juzu.View;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @View
   public Response.Content<?> index() throws IOException {

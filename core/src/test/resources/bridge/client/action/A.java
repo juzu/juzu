@@ -20,7 +20,6 @@
 package bridge.client.action;
 
 import juzu.Action;
-import juzu.Controller;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
@@ -33,19 +32,19 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   @Action
   @Route("/action")
-  public void action() throws IOException {
-    test(actionContext.getClientContext());
+  public void action(ClientContext clientContext) throws IOException {
+    test(clientContext);
     AbstractClientContextTestCase.kind = "action";
   }
 
   @Resource
   @Route("/resource")
-  public void resource() throws IOException {
-    test(resourceContext.getClientContext());
+  public void resource(ClientContext clientContext) throws IOException {
+    test(clientContext);
     AbstractClientContextTestCase.kind = "resource";
   }
 

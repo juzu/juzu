@@ -19,12 +19,11 @@
 
 package bridge.response.metatag.view;
 
-import juzu.Controller;
 import juzu.Response;
 import juzu.View;
 
 /** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
-public class A extends Controller {
+public class A {
 
   @View
   public Response.Content<?> index() {

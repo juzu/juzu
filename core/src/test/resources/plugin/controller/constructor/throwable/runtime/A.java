@@ -19,13 +19,12 @@
 
 package plugin.controller.constructor.throwable.runtime;
 
-import juzu.Controller;
 import juzu.View;
 
 import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Controller {
+public class A {
 
   public A() {
     throw new ConcurrentModificationException();
