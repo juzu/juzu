@@ -86,7 +86,7 @@ public class Hotels // extends Application
 
   @Ajax
   @Resource
-  @Route("/hotels/list")
+  @Route("/hotels")
   public void list(String search, String size, String page) {
     int _size = size != null ? Integer.parseInt(size) : 5;
     int _page = page != null ? Integer.parseInt(page) : 0;
@@ -147,6 +147,7 @@ public class Hotels // extends Application
   }
 
   @View
+  @Route("/hotels/{id}/confirm")
   public void confirmBooking(String id, Booking booking) {
     Hotel hotel = Hotel.findById(id);
     confirmBooking.with().total(0).hotel(hotel).booking(booking).render();
