@@ -45,19 +45,8 @@ public abstract class ModuleLifeCycle<R, C> {
   /** . */
   protected final Logger logger;
 
-  /** . */
-  protected ReadFileSystem<R> resources;
-
   protected ModuleLifeCycle(Logger logger) {
     this.logger = logger;
-  }
-
-  public ReadFileSystem<R> getResources() {
-    return resources;
-  }
-
-  public void setResources(ReadFileSystem<R> resources) {
-    this.resources = resources;
   }
 
   public abstract boolean refresh() throws Exception, CompilationException ;
