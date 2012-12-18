@@ -19,13 +19,14 @@
 
 package juzu.impl.inject.spi.cdi;
 
+import juzu.impl.common.AnnotationLiteral;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;

@@ -19,7 +19,7 @@
 
 package inject;
 
-import javax.enterprise.util.AnnotationLiteral;
+import juzu.impl.common.AnnotationLiteral;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ColorizedLiteral extends AnnotationLiteral<Colorized> implements Colorized {

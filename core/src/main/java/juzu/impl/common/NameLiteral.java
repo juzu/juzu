@@ -19,7 +19,6 @@
 
 package juzu.impl.common;
 
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Named;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
