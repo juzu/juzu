@@ -20,7 +20,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.EventQueue;
-import juzu.impl.bridge.EventBridge;
+import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.request.Request;

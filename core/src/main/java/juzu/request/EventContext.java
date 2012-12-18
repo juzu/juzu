@@ -19,7 +19,7 @@
 
 package juzu.request;
 
-import juzu.impl.bridge.EventBridge;
+import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;

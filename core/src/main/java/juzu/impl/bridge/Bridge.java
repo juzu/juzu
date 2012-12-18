@@ -20,6 +20,7 @@
 package juzu.impl.bridge;
 
 import juzu.Response;
+import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.asset.AssetServer;

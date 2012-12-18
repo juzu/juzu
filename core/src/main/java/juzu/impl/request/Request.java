@@ -21,7 +21,7 @@ package juzu.impl.request;
 
 import juzu.Response;
 import juzu.Scope;
-import juzu.impl.bridge.EventBridge;
+import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.inject.Scoped;

@@ -20,7 +20,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Event;
-import juzu.impl.bridge.EventBridge;
+import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.common.Introspector;
 import juzu.impl.plugin.application.ApplicationContext;
 import juzu.impl.request.ContextualParameter;

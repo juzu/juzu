@@ -21,7 +21,7 @@ package juzu.impl.plugin.application;
 
 import juzu.Response;
 import juzu.UndeclaredIOException;
-import juzu.impl.bridge.EventBridge;
+import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerPlugin;
