@@ -38,7 +38,7 @@ public enum JavaCompilerProvider implements Provider<JavaCompiler> {
     }
   },
 
-  EJC() {
+  ECJ() {
     public JavaCompiler get() {
       return new EclipseCompiler();
     }

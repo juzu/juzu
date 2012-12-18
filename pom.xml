@@ -297,6 +297,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.eclipse.jdt.core.compiler</groupId>
+        <artifactId>ecj</artifactId>
+        <version>3.7</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.github.spullara.mustache.java</groupId>
         <artifactId>compiler</artifactId>
         <version>0.8.0</version>
@@ -751,9 +757,9 @@
     </profile>
 
     <profile>
-      <id>ejc</id>
+      <id>ecj</id>
       <properties>
-        <juzu.test.compiler>ejc</juzu.test.compiler>
+        <juzu.test.compiler>ecj</juzu.test.compiler>
       </properties>
     </profile>
 
