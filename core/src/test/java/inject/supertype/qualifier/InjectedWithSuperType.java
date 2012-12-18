@@ -17,29 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package inject.supertype;
+package inject.supertype.qualifier;
 
-import inject.AbstractInjectTestCase;
-import juzu.impl.inject.spi.InjectorProvider;
-import org.junit.Test;
+import inject.Color;
+import inject.Colorized;
+
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SuperTypeTestCase<B, I> extends AbstractInjectTestCase<B, I> {
+public class InjectedWithSuperType {
 
-  public SuperTypeTestCase(InjectorProvider di) {
-    super(di);
-  }
+  @Inject
+  @Colorized(Color.RED)
+  public Fruit fruit;
 
-  @Test
-  public void testSuperType() throws Exception {
-    init();
-    bootstrap.declareBean(Fruit.class, null, null, Apple.class);
-    bootstrap.declareBean(Injected.class, null, null, null);
-    boot();
-
-    //
-    Injected beanObject = getBean(Injected.class);
-    assertNotNull(beanObject);
-    assertNotNull(beanObject.fruit);
-  }
 }

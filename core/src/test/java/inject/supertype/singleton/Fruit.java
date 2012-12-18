@@ -17,8 +17,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package inject.supertype;
+package inject.supertype.singleton;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Apple extends Fruit {
+public abstract class Fruit {
 }

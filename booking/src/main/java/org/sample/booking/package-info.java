@@ -18,8 +18,7 @@
  */
 
 @Application(defaultController = org.sample.booking.controllers.Application.class)
-//Uncomment the @Bindings to have Arquillian tests worked
-//@Bindings({@Binding(Flash.class), @Binding(org.sample.booking.controllers.Login.class)})
+@Bindings({@Binding(Flash.class), @Binding(Login.class)})
 @Portlet
 @Assets(
     scripts = {
@@ -42,3 +41,4 @@ import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;
+import org.sample.booking.controllers.Login;

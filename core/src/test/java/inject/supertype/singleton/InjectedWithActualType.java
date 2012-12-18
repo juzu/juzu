@@ -17,8 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package inject.supertype;
+package inject.supertype.singleton;
+
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Fruit {
+public class InjectedWithActualType {
+
+  @Inject
+  public Apple apple;
+
 }

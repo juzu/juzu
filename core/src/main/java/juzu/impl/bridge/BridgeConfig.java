@@ -94,6 +94,8 @@ public class BridgeConfig {
         implementation = InjectorProvider.CDI_WELD;
       } else if ("spring".equals(inject)) {
         implementation = InjectorProvider.INJECT_SPRING;
+      } else if ("guice".equals(inject)) {
+        implementation = InjectorProvider.INJECT_GUICE;
       } else {
         throw new Exception("unrecognized inject vendor " + inject);
       }

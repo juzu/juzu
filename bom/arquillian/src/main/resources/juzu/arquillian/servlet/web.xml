@@ -4,6 +4,10 @@
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
+    <init-param>
+      <param-name>juzu.inject</param-name>
+      <param-value>%s</param-value>
+    </init-param>
   </servlet>
   <servlet>
     <servlet-name>AssetServlet</servlet-name>

@@ -14,7 +14,7 @@
      </init-param>
      <init-param>
        <name>juzu.inject</name>
-       <value>weld</value>
+       <value>guice</value>
        <!--
        <value>spring</value>
        -->

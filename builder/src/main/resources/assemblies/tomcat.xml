@@ -48,7 +48,6 @@
       <excludes>
         <exclude>commons-logging:commons-logging</exclude>
         <exclude>org.javassist:javassist</exclude>
-        <exclude>javax.servlet:servlet-api</exclude>
       </excludes>
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <useTransitiveFiltering>true</useTransitiveFiltering>

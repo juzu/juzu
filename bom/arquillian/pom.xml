@@ -19,11 +19,6 @@
 
   <dependencies>
 
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
-    </dependency>
-
     <!-- Shrinkwrap/Arquillian -->
     <dependency>
       <groupId>org.jboss.shrinkwrap</groupId>

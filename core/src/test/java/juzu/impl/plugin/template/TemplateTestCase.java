@@ -71,12 +71,9 @@ public class TemplateTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testTyped() throws Exception {
-    // Does not work with Guice at the moment
-    if (getDI() != InjectorProvider.INJECT_GUICE) {
-      MockApplication<?> app = application("plugin.template.typed").init();
-      MockClient client = app.client();
-      assertEquals("typed_template", client.render().assertStringResult());
-    }
+    MockApplication<?> app = application("plugin.template.typed").init();
+    MockClient client = app.client();
+    assertEquals("typed_template", client.render().assertStringResult());
   }
 
   @Test

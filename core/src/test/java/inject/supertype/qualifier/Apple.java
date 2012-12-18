@@ -17,14 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package inject.supertype;
+package inject.supertype.qualifier;
 
-import javax.inject.Inject;
+import inject.Color;
+import inject.Colorized;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Injected {
-
-  @Inject
-  public Fruit fruit;
-
+@Colorized(Color.RED)
+public class Apple extends Fruit {
 }

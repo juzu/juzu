@@ -85,20 +85,22 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
 
         // Bind beans
         for (BeanBinding<?> beanBinding : bootstrap.bindings) {
-          AnnotatedBindingBuilder a = bind(beanBinding.type);
-          LinkedBindingBuilder b;
 
+          // Get a binding key
+          Key key;
           if (beanBinding.qualifiers != null && beanBinding.qualifiers.size() > 0) {
             Iterator<Annotation> i = beanBinding.qualifiers.iterator();
             // Construction to make compiler happy
-            b = a.annotatedWith(i.next());
-            while (i.hasNext()) {
-              b = a.annotatedWith(i.next());
-            }
+//            b = a.annotatedWith(i.next());
+//            while (i.hasNext()) {
+//              b = a.annotatedWith(i.next());
+//            }
+            key = Key.get(beanBinding.type, i.next());
           }
           else {
-            b = a;
+            key = Key.get(beanBinding.type);
           }
+          LinkedBindingBuilder b = bind(key);
 
           //
           ScopedBindingBuilder c;
@@ -124,6 +126,8 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
               if (d.qualifiers != null) {
                 if (d.implementationType != null) {
                   c = b.to(d.implementationType);
+                  // Guice trick : need to bind alias so the implementation type will be bound with the qualifier
+                  bind(Key.get(d.implementationType, key.getAnnotation())).toProvider(new BeanAlias(key));
                 }
                 else {
                   c = b.to(beanBinding.type);

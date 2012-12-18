@@ -21,8 +21,11 @@ package juzu.arquillian;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -33,13 +36,24 @@ import java.io.InputStream;
 public class Helper {
 
   /**
-   * Create a base portlet war file. The returned war file is configured for running the Juzu
-   * servlet.
+   * Create a base servlet war file. The returned war file is configured for running the Juzu
+   * servlet with Weld container.
    *
    * @return the base servlet deployment
    */
   public static WebArchive createBaseServletDeployment() {
-    return createBaseDeployment("servlet/web.xml");
+    return createBaseServletDeployment("weld");
+  }
+
+  /**
+   * Create a base servlet war file. The returned war file is configured for running the Juzu
+   * servlet and the specified injector provider.
+   *
+   * @param injectorVendor the injector vendor
+   * @return the base servlet deployment
+   */
+  public static WebArchive createBaseServletDeployment(String injectorVendor) {
+    return createBaseDeployment("servlet/web.xml", injectorVendor);
   }
 
   /**
@@ -49,20 +63,35 @@ public class Helper {
    * @return the base portlet deployment
    */
   public static WebArchive createBasePortletDeployment() {
-    return createBaseDeployment("portlet/web.xml");
+    return createBaseDeployment("portlet/web.xml", "weld");
   }
 
-  private static WebArchive createBaseDeployment(String webXML) {
+  private static WebArchive createBaseDeployment(String webXMLPath, String injectorProvider) {
     WebArchive war = ShrinkWrap.create(WebArchive.class);
-
-    // Embedded portlet container configuration
-    InputStream in = Helper.class.getResourceAsStream(webXML);
+    byte[] buffer = new byte[512];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    InputStream in = Helper.class.getResourceAsStream(webXMLPath);
     if (in == null) {
-      throw new AssertionError("Could not find web.xml for juzu portlet testing");
+      throw new AssertionError("Could not locate " + webXMLPath + " web.xml for juzu testing");
     }
-    war.setWebXML(new ByteArrayAsset(in));
-
-    //
+    try {
+      for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
+        baos.write(buffer, 0, l);
+      }
+    }
+    catch (IOException e) {
+      throw new AssertionError("Could not find read " + webXMLPath + " web.xml for juzu testing");
+    }
+    finally {
+      try {
+        in.close();
+      }
+      catch (Throwable ignore) {
+      }
+    }
+    String webXML = baos.toString();
+    webXML = String.format(webXML, injectorProvider);
+    war.setWebXML(new StringAsset(webXML));
     return war;
   }
 }
