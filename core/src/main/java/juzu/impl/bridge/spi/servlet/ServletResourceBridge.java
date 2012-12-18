@@ -20,7 +20,7 @@
 package juzu.impl.bridge.spi.servlet;
 
 import juzu.Response;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.Tools;
 import juzu.impl.request.Method;
@@ -43,7 +43,7 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
   private Response.Content response;
 
   ServletResourceBridge(
-      ApplicationContext application,
+      Application application,
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,

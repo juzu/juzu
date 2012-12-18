@@ -23,7 +23,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.common.Tools;
@@ -57,7 +57,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
   private String title;
 
   ServletRenderBridge(
-      ApplicationContext application,
+      Application application,
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,

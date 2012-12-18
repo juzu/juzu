@@ -23,7 +23,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.common.MimeType;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
@@ -56,7 +56,7 @@ import java.util.Map;
 public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext, ClientContext {
 
   /** . */
-  final ApplicationContext application;
+  final Application application;
 
   /** . */
   final Handler handler;
@@ -83,7 +83,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   protected Map<String, String[]> responseHeaders;
 
   ServletRequestBridge(
-      ApplicationContext application,
+      Application application,
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,

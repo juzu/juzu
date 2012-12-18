@@ -22,7 +22,7 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.Event;
 import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.common.Introspector;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Parameter;
@@ -36,7 +36,7 @@ import java.util.Map;
 public class PortletEventBridge extends PortletRequestBridge<EventRequest, EventResponse> implements EventBridge {
 
   public PortletEventBridge(
-      ApplicationContext application,
+      Application application,
       EventRequest req,
       EventResponse resp,
       Method<?> target,

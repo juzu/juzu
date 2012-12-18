@@ -21,7 +21,7 @@ package juzu.test.protocol.mock;
 
 import juzu.impl.common.Name;
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -89,7 +89,7 @@ public class MockApplication<P> {
     return runtime;
   }
 
-  public ApplicationContext getContext() {
+  public Application getContext() {
     return runtime.getContext();
   }
 

@@ -20,7 +20,7 @@
 package juzu.request;
 
 import juzu.Response;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.ActionBridge;
@@ -31,7 +31,7 @@ public class ActionContext extends RequestContext {
   /** . */
   private ActionBridge bridge;
 
-  public ActionContext(Request request, ApplicationContext application, Method method, ActionBridge bridge) {
+  public ActionContext(Request request, Application application, Method method, ActionBridge bridge) {
     super(request, application, method);
 
     //

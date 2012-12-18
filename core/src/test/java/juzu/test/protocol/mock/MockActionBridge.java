@@ -20,7 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.request.ClientContext;
@@ -39,7 +39,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   /** . */
   private Response response;
 
-  public MockActionBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockActionBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
 

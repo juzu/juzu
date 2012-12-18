@@ -20,7 +20,7 @@
 package juzu.impl.plugin.template;
 
 import juzu.PropertyMap;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.template.spi.TemplateStub;
@@ -45,7 +45,7 @@ public class TemplatePlugin extends ApplicationPlugin {
   private final ConcurrentHashMap<Path, TemplateStub> stubs;
 
   @Inject
-  ApplicationContext application;
+  Application application;
 
   public TemplatePlugin() {
     super("template");

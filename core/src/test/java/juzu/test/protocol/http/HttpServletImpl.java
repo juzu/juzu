@@ -19,7 +19,7 @@
 
 package juzu.test.protocol.http;
 
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
@@ -143,7 +143,7 @@ public class HttpServletImpl extends HttpServlet {
     else {
       RequestBridgeImpl requestBridge = create(req, resp);
       try {
-        ApplicationContext context = application.getContext();
+        Application context = application.getContext();
         context.invoke(requestBridge);
       }
       finally {

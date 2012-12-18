@@ -22,7 +22,7 @@ package juzu.test.protocol.http;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.common.MimeType;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
@@ -53,7 +53,7 @@ import java.util.Map;
 public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, WindowContext, ClientContext {
 
   /** . */
-  final ApplicationContext application;
+  final Application application;
 
   /** . */
   final HttpServletRequest req;
@@ -74,7 +74,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   protected Request request;
 
   RequestBridgeImpl(
-      ApplicationContext application,
+      Application application,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,

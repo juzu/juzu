@@ -23,7 +23,7 @@ import juzu.PropertyType;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
@@ -38,7 +38,7 @@ public abstract class RequestContext {
   private static final Object[] EMPTY = new Object[0];
 
   /** . */
-  protected final ApplicationContext application;
+  protected final Application application;
 
   /** . */
   protected final Method method;
@@ -46,13 +46,13 @@ public abstract class RequestContext {
   /** . */
   protected final Request request;
 
-  public RequestContext(Request request, ApplicationContext application, Method method) {
+  public RequestContext(Request request, Application application, Method method) {
     this.request = request;
     this.application = application;
     this.method = method;
   }
 
-  public ApplicationContext getApplication() {
+  public Application getApplication() {
     return application;
   }
 

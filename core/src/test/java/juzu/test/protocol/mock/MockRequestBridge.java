@@ -22,7 +22,7 @@ package juzu.test.protocol.mock;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.common.MimeType;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
@@ -44,7 +44,7 @@ import java.util.Map;
 public abstract class MockRequestBridge implements RequestBridge {
 
   /** . */
-  protected final ApplicationContext application;
+  protected final Application application;
 
   /** . */
   protected final MockClient client;
@@ -73,7 +73,7 @@ public abstract class MockRequestBridge implements RequestBridge {
   /** . */
   private final Map<String, ? extends Argument> arguments;
 
-  public MockRequestBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockRequestBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
 
     //
     Method<?> descriptor = application.getDescriptor().getControllers().getMethodByHandle(target);

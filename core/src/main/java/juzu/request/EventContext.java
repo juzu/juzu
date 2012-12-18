@@ -20,7 +20,7 @@
 package juzu.request;
 
 import juzu.impl.bridge.spi.EventBridge;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 
@@ -30,7 +30,7 @@ public class EventContext extends RequestContext {
   /** . */
   private final EventBridge bridge;
 
-  public EventContext(Request request, ApplicationContext application, Method method, EventBridge bridge) {
+  public EventContext(Request request, Application application, Method method, EventBridge bridge) {
     super(request, application, method);
 
     //

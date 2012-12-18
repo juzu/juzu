@@ -21,7 +21,7 @@ package juzu.impl.bridge.spi.servlet;
 
 import juzu.Response;
 import juzu.impl.common.MimeType;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.request.Method;
 import juzu.request.ClientContext;
@@ -40,7 +40,7 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
   Response response;
 
   ServletActionBridge(
-      ApplicationContext application,
+      Application application,
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,

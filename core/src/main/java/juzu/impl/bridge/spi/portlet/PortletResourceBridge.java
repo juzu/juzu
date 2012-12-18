@@ -20,7 +20,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
@@ -38,7 +38,7 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
   /** . */
   private final PortletClientContext clientContext;
 
-  public PortletResourceBridge(ApplicationContext application, ResourceRequest request, ResourceResponse response, boolean prod) {
+  public PortletResourceBridge(Application application, ResourceRequest request, ResourceResponse response, boolean prod) {
     super(application, request, response, prod);
 
     //

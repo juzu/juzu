@@ -22,7 +22,7 @@ package juzu.impl.request;
 import juzu.Response;
 import juzu.Scope;
 import juzu.impl.bridge.spi.EventBridge;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
@@ -53,7 +53,7 @@ public class Request implements ScopingContext {
   private static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
   /** . */
-  private final ApplicationContext application;
+  private final Application application;
 
   /** . */
   private final RequestBridge bridge;
@@ -71,7 +71,7 @@ public class Request implements ScopingContext {
   private Response response;
 
   public Request(
-    ApplicationContext application,
+    Application application,
     Method method,
     Map<String, String[]> parameters,
     RequestBridge bridge) {
@@ -102,7 +102,7 @@ public class Request implements ScopingContext {
     this.arguments = arguments;
   }
 
-  public ApplicationContext getApplication() {
+  public Application getApplication() {
     return application;
   }
 

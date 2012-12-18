@@ -62,7 +62,7 @@ public class ApplicationLifeCycle<P, R> {
   protected ReadFileSystem<R> resources;
 
   /** . */
-  protected ApplicationContext context;
+  protected Application context;
 
   /** . */
   protected AssetServer assetServer;
@@ -122,7 +122,7 @@ public class ApplicationLifeCycle<P, R> {
     this.resolver = resolver;
   }
 
-  public ApplicationContext getContext() {
+  public Application getContext() {
     return context;
   }
 

@@ -23,7 +23,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
@@ -51,7 +51,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
   /** . */
   private LinkedList<Element> headers = new LinkedList<Element>();
 
-  public PortletRenderBridge(ApplicationContext application, Bridge bridge, RenderRequest request, RenderResponse response, boolean prod) {
+  public PortletRenderBridge(Application application, Bridge bridge, RenderRequest request, RenderResponse response, boolean prod) {
     super(application, request, response, prod);
 
     //

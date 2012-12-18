@@ -19,7 +19,7 @@
 
 package juzu.impl.bridge.spi.servlet;
 
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.request.Method;
 
@@ -31,7 +31,7 @@ import java.util.Map;
 public abstract class ServletMimeBridge extends ServletRequestBridge implements MimeBridge {
 
   ServletMimeBridge(
-      ApplicationContext application,
+      Application application,
       Handler handler,
       HttpServletRequest req,
       HttpServletResponse resp,

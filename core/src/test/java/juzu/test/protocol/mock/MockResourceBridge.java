@@ -20,7 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.request.ClientContext;
@@ -35,7 +35,7 @@ public class MockResourceBridge extends MockMimeBridge implements ResourceBridge
   /** . */
   private int status = 200;
 
-  public MockResourceBridge(ApplicationContext application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockResourceBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
 

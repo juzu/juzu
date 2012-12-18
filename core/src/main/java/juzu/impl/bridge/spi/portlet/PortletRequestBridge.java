@@ -23,7 +23,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.common.MimeType;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.request.Method;
@@ -65,7 +65,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   protected Map<String, String[]> responseHeaders;
 
   /** . */
-  protected final ApplicationContext application;
+  protected final Application application;
 
   /** . */
   protected final Rq req;
@@ -100,7 +100,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
   /** . */
   protected Response response;
 
-  PortletRequestBridge(ApplicationContext application, Rq req, Rs resp, boolean prod) {
+  PortletRequestBridge(Application application, Rq req, Rs resp, boolean prod) {
     String methodId = null;
     Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
     for (Iterator<Map.Entry<String, String[]>> i = parameters.entrySet().iterator();i.hasNext();) {
@@ -140,7 +140,7 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
     this.prod = prod;
   }
 
-  PortletRequestBridge(ApplicationContext application, Rq req, Rs resp, Method<?> target, Map<String, String[]> parameters, boolean prod) {
+  PortletRequestBridge(Application application, Rq req, Rs resp, Method<?> target, Map<String, String[]> parameters, boolean prod) {
 
     // Get argument map
     HashMap<String, Argument> arguments = new HashMap<String, Argument>(target.getArguments(parameters));

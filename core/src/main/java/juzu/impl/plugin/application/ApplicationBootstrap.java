@@ -19,7 +19,6 @@
 
 package juzu.impl.plugin.application;
 
-import juzu.Application;
 import juzu.Scope;
 import juzu.impl.common.Filter;
 import juzu.impl.common.Tools;
@@ -43,7 +42,7 @@ class ApplicationBootstrap {
   public final ApplicationDescriptor descriptor;
 
   /** . */
-  private BeanLifeCycle<ApplicationContext> contextLifeCycle;
+  private BeanLifeCycle<Application> contextLifeCycle;
 
   /** . */
   private InjectionContext<?, ?> injectionContext;
@@ -62,7 +61,7 @@ class ApplicationBootstrap {
     injector.bindBean(ApplicationDescriptor.class, null, descriptor);
 
     // Bind the application context
-    injector.declareBean(ApplicationContext.class, null, null, null);
+    injector.declareBean(Application.class, null, null, null);
 
     // Bind the scopes
     for (Scope scope : Scope.values()) {
@@ -99,7 +98,7 @@ class ApplicationBootstrap {
             } else {
               try {
                 Class<?> packageClass = descriptor.getApplicationLoader().loadClass(currentPkg + ".package-info");
-                Application ann = packageClass.getAnnotation(Application.class);
+                juzu.Application ann = packageClass.getAnnotation(juzu.Application.class);
                 if (ann != null) {
                   blackList.add(currentPkg);
                   return false;
@@ -125,7 +124,7 @@ class ApplicationBootstrap {
     }
 
     // Let the container create the application context bean
-    BeanLifeCycle<ApplicationContext> contextLifeCycle = injectionContext.get(ApplicationContext.class);
+    BeanLifeCycle<Application> contextLifeCycle = injectionContext.get(Application.class);
     try {
       contextLifeCycle.get();
     }
@@ -138,7 +137,7 @@ class ApplicationBootstrap {
     this.injectionContext = injectionContext;
   }
 
-  ApplicationContext getContext() {
+  Application getContext() {
     return contextLifeCycle.peek();
   }
 

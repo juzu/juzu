@@ -20,7 +20,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
-import juzu.impl.plugin.application.ApplicationContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
@@ -37,7 +37,7 @@ abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeRespo
   /** . */
   private Response.Content<?> response;
 
-  PortletMimeBridge(ApplicationContext application, Rq request, Rs response, boolean prod) {
+  PortletMimeBridge(Application application, Rq request, Rs response, boolean prod) {
     super(application, request, response, prod);
   }
 

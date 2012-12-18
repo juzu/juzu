@@ -47,7 +47,7 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Singleton
-public class ApplicationContext {
+public class Application {
 
   /** . */
   private final ApplicationDescriptor descriptor;
@@ -62,7 +62,7 @@ public class ApplicationContext {
   public ArrayList<RequestFilter> lifecycles;
 
   @Inject
-  public ApplicationContext(InjectionContext injectionContext, ApplicationDescriptor descriptor, ControllerPlugin controller) throws Exception {
+  public Application(InjectionContext injectionContext, ApplicationDescriptor descriptor, ControllerPlugin controller) throws Exception {
     this.descriptor = descriptor;
     this.injectionContext = injectionContext;
     this.controller = controller;
