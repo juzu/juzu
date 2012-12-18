@@ -46,6 +46,8 @@
 
     <dependencySet>
       <excludes>
+
+        <!-- GateIn excludes -->
         <exclude>org.codehaus.groovy:groovy-all</exclude>
         <exclude>com.google.guava:guava</exclude>
         <exclude>commons-logging:commons-logging</exclude>
@@ -53,6 +55,7 @@
         <exclude>org.slf4j:slf4j-simple</exclude>
         <exclude>javax.portlet:portlet-api</exclude>
         <exclude>org.javassist:javassist</exclude>
+
       </excludes>
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <useTransitiveFiltering>true</useTransitiveFiltering>
