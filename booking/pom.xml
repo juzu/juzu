@@ -89,15 +89,15 @@
             </configuration>
           </execution>
           <execution>
-            <id>tomcat</id>
+            <id>tomcat-guice</id>
             <goals>
               <goal>single</goal>
             </goals>
             <phase>package</phase>
             <configuration>
-              <classifier>tomcat</classifier>
+              <classifier>tomcat-guice</classifier>
               <descriptorRefs>
-                <descriptorRef>tomcat</descriptorRef>
+                <descriptorRef>tomcat-guice</descriptorRef>
               </descriptorRefs>
             </configuration>
           </execution>
