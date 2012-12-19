@@ -19,17 +19,18 @@
 
 package juzu.impl.inject.spi;
 
+import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class InjectionContext<B, I> {
+public abstract class InjectionContext<B, I> implements Closeable {
 
   /**
-   * Returns the implementation.
+   * Returns the injector provider.
    *
-   * @return the implementation
+   * @return the injector provider
    */
-  public abstract InjectorProvider getImplementation();
+  public abstract InjectorProvider getProvider();
 
   public abstract ClassLoader getClassLoader();
 
@@ -61,10 +62,10 @@ public abstract class InjectionContext<B, I> {
   public abstract void release(B bean, I instance);
 
   /**
-   * Shutdown the manager. The implementation should care bout shutting down the existing bean in particular the
+   * Close the manager. The implementation should care bout shutting down the existing bean in particular the
    * singleton beans that are managed outside of an explicit scope.
    */
-  public abstract void shutdown();
+  public abstract void close();
 
   private static class BeanLifeCycleImpl<B,I,T> implements BeanLifeCycle<T> {
 
@@ -92,7 +93,7 @@ public abstract class InjectionContext<B, I> {
       return o;
     }
 
-    public void release() {
+    public void close() {
       if (instance != null) {
         manager.release(a, instance);
       }

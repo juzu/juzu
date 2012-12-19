@@ -81,7 +81,7 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
     this.container = container;
   }
 
-  public InjectorProvider getImplementation() {
+  public InjectorProvider getProvider() {
     return InjectorProvider.CDI_WELD;
   }
 
@@ -148,7 +148,7 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
     }
   }
 
-  public void shutdown() {
+  public void close() {
     container.stop();
   }
 }

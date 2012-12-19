@@ -39,7 +39,7 @@ public class MockApplication<P> {
   final ClassLoader classLoader;
 
   /** . */
-  private final ApplicationLifeCycle<P, ?> runtime;
+  private final ApplicationLifeCycle<P, ?> lifeCycle;
 
   public <L> MockApplication(
       ReadFileSystem<P> classes,
@@ -65,11 +65,11 @@ public class MockApplication<P> {
     ModuleLifeCycle<P, P> module = new ModuleLifeCycle.Static<P, P>(log, classLoader, classes);
 
     //
-    ApplicationLifeCycle<P, P> runtime = new ApplicationLifeCycle<P, P>(log, module);
-    runtime.setResources(classes);
-    runtime.setName(name);
-    runtime.setInjectorProvider(implementation);
-    runtime.setResourceResolver(new ResourceResolver() {
+    ApplicationLifeCycle<P, P> lifeCycle = new ApplicationLifeCycle<P, P>(log, module);
+    lifeCycle.setResources(classes);
+    lifeCycle.setName(name);
+    lifeCycle.setInjectorProvider(implementation);
+    lifeCycle.setResourceResolver(new ResourceResolver() {
       public URL resolve(String uri) {
         return null;
       }
@@ -77,24 +77,24 @@ public class MockApplication<P> {
 
     //
     this.classLoader = classLoader;
-    this.runtime = runtime;
+    this.lifeCycle = lifeCycle;
   }
 
   public MockApplication<P> init() throws Exception {
-    runtime.refresh();
+    lifeCycle.refresh();
     return this;
   }
 
-  public ApplicationLifeCycle<P, ?> getRuntime() {
-    return runtime;
+  public ApplicationLifeCycle<P, ?> getLifeCycle() {
+    return lifeCycle;
   }
 
   public Application getContext() {
-    return runtime.getApplication();
+    return lifeCycle.getApplication();
   }
 
   void invoke(RequestBridge bridge) throws ApplicationException {
-    runtime.getApplication().invoke(bridge);
+    lifeCycle.getApplication().invoke(bridge);
   }
 
   public MockClient client() {

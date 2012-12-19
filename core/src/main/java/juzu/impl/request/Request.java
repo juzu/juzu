@@ -279,7 +279,7 @@ public class Request implements ScopingContext {
         }
       }
       finally {
-        lifeCycle.release();
+        lifeCycle.close();
       }
     }
     else {

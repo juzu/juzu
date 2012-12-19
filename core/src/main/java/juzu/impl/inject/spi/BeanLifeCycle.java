@@ -19,6 +19,7 @@
 
 package juzu.impl.inject.spi;
 
+import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -27,12 +28,12 @@ import java.lang.reflect.InvocationTargetException;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public interface BeanLifeCycle<T> {
+public interface BeanLifeCycle<T> extends Closeable {
 
   T get() throws InvocationTargetException;
 
   T peek();
 
-  void release();
+  void close();
 
 }

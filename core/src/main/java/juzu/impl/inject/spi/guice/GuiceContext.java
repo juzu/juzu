@@ -26,7 +26,6 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.ProvisionException;
 import com.google.inject.TypeLiteral;
-import com.google.inject.binder.AnnotatedBindingBuilder;
 import com.google.inject.binder.LinkedBindingBuilder;
 import com.google.inject.binder.ScopedBindingBuilder;
 import com.google.inject.internal.BindingImpl;
@@ -174,7 +173,7 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
     this.classLoader = bootstrap.classLoader;
   }
 
-  public InjectorProvider getImplementation() {
+  public InjectorProvider getProvider() {
     return InjectorProvider.INJECT_GUICE;
   }
 
@@ -248,7 +247,7 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
     }
   }
 
-  public void shutdown() {
+  public void close() {
     for (Binding<?> binding : injector.getAllBindings().values()) {
       Scoping scoping = ((BindingImpl)binding).getScoping();
       if (scoping == Scoping.SINGLETON_INSTANCE) {

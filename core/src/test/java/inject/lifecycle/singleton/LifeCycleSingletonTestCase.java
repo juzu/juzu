@@ -61,7 +61,7 @@ public class LifeCycleSingletonTestCase<B, I> extends AbstractInjectTestCase<B, 
     assertEquals(0, Bean.destroy);
 
     //
-    mgr.shutdown();
+    mgr.close();
     assertEquals(1, Bean.construct);
     assertEquals(1, Bean.destroy);
   }

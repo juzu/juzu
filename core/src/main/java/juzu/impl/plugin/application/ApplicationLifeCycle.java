@@ -43,6 +43,7 @@ import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ClassLoaderResolver;
 import juzu.impl.resource.ResourceResolver;
 
+import java.io.Closeable;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -56,7 +57,7 @@ import java.util.jar.JarFile;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ApplicationLifeCycle<P, R> {
+public class ApplicationLifeCycle<P, R> implements Closeable {
 
   /** Configuration: name. */
   protected Name name;
@@ -178,14 +179,14 @@ public class ApplicationLifeCycle<P, R> {
     //
     if (application == null) {
       logger.log("Building application");
-      doBoot();
+      start();
       return true;
     } else {
       return false;
     }
   }
 
-  protected final void doBoot() throws Exception {
+  protected final void start() throws Exception {
     ReadFileSystem<P> classes = getModule().getClasses();
 
     //
@@ -233,7 +234,7 @@ public class ApplicationLifeCycle<P, R> {
 
     //
     logger.log("Starting " + descriptor.getName());
-    InjectionContext<?, ?> injectionContext = _start(descriptor, injector);
+    InjectionContext<?, ?> injectionContext = doStart(descriptor, injector);
 
     //
     AssetPlugin assetPlugin = injectionContext.get(AssetPlugin.class).get();
@@ -255,7 +256,7 @@ public class ApplicationLifeCycle<P, R> {
     }
   }
 
-  private <B, I> InjectionContext<B, I> _start(final ApplicationDescriptor descriptor, Injector injector) throws ApplicationException {
+  private <B, I> InjectionContext<B, I> doStart(final ApplicationDescriptor descriptor, Injector injector) throws ApplicationException {
 
     // Bind the application descriptor
     injector.bindBean(ApplicationDescriptor.class, null, descriptor);
@@ -328,15 +329,16 @@ public class ApplicationLifeCycle<P, R> {
   }
 
   void stop() {
-    if (application != null) {
-      application.release();
-    }
-    if (injectionContext != null) {
-      injectionContext.shutdown();
-    }
+    Tools.safeClose(application);
+    Tools.safeClose(injectionContext);
+    application = null;
+    injectionContext = null;
+    stylesheetManager = null;
+    scriptManager = null;
+    descriptor = null;
   }
 
-  public void shutdown() {
+  public void close() {
     stop();
   }
 }

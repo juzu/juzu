@@ -55,7 +55,7 @@ public class SpringContext extends InjectionContext<String, Object> {
     this.classLoader = classLoader;
   }
 
-  public InjectorProvider getImplementation() {
+  public InjectorProvider getProvider() {
     return InjectorProvider.INJECT_SPRING;
   }
 
@@ -113,7 +113,7 @@ public class SpringContext extends InjectionContext<String, Object> {
     }
   }
 
-  public void shutdown() {
+  public void close() {
     factory.destroySingletons();
   }
 }

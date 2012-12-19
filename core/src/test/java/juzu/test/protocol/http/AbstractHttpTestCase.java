@@ -43,7 +43,7 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
     if (currentTest == null) {
       throw new IllegalStateException("No deployed test");
     }
-    return currentTest.application.getRuntime();
+    return currentTest.application.getLifeCycle();
   }
 
   @Override
@@ -79,7 +79,7 @@ public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
     }
     MockApplication<?> app = application;
     application = null;
-    app.getRuntime().shutdown();
+    app.getLifeCycle().close();
   }
 
   public final MockApplication<?> assertDeploy(String packageName) {
