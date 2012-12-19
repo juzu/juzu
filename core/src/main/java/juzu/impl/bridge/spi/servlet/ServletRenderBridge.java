@@ -136,7 +136,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         url = sb.toString();
         break;
       case CLASSPATH:
-        if (handler.bridge.config.isProd()) {
+        if (handler.bridge.getConfig().isProd()) {
           sb = new StringBuilder();
           sb.append(req.getContextPath()).append("/assets");
           if (!uri.startsWith("/")) {

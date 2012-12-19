@@ -153,21 +153,22 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     }
 
     //
-    Bridge bridge = new Bridge(module);
-    bridge.config = bridgeConfig;
-    bridge.resources = WarFileSystem.create(config.getPortletContext(), "/WEB-INF/");
-    bridge.server = server;
-    bridge.log = log;
-    bridge.resolver = new ResourceResolver() {
-      public URL resolve(String uri) {
-        try {
-          return context.getResource(uri);
-        }
-        catch (MalformedURLException e) {
-          return null;
-        }
-      }
-    };
+    Bridge bridge = new Bridge(
+        log,
+        module,
+        bridgeConfig,
+        WarFileSystem.create(config.getPortletContext(), "/WEB-INF/"),
+        server,
+        new ResourceResolver() {
+          public URL resolve(String uri) {
+            try {
+              return context.getResource(uri);
+            }
+            catch (MalformedURLException e) {
+              return null;
+            }
+          }
+        });
 
     //
     this.bridgeConfig = bridgeConfig;
@@ -209,7 +210,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
 
   public void processAction(ActionRequest req, ActionResponse resp) throws PortletException, IOException {
     try {
-      PortletActionBridge requestBridge = new PortletActionBridge(bridge.application.getApplication(), req, resp, bridge.config.isProd());
+      PortletActionBridge requestBridge = new PortletActionBridge(bridge.application.getApplication(), req, resp, bridge.getConfig().isProd());
       bridge.processAction(requestBridge);
       requestBridge.send();
     }
@@ -245,7 +246,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
             response,
             target,
             request.getParameterMap(),
-            bridge.config.isProd());
+            bridge.getConfig().isProd());
         bridge.processEvent(requestBridge);
         requestBridge.send();
       }
@@ -284,7 +285,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
 
     //
     try {
-      PortletRenderBridge requestBridge = new PortletRenderBridge(bridge.application.getApplication(), bridge, req, resp, bridge.config.isProd());
+      PortletRenderBridge requestBridge = new PortletRenderBridge(bridge.application.getApplication(), bridge, req, resp, bridge.getConfig().isProd());
       bridge.render(requestBridge);
       requestBridge.send();
     }
@@ -325,7 +326,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
       }
     } else {
       try {
-        PortletResourceBridge requestBridge = new PortletResourceBridge(bridge.application.getApplication(), req, resp, bridge.config.isProd());
+        PortletResourceBridge requestBridge = new PortletResourceBridge(bridge.application.getApplication(), req, resp, bridge.getConfig().isProd());
         bridge.serveResource(requestBridge);
         requestBridge.send();
       }

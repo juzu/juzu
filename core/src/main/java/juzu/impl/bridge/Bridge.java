@@ -53,16 +53,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Bridge implements Closeable {
 
   /** . */
-  public Logger log;
+  private final Logger log;
 
   /** . */
-  public AssetServer server;
+  private final AssetServer server;
 
   /** . */
-  public BridgeConfig config;
+  private final BridgeConfig config;
 
   /** . */
-  public ReadFileSystem<?> resources;
+  private final ReadFileSystem<?> resources;
+
+  /** . */
+  private final ResourceResolver resolver;
+
+  /** . */
+  private final ModuleLifeCycle module;
 
   /** . */
   public ClassLoader classLoader;
@@ -70,17 +76,20 @@ public class Bridge implements Closeable {
   /** . */
   public ApplicationLifeCycle application;
 
-  /** . */
-  public ResourceResolver resolver;
-
-  /** . */
-  private ModuleLifeCycle module;
-
-  public Bridge(ModuleLifeCycle module) {
+  public Bridge(Logger log, ModuleLifeCycle module, BridgeConfig config, ReadFileSystem<?> resources, AssetServer server, ResourceResolver resolver) {
+    this.log = log;
     this.module = module;
+    this.config = config;
+    this.resources = resources;
+    this.server = server;
+    this.resolver = resolver;
   }
 
-  public void refresh() throws Exception, CompilationException {
+  public BridgeConfig getConfig() {
+    return config;
+  }
+
+  public void refresh() throws Exception {
 
     if (application == null) {
       application = new ApplicationLifeCycle(

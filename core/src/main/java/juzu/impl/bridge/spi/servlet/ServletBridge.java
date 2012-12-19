@@ -235,12 +235,13 @@ public class ServletBridge extends HttpServlet {
         //
 
         // Create and configure bridge
-        Bridge bridge = new Bridge(moduleLifeCycle);
-        bridge.config = bridgeConfig;
-        bridge.resources = resources;
-        bridge.server = server;
-        bridge.log = log;
-        bridge.resolver = new ResourceResolver() {
+        Bridge bridge = new Bridge(
+            log,
+            moduleLifeCycle,
+            bridgeConfig,
+            resources,
+            server,
+            new ResourceResolver() {
           public URL resolve(String uri) {
             try {
               return getServletConfig().getServletContext().getResource(uri);
@@ -249,7 +250,7 @@ public class ServletBridge extends HttpServlet {
               return null;
             }
           }
-        };
+        });
 
         //
         applications.put(name.toString(), bridge);
