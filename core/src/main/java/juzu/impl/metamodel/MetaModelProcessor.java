@@ -130,8 +130,10 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         Set<Class<? extends Annotation>> abc = state.metaModel.getSupportedAnnotations();
         for (Class annotationType : abc) {
           TypeElement annotationElt = getContext().getTypeElement(annotationType.getName());
+          log.log("Processing elements for annotation for " + annotationElt.getQualifiedName());
           for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt)) {
             if (annotatedElt.getAnnotation(Generated.class) == null) {
+              log.log("Processing element " + annotatedElt);
               for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
                 if (annotationMirror.getAnnotationType().asElement().equals(annotationElt)) {
                   AnnotationKey key = new AnnotationKey(annotatedElt, Name.parse(((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().toString()));
