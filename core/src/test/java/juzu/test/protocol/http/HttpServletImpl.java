@@ -77,17 +77,17 @@ public class HttpServletImpl extends HttpServlet {
 
     //
     if (method == null) {
-      Method descriptor = application.getContext().getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+      Method descriptor = application.getApplication().getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
       method = descriptor != null ? descriptor.getHandle() : null;
     }
 
     //
     if (phase == Phase.ACTION) {
-      return new ActionBridgeImpl(application.getContext(), req, resp, method, parameters);
+      return new ActionBridgeImpl(application.getApplication(), req, resp, method, parameters);
     } else if (phase == Phase.VIEW) {
-      return new RenderBridgeImpl(this, application.getContext(), req, resp, method, parameters);
+      return new RenderBridgeImpl(this, application.getApplication(), req, resp, method, parameters);
     } else if (phase == Phase.RESOURCE) {
-      return new ResourceBridgeImpl(application.getContext(), req, resp, method, parameters);
+      return new ResourceBridgeImpl(application.getApplication(), req, resp, method, parameters);
     } else {
       throw new AssertionError();
     }
@@ -143,7 +143,7 @@ public class HttpServletImpl extends HttpServlet {
     else {
       RequestBridgeImpl requestBridge = create(req, resp);
       try {
-        Application context = application.getContext();
+        Application context = application.getApplication();
         context.invoke(requestBridge);
       }
       finally {

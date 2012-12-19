@@ -387,11 +387,11 @@ public class ServletBridge extends HttpServlet {
       //
       ServletRequestBridge requestBridge;
       if (requestMethod.getPhase() == Phase.ACTION) {
-        requestBridge = new ServletActionBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod, requestParameters);
+        requestBridge = new ServletActionBridge(requestHandler.bridge.runtime.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.VIEW) {
-        requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod, requestParameters);
+        requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.RESOURCE) {
-        requestBridge = new ServletResourceBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, requestMethod, requestParameters);
+        requestBridge = new ServletResourceBridge(requestHandler.bridge.runtime.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
       } else {
         throw new ServletException("Cannot decode phase");
       }
@@ -412,7 +412,7 @@ public class ServletBridge extends HttpServlet {
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
             Method<?> desc = requestHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
-            requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getContext(), requestHandler, req, resp, desc, update.getParameters());
+            requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getApplication(), requestHandler, req, resp, desc, update.getParameters());
             try {
               requestHandler.bridge.invoke(requestBridge);
             }

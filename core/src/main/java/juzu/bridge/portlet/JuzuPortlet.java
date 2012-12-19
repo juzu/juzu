@@ -209,7 +209,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
 
   public void processAction(ActionRequest req, ActionResponse resp) throws PortletException, IOException {
     try {
-      PortletActionBridge requestBridge = new PortletActionBridge(bridge.runtime.getContext(), req, resp, bridge.config.isProd());
+      PortletActionBridge requestBridge = new PortletActionBridge(bridge.runtime.getApplication(), req, resp, bridge.config.isProd());
       bridge.processAction(requestBridge);
       requestBridge.send();
     }
@@ -219,7 +219,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   }
 
   public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException {
-    ControllerResolver<Method> resolver = bridge.runtime.getContext().getDescriptor().getControllers().getResolver();
+    ControllerResolver<Method> resolver = bridge.runtime.getApplication().getDescriptor().getControllers().getResolver();
     List<Method> methods = resolver.resolveMethods(Phase.EVENT, null, request.getParameterMap().keySet());
 
     //
@@ -240,7 +240,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     if (target != null) {
       try {
         PortletEventBridge requestBridge = new PortletEventBridge(
-            bridge.runtime.getContext(),
+            bridge.runtime.getApplication(),
             request,
             response,
             target,
@@ -284,7 +284,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
 
     //
     try {
-      PortletRenderBridge requestBridge = new PortletRenderBridge(bridge.runtime.getContext(), bridge, req, resp, bridge.config.isProd());
+      PortletRenderBridge requestBridge = new PortletRenderBridge(bridge.runtime.getApplication(), bridge, req, resp, bridge.config.isProd());
       bridge.render(requestBridge);
       requestBridge.send();
     }
@@ -314,7 +314,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
         url = bridge.runtime.getStylesheetManager().resolveAsset(path);
         if (url != null) {
           contentType = "text/css";
-          in = bridge.runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+          in = bridge.runtime.getApplication().getClassLoader().getResourceAsStream(path.substring(1));
         }
       }
       if (in != null) {
@@ -325,7 +325,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
       }
     } else {
       try {
-        PortletResourceBridge requestBridge = new PortletResourceBridge(bridge.runtime.getContext(), req, resp, bridge.config.isProd());
+        PortletResourceBridge requestBridge = new PortletResourceBridge(bridge.runtime.getApplication(), req, resp, bridge.config.isProd());
         bridge.serveResource(requestBridge);
         requestBridge.send();
       }

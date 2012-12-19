@@ -19,17 +19,24 @@
 
 package juzu.impl.plugin.application;
 
+import juzu.Scope;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
+import juzu.impl.common.Filter;
 import juzu.impl.common.Name;
 import juzu.impl.common.NameLiteral;
+import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;
+import juzu.impl.inject.BeanDescriptor;
+import juzu.impl.inject.spi.BeanLifeCycle;
+import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringBuilder;
 import juzu.impl.common.Logger;
+import juzu.impl.plugin.Plugin;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.plugin.module.ModuleLifeCycle;
@@ -38,8 +45,10 @@ import juzu.impl.resource.ResourceResolver;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.jar.JarFile;
 
 /**
@@ -49,23 +58,29 @@ import java.util.jar.JarFile;
  */
 public class ApplicationLifeCycle<P, R> {
 
-  /** . */
-  protected final Logger logger;
-
-  /** . */
+  /** Configuration: name. */
   protected Name name;
 
-  /** . */
-  protected InjectorProvider injectImplementation;
+  /** Configuration: injector provider. */
+  protected InjectorProvider injectorProvider;
 
-  /** . */
+  /** Contextual: logger. */
+  protected final Logger logger;
+
+  /** Contextual: resources. */
   protected ReadFileSystem<R> resources;
 
-  /** . */
-  protected Application context;
+  /** Contextual: resoure resolver. */
+  protected ResourceResolver resourceResolver;
+
+  /** Contextual: asset server. */
+  protected AssetServer assetServer;
+
+  /** Contextual: module. */
+  private final ModuleLifeCycle<R, P> module;
 
   /** . */
-  protected AssetServer assetServer;
+  protected ApplicationDescriptor descriptor;
 
   /** . */
   protected AssetManager stylesheetManager;
@@ -74,16 +89,10 @@ public class ApplicationLifeCycle<P, R> {
   protected AssetManager scriptManager;
 
   /** . */
-  protected ApplicationDescriptor descriptor;
+  private InjectionContext<?, ?> injectionContext;
 
   /** . */
-  protected ApplicationBootstrap bootstrap;
-
-  /** . */
-  protected ResourceResolver resolver;
-
-  /** . */
-  private final ModuleLifeCycle<R, P> module;
+  private BeanLifeCycle<Application> application;
 
   public ApplicationLifeCycle(Logger logger, ModuleLifeCycle<R, P> module) {
     this.logger = logger;
@@ -98,12 +107,12 @@ public class ApplicationLifeCycle<P, R> {
     this.name = name;
   }
 
-  public InjectorProvider getInjectImplementation() {
-    return injectImplementation;
+  public InjectorProvider getInjectorProvider() {
+    return injectorProvider;
   }
 
-  public void setInjectImplementation(InjectorProvider injectImplementation) {
-    this.injectImplementation = injectImplementation;
+  public void setInjectorProvider(InjectorProvider injectorProvider) {
+    this.injectorProvider = injectorProvider;
   }
 
   public ReadFileSystem<R> getResources() {
@@ -114,16 +123,16 @@ public class ApplicationLifeCycle<P, R> {
     this.resources = resources;
   }
 
-  public ResourceResolver getResolver() {
-    return resolver;
+  public ResourceResolver getResourceResolver() {
+    return resourceResolver;
   }
 
-  public void setResolver(ResourceResolver resolver) {
-    this.resolver = resolver;
+  public void setResourceResolver(ResourceResolver resourceResolver) {
+    this.resourceResolver = resourceResolver;
   }
 
-  public Application getContext() {
-    return context;
+  public Application getApplication() {
+    return application != null ? application.peek() : null;
   }
 
   public AssetServer getAssetServer() {
@@ -160,14 +169,14 @@ public class ApplicationLifeCycle<P, R> {
     boolean changed = getModule().refresh();
 
     //
-    if (context != null) {
+    if (application != null) {
       if (changed) {
-        context = null;
+        application = null;
       }
     }
 
     //
-    if (context == null) {
+    if (application == null) {
       logger.log("Building application");
       doBoot();
       return true;
@@ -187,7 +196,7 @@ public class ApplicationLifeCycle<P, R> {
     ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
 
     // Find the juzu jar
-    URL mainURL = ApplicationBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
+    URL mainURL = ApplicationLifeCycle.class.getProtectionDomain().getCodeSource().getLocation();
     if (mainURL == null) {
       throw new Exception("Cannot find juzu jar");
     }
@@ -203,7 +212,7 @@ public class ApplicationLifeCycle<P, R> {
     }
 
     //
-    Injector injector = injectImplementation.get();
+    Injector injector = injectorProvider.get();
     injector.addFileSystem(classes);
     injector.addFileSystem(libs);
     injector.setClassLoader(getModule().getClassLoader());
@@ -220,32 +229,114 @@ public class ApplicationLifeCycle<P, R> {
     // Bind the resolver
     ClassLoaderResolver resolver = new ClassLoaderResolver(getModule().getClassLoader());
     injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.classpath")), resolver);
-    injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.server")), this.resolver);
-
-    //
-    ApplicationBootstrap bootstrap = new ApplicationBootstrap(
-        injector,
-      descriptor
-    );
+    injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.server")), this.resourceResolver);
 
     //
     logger.log("Starting " + descriptor.getName());
-    bootstrap.start();
+    InjectionContext<?, ?> injectionContext = _start(descriptor, injector);
 
     //
-    AssetPlugin assetPlugin = bootstrap.getContext().getInjectionContext().get(AssetPlugin.class).get();
+    AssetPlugin assetPlugin = injectionContext.get(AssetPlugin.class).get();
+    BeanLifeCycle<Application> application = injectionContext.get(Application.class);
 
     //
-    this.context = bootstrap.getContext();
+    this.injectionContext = injectionContext;
     this.scriptManager = assetPlugin.getScriptManager();
     this.stylesheetManager = assetPlugin.getStylesheetManager();
     this.descriptor = descriptor;
-    this.bootstrap = bootstrap;
+    this.application = application;
+
+    // For application start (perhaps we could remove that)
+    try {
+      application.get();
+    }
+    catch (InvocationTargetException e) {
+      throw new UnsupportedOperationException("handle me gracefully", e);
+    }
+  }
+
+  private <B, I> InjectionContext<B, I> _start(final ApplicationDescriptor descriptor, Injector injector) throws ApplicationException {
+
+    // Bind the application descriptor
+    injector.bindBean(ApplicationDescriptor.class, null, descriptor);
+
+    // Bind the application context
+    injector.declareBean(Application.class, null, null, null);
+
+    // Bind the scopes
+    for (Scope scope : Scope.values()) {
+      injector.addScope(scope);
+    }
+
+    // Bind the plugins
+    for (Plugin plugin : descriptor.getPlugins().values()) {
+      Class aClass = plugin.getClass();
+      Object o = plugin;
+      injector.bindBean(aClass, null, o);
+    }
+
+    // Bind the beans
+    for (BeanDescriptor bean : descriptor.getBeans()) {
+      bean.bind(injector);
+    }
+
+    // Filter the classes:
+    // any class beginning with juzu. is refused
+    // any class prefixed with the application package is accepted
+    // any other application class is refused (i.e a class having an ancestor package annotated with @Application)
+    Filter<Class<?>> filter = new Filter<Class<?>>() {
+      HashSet<String> blackList = new HashSet<String>();
+      public boolean accept(Class<?> elt) {
+        if (elt.getName().startsWith("juzu.")) {
+          return false;
+        } else if (elt.getPackage().getName().startsWith(descriptor.getPackageName())) {
+          return true;
+        } else {
+          for (String currentPkg = elt.getPackage().getName();currentPkg != null;currentPkg = Tools.parentPackageOf(currentPkg)) {
+            if (blackList.contains(currentPkg)) {
+              return false;
+            } else {
+              try {
+                Class<?> packageClass = descriptor.getApplicationLoader().loadClass(currentPkg + ".package-info");
+                juzu.Application ann = packageClass.getAnnotation(juzu.Application.class);
+                if (ann != null) {
+                  blackList.add(currentPkg);
+                  return false;
+                }
+              }
+              catch (ClassNotFoundException e) {
+                // Skip it
+              }
+            }
+          }
+          return true;
+        }
+      }
+    };
+
+    //
+    InjectionContext<B, I> injectionContext;
+    try {
+      injectionContext = (InjectionContext<B, I>)injector.create(filter);
+    }
+    catch (Exception e) {
+      throw new UnsupportedOperationException("handle me gracefully", e);
+    }
+
+    //
+    return injectionContext;
+  }
+
+  void stop() {
+    if (application != null) {
+      application.release();
+    }
+    if (injectionContext != null) {
+      injectionContext.shutdown();
+    }
   }
 
   public void shutdown() {
-    if (bootstrap != null) {
-      bootstrap.stop();
-    }
+    stop();
   }
 }

@@ -86,10 +86,10 @@ public class Bridge {
 
       // Configure the runtime
       runtime.setResources(resources);
-      runtime.setInjectImplementation(config.injectImpl);
+      runtime.setInjectorProvider(config.injectImpl);
       runtime.setName(config.name);
       runtime.setAssetServer(server);
-      runtime.setResolver(resolver);
+      runtime.setResourceResolver(resolver);
     }
 
     //
@@ -113,7 +113,7 @@ public class Bridge {
       TrimmingException.invoke(new TrimmingException.Callback() {
         public void call() throws Throwable {
           try {
-            runtime.getContext().invoke(requestBridge);
+            runtime.getApplication().invoke(requestBridge);
           }
           catch (ApplicationException e) {
             // For now we do that until we find something better specially for the dev mode
@@ -135,7 +135,7 @@ public class Bridge {
       TrimmingException.invoke(new TrimmingException.Callback() {
         public void call() throws Throwable {
           try {
-            runtime.getContext().invoke(requestBridge);
+            runtime.getApplication().invoke(requestBridge);
           }
           catch (ApplicationException e) {
             // For now we do that until we find something better specially for the dev mode
@@ -176,7 +176,7 @@ public class Bridge {
         TrimmingException.invoke(new TrimmingException.Callback() {
           public void call() throws Throwable {
             try {
-              runtime.getContext().invoke(requestBridge);
+              runtime.getApplication().invoke(requestBridge);
             }
             catch (ApplicationException e) {
               throw e.getCause();
@@ -216,7 +216,7 @@ public class Bridge {
       TrimmingException.invoke(new TrimmingException.Callback() {
         public void call() throws Throwable {
           try {
-            runtime.getContext().invoke(requestBridge);
+            runtime.getApplication().invoke(requestBridge);
           }
           catch (ApplicationException e) {
             throw e.getCause();

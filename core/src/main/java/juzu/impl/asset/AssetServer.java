@@ -64,7 +64,7 @@ public class AssetServer {
           url = runtime.getStylesheetManager().resolveAsset(path);
           if (url != null) {
             contentType = "text/css";
-            in = runtime.getContext().getClassLoader().getResourceAsStream(path.substring(1));
+            in = runtime.getApplication().getClassLoader().getResourceAsStream(path.substring(1));
           }
         }
 

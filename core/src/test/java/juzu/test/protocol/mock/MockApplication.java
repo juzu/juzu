@@ -68,8 +68,8 @@ public class MockApplication<P> {
     ApplicationLifeCycle<P, P> runtime = new ApplicationLifeCycle<P, P>(log, module);
     runtime.setResources(classes);
     runtime.setName(name);
-    runtime.setInjectImplementation(implementation);
-    runtime.setResolver(new ResourceResolver() {
+    runtime.setInjectorProvider(implementation);
+    runtime.setResourceResolver(new ResourceResolver() {
       public URL resolve(String uri) {
         return null;
       }
@@ -90,11 +90,11 @@ public class MockApplication<P> {
   }
 
   public Application getContext() {
-    return runtime.getContext();
+    return runtime.getApplication();
   }
 
   void invoke(RequestBridge bridge) throws ApplicationException {
-    runtime.getContext().invoke(bridge);
+    runtime.getApplication().invoke(bridge);
   }
 
   public MockClient client() {
