@@ -17,6 +17,7 @@
   <description>The Juzu BOMs</description>
 
   <modules>
+    <module>core</module>
     <module>arquillian</module>
     <module>arquillian-tomcat7</module>
   </modules>

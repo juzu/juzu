@@ -98,10 +98,9 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-builder</artifactId>
+        <artifactId>juzu-bom-core</artifactId>
         <version>0.6.0-beta2-SNAPSHOT</version>
       </dependency>
-
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-bom-arquillian</artifactId>
@@ -725,10 +724,9 @@
   
   <modules>
     <module>core</module>
+    <module>bom</module>
     <module>templating</module>
     <module>plugins</module>
-    <module>builder</module>
-    <module>bom</module>
     <module>archetype</module>
     <module>booking</module>
     <module>doc</module>
