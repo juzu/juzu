@@ -22,13 +22,10 @@ package juzu.impl.plugin.template;
 import juzu.impl.common.Name;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
-import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
-
-import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AmbiguousTestCase extends AbstractInjectTestCase {
@@ -39,9 +36,7 @@ public class AmbiguousTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResolveBean() throws Exception {
-    CompilerAssert<File, File> helper = compiler("plugin.template.ambiguous");
-    helper.assertCompile();
-    MockApplication<?> app = helper.application(di, Name.parse("plugin.template.ambiguous.app1")).init();
+    MockApplication<?> app = application(di, "plugin.template.ambiguous.app1").init();
 
     //
     MockClient client = app.client();

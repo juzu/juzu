@@ -39,6 +39,7 @@ import juzu.impl.resource.ResourceResolver;
 import juzu.bridge.portlet.JuzuPortlet;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -49,7 +50,7 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bridge {
+public class Bridge implements Closeable {
 
   /** . */
   public Logger log;
@@ -67,7 +68,7 @@ public class Bridge {
   public ClassLoader classLoader;
 
   /** . */
-  public ApplicationLifeCycle runtime;
+  public ApplicationLifeCycle application;
 
   /** . */
   public ResourceResolver resolver;
@@ -81,19 +82,19 @@ public class Bridge {
 
   public void boot() throws Exception, CompilationException {
 
-    if (runtime == null) {
-      runtime = new ApplicationLifeCycle(log, module);
+    if (application == null) {
+      application = new ApplicationLifeCycle(log, module);
 
       // Configure the runtime
-      runtime.setResources(resources);
-      runtime.setInjectorProvider(config.injectImpl);
-      runtime.setName(config.name);
-      runtime.setAssetServer(server);
-      runtime.setResourceResolver(resolver);
+      application.setResources(resources);
+      application.setInjectorProvider(config.injectImpl);
+      application.setName(config.name);
+      application.setAssetServer(server);
+      application.setResourceResolver(resolver);
     }
 
     //
-    runtime.refresh();
+    application.refresh();
   }
 
   public void invoke(RequestBridge requestBridge) throws Throwable {
@@ -113,7 +114,7 @@ public class Bridge {
       TrimmingException.invoke(new TrimmingException.Callback() {
         public void call() throws Throwable {
           try {
-            runtime.getApplication().invoke(requestBridge);
+            application.getApplication().invoke(requestBridge);
           }
           catch (ApplicationException e) {
             // For now we do that until we find something better specially for the dev mode
@@ -135,7 +136,7 @@ public class Bridge {
       TrimmingException.invoke(new TrimmingException.Callback() {
         public void call() throws Throwable {
           try {
-            runtime.getApplication().invoke(requestBridge);
+            application.getApplication().invoke(requestBridge);
           }
           catch (ApplicationException e) {
             // For now we do that until we find something better specially for the dev mode
@@ -176,7 +177,7 @@ public class Bridge {
         TrimmingException.invoke(new TrimmingException.Callback() {
           public void call() throws Throwable {
             try {
-              runtime.getApplication().invoke(requestBridge);
+              application.getApplication().invoke(requestBridge);
             }
             catch (ApplicationException e) {
               throw e.getCause();
@@ -216,7 +217,7 @@ public class Bridge {
       TrimmingException.invoke(new TrimmingException.Callback() {
         public void call() throws Throwable {
           try {
-            runtime.getApplication().invoke(requestBridge);
+            application.getApplication().invoke(requestBridge);
           }
           catch (ApplicationException e) {
             throw e.getCause();
@@ -381,5 +382,9 @@ public class Bridge {
       writer.append("</div>");
     }
     writer.append("</div>");
+  }
+
+  public void close() {
+    Tools.safeClose(application);
   }
 }

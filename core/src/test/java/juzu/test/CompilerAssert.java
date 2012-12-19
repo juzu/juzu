@@ -23,14 +23,12 @@ import juzu.impl.common.Name;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
-import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.common.Tools;
 import juzu.processor.MainProcessor;
-import juzu.test.protocol.mock.MockApplication;
 
 import javax.annotation.processing.Processor;
 import javax.inject.Provider;
@@ -175,15 +173,6 @@ public class CompilerAssert<I, O> {
     }
     catch (CompilationException e) {
       return e.getErrors();
-    }
-    catch (Exception e) {
-      throw AbstractTestCase.failure(e);
-    }
-  }
-
-  public MockApplication<?> application(InjectorProvider injectImplementation, Name name) {
-    try {
-      return new MockApplication<O>(getClassOutput(), classLoader, injectImplementation, name);
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);

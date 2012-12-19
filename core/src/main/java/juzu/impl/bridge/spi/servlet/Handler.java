@@ -21,18 +21,20 @@ package juzu.impl.bridge.spi.servlet;
 
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.Tools;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.router.Route;
-import juzu.impl.router.Router;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class Handler {
+class Handler implements Closeable {
 
   /** . */
   final Bridge bridge;
@@ -63,7 +65,7 @@ class Handler {
       Route root;
 
       //
-      RouteDescriptor routesDesc = (RouteDescriptor)bridge.runtime.getDescriptor().getPluginDescriptor("router");
+      RouteDescriptor routesDesc = (RouteDescriptor)bridge.application.getDescriptor().getPluginDescriptor("router");
       if (routesDesc != null) {
         Map<RouteDescriptor, Route> ret;
         if (routesDesc.getPath() != null) {
@@ -86,7 +88,7 @@ class Handler {
           routes.add(entry.getValue());
         }
       } else {
-        routes.add(root = parent.append("/" + bridge.runtime.getName().getIdentifier()));
+        routes.add(root = parent.append("/" + bridge.application.getName().getIdentifier()));
       }
 
       //
@@ -98,5 +100,9 @@ class Handler {
     catch (Exception e) {
       throw ServletBridge.wrap(e);
     }
+  }
+
+  public void close() throws IOException {
+    Tools.safeClose(bridge);
   }
 }

@@ -20,6 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.impl.common.Name;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationException;
@@ -30,10 +31,12 @@ import juzu.impl.common.Logger;
 import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ResourceResolver;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockApplication<P> {
+public class MockApplication<P> implements Closeable {
 
   /** . */
   final ClassLoader classLoader;
@@ -99,5 +102,9 @@ public class MockApplication<P> {
 
   public MockClient client() {
     return new MockClient(this);
+  }
+
+  public void close() throws IOException {
+    Tools.safeClose(lifeCycle);
   }
 }

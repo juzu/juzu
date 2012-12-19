@@ -72,6 +72,11 @@ public abstract class Container {
   }
 
   public void stop() {
-    doStop();
+    try {
+      doStop();
+    }
+    catch (Exception e) {
+      // Log it ?
+    }
   }
 }

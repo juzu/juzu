@@ -52,6 +52,10 @@ public abstract class AbstractTestCase extends Assert {
 
   @After
   public void tearDown() {
+    if (application != null) {
+      Tools.safeClose(application);
+      application = null;
+    }
   }
 
   /**
@@ -139,6 +143,9 @@ public abstract class AbstractTestCase extends Assert {
 
   @Rule
   public TestName name = new TestName();
+
+  /** The currently deployed mock application. */
+  private MockApplication<?> application;
 
   public final String getName() {
     return name.getMethodName();
@@ -243,10 +250,22 @@ public abstract class AbstractTestCase extends Assert {
     return new CompilerAssert<File, File>(incremental, sourcePath, sourceOutput, classOutput);
   }
 
-  public MockApplication<?> application(InjectorProvider injectImplementation, String packageName) {
+  public MockApplication<?> application(InjectorProvider injectorProvider, String packageName) {
+    if (application != null) {
+      throw failure("An application is already deployed");
+    }
     CompilerAssert<File, File> helper = compiler(packageName);
     helper.assertCompile();
-    return helper.application(injectImplementation, Name.parse(packageName));
+    try {
+      return application = new MockApplication(
+          helper.getClassOutput(),
+          helper.getClassLoader(),
+          injectorProvider,
+          Name.parse(packageName));
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
   }
 
   public static void assertEquals(JSON expected, JSON test) {

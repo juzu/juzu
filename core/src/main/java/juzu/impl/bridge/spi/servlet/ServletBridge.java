@@ -174,9 +174,14 @@ public class ServletBridge extends HttpServlet {
     try {
       boolean stale = moduleLifeCycle.refresh();
       if (stale) {
-        this.root = null;
-        this.handlers = null;
-        this.defaultHandler = null;
+        if (handlers != null) {
+          for (Handler handler : handlers) {
+            Tools.safeClose(handler);
+          }
+          this.root = null;
+          this.handlers = null;
+          this.defaultHandler = null;
+        }
       }
     }
     catch (Exception e) {
@@ -324,7 +329,7 @@ public class ServletBridge extends HttpServlet {
         for (Phase phase : phases) {
           MethodHandle handle = m.get(phase);
           if (handle != null) {
-            requestMethod =  requestHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(handle);
+            requestMethod =  requestHandler.bridge.application.getDescriptor().getControllers().getMethodByHandle(handle);
             if (requestMatch.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
               requestParameters = new HashMap<String, String[]>();
               for (Map.Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
@@ -356,7 +361,7 @@ public class ServletBridge extends HttpServlet {
 
       // If we have an handler we locate the index method
       if (requestHandler != null) {
-        requestMethod = requestHandler.bridge.runtime.getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+        requestMethod = requestHandler.bridge.application.getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
       }
     }
 
@@ -387,11 +392,11 @@ public class ServletBridge extends HttpServlet {
       //
       ServletRequestBridge requestBridge;
       if (requestMethod.getPhase() == Phase.ACTION) {
-        requestBridge = new ServletActionBridge(requestHandler.bridge.runtime.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
+        requestBridge = new ServletActionBridge(requestHandler.bridge.application.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.VIEW) {
-        requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
+        requestBridge = new ServletRenderBridge(requestHandler.bridge.application.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.RESOURCE) {
-        requestBridge = new ServletResourceBridge(requestHandler.bridge.runtime.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
+        requestBridge = new ServletResourceBridge(requestHandler.bridge.application.getApplication(), requestHandler, req, resp, requestMethod, requestParameters);
       } else {
         throw new ServletException("Cannot decode phase");
       }
@@ -411,8 +416,8 @@ public class ServletBridge extends HttpServlet {
           Response.View update = (Response.View)response;
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
-            Method<?> desc = requestHandler.bridge.runtime.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
-            requestBridge = new ServletRenderBridge(requestHandler.bridge.runtime.getApplication(), requestHandler, req, resp, desc, update.getParameters());
+            Method<?> desc = requestHandler.bridge.application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
+            requestBridge = new ServletRenderBridge(requestHandler.bridge.application.getApplication(), requestHandler, req, resp, desc, update.getParameters());
             try {
               requestHandler.bridge.invoke(requestBridge);
             }
@@ -431,5 +436,17 @@ public class ServletBridge extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     doGet(req, resp);
+  }
+
+  @Override
+  public void destroy() {
+    if (handlers != null) {
+      for (Handler handler : handlers) {
+        Tools.safeClose(handler);
+      }
+      this.root = null;
+      this.handlers = null;
+      this.defaultHandler = null;
+    }
   }
 }

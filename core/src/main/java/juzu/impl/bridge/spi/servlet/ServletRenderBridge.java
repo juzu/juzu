@@ -96,13 +96,13 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         //
         Iterable<Asset.Value> stylesheets = Collections.emptyList();
         if (stylesheetProps != null) {
-          stylesheets = handler.bridge.runtime.getStylesheetManager().resolveAssets(stylesheetProps);
+          stylesheets = handler.bridge.application.getStylesheetManager().resolveAssets(stylesheetProps);
         }
 
         //
         Iterable<Asset.Value> scripts = Collections.emptyList();
         if (scriptsProp != null) {
-          scripts = handler.bridge.runtime.getScriptManager().resolveAssets(scriptsProp);
+          scripts = handler.bridge.application.getScriptManager().resolveAssets(scriptsProp);
         }
 
         //

@@ -97,7 +97,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
       //
       if (stylesheetsProp != null) {
-        Iterable<Asset.Value> stylesheets = bridge.runtime.getStylesheetManager().resolveAssets(stylesheetsProp);
+        Iterable<Asset.Value> stylesheets = bridge.application.getStylesheetManager().resolveAssets(stylesheetsProp);
         for (Asset.Value stylesheet : stylesheets) {
           int pos = stylesheet.getURI().lastIndexOf('.');
           String ext = pos == -1 ? "css" : stylesheet.getURI().substring(pos + 1);
@@ -112,7 +112,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
       //
       if (scriptsProp != null) {
-        Iterable<Asset.Value> scripts = bridge.runtime.getScriptManager().resolveAssets(scriptsProp);
+        Iterable<Asset.Value> scripts = bridge.application.getScriptManager().resolveAssets(scriptsProp);
         for (Asset.Value script : scripts) {
           String url = getAssetURL(script);
           Element elt = this.resp.createElement("script");
