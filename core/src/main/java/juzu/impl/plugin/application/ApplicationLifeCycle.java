@@ -26,9 +26,7 @@ import juzu.impl.common.Filter;
 import juzu.impl.common.Name;
 import juzu.impl.common.NameLiteral;
 import juzu.impl.common.Tools;
-import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.jar.JarFileSystem;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.inject.spi.InjectionContext;
@@ -44,13 +42,11 @@ import juzu.impl.resource.ClassLoaderResolver;
 import juzu.impl.resource.ResourceResolver;
 
 import java.io.Closeable;
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.jar.JarFile;
 
 /**
  * The application life cycle.
@@ -173,16 +169,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     if (mainURL == null) {
       throw new Exception("Cannot find juzu jar");
     }
-    if (!mainURL.getProtocol().equals("file")) {
-      throw new Exception("Cannot handle " + mainURL);
-    }
-    File file = new File(mainURL.toURI());
-    ReadFileSystem<?> libs;
-    if (file.isDirectory()) {
-      libs = new DiskFileSystem(file);
-    } else {
-      libs = new JarFileSystem(new JarFile(file));
-    }
+    ReadFileSystem<?> libs = ReadFileSystem.create(mainURL);
 
     //
     Injector injector = injectorProvider.get();

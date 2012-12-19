@@ -24,9 +24,13 @@ import juzu.impl.fs.Filter;
 import juzu.impl.fs.Visitor;
 import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.jar.JarFileSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -39,6 +43,35 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 public abstract class ReadFileSystem<P> {
+
+  public static ReadFileSystem<?> create(URL url) throws IOException {
+    String protocol = url.getProtocol();
+    if (protocol.equals("jar")) {
+      String path = url.getPath();
+      int pos = path.lastIndexOf("!/");
+      URL nested = new URL(path.substring(0, pos));
+      if (nested.getProtocol().equals("file")) {
+        return new JarFileSystem(url);
+      } else {
+        throw new IOException("Cannot handle nested jar URL " + url);
+      }
+    } else if (protocol.equals("file")) {
+      File f;
+      try {
+        f = new File(url.toURI());
+      }
+      catch (URISyntaxException e) {
+        throw new IOException(e);
+      }
+      if (f.isDirectory()) {
+        return new DiskFileSystem(f);
+      } else {
+        return new JarFileSystem(url);
+      }
+    } else {
+      throw new IOException("Unsupported URL: " + url);
+    }
+  }
 
   /** . */
   public static final int DIR = 0;
