@@ -80,17 +80,17 @@ public class Bridge implements Closeable {
     this.module = module;
   }
 
-  public void boot() throws Exception, CompilationException {
+  public void refresh() throws Exception, CompilationException {
 
     if (application == null) {
-      application = new ApplicationLifeCycle(log, module);
-
-      // Configure the runtime
-      application.setResources(resources);
-      application.setInjectorProvider(config.injectImpl);
-      application.setName(config.name);
-      application.setAssetServer(server);
-      application.setResourceResolver(resolver);
+      application = new ApplicationLifeCycle(
+          log,
+          module,
+          config.injectImpl,
+          config.name,
+          resources,
+          server,
+          resolver);
     }
 
     //
@@ -158,7 +158,7 @@ public class Bridge implements Closeable {
     //
     Collection<CompilationError> errors = null;
     try {
-      boot();
+      refresh();
     }
     catch (CompilationException e) {
       errors = e.getErrors();

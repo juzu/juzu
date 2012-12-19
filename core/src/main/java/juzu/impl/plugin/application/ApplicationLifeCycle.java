@@ -60,34 +60,34 @@ import java.util.jar.JarFile;
 public class ApplicationLifeCycle<P, R> implements Closeable {
 
   /** Configuration: name. */
-  protected Name name;
+  private final Name name;
 
   /** Configuration: injector provider. */
-  protected InjectorProvider injectorProvider;
+  private final InjectorProvider injectorProvider;
 
   /** Contextual: logger. */
-  protected final Logger logger;
+  private final Logger logger;
 
   /** Contextual: resources. */
-  protected ReadFileSystem<R> resources;
+  private final ReadFileSystem<R> resources;
 
   /** Contextual: resoure resolver. */
-  protected ResourceResolver resourceResolver;
+  private final ResourceResolver resourceResolver;
 
   /** Contextual: asset server. */
-  protected AssetServer assetServer;
+  private final AssetServer assetServer;
 
   /** Contextual: module. */
   private final ModuleLifeCycle<R, P> module;
 
   /** . */
-  protected ApplicationDescriptor descriptor;
+  private ApplicationDescriptor descriptor;
 
   /** . */
-  protected AssetManager stylesheetManager;
+  private AssetManager stylesheetManager;
 
   /** . */
-  protected AssetManager scriptManager;
+  private AssetManager scriptManager;
 
   /** . */
   private InjectionContext<?, ?> injectionContext;
@@ -95,49 +95,31 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   /** . */
   private BeanLifeCycle<Application> application;
 
-  public ApplicationLifeCycle(Logger logger, ModuleLifeCycle<R, P> module) {
+  public ApplicationLifeCycle(
+      Logger logger,
+      ModuleLifeCycle<R, P> module,
+      InjectorProvider injectorProvider,
+      Name name,
+      ReadFileSystem<R> resources,
+      AssetServer assetServer,
+      ResourceResolver resourceResolver) {
+
+    //
     this.logger = logger;
     this.module = module;
+    this.injectorProvider = injectorProvider;
+    this.name = name;
+    this.resources = resources;
+    this.assetServer = assetServer;
+    this.resourceResolver = resourceResolver;
   }
 
   public Name getName() {
     return name;
   }
 
-  public void setName(Name name) {
-    this.name = name;
-  }
-
-  public InjectorProvider getInjectorProvider() {
-    return injectorProvider;
-  }
-
-  public void setInjectorProvider(InjectorProvider injectorProvider) {
-    this.injectorProvider = injectorProvider;
-  }
-
-  public ReadFileSystem<R> getResources() {
-    return resources;
-  }
-
-  public void setResources(ReadFileSystem<R> resources) {
-    this.resources = resources;
-  }
-
-  public ResourceResolver getResourceResolver() {
-    return resourceResolver;
-  }
-
-  public void setResourceResolver(ResourceResolver resourceResolver) {
-    this.resourceResolver = resourceResolver;
-  }
-
   public Application getApplication() {
     return application != null ? application.peek() : null;
-  }
-
-  public AssetServer getAssetServer() {
-    return assetServer;
   }
 
   public AssetManager getScriptManager() {
@@ -146,16 +128,6 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
 
   public AssetManager getStylesheetManager() {
     return stylesheetManager;
-  }
-
-  public void setAssetServer(AssetServer assetServer) {
-    if (assetServer != null) {
-      assetServer.register(this);
-    }
-    if (this.assetServer != null) {
-      this.assetServer.unregister(this);
-    }
-    this.assetServer = assetServer;
   }
 
   public ApplicationDescriptor getDescriptor() {
@@ -239,6 +211,11 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     //
     AssetPlugin assetPlugin = injectionContext.get(AssetPlugin.class).get();
     BeanLifeCycle<Application> application = injectionContext.get(Application.class);
+
+    //
+    if (assetServer != null) {
+      assetServer.register(this);
+    }
 
     //
     this.injectionContext = injectionContext;
@@ -329,6 +306,9 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   }
 
   void stop() {
+    if (assetServer != null) {
+      assetServer.unregister(this);
+    }
     Tools.safeClose(application);
     Tools.safeClose(injectionContext);
     application = null;

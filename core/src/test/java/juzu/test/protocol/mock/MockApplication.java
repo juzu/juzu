@@ -68,15 +68,18 @@ public class MockApplication<P> implements Closeable {
     ModuleLifeCycle<P, P> module = new ModuleLifeCycle.Static<P, P>(log, classLoader, classes);
 
     //
-    ApplicationLifeCycle<P, P> lifeCycle = new ApplicationLifeCycle<P, P>(log, module);
-    lifeCycle.setResources(classes);
-    lifeCycle.setName(name);
-    lifeCycle.setInjectorProvider(implementation);
-    lifeCycle.setResourceResolver(new ResourceResolver() {
-      public URL resolve(String uri) {
-        return null;
-      }
-    });
+    ApplicationLifeCycle<P, P> lifeCycle = new ApplicationLifeCycle<P, P>(
+        log,
+        module,
+        implementation,
+        name,
+        classes,
+        null,
+        new ResourceResolver() {
+          public URL resolve(String uri) {
+            return null;
+          }
+        });
 
     //
     this.classLoader = classLoader;

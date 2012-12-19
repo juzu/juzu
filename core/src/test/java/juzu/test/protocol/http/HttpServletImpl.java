@@ -106,7 +106,7 @@ public class HttpServletImpl extends HttpServlet {
       scriptManager = application.getScriptManager();
       stylesheetManager = application.getStylesheetManager();
 
-      //
+      // Manually register here : a bit ugly
       assetServer.register(application);
 
       //

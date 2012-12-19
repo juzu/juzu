@@ -56,7 +56,7 @@ class Handler implements Closeable {
 
     //
     try {
-      bridge.boot();
+      bridge.refresh();
 
       //
       HashMap<MethodHandle, Route> routeMap = new HashMap<MethodHandle, Route>();

@@ -265,7 +265,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     //
     if (!initialized) {
       try {
-        bridge.boot();
+        bridge.refresh();
         initialized = true;
       }
       catch (Exception e) {
