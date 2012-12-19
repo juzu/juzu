@@ -172,7 +172,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     //
     if (application != null) {
       if (changed) {
-        application = null;
+        stop();
       }
     }
 
