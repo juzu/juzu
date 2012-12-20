@@ -65,7 +65,7 @@
 
     <dependencySet>
       <includes>
-        <include>org.juzu:juzu-builder</include>
+        <include>org.juzu:juzu-bom-core</include>
       </includes>
       <unpack>true</unpack>
       <unpackOptions>
