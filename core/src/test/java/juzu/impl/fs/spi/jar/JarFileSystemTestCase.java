@@ -55,7 +55,7 @@ public class JarFileSystemTestCase extends AbstractTestCase {
     //
     Set<String> set2 = Tools.set(fs.getChildren("META-INF/"));
     HashSet<String> expectedSet2 = Tools.set("META-INF/MANIFEST.MF");
-    assertEquals(expectedSet2, set2);
+    assertTrue(set2.containsAll(expectedSet2));
 
     //
     Set<String> set3 = Tools.set(fs.getChildren("javax/"));
