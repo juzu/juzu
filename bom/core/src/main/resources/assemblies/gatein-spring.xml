@@ -33,7 +33,7 @@
       <outputDirectory>/WEB-INF/classes</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory> ${project.build.sourceDirectory}</directory>
+      <directory>${project.build.sourceDirectory}</directory>
       <outputDirectory>/WEB-INF/src</outputDirectory>
     </fileSet>
     <fileSet>
