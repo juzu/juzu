@@ -163,18 +163,9 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     //
     Class<?> clazz = getModule().getClassLoader().loadClass(fqn.toString());
     ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
-
-    // Find the juzu jar
-    URL mainURL = ApplicationLifeCycle.class.getProtectionDomain().getCodeSource().getLocation();
-    if (mainURL == null) {
-      throw new Exception("Cannot find juzu jar");
-    }
-    ReadFileSystem<?> libs = ReadFileSystem.create(mainURL);
-
     //
     Injector injector = injectorProvider.get();
     injector.addFileSystem(classes);
-    injector.addFileSystem(libs);
     injector.setClassLoader(getModule().getClassLoader());
 
     //
