@@ -535,11 +535,6 @@
         <version>7.0.19</version>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jdt.core.compiler</groupId>
-        <artifactId>ecj</artifactId>
-        <version>3.7</version>
-      </dependency>
-      <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
         <version>2.2</version>
