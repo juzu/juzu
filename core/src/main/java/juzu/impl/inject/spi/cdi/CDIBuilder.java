@@ -92,7 +92,7 @@ public class CDIBuilder extends Injector {
   }
 
   @Override
-  public <T> Injector bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider) {
+  public <T> Injector bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<? extends T> provider) {
     boundBeans.add(new SingletonProviderBean(beanType, beanScope, beanQualifiers, provider));
     return this;
   }

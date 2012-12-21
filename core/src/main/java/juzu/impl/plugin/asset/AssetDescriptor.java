@@ -20,7 +20,6 @@
 package juzu.impl.plugin.asset;
 
 import juzu.Scope;
-import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.common.NameLiteral;
@@ -57,15 +56,13 @@ public class AssetDescriptor extends Descriptor {
   @Override
   public Iterable<BeanDescriptor> getBeans() {
     return Tools.list(
-        new BeanDescriptor(
+        BeanDescriptor.createFromBean(
             AssetManager.class,
             Scope.SINGLETON,
-            Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.script")),
-            null),
-        new BeanDescriptor(
+            Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.script"))),
+        BeanDescriptor.createFromBean(
             AssetManager.class,
             Scope.SINGLETON,
-            Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.stylesheet")),
-            null));
+            Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.stylesheet"))));
   }
 }

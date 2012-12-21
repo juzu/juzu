@@ -50,18 +50,6 @@ import java.util.Set;
 public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  public static final MessageCode BEAN_INVALID_TYPE =
-    new MessageCode(
-      "BINDING_BEAN_INVALID_TYPE",
-      "The binding bean %1$s must be a class");
-
-  /** . */
-  public static final MessageCode BEAN_ABSTRACT_TYPE =
-    new MessageCode(
-      "BINDING_BEAN_ABSTRACT_TYPE",
-      "The binding bean %1$s must not be abstract");
-
-  /** . */
   public static final MessageCode IMPLEMENTATION_NOT_ASSIGNABLE =
     new MessageCode(
       "BINDING_IMPLEMENTATION_NOT_ASSIGNABLE",
@@ -213,18 +201,6 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
 
             //
             bindingJSON.set("implementation", bindingImplementation.getFQN().toString());
-          }
-          else {
-            // Check valid class
-            if (valueElt.getKind() != ElementKind.CLASS) {
-              throw BEAN_INVALID_TYPE.failure(env.get(key.getElement()), valueElt.getQualifiedName());
-            }
-
-            // Check for concrete type
-            Set<Modifier> modifiers = valueElt.getModifiers();
-            if (modifiers.contains(Modifier.ABSTRACT)) {
-              throw BEAN_ABSTRACT_TYPE.failure(env.get(key.getElement()), valueElt.getQualifiedName());
-            }
           }
 
           // Add the declared scope if any

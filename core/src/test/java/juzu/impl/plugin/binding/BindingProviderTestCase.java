@@ -61,18 +61,6 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
   }
 
   @Test
-  public void testNotClass() throws Exception {
-    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.notclass");
-    compiler.formalErrorReporting(true);
-    List<CompilationError> errors = compiler.failCompile();
-    assertEquals(1, errors.size());
-    CompilationError error = errors.get(0);
-    assertEquals(BindingMetaModelPlugin.IMPLEMENTATION_INVALID_TYPE, error.getCode());
-    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "notclass", "package-info.java");
-    assertEquals(f, error.getSourceFile());
-  }
-
-  @Test
   public void testAbstractClass() throws Exception {
     CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.abstractclass");
     compiler.formalErrorReporting(true);

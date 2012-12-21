@@ -20,8 +20,8 @@
 package juzu.impl.plugin.binding;
 
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.compiler.CompilationError;
+import juzu.inject.ProviderFactory;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
@@ -30,6 +30,7 @@ import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -88,20 +89,16 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
   }
 
   @Test
-  public void testNotClass() throws Exception {
-    CompilerAssert<File, File> compiler = compiler("plugin.binding.provider.factory.notclass");
-    compiler.formalErrorReporting(true);
-    List<CompilationError> errors = compiler.failCompile();
-    assertEquals(1, errors.size());
-    CompilationError error = errors.get(0);
-    assertEquals(BindingMetaModelPlugin.IMPLEMENTATION_INVALID_TYPE, error.getCode());
-    File f = compiler.getSourcePath().getPath("plugin", "binding", "provider", "factory", "notclass", "package-info.java");
-    assertEquals(f, error.getSourceFile());
-  }
-
-  @Test
   public void testCreate() throws Exception {
-    MockApplication<?> app = application("plugin.binding.provider.factory.create").init();
+    MockApplication<File> app = application("plugin.binding.provider.factory.create");
+    File root = app.getClasses().getRoot();
+    File services = new File(root, "META-INF/services");
+    assertTrue(services.mkdirs());
+    File providers = new File(services, ProviderFactory.class.getName());
+    FileWriter writer = new FileWriter(providers);
+    writer.append("plugin.binding.provider.factory.create.ProviderFactoryImpl");
+    writer.close();
+    app.init();
 
     //
     MockClient client = app.client();
@@ -111,15 +108,21 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testGetProviderThrowable() throws Exception {
-    MockApplication<?> app = application("plugin.binding.provider.factory.throwable");
+    MockApplication<File> app = application("plugin.binding.provider.factory.throwable");
+    File root = app.getClasses().getRoot();
+    File services = new File(root, "META-INF/services");
+    assertTrue(services.mkdirs());
+    File providers = new File(services, ProviderFactory.class.getName());
+    FileWriter writer = new FileWriter(providers);
+    writer.append("plugin.binding.provider.factory.throwable.ServiceProviderFactory");
+    writer.close();
 
     //
     try {
       app.init();
       fail();
     }
-    catch (ApplicationException e) {
-      assertInstanceOf(SecurityException.class, e.getCause());
+    catch (SecurityException e) {
     }
   }
 }

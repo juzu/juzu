@@ -103,7 +103,7 @@ public class SpringBuilder extends Injector {
   }
 
   @Override
-  public <T> Injector bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, final Provider<T> provider) {
+  public <T> Injector bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, final Provider<? extends T> provider) {
     return declareBean(new SingletonProviderBean(beanType, beanScope, beanQualifiers, provider));
   }
 

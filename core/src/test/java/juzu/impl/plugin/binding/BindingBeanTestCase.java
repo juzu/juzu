@@ -49,30 +49,6 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
   }
 
   @Test
-  public void testAbstractClass() throws Exception {
-    CompilerAssert<File, File> compiler = compiler("plugin.binding.abstractclass");
-    compiler.formalErrorReporting(true);
-    List<CompilationError> errors = compiler.failCompile();
-    assertEquals(1, errors.size());
-    CompilationError error = errors.get(0);
-    assertEquals(BindingMetaModelPlugin.BEAN_ABSTRACT_TYPE, error.getCode());
-    File f = compiler.getSourcePath().getPath("plugin", "binding", "abstractclass", "package-info.java");
-    assertEquals(f, error.getSourceFile());
-  }
-
-  @Test
-  public void testNotClass() throws Exception {
-    CompilerAssert<File, File> compiler = compiler("plugin.binding.notclass");
-    compiler.formalErrorReporting(true);
-    List<CompilationError> errors = compiler.failCompile();
-    assertEquals(1, errors.size());
-    CompilationError error = errors.get(0);
-    assertEquals(BindingMetaModelPlugin.BEAN_INVALID_TYPE, error.getCode());
-    File f = compiler.getSourcePath().getPath("plugin", "binding", "notclass", "package-info.java");
-    assertEquals(f, error.getSourceFile());
-  }
-
-  @Test
   public void testScope() throws Exception {
     MockApplication<?> app = application("plugin.binding.scope").init();
 

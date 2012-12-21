@@ -21,8 +21,6 @@ package juzu.impl.inject;
 
 import juzu.Scope;
 import juzu.impl.inject.spi.Injector;
-import juzu.impl.plugin.application.ApplicationException;
-import juzu.inject.ProviderFactory;
 
 import javax.inject.Provider;
 import javax.inject.Qualifier;
@@ -42,7 +40,7 @@ import java.util.List;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class BeanDescriptor {
+public abstract class BeanDescriptor {
 
   /** The bean declared type. */
   private final Class<?> declaredType;
@@ -56,11 +54,11 @@ public final class BeanDescriptor {
   /** The bean implementation type. */
   private final Class<?> implementationType;
 
-  public BeanDescriptor(
-    Class<?> declaredType,
-    Scope scope,
-    List<Annotation> qualifiers,
-    Class<?> implementationType) throws NullPointerException, IllegalArgumentException {
+  private BeanDescriptor(
+      Class<?> declaredType,
+      Scope scope,
+      List<Annotation> qualifiers,
+      Class<?> implementationType) throws NullPointerException, IllegalArgumentException {
     if (declaredType == null) {
       throw new NullPointerException("No null declared type accepted");
     }
@@ -79,6 +77,73 @@ public final class BeanDescriptor {
     this.implementationType = implementationType;
   }
 
+  public static <T> BeanDescriptor createFromProviderType(
+      final Class<T> declaredType,
+      Scope scope,
+      List<Annotation> qualifiers,
+      final Class<? extends Provider<T>> implementationType) throws NullPointerException, IllegalArgumentException {
+    return new BeanDescriptor(declaredType, scope, qualifiers, implementationType) {
+      @Override
+      public void bind(Injector builder) {
+        // Bind provider
+        builder.declareProvider(
+            declaredType,
+            getScope(),
+            determineQualifiers(getQualifiers(), implementationType),
+            implementationType);
+      }
+    };
+  }
+
+  public static <T> BeanDescriptor createFromProvider(
+      final Class<T> declaredType,
+      Scope scope,
+      List<Annotation> qualifiers,
+      final Provider<? extends T> implementationType) throws NullPointerException, IllegalArgumentException {
+    return new BeanDescriptor(declaredType, scope, qualifiers, null) {
+      @Override
+      public void bind(Injector builder) {
+        // Bind provider
+        builder.bindProvider(
+            declaredType,
+            getScope(),
+            determineQualifiers(getQualifiers(), implementationType.getClass()),
+            implementationType);
+      }
+    };
+  }
+
+  public static <T> BeanDescriptor createFromImpl(
+      final Class<T> declaredType,
+      Scope scope,
+      List<Annotation> qualifiers,
+      final Class<? extends T> implementationType) throws NullPointerException, IllegalArgumentException {
+    return new BeanDescriptor(declaredType, scope, qualifiers, implementationType) {
+      @Override
+      public void bind(Injector builder) {
+        // Bean implementation declaration
+        builder.declareBean(
+            declaredType,
+            getScope(),
+            getQualifiers(),
+            implementationType);
+      }
+    };
+  }
+
+  public static <T> BeanDescriptor createFromBean(
+      final Class<T> declaredType,
+      Scope scope,
+      List<Annotation> qualifiers) throws NullPointerException, IllegalArgumentException {
+    // Direct declaration
+    return new BeanDescriptor(declaredType, scope, qualifiers, null) {
+      @Override
+      public void bind(Injector builder) {
+        builder.declareBean(declaredType, getScope(), getQualifiers(), null);
+      }
+    };
+  }
+
   public Class<?> getDeclaredType() {
     return declaredType;
   }
@@ -95,59 +160,7 @@ public final class BeanDescriptor {
     return implementationType;
   }
 
-  public void bind(Injector builder) {
-    Class<?> type = getDeclaredType();
-    Class<?> implementation = getImplementationType();
-    if (implementation == null) {
-      // Direct declaration
-      builder.declareBean(type, getScope(), getQualifiers(), null);
-    }
-    else if (ProviderFactory.class.isAssignableFrom(implementation)) {
-      // Instantiate provider factory
-      ProviderFactory mp;
-      try {
-        mp = (ProviderFactory)implementation.newInstance();
-      }
-      catch (InstantiationException e) {
-        throw new ApplicationException(e);
-      }
-      catch (IllegalAccessException e) {
-        throw new UndeclaredThrowableException(e);
-      }
-
-      // Get provider from factory
-      Provider provider;
-      try {
-        provider = mp.getProvider(type);
-      }
-      catch (Exception e) {
-        throw new ApplicationException(e);
-      }
-
-      // Bind provider instance
-      builder.bindProvider(
-        type,
-        getScope(),
-        determineQualifiers(getQualifiers(), provider.getClass()),
-        provider);
-    }
-    else if (Provider.class.isAssignableFrom(implementation)) {
-      // Bind provider
-      builder.declareProvider(
-        type,
-        getScope(),
-        determineQualifiers(getQualifiers(), implementation),
-        (Class)implementation);
-    }
-    else {
-      // Bean implementation declaration
-      builder.declareBean(
-        (Class)type,
-        getScope(),
-        getQualifiers(),
-        (Class)implementation);
-    }
-  }
+  public abstract void bind(Injector builder);
 
   private static Collection<Annotation> determineQualifiers(Collection<Annotation> qualifiers, Class<?> implementation) {
     Collection<Annotation> overridenQualifiers = null;

@@ -50,7 +50,7 @@ public class TemplatesDescriptor extends Descriptor {
       Field f = clazz.getField("DESCRIPTOR");
       TemplateDescriptor descriptor = (TemplateDescriptor)f.get(null);
       templates.add(descriptor);
-      beans.add(new BeanDescriptor(Template.class, null, null, descriptor.getType()));
+      beans.add(BeanDescriptor.createFromImpl(Template.class, null, null, descriptor.getType()));
     }
 
     //

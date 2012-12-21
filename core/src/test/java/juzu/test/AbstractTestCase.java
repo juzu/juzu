@@ -145,7 +145,7 @@ public abstract class AbstractTestCase extends Assert {
   public TestName name = new TestName();
 
   /** The currently deployed mock application. */
-  private MockApplication<?> application;
+  private MockApplication<File> application;
 
   public final String getName() {
     return name.getMethodName();
@@ -250,14 +250,14 @@ public abstract class AbstractTestCase extends Assert {
     return new CompilerAssert<File, File>(incremental, sourcePath, sourceOutput, classOutput);
   }
 
-  public MockApplication<?> application(InjectorProvider injectorProvider, String packageName) {
+  public MockApplication<File> application(InjectorProvider injectorProvider, String packageName) {
     if (application != null) {
       throw failure("An application is already deployed");
     }
     CompilerAssert<File, File> helper = compiler(packageName);
     helper.assertCompile();
     try {
-      return application = new MockApplication(
+      return application = new MockApplication<File>(
           helper.getClassOutput(),
           helper.getClassLoader(),
           injectorProvider,

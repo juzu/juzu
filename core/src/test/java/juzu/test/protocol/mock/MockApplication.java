@@ -21,6 +21,7 @@ package juzu.test.protocol.mock;
 
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationException;
@@ -44,8 +45,11 @@ public class MockApplication<P> implements Closeable {
   /** . */
   private final ApplicationLifeCycle<P, ?> lifeCycle;
 
+  /** . */
+  private final ReadWriteFileSystem<P> classes;
+
   public <L> MockApplication(
-      ReadFileSystem<P> classes,
+      ReadWriteFileSystem<P> classes,
       ClassLoader classLoader,
       InjectorProvider implementation,
       Name name) throws Exception {
@@ -82,8 +86,13 @@ public class MockApplication<P> implements Closeable {
         });
 
     //
+    this.classes = classes;
     this.classLoader = classLoader;
     this.lifeCycle = lifeCycle;
+  }
+
+  public ReadFileSystem<P> getClasses() {
+    return classes;
   }
 
   public MockApplication<P> init() throws Exception {

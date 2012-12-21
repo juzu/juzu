@@ -82,7 +82,7 @@ public abstract class Injector {
     Class<T> beanType,
     Scope beanScope,
     Iterable<Annotation> beanQualifiers,
-    Provider<T> provider);
+    Provider<? extends T> provider);
 
   /**
    * Bind a bean type to a specified bean instance.

@@ -25,7 +25,7 @@ import juzu.impl.metadata.Descriptor;
 import juzu.impl.bridge.spi.portlet.PortletPreferencesProvider;
 import juzu.impl.common.Tools;
 
-import java.util.Collections;
+import javax.portlet.PortletPreferences;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletDescriptor extends Descriptor {
@@ -38,13 +38,6 @@ public class PortletDescriptor extends Descriptor {
 
   @Override
   public Iterable<BeanDescriptor> getBeans() {
-    try {
-      Class portletPreferencesClass = Thread.currentThread().getContextClassLoader().loadClass("javax.portlet.PortletPreferences");
-      return Tools.list(new BeanDescriptor(portletPreferencesClass, Scope.REQUEST, null, PortletPreferencesProvider.class));
-    }
-    catch (ClassNotFoundException e) {
-      // Not available
-      return Collections.emptyList();
-    }
+    return Tools.list(BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class));
   }
 }

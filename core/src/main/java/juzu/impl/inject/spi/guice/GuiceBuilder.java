@@ -85,7 +85,7 @@ public class GuiceBuilder extends Injector {
   }
 
   @Override
-  public <T> Injector bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<T> provider) {
+  public <T> Injector bindProvider(Class<T> beanType, Scope beanScope, Iterable<Annotation> beanQualifiers, Provider<? extends T> provider) {
     bindings.add(new BeanBinding.ToProviderInstance<T>(beanType, beanScope, beanQualifiers, provider));
     return this;
   }

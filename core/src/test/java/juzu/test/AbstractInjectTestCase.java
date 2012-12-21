@@ -24,6 +24,7 @@ import juzu.test.protocol.mock.MockApplication;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +54,7 @@ public abstract class AbstractInjectTestCase extends AbstractTestCase {
     return di;
   }
 
-  public MockApplication<?> application(String packageName) {
+  public MockApplication<File> application(String packageName) {
     return application(di, packageName);
   }
 

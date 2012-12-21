@@ -20,6 +20,7 @@
 package juzu.impl.plugin.controller.descriptor;
 
 import juzu.impl.common.MethodHandle;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
@@ -71,7 +72,7 @@ public class ControllersDescriptor extends Descriptor {
       }
       controllers.add(bean);
       controllerMethods.addAll(bean.getMethods());
-      beans.add(new juzu.impl.inject.BeanDescriptor(bean.getType(), null, null, null));
+      beans.add(BeanDescriptor.createFromBean(bean.getType(), null, null));
     }
 
     //
