@@ -30,13 +30,13 @@ import java.util.Map;
 public abstract class AbstractTrie<K, T extends AbstractTrie<K, T>> implements Iterable<K> {
 
   /** . */
-  private final T parent;
+  final T parent;
 
   /** . */
-  private final List<K> path;
+  final List<K> path;
 
   /** . */
-  private final K key;
+  final K key;
 
   /** The entries. */
   private Map<K, T> entries;
@@ -54,7 +54,7 @@ public abstract class AbstractTrie<K, T extends AbstractTrie<K, T>> implements I
 
     //
     this.parent = parent;
-    this.path = path;
+    this.path = Collections.unmodifiableList(path);
     this.key = key;
   }
 
