@@ -26,8 +26,8 @@ import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
+import juzu.impl.fs.spi.url.URLFileSystem;
 import juzu.processor.MainProcessor;
 
 import java.io.IOException;
@@ -74,7 +74,7 @@ public abstract class ModuleLifeCycle<R, C> {
     private final ClassLoader baseClassLoader;
 
     /** . */
-    private ClassLoaderFileSystem classPath;
+    private URLFileSystem classPath;
 
     /** . */
     private FileSystemScanner<S> scanner;
@@ -102,7 +102,7 @@ public abstract class ModuleLifeCycle<R, C> {
 
       // Lazy initialize
       if (!initialized) {
-        classPath = new ClassLoaderFileSystem(baseClassLoader);
+        classPath = new URLFileSystem().add(baseClassLoader, ClassLoader.getSystemClassLoader().getParent());
         scanner = FileSystemScanner.createHashing(source);
         initialized = true;
       }
@@ -139,7 +139,7 @@ public abstract class ModuleLifeCycle<R, C> {
         compiler.compile();
 
         //
-        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, classPath.getClassLoader());
+        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
         this.classes = classOutput;
 
         //

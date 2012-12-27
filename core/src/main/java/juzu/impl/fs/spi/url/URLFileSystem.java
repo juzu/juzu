@@ -17,45 +17,123 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.fs.spi.classloader;
+package juzu.impl.fs.spi.url;
 
+import juzu.impl.common.Content;
 import juzu.impl.common.Timestamped;
+import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.common.Content;
-import juzu.impl.common.Tools;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ClassLoaderFileSystem extends ReadFileSystem<Node> {
+public class URLFileSystem extends ReadFileSystem<Node> {
 
   /** . */
-  private final URLCache cache;
+  private final Node root;
 
-  /** . */
-  private final ClassLoader classLoader;
-
-  public ClassLoaderFileSystem(ClassLoader classLoader) throws IOException {
-    // For now we do that here
-    URLCache cache = new URLCache();
-    cache.add(classLoader);
-    cache.add(Inject.class);
-
-    //
-    this.cache = cache;
-    this.classLoader = classLoader;
+  public URLFileSystem() throws IOException {
+    this.root = new Node();
   }
 
-  public ClassLoader getClassLoader() {
-    return classLoader;
+  /**
+   * Add the resources from the specified classloader only.
+   *
+   * @param loader the loader
+   * @return this url file system
+   * @throws IOException any io exception
+   * @throws URISyntaxException any uri syntax exception
+   */
+  public URLFileSystem add(ClassLoader loader) throws IOException, URISyntaxException {
+    return add(loader, loader.getParent());
+  }
+
+  /**
+   * Add the resources from the <code>from</code> classloader up to the <code>to</code> classloader
+   * that is excluded.
+   *
+   * @param from the classloader from which resources are included
+   * @param to the classloader from which resources are excluded
+   * @return this url file system
+   * @throws IOException any io exception
+   * @throws URISyntaxException any uri syntax exception
+   */
+  public URLFileSystem add(ClassLoader from, ClassLoader to) throws IOException, URISyntaxException {
+
+    // Get urls from loader
+    HashSet<URL> urls = Tools.set(from.getResources(""));
+    for (Enumeration<URL> e = from.getResources("META-INF/MANIFEST.MF"); e.hasMoreElements();) {
+      URL url = e.nextElement();
+      if ("jar".equals(url.getProtocol())) {
+        urls.add(url);
+      }
+    }
+
+    // Remove URLs from extension classloader and above (bootstrap)
+    if (to != null) {
+      for (Enumeration<URL> e = to.getResources("");e.hasMoreElements();) {
+        urls.remove(e.nextElement());
+      }
+      for (Enumeration<URL> e = to.getResources("META-INF/MANIFEST.MF"); e.hasMoreElements();) {
+        URL url = e.nextElement();
+        if ("jar".equals(url.getProtocol())) {
+          urls.remove(url);
+        }
+      }
+    }
+
+    // Now handle urls
+    for (URL url : urls) {
+      add(url);
+    }
+
+    // Add manually this one (fucked up jar: no META-INF/MANIFEST.MF)
+    if (Inject.class.getClassLoader() == from) {
+      add(from.getResource(Inject.class.getName().replace('.', '/') + ".class"));
+    }
+
+    //
+    return this;
+  }
+
+  public URLFileSystem add(URL url) throws IOException, URISyntaxException {
+    String protocol = url.getProtocol();
+    if ("file".equals(protocol)) {
+      File file = new File(url.toURI());
+      if (file.isDirectory()) {
+        root.merge(file);
+      } else {
+        JarFile jar = new JarFile(file, false);
+        for (JarEntry entry : Tools.iterable(jar.entries())) {
+          root.merge(url, entry);
+        }
+      }
+    } else if ("jar".equals(protocol)) {
+      String path = url.getPath();
+      int pos = path.lastIndexOf("!/");
+      if (pos == -1) {
+        throw new MalformedURLException("Malformed URL " + url);
+      }
+      URL inner = new URL(path.substring(0, pos));
+      add(inner);
+    } else {
+      throw new UnsupportedOperationException("Cannot handle url " + url + " yet");
+    }
+    return this;
   }
 
   @Override
@@ -65,7 +143,7 @@ public class ClassLoaderFileSystem extends ReadFileSystem<Node> {
 
   @Override
   public String getDescription() {
-    return "ClassLoader[]";
+    return "URLFileSystem[]";
   }
 
   @Override
@@ -75,7 +153,7 @@ public class ClassLoaderFileSystem extends ReadFileSystem<Node> {
 
   @Override
   public Node getRoot() throws IOException {
-    return cache.root;
+    return root;
   }
 
   @Override

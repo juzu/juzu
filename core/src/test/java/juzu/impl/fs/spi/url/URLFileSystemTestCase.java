@@ -17,10 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.fs.spi.classloader;
+package juzu.impl.fs.spi.url;
 
-import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.common.Tools;
+import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.test.AbstractTestCase;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -28,20 +28,17 @@ import org.jboss.shrinkwrap.api.exporter.ExplodedExporter;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
-import sun.net.www.protocol.foo.Handler;
 
 import javax.portlet.Portlet;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Vector;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ClassLoaderFileSystemTestCase extends AbstractTestCase {
+public class URLFileSystemTestCase extends AbstractTestCase {
 
   /** . */
   private JavaArchive jar;
@@ -66,60 +63,13 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase {
   }
 
   @Test
-  public void testJarStream() throws Exception {
-    try {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      jar.as(ZipExporter.class).exportTo(baos);
-      byte[] bytes = baos.toByteArray();
-      Handler.bind("jarfile", bytes);
-      URL url = new URL("foo:jarfile");
-
-      //
-      final String abc = url.toString();
-      final URL manifestURL = new URL("jar:" + abc + "!/META-INF/MANIFEST.MF");
-      final URL fooURL = new URL("jar:" + abc + "!/foo/");
-      final URL barTxtURL = new URL("jar:" + abc + "!/foo/bar.txt");
-      final URL barURL = new URL("jar:" + abc + "!/foo/bar/");
-      final URL juuTxtURL = new URL("jar:" + abc + "!/foo/bar/juu.txt");
-
-      //
-      ClassLoader cl = new ClassLoader(ClassLoader.getSystemClassLoader()) {
-        @Override
-        protected URL findResource(String name) {
-          if ("META-INF/MANIFEST.MF".equals(name)) {
-            return manifestURL;
-          }
-          else if ("foo/".equals(name)) {
-            return fooURL;
-          }
-          else if ("foo/bar.txt".equals(name)) {
-            return barTxtURL;
-          }
-          else if ("foo/bar/juu.txt".equals(name)) {
-            return barURL;
-          }
-          else if ("foo/bar/juu.txt".equals(name)) {
-            return juuTxtURL;
-          }
-          return null;
-        }
-
-        @Override
-        protected Enumeration<URL> findResources(String name) throws IOException {
-          Vector<URL> v = new Vector<URL>();
-          URL url = findResource(name);
-          if (url != null) {
-            v.add(url);
-          }
-          return v.elements();
-        }
-      };
-
-      assertFS(cl);
-    }
-    finally {
-      Handler.clear();
-    }
+  public void testJar() throws Exception {
+    File tmp = File.createTempFile("juzu", ".jar");
+    tmp.deleteOnExit();
+    FileOutputStream baos = new FileOutputStream(tmp);
+    jar.as(ZipExporter.class).exportTo(baos);
+    URL url = new URL("jar:" + tmp.toURI().toURL() + "!/foo/bar.txt_value");
+    assertFS(url);
   }
 
   @Test
@@ -133,22 +83,38 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase {
   }
 
   @Test
-  public void testPortletJar() throws Exception {
-    URL url = Portlet.class.getProtectionDomain().getCodeSource().getLocation();
-    ClassLoader cl = new URLClassLoader(new URL[]{url}, ClassLoader.getSystemClassLoader());
-    ClassLoaderFileSystem fs = new ClassLoaderFileSystem(cl);
-    Object s = fs.getPath("javax", "portlet");
-    assertNotNull(s);
+  public void testFromClassLoaderWithJar() throws Exception {
+    File f = File.createTempFile("test", ".jar");
+    f.deleteOnExit();
+    jar.as(ZipExporter.class).exportTo(f, true);
+
+    //
+    URLClassLoader loader = new URLClassLoader(new URL[]{f.toURI().toURL()}, Thread.currentThread().getContextClassLoader());
+    URLFileSystem fs = new URLFileSystem();
+    fs.add(loader);
+    assertFS(fs);
   }
 
-  private void assertFS(URL base) throws Exception {
-    assertFS(new URLClassLoader(new URL[]{base}, ClassLoader.getSystemClassLoader()));
+  @Test
+  public void testFromClassLoaderWithFile() throws Exception {
+    File f = File.createTempFile("test", "");
+    assertTrue(f.delete());
+    assertTrue(f.mkdirs());
+    f.deleteOnExit();
+    File dir = jar.as(ExplodedExporter.class).exportExploded(f);
+
+    //
+    URLClassLoader loader = new URLClassLoader(new URL[]{dir.toURI().toURL()}, Thread.currentThread().getContextClassLoader());
+    URLFileSystem fs = new URLFileSystem();
+    fs.add(loader);
+    assertFS(fs);
   }
 
-  private void assertFS(ClassLoader classLoader) throws Exception {
-    assertFS(new ClassLoaderFileSystem(classLoader));
+  private void assertFS(URL url) throws Exception {
+    URLFileSystem fs = new URLFileSystem();
+    fs.add(url);
+    assertFS(fs);
   }
-
 
   private <P> void assertFS(ReadFileSystem<P> fs) throws Exception {
     P foo = fs.getPath("foo");
@@ -174,5 +140,26 @@ public class ClassLoaderFileSystemTestCase extends AbstractTestCase {
 
     //
     assertEquals(null, fs.getPath("juu"));
+  }
+
+
+  @Test
+  public void testPortletJar() throws Exception {
+    URL url = Portlet.class.getProtectionDomain().getCodeSource().getLocation();
+    URLFileSystem fs = new URLFileSystem();
+    fs.add(url);
+    Object s = fs.getPath("javax", "portlet");
+    assertNotNull(s);
+  }
+
+  @Test
+  public void testInheritance() throws Exception {
+    URLClassLoader loader = new URLClassLoader(new URL[0], Thread.currentThread().getContextClassLoader());
+    URLFileSystem fs = new URLFileSystem();
+    fs.add(loader, ClassLoader.getSystemClassLoader().getParent());
+
+    //
+    Node assertClass = fs.getPath("junit", "framework", "Assert.class");
+    assertNotNull(assertClass);
   }
 }

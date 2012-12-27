@@ -490,6 +490,14 @@ public class Tools {
     return list;
   }
 
+  public static <E> HashSet<E> set(Enumeration<E> elements) {
+    HashSet<E> list = new HashSet<E>();
+    while (elements.hasMoreElements()) {
+      list.add(elements.nextElement());
+    }
+    return list;
+  }
+
   public static <E> ArrayList<E> list(Iterable<E> elements) {
     return list(elements.iterator());
   }
@@ -514,6 +522,14 @@ public class Tools {
     ArrayList<E> set = new ArrayList<E>(elements.length);
     Collections.addAll(set, elements);
     return set;
+  }
+
+  public static <E> Iterable<E> iterable(final Enumeration<E> elements) throws NullPointerException {
+    return new Iterable<E>() {
+      public Iterator<E> iterator() {
+        return Tools.iterator(elements);
+      }
+    };
   }
 
   public static <E> Iterator<E> iterator(final Enumeration<E> elements) throws NullPointerException {

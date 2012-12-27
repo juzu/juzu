@@ -19,14 +19,13 @@
 
 package juzu.test;
 
-import juzu.impl.common.Name;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
+import juzu.impl.fs.spi.url.URLFileSystem;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.fs.spi.classloader.ClassLoaderFileSystem;
 import juzu.impl.common.Tools;
 import juzu.processor.MainProcessor;
 
@@ -53,10 +52,7 @@ public class CompilerAssert<I, O> {
   };
 
   /** A cache to speed up unit tests. */
-  private static WeakHashMap<ClassLoader, ClassLoaderFileSystem> classPathCache = new WeakHashMap<ClassLoader, ClassLoaderFileSystem>();
-
-  /** . */
-  private ClassLoader baseClassLoader;
+  private static WeakHashMap<ClassLoader, URLFileSystem> classPathCache = new WeakHashMap<ClassLoader, URLFileSystem>();
 
   /** . */
   private ClassLoader classLoader;
@@ -69,15 +65,16 @@ public class CompilerAssert<I, O> {
     ReadWriteFileSystem<I> sourcePath,
     ReadWriteFileSystem<O> sourceOutput,
     ReadWriteFileSystem<O> classOutput) {
-    ClassLoader baseClassLoader = Thread.currentThread().getContextClassLoader();
 
     //
-    ClassLoaderFileSystem classPath = classPathCache.get(baseClassLoader);
-    if (classPath == null) {
+    URLFileSystem classPath = classPathCache.get(Thread.currentThread().getContextClassLoader());
+      if (classPath == null) {
       try {
-        classPathCache.put(baseClassLoader, classPath = new ClassLoaderFileSystem(baseClassLoader));
+        classPathCache.put(
+            Thread.currentThread().getContextClassLoader(),
+            classPath = new URLFileSystem().add(Thread.currentThread().getContextClassLoader(), ClassLoader.getSystemClassLoader().getParent()));
       }
-      catch (IOException e) {
+      catch (Exception e) {
         throw AbstractTestCase.failure(e);
       }
     }
@@ -96,9 +93,6 @@ public class CompilerAssert<I, O> {
     //
     this.strategy.processorFactory = META_MODEL_PROCESSOR_FACTORY;
     this.strategy.javaCompilerProvider = JavaCompilerProvider.DEFAULT;
-
-    //
-    this.baseClassLoader = baseClassLoader;
   }
 
   public CompilerAssert(
@@ -182,7 +176,7 @@ public class CompilerAssert<I, O> {
   public Compiler assertCompile() {
     try {
       strategy.compile();
-      classLoader = new URLClassLoader(new URL[]{strategy.classOutput.getURL()}, baseClassLoader);
+      classLoader = new URLClassLoader(new URL[]{strategy.classOutput.getURL()}, Thread.currentThread().getContextClassLoader());
       return strategy.compiler;
     }
     catch (Exception e) {
