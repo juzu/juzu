@@ -40,7 +40,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ModuleLifeCycle<R, C> {
+public abstract class ModuleLifeCycle<C> {
 
   /** . */
   protected final Logger logger;
@@ -65,7 +65,7 @@ public abstract class ModuleLifeCycle<R, C> {
    */
   public abstract ReadFileSystem<C> getClasses();
 
-  public static class Dynamic<R, S> extends ModuleLifeCycle<R, String[]> {
+  public static class Dynamic<S> extends ModuleLifeCycle<String[]> {
 
     /** . */
     private final ReadFileSystem<S> source;
@@ -162,7 +162,7 @@ public abstract class ModuleLifeCycle<R, C> {
     }
   }
 
-  public static class Static<R, P> extends ModuleLifeCycle<R, P> {
+  public static class Static<P> extends ModuleLifeCycle<P> {
 
     /** . */
     private final ClassLoader classLoader;

@@ -74,7 +74,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   private final AssetServer assetServer;
 
   /** Contextual: module. */
-  private final ModuleLifeCycle<R, P> module;
+  private final ModuleLifeCycle<P> module;
 
   /** . */
   private ApplicationDescriptor descriptor;
@@ -93,7 +93,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
 
   public ApplicationLifeCycle(
       Logger logger,
-      ModuleLifeCycle<R, P> module,
+      ModuleLifeCycle<P> module,
       InjectorProvider injectorProvider,
       Name name,
       ReadFileSystem<R> resources,
@@ -130,7 +130,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     return descriptor;
   }
 
-  public ModuleLifeCycle<R, P> getModule() {
+  public ModuleLifeCycle<P> getModule() {
     return module;
   }
 

@@ -69,7 +69,7 @@ public class MockApplication<P> implements Closeable {
     };
 
     //
-    ModuleLifeCycle<P, P> module = new ModuleLifeCycle.Static<P, P>(log, classLoader, classes);
+    ModuleLifeCycle<P> module = new ModuleLifeCycle.Static<P>(log, classLoader, classes);
 
     //
     ApplicationLifeCycle<P, P> lifeCycle = new ApplicationLifeCycle<P, P>(
