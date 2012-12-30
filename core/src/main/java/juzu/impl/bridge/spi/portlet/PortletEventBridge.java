@@ -33,7 +33,7 @@ import javax.portlet.EventResponse;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletEventBridge extends PortletRequestBridge<EventRequest, EventResponse> implements EventBridge {
+public class PortletEventBridge extends PortletInteractionBridge<EventRequest, EventResponse> implements EventBridge {
 
   public PortletEventBridge(
       Application application,
@@ -44,7 +44,7 @@ public class PortletEventBridge extends PortletRequestBridge<EventRequest, Event
       boolean prod) {
     super(application, req, resp, target, parameters, prod);
 
-    // Care of event contextual arguments
+    // Set event as part of contextual arguments
     for (Parameter parameter : target.getParameters()) {
       if (parameter instanceof ContextualParameter) {
         ContextualParameter contextualParameter = (ContextualParameter)parameter;
