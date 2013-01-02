@@ -40,6 +40,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -58,6 +59,9 @@ import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Tools {
+
+  /** . */
+  public static final Charset UTF_8 = Charset.forName("UTF-8");
 
   /** . */
   private static final Iterator EMPTY_ITERATOR = new Iterator() {

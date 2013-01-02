@@ -17,23 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.servlet.route.module.mountnomount.app2;
+package juzu.impl.plugin.servlet;
 
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
+import juzu.Scope;
+import juzu.impl.bridge.spi.portlet.PortletPreferencesProvider;
+import juzu.impl.common.Tools;
+import juzu.impl.inject.BeanDescriptor;
+import juzu.impl.metadata.Descriptor;
+
+import javax.portlet.PortletPreferences;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+public class ServletDescriptor extends Descriptor {
 
-  @View
-  public Response.Content<?> index() {
-    return Response.render("app2:index");
+  /** . */
+  public static ServletDescriptor INSTANCE = new ServletDescriptor();
+
+  private ServletDescriptor() {
   }
 
-  @View
-  @Route("/bar")
-  public Response.Content<?> bar() {
-    return Response.render("app2:bar");
+  @Override
+  public Iterable<BeanDescriptor> getBeans() {
+    return Tools.list(BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class));
   }
 }

@@ -50,6 +50,7 @@
         <!-- Tomcat excludes -->
         <exclude>commons-logging:commons-logging</exclude>
         <exclude>org.javassist:javassist</exclude>
+        <exclude>javax.servlet:javax.servlet-api</exclude>
 
       </excludes>
       <useTransitiveDependencies>true</useTransitiveDependencies>

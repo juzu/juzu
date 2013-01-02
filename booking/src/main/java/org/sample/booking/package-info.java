@@ -20,6 +20,7 @@
 @Application(defaultController = org.sample.booking.controllers.Application.class)
 @Bindings({@Binding(Flash.class), @Binding(Login.class)})
 @Portlet
+@Servlet("/")
 @Assets(
     scripts = {
         @Script(id = "jquery", src = "public/javascripts/jquery-1.7.1.min.js"),
@@ -41,4 +42,5 @@ import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;
+import juzu.plugin.servlet.Servlet;
 import org.sample.booking.controllers.Login;

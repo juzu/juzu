@@ -23,7 +23,7 @@ import juzu.impl.common.JSON;
 import juzu.impl.metamodel.MetaModelPlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ModuleMetaModelPlugin extends MetaModelPlugin<ModuleMetaModel, ModuleMetaModelPlugin> {
+public abstract class ModuleMetaModelPlugin extends MetaModelPlugin<ModuleMetaModel, ModuleMetaModelPlugin> {
 
   public ModuleMetaModelPlugin(String name) {
     super(name);

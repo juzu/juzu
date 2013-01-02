@@ -51,6 +51,9 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   private static Name applicationName;
 
   /** . */
+  private static String path;
+
+  /** . */
   private static boolean asDefault;
 
   /** . */
@@ -86,7 +89,34 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     return compiler;
   }
 
-  private static WebArchive createDeployment(boolean servlet, boolean asDefault, boolean incremental, String... applicationNames) {
+  private static WebArchive createServletDeployment(String urlPattern, boolean asDefault, boolean incremental, String... applicationNames) {
+
+    String path;
+    if ("/".equals(urlPattern)) {
+      path = "";
+    } else if ("/*".equals(urlPattern)) {
+      throw failure("Not yet implemented");
+    } else if (urlPattern.startsWith("/") && urlPattern.endsWith("/*")) {
+      path = urlPattern.substring(1, urlPattern.length() - 1);
+    } else {
+      throw failure("Illegal url pattern " + urlPattern);
+    }
+
+    //
+    WebArchive war = createDeployment(asDefault, incremental, applicationNames);
+    AbstractWebTestCase.path = path;
+    AbstractWebTestCase.servlet = true;
+    return war;
+  }
+
+  private static WebArchive createPortletDeployment(boolean asDefault, boolean incremental, String... applicationNames) {
+    WebArchive war = createDeployment(asDefault, incremental, applicationNames);
+    AbstractWebTestCase.path = null;
+    AbstractWebTestCase.servlet = false;
+    return war;
+  }
+
+  private static WebArchive createDeployment(boolean asDefault, boolean incremental, String... applicationNames) {
 
     //
     Name[] applicationQNs = new Name[applicationNames.length];
@@ -150,7 +180,6 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     AbstractWebTestCase.applicationName = applicationQNs.length > 0 ? applicationQNs[0] : null;
     AbstractWebTestCase.asDefault = asDefault;
     AbstractWebTestCase.compiler = compiler;
-    AbstractWebTestCase.servlet = servlet;
 
     //
     return war;
@@ -164,10 +193,24 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     return createServletDeployment(false, asDefault, applicationNames);
   }
 
-  public static WebArchive createServletDeployment(boolean incremental, boolean asDefault, String... applicationNames) {
+  public static WebArchive createServletDeployment(String urlPattern, boolean asDefault, String... applicationNames) {
+    return createServletDeployment(false, urlPattern, asDefault, applicationNames);
+  }
+
+  public static WebArchive createServletDeployment(
+      boolean incremental,
+      boolean asDefault,
+      String... applicationNames) {
+    return createServletDeployment(incremental, "/", asDefault, applicationNames);
+  }
+  public static WebArchive createServletDeployment(
+      boolean incremental,
+      String urlPattern,
+      boolean asDefault,
+      String... applicationNames) {
 
     // Create war
-    WebArchive war = createDeployment(true, asDefault, false, applicationNames);
+    WebArchive war = createServletDeployment(urlPattern, asDefault, false, applicationNames);
 
     //
     String runModeValue;
@@ -191,7 +234,8 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     servlet = String.format(
         servlet,
         runModeValue,
-        sourcePath);
+        sourcePath,
+        urlPattern);
 
     // Descriptor
     war.setWebXML(new StringAsset(servlet));
@@ -207,7 +251,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   public static WebArchive createPortletDeployment(boolean incremental, String packageName) {
 
     //
-    WebArchive war = createDeployment(false, true, incremental, packageName);
+    WebArchive war = createPortletDeployment(true, incremental, packageName);
 
     //
     String runModeValue;
@@ -247,7 +291,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public static WebArchive createPortletDeployment(boolean incremental, String packageName, URL portletXML) {
-    WebArchive war = createDeployment(false, true, incremental, packageName);
+    WebArchive war = createDeployment(true, incremental, packageName);
     war.setWebXML(JuzuPortlet.class.getResource("web.xml"));
     war.addAsWebInfResource(new UrlAsset(portletXML), "portlet.xml");
     return war;
@@ -294,10 +338,16 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     //
     URI base;
     try {
+      URI uri = deploymentURL.toURI();
+
+      //
+      uri = uri.resolve(AbstractWebTestCase.path);
+
+      //
       if (asDefault) {
-        base = deploymentURL.toURI();
+        base = uri;
       } else {
-        base = deploymentURL.toURI().resolve(getApplicationName().getIdentifier());
+        base = uri.resolve(getApplicationName().getIdentifier());
       }
       base = base.resolve(path);
       return base.toURL();

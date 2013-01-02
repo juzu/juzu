@@ -117,6 +117,15 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
             return getApplicationName(config);
           } else if (BridgeConfig.RUN_MODE.equals(key)) {
             return getRunMode(config);
+          } else if (BridgeConfig.INJECT.equals(key)) {
+            // Cascade:
+            // 1/ portlet init param
+            // 2/ serlvet context init param
+            String inject = config.getInitParameter((String)key);
+            if (inject == null) {
+              inject = config.getPortletContext().getInitParameter((String)key);
+            }
+            return inject;
           } else if (BridgeConfig.NAMES.contains(key)) {
             return config.getInitParameter((String)key);
           } else {

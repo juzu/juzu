@@ -226,17 +226,17 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
       throw new IllegalArgumentException("Package element cannot be resolved " + context);
     }
     if (sourcePath != null) {
-      log.log("Found eclipse source path " + sourcePath + " for package " + context.getQN());
+      log.log("Found eclipse source path " + sourcePath + " for package " + context.getPackage());
       return sourcePath;
     }
     else {
       ReadFileSystem<File> sourcePath = sourcePathMap.get(context);
       if (sourcePath == null) {
         try {
-          log.log("Trying to find a native file system for package " + context.getQN());
+          log.log("Trying to find a native file system for package " + context.getPackage());
           List<? extends AnnotationMirror> annotations = element.getAnnotationMirrors();
           if (annotations.size() > 0) {
-            log.log("Found package " + context.getQN() + " annotations " + annotations + " will use first one");
+            log.log("Found package " + context.getPackage() + " annotations " + annotations + " will use first one");
             AnnotationMirror annotation = annotations.get(0);
             ClassLoader cl = env.getClass().getClassLoader();
             if (cl == null) {
@@ -253,7 +253,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
               Method getSourceFileMethod = cu.getClass().getMethod("getSourceFile");
               JavaFileObject file = (JavaFileObject)getSourceFileMethod.invoke(cu);
               URI uri = file.toUri();
-              log.log("Resolved uri " + uri + " for package " + context.getQN());
+              log.log("Resolved uri " + uri + " for package " + context.getPackage());
               File f = new File(uri.getPath());
               if (f.exists() && f.isFile()) {
                 File dir = f.getParentFile().getParentFile();
@@ -266,11 +266,11 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
                 sourcePathMap.put(context, sourcePath = new DiskFileSystem(dir));
               }
             } else {
-              log.log("No path object for package " + context.getQN());
+              log.log("No path object for package " + context.getPackage());
             }
           }
           else {
-            log.log("Package " + context.getQN() + " is not annotated (does not make sense)");
+            log.log("Package " + context.getPackage() + " is not annotated (does not make sense)");
           }
         }
         catch (Exception e) {
@@ -278,7 +278,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         }
       }
       else {
-        log.log("Found cached source path " + sourcePath.getDescription() + " for package " + context.getQN());
+        log.log("Found cached source path " + sourcePath.getDescription() + " for package " + context.getPackage());
       }
       return sourcePath;
     }

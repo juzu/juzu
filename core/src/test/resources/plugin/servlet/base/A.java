@@ -17,23 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.servlet.route.module.mountnomount.app1;
+package plugin.servlet.base;
 
-import juzu.Response;
-import juzu.Route;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
-
   @View
-  public Response.Content<?> index() {
-    return Response.render("app1:index");
-  }
-
-  @View
-  @Route("/bar")
-  public Response.Content<?> bar() {
-    return Response.render("app1:bar");
+  public void index() {
+    // This won't be executed we just check that the servlet was correctly generated
   }
 }

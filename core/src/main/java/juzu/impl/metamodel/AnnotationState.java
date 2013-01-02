@@ -128,8 +128,10 @@ public class AnnotationState extends HashMap<String, Serializable> {
         } else {
           target = state;
         }
-        Serializable serialized = unwrap(value, xMember.getReturnType());
-        target.put(key, serialized);
+        if (value != null) {
+          Serializable serialized = unwrap(value, xMember.getReturnType());
+          target.put(key, serialized);
+        }
       }
     }
 

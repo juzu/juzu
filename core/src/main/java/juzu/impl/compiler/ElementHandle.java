@@ -102,24 +102,20 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
     }
 
     /** . */
-    private final Name qn;
+    private final Name name;
 
-    private Package(Name qn) {
-      this.qn = qn;
-    }
-
-    public Name getQN() {
-      return qn;
+    private Package(Name name) {
+      this.name = name;
     }
 
     @Override
     public Name getPackage() {
-      return qn;
+      return name;
     }
 
     @Override
     protected PackageElement doGet(ProcessingEnvironment env) {
-      return env.getElementUtils().getPackageElement(qn);
+      return env.getElementUtils().getPackageElement(name);
     }
 
     @Override
@@ -129,19 +125,19 @@ public abstract class ElementHandle<E extends Element> implements Serializable {
       }
       else if (obj instanceof Package) {
         Package that = (Package)obj;
-        return qn.equals(that.qn);
+        return name.equals(that.name);
       }
       return false;
     }
 
     @Override
     public int hashCode() {
-      return qn.hashCode();
+      return name.hashCode();
     }
 
     @Override
     public String toString() {
-      return "ElementHandle.Package[qn=" + qn + "]";
+      return "ElementHandle.Package[qn=" + name + "]";
     }
   }
 

@@ -18,6 +18,6 @@
  */
 
 @Application
-package bridge.servlet.route.view.pathmapping;
+package bridge.servlet.route.view.mapping;
 
 import juzu.Application;

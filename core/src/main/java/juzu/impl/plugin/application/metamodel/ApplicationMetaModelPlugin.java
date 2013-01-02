@@ -44,7 +44,7 @@ public abstract class ApplicationMetaModelPlugin extends MetaModelPlugin<Applica
 
   @Override
   public final void processAnnotationChange(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
-    if (metaModel.getHandle().getQN().isPrefix(key.getElement().getPackage())) {
+    if (metaModel.getHandle().getPackage().isPrefix(key.getElement().getPackage())) {
       super.processAnnotationChange(metaModel, key, removed, added);
     }
   }

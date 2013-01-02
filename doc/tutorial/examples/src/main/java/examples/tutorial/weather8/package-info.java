@@ -18,8 +18,8 @@
  */
 
 @Application
-@Route("/weather8")
 @Portlet
+@Servlet("/weather8/*")
 @Assets(
   scripts = {
     @Script(id = "jquery", src = "jquery-1.7.1.min.js"),
@@ -32,8 +32,8 @@
 package examples.tutorial.weather8;
 
 import juzu.Application;
-import juzu.Route;
 import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.portlet.Portlet;
+import juzu.plugin.servlet.Servlet;

@@ -36,10 +36,11 @@ public abstract class AbstractRoutePathMappingTestCase extends AbstractWebTestCa
 
   @Test
   public void testRender() throws Exception {
-    driver.get(applicationURL().toString());
+    URL url = applicationURL();
+    driver.get(url.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     String href = trigger.getAttribute("href");
-    URL url = new URL(href);
+    url = new URL(href);
     assertEquals(applicationURL("/foo").getPath(), url.getPath());
     assertNull(url.getQuery());
     trigger.click();

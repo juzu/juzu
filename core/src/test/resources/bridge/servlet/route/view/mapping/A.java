@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.servlet.route.view.pathmapping;
+package bridge.servlet.route.view.mapping;
 
 import juzu.Response;
 import juzu.Route;

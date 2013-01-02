@@ -24,6 +24,10 @@
       <artifactId>portlet-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <exclusions>

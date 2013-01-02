@@ -56,7 +56,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
     String baseName) {
     //
     if (baseName == null) {
-      String s = handle.getQN().toString();
+      String s = handle.getPackage().toString();
       int index = s.lastIndexOf('.');
       baseName = Character.toUpperCase(s.charAt(index + 1)) + s.substring(index + 2);
     }
@@ -68,7 +68,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   }
 
   public Name getName() {
-    return handle.getQN();
+    return handle.getPackage();
   }
 
   public String getBaseName() {
@@ -82,7 +82,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   public JSON toJSON() {
     JSON json = new JSON();
     json.set("handle", handle);
-    json.set("qn", handle.getQN().toString());
+    json.set("qn", handle.getPackage().toString());
     json.map("templates", getChild(TemplatesMetaModel.KEY));
     json.map("controllers", getChild(ControllersMetaModel.KEY));
     return json;

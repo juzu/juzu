@@ -17,9 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-@Route("/app2")
-package bridge.servlet.route.module.mountmount.app2;
+package juzu.plugin.servlet;
 
-import juzu.Application;
-import juzu.Route;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PACKAGE)
+public @interface Servlet {
+
+  // Not yet implemented
+  String name() default "";
+
+  String value();
+
+}

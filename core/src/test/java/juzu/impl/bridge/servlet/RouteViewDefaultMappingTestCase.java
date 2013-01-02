@@ -17,7 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application
-package bridge.servlet.route.module.nomount;
+package juzu.impl.bridge.servlet;
 
-import juzu.Application;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.openqa.selenium.WebDriver;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class RouteViewDefaultMappingTestCase extends AbstractRoutePathMappingTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment("/", true, "bridge.servlet.route.view.mapping");
+  }
+
+  @Drone
+  WebDriver driver;
+}

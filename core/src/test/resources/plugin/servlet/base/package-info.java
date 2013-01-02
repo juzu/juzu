@@ -18,8 +18,7 @@
  */
 
 @Application
-@Route("/app1")
-package bridge.servlet.route.module.mountmount.app1;
+@Servlet("/whatever/*") package plugin.servlet.base;
 
 import juzu.Application;
-import juzu.Route;
+import juzu.plugin.servlet.Servlet;

@@ -65,7 +65,7 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.PACKAGE})
+@Target({ElementType.METHOD})
 public @interface Route {
 
   /**

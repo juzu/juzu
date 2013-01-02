@@ -24,17 +24,20 @@ import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.router.Route;
+import juzu.impl.router.Router;
 import juzu.request.Phase;
 
 import javax.servlet.ServletException;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class Handler implements Closeable {
+
+  /** . */
+  final String path;
 
   /** . */
   final Bridge bridge;
@@ -43,15 +46,12 @@ class Handler implements Closeable {
   final Route root;
 
   /** . */
-  final HashMap<MethodHandle, Route> routeMap;
+  final HashMap<MethodHandle, Route> forwardRoutes;
 
   /** . */
-  final HashMap<Route, Map<Phase, MethodHandle>> routeMap2;
+  final HashMap<Route, Map<Phase, MethodHandle>> backwardRoutes;
 
-  /** All the routes. */
-  final HashSet<Route> routes;
-
-  Handler(Route parent, Bridge bridge) throws ServletException {
+  Handler(Bridge bridge, String path) throws ServletException {
     this.bridge = bridge;
 
     //
@@ -59,43 +59,37 @@ class Handler implements Closeable {
       bridge.refresh();
 
       //
-      HashMap<MethodHandle, Route> routeMap = new HashMap<MethodHandle, Route>();
-      HashMap<Route, Map<Phase, MethodHandle>> routeMap2 = new HashMap<Route, Map<Phase, MethodHandle>>();
-      HashSet<Route> routes = new HashSet<Route>();
-      Route root;
+      HashMap<MethodHandle, Route> forwardRoutes = new HashMap<MethodHandle, Route>();
+      HashMap<Route, Map<Phase, MethodHandle>> backwardRoutes = new HashMap<Route, Map<Phase, MethodHandle>>();
 
       //
+      Route root;
       RouteDescriptor routesDesc = (RouteDescriptor)bridge.application.getDescriptor().getPluginDescriptor("router");
       if (routesDesc != null) {
         Map<RouteDescriptor, Route> ret;
-        if (routesDesc.getPath() != null) {
-          ret = routesDesc.popupate(parent);
-        } else {
-          ret = routesDesc.create();
-        }
+        ret = routesDesc.create();
         root = ret.values().iterator().next();
         for (Map.Entry<RouteDescriptor, Route> entry : ret.entrySet()) {
           for (Map.Entry<String, String> entry2 : entry.getKey().getTargets().entrySet()) {
             MethodHandle handle = MethodHandle.parse(entry2.getValue());
             Phase phase = Phase.valueOf(entry2.getKey());
-            routeMap.put(handle, entry.getValue());
-            Map<Phase, MethodHandle> map =  routeMap2.get(entry.getValue());
+            forwardRoutes.put(handle, entry.getValue());
+            Map<Phase, MethodHandle> map =  backwardRoutes.get(entry.getValue());
             if (map == null) {
-              routeMap2.put(entry.getValue(), map = new HashMap<Phase, MethodHandle>());
+              backwardRoutes.put(entry.getValue(), map = new HashMap<Phase, MethodHandle>());
             }
             map.put(phase, handle);
           }
-          routes.add(entry.getValue());
         }
       } else {
-        routes.add(root = parent.append("/" + bridge.application.getName().getIdentifier()));
+        root = new Router();
       }
 
       //
-      this.routes = routes;
+      this.path = path;
+      this.forwardRoutes = forwardRoutes;
+      this.backwardRoutes = backwardRoutes;
       this.root = root;
-      this.routeMap = routeMap;
-      this.routeMap2 = routeMap2;
     }
     catch (Exception e) {
       throw ServletBridge.wrap(e);

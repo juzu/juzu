@@ -128,7 +128,7 @@ public class ApplicationDescriptor extends Descriptor {
 
     //
     if (names.size() > 0) {
-      throw new UnsupportedOperationException("Handle me gracefully : missing plugin " + name);
+      throw new UnsupportedOperationException("Handle me gracefully : missing plugins " + names);
     }
 
     //

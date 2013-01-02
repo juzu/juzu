@@ -258,7 +258,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
-    Route route = handler.routeMap.get(method.getHandle());
+    Route route = handler.forwardRoutes.get(method.getHandle());
     if (route == null) {
       if (application.getDescriptor().getControllers().getResolver().isIndex(method)) {
         route = handler.root;
@@ -309,6 +309,10 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
             // Add context path
             appendable.append(req.getContextPath());
 
+            // Append path
+            appendable.append(handler.path);
+
+            //
             URIWriter writer = new URIWriter(appendable, mimeType);
             match.render(writer);
             for (Map.Entry<String, String> entry : match.getUnmatched().entrySet()) {

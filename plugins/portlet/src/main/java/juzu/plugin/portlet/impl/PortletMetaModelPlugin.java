@@ -71,7 +71,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     ElementHandle.Package pkg = metaModel.getHandle();
-    if (key.getType().equals(PORTLET) && key.getElement().getPackage().equals(pkg.getQN())) {
+    if (key.getType().equals(PORTLET) && key.getElement().getPackage().equals(pkg.getPackage())) {
       String name = (String)added.get("name");
       if (name == null) {
         name = metaModel.getBaseName() + "Portlet";

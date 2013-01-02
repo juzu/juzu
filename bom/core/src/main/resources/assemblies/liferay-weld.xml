@@ -55,6 +55,7 @@
 
         <!-- Liferay excludes -->
         <exclude>javax.portlet:portlet-api</exclude>
+        <exclude>javax.servlet:javax.servlet-api</exclude>
 
       </excludes>
       <useTransitiveDependencies>true</useTransitiveDependencies>
