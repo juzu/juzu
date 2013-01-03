@@ -18,7 +18,21 @@
 
   <modules>
     <module>examples</module>
-    <module>guide</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>noguide</id>
+      <activation>
+        <property>
+          <name>!noguide</name>
+        </property>
+      </activation>
+      <modules>
+        <module>examples</module>
+        <module>guide</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>
