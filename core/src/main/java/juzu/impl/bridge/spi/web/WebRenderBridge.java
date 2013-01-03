@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.servlet;
+package juzu.impl.bridge.spi.web;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
@@ -30,16 +30,14 @@ import juzu.impl.common.Tools;
 import juzu.impl.request.Method;
 import juzu.io.AppendableStream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletRenderBridge extends ServletMimeBridge implements RenderBridge {
+public class WebRenderBridge extends WebMimeBridge implements RenderBridge {
 
   /** . */
   private Response.Content response;
@@ -56,14 +54,13 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
   /** Unused for now. */
   private String title;
 
-  ServletRenderBridge(
+  WebRenderBridge(
       Application application,
       Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
+      WebBridge http,
       Method<?> target,
       Map<String, String[]> parameters) {
-    super(application, handler, req, resp, target, parameters);
+    super(application, handler, http, target, parameters);
   }
 
   public void setTitle(String title) {
@@ -73,7 +70,6 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
   public void setResponse(Response response) throws IllegalStateException, IOException {
     super.setResponse(response);
     if (response instanceof Response.Content) {
-      Response.Content content = (Response.Content)response;
       try {
 
         //
@@ -96,13 +92,13 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         //
         Iterable<Asset.Value> stylesheets = Collections.emptyList();
         if (stylesheetProps != null) {
-          stylesheets = handler.bridge.application.getStylesheetManager().resolveAssets(stylesheetProps);
+          stylesheets = handler.getBridge().application.getStylesheetManager().resolveAssets(stylesheetProps);
         }
 
         //
         Iterable<Asset.Value> scripts = Collections.emptyList();
         if (scriptsProp != null) {
-          scripts = handler.bridge.application.getScriptManager().resolveAssets(scriptsProp);
+          scripts = handler.getBridge().application.getScriptManager().resolveAssets(scriptsProp);
         }
 
         //
@@ -111,7 +107,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
         this.responseMetaTags = metaTags;
       }
       catch (IllegalArgumentException e) {
-        response = Response.content(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        response = Response.content(500, e.getMessage());
       }
 
       //
@@ -121,41 +117,11 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
     }
   }
 
-  private String getAssetURL(Asset.Value asset) {
-    StringBuilder sb;
-    String url;
+  private String getAssetURL(Asset.Value asset) throws IOException {
+    StringBuilder url = new StringBuilder();
     String uri = asset.getURI();
-    switch (asset.getLocation()) {
-      case SERVER:
-        sb = new StringBuilder();
-        if (!uri.startsWith("/")) {
-          sb.append(req.getContextPath());
-          sb.append('/');
-        }
-        sb.append(uri);
-        url = sb.toString();
-        break;
-      case CLASSPATH:
-        if (handler.bridge.getConfig().isProd()) {
-          sb = new StringBuilder();
-          sb.append(req.getContextPath()).append("/assets");
-          if (!uri.startsWith("/")) {
-            sb.append('/');
-          }
-          sb.append(uri);
-          url = sb.toString();
-        }
-        else {
-          throw new UnsupportedOperationException("not yet done");
-        }
-        break;
-      case URL:
-        url = uri;
-        break;
-      default:
-        throw new AssertionError();
-    }
-    return url;
+    http.renderAssetURL(asset.getLocation(), uri, url);
+    return url.toString();
   }
 
   @Override
@@ -163,7 +129,7 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
     super.end();
 
     //
-    ScopedContext context = getFlashContext(false);
+    ScopedContext context = http.getFlashScope(false);
     if (context != null) {
       context.close();
     }
@@ -174,43 +140,43 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
     if (response != null) {
 
       //
-      resp.setContentType(response.getMimeType());
+      http.setContentType(response.getMimeType());
 
       //
       Integer status = response.getStatus();
       if (status != null) {
-        resp.setStatus(status);
+        http.setStatus(status);
       }
 
       //
       for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
-        resp.setHeader(entry.getKey(), entry.getValue()[0]);
+        http.setHeader(entry.getKey(), entry.getValue()[0]);
       }
 
       //
-      PrintWriter writer = null;
+      Writer writer = null;
       try {
-        writer = resp.getWriter();
+        writer = http.getWriter();
 
         //
-        writer.println("<!DOCTYPE html>");
-        writer.println("<html>");
-        writer.println("<head>");
+        writer.append("<!DOCTYPE html>\n");
+        writer.append("<html>\n");
+        writer.append("<head>\n");
 
         //
         if (title != null) {
-          writer.print("<title>");
-          writer.print(title);
-          writer.println("</title>");
+          writer.append("<title>");
+          writer.append(title);
+          writer.append("</title>\n");
         }
 
         //
         for (Map.Entry<String, String> meta : responseMetaTags.entrySet()) {
-          writer.print("<meta name=\"");
+          writer.append("<meta name=\"");
           writer.append(meta.getKey());
           writer.append("\" content=\"");
           writer.append(meta.getValue());
-          writer.println("\">");
+          writer.append("\">\n");
         }
 
         //
@@ -218,30 +184,30 @@ public class ServletRenderBridge extends ServletMimeBridge implements RenderBrid
           String path = stylesheet.getURI();
           int pos = path.lastIndexOf('.');
           String ext = pos == -1 ? "css" : path.substring(pos + 1);
-          writer.print("<link rel=\"stylesheet\" type=\"text/");
-          writer.print(ext);
-          writer.print("\" href=\"");
+          writer.append("<link rel=\"stylesheet\" type=\"text/");
+          writer.append(ext);
+          writer.append("\" href=\"");
           writer.append(getAssetURL(stylesheet));
-          writer.println("\"></link>");
+          writer.append("\"></link>\n");
         }
 
         //
         for (Asset.Value script : scripts) {
-          writer.print("<script type=\"text/javascript\" src=\"");
+          writer.append("<script type=\"text/javascript\" src=\"");
           writer.append(getAssetURL(script));
-          writer.println("\"></script>");
+          writer.append("\"></script>\n");
         }
 
         //
-        writer.println("</head>");
-        writer.println("<body>");
+        writer.append("</head>\n");
+        writer.append("<body>\n");
 
         // Send response
         response.send(new AppendableStream(writer));
 
         //
-        writer.println("</body>");
-        writer.println("</html>");
+        writer.append("</body>\n");
+        writer.append("</html>\n");
       }
       finally {
         Tools.safeClose(writer);

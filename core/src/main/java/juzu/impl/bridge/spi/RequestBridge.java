@@ -81,6 +81,9 @@ public interface RequestBridge {
 
   WindowContext getWindowContext();
 
+  /**
+   * todo: see if we can remove that and instead do it from the session context directly.
+   */
   void purgeSession();
 
   /**

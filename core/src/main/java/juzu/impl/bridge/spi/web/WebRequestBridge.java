@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.servlet;
+package juzu.impl.bridge.spi.web;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
@@ -35,25 +35,19 @@ import juzu.impl.common.Tools;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.common.URIWriter;
-import juzu.request.ClientContext;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
 import juzu.request.WindowContext;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ServletRequestBridge implements RequestBridge, HttpContext, WindowContext, ClientContext {
+public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   /** . */
   final Application application;
@@ -62,10 +56,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   final Handler handler;
 
   /** . */
-  final HttpServletRequest req;
-
-  /** . */
-  final HttpServletResponse resp;
+  final WebBridge http;
 
   /** . */
   final Map<String, String[]> parameters;
@@ -82,11 +73,10 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   /** . */
   protected Map<String, String[]> responseHeaders;
 
-  ServletRequestBridge(
+  WebRequestBridge(
       Application application,
       Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
+      WebBridge http,
       Method<?> target,
       Map<String, String[]> parameters) {
 
@@ -95,35 +85,12 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     this.application = application;
     this.target = target;
     this.handler = handler;
-    this.req = req;
-    this.resp = resp;
+    this.http = http;
     this.parameters = parameters;
     this.request = null;
   }
 
   //
-
-  public String getContentType() {
-    return req.getContentType();
-  }
-
-  public String getCharacterEncoding() {
-    return req.getCharacterEncoding();
-  }
-
-  public int getContentLenth() {
-    return req.getContentLength();
-  }
-
-  public InputStream getInputStream() throws IOException {
-    return req.getInputStream();
-  }
-
-  //
-
-  public String getMethod() {
-    return req.getMethod();
-  }
 
   public MethodHandle getTarget() {
     return target.getHandle();
@@ -133,29 +100,9 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     return arguments;
   }
 
-  public Cookie[] getCookies() {
-    return req.getCookies();
-  }
-
-  public String getScheme() {
-    return req.getScheme();
-  }
-
-  public int getServerPort() {
-    return req.getServerPort();
-  }
-
-  public String getServerName() {
-    return req.getServerName();
-  }
-
-  public String getContextPath() {
-    return req.getContextPath();
-  }
-
   public <T> T getProperty(PropertyType<T> propertyType) {
     if (PropertyType.PATH.equals(propertyType)) {
-      return propertyType.cast(req.getRequestURI());
+      return propertyType.cast(http.getRequestURI());
     }
     return null;
   }
@@ -176,7 +123,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   }
 
   public final HttpContext getHttpContext() {
-    return this;
+    return http.getHttpContext();
   }
 
   public final WindowContext getWindowContext() {
@@ -188,53 +135,53 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   }
 
   public final Scoped getRequestValue(Object key) {
-    ScopedContext context = getRequestContext(false);
+    ScopedContext context = http.getRequestScope(false);
     return context != null ? context.get(key) : null;
   }
 
   public final void setRequestValue(Object key, Scoped value) {
     if (value != null) {
-      ScopedContext context = getRequestContext(false);
+      ScopedContext context = http.getRequestScope(false);
       if (context != null) {
         context.set(key, null);
       }
     }
     else {
-      getRequestContext(true).set(key, value);
+      http.getRequestScope(true).set(key, value);
     }
   }
 
   public final Scoped getFlashValue(Object key) {
-    ScopedContext context = getFlashContext(false);
+    ScopedContext context = http.getFlashScope(false);
     return context != null ? context.get(key) : null;
   }
 
   public final void setFlashValue(Object key, Scoped value) {
     if (value == null) {
-      ScopedContext context = getFlashContext(false);
+      ScopedContext context = http.getFlashScope(false);
       if (context != null) {
         context.set(key, null);
       }
     }
     else {
-      getFlashContext(true).set(key, value);
+      http.getFlashScope(true).set(key, value);
     }
   }
 
   public final Scoped getSessionValue(Object key) {
-    ScopedContext context = getSessionContext(false);
+    ScopedContext context = http.getSessionScope(false);
     return context != null ? context.get(key) : null;
   }
 
   public final void setSessionValue(Object key, Scoped value) {
     if (value == null) {
-      ScopedContext context = getSessionContext(false);
+      ScopedContext context = http.getSessionScope(false);
       if (context != null) {
         context.set(key, null);
       }
     }
     else {
-      getSessionContext(true).set(key, value);
+      http.getSessionScope(true).set(key, value);
     }
   }
 
@@ -246,22 +193,17 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
   }
 
   public void purgeSession() {
-    HttpSession session = req.getSession(false);
-    if (session != null) {
-      for (String key : Tools.list(session.getAttributeNames())) {
-        session.removeAttribute(key);
-      }
-    }
+    http.purgeSession();
   }
 
   public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) {
     Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
 
     //
-    Route route = handler.forwardRoutes.get(method.getHandle());
+    Route route = handler.getRoute(method.getHandle());
     if (route == null) {
       if (application.getDescriptor().getControllers().getResolver().isIndex(method)) {
-        route = handler.root;
+        route = handler.getRoot();
       }
     }
 
@@ -297,20 +239,8 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
 
           public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
-            //
-            appendable.append(req.getScheme());
-            appendable.append("://");
-            appendable.append(req.getServerName());
-            int port = req.getServerPort();
-            if (port != 80) {
-              appendable.append(':').append(Integer.toString(port));
-            }
-
-            // Add context path
-            appendable.append(req.getContextPath());
-
-            // Append path
-            appendable.append(handler.path);
+            // Render base URL
+            http.renderRequestURL(appendable);
 
             //
             URIWriter writer = new URIWriter(appendable, mimeType);
@@ -334,38 +264,6 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     }
   }
 
-  protected final ScopedContext getRequestContext(boolean create) {
-    ScopedContext context = (ScopedContext)req.getAttribute("juzu.request_scope");
-    if (context == null && create) {
-      req.setAttribute("juzu.request_scope", context = new ScopedContext());
-    }
-    return context;
-  }
-
-  protected final ScopedContext getFlashContext(boolean create) {
-    ScopedContext context = null;
-    HttpSession session = req.getSession(create);
-    if (session != null) {
-      context = (ScopedContext)session.getAttribute("juzu.flash_scope");
-      if (context == null && create) {
-        session.setAttribute("juzu.flash_scope", context = new ScopedContext());
-      }
-    }
-    return context;
-  }
-
-  protected final ScopedContext getSessionContext(boolean create) {
-    ScopedContext context = null;
-    HttpSession session = req.getSession(create);
-    if (session != null) {
-      context = (ScopedContext)session.getAttribute("juzu.session_scope");
-      if (context == null && create) {
-        session.setAttribute("juzu.session_scope", context = new ScopedContext());
-      }
-    }
-    return context;
-  }
-
   public void setResponse(Response response) throws IllegalArgumentException, IOException {
     responseHeaders = Collections.emptyMap();
     Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
@@ -387,7 +285,7 @@ public abstract class ServletRequestBridge implements RequestBridge, HttpContext
     this.request = null;
 
     //
-    ScopedContext context = getRequestContext(false);
+    ScopedContext context = http.getRequestScope(false);
     if (context != null) {
       context.close();
     }

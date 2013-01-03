@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.servlet;
+package juzu.impl.bridge.spi.web;
 
 import juzu.Response;
 import juzu.impl.plugin.application.Application;
@@ -29,31 +29,28 @@ import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
 import juzu.request.ClientContext;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletResourceBridge extends ServletMimeBridge implements ResourceBridge {
+public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
 
   /** . */
   private Response.Content response;
 
-  ServletResourceBridge(
+  WebResourceBridge(
       Application application,
       Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
+      WebBridge bridge,
       Method<?> target,
       Map<String, String[]> parameters) {
-    super(application, handler, req, resp, target, parameters);
+    super(application, handler, bridge, target, parameters);
   }
 
   public ClientContext getClientContext() {
-    return this;
+    return http.getClientContext();
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
@@ -70,23 +67,23 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
       //
       int status = response.getStatus();
       if (status != 200) {
-        resp.setStatus(status);
+        http.setStatus(status);
       }
 
       // Set mime type
       String mimeType = response.getMimeType();
       if (mimeType != null) {
-        resp.setContentType(mimeType);
+        http.setContentType(mimeType);
       }
 
       // Set headers
       for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
-        resp.setHeader(entry.getKey(), entry.getValue()[0]);
+        http.setHeader(entry.getKey(), entry.getValue()[0]);
       }
 
       // Send response
       if (response.getKind() == Stream.Char.class) {
-        PrintWriter writer = resp.getWriter();
+        Writer writer = http.getWriter();
         try {
           response.send(new AppendableStream(writer));
         }
@@ -95,7 +92,7 @@ public class ServletResourceBridge extends ServletMimeBridge implements Resource
         }
       }
       else {
-        OutputStream out = resp.getOutputStream();
+        OutputStream out = http.getOutputStream();
         try {
           response.send(new BinaryOutputStream(out));
         }

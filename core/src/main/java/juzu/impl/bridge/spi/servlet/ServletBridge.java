@@ -19,22 +19,14 @@
 
 package juzu.impl.bridge.spi.servlet;
 
-import juzu.PropertyType;
-import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
-import juzu.impl.common.MethodHandle;
+import juzu.impl.bridge.spi.web.Handler;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
-import juzu.impl.request.Method;
 import juzu.impl.resource.ResourceResolver;
-import juzu.impl.router.PathParam;
-import juzu.impl.router.Route;
-import juzu.impl.router.RouteMatch;
-import juzu.impl.common.URIWriter;
-import juzu.request.Phase;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -46,19 +38,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletBridge extends HttpServlet {
-
-  /** . */
-  private static final Phase[] GET_PHASES = {Phase.VIEW, Phase.ACTION, Phase.RESOURCE};
-
-  /** . */
-  private static final Phase[] POST_PHASES = {Phase.ACTION, Phase.VIEW, Phase.RESOURCE};
 
   /** . */
   ServletModule module;
@@ -71,6 +54,9 @@ public class ServletBridge extends HttpServlet {
 
   /** . */
   private Handler handler;
+
+  /** . */
+  private String path;
 
   @Override
   public void init() throws ServletException {
@@ -133,6 +119,7 @@ public class ServletBridge extends HttpServlet {
     this.log = log;
     this.config = config;
     this.handler = null;
+    this.path = null;
   }
 
   static ServletException wrap(Throwable e) {
@@ -224,149 +211,50 @@ public class ServletBridge extends HttpServlet {
       }
 
       //
-      this.handler = new Handler(bridge, path);
+      Handler handler = null;
+      try {
+        handler = new Handler(bridge);
+      }
+      catch (Exception e) {
+        throw wrap(e);
+      }
+
+      //
+      this.handler = handler;
+      this.path = path;
     }
   }
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+  protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    if (req.getMethod().equals("GET") || req.getMethod().equals("POST")) {
 
-    //
-    refresh();
+      //
+      refresh();
 
-    //
-    String path = req.getRequestURI().substring(req.getContextPath().length());
-
-    // Determine first a possible match from the root route from the request path
-    RouteMatch requestMatch = null;
-    if (path.startsWith(handler.path)) {
-      requestMatch = handler.root.route(path.substring(handler.path.length()), Collections.<String, String[]>emptyMap());
-    }
-
-    // Determine a method + parameters if we have a match
-    Method requestMethod = null;
-    Map<String, String[]> requestParameters = Collections.emptyMap();
-    if (requestMatch != null) {
-      Map<Phase, MethodHandle> m = handler.backwardRoutes.get(requestMatch.getRoute());
-      if (m != null) {
-        Phase[] phases;
-        if ("GET".equals(req.getMethod())) {
-          phases = GET_PHASES;
-        } else if ("POST".equals(req.getMethod())) {
-          phases = POST_PHASES;
-        } else {
-          throw new UnsupportedOperationException("handle me gracefully");
-        }
-        for (Phase phase : phases) {
-          MethodHandle handle = m.get(phase);
-          if (handle != null) {
-            requestMethod =  handler.bridge.application.getDescriptor().getControllers().getMethodByHandle(handle);
-            if (requestMatch.getMatched().size() > 0 || req.getParameterMap().size() > 0) {
-              requestParameters = new HashMap<String, String[]>();
-              for (Map.Entry<String, String[]> entry : req.getParameterMap().entrySet()) {
-                requestParameters.put(entry.getKey(), entry.getValue().clone());
-              }
-              for (Map.Entry<PathParam, String> entry : requestMatch.getMatched().entrySet()) {
-                requestParameters.put(entry.getKey().getName(), new String[]{entry.getValue()});
-              }
-            }
-            break;
-          }
-        }
-      }
-    }
-
-    // No method means we either send a server resource
-    // or we look for the handler method
-    if (requestMethod == null) {
+      //
+      ServletWebBridge bridge = new ServletWebBridge(req, resp, path);
 
       // Do we need to send a server resource ?
-      if (path != null && path.length() > 1 && !path.startsWith("/WEB-INF/")) {
-        URL url = getServletContext().getResource(path);
+      if (bridge.getRequestPath().length() > 1 && !bridge.getRequestPath().startsWith("/WEB-INF/")) {
+        URL url = getServletContext().getResource(bridge.getRequestPath());
         if (url != null) {
           RequestDispatcher dispatcher = getServletContext().getNamedDispatcher("default");
-          dispatcher.include(req, resp);
+          dispatcher.include(bridge.getRequest(), bridge.getResponse());
           return;
         }
       }
 
-      // If we have an handler we locate the index method
-      if (handler != null) {
-        requestMethod = handler.bridge.application.getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
-      }
-    }
-
-    // No method -> not found
-    if (requestMethod == null) {
-      resp.sendError(404);
-    } else {
-      if (requestMatch == null) {
-        Route requestRoute = handler.forwardRoutes.get(requestMethod.getHandle());
-        if (requestRoute != null) {
-          requestMatch = requestRoute.matches(Collections.<String, String>emptyMap());
-          if (requestMatch != null) {
-            StringBuilder sb = new StringBuilder();
-            requestMatch.render(new URIWriter(sb));
-            if (!sb.toString().equals(path)) {
-              String redirect =
-                  req.getScheme() + "://" + req.getServerName() + (req.getServerPort() != 80 ? (":" + req.getServerPort()) : "") +
-                      req.getContextPath() +
-                      handler.path +
-                      sb;
-              resp.sendRedirect(redirect);
-              return;
-            }
-          }
-        }
-      }
-
-      //
-      ServletRequestBridge requestBridge;
-      if (requestMethod.getPhase() == Phase.ACTION) {
-        requestBridge = new ServletActionBridge(handler.bridge.application.getApplication(), handler, req, resp, requestMethod, requestParameters);
-      } else if (requestMethod.getPhase() == Phase.VIEW) {
-        requestBridge = new ServletRenderBridge(handler.bridge.application.getApplication(), handler, req, resp, requestMethod, requestParameters);
-      } else if (requestMethod.getPhase() == Phase.RESOURCE) {
-        requestBridge = new ServletResourceBridge(handler.bridge.application.getApplication(), handler, req, resp, requestMethod, requestParameters);
-      } else {
-        throw new ServletException("Cannot decode phase");
-      }
-
       //
       try {
-        handler.bridge.invoke(requestBridge);
+        handler.handle(bridge);
       }
       catch (Throwable throwable) {
-        throw ServletBridge.wrap(throwable);
+        throw wrap(throwable);
       }
-
-      // Implement the two phases in one
-      if (requestBridge instanceof ServletActionBridge) {
-        Response response = ((ServletActionBridge)requestBridge).response;
-        if (response instanceof Response.View) {
-          Response.View update = (Response.View)response;
-          Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
-          if (redirect != null && !redirect) {
-            Method<?> desc = handler.bridge.application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
-            requestBridge = new ServletRenderBridge(handler.bridge.application.getApplication(), handler, req, resp, desc, update.getParameters());
-            try {
-              handler.bridge.invoke(requestBridge);
-            }
-            catch (Throwable throwable) {
-              throw ServletBridge.wrap(throwable);
-            }
-          }
-        }
-      }
-
-      //
-      requestBridge.send();
+    } else {
+      super.service(req, resp);
     }
-  }
-
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    doGet(req, resp);
   }
 
   @Override

@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.servlet;
+package juzu.impl.bridge.spi.web;
 
 import juzu.Response;
 import juzu.impl.common.MimeType;
@@ -28,29 +28,26 @@ import juzu.request.ClientContext;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletActionBridge extends ServletRequestBridge implements ActionBridge {
+public class WebActionBridge extends WebRequestBridge implements ActionBridge {
 
   /** . */
   Response response;
 
-  ServletActionBridge(
+  WebActionBridge(
       Application application,
       Handler handler,
-      HttpServletRequest req,
-      HttpServletResponse resp,
+      WebBridge http,
       Method<?> target,
       Map<String, String[]> parameters) {
-    super(application, handler, req, resp, target, parameters);
+    super(application, handler, http, target, parameters);
   }
 
   public ClientContext getClientContext() {
-    return this;
+    return http.getClientContext();
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
@@ -70,14 +67,14 @@ public class ServletActionBridge extends ServletRequestBridge implements ActionB
       Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
       String url = dispatch.with(MimeType.PLAIN).with(update.getProperties()).toString();
       for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
-        resp.setHeader(entry.getKey(), entry.getValue()[0]);
+        http.setHeader(entry.getKey(), entry.getValue()[0]);
       }
-      resp.sendRedirect(url);
+      http.sendRedirect(url);
     }
     else if (response instanceof Response.Redirect) {
       Response.Redirect redirect = (Response.Redirect)response;
       String url = redirect.getLocation();
-      resp.sendRedirect(url);
+      http.sendRedirect(url);
     }
   }
 }
