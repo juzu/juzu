@@ -17,27 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.servlet;
+package juzu.plugin.portlet.impl;
 
-import juzu.Scope;
-import juzu.impl.bridge.spi.portlet.PortletPreferencesProvider;
-import juzu.impl.common.Tools;
-import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.bridge.spi.portlet.PortletRequestBridge;
+import juzu.impl.request.Request;
 
+import javax.inject.Provider;
 import javax.portlet.PortletPreferences;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletDescriptor extends Descriptor {
-
-  /** . */
-  public static ServletDescriptor INSTANCE = new ServletDescriptor();
-
-  private ServletDescriptor() {
-  }
-
-  @Override
-  public Iterable<BeanDescriptor> getBeans() {
-    return Tools.list(BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class));
+public class PortletPreferencesProvider implements Provider<PortletPreferences> {
+  public PortletPreferences get() {
+    Request request = Request.getCurrent();
+    PortletRequestBridge bridge = (PortletRequestBridge)request.getBridge();
+    return bridge.getPortletRequest().getPreferences();
   }
 }

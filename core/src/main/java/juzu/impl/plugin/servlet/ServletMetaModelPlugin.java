@@ -42,7 +42,7 @@ import java.util.Set;
 public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  public static final MessageCode CANNOT_WRITE_PORTLET_CLASS = new MessageCode("CANNOT_WRITE_PORTLET_CLASS", "The portlet class %1$s cannot be written");
+  public static final MessageCode CANNOT_WRITE_SERVLET_CLASS = new MessageCode("CANNOT_WRITE_SERVLET_CLASS", "The servlet class %1$s cannot be written");
 
   /** . */
   private static final Name SERVLET = Name.create(Servlet.class);
@@ -103,7 +103,7 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
         writer.append("}\n");
       }
       catch (IOException e) {
-        throw CANNOT_WRITE_PORTLET_CLASS.failure(e, pkgElt, pkg.getPackage());
+        throw CANNOT_WRITE_SERVLET_CLASS.failure(e, pkgElt, pkg.getPackage());
       }
       finally {
         Tools.safeClose(writer);

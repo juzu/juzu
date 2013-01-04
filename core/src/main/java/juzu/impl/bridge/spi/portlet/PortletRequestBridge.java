@@ -59,7 +59,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge {
+public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge {
 
   /** . */
   protected Map<String, String[]> responseHeaders;
@@ -461,5 +461,12 @@ abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends Portle
         }
       }
     };
+  }
+  public PortletRequest getPortletRequest() {
+    return req;
+  }
+
+  public PortletResponse getPortletResponse() {
+    return resp;
   }
 }
