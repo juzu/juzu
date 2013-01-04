@@ -65,20 +65,20 @@ public class Node extends AbstractTrie<String, Node> {
     }
   }
 
-  void merge(URL base, JarEntry entry) throws IOException {
-    if (entry.isDirectory()) {
+  void merge(String base, String path) throws IOException {
+    if (path.length() == 0 || path.endsWith("/")) {
       // Ignore
     } else {
-      merge(base, entry.getName(), 0);
+      merge(base, path, 0);
     }
   }
 
-  void merge(URL base, String path, int from) throws IOException {
+  void merge(String base, String path, int from) throws IOException {
     int pos = path.indexOf('/', from);
     if (pos == -1) {
       String name = path.substring(from);
       Node childNode = add(name);
-      childNode.url = new URL("jar:" + base + "!/" + path);
+      childNode.url = new URL(base + path);
     } else {
       String name = path.substring(from, pos);
       Node childNode = add(name);

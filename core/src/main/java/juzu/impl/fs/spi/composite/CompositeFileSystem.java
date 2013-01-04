@@ -79,7 +79,7 @@ public class CompositeFileSystem extends ReadFileSystem<Context> {
   }
 
   @Override
-  public String getName(Context path) throws IOException {
+  public String getName(Context path) {
     return path.getKey();
   }
 

@@ -74,7 +74,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
   }
 
   @Override
-  public String getName(String path) throws IOException {
+  public String getName(String path) {
     // It's a directory, remove the trailing '/'
     if (path.endsWith("/")) {
       path = path.substring(0, path.length() - 1);

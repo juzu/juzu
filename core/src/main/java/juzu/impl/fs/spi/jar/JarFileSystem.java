@@ -181,7 +181,7 @@ public class JarFileSystem extends ReadFileSystem<String> {
   }
 
   @Override
-  public String getName(String path) throws IOException {
+  public String getName(String path) {
     if (path.isEmpty()) {
       return "";
     } else {

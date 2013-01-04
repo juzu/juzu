@@ -36,6 +36,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class URLFileSystemTestCase extends AbstractTestCase {
@@ -63,12 +64,12 @@ public class URLFileSystemTestCase extends AbstractTestCase {
   }
 
   @Test
-  public void testJar() throws Exception {
+  public void testJarEntry() throws Exception {
     File tmp = File.createTempFile("juzu", ".jar");
     tmp.deleteOnExit();
     FileOutputStream baos = new FileOutputStream(tmp);
     jar.as(ZipExporter.class).exportTo(baos);
-    URL url = new URL("jar:" + tmp.toURI().toURL() + "!/foo/bar.txt_value");
+    URL url = new URL("jar:" + tmp.toURI().toURL() + "!/");
     assertFS(url);
   }
 
@@ -119,17 +120,23 @@ public class URLFileSystemTestCase extends AbstractTestCase {
   private <P> void assertFS(ReadFileSystem<P> fs) throws Exception {
     P foo = fs.getPath("foo");
     assertEquals("foo", fs.getName(foo));
-    ArrayList<? extends P> fooChildren = Tools.list(fs.getChildren(foo));
-    assertEquals(1, fooChildren.size());
-    P fooChild = fooChildren.get(0);
-    assertEquals("bar.txt", fs.getName(fooChild));
+    HashSet<? extends P> fooChildren = Tools.set(fs.getChildren(foo));
+    assertEquals(2, fooChildren.size());
 
     //
-    P fooBar = fs.getPath("foo", "bar.txt");
-    assertEquals("bar.txt", fs.getName(fooBar));
-    URL fooBarURL = fs.getURL(fooBar);
-    String fooBarContent = Tools.read(fooBarURL);
-    assertEquals("foo/bar.txt_value", fooBarContent);
+    P fooBarTxt = fs.getChild(foo, "bar.txt");
+    assertTrue(fooChildren.contains(fooBarTxt));
+    assertEquals("bar.txt", fs.getName(fooBarTxt));
+    assertTrue(fs.isFile(fooBarTxt));
+    URL fooBarTxtURL = fs.getURL(fooBarTxt);
+    String fooBarTxtContent = Tools.read(fooBarTxtURL);
+    assertEquals("foo/bar.txt_value", fooBarTxtContent);
+
+    //
+    P fooBar = fs.getChild(foo, "bar");
+    assertTrue(fooChildren.contains(fooBar));
+    assertEquals("bar", fs.getName(fooBar));
+    assertTrue(fs.isDir(fooBar));
 
     //
     P fooBarJuu = fs.getPath("foo", "bar", "juu.txt");
@@ -142,6 +149,19 @@ public class URLFileSystemTestCase extends AbstractTestCase {
     assertEquals(null, fs.getPath("juu"));
   }
 
+  @Test
+  public void testNestedJarEntry() throws Exception {
+    File tmp = File.createTempFile("juzu", ".jar");
+    tmp.deleteOnExit();
+    FileOutputStream baos = new FileOutputStream(tmp);
+    jar.as(ZipExporter.class).exportTo(baos);
+    URL url = new URL("jar:" + tmp.toURI().toURL() + "!/foo/");
+    URLFileSystem fs = new URLFileSystem();
+    fs.add(url);
+    Node root = fs.getRoot();
+    HashSet<Node> children = Tools.set(fs.getChildren(root));
+    assertEquals(2, children.size());
+  }
 
   @Test
   public void testPortletJar() throws Exception {

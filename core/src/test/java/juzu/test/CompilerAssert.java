@@ -22,6 +22,9 @@ package juzu.test;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
+import juzu.impl.fs.Filter;
+import juzu.impl.fs.spi.filter.FilterFileSystem;
+import juzu.impl.fs.spi.url.Node;
 import juzu.impl.fs.spi.url.URLFileSystem;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -52,7 +55,7 @@ public class CompilerAssert<I, O> {
   };
 
   /** A cache to speed up unit tests. */
-  private static WeakHashMap<ClassLoader, URLFileSystem> classPathCache = new WeakHashMap<ClassLoader, URLFileSystem>();
+  private static WeakHashMap<ClassLoader, ReadFileSystem<Node>> classPathCache = new WeakHashMap<ClassLoader, ReadFileSystem<Node>>();
 
   /** . */
   private ClassLoader classLoader;
@@ -67,7 +70,7 @@ public class CompilerAssert<I, O> {
     ReadWriteFileSystem<O> classOutput) {
 
     //
-    URLFileSystem classPath = classPathCache.get(Thread.currentThread().getContextClassLoader());
+    ReadFileSystem<Node> classPath = classPathCache.get(Thread.currentThread().getContextClassLoader());
       if (classPath == null) {
       try {
         classPathCache.put(
@@ -78,6 +81,16 @@ public class CompilerAssert<I, O> {
         throw AbstractTestCase.failure(e);
       }
     }
+
+    // Filter .java file as compiler may use it through classpath
+    classPath = new FilterFileSystem<Node>(classPath, new Filter<Node>() {
+      public boolean acceptDir(Node dir, String name) throws IOException {
+        return true;
+      }
+      public boolean acceptFile(Node file, String name) throws IOException {
+        return !name.endsWith(".java");
+      }
+    });
 
     //
     this.strategy = incremental ? new CompileStrategy.Incremental<I, O>(

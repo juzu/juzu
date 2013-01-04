@@ -108,7 +108,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
-  public String getName(File path) throws IOException {
+  public String getName(File path) {
     if (path.equals(root)) {
       return "";
     }

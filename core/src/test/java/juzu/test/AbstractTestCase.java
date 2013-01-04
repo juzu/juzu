@@ -23,6 +23,7 @@ import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import juzu.impl.common.Name;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.url.URLFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
@@ -34,6 +35,8 @@ import org.junit.rules.TestName;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -235,14 +238,17 @@ public abstract class AbstractTestCase extends Assert {
     DiskFileSystem classOutput = new DiskFileSystem(classOutputDir);
 
     //
-    DiskFileSystem input = diskFS(packageName);
     File sourcePathDir = new File(f2, "source-path");
-    assertTrue(sourcePathDir.mkdir());
+    String relativePath = packageName.toString().replace('.', '/') + '/';
+    assertTrue(new File(sourcePathDir, relativePath).mkdirs());
     DiskFileSystem sourcePath = new DiskFileSystem(sourcePathDir);
     try {
-      input.copy(sourcePath);
+      URL url = Thread.currentThread().getContextClassLoader().getResource(relativePath);
+      URLFileSystem fs = new URLFileSystem();
+      fs.add(url);
+      fs.copy(sourcePath, sourcePath.getPath(packageName));
     }
-    catch (IOException e) {
+    catch (Exception e) {
       throw failure(e);
     }
 

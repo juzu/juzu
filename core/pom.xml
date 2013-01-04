@@ -223,15 +223,6 @@
 
   <build>
 
-    <testResources>
-      <testResource>
-        <directory>${basedir}/src/test/resources</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </testResource>
-    </testResources>
-
     <pluginManagement>
       <plugins>
         <plugin>

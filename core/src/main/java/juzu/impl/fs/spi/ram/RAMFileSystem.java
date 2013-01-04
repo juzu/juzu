@@ -150,7 +150,7 @@ public class RAMFileSystem extends ReadWriteFileSystem<String[]> {
   }
 
   @Override
-  public String getName(String[] path) throws IOException {
+  public String getName(String[] path) {
     return path.length > 0 ? path[path.length - 1] : "";
   }
 

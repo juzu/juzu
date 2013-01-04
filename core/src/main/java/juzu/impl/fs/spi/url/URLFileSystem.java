@@ -46,7 +46,7 @@ public class URLFileSystem extends ReadFileSystem<Node> {
   /** . */
   private final Node root;
 
-  public URLFileSystem() throws IOException {
+  public URLFileSystem() {
     this.root = new Node();
   }
 
@@ -74,8 +74,10 @@ public class URLFileSystem extends ReadFileSystem<Node> {
    */
   public URLFileSystem add(ClassLoader from, ClassLoader to) throws IOException, URISyntaxException {
 
-    // Get urls from loader
+    // Get file urls from loader
     HashSet<URL> urls = Tools.set(from.getResources(""));
+
+    // Get jar urls from loader
     for (Enumeration<URL> e = from.getResources("META-INF/MANIFEST.MF"); e.hasMoreElements();) {
       URL url = e.nextElement();
       if ("jar".equals(url.getProtocol())) {
@@ -85,9 +87,13 @@ public class URLFileSystem extends ReadFileSystem<Node> {
 
     // Remove URLs from extension classloader and above (bootstrap)
     if (to != null) {
+
+      // Remove file urls we don't need
       for (Enumeration<URL> e = to.getResources("");e.hasMoreElements();) {
         urls.remove(e.nextElement());
       }
+
+      // Remove jar urls we don't need
       for (Enumeration<URL> e = to.getResources("META-INF/MANIFEST.MF"); e.hasMoreElements();) {
         URL url = e.nextElement();
         if ("jar".equals(url.getProtocol())) {
@@ -96,14 +102,24 @@ public class URLFileSystem extends ReadFileSystem<Node> {
       }
     }
 
-    // Now handle urls
-    for (URL url : urls) {
-      add(url);
-    }
-
     // Add manually this one (fucked up jar: no META-INF/MANIFEST.MF)
     if (Inject.class.getClassLoader() == from) {
-      add(from.getResource(Inject.class.getName().replace('.', '/') + ".class"));
+      URL url = from.getResource(Inject.class.getName().replace('.', '/') + ".class");
+      if (url != null) {
+        urls.add(url);
+      }
+    }
+
+    // Now handle urls
+    for (URL url : urls) {
+      if (url.getProtocol().equals("jar")) {
+        // Correct URL to get root and not manifest
+        String s = url.toString();
+        int pos = s.lastIndexOf("!/");
+        add(new URL(s.substring(0, pos + 2)));
+      } else {
+        add(url);
+      }
     }
 
     //
@@ -119,7 +135,7 @@ public class URLFileSystem extends ReadFileSystem<Node> {
       } else {
         JarFile jar = new JarFile(file, false);
         for (JarEntry entry : Tools.iterable(jar.entries())) {
-          root.merge(url, entry);
+          root.merge("jar:" + url + "!/", entry.getName());
         }
       }
     } else if ("jar".equals(protocol)) {
@@ -129,7 +145,26 @@ public class URLFileSystem extends ReadFileSystem<Node> {
         throw new MalformedURLException("Malformed URL " + url);
       }
       URL inner = new URL(path.substring(0, pos));
-      add(inner);
+      if (inner.getProtocol().equals("file")) {
+        File file = new File(inner.toURI());
+        if (file.isDirectory()) {
+          throw new IllegalArgumentException("Wrong jar URL " + url);
+        } else {
+          String prefix = path.substring(pos + 2);
+          if (prefix.length() > 0 && !prefix.endsWith("/")) {
+            throw new IllegalArgumentException("Wrong nested jar URL, should end with a / or be empty" + url);
+          }
+          JarFile jar = new JarFile(file, false);
+          for (JarEntry entry : Tools.iterable(jar.entries())) {
+            String name = entry.getName();
+            if (name.startsWith(prefix)) {
+              root.merge("jar:" + inner + "!/" + prefix, name.substring(prefix.length()));
+            }
+          }
+        }
+      } else {
+        throw new UnsupportedOperationException("Not yet supported");
+      }
     } else {
       throw new UnsupportedOperationException("Cannot handle url " + url + " yet");
     }
@@ -167,24 +202,25 @@ public class URLFileSystem extends ReadFileSystem<Node> {
   }
 
   @Override
-  public String getName(Node path) throws IOException {
+  public String getName(Node path) {
     return path.getKey();
   }
 
   @Override
   public Iterator<Node> getChildren(Node dir) throws IOException {
-    final Iterator<Node> entries = dir.getEntries();
+    return dir.getEntries();
+/*
     return new Iterator<Node>() {
 
-      /** . */
+      */
+/** . *//*
+
       private Node next;
 
       public boolean hasNext() {
         while (next == null && entries.hasNext()) {
           Node next = entries.next();
-          if (next.url != null) {
-            this.next = next;
-          }
+          this.next = next;
         }
         return next != null;
       }
@@ -205,6 +241,7 @@ public class URLFileSystem extends ReadFileSystem<Node> {
         throw new UnsupportedOperationException();
       }
     };
+*/
   }
 
   @Override

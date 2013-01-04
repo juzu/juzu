@@ -119,7 +119,7 @@ public abstract class ReadFileSystem<P> {
    */
   public abstract String getDescription();
 
-  public abstract String getName(P path) throws IOException;
+  public abstract String getName(P path);
 
   public abstract Iterator<P> getChildren(P dir) throws IOException;
 
@@ -273,6 +273,10 @@ public abstract class ReadFileSystem<P> {
 
   public <D> void copy(ReadWriteFileSystem<D> dst) throws IOException {
     copy(new Filter.Default<P>(), dst);
+  }
+
+  public <D> void copy(ReadWriteFileSystem<D> dst, D dstPath) throws IOException {
+    copy(getRoot(), new Filter.Default<P>(), dst, dstPath);
   }
 
   public <D> void copy(Filter<P> filter, ReadWriteFileSystem<D> dst) throws IOException {
