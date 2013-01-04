@@ -7,7 +7,7 @@ Various things to do, not exhaustive that needs to go in the roadmap
 2/ 2 step Juzu initialization
 - create step: declare and assemble the beans in the IOC
 - start step: start the application with the runtime
-
+- Data tables 4j : https://github.com/datatables4j
 - Enforce controller response to have the good return type: @Action -> Response.View, @View -> Response.Content, etc...
 - cleanup ApplicationLifeCycle of libs -> juzu-core.jar (???)
 

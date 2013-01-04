@@ -107,7 +107,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
                 } else {
                   parameter = RequestParameter.create(name, file.getString());
                 }
-                parameter.addTo(parameters);
+                parameter.appendTo(parameters);
               } else {
                 ControlParameter parameter = request.getContext().getMethod().getParameter(name);
                 if (parameter instanceof ContextualParameter && FileItem.class.isAssignableFrom(parameter.getType())) {
@@ -119,7 +119,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
             // Keep original parameters that may come from the request path
             for (RequestParameter parameter : request.getParameters().values()) {
               if (!parameters.containsKey(parameter.getName())) {
-                parameter.addTo(parameters);
+                parameter.appendTo(parameters);
               }
             }
 

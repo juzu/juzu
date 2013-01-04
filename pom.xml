@@ -29,7 +29,7 @@
 
     <!-- Dependency versions -->
     <wikbook.version>0.9.45</wikbook.version>
-    <junit.version>4.8.2</junit.version>
+    <junit.version>4.10</junit.version>
 
     <!-- Test settings -->
     <juzu.test.compiler>javac</juzu.test.compiler>
@@ -313,6 +313,11 @@
         <artifactId>standard</artifactId>
         <version>1.1.2</version>
       </dependency>
+    <dependency>
+      <groupId>aopalliance</groupId>
+      <artifactId>aopalliance</artifactId>
+      <version>1.0</version>
+    </dependency>
 
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
@@ -846,6 +851,7 @@
   <modules>
     <module>core</module>
     <module>bom</module>
+    <module>vertx</module>
     <module>templating</module>
     <module>plugins</module>
     <module>archetype</module>
