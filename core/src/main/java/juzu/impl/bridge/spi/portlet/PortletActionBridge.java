@@ -52,7 +52,6 @@ public class PortletActionBridge extends PortletInteractionBridge<ActionRequest,
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {
-    super.setResponse(response);
     if (response instanceof Response.Redirect) {
       Response.Redirect redirect = (Response.Redirect)response;
       super.resp.sendRedirect(redirect.getLocation());

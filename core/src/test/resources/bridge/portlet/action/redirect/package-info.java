@@ -17,26 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.portlet.action;
+@Application package bridge.portlet.action.redirect;
 
-import juzu.Action;
-import juzu.Response;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @juzu.View
-  public Response.Content<?> index() {
-    return Response.render("<a id='trigger' href='" + A_.action() + "'>click</a>");
-  }
-
-  @Action
-  public Response.View action() {
-    return A_.done();
-  }
-
-  @juzu.View
-  public Response.Content<?> done() {
-    return Response.render("pass");
-  }
-}
+import juzu.Application;

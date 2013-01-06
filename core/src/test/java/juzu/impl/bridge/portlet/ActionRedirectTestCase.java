@@ -30,14 +30,16 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ActionTestCase extends AbstractWebTestCase {
+public class ActionRedirectTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createPortletDeployment("bridge.portlet.action");
+    return createPortletDeployment("bridge.portlet.action.redirect");
   }
 
   @ArquillianResource
@@ -51,8 +53,12 @@ public class ActionTestCase extends AbstractWebTestCase {
     URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
     driver.get(url.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
-    trigger.click();
-    WebElement body = driver.findElement(By.tagName("body"));
-    assertEquals(1, Tools.count(body.getText(), "pass"));
+    url = new URL(trigger.getAttribute("href"));
+    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+    conn.setInstanceFollowRedirects(false);
+    assertEquals(302, conn.getResponseCode());
+    Map<String, String> headers = Tools.responseHeaders(conn);
+    assertTrue(headers.containsKey("Location"));
+    assertEquals("http://www.foobar.com", headers.get("Location"));
   }
 }
