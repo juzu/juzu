@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>0.6.0-beta8</version>
+    <version>0.6.0-beta9-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-templating-parent</artifactId>
-  <version>0.6.0-beta8</version>
+  <version>0.6.0-beta9-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Juzu Templating Aggregator</name>
