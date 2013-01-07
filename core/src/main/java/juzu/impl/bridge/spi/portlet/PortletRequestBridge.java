@@ -25,7 +25,9 @@ import juzu.Response;
 import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerResolver;
+import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
@@ -116,7 +118,9 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
     //
     Phase phase = getPhase();
-    ControllerResolver<Method> resolver = application.getDescriptor().getControllers().getResolver();
+    ApplicationDescriptor descriptor = application.getDescriptor();
+    ControllersDescriptor controllers = descriptor.getControllers();
+    ControllerResolver<Method> resolver = controllers.getResolver();
     Method<?> target;
     if (methodId != null) {
       target = resolver.resolveMethod(phase, methodId, parameters.keySet());
