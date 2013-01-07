@@ -20,8 +20,12 @@
 package juzu.impl.plugin.template;
 
 import juzu.impl.compiler.CompilationError;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
+import juzu.test.protocol.mock.MockApplication;
+import juzu.test.protocol.mock.MockClient;
+import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
 import java.util.List;
@@ -57,5 +61,13 @@ public class URLTestCase extends AbstractTestCase {
   public void testOverload() throws Exception {
     CompilerAssert<?, ?> compiler = compiler("plugin.template.url.overload");
     compiler.assertCompile();
+  }
+
+  @Test
+  public void testContextutal() throws Exception {
+    MockApplication<?> app = application(InjectorProvider.CDI_WELD, "plugin.template.url.contextual").init();
+    MockClient client = app.client();
+    String url = client.render().assertStringResult();
+    assertEquals("pass", ((MockRenderBridge)client.invoke(url)).assertStringResult());
   }
 }

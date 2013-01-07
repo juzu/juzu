@@ -28,6 +28,7 @@ import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
 import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
+import juzu.impl.plugin.controller.metamodel.PhaseParameterMetaModel;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
@@ -94,8 +95,10 @@ class ModelTemplateProcessContext extends ProcessContext {
     //
     List<String> args = new ArrayList<String>();
     for (ParameterMetaModel param : method.getParameters()) {
-      String value = parameterMap.get(param.getName());
-      args.add(value);
+      if (param instanceof PhaseParameterMetaModel) {
+        String value = parameterMap.get(param.getName());
+        args.add(value);
+      }
     }
     return new MethodInvocation(method.getController().getHandle().getFQN() + "_", method.getName(), args);
   }
