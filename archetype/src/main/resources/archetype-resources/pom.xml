@@ -21,7 +21,7 @@
     <!-- Application dependencies-->
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-builder</artifactId>
+      <artifactId>juzu-bom-core</artifactId>
       <version>${pom.version}</version>
     </dependency>
 
@@ -47,7 +47,7 @@
         <dependencies>
           <dependency>
             <groupId>org.juzu</groupId>
-            <artifactId>juzu-builder</artifactId>
+            <artifactId>juzu-bom-core</artifactId>
             <version>${pom.version}</version>
           </dependency>
         </dependencies>
