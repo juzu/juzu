@@ -165,7 +165,7 @@ public class TemplateResolver implements Serializable {
       final Element[] elements = new Element[types.size()];
       int index = 0;
       for (Name type : types) {
-        elements[index++] = context.getTypeElement(type.getIdentifier());
+        elements[index++] = context.getTypeElement(type);
       }
 
       // Resolve the stub

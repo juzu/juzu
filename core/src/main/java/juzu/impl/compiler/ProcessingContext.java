@@ -514,12 +514,32 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
     return createSourceFile((CharSequence)name, originatingElements);
   }
 
-  public JavaFileObject createSourceFile(CharSequence name, Element... originatingElements) throws IOException {
+  /**
+   * @inheritDoc
+   * @throws IllegalArgumentException if the originating element contains a null value
+   */
+  public JavaFileObject createSourceFile(CharSequence name, Element... originatingElements) throws IOException, IllegalArgumentException {
+    // Gard against null element (java compiler is OK but ecj is not)
+    for (Object originatingElement : originatingElements) {
+      if (originatingElement == null) {
+        throw new IllegalArgumentException("Originating elements contains a null element");
+      }
+    }
     log.log("Creating source file for name=" + name + " elements=" + Arrays.asList(originatingElements));
     return env.getFiler().createSourceFile(name, originatingElements);
   }
 
-  public JavaFileObject createClassFile(CharSequence name, Element... originatingElements) throws IOException {
+  /**
+   * @inheritDoc
+   * @throws IllegalArgumentException if the originating element contains a null value
+   */
+  public JavaFileObject createClassFile(CharSequence name, Element... originatingElements) throws IOException, IllegalArgumentException {
+    // Gard against null element (java compiler is OK but ecj is not)
+    for (Object originatingElement : originatingElements) {
+      if (originatingElement == null) {
+        throw new IllegalArgumentException("Originating elements contains a null element");
+      }
+    }
     log.log("Creating class file for name=" + name + " elements=" + Arrays.asList(originatingElements));
     return env.getFiler().createClassFile(name, originatingElements);
   }
