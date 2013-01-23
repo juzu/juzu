@@ -36,6 +36,18 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- -->
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-bom-arquillian</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

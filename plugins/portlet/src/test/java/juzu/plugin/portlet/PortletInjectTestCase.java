@@ -17,30 +17,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.plugin.portlet.impl;
+package juzu.plugin.portlet;
 
-import juzu.Scope;
-import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.metadata.Descriptor;
-import juzu.impl.common.Tools;
+import juzu.test.AbstractWebTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Test;
 
-import javax.portlet.PortletPreferences;
+import java.net.HttpURLConnection;
 import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletDescriptor extends Descriptor {
+public class PortletInjectTestCase extends AbstractWebTestCase {
 
   /** . */
-  public static PortletDescriptor INSTANCE = new PortletDescriptor();
+  public static ResourceBundle bundle;
 
-  private PortletDescriptor() {
+  /** . */
+  public static boolean prefs;
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createPortletDeployment("plugin.portlet.inject");
   }
 
-  @Override
-  public Iterable<BeanDescriptor> getBeans() {
-    return Tools.list(
-        BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class),
-        BeanDescriptor.createFromProviderType(ResourceBundle.class, Scope.REQUEST, null, ResourceBundleProvider.class)
-    );
+  @Test
+  public void testInjection() throws Exception {
+    bundle = null;
+    prefs = false;
+    HttpURLConnection conn = (HttpURLConnection)getPortletURL().openConnection();
+    assertEquals(200, conn.getResponseCode());
+    assertNotNull(bundle);
+    assertTrue(prefs);
   }
 }

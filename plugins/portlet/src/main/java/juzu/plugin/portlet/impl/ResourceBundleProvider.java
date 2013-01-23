@@ -19,28 +19,17 @@
 
 package juzu.plugin.portlet.impl;
 
-import juzu.Scope;
-import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.metadata.Descriptor;
-import juzu.impl.common.Tools;
+import juzu.impl.request.Request;
 
-import javax.portlet.PortletPreferences;
+import javax.inject.Provider;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletDescriptor extends Descriptor {
-
-  /** . */
-  public static PortletDescriptor INSTANCE = new PortletDescriptor();
-
-  private PortletDescriptor() {
-  }
-
-  @Override
-  public Iterable<BeanDescriptor> getBeans() {
-    return Tools.list(
-        BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class),
-        BeanDescriptor.createFromProviderType(ResourceBundle.class, Scope.REQUEST, null, ResourceBundleProvider.class)
-    );
+public class ResourceBundleProvider implements Provider<ResourceBundle> {
+  public ResourceBundle get() {
+    Request request = Request.getCurrent();
+    Locale locale = request.getContext().getUserContext().getLocale();
+    return request.getContext().getApplicationContext().resolveBundle(locale);
   }
 }

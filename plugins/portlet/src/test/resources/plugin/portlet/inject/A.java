@@ -17,30 +17,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.plugin.portlet.impl;
+package plugin.portlet.inject;
 
-import juzu.Scope;
-import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.metadata.Descriptor;
-import juzu.impl.common.Tools;
+import juzu.View;
+import juzu.plugin.portlet.PortletInjectTestCase;
 
+import javax.inject.Inject;
 import javax.portlet.PortletPreferences;
 import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletDescriptor extends Descriptor {
+public class A {
 
-  /** . */
-  public static PortletDescriptor INSTANCE = new PortletDescriptor();
+  @Inject
+  ResourceBundle bundle;
 
-  private PortletDescriptor() {
-  }
+  @Inject
+  PortletPreferences preferences;
 
-  @Override
-  public Iterable<BeanDescriptor> getBeans() {
-    return Tools.list(
-        BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class),
-        BeanDescriptor.createFromProviderType(ResourceBundle.class, Scope.REQUEST, null, ResourceBundleProvider.class)
-    );
+  @View
+  public void index() {
+    PortletInjectTestCase.bundle = bundle;
+    PortletInjectTestCase.prefs = preferences != null;
   }
 }
