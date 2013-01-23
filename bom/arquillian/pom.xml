@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-bom</artifactId>
-    <version>0.6.0-beta10</version>
+    <version>0.6.0-beta11-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-bom-arquillian</artifactId>
-  <version>0.6.0-beta10</version>
+  <version>0.6.0-beta11-SNAPSHOT</version>
 
   <name>Juzu Arquillian BOM</name>
   <description>The Juzu BOM for Arquillian testing</description>
