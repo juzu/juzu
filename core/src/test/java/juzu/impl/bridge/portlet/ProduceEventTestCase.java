@@ -22,7 +22,6 @@ package juzu.impl.bridge.portlet;
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -45,9 +44,6 @@ public class ProduceEventTestCase extends AbstractWebTestCase {
     return createPortletDeployment("bridge.portlet.event.produce", portletXML);
   }
 
-  @ArquillianResource
-  URL deploymentURL;
-
   @Drone
   WebDriver driver;
 
@@ -65,8 +61,7 @@ public class ProduceEventTestCase extends AbstractWebTestCase {
     assertEquals(Collections.emptyList(), eventNames);
     assertEquals(Collections.emptyList(), eventQNames);
     assertEquals(Collections.emptyList(), eventPayloads);
-    URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
-    driver.get(url.toString());
+    driver.get(getPortletURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
     assertEquals(Arrays.asList("the_event"), eventNames);

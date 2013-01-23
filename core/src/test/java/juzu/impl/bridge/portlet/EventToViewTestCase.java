@@ -30,9 +30,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class EventToViewTestCase extends AbstractWebTestCase {
@@ -51,8 +48,7 @@ public class EventToViewTestCase extends AbstractWebTestCase {
 
   @Test
   public void testFoo() throws Exception {
-    URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
-    driver.get(url.toString());
+    driver.get(getPortletURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
     String src = driver.getPageSource();

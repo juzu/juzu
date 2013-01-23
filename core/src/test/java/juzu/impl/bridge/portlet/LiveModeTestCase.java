@@ -24,7 +24,6 @@ import juzu.test.AbstractWebTestCase;
 import juzu.test.JavaFile;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -41,15 +40,12 @@ public class LiveModeTestCase extends AbstractWebTestCase {
     return createPortletDeployment(true, "bridge.portlet.render");
   }
 
-  @ArquillianResource
-  URL deploymentURL;
-
   @Drone
   WebDriver driver;
 
   @Test
   public void testChange() throws Exception {
-    URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
+    URL url = getPortletURL();
     driver.get(url.toString());
     WebElement body = driver.findElement(By.tagName("body"));
     assertEquals(1, Tools.count(body.getText(), "pass"));

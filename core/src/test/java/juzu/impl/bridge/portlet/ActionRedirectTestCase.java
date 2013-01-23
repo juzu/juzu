@@ -23,7 +23,6 @@ import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -42,15 +41,12 @@ public class ActionRedirectTestCase extends AbstractWebTestCase {
     return createPortletDeployment("bridge.portlet.action.redirect");
   }
 
-  @ArquillianResource
-  URL deploymentURL;
-
   @Drone
   WebDriver driver;
 
   @Test
   public void testFoo() throws Exception {
-    URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
+    URL url = getPortletURL();
     driver.get(url.toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     url = new URL(trigger.getAttribute("href"));

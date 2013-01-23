@@ -63,8 +63,7 @@ public class ConsumeEventTestCase extends AbstractWebTestCase {
   public void testFoo() throws Exception {
     assertEquals(Collections.emptyList(), eventNames);
     assertEquals(Collections.emptyList(), eventPayloads);
-    URL url = deploymentURL.toURI().resolve("embed/JuzuPortlet").toURL();
-    driver.get(url.toString());
+    driver.get(getPortletURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
     assertEquals(Arrays.asList("event1", "event1", "event2", "event3"), sourceNames);
