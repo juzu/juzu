@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.client;
+package juzu.impl.bridge.context;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -28,7 +28,7 @@ public class ServletClientContextTestCase extends AbstractClientContextTestCase 
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.client.action");
+    return createServletDeployment(true, "bridge.context.client");
   }
 
   @Test

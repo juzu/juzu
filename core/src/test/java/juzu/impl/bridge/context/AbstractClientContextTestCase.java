@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.client;
+package juzu.impl.bridge.context;
 
 import junit.framework.Assert;
 import juzu.test.AbstractWebTestCase;

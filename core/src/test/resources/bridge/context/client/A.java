@@ -17,14 +17,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.client.action;
+package bridge.context.client;
 
 import juzu.Action;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.impl.bridge.client.AbstractClientContextTestCase;
+import juzu.impl.bridge.context.AbstractClientContextTestCase;
 import juzu.impl.common.Tools;
 import juzu.request.ClientContext;
 

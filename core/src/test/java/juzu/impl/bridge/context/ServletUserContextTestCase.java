@@ -19,7 +19,6 @@
 
 package juzu.impl.bridge.context;
 
-import juzu.impl.bridge.client.AbstractClientContextTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;

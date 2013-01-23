@@ -17,27 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.client;
+@Application package bridge.context.client;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletClientContextTestCase extends AbstractClientContextTestCase {
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createPortletDeployment("bridge.client.action");
-  }
-
-  @Test
-  public void testServletAction() throws Exception {
-    test(getPortletURL(), "action");
-  }
-
-  @Test
-  public void testServletResource() throws Exception {
-    test(getPortletURL(), "resource");
-  }
-}
+import juzu.Application;
