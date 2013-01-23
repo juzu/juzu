@@ -19,50 +19,21 @@
 
 package juzu.plugin.upload;
 
-import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class UploadTestCase extends AbstractWebTestCase {
-
-  /** . */
-  public static String contentType;
-
-  /** . */
-  public static String content;
-
-  @Drone
-  WebDriver driver;
+public class ActionPortletUploadTestCase extends AbstractUploadTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "plugin.upload");
+    return createPortletDeployment("plugin.upload.action");
   }
 
-  @Test
-  public void testActionUpload() throws Exception {
-    driver.get(deploymentURL.toString());
-    WebElement submit = driver.findElement(By.id("submit"));
-    WebElement file = driver.findElement(By.id("file"));
-    WebElement text = driver.findElement(By.id("text"));
-    File f = File.createTempFile("juzu", ".txt");
-    f.deleteOnExit();
-    FileWriter writer = new FileWriter(f);
-    writer.write("HELLO");
-    writer.close();
-    file.sendKeys(f.getAbsolutePath());
-    text.sendKeys("value");
-    submit.submit();
-    assertEquals("text/plain", contentType);
-    assertEquals("HELLO", content);
+  @Override
+  protected URL getURL() {
+    return getPortletURL();
   }
 }

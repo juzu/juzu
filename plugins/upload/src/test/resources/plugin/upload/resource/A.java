@@ -17,13 +17,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.upload;
+package plugin.upload.resource;
 
-import juzu.Action;
+import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.plugin.upload.UploadTestCase;
+import juzu.plugin.upload.AbstractUploadTestCase;
 import org.apache.commons.fileupload.FileItem;
 
 import java.io.IOException;
@@ -31,20 +31,21 @@ import java.io.IOException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
-  @Action
-  @Route("/action")
-  public void action(FileItem file) throws IOException {
+  @Resource
+  @Route("/resource")
+  public Response.Content resource(FileItem file) throws IOException {
     if (file != null) {
-      UploadTestCase.contentType = file.getContentType();
-      UploadTestCase.content = file.getString();
+      AbstractUploadTestCase.contentType = file.getContentType();
+      AbstractUploadTestCase.content = file.getString();
     }
+    return Response.ok("");
   }
 
   @View
   @Route("/index")
   public Response.Content index() {
     return Response.ok(
-        "<form action='" + A_.action() + "' method='post' enctype='multipart/form-data'>" +
+        "<form action='" + A_.resource() + "' method='post' enctype='multipart/form-data'>" +
         "<input type='text' id='text' name='text'>" +
         "<input type='file' id='file' name='file'>" +
         "<input type='submit' id='submit'>" +
