@@ -32,6 +32,7 @@ import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 
 import javax.portlet.MimeResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
@@ -51,8 +52,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
   /** . */
   private LinkedList<Element> headers = new LinkedList<Element>();
 
-  public PortletRenderBridge(Application application, Bridge bridge, RenderRequest request, RenderResponse response, boolean prod) {
-    super(application, request, response, prod);
+  public PortletRenderBridge(Application application, Bridge bridge, RenderRequest request, RenderResponse response, PortletConfig config, boolean prod) {
+    super(application, request, response, config, prod);
 
     //
     this.bridge = bridge;

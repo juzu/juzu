@@ -31,11 +31,13 @@ import juzu.impl.request.Argument;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
+import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
+import juzu.request.UserContext;
 import juzu.request.WindowContext;
 
 import javax.servlet.http.Cookie;
@@ -173,6 +175,14 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   }
 
   public final SecurityContext getSecurityContext() {
+    return null;
+  }
+
+  public UserContext getUserContext() {
+    return null;
+  }
+
+  public ApplicationContext getApplicationContext() {
     return null;
   }
 

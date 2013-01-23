@@ -28,6 +28,7 @@ import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Parameter;
 
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
 import javax.portlet.PortletRequest;
@@ -40,15 +41,15 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs extends StateAwareResponse> extends PortletRequestBridge<Rq, Rs> {
 
-  protected PortletInteractionBridge(Application application, Rq req, Rs resp, boolean prod) {
-    super(application, req, resp, prod);
+  protected PortletInteractionBridge(Application application, Rq req, Rs resp, PortletConfig config, boolean prod) {
+    super(application, req, resp, config, prod);
 
     //
     init();
   }
 
-  protected PortletInteractionBridge(Application application, Rq req, Rs resp, Method<?> target, Map<String, String[]> parameters, boolean prod) {
-    super(application, req, resp, target, parameters, prod);
+  protected PortletInteractionBridge(Application application, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters, boolean prod) {
+    super(application, req, resp, config, target, parameters, prod);
 
     //
     init();

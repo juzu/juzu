@@ -36,13 +36,16 @@ import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.spi.DispatchSPI;
+import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
+import juzu.request.UserContext;
 import juzu.request.WindowContext;
 
 import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
 import javax.portlet.PortletRequest;
@@ -94,6 +97,12 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected final PortletWindowContext windowContext;
 
   /** . */
+  protected final PortletUserContext userContext;
+
+  /** . */
+  protected final PortletApplicationContext applicationContext;
+
+  /** . */
   protected Request request;
 
   /** . */
@@ -102,7 +111,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   /** . */
   protected Response response;
 
-  PortletRequestBridge(Application application, Rq req, Rs resp, boolean prod) {
+  PortletRequestBridge(Application application, Rq req, Rs resp, PortletConfig config, boolean prod) {
     String methodId = null;
     Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
     for (Iterator<Map.Entry<String, String[]>> i = parameters.entrySet().iterator();i.hasNext();) {
@@ -141,10 +150,12 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
     this.windowContext = new PortletWindowContext(this);
+    this.userContext = new PortletUserContext(req);
+    this.applicationContext = new PortletApplicationContext(config);
     this.prod = prod;
   }
 
-  PortletRequestBridge(Application application, Rq req, Rs resp, Method<?> target, Map<String, String[]> parameters, boolean prod) {
+  PortletRequestBridge(Application application, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters, boolean prod) {
 
     // Get argument map
     HashMap<String, Argument> arguments = new HashMap<String, Argument>(target.getArguments(parameters));
@@ -159,6 +170,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
     this.windowContext = new PortletWindowContext(this);
+    this.userContext = new PortletUserContext(req);
+    this.applicationContext = new PortletApplicationContext(config);
     this.prod = prod;
   }
 
@@ -197,6 +210,14 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   public final WindowContext getWindowContext() {
     return windowContext;
+  }
+
+  public final UserContext getUserContext() {
+    return userContext;
+  }
+
+  public final ApplicationContext getApplicationContext() {
+    return applicationContext;
   }
 
   public final Scoped getRequestValue(Object key) {

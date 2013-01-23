@@ -36,9 +36,11 @@ import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.common.URIWriter;
 import juzu.impl.bridge.spi.DispatchSPI;
+import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
+import juzu.request.UserContext;
 import juzu.request.WindowContext;
 
 import java.io.IOException;
@@ -72,6 +74,9 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   /** . */
   protected Map<String, String[]> responseHeaders;
+
+  /** . */
+  protected UserContext userContext;
 
   WebRequestBridge(
       Application application,
@@ -131,6 +136,14 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public final SecurityContext getSecurityContext() {
+    return null;
+  }
+
+  public UserContext getUserContext() {
+    return http.getUserContext();
+  }
+
+  public ApplicationContext getApplicationContext() {
     return null;
   }
 

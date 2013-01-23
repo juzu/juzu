@@ -33,7 +33,9 @@ import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.impl.bridge.spi.DispatchSPI;
+import juzu.request.ApplicationContext;
 import juzu.request.Phase;
+import juzu.request.UserContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -167,6 +169,14 @@ public abstract class MockRequestBridge implements RequestBridge {
 
   public MockWindowContext getWindowContext() {
     return windowContext;
+  }
+
+  public UserContext getUserContext() {
+    return null;
+  }
+
+  public ApplicationContext getApplicationContext() {
+    return null;
   }
 
   public void close() {

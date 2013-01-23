@@ -25,9 +25,11 @@ import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
 import juzu.impl.request.Argument;
 import juzu.impl.request.Request;
+import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
+import juzu.request.UserContext;
 import juzu.request.WindowContext;
 
 import java.io.IOException;
@@ -80,6 +82,10 @@ public interface RequestBridge {
   SecurityContext getSecurityContext();
 
   WindowContext getWindowContext();
+
+  UserContext getUserContext();
+
+  ApplicationContext getApplicationContext();
 
   /**
    * todo: see if we can remove that and instead do it from the session context directly.

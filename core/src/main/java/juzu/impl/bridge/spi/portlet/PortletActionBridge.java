@@ -27,6 +27,7 @@ import juzu.request.Phase;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -35,8 +36,8 @@ public class PortletActionBridge extends PortletInteractionBridge<ActionRequest,
   /** . */
   private final PortletClientContext clientContext;
 
-  public PortletActionBridge(Application application, ActionRequest request, ActionResponse response, boolean prod) {
-    super(application, request, response, prod);
+  public PortletActionBridge(Application application, ActionRequest request, ActionResponse response, PortletConfig config, boolean prod) {
+    super(application, request, response, config, prod);
 
     //
     this.clientContext = new PortletClientContext(request);

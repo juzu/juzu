@@ -30,6 +30,7 @@ import juzu.request.Phase;
 
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
+import javax.portlet.PortletConfig;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -39,10 +40,11 @@ public class PortletEventBridge extends PortletInteractionBridge<EventRequest, E
       Application application,
       EventRequest req,
       EventResponse resp,
+      PortletConfig config,
       Method<?> target,
       Map<String, String[]> parameters,
       boolean prod) {
-    super(application, req, resp, target, parameters, prod);
+    super(application, req, resp, config, target, parameters, prod);
 
     // Set event as part of contextual arguments
     for (Parameter parameter : target.getParameters()) {

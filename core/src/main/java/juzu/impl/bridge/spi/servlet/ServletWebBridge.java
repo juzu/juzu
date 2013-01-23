@@ -25,6 +25,7 @@ import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
+import juzu.request.UserContext;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +35,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletWebBridge implements WebBridge, HttpContext, ClientContext {
+public class ServletWebBridge implements WebBridge, HttpContext, ClientContext, UserContext {
 
   /** . */
   private final HttpServletRequest req;
@@ -66,7 +70,7 @@ public class ServletWebBridge implements WebBridge, HttpContext, ClientContext {
     return resp;
   }
 
-// HttpBridge implementation
+  // HttpBridge implementation
 
   public Map<String, String[]> getParameters() {
     return req.getParameterMap();
@@ -125,6 +129,10 @@ public class ServletWebBridge implements WebBridge, HttpContext, ClientContext {
   }
 
   public HttpContext getHttpContext() {
+    return this;
+  }
+
+  public UserContext getUserContext() {
     return this;
   }
 
@@ -235,5 +243,30 @@ public class ServletWebBridge implements WebBridge, HttpContext, ClientContext {
 
   public String getContextPath() {
     return req.getContextPath();
+  }
+
+  // UserContext implementation
+
+  public Locale getLocale() {
+    return req.getLocale();
+  }
+
+  public Iterable<Locale> getLocales() {
+    return new Iterable<Locale>() {
+      public Iterator<Locale> iterator() {
+        return new Iterator<Locale>() {
+          Enumeration<Locale> e = req.getLocales();
+          public boolean hasNext() {
+            return e.hasMoreElements();
+          }
+          public Locale next() {
+            return e.nextElement();
+          }
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
+      }
+    };
   }
 }

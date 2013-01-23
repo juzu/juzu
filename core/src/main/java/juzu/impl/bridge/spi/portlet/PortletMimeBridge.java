@@ -27,6 +27,7 @@ import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
 
 import javax.portlet.MimeResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import java.io.IOException;
 import java.util.Map;
@@ -37,8 +38,8 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
   /** . */
   private Response.Content<?> response;
 
-  PortletMimeBridge(Application application, Rq request, Rs response, boolean prod) {
-    super(application, request, response, prod);
+  PortletMimeBridge(Application application, Rq request, Rs response, PortletConfig config, boolean prod) {
+    super(application, request, response, config, prod);
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

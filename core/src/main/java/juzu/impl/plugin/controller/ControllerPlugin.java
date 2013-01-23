@@ -30,6 +30,7 @@ import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.ActionContext;
+import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
 import juzu.request.MimeContext;
@@ -37,6 +38,7 @@ import juzu.request.RenderContext;
 import juzu.request.RequestContext;
 import juzu.request.ResourceContext;
 import juzu.request.SecurityContext;
+import juzu.request.UserContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerPlugin extends ApplicationPlugin implements RequestFilter {
@@ -71,6 +73,8 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
         tryInject(request, contextualParameter, RequestContext.class, context);
         tryInject(request, contextualParameter, HttpContext.class, context.getHttpContext());
         tryInject(request, contextualParameter, SecurityContext.class, context.getSecurityContext());
+        tryInject(request, contextualParameter, ApplicationContext.class, context.getApplicationContext());
+        tryInject(request, contextualParameter, UserContext.class, context.getUserContext());
         if (context instanceof ResourceContext) {
           ResourceContext resourceContext = (ResourceContext)context;
           tryInject(request, contextualParameter, ClientContext.class, resourceContext.getClientContext());

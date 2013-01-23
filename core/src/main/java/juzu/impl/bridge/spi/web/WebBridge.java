@@ -23,6 +23,7 @@ import juzu.asset.AssetLocation;
 import juzu.impl.inject.ScopedContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
+import juzu.request.UserContext;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -61,6 +62,8 @@ public interface WebBridge {
   HttpContext getHttpContext();
 
   ClientContext getClientContext();
+
+  UserContext getUserContext();
 
   //
 

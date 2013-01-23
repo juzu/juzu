@@ -72,6 +72,14 @@ public abstract class RequestContext {
     return getBridge().getSecurityContext();
   }
 
+  public UserContext getUserContext() {
+    return getBridge().getUserContext();
+  }
+
+  public ApplicationContext getApplicationContext() {
+    return getBridge().getApplicationContext();
+  }
+
   public <T> T getProperty(PropertyType<T> propertyType) {
     return getBridge().getProperty(propertyType);
   }
