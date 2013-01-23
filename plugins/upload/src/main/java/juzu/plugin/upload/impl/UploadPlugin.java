@@ -100,7 +100,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
             for (FileItem file : list) {
               String name = file.getFieldName();
               Parameter parameter = request.getContext().getMethod().getParameter(name);
-              if (parameter instanceof ContextualParameter) {
+              if (parameter instanceof ContextualParameter && parameter.getType().isInstance(FileItem.class)) {
                 if (FileItem.class.isAssignableFrom(parameter.getType())) {
                   request.setArgument(parameter, file);
                 }
