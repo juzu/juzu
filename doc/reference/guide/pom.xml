@@ -49,6 +49,16 @@
             <configuration>
               <artifactItems>
 
+                <!-- Less -->
+                <artifactItem>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-plugins-less</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>wikbook</classifier>
+                  <type>zip</type>
+                  <outputDirectory>${wikbook.target}/src</outputDirectory>
+                </artifactItem>
+
                 <!-- Portlet -->
                 <artifactItem>
                   <groupId>org.juzu</groupId>
@@ -84,6 +94,7 @@
           <afterBookBodyXML><![CDATA[
           <xi:include href="juzu-plugins-upload.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
           <xi:include href="juzu-plugins-portlet.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+          <xi:include href="juzu-plugins-less.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
           ]]>
           </afterBookBodyXML>
         </configuration>

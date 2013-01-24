@@ -1,10 +1,12 @@
+= Juzu Less Plugin =
+
 LESS is a dynamic stylesheet language which extends CSS with dynamic behavior such as variables, mixins, operations
 and functions. LESS is easy to learn thanks to the [[online documentation>>http://lesscss.org/]].
 
 Juzu provides a LESS plugin that takes care of compiling a LESS stylesheet into a CSS stylesheet which
 are then served by the Asset plugin. This chapter explains how to use LESS and combine it with the [[Asset plugin>>#assets]].
 
-= Usage =
+== Usage ==
 
 The LESS plugin operates at compilation time only because the only task he has to do is to transform a LESS
 source code into a CSS stylesheet. The runtime part is usually done by the Asset plugin.
@@ -49,7 +51,7 @@ import juzu.plugin.asset.Stylesheet;
 By default LESS will use a default formatting for the generated CSS. To achieve smaller CSS size, a //minify// option
 can be used, this option will trim the whitespace when processing the file : ##@Less(value = "stylesheet.less", minify = true)##.
 
-= Building =
+== Building ==
 
 Add the Less plugin jar to your compilation classpath.
 

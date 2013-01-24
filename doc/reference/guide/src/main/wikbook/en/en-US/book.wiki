@@ -38,11 +38,3 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 = Assets {{anchor id=assets /}} =
 
 {{include document=assets.wiki/}}
-
-= Less plugin {{anchor id=plugins_less /}} =
-
-{{include document=plugins/less.wiki/}}
-
-{{docbook}}<xi:include href="juzu-plugins-portlet.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>{{/docbook}}
-
-{{docbook}}<xi:include href="juzu-plugins-upload.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>{{/docbook}}
