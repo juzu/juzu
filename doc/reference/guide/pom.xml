@@ -37,9 +37,45 @@
 
     <plugins>
 
+      <!-- Unpack plugin docs -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <artifactItems>
+
+                <!-- File upload-->
+                <artifactItem>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-plugins-upload</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>wikbook</classifier>
+                  <type>zip</type>
+                  <outputDirectory>${wikbook.target}/src</outputDirectory>
+                </artifactItem>
+
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+
       <plugin>
         <groupId>org.wikbook</groupId>
         <artifactId>wikbook.maven</artifactId>
+        <configuration>
+          <afterBookBodyXML><![CDATA[
+          <xi:include href="juzu-plugins-upload.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+          ]]>
+          </afterBookBodyXML>
+        </configuration>
       </plugin>
     </plugins>
   </build>

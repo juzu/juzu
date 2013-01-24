@@ -1,0 +1,3 @@
+= Juzu File Upload Plugin =
+
+The file upload plugin.
