@@ -48,34 +48,12 @@
       <type>war</type>
       <classifier>gatein</classifier>
     </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-doc-tutorial-guide</artifactId>
-      <classifier>html</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-doc-tutorial-guide</artifactId>
-      <type>pdf</type>
-    </dependency>
 
     <!-- Reference -->
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-doc-reference-api</artifactId>
       <classifier>javadoc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-doc-reference-guide</artifactId>
-      <classifier>html</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-doc-reference-guide</artifactId>
-      <type>pdf</type>
     </dependency>
 
 
@@ -84,9 +62,7 @@
   <build>
     <plugins>
       <plugin>
-
         <artifactId>maven-assembly-plugin</artifactId>
-
         <executions>
           <execution>
             <id>booking-gatein</id>
@@ -103,9 +79,43 @@
             </configuration>
           </execution>
         </executions>
-
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+
+    <profile>
+      <id>wikbook</id>
+      <dependencies>
+
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-doc-tutorial-guide</artifactId>
+          <classifier>html</classifier>
+          <type>zip</type>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-doc-tutorial-guide</artifactId>
+          <type>pdf</type>
+        </dependency>
+
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-doc-reference-guide</artifactId>
+          <classifier>html</classifier>
+          <type>zip</type>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-doc-reference-guide</artifactId>
+          <type>pdf</type>
+        </dependency>
+
+      </dependencies>
+    </profile>
+
+  </profiles>
 
 </project>
