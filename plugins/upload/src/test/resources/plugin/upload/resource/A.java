@@ -33,10 +33,11 @@ public class A {
 
   @Resource
   @Route("/resource")
-  public Response.Content resource(FileItem file) throws IOException {
+  public Response.Content resource(FileItem file, String text) throws IOException {
     if (file != null) {
       AbstractUploadTestCase.contentType = file.getContentType();
       AbstractUploadTestCase.content = file.getString();
+      AbstractUploadTestCase.text = text;
     }
     return Response.ok("");
   }
@@ -45,7 +46,7 @@ public class A {
   @Route("/index")
   public Response.Content index() {
     return Response.ok(
-        "<form action='" + A_.resource() + "' method='post' enctype='multipart/form-data'>" +
+        "<form action='" + A_.resource(null) + "' method='post' enctype='multipart/form-data'>" +
         "<input type='text' id='text' name='text'>" +
         "<input type='file' id='file' name='file'>" +
         "<input type='submit' id='submit'>" +

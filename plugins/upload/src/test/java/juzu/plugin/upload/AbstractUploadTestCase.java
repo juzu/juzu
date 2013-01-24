@@ -41,6 +41,9 @@ public abstract class AbstractUploadTestCase extends AbstractWebTestCase {
   /** . */
   public static String content;
 
+  /** . */
+  public static String text;
+
   @Drone
   WebDriver driver;
 
@@ -58,9 +61,13 @@ public abstract class AbstractUploadTestCase extends AbstractWebTestCase {
     writer.write("HELLO");
     writer.close();
     file.sendKeys(f.getAbsolutePath());
-    text.sendKeys("value");
+    text.sendKeys("text_value");
+    AbstractUploadTestCase.contentType = null;
+    AbstractUploadTestCase.content = null;
+    AbstractUploadTestCase.text = null;
     submit.submit();
-    assertEquals("text/plain", contentType);
-    assertEquals("HELLO", content);
+    assertEquals("text/plain", AbstractUploadTestCase.contentType);
+    assertEquals("HELLO", AbstractUploadTestCase.content);
+    assertEquals("text_value", AbstractUploadTestCase.text);
   }
 }

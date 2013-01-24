@@ -26,6 +26,7 @@ import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Parameter;
+import juzu.impl.request.PhaseParameter;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.ActionContext;
@@ -100,8 +101,12 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
             for (FileItem file : list) {
               String name = file.getFieldName();
               Parameter parameter = request.getContext().getMethod().getParameter(name);
-              if (parameter instanceof ContextualParameter && parameter.getType().isInstance(FileItem.class)) {
-                if (FileItem.class.isAssignableFrom(parameter.getType())) {
+              if (file.isFormField()) {
+                if (parameter instanceof PhaseParameter) {
+                  request.setArgument(parameter, file.getString());
+                }
+              } else {
+                if (parameter instanceof ContextualParameter && FileItem.class.isAssignableFrom(parameter.getType())) {
                   request.setArgument(parameter, file);
                 }
               }
