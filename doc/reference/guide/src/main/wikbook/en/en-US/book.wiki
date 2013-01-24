@@ -43,11 +43,6 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 
 {{include document=plugins/less.wiki/}}
 
-= Portlet plugin {{anchor id=plugins_portlet /}} =
-
-{{include document=plugins/portlet.wiki/}}
+{{docbook}}<xi:include href="juzu-plugins-portlet.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>{{/docbook}}
 
 {{docbook}}<xi:include href="juzu-plugins-upload.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>{{/docbook}}
-
-
-
