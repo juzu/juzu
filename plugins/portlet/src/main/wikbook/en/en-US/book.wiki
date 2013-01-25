@@ -52,7 +52,7 @@ package my;
 
 == Portlet preferences injection ==
 
-During the various phase of an application, the current portlet preferences can be injected in a controller:
+During the various phase of an application, the current portlet preferences can be injected::
 
 {{example title="Injecting portlet preferences"}}
 {{java}}
@@ -64,6 +64,25 @@ During the various phase of an application, the current portlet preferences can 
 The same restriction defined in the portlet specification applies to the provided preferences object: i.e saving preferences
 can only be performed during an action phase.
 {{/note}}
+
+== Resource bundle injection ==
+
+During the various phase of an application, the portlet resource bundle for the current locale can be injected:
+
+{{example title="Injecting the portlet resource bundle"}}
+{{java}}
+@Inject java.util.ResourceBundle bundle;
+{{/java}}
+{{/example}}
+
+This is equivalent of doing:
+
+{{java}}
+Locale locale = request.getLocale();
+ResourceBundle bundle = portlet.getConfig().getResourceBundle(locale);
+{{/java}}
+
+This resource bundle can be configured in the //portlet.xml// deployment descriptor.
 
 == Building ==
 
