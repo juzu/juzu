@@ -102,8 +102,8 @@ Action controller are executed during the action phase of a Juzu application. Us
 * configure the next view phase: setting the next view controller to display and configuring its view parameters
 of the method when they exist
 
-{{anchor id=controller_action_update /}}In the following example, the controller method ##createUser##  creates a user and returns a ##Response.View##
-object that will tell Juzu to use the ##showUser## view controller during the next view phase:
+{{anchor id=controller_action_view /}}In the following example, the controller method ##createUser##  creates a user and
+returns a ##Response.View## object that will tell Juzu to use the ##showUser## view controller during the next view phase:
 
 {{java}}
 @Action
@@ -113,8 +113,8 @@ public Response.View addUser(String userName, String password) {
 }
 {{/java}}
 
-##showUser## is a companion //update// method that creates a ##Response.View## object configured with the
-controller and arguments to use. Like url companion methods, update companion methods are generated during
+##showUser## is a companion //view// method that creates a ##Response.View## object configured with the
+controller and arguments to use. Like url companion methods, view companion methods are generated during
 the compilation of the project by Juzu.
 
 == Resource controllers ==
