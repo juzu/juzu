@@ -28,7 +28,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Wikbook -->
-    <wikbook.version>0.9.42</wikbook.version>
+    <wikbook.version>0.9.43</wikbook.version>
 
     <!-- Test settings -->
     <juzu.test.compiler>javac</juzu.test.compiler>
