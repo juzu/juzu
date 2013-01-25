@@ -191,24 +191,6 @@ public class ConfiguredMailerProvider implements javax.inject.Provider<Mailer> {
 
 Thanks to the provider, we have a ##Mailer## provider that returns a ##MailerImpl## configured before usage.
 
-=== Beyond the provider ===
-
-The implementation class can also be an instance of ##juzu.inject.ProviderFactory##. The provider factory
-is a factory for providers whose purpose is to return a ##Provider## for a specific class. The provider factory
-has the method:
-
-{{java}}
-{@javadoc juzu.inject.ProviderFactory#getProvider(java.lang.Class)}
-{@include juzu.inject.ProviderFactory#getProvider(java.lang.Class)}
-{{/java}}
-
-The provider factory implementation must provide a public zero argument constructor and it will be instantiated
-during the application boostrap by Juzu to obtain the provider. The returned providers will then be bound into
-the IOC container.
-
-Usually provider factories will lookup the service in a registry (like another IOC container) and returns a provider
- that return them lazily or not.
-
 === Scoped binding ===
 
 The ##@Binding## annotation provides room for declaring a bean scope:
@@ -237,3 +219,47 @@ public class MailerProvider implements Provider<Mailer> {
 This is useful for declaring qualifiers on a class that is not annotated by qualifiers, because it is not possible
 to declare qualifiers in an ##@Binding## annotation due to limitations of the Java language.
 
+= Provider factories =
+
+Provider factories provides plugability for integrating beans that are not managed by the IOC container. The provider
+factory is a factory for ##javax.inject.Provider## whose purpose is to return a provider for a specific class. Usually
+provider factories will lookup the service in a registry (like another IOC container) and returns a provider that
+return them lazily or not.
+
+The provider factory defines the ##getProvider## method:
+
+{{java}}
+{@javadoc juzu.inject.ProviderFactory#getProvider(java.lang.Class)}
+{@include juzu.inject.ProviderFactory#getProvider(java.lang.Class)}
+{{/java}}
+
+The factory implementation must provide a public zero argument constructor and it will be instantiated
+during the application boostrap by Juzu to obtain the provider. The returned providers will then be bound into
+the IOC container.
+
+The IOC container uses the ##java.util.ServiceLoader## discovery mechanism for finding provider factories when
+ injection occurs.
+
+Let's study a simple example with a provider for the current time:
+
+{{example title="Time provider factory"}}
+{{java}}
+package my;
+
+public class TimeProvider implements java.inject.ProviderFactory {
+   public <T> Provider<? extends T> getProvider(Class<T> implementationType) {
+      if (implementationType == java.util.Date.class) {
+         return implementationType.cast(new java.util.Date());
+      } else {
+         return null;
+      }
+   }
+}
+{{/java}}
+{{/example}}
+
+This provider should be declared in the //META-INF/services/juzu.inject.ProviderFactory// file:
+
+{{example title="Time provider configuration"}}
+{{code}}my.TimeProvider{{/code}}
+{{/example}}
