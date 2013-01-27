@@ -69,7 +69,11 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
       processPhase.process(template);
 
       // Emit
-      EmitPhase emitPhase = new EmitPhase(new EmitContext());
+      EmitPhase emitPhase = new EmitPhase(new EmitContext(){
+        public void createResource(String rawName, String ext, CharSequence content) throws IOException {
+          throw new UnsupportedOperationException();
+        }
+      });
       emitPhase.emit(generator, template.getModel());
     }
     catch (juzu.impl.template.spi.juzu.ast.ParseException e) {

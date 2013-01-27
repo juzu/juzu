@@ -28,10 +28,12 @@ import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.ParseContext;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.common.Path;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -85,8 +87,7 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
   }
 
   @Override
-  public CharSequence emit(EmitContext context, MustacheContext templateModel) {
-    return null;
+  public void emit(EmitContext context, Template<MustacheContext> template) throws TemplateException, IOException {
   }
 
   @Override

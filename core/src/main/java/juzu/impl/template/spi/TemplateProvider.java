@@ -19,6 +19,7 @@
 
 package juzu.impl.template.spi;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -41,7 +42,7 @@ public abstract class TemplateProvider<M extends Serializable> {
   /**
    * Returns the template target extension without the dot, this value
    * will be used only when the provider emits a file, i.e the method
-   * {@link #emit(EmitContext, java.io.Serializable)} does not return null.
+   * {@link #emit(EmitContext, Template} does not return null.
    *
    * @return the target extension
    */
@@ -78,17 +79,15 @@ public abstract class TemplateProvider<M extends Serializable> {
       Template<M> template) throws TemplateException;
 
   /**
-   * Provide an opportunity for emitting a file on the disk for the
-   * {@link #getTargetExtension()}. When no file should be created,
-   * null must be returned.
+   * Provide an opportunity for emitting a file on the disk.
    *
    * @param context the emit context
-   * @param templateModel the template model
-   * @return the emitted char sequence
+   * @param template the template
    * @throws TemplateException any template related exception
+   * @throws IOException any io exception
    */
-  public abstract CharSequence emit(
+  public abstract void emit(
       EmitContext context,
-      M templateModel) throws TemplateException;
+      Template<M> template) throws TemplateException, IOException;
 
 }

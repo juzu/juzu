@@ -35,6 +35,7 @@ import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -147,7 +148,11 @@ public class TagTestCase extends AbstractInjectTestCase {
     assertNotNull(template);
 
     // Now emit the template
-    EmitPhase emit = new EmitPhase(new EmitContext());
+    EmitPhase emit = new EmitPhase(new EmitContext(){
+      public void createResource(String rawName, String ext, CharSequence content) throws IOException {
+        throw new UnsupportedOperationException();
+      }
+    });
     emit.emit(new GroovyTemplateEmitter(), template.getModel());
   }
 }

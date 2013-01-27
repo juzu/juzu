@@ -19,6 +19,18 @@
 
 package juzu.impl.template.spi;
 
+import java.io.IOException;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class EmitContext {
+public interface EmitContext {
+
+  /**
+   * Create a resource.
+   *
+   * @param rawName
+   * @param ext
+   * @param content the content  @throws IOException any io exception preventing the resource creation
+   */
+  void createResource(String rawName, String ext, CharSequence content) throws IOException;
+
 }

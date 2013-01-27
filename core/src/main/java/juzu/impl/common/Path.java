@@ -124,6 +124,13 @@ public class Path implements Serializable {
     return new Path(absolute, tmp);
   }
 
+  public Path as(String rawName, String ext) {
+    String[] tmp = atoms.clone();
+    tmp[tmp.length - 2] = rawName;
+    tmp[tmp.length - 1] = ext;
+    return new Path(absolute, tmp);
+  }
+
   public String getCanonical() {
     if (canonical == null) {
       StringBuilder sb = new StringBuilder();

@@ -183,7 +183,7 @@ public class TemplateResolver implements Serializable {
       public Void call() throws Exception {
 
         //
-        TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
+        final TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
 
         // If CCE that would mean there is an internal bug
         TemplateProvider<M> provider = (TemplateProvider<M>)plugin.providers.get(template.getPath().getExt());
@@ -192,30 +192,26 @@ public class TemplateResolver implements Serializable {
         if (!emitted.contains(template.getPath())) {
           //
           try {
-            M model = template.getModel();
-            EmitContext emitCtx = new EmitContext();
+            EmitContext emitCtx = new EmitContext() {
+              public void createResource(String rawName, String ext, CharSequence content) throws IOException {
+                Path bar = template.getPath().as(rawName, ext);
+                FileKey absolute = metaModel.resolve(bar);
+                FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, elements);
+                Writer writer = null;
+                try {
+                  writer = scriptFile.openWriter();
+                  writer.append(content);
+                  log.log("Generated template script " + bar + " as " + scriptFile.toUri() +
+                      " with originating elements " + Arrays.asList(elements));
+                }
+                finally {
+                  Tools.safeClose(writer);
+                }
+              }
+            };
 
             //
-            CharSequence res = provider.emit(emitCtx, model);
-
-            //
-            if (res != null) {
-              //
-              FileKey absolute = metaModel.resolve(template.getPath().as(provider.getTargetExtension()));
-              FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, elements);
-              Writer writer = null;
-              try {
-                writer = scriptFile.openWriter();
-                writer.write(res.toString());
-              }
-              finally {
-                Tools.safeClose(writer);
-              }
-
-              //
-              log.log("Generated template script " + template.getPath() + " as " + scriptFile.toUri() +
-                " with originating elements " + Arrays.asList(elements));
-            }
+            provider.emit(emitCtx, template);
 
             // Put it in cache
             emitted.add(template.getPath());
