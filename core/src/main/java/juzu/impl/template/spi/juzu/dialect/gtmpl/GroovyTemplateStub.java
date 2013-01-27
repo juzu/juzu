@@ -36,21 +36,15 @@ import java.util.HashMap;
 public abstract class GroovyTemplateStub extends TemplateStub {
 
   /** . */
-  protected final String templateId;
-
-  /** . */
   private Class<?> scriptClass;
 
   /** . */
   private HashMap<Integer, Foo> locationTable;
 
-  protected GroovyTemplateStub() {
-    String name = getClass().getName();
-    this.templateId = name.substring(0, name.length() - 1); // Remove trailing _
-  }
-
   public GroovyTemplateStub(String templateId) {
-    this.templateId = templateId;
+    super(templateId);
+
+    //
     this.scriptClass = null;
     this.locationTable = null;
   }
@@ -59,7 +53,7 @@ public abstract class GroovyTemplateStub extends TemplateStub {
   public void doInit(ClassLoader loader) {
     CompilerConfiguration config = new CompilerConfiguration();
     config.setScriptBaseClass(BaseScript.class.getName());
-    String script = getScript();
+    String script = getScript(loader);
     GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
     GroovyClassLoader gcl = new GroovyClassLoader(loader, config);
     try {
@@ -72,7 +66,7 @@ public abstract class GroovyTemplateStub extends TemplateStub {
     }
   }
 
-  public abstract String getScript();
+  public abstract String getScript(ClassLoader loader);
 
   public String getClassName() {
     return scriptClass != null ? scriptClass.getName() : null;
@@ -139,10 +133,10 @@ public abstract class GroovyTemplateStub extends TemplateStub {
 
     //
     if (firstItem != null) {
-      return new TemplateExecutionException(templateId, firstItem.getPosition(), firstItem.getValue(), t);
+      return new TemplateExecutionException(id, firstItem.getPosition(), firstItem.getValue(), t);
     }
     else {
-      return new TemplateExecutionException(templateId, null, null, t);
+      return new TemplateExecutionException(id, null, null, t);
     }
   }
 }

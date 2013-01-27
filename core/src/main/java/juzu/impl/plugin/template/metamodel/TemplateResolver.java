@@ -38,7 +38,6 @@ import juzu.impl.common.Tools;
 import javax.annotation.Generated;
 import javax.lang.model.element.Element;
 import javax.tools.FileObject;
-import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Serializable;
@@ -168,11 +167,11 @@ public class TemplateResolver implements Serializable {
         elements[index++] = context.getTypeElement(type);
       }
 
-      // Resolve the stub
-      resolveStub(template, plugin, context, elements);
+      // If CCE that would mean there is an internal bug
+      TemplateProvider<?> provider = (TemplateProvider<?>)plugin.providers.get(template.getPath().getExt());
 
       // Resolve the qualified class
-      resolvedQualified(template, context, elements);
+      resolvedQualified(provider, template, context, elements);
 
       //
       resolveScript(template, plugin, context, elements);
@@ -235,7 +234,11 @@ public class TemplateResolver implements Serializable {
     });
   }
 
-  private <M extends Serializable> void resolvedQualified(Template<M> template, ProcessingContext context, Element[] elements) {
+  private <M extends Serializable> void resolvedQualified(
+      TemplateProvider<?> provider,
+      Template<M> template,
+      ProcessingContext context,
+      Element[] elements) {
 
     //
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
@@ -266,16 +269,15 @@ public class TemplateResolver implements Serializable {
         append(TemplatePlugin.class.getSimpleName()).append(" templatePlugin").
         append(")\n");
       writer.append("{\n");
-      writer.append("super(templatePlugin, \"").append(path.getValue()).append("\");\n");
+      writer.append("super(templatePlugin, \"").append(path.getValue()).append("\"").append(", ").append(provider.getTemplateStubType().getName()).append(".class);\n");
       writer.append("}\n");
 
       //
       writer.
-          append("public static final ").
-          append(TemplateDescriptor.class.getName()).
-          append(" DESCRIPTOR = new ").
-          append(TemplateDescriptor.class.getName()).
-          append("(").append(absolute.fqn).append(".class);\n");
+          append("public static final ").append(TemplateDescriptor.class.getName()).append(" DESCRIPTOR = new ").append(TemplateDescriptor.class.getName()).append("(").
+          append(absolute.fqn).append(".class,").
+          append(provider.getTemplateStubType().getName()).append(".class").
+          append(");\n");
 
       //
       String baseBuilderName = juzu.template.Template.Builder.class.getCanonicalName();
@@ -315,47 +317,6 @@ public class TemplateResolver implements Serializable {
     }
     catch (IOException e) {
       throw TemplateMetaModel.CANNOT_WRITE_TEMPLATE_CLASS.failure(e, elements[0], path);
-    }
-    finally {
-      Tools.safeClose(writer);
-    }
-  }
-
-  private void resolveStub(Template<?> template, TemplateMetaModelPlugin plugin, ProcessingContext context, Element[] elements) {
-
-    //
-    TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
-    FileKey absolute = metaModel.resolve(template.getPath());
-
-    //
-    if (stubCache.containsKey(absolute)) {
-      log.log("Template strub " + template.getPath() + " was found in cache");
-      return;
-    }
-
-    //
-    Name stubFQN = Name.parse(absolute.fqn + "_");
-    TemplateProvider provider = plugin.providers.get(template.getPath().getExt());
-    Writer writer = null;
-    try {
-      // Template stub
-      JavaFileObject stubFile = context.createSourceFile(stubFQN, elements);
-      writer = stubFile.openWriter();
-      writer.append("package ").append(stubFQN.getParent()).append(";\n");
-      writer.append("import ").append(Generated.class.getCanonicalName()).append(";\n");
-      writer.append("@Generated({\"").append(stubFQN).append("\"})\n");
-      writer.append("public class ").append(stubFQN.getIdentifier()).append(" extends ").append(provider.getTemplateStubType().getName()).append(" {\n");
-      writer.append("}");
-
-      //
-      stubCache.put(absolute, stubFile);
-
-      //
-      log.log("Generating template stub " + stubFQN + " as " + stubFile.toUri() +
-        " with originating elements " + Arrays.asList(elements));
-    }
-    catch (IOException e) {
-      throw TemplateMetaModel.CANNOT_WRITE_TEMPLATE_STUB.failure(e, elements[0], template.getPath());
     }
     finally {
       Tools.safeClose(writer);

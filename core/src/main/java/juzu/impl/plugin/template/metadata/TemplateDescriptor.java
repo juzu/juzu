@@ -20,6 +20,7 @@
 package juzu.impl.plugin.template.metadata;
 
 import juzu.Path;
+import juzu.impl.template.spi.TemplateStub;
 import juzu.template.Template;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -29,14 +30,20 @@ public class TemplateDescriptor {
   private final String path;
 
   /** . */
-  private final Class<? extends Template> template;
+  private final Class<? extends Template> type;
 
-  public TemplateDescriptor(Class<? extends Template> template) {
-    Path path = template.getAnnotation(Path.class);
+  /** . */
+  private final Class<? extends TemplateStub> stubType;
+
+  public TemplateDescriptor(
+      Class<? extends Template> type,
+      Class<? extends TemplateStub> stubType) {
+    Path path = type.getAnnotation(Path.class);
 
     //
     this.path = path.value();
-    this.template = template;
+    this.type = type;
+    this.stubType = stubType;
   }
 
   public String getPath() {
@@ -44,6 +51,10 @@ public class TemplateDescriptor {
   }
 
   public Class<? extends Template> getType() {
-    return template;
+    return type;
+  }
+
+  public Class<? extends TemplateStub> getStubType() {
+    return stubType;
   }
 }

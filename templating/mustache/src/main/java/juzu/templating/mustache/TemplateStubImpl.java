@@ -38,14 +38,31 @@ public class TemplateStubImpl extends TemplateStub {
   /** . */
   private Mustache mustache;
 
+  /** . */
+  private final String resourceRoot;
+
+  /** . */
+  private final String mustacheName;
+
+  public TemplateStubImpl(String id) {
+    super(id);
+
+    //
+    int index = id.lastIndexOf('.');
+    String resourceRoot = id.substring(0, index).replace('.', '/') + "/";
+    String name = id.substring(index + 1) + ".mustache";
+
+    //
+    this.resourceRoot = resourceRoot;
+    this.mustacheName = name;
+  }
+
   @Override
   protected void doInit(ClassLoader loader) {
-    String name = getClass().getSimpleName();
-    String mustacheName = name.substring(0, name.length() - 1).replace('.', '/') + ".mustache";
     ClassLoader previous = Thread.currentThread().getContextClassLoader();
     try {
       Thread.currentThread().setContextClassLoader(loader);
-      DefaultMustacheFactory factory = new DefaultMustacheFactory(getClass().getPackage().getName().replace('.', '/')) {
+      DefaultMustacheFactory factory = new DefaultMustacheFactory(resourceRoot) {
         @Override
         public MustacheVisitor createMustacheVisitor() {
           return new DefaultMustacheVisitor(this) {

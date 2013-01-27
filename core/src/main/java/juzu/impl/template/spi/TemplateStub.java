@@ -48,10 +48,6 @@ public abstract class TemplateStub {
   /** . */
   private final AtomicInteger status;
 
-  protected TemplateStub() {
-    this(null);
-  }
-
   protected TemplateStub(String id) {
 
     if (id == null) {
@@ -116,7 +112,7 @@ public abstract class TemplateStub {
           doRender(renderContext);
           return;
         default:
-          throw new IllegalStateException("Template stub is not initialized");
+          throw new IllegalStateException("Template stub is not initialized " + status.get());
       }
     }
   }

@@ -23,6 +23,7 @@ import juzu.PropertyMap;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
 import juzu.impl.common.JSON;
@@ -31,6 +32,7 @@ import juzu.template.Template;
 import juzu.template.TemplateRenderContext;
 
 import javax.inject.Inject;
+import java.lang.reflect.Constructor;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,22 +70,14 @@ public class TemplatePlugin extends ApplicationPlugin {
     if (stub == null) {
 
       //
+      TemplateDescriptor desc = descriptor.getTemplate(path.getCanonical());
+      //
       try {
-        StringBuilder id = new StringBuilder(descriptor.getPackageName());
-        for (String name : path.getDirs()) {
-          if (id.length() > 0) {
-            id.append('.');
-          }
-          id.append(name);
-        }
-        id.append('.').append(path.getRawName());
-        id.append("_");
-        ClassLoader cl = application.getClassLoader();
-        Class<?> stubClass = cl.loadClass(id.toString());
-        stub = (TemplateStub)stubClass.newInstance();
+        Constructor ctor = desc.getStubType().getConstructor(String.class);
+        stub = (TemplateStub)ctor.newInstance(desc.getType().getName());
       }
       catch (Exception e) {
-        throw new UnsupportedOperationException("handle me gracefully", e);
+        throw new UnsupportedOperationException("Handle me gracefully", e);
       }
 
       //
@@ -99,10 +93,38 @@ public class TemplatePlugin extends ApplicationPlugin {
     return stub;
   }
 
-  public TemplateRenderContext render(Template template, PropertyMap properties, Map<String, ?> parameters, Locale locale) {
+  public TemplateRenderContext render(
+      Class<? extends TemplateStub> stubType,
+      Template template,
+      PropertyMap properties,
+      Map<String, ?> parameters,
+      Locale locale) {
 
     //
-    TemplateStub stub = resolveTemplateStub(template.getPath());
+    Path path = template.getPath();
+    TemplateStub stub = stubs.get(path);
+    if (stub == null) {
+
+      //
+      try {
+        Constructor ctor = stubType.getConstructor(String.class);
+        stub = (TemplateStub)ctor.newInstance(template.getClass().getName());
+      }
+      catch (Exception e) {
+        throw new UnsupportedOperationException("Handle me gracefully", e);
+      }
+
+      //
+      TemplateStub phantom = stubs.putIfAbsent(path, stub);
+      if (phantom != null) {
+        stub = phantom;
+      } else {
+        stub.init(application.getClassLoader());
+      }
+    }
+
+    //
+//    TemplateStub stub = resolveTemplateStub(template.getPath());
 
     //
     return new TemplateRenderContextImpl(

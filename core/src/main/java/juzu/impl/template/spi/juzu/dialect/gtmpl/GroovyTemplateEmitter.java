@@ -121,7 +121,7 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
     final String script = toString();
     return new GroovyTemplateStub(templateId) {
       @Override
-      public String getScript() {
+      public String getScript(ClassLoader loader) {
         return script;
       }
     };

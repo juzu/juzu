@@ -25,15 +25,17 @@ import java.io.InputStream;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class GroovyTemplateLiteral extends GroovyTemplateStub {
-  public GroovyTemplateLiteral() {
+public class GroovyTemplateLiteral extends GroovyTemplateStub {
+
+  public GroovyTemplateLiteral(String templateId) {
+    super(templateId);
   }
 
   @Override
-  public final String getScript() {
+  public final String getScript(ClassLoader loader) {
     try {
-      String path = templateId.replace('.', '/') + ".groovy";
-      URL url = getClass().getClassLoader().getResource(path);
+      String path = id.replace('.', '/') + ".groovy";
+      URL url = loader.getResource(path);
       if (url != null) {
         byte[] buffer = new byte[256];
         InputStream in = url.openStream();

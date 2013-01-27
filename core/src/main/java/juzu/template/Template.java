@@ -25,6 +25,7 @@ import juzu.UndeclaredIOException;
 import juzu.impl.request.Request;
 import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.common.Path;
+import juzu.impl.template.spi.TemplateStub;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;
 import juzu.io.Streamable;
@@ -72,13 +73,17 @@ public abstract class Template {
   /** . */
   private final TemplatePlugin applicationContext;
 
-  public Template(TemplatePlugin applicationContext, String path) {
-    this(applicationContext, Path.parse(path));
+  /** . */
+  private final Class<? extends TemplateStub> stubType;
+
+  public Template(TemplatePlugin applicationContext, String path, Class<? extends TemplateStub> stubType) {
+    this(applicationContext, Path.parse(path), stubType);
   }
 
-  public Template(TemplatePlugin applicationContext, Path path) {
+  public Template(TemplatePlugin applicationContext, Path path, Class<? extends TemplateStub> stubType) {
     this.applicationContext = applicationContext;
     this.path = path;
+    this.stubType = stubType;
   }
 
   /**
@@ -137,7 +142,7 @@ public abstract class Template {
       if (context instanceof MimeContext) {
         MimeContext mime = (MimeContext)context;
         PropertyMap properties = new PropertyMap();
-        TemplateRenderContext streamable = applicationContext.render(Template.this, properties, parameters, locale);
+        TemplateRenderContext streamable = applicationContext.render(stubType, Template.this, properties, parameters, locale);
         StringBuilder sb = new StringBuilder();
         streamable.render(new AppendableStream(sb));
         Response.Render render = new Response.Content.Render(properties, new Streamable.CharSequence(sb));
@@ -349,7 +354,7 @@ public abstract class Template {
       throw new NullPointerException("No null printe provided");
     }
     try {
-      TemplateRenderContext trc = applicationContext.render(this, null, parameters, locale);
+      TemplateRenderContext trc = applicationContext.render(stubType, this, null, parameters, locale);
       trc.render(printer);
     }
     catch (IOException e) {
