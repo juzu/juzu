@@ -28,7 +28,7 @@ public class GroovyTemplateProvider extends DialectTemplateProvider {
 
   @Override
   public Class<? extends TemplateStub> getTemplateStubType() {
-    return GroovyTemplateLiteral.class;
+    return GroovyTemplateStub.class;
   }
 
   @Override

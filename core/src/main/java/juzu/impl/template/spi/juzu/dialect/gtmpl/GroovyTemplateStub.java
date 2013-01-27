@@ -29,11 +29,14 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class GroovyTemplateStub extends TemplateStub {
+public class GroovyTemplateStub extends TemplateStub {
 
   /** . */
   private Class<?> scriptClass;
@@ -66,7 +69,32 @@ public abstract class GroovyTemplateStub extends TemplateStub {
     }
   }
 
-  public abstract String getScript(ClassLoader loader);
+  public String getScript(ClassLoader loader) {
+    try {
+      String path = id.replace('.', '/') + ".groovy";
+      URL url = loader.getResource(path);
+      if (url != null) {
+        byte[] buffer = new byte[256];
+        InputStream in = url.openStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
+          baos.write(buffer, 0, l);
+        }
+        return baos.toString();
+      }
+      else {
+        System.out.println("Could not load resource " + path);
+        System.out.println("Could not load resource " + path);
+        System.out.println("Could not load resource " + path);
+        System.out.println("Could not load resource " + path);
+        System.out.println("Could not load resource " + path);
+      }
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 
   public String getClassName() {
     return scriptClass != null ? scriptClass.getName() : null;
