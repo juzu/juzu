@@ -71,7 +71,7 @@ public class GroovyTemplateStub extends TemplateStub {
 
   public String getScript(ClassLoader loader) {
     try {
-      String path = id.replace('.', '/') + ".groovy";
+      String path = id.replace('.', '/') + "_.groovy";
       URL url = loader.getResource(path);
       if (url != null) {
         byte[] buffer = new byte[256];

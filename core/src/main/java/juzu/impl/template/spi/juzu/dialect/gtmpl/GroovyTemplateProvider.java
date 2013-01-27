@@ -58,6 +58,6 @@ public class GroovyTemplateProvider extends DialectTemplateProvider {
     DialectTemplateEmitter emitter = createEmitter();
     EmitPhase tcc = new EmitPhase(context);
     tcc.emit(emitter, template.getModel());
-    context.createResource(template.getPath().getRawName(), "groovy", emitter.toString());
+    context.createResource(template.getPath().getRawName() + "_", "groovy", emitter.toString());
   }
 }
