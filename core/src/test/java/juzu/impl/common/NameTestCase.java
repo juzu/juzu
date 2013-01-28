@@ -108,9 +108,9 @@ public class NameTestCase extends AbstractTestCase {
     FileKey file = name.resolve(path);
     assertEquals("foo", file.packageFQN);
     assertEquals("a.b.c", file.name);
-    assertEquals("c", file.ext);
-    assertEquals("a.b", file.rawName);
-    assertEquals("foo.a.b", file.fqn);
+    assertEquals("b.c", file.ext);
+    assertEquals("a", file.rawName);
+    assertEquals("foo.a", file.fqn);
   }
 
   @Test

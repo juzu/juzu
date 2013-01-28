@@ -87,7 +87,7 @@ public class FileKey implements Serializable {
   }
 
   public static FileKey newName(String packageName, String name) {
-    int pos = name.lastIndexOf('.');
+    int pos = name.indexOf('.');
     String rawName;
     String ext;
     if (pos == -1) {

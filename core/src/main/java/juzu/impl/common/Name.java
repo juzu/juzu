@@ -241,7 +241,7 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
       path = Path.absolute(append(dirs.toArray(new String[dirs.size()])), path.getRawName(), path.getExt());
     }
     String pkg = Tools.join('.', path.getDirs());
-    return FileKey.newName(pkg, path.getSimpleName());
+    return FileKey.newName(pkg, path.getRawName(), path.getExt());
   }
 
   /**

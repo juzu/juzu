@@ -65,11 +65,13 @@ class Lexers {
           throw new IllegalArgumentException("The name " + name + " is not valid");
         }
 
-        // Find the last index of '.'
-        int cur = name.lastIndexOf('.');
+        // Find the index of the first '.'
+        int cur = name.indexOf('.');
         String[] ret = new String[padding + size + 2];
         System.arraycopy(base, 0, ret, 0, padding);
-        if (cur == -1) {
+        if (cur == 0) {
+          throw new UnsupportedOperationException("Handle me gracefully");
+        } else if (cur == -1) {
           ret[at] = name;
           return ret;
         } else {
