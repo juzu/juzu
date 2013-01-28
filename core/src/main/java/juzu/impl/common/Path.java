@@ -20,7 +20,6 @@
 package juzu.impl.common;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class Path implements Serializable {
@@ -28,11 +27,15 @@ public abstract class Path implements Serializable {
   /** . */
   private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-  public static Path absolute(Name qn, String name, String extension) {
+  public static Absolute absolute(Name name, String extension) {
+    return new Absolute(name, extension);
+  }
+
+  public static Absolute absolute(Name qn, String name, String extension) {
     return new Absolute(qn, name, extension);
   }
 
-  public static Path relative(Name qn, String name, String extension) {
+  public static Relative relative(Name qn, String name, String extension) {
     return new Relative(qn, name, extension);
   }
 
@@ -48,40 +51,31 @@ public abstract class Path implements Serializable {
     boolean absolute = path.length() > 0 && path.charAt(0) == '/';
     String[] atoms = Lexers.parsePath(Lexers.PARSE_CANONICAL, EMPTY_STRING_ARRAY, 0, path, 0);
     if (absolute) {
-      return new Absolute(atoms);
+      return new Absolute(new Name(atoms, atoms.length - 1), atoms[atoms.length - 1]);
     } else {
-      return new Relative(atoms);
+      return new Relative(new Name(atoms, atoms.length - 1), atoms[atoms.length - 1]);
     }
   }
-
-  /** . */
-  protected final String[] atoms;
 
   /** . */
   protected final Name name;
 
   /** . */
+  protected final String ext;
+
+  /** . */
   private String canonical;
 
   private Path(Name pkg, String rawName, String ext) {
-
-    String[] atoms = new String[pkg.size() + 2];
-    for (int i = 0;i < pkg.size();i++) {
-      atoms[i] = pkg.get(i);
-    }
-    atoms[atoms.length - 2] = rawName;
-    atoms[atoms.length - 1] = ext;
-
-    //
     this.canonical = null;
-    this.atoms = atoms;
-    this.name = new Name(atoms, atoms.length - 1);
+    this.name = pkg.append(rawName);
+    this.ext = ext;
   }
 
-  private Path(String[] atoms) {
+  private Path(Name name, String ext) {
     this.canonical = null;
-    this.atoms = atoms;
-    this.name = new Name(atoms, atoms.length - 1);
+    this.name = name;
+    this.ext = ext;
   }
 
   public Path append(String path) throws NullPointerException, IllegalArgumentException {
@@ -91,8 +85,8 @@ public abstract class Path implements Serializable {
     if (path.length() > 0 && path.charAt(0) == '/') {
       throw new IllegalArgumentException("Cannot append absolute path " + path);
     }
-    String[] atoms = Lexers.parsePath(Lexers.PARSE_ANY, this.atoms, this.atoms.length - 2, path, 0);
-    return create(atoms);
+    String[] atoms = Lexers.parsePath(Lexers.PARSE_ANY, name.identifiers, name.size - 1, path, 0);
+    return create(new Name(atoms, atoms.length - 1), atoms[atoms.length - 1]);
   }
 
   public String getValue() {
@@ -102,10 +96,11 @@ public abstract class Path implements Serializable {
   /**
    * Covariant create.
    *
-   * @param atoms the path atoms
+   * @param name the name
+   * @param ext the extension
    * @return the path
    */
-  protected abstract Path create(String[] atoms);
+  protected abstract Path create(Name name, String ext);
 
   public final boolean isAbsolute() {
     return this instanceof Absolute;
@@ -139,7 +134,7 @@ public abstract class Path implements Serializable {
    * @return the raw name
    */
   public String getRawName() {
-    return atoms[atoms.length - 2];
+    return name.getIdentifier();
   }
 
   /**
@@ -148,7 +143,7 @@ public abstract class Path implements Serializable {
    * @return the extension
    */
   public String getExt() {
-    return atoms[atoms.length - 1];
+    return ext;
   }
 
   /**
@@ -168,16 +163,14 @@ public abstract class Path implements Serializable {
   }
 
   public Path as(String ext) {
-    String[] tmp = atoms.clone();
-    tmp[tmp.length - 1] = ext;
-    return create(tmp);
+    return create(name, ext);
   }
 
   public Path as(String rawName, String ext) {
-    String[] tmp = atoms.clone();
-    tmp[tmp.length - 2] = rawName;
-    tmp[tmp.length - 1] = ext;
-    return create(tmp);
+    String[] tmp = new String[name.size];
+    System.arraycopy(name.identifiers, 0, tmp, 0, name.size - 1);
+    tmp[tmp.length - 1] = rawName;
+    return create(new Name(tmp, tmp.length), ext);
   }
 
   public String getCanonical() {
@@ -186,11 +179,11 @@ public abstract class Path implements Serializable {
       if (isAbsolute()) {
         sb.append('/');
       }
-      for (int i = 0;i < atoms.length - 1;i++) {
+      for (int i = 0;i < name.size();i++) {
         if (i > 0) {
           sb.append('/');
         }
-        sb.append(atoms[i]);
+        sb.append(name.get(i));
       }
       String ext = getExt();
       if (ext != null) {
@@ -203,7 +196,8 @@ public abstract class Path implements Serializable {
 
   @Override
   public int hashCode() {
-    return Arrays.hashCode(atoms);
+    // Should use ext too in hashcode
+    return name.hashCode();
   }
 
   @Override
@@ -213,7 +207,7 @@ public abstract class Path implements Serializable {
     }
     if (obj.getClass() == getClass()) {
       Path that = (Path)obj;
-      return isAbsolute() == that.isAbsolute() && Arrays.equals(atoms, that.atoms);
+      return isAbsolute() == that.isAbsolute() && name.equals(that.name) && Tools.safeEquals(ext, that.ext);
     }
     return false;
   }
@@ -229,13 +223,13 @@ public abstract class Path implements Serializable {
       super(pkg, rawName, ext);
     }
 
-    public Absolute(String[] atoms) {
-      super(atoms);
+    public Absolute(Name name, String ext) {
+      super(name, ext);
     }
 
     @Override
-    protected Absolute create(String[] atoms) {
-      return new Absolute(atoms);
+    protected Absolute create(Name name, String ext) {
+      return new Absolute(name, ext);
     }
 
     @Override
@@ -255,13 +249,13 @@ public abstract class Path implements Serializable {
       super(pkg, rawName, ext);
     }
 
-    public Relative(String[] atoms) {
-      super(atoms);
+    public Relative(Name name, String ext) {
+      super(name, ext);
     }
 
     @Override
-    protected Relative create(String[] atoms) {
-      return new Relative(atoms);
+    protected Relative create(Name name, String ext) {
+      return new Relative(name, ext);
     }
 
     @Override

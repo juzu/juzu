@@ -104,6 +104,10 @@ public class FileKey implements Serializable {
     return new FileKey(packageName, rawName, ext);
   }
 
+  public static FileKey newName(Path.Absolute path) {
+    return new FileKey(path.getDirs().toString(), path.getRawName(), path.getExt());
+  }
+
   /** . */
   public final Iterable<String> packageNames;
 

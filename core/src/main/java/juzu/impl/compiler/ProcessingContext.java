@@ -21,6 +21,7 @@ package juzu.impl.compiler;
 
 import juzu.impl.common.Name;
 import juzu.impl.common.FileKey;
+import juzu.impl.common.Path;
 import juzu.impl.compiler.file.JavaFileObjectImpl;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
@@ -288,6 +289,19 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
    * Resolve a resource from the provided context and path.
    *
    * @param context the context of the application that will help to resolve the path source code
+   * @param path the path of the resource to resolve
+   * @return the resolved resource or null if it cannot be determined
+   * @throws NullPointerException if any argument is null
+   * @throws IllegalArgumentException if the context package is not valid
+   */
+  public FileObject resolveResource(ElementHandle.Package context, Path.Absolute path) throws NullPointerException, IllegalArgumentException {
+    return resolveResource(context, FileKey.newName(path));
+  }
+
+  /**
+   * Resolve a resource from the provided context and key.
+   *
+   * @param context the context of the application that will help to resolve the path source code
    * @param key the key of the resource to resolve
    * @return the resolved resource or null if it cannot be determined
    * @throws NullPointerException if any argument is null
@@ -544,6 +558,10 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
     return env.getFiler().createClassFile(name, originatingElements);
   }
 
+  public FileObject createResource(JavaFileManager.Location location, Path.Absolute path, Element... originatingElements) throws IOException {
+    return createResource(location, path.getDirs(), path.getSimpleName(), originatingElements);
+  }
+
   public FileObject createResource(JavaFileManager.Location location, FileKey key, Element... originatingElements) throws IOException {
     return createResource(location, key.packageFQN, key.name, originatingElements);
   }
@@ -564,6 +582,10 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
     } else {
       return env.getFiler().createResource(location, pkg, relativeName, originatingElements);
     }
+  }
+
+  public FileObject getResource(JavaFileManager.Location location, Path.Absolute path) throws IOException {
+    return getResource(location, path.getDirs(), path.getSimpleName());
   }
 
   public FileObject getResource(JavaFileManager.Location location, FileKey key) throws IOException {

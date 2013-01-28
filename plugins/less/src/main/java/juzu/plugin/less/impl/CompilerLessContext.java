@@ -52,14 +52,14 @@ class CompilerLessContext implements LessContext {
 
   public String load(String ref) {
     try {
-      FileKey key = pkg.resolve(ref);
-      FileObject c = processingContext.resolveResource(context, key);
+      Path.Absolute path = pkg.resolve(ref);
+      FileObject c = processingContext.resolveResource(context, path);
       if (c != null) {
         try {
           return c.getCharContent(true).toString();
         }
         catch (IOException e) {
-          processingContext.log("Could not get content of " + key, e);
+          processingContext.log("Could not get content of " + path, e);
         }
       }
     }

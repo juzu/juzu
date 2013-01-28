@@ -19,6 +19,7 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.FileKey;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;

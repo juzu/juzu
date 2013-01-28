@@ -89,10 +89,10 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
   }
 
   /** . */
-  private final String[] identifiers;
+  final String[] identifiers;
 
   /** . */
-  private final int size;
+  final int size;
 
   /** . */
   private String value;
@@ -223,28 +223,23 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
     return false;
   }
 
-  public FileKey resolve(String path) {
+  public Path.Absolute resolve(String path) {
     String[] atoms = Lexers.parsePath(Lexers.PARSE_ANY, identifiers, identifiers.length, path, 0);
-    String pkg = Tools.join('.', atoms, 0, atoms.length - 2);
-    return FileKey.newName(pkg, atoms[atoms.length - 2], atoms[atoms.length - 1]);
+    return new Path.Absolute(new Name(atoms, atoms.length - 1), atoms[atoms.length - 1]);
   }
 
   /**
-   * Resolve a path with respect to this name and return a file key.
+   * Resolve a path with respect to this name and return an absolute path.
    *
    * @param path the path
-   * @return the corresponding file key
+   * @return the corresponding absolute path
    */
-  public FileKey resolve(Path path) {
-    if (path.isRelative()) {
-      Name dirs = path.getDirs();
-      path = Path.absolute(
-          append(dirs),
-          path.getRawName(),
-          path.getExt());
+  public Path.Absolute resolve(Path path) {
+    if (path instanceof Path.Absolute) {
+      return (Path.Absolute)path;
+    } else {
+      return Path.absolute(append(path.getName()), path.getExt());
     }
-    String pkg = Tools.join('.', path.getDirs());
-    return FileKey.newName(pkg, path.getRawName(), path.getExt());
   }
 
   /**

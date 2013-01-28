@@ -105,23 +105,23 @@ public class NameTestCase extends AbstractTestCase {
   public void testResolveDotInRawName() throws Exception {
     Name name = Name.parse("foo");
     Path path = Path.parse("a.b.c");
-    FileKey file = name.resolve(path);
-    assertEquals("foo", file.packageFQN);
-    assertEquals("a.b.c", file.name);
+    Path.Absolute file = name.resolve(path);
+    assertEquals("foo", file.getDirs().toString());
+    assertEquals("a.b.c", file.getSimpleName());
     assertEquals("b.c", file.ext);
-    assertEquals("a", file.rawName);
-    assertEquals("foo.a", file.fqn);
+    assertEquals("a", file.getRawName());
+    assertEquals("foo.a", file.getName().toString());
   }
 
   @Test
   public void testResolveUp() throws Exception {
     Name name = Name.parse("foo.bar");
-    FileKey file = name.resolve("../juu/daa.txt");
-    assertEquals("foo.juu", file.packageFQN);
-    assertEquals("daa.txt", file.name);
-    assertEquals("txt", file.ext);
-    assertEquals("daa", file.rawName);
-    assertEquals("foo.juu.daa", file.fqn);
+    Path.Absolute file = name.resolve("../juu/daa.txt");
+    assertEquals("foo.juu", file.getDirs().toString());
+    assertEquals("daa.txt", file.getSimpleName());
+    assertEquals("txt", file.getExt());
+    assertEquals("daa", file.getRawName());
+    assertEquals("foo.juu.daa", file.getName().toString());
   }
 
   @Test

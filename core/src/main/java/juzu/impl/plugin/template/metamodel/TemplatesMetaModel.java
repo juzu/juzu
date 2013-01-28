@@ -20,7 +20,6 @@
 package juzu.impl.plugin.template.metamodel;
 
 import juzu.impl.common.Name;
-import juzu.impl.common.FileKey;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
@@ -56,7 +55,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     return json;
   }
 
-  public FileKey resolve(Path path) {
+  public Path.Absolute resolve(Path path) {
     return qn.resolve(path);
   }
 

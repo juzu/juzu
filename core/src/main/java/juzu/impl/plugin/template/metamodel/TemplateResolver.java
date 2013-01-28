@@ -72,9 +72,6 @@ public class TemplateResolver implements Serializable {
   private Set<Path> emitted;
 
   /** . */
-  private Map<FileKey, FileObject> stubCache;
-
-  /** . */
   private Map<FileKey, FileObject> classCache;
 
   public TemplateResolver(ApplicationMetaModel application) {
@@ -86,7 +83,6 @@ public class TemplateResolver implements Serializable {
     this.application = application;
     this.templates = new HashMap<Path, Template<?>>();
     this.emitted = new HashSet<Path>();
-    this.stubCache = new HashMap<FileKey, FileObject>();
     this.classCache = new HashMap<FileKey, FileObject>();
   }
 
@@ -102,7 +98,6 @@ public class TemplateResolver implements Serializable {
   public void prePassivate() {
     log.log("Evicting cache " + emitted);
     emitted.clear();
-    stubCache.clear();
     classCache.clear();
   }
 
@@ -115,7 +110,7 @@ public class TemplateResolver implements Serializable {
     log.log("Synchronizing existing templates " + templates.keySet());
     for (Iterator<Template<?>> i = templates.values().iterator();i.hasNext();) {
       Template<?> template = i.next();
-      FileKey absolute = metaModel.resolve(template.getPath());
+      Path.Absolute absolute = metaModel.resolve(template.getPath());
       FileObject resource = context.resolveResource(application.getHandle(), absolute);
       if (resource == null) {
         // That will generate a template not found error
@@ -195,8 +190,9 @@ public class TemplateResolver implements Serializable {
             EmitContext emitCtx = new EmitContext() {
               public void createResource(String rawName, String ext, CharSequence content) throws IOException {
                 Path bar = template.getPath().as(rawName, ext);
-                FileKey absolute = metaModel.resolve(bar);
-                FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, elements);
+                Path.Absolute absolute = metaModel.resolve(bar);
+                FileKey key = FileKey.newName(absolute);
+                FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, key, elements);
                 Writer writer = null;
                 try {
                   writer = scriptFile.openWriter();
@@ -241,7 +237,7 @@ public class TemplateResolver implements Serializable {
 
     //
     Path path = template.getPath();
-    FileKey absolute = metaModel.resolve(path);
+    FileKey absolute = FileKey.newName(metaModel.resolve(path));
     if (classCache.containsKey(absolute)) {
       log.log("Template class " + path + " was found in cache");
       return;

@@ -109,7 +109,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
             if ((location == null && classpath) || "CLASSPATH".equals(location)) {
               String value = (String)script.get("src");
               Path path = Path.parse(value);
-              FileKey absolute;
+              Path.Absolute absolute;
               if (path.isRelative()) {
                 context.log("Found classpath asset to copy " + value);
                 Name qn = metaModel.getHandle().getPackage().append("assets");
