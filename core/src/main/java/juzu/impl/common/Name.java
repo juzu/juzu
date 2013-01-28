@@ -237,8 +237,11 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
    */
   public FileKey resolve(Path path) {
     if (path.isRelative()) {
-      ArrayList<String> dirs = Tools.list(path.getDirs());
-      path = Path.absolute(append(dirs.toArray(new String[dirs.size()])), path.getRawName(), path.getExt());
+      Name dirs = path.getDirs();
+      path = Path.absolute(
+          append(dirs),
+          path.getRawName(),
+          path.getExt());
     }
     String pkg = Tools.join('.', path.getDirs());
     return FileKey.newName(pkg, path.getRawName(), path.getExt());
