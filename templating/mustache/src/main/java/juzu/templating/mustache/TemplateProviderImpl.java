@@ -83,7 +83,7 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
     };
 
     // Does the name count ?
-    factory.compile(new StringReader(mustacheTemplate.getModel().source), mustacheTemplate.getPath().getName());
+    factory.compile(new StringReader(mustacheTemplate.getModel().source), mustacheTemplate.getPath().getSimpleName());
   }
 
   @Override

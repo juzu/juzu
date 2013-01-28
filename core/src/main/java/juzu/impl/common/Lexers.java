@@ -131,12 +131,18 @@ class Lexers {
     }
   }
 
-  static String[] parse_(CharSequence s, int from, int end, int max) throws IllegalArgumentException {
+  /**
+   * Parse a dot separated name.
+   *
+   * @param s the sequence
+   * @param from the from index
+   * @param end the end index
+   * @return the parsed identifiers
+   * @throws IllegalArgumentException
+   */
+  static String[] parseName(CharSequence s, int from, int end) throws IllegalArgumentException {
     if (from < 0) {
       throw new IllegalArgumentException("From bound " + from + " cannot be negative");
-    }
-    if (end > max) {
-      throw new IllegalArgumentException("End bound " + end + " cannot be greater than the sequence length " + max);
     }
     if (from > end) {
       throw new IllegalArgumentException("From bound " + from + " cannot be greater than the end bound " + end);

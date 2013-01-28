@@ -77,7 +77,10 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
    * @throws IllegalArgumentException if the name is not valid
    */
   public static Name parse(CharSequence s, int from, int end) throws IllegalArgumentException {
-    String[] segments = Lexers.parse_(s, from, end, s.length());
+    if (end > s.length()) {
+      throw new IllegalArgumentException("End bound " + end + " cannot be greater than the sequence length " + s.length());
+    }
+    String[] segments = Lexers.parseName(s, from, end);
     if (segments.length == 0) {
       return EMPTY;
     } else {
@@ -92,7 +95,7 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
   private final int size;
 
   /** . */
-  private final String value;
+  private String value;
 
   /** . */
   private Name parent;
@@ -103,6 +106,13 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
 
   private Name(String value, String[] identifiers, int size) {
     this.value = value;
+    this.identifiers = identifiers;
+    this.size = size;
+    this.parent = null;
+  }
+
+  Name(String[] identifiers, int size) {
+    this.value = Tools.join('.', identifiers, 0, size);
     this.identifiers = identifiers;
     this.size = size;
     this.parent = null;
@@ -231,7 +241,7 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
       path = Path.absolute(append(dirs.toArray(new String[dirs.size()])), path.getRawName(), path.getExt());
     }
     String pkg = Tools.join('.', path.getDirs());
-    return FileKey.newName(pkg, path.getName());
+    return FileKey.newName(pkg, path.getSimpleName());
   }
 
   /**

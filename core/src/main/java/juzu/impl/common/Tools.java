@@ -275,11 +275,18 @@ public class Tools {
   }
 
   public static String join(char separator, String... names) {
-    return join(new StringBuilder(), separator, names).toString();
+    return join(separator, names, 0, names.length);
   }
 
   public static String join(char separator, String[] names, int from, int end) {
-    return join(new StringBuilder(), separator, names, from, end).toString();
+    int length = 0;
+    for (int i = from;i < end;i++) {
+      if (i > from) {
+        length++;
+      }
+      length += names[i].length();
+    }
+    return join(new StringBuilder(length), separator, names, from, end).toString();
   }
 
   public static String join(char separator, Iterator<String> names) {
@@ -287,7 +294,7 @@ public class Tools {
   }
 
   public static String join(char separator, Iterable<String> names) {
-    return join(new StringBuilder(), separator, names).toString();
+    return join(separator, names.iterator());
   }
 
   public static StringBuilder join(StringBuilder sb, char separator, String... names) {
