@@ -85,7 +85,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     }
   }
 
-  public TemplateRefMetaModel add(ElementHandle.Field handle, Path path) {
+  public TemplateRefMetaModel add(ElementHandle.Field handle, Path.Relative path) {
     TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new TemplateRefMetaModel(handle, path));
     TemplateMetaModel template = getChild(Key.of(path, TemplateMetaModel.class));
     if (template == null) {

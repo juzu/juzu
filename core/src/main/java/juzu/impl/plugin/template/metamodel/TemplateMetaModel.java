@@ -67,9 +67,9 @@ public class TemplateMetaModel extends MetaModelObject {
   TemplatesMetaModel templates;
 
   /** . */
-  final Path path;
+  final Path.Relative path;
 
-  public TemplateMetaModel(Path path) {
+  public TemplateMetaModel(Path.Relative path) {
     this.path = path;
   }
 
@@ -77,7 +77,7 @@ public class TemplateMetaModel extends MetaModelObject {
     return templates;
   }
 
-  public Path getPath() {
+  public Path.Relative getPath() {
     return path;
   }
 

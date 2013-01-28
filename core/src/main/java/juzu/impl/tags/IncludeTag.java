@@ -37,7 +37,7 @@ public class IncludeTag extends ExtendedTagHandler {
   @Override
   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) {
     String path = tag.getArgs().get("path");
-    phase.resolveTemplate(Path.parse(path));
+    phase.resolveTemplate((Path.Relative)Path.parse(path));
   }
 
   @Override

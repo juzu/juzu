@@ -19,6 +19,7 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.Path;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
@@ -33,12 +34,12 @@ public class TemplateRefMetaModel extends MetaModelObject {
   /** . */
   final ElementHandle.Field handle;
 
-  /** . */
-  juzu.impl.common.Path path;
+  /** The path declaration. */
+  Path.Relative path;
 
   TemplateRefMetaModel(
     ElementHandle.Field handle,
-    juzu.impl.common.Path path) {
+    Path.Relative path) {
     this.handle = handle;
     this.path = path;
   }
@@ -47,7 +48,7 @@ public class TemplateRefMetaModel extends MetaModelObject {
     return handle;
   }
 
-  public juzu.impl.common.Path getPath() {
+  public Path.Relative getPath() {
     return path;
   }
 

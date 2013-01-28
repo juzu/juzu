@@ -39,7 +39,7 @@ public class ProcessPhase extends CompilationPhase {
   }
 
   /** . */
-  private Path originPath;
+  private Path.Relative originPath;
 
   public void process(Template<ASTNode.Template> template) {
     boolean initial;
@@ -64,7 +64,7 @@ public class ProcessPhase extends CompilationPhase {
     }
   }
 
-  public Template resolveTemplate(Path path) throws ProcessingException {
+  public Template resolveTemplate(Path.Relative path) throws ProcessingException {
     return context.resolveTemplate(originPath, path);
   }
 

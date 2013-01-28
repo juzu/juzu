@@ -66,13 +66,13 @@ public class TemplateResolver implements Serializable {
   private final ApplicationMetaModel application;
 
   /** . */
-  private Map<Path, Template<?>> templates;
+  private Map<Path.Relative, Template<?>> templates;
 
   /** . */
-  private Set<Path> emitted;
+  private Set<Path.Relative> emitted;
 
   /** . */
-  private Map<FileKey, FileObject> classCache;
+  private Map<Path.Relative, FileObject> classCache;
 
   public TemplateResolver(ApplicationMetaModel application) {
     if (application == null) {
@@ -81,16 +81,16 @@ public class TemplateResolver implements Serializable {
 
     //
     this.application = application;
-    this.templates = new HashMap<Path, Template<?>>();
-    this.emitted = new HashSet<Path>();
-    this.classCache = new HashMap<FileKey, FileObject>();
+    this.templates = new HashMap<Path.Relative, Template<?>>();
+    this.emitted = new HashSet<Path.Relative>();
+    this.classCache = new HashMap<Path.Relative, FileObject>();
   }
 
   public Collection<Template<?>> getTemplates() {
     return templates.values();
   }
 
-  public void removeTemplate(Path path) {
+  public void removeTemplate(Path.Relative path) {
     // Shall we do something else ?
     templates.remove(path);
   }
@@ -129,7 +129,7 @@ public class TemplateResolver implements Serializable {
 
     // Build missing templates
     log.log("Building missing templates");
-    Map<Path, Template<?>> copy = new HashMap<Path, Template<?>>(templates);
+    Map<Path.Relative, Template<?>> copy = new HashMap<Path.Relative, Template<?>>(templates);
     for (TemplateMetaModel templateMeta : metaModel) {
       Template<?> template = copy.get(templateMeta.getPath());
       if (template == null) {
@@ -183,8 +183,11 @@ public class TemplateResolver implements Serializable {
         // If CCE that would mean there is an internal bug
         TemplateProvider<M> provider = (TemplateProvider<M>)plugin.providers.get(template.getPath().getExt());
 
+        //
+        Path.Relative path = template.getPath();
+
         // If it's the cache we do nothing
-        if (!emitted.contains(template.getPath())) {
+        if (!emitted.contains(path)) {
           //
           try {
             EmitContext emitCtx = new EmitContext() {
@@ -210,7 +213,7 @@ public class TemplateResolver implements Serializable {
             provider.emit(emitCtx, template);
 
             // Put it in cache
-            emitted.add(template.getPath());
+            emitted.add(path);
           }
           catch (IOException e) {
             throw TemplateMetaModel.CANNOT_WRITE_TEMPLATE_SCRIPT.failure(e, template.getPath());
@@ -236,20 +239,22 @@ public class TemplateResolver implements Serializable {
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
 
     //
-    Path path = template.getPath();
-    FileKey absolute = FileKey.newName(metaModel.resolve(path));
-    if (classCache.containsKey(absolute)) {
+    Path.Relative path = template.getPath();
+    if (classCache.containsKey(path)) {
       log.log("Template class " + path + " was found in cache");
       return;
     }
 
     //
+    Path.Absolute resolvedPath = metaModel.resolve(path);
+
+    //
     Writer writer = null;
     try {
       // Template qualified class
-      FileObject classFile = context.createSourceFile(absolute.fqn, elements);
+      FileObject classFile = context.createSourceFile(resolvedPath.getName(), elements);
       writer = classFile.openWriter();
-      writer.append("package ").append(absolute.packageFQN).append(";\n");
+      writer.append("package ").append(resolvedPath.getDirs()).append(";\n");
       writer.append("import ").append(TemplateDescriptor.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(TemplatePlugin.class.getCanonicalName()).append(";\n");
       writer.append("@").append(Generated.class.getName()).append("({})\n");
@@ -267,7 +272,7 @@ public class TemplateResolver implements Serializable {
       //
       writer.
           append("public static final ").append(TemplateDescriptor.class.getName()).append(" DESCRIPTOR = new ").append(TemplateDescriptor.class.getName()).append("(").
-          append(absolute.fqn).append(".class,").
+          append(resolvedPath.getName()).append(".class,").
           append(provider.getTemplateStubType().getName()).append(".class").
           append(");\n");
 
@@ -301,7 +306,7 @@ public class TemplateResolver implements Serializable {
       writer.append("}\n");
 
       //
-      classCache.put(absolute, classFile);
+      classCache.put(path, classFile);
 
       //
       log.log("Generated template class " + path + " as " + classFile.toUri() +

@@ -100,7 +100,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     if (key.getType().equals(PATH)) {
       if (key.getElement() instanceof ElementHandle.Field) {
         ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-        Path addedPath = Path.parse((String)added.get("value"));
+        Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
         Path removedPath = Path.parse((String)removed.get("value"));
         TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
         metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
@@ -116,7 +116,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
       if (key.getElement() instanceof ElementHandle.Field) {
         ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
         TemplatesMetaModel templates = application.getChild(TemplatesMetaModel.KEY);
-        Path addedPath = Path.parse((String)added.get("value"));
+        Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
         application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
         templates.add(variableElt, addedPath);
       }

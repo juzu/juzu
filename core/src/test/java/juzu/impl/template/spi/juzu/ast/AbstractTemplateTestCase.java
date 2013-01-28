@@ -65,7 +65,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
           }
         }
       });
-      Template<ASTNode.Template> template = new Template<ASTNode.Template>(Path.parse("index.gtmpl"), ASTNode.Template.parse(text), Path.parse("index.gtmpl"), 0);
+      Template<ASTNode.Template> template = new Template<ASTNode.Template>((Path.Relative)Path.parse("index.gtmpl"), ASTNode.Template.parse(text), (Path.Relative)Path.parse("index.gtmpl"), 0);
       processPhase.process(template);
 
       // Emit
