@@ -149,7 +149,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
           }
 
           //
-          FileKey to = assetPkg.resolve(path.as("css"));
+          Path.Absolute to = assetPkg.resolve(path.as("css"));
           log.log("Resource " + resource + " destination resolved to " + to);
 
           //
