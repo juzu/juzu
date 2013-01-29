@@ -139,23 +139,3 @@ External assets declares an opaque URL for Juzu.
 package my.application;
 {{/java}}
 {{/example}}
-
-= Less plugin =
-
-The Less plugin transform Less source files into regular CSS files. This plugin operates during compile phase to
-transform Less sources into css assets that can be the served by the asset plugin.
-
-The Less plugin declares a set of //.less// files to be compiled via the ##@Less## package annotation. However unlike
-the asset plugin, the Less plugin is not related to a specific application, it means that the ##@Less## annotation can
-be used on any package. The ##.less## files will be resolved from the ##assets## child package of the annotated package:
-
-* When an application package is annotated the ##assets## package will coincide with the application asset package
-* When a regular package is annotated, application can refer to it via an absolute uri
-
-{{example title="Transforming and declaring Less assets"}}
-{{java}}
-@Less(value = "bootstrap.less", minify = true) // <1> Transform ##my.application.assets.bootstrap.less## to ##my.application.assets.bootstrap.css##
-@Assets(stylesheets = "bootstrap.css") // <2> Declare ##my.application.assets.bootstrap.css## to be served by the application
-package my.application;
-{{/java}}
-{{/example}}
