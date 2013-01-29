@@ -40,15 +40,6 @@ public abstract class TemplateProvider<M extends Serializable> {
   public abstract String getSourceExtension();
 
   /**
-   * Returns the template target extension without the dot, this value
-   * will be used only when the provider emits a file, i.e the method
-   * {@link #emit(EmitContext, Template} does not return null.
-   *
-   * @return the target extension
-   */
-  public abstract String getTargetExtension();
-
-  /**
    * Return the template stub type.
    *
    * @return the template stub class

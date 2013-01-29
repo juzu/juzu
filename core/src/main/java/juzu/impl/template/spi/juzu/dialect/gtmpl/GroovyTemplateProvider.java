@@ -43,11 +43,6 @@ public class GroovyTemplateProvider extends DialectTemplateProvider {
   }
 
   @Override
-  public String getTargetExtension() {
-    return "groovy";
-  }
-
-  @Override
   public final void emit(EmitContext context, Template<ASTNode.Template> template) throws TemplateException, IOException {
     GroovyTemplateEmitter emitter = new GroovyTemplateEmitter(template.getAbsolutePath().getName());
     EmitPhase tcc = new EmitPhase(context);

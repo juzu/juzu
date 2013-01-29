@@ -94,9 +94,4 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
   public String getSourceExtension() {
     return "mustache";
   }
-
-  @Override
-  public String getTargetExtension() {
-    return null;
-  }
 }
