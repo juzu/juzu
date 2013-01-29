@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-doc-reference-parent</artifactId>
-    <version>0.6.0-beta12-SNAPSHOT</version>
+    <version>0.6.0-beta12</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-doc-reference-guide</artifactId>
-  <version>0.6.0-beta12-SNAPSHOT</version>
+  <version>0.6.0-beta12</version>
 
   <name>Juzu Reference Guide</name>
   <description>The reference guide</description>
@@ -23,13 +23,13 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
-      <version>0.6.0-beta12-SNAPSHOT</version>
+      <version>0.6.0-beta12</version>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <classifier>sources</classifier>
-      <version>0.6.0-beta12-SNAPSHOT</version>
+      <version>0.6.0-beta12</version>
     </dependency>
   </dependencies>
 
@@ -92,9 +92,9 @@
         <artifactId>wikbook.maven</artifactId>
         <configuration>
           <afterBookBodyXML><![CDATA[
-          <xi:include href="juzu-plugins-upload.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
-          <xi:include href="juzu-plugins-portlet.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
-          <xi:include href="juzu-plugins-less.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+          <xi:include href="juzu-plugins-upload.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+          <xi:include href="juzu-plugins-portlet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+          <xi:include href="juzu-plugins-less.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
           ]]>
           </afterBookBodyXML>
         </configuration>
