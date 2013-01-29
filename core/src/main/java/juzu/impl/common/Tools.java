@@ -203,9 +203,13 @@ public class Tools {
   }
 
   public static void write(String content, File f) throws IOException {
+    write(content.getBytes(), f);
+  }
+
+  public static void write(byte[] content, File f) throws IOException {
     FileOutputStream out = new FileOutputStream(f);
     try {
-      copy(new ByteArrayInputStream(content.getBytes()), out);
+      copy(new ByteArrayInputStream(content), out);
     }
     finally {
       safeClose(out);

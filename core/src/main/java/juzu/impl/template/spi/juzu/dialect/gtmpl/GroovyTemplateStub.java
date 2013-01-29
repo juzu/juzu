@@ -22,6 +22,7 @@ package juzu.impl.template.spi.juzu.dialect.gtmpl;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
+import groovy.lang.Script;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
@@ -54,24 +55,57 @@ public class GroovyTemplateStub extends TemplateStub {
 
   @Override
   public void doInit(ClassLoader loader) {
-    CompilerConfiguration config = new CompilerConfiguration();
-    config.setScriptBaseClass(BaseScript.class.getName());
-    String script = getScript(loader);
-    GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
-    GroovyClassLoader gcl = new GroovyClassLoader(loader, config);
+
+    // The class fqn
+    String fqn = id + "_";
+
+    // Load from class loader first
     try {
-      scriptClass = gcl.parseClass(gcs, false);
-      Class<?> constants = scriptClass.getClassLoader().loadClass("Constants");
+      scriptClass = loader.loadClass(fqn);
+    }
+    catch (ClassNotFoundException ignore) {
+    }
+    catch (NoClassDefFoundError ignore) {
+    }
+
+    // Compile class
+    if (scriptClass == null) {
+      CompilerConfiguration config = new CompilerConfiguration();
+      String script = getScript(loader, fqn);
+      GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
+      GroovyClassLoader gcl = new GroovyClassLoader(loader, config);
+      try {
+        scriptClass = gcl.parseClass(gcs, false);
+      }
+      catch (Exception e) {
+        throw new UnsupportedOperationException("handle me gracefully", e);
+      }
+    }
+
+    // Load constants
+    try {
+      String simpleName;
+      String prefix;
+      int pos = id.lastIndexOf('.');
+      if (pos != -1) {
+        prefix = id.substring(0, pos + 1);
+        simpleName = id.substring(pos + 1);
+      } else {
+        prefix = "";
+        simpleName = id;
+      }
+      String constantsName = prefix + "C" + simpleName;
+      Class<?> constants = scriptClass.getClassLoader().loadClass(constantsName);
       locationTable = (HashMap<Integer, Foo>)constants.getField("TABLE").get(null);
     }
     catch (Exception e) {
-      throw new UnsupportedOperationException("handle me gracefully", e);
+      throw new UnsupportedOperationException("Handle me gracefully", e);
     }
   }
 
-  public String getScript(ClassLoader loader) {
+  public String getScript(ClassLoader loader, String fqn) {
     try {
-      String path = id.replace('.', '/') + "_.groovy";
+      String path = fqn.replace('.', '/') + ".groovy";
       URL url = loader.getResource(path);
       if (url != null) {
         byte[] buffer = new byte[256];
@@ -102,8 +136,10 @@ public class GroovyTemplateStub extends TemplateStub {
 
   @Override
   public void doRender(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException {
-    BaseScript script = (BaseScript)InvokerHelper.createScript(scriptClass, renderContext.getAttributes() != null ? new Binding(renderContext.getAttributes()) : new Binding());
-    script.init(renderContext);
+    Binding binding = new BindingImpl(renderContext);
+
+    //
+    Script script = InvokerHelper.createScript(scriptClass, binding);
 
     //
     try {

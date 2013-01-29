@@ -27,16 +27,20 @@ public abstract class Path implements Serializable {
   /** . */
   private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-  public static Absolute absolute(Name name, String extension) {
-    return new Absolute(name, extension);
+  public static Absolute absolute(Name name, String ext) {
+    return new Absolute(name, ext);
   }
 
-  public static Absolute absolute(Name qn, String name, String extension) {
-    return new Absolute(qn, name, extension);
+  public static Absolute absolute(Name qn, String rawName, String ext) {
+    return new Absolute(qn, rawName, ext);
   }
 
-  public static Relative relative(Name qn, String name, String extension) {
-    return new Relative(qn, name, extension);
+  public static Relative relative(Name qn, String rawName, String ext) {
+    return new Relative(qn, rawName, ext);
+  }
+
+  public static Relative relative(Name name, String ext) {
+    return new Relative(name, ext);
   }
 
   public static Path create(boolean absolute, Name qn, String rawName, String ext) {

@@ -118,6 +118,7 @@ public class TagTestCase extends AbstractInjectTestCase {
       (Path.Relative)Path.parse("index.gtmpl"),
       new ASTNode.Template(),
       (Path.Relative)Path.parse(desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
+      (Path.Absolute)Path.parse("/" + desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
       System.currentTimeMillis());
 
     //
@@ -132,6 +133,7 @@ public class TagTestCase extends AbstractInjectTestCase {
               path,
               ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
               (Path.Relative)Path.parse("plugin/template/tag/decorate/templates/index.gtmpl"),
+              (Path.Absolute)Path.parse("/plugin/template/tag/decorate/templates/index.gtmpl"),
               System.currentTimeMillis()
             );
           }

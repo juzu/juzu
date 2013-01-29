@@ -59,8 +59,8 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
 
       @Override
       public Reader getReader(String resourceName) {
-        Path partialPath = Path.parse(resourceName);
-        Template<MustacheContext> partial = (Template<MustacheContext>)context.resolveTemplate(mustacheTemplate.getOriginPath(), partialPath);
+        Path.Relative partialPath = (Path.Relative)Path.parse(resourceName);
+        Template<MustacheContext> partial = (Template<MustacheContext>)context.resolveTemplate(mustacheTemplate.getOrigin(), partialPath);
         if (partial != null) {
           return new StringReader(partial.getModel().source);
         } else {
@@ -83,7 +83,7 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
     };
 
     // Does the name count ?
-    factory.compile(new StringReader(mustacheTemplate.getModel().source), mustacheTemplate.getPath().getSimpleName());
+    factory.compile(new StringReader(mustacheTemplate.getModel().source), mustacheTemplate.getRelativePath().getSimpleName());
   }
 
   @Override

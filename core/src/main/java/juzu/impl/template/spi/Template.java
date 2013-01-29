@@ -33,13 +33,16 @@ import java.util.LinkedHashSet;
 public class Template<M extends Serializable> implements Serializable {
 
   /** The origin path. */
-  private final Path.Relative originPath;
+  private final Path.Relative origin;
 
   /** . */
   private final M model;
 
   /** . */
-  private final Path.Relative path;
+  private final Path.Relative relativePath;
+
+  /** . */
+  private final Path.Absolute absolutePath;
 
   /** . */
   private final LinkedHashSet<String> parameters;
@@ -48,23 +51,29 @@ public class Template<M extends Serializable> implements Serializable {
   private long lastModified;
 
   public Template(
-    Path.Relative originPath,
+    Path.Relative origin,
     M model,
-    Path.Relative path,
+    Path.Relative relativePath,
+    Path.Absolute absolutePath,
     long lastModified) {
-    this.originPath = originPath;
+    this.origin = origin;
     this.model = model;
-    this.path = path;
+    this.relativePath = relativePath;
     this.parameters = new LinkedHashSet<String>();
     this.lastModified = lastModified;
+    this.absolutePath = absolutePath;
   }
 
-  public Path.Relative getOriginPath() {
-    return originPath;
+  public Path.Relative getOrigin() {
+    return origin;
   }
 
-  public Path.Relative getPath() {
-    return path;
+  public Path.Absolute getAbsolutePath() {
+    return absolutePath;
+  }
+
+  public Path.Relative getRelativePath() {
+    return relativePath;
   }
 
   public M getModel() {

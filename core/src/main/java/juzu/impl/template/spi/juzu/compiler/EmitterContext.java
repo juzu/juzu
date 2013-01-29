@@ -39,7 +39,15 @@ class EmitterContext {
     this.writer = writer;
   }
 
-  void begin(SectionType sectionType, Location pos) {
+  void open() {
+    writer.open();
+  }
+
+  void close() {
+    writer.close();
+  }
+
+  void openSection(SectionType sectionType, Location pos) {
     if (sectionType == null) {
       throw new NullPointerException();
     }
@@ -56,10 +64,10 @@ class EmitterContext {
       case STRING:
         break;
       case SCRIPTLET:
-        writer.startScriptlet(pos);
+        writer.openScriptlet(pos);
         break;
       case EXPR:
-        writer.startExpression(pos);
+        writer.openExpression(pos);
         break;
     }
   }
@@ -92,7 +100,7 @@ class EmitterContext {
     }
   }
 
-  void end() {
+  void closeSection() {
     if (currentType == null) {
       throw new IllegalStateException();
     }
@@ -106,10 +114,10 @@ class EmitterContext {
         }
         break;
       case SCRIPTLET:
-        writer.endScriptlet();
+        writer.closeScriptlet();
         break;
       case EXPR:
-        writer.endExpression();
+        writer.closeExpression();
         break;
     }
 

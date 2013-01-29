@@ -19,8 +19,19 @@
 
 package plugin.template.simple;
 
+import juzu.View;
+
+import javax.inject.Inject;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
+
+  @Inject
   @juzu.Path("index.gtmpl")
   juzu.template.Template template;
+
+  @View
+  public void index() {
+    template.render();
+  }
 }

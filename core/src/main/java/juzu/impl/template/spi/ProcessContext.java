@@ -39,7 +39,11 @@ public class ProcessContext {
     this.templates = templates;
   }
 
-  protected Timestamped<Content> resolveResource(Path path) {
+  protected Path.Absolute resolvePath(Path.Relative path) {
+    return Path.absolute(path.getName(), path.getExt());
+  }
+
+  protected Timestamped<Content> resolveResource(Path.Absolute path) {
     return null;
   }
 
@@ -51,15 +55,21 @@ public class ProcessContext {
     return resolveTemplate(path, path);
   }
 
-  public <M extends Serializable> Template<? extends M> resolveTemplate(Path.Relative originPath, Path.Relative path) {
+  public <M extends Serializable> Template<? extends M> resolveTemplate(
+      Path.Relative originPath,
+      Path.Relative path) {
 
     // A class cast here would mean a terrible issue
     Template<M> template = (Template<M>)templates.get(path);
 
     //
     if (template == null) {
+
+      // Resolve
+      Path.Absolute resolved = resolvePath(path);
+
       // Get source
-      Timestamped<Content> content = resolveResource(path);
+      Timestamped<Content> content = resolveResource(resolved);
       if (content == null) {
         throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
       }
@@ -81,6 +91,7 @@ public class ProcessContext {
         originPath,
         templateAST,
         path,
+        resolved,
         content.getTime());
 
       //

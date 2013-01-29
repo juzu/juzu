@@ -44,7 +44,7 @@ public class ProcessPhase extends CompilationPhase {
   public void process(Template<ASTNode.Template> template) {
     boolean initial;
     if (originPath == null) {
-      originPath = template.getPath();
+      originPath = template.getRelativePath();
       initial = true;
     }
     else {

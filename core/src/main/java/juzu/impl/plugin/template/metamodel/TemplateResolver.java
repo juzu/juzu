@@ -110,20 +110,20 @@ public class TemplateResolver implements Serializable {
     log.log("Synchronizing existing templates " + templates.keySet());
     for (Iterator<Template<?>> i = templates.values().iterator();i.hasNext();) {
       Template<?> template = i.next();
-      Path.Absolute absolute = metaModel.resolve(template.getPath());
+      Path.Absolute absolute = metaModel.resolvePath(template.getRelativePath());
       FileObject resource = context.resolveResource(application.getHandle(), absolute);
       if (resource == null) {
         // That will generate a template not found error
         i.remove();
-        log.log("Detected template removal " + template.getPath());
+        log.log("Detected template removal " + template.getRelativePath());
       }
       else if (resource.getLastModified() > template.getLastModified()) {
         // That will force the regeneration of the template
         i.remove();
-        log.log("Detected stale template " + template.getPath());
+        log.log("Detected stale template " + template.getRelativePath());
       }
       else {
-        log.log("Template " + template.getPath() + " is valid");
+        log.log("Template " + template.getRelativePath() + " is valid");
       }
     }
 
@@ -137,7 +137,7 @@ public class TemplateResolver implements Serializable {
         ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<Path, Template<?>>(copy), context);
         Collection<Template<?>> resolved = compiler.resolve(templateMeta);
         for (Template<?> added : resolved) {
-          copy.put(added.getPath(), added);
+          copy.put(added.getRelativePath(), added);
         }
       }
     }
@@ -146,7 +146,7 @@ public class TemplateResolver implements Serializable {
     // Generate missing files from template
     for (Template<?> template : templates.values()) {
       //
-      Path originPath = template.getOriginPath();
+      Path originPath = template.getOrigin();
       TemplateMetaModel templateMeta = metaModel.get(originPath);
 
       //
@@ -163,7 +163,7 @@ public class TemplateResolver implements Serializable {
       }
 
       // If CCE that would mean there is an internal bug
-      TemplateProvider<?> provider = (TemplateProvider<?>)plugin.providers.get(template.getPath().getExt());
+      TemplateProvider<?> provider = (TemplateProvider<?>)plugin.providers.get(template.getRelativePath().getExt());
 
       // Resolve the qualified class
       resolvedQualified(provider, template, context, elements);
@@ -181,10 +181,10 @@ public class TemplateResolver implements Serializable {
         final TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
 
         // If CCE that would mean there is an internal bug
-        TemplateProvider<M> provider = (TemplateProvider<M>)plugin.providers.get(template.getPath().getExt());
+        TemplateProvider<M> provider = (TemplateProvider<M>)plugin.providers.get(template.getRelativePath().getExt());
 
         //
-        Path.Relative path = template.getPath();
+        Path.Relative path = template.getRelativePath();
 
         // If it's the cache we do nothing
         if (!emitted.contains(path)) {
@@ -192,8 +192,8 @@ public class TemplateResolver implements Serializable {
           try {
             EmitContext emitCtx = new EmitContext() {
               public void createResource(String rawName, String ext, CharSequence content) throws IOException {
-                Path bar = template.getPath().as(rawName, ext);
-                Path.Absolute absolute = metaModel.resolve(bar);
+                Path bar = template.getRelativePath().as(rawName, ext);
+                Path.Absolute absolute = metaModel.resolvePath(bar);
                 FileKey key = FileKey.newName(absolute);
                 FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, key, elements);
                 Writer writer = null;
@@ -216,11 +216,11 @@ public class TemplateResolver implements Serializable {
             emitted.add(path);
           }
           catch (IOException e) {
-            throw TemplateMetaModel.CANNOT_WRITE_TEMPLATE_SCRIPT.failure(e, template.getPath());
+            throw TemplateMetaModel.CANNOT_WRITE_TEMPLATE_SCRIPT.failure(e, template.getRelativePath());
           }
         }
         else {
-          log.log("Template " + template.getPath() + " was found in cache");
+          log.log("Template " + template.getRelativePath() + " was found in cache");
         }
 
         //
@@ -239,14 +239,14 @@ public class TemplateResolver implements Serializable {
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
 
     //
-    Path.Relative path = template.getPath();
+    Path.Relative path = template.getRelativePath();
     if (classCache.containsKey(path)) {
       log.log("Template class " + path + " was found in cache");
       return;
     }
 
     //
-    Path.Absolute resolvedPath = metaModel.resolve(path);
+    Path.Absolute resolvedPath = metaModel.resolvePath(path);
 
     //
     Writer writer = null;

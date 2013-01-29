@@ -19,6 +19,7 @@
 
 package juzu.impl.template.spi.juzu.dialect.gtmpl;
 
+import juzu.impl.common.Name;
 import juzu.impl.template.spi.juzu.DialectTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.SectionType;
 import juzu.impl.common.Location;
@@ -63,7 +64,25 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
   /** . */
   private final int[] closureCountStack = new int[200];
 
+  /** . */
+  private final Name pkg;
+
+  /** . */
+  private final Name constants;
+
   public GroovyTemplateEmitter() {
+    this(null);
+  }
+
+  public GroovyTemplateEmitter(Name name) {
+    if (name != null) {
+      pkg = name.getParent();
+      String id = "C" + name.getIdentifier();
+      constants = pkg.append(id);
+    } else {
+      pkg = null;
+      constants = Name.parse("Constants");
+    }
   }
 
   @Override
@@ -75,7 +94,7 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
 
     //
     builder.append(sep);
-    builder.append("public static class Constants").append(sep);
+    builder.append("public static class ").append(constants.getIdentifier()).append(sep);
     builder.append("{").append(sep);
 
     // Add text constant
@@ -121,13 +140,25 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
     final String script = toString();
     return new GroovyTemplateStub(templateId) {
       @Override
-      public String getScript(ClassLoader loader) {
+      public String getScript(ClassLoader loader, String fqn) {
         return script;
       }
     };
   }
 
-  public void startScriptlet(Location beginPosition) {
+  @Override
+  public void open() {
+    if (pkg != null) {
+      out.append("package ").append(pkg).append(";\n");
+      lineNumber++;
+    }
+  }
+
+  @Override
+  public void close() {
+  }
+
+  public void openScriptlet(Location beginPosition) {
     pos = beginPosition;
   }
 
@@ -136,13 +167,13 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
     locationTable.put(lineNumber, new Foo(pos, scriptlet));
   }
 
-  public void endScriptlet() {
+  public void closeScriptlet() {
     // We append a line break because we want that any line comment does not affect the template
     out.append(sep);
     lineNumber++;
   }
 
-  public void startExpression(Location beginPosition) {
+  public void openExpression(Location beginPosition) {
     pos = beginPosition;
     out.append(";out.print(\"${");
   }
@@ -152,14 +183,14 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
     locationTable.put(lineNumber, new Foo(pos, expr));
   }
 
-  public void endExpression() {
+  public void closeExpression() {
     out.append("}\");").append(sep);
     lineNumber++;
   }
 
   public void appendText(String text) {
     TextConstant m = new TextConstant("s" + methodCount++, text);
-    out.append(";out.print(Constants.").append(m.name).append(");").append(sep);
+    out.append(";out.print(").append(constants).append(".").append(m.name).append(");").append(sep);
     textMethods.add(m);
     lineNumber++;
   }

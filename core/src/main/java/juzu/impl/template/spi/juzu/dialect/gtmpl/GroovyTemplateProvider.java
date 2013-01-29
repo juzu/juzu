@@ -23,7 +23,6 @@ import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.TemplateStub;
-import juzu.impl.template.spi.juzu.DialectTemplateEmitter;
 import juzu.impl.template.spi.juzu.DialectTemplateProvider;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.compiler.EmitPhase;
@@ -39,11 +38,6 @@ public class GroovyTemplateProvider extends DialectTemplateProvider {
   }
 
   @Override
-  protected DialectTemplateEmitter createEmitter() {
-    return new GroovyTemplateEmitter();
-  }
-
-  @Override
   public String getSourceExtension() {
     return "gtmpl";
   }
@@ -55,9 +49,9 @@ public class GroovyTemplateProvider extends DialectTemplateProvider {
 
   @Override
   public final void emit(EmitContext context, Template<ASTNode.Template> template) throws TemplateException, IOException {
-    DialectTemplateEmitter emitter = createEmitter();
+    GroovyTemplateEmitter emitter = new GroovyTemplateEmitter(template.getAbsolutePath().getName());
     EmitPhase tcc = new EmitPhase(context);
     tcc.emit(emitter, template.getModel());
-    context.createResource(template.getPath().getRawName() + "_", "groovy", emitter.toString());
+    context.createResource(template.getRelativePath().getRawName() + "_", "groovy", emitter.toString());
   }
 }

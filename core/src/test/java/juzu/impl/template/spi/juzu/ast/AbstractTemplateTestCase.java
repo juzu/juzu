@@ -19,6 +19,7 @@
 
 package juzu.impl.template.spi.juzu.ast;
 
+import juzu.impl.common.Name;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.ProcessContext;
@@ -46,7 +47,12 @@ import java.util.Random;
 public abstract class AbstractTemplateTestCase extends AbstractTestCase {
 
   public GroovyTemplateStub template(final String text) throws IOException {
-    GroovyTemplateEmitter generator = new GroovyTemplateEmitter();
+    Name pkg = Name.parse("foo");
+    Name name = Name.parse("index");
+    Name fqn = pkg.append(name);
+    Path.Absolute absolute = Path.absolute(fqn, ".gtmpl");
+    Path.Relative relative = Path.relative(name, ".gtmpl");
+    GroovyTemplateEmitter generator = new GroovyTemplateEmitter(fqn);
     try {
       ProcessPhase processPhase = new ProcessPhase(new ProcessContext(Collections.<Path, Template<?>>emptyMap()) {
         @Override
@@ -65,7 +71,12 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
           }
         }
       });
-      Template<ASTNode.Template> template = new Template<ASTNode.Template>((Path.Relative)Path.parse("index.gtmpl"), ASTNode.Template.parse(text), (Path.Relative)Path.parse("index.gtmpl"), 0);
+      Template<ASTNode.Template> template = new Template<ASTNode.Template>(
+          relative,
+          ASTNode.Template.parse(text),
+          relative,
+          absolute,
+          0);
       processPhase.process(template);
 
       // Emit
@@ -79,7 +90,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     catch (juzu.impl.template.spi.juzu.ast.ParseException e) {
       throw failure(e);
     }
-    GroovyTemplateStub stub = generator.build("template_" + Math.abs(new Random().nextLong()));
+    GroovyTemplateStub stub = generator.build(fqn.toString());
     stub.init(Thread.currentThread().getContextClassLoader());
     return stub;
   }

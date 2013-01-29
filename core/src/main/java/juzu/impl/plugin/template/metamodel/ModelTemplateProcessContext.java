@@ -19,7 +19,6 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.impl.common.FileKey;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
@@ -104,10 +103,16 @@ class ModelTemplateProcessContext extends ProcessContext {
     return new MethodInvocation(method.getController().getHandle().getFQN() + "_", method.getName(), args);
   }
 
-  protected Timestamped<Content> resolveResource(Path path) {
+  @Override
+  protected Path.Absolute resolvePath(Path.Relative path) {
+    TemplatesMetaModel tmm = templateMetaModel.getTemplates();
+    return tmm.resolvePath(path);
+  }
+
+  protected Timestamped<Content> resolveResource(Path.Absolute path) {
     TemplatesMetaModel tmm = templateMetaModel.getTemplates();
     ElementHandle.Package context = tmm.getApplication().getHandle();
-    FileObject resource = env.resolveResource(context, tmm.resolve(path));
+    FileObject resource = env.resolveResource(context, path);
     if (resource != null) {
       try {
         byte[] bytes = Tools.bytes(resource.openInputStream());

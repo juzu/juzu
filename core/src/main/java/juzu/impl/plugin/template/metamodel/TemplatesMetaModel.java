@@ -55,7 +55,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     return json;
   }
 
-  public Path.Absolute resolve(Path path) {
+  public Path.Absolute resolvePath(Path path) {
     return qn.resolve(path);
   }
 

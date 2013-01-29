@@ -33,8 +33,6 @@ import java.io.IOException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class DialectTemplateProvider extends TemplateProvider<ASTNode.Template> {
 
-  protected abstract DialectTemplateEmitter createEmitter();
-
   @Override
   public final ASTNode.Template parse(ParseContext context, CharSequence source) throws TemplateException {
     try {
@@ -46,7 +44,7 @@ public abstract class DialectTemplateProvider extends TemplateProvider<ASTNode.T
   }
 
   @Override
-  public final void process(ProcessContext context, Template template) {
+  public final void process(ProcessContext context, Template<ASTNode.Template> template) {
     new ProcessPhase(context).process(template);
   }
 }

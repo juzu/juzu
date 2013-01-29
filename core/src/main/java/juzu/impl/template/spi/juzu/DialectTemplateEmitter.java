@@ -28,17 +28,21 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class DialectTemplateEmitter {
 
-  public abstract void startScriptlet(Location beginPosition);
+  public abstract void open();
+
+  public abstract void close();
+
+  public abstract void openScriptlet(Location beginPosition);
 
   public abstract void appendScriptlet(String scriptlet);
 
-  public abstract void endScriptlet();
+  public abstract void closeScriptlet();
 
-  public abstract void startExpression(Location beginPosition);
+  public abstract void openExpression(Location beginPosition);
 
   public abstract void appendExpression(String expr);
 
-  public abstract void endExpression();
+  public abstract void closeExpression();
 
   public abstract void appendText(String text);
 

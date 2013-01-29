@@ -20,7 +20,6 @@
 package juzu.impl.plugin.template.metamodel;
 
 import juzu.impl.common.Name;
-import juzu.impl.common.FileKey;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
@@ -160,7 +159,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     ArrayList<String> list = new ArrayList<String>();
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
     for (Template template : metaModel.resolver.getTemplates()) {
-      Path.Absolute resolved = metaModel.resolve(template.getPath());
+      Path.Absolute resolved = metaModel.resolvePath(template.getRelativePath());
       list.add(resolved.getName().toString());
     }
     config.map("templates", list);

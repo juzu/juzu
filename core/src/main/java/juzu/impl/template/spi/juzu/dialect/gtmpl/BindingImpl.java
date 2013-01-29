@@ -20,16 +20,13 @@
 package juzu.impl.template.spi.juzu.dialect.gtmpl;
 
 import groovy.lang.Binding;
-import groovy.lang.Script;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.template.TemplateRenderContext;
-import org.codehaus.groovy.runtime.InvokerInvocationException;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class BaseScript extends Script {
+class BindingImpl extends Binding {
 
   /** . */
   private GroovyPrinter printer;
@@ -37,30 +34,26 @@ public abstract class BaseScript extends Script {
   /** . */
   private TemplateRenderContext renderContext;
 
-  protected BaseScript() {
-  }
+  public BindingImpl(TemplateRenderContext renderContext) {
+    super(renderContext.getAttributes());
 
-  protected BaseScript(Binding binding) {
-    super(binding);
-  }
-
-  public void init(TemplateRenderContext renderContext) {
+    //
     this.printer = new GroovyPrinter(renderContext);
     this.renderContext = renderContext;
   }
 
   @Override
-  public Object getProperty(String property) {
+  public Object getVariable(String name) {
     Object value;
-    if ("out".equals(property)) {
+    if ("out".equals(name)) {
       value = printer;
     }
-    else if ("renderContext".equals(property)) {
+    else if ("renderContext".equals(name)) {
       value = renderContext;
     }
     else {
       try {
-        value = renderContext.resolveBean(property);
+        value = renderContext.resolveBean(name);
       }
       catch (ApplicationException e) {
         Throwable cause = e.getCause();
@@ -75,39 +68,9 @@ public abstract class BaseScript extends Script {
         }
       }
       if (value == null) {
-        value = super.getProperty(property);
+        value = super.getVariable(name);
       }
     }
     return value;
-  }
-
-  @Override
-  public void println(Object o) {
-    try {
-      printer.println(o);
-    }
-    catch (IOException e) {
-      throw new InvokerInvocationException(e);
-    }
-  }
-
-  @Override
-  public void println() {
-    try {
-      printer.println();
-    }
-    catch (IOException e) {
-      throw new InvokerInvocationException(e);
-    }
-  }
-
-  @Override
-  public void print(Object o) {
-    try {
-      printer.print(o);
-    }
-    catch (IOException e) {
-      throw new InvokerInvocationException(e);
-    }
   }
 }

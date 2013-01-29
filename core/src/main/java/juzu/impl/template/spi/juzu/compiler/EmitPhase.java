@@ -40,7 +40,10 @@ public class EmitPhase extends CompilationPhase {
 
   public void emit(DialectTemplateEmitter generator, ASTNode<?> node) {
     doAttribute(node);
-    doEmit(new EmitterContext(generator), node.getChildren());
+    EmitterContext ctx = new EmitterContext(generator);
+    ctx.open();
+    doEmit(ctx, node.getChildren());
+    ctx.close();
     doUnattribute(node);
   }
 
@@ -48,7 +51,7 @@ public class EmitPhase extends CompilationPhase {
     for (ASTNode.Block block : blocks) {
       if (block instanceof ASTNode.Section) {
         ASTNode.Section section = (ASTNode.Section)block;
-        ctx.begin(section.getType(), section.getBeginPosition());
+        ctx.openSection(section.getType(), section.getBeginPosition());
         int lineNumber = section.getBegin().getPosition().getLine();
         int colNumber = section.getBegin().getPosition().getCol();
         String text = section.getText();
@@ -69,7 +72,7 @@ public class EmitPhase extends CompilationPhase {
             break;
           }
         }
-        ctx.end();
+        ctx.closeSection();
       }
       else if (block instanceof ASTNode.URL) {
         ASTNode.URL url = (ASTNode.URL)block;

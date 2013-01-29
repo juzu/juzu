@@ -20,12 +20,17 @@
 package juzu.impl.plugin.template;
 
 import juzu.impl.compiler.Compiler;
+import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
+import org.codehaus.groovy.control.CompilationUnit;
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.junit.Test;
+
+import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateTestCase extends AbstractInjectTestCase {
@@ -87,5 +92,21 @@ public class TemplateTestCase extends AbstractInjectTestCase {
   public void testSyntaxError() throws Exception {
     MockApplication<?> app = application("plugin.template.syntaxerror").init();
 
+  }
+
+  @Test
+  public void testPrecompileGroovy() throws Exception {
+    MockApplication<File> app = application("plugin.template.simple").init();
+    ReadFileSystem<File> fs = app.getClasses();
+    File groovy = fs.getPath("plugin", "template", "simple", "templates", "index_.groovy");
+    assertNotNull(groovy);
+    CompilerConfiguration config = new CompilerConfiguration();
+    config.setTargetDirectory(fs.getRoot());
+    CompilationUnit cu = new CompilationUnit(config);
+    cu.addSource(groovy);
+    cu.compile();
+    assertTrue(groovy.delete());
+    MockClient client = app.client();
+    assertEquals("hello", client.render().assertStringResult());
   }
 }
