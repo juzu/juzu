@@ -99,4 +99,23 @@
     <module>upload</module>
   </modules>
 
+  <profiles>
+    <!-- Profile for generating an overview of the doc of a plugin -->
+    <profile>
+      <id>doc</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.wikbook</groupId>
+            <artifactId>wikbook.docbkxstyle</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.wikbook</groupId>
+            <artifactId>wikbook.html2pdf</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

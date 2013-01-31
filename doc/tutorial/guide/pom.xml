@@ -44,16 +44,58 @@
 </dependencies>
 
   <build>
-
     <plugins>
-
       <plugin>
         <groupId>org.wikbook</groupId>
         <artifactId>wikbook.maven</artifactId>
       </plugin>
-
+      <plugin>
+        <groupId>org.wikbook</groupId>
+        <artifactId>wikbook.docbkxstyle</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.wikbook</groupId>
+        <artifactId>wikbook.html2pdf</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>zip-html</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/assembly/html.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${wikbook.target}/output/pdf/index.pdf</file>
+                  <type>pdf</type>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
-
    </build>
 
 </project>
