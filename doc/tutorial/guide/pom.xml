@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-doc-tutorial-parent</artifactId>
-    <version>0.6.0-beta13</version>
+    <version>0.6.0-beta14-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-doc-tutorial-guide</artifactId>
-  <version>0.6.0-beta13</version>
+  <version>0.6.0-beta14-SNAPSHOT</version>
 
   <name>Juzu Tutorial Guide</name>
   <description>The tutorial guide</description>
