@@ -87,41 +87,15 @@
         </configuration>
         <executions>
           <execution>
-            <id>gatein</id>
             <goals>
               <goal>single</goal>
             </goals>
             <phase>package</phase>
             <configuration>
-              <classifier>gatein</classifier>
-              <descriptorRefs>
-                <descriptorRef>gatein</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-          <execution>
-            <id>liferay</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <classifier>liferay</classifier>
-              <descriptorRefs>
-                <descriptorRef>liferay</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-          <execution>
-            <id>tomcat-guice</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <classifier>tomcat-guice</classifier>
               <descriptorRefs>
                 <descriptorRef>tomcat-guice</descriptorRef>
+                <descriptorRef>gatein</descriptorRef>
+                <descriptorRef>liferay</descriptorRef>
               </descriptorRefs>
             </configuration>
           </execution>
