@@ -147,6 +147,36 @@ public abstract class Response {
     return this;
   }
 
+  /**
+   * Removes a property.
+   *
+   * @param propertyType the property type
+   * @throws NullPointerException if the property type is null
+   */
+  public <T> Response without(PropertyType<T> propertyType) throws NullPointerException {
+    return with(propertyType, null);
+  }
+
+  /**
+   * Set a boolean property to true.
+   *
+   * @param propertyType the property type
+   * @throws NullPointerException if the property type is null
+   */
+  public Response with(PropertyType<Boolean> propertyType) throws NullPointerException {
+    return with(propertyType, true);
+  }
+
+  /**
+   * Set a boolean property to false.
+   *
+   * @param propertyType the property type
+   * @throws NullPointerException if the property type is null
+   */
+  public Response withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
+    return with(propertyType, false);
+  }
+
   public final PropertyMap getProperties() {
     return properties;
   }
@@ -182,6 +212,21 @@ public abstract class Response {
     @Override
     public View withHeader(String name, String... value) {
       return (View)super.withHeader(name, value);
+    }
+
+    @Override
+    public <T> View without(PropertyType<T> propertyType) throws NullPointerException {
+      return (View)super.without(propertyType);
+    }
+
+    @Override
+    public View with(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (View)super.with(propertyType);
+    }
+
+    @Override
+    public View withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (View)super.withNo(propertyType);
     }
 
     @Override
@@ -226,6 +271,21 @@ public abstract class Response {
     @Override
     public Redirect withHeader(String name, String... value) {
       return (Redirect)super.withHeader(name, value);
+    }
+
+    @Override
+    public <T> Redirect without(PropertyType<T> propertyType) throws NullPointerException {
+      return (Redirect)super.without(propertyType);
+    }
+
+    @Override
+    public Redirect with(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Redirect)super.with(propertyType);
+    }
+
+    @Override
+    public Redirect withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Redirect)super.withNo(propertyType);
     }
 
     @Override
@@ -309,13 +369,28 @@ public abstract class Response {
       return (Content<S>)super.withHeader(name, value);
     }
 
-    public Integer getStatus() {
-      return status;
+    @Override
+    public <T> Content<S> with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (Content<S>)super.with(propertyType, propertyValue);
     }
 
     @Override
-    public <T> Content with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Content)super.with(propertyType, propertyValue);
+    public <T> Content<S> without(PropertyType<T> propertyType) throws NullPointerException {
+      return (Content<S>)super.without(propertyType);
+    }
+
+    @Override
+    public Content<S> with(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Content<S>)super.with(propertyType);
+    }
+
+    @Override
+    public Content<S> withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Content<S>)super.withNo(propertyType);
+    }
+
+    public Integer getStatus() {
+      return status;
     }
 
     /**
@@ -334,6 +409,26 @@ public abstract class Response {
     @Override
     public <T> Render with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
       return (Render)super.with(propertyType, propertyValue);
+    }
+
+    @Override
+    public <T> Render without(PropertyType<T> propertyType) throws NullPointerException {
+      return (Render)super.without(propertyType);
+    }
+
+    @Override
+    public Render with(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Render)super.with(propertyType);
+    }
+
+    @Override
+    public Render withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Render)super.withNo(propertyType);
+    }
+
+    @Override
+    public Render withMimeType(String mimeType) {
+      return (Render)super.withMimeType(mimeType);
     }
 
     public Render() {

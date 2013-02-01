@@ -35,7 +35,7 @@ public class A {
   @Action
   @Route("/foo")
   public Response.View foo() {
-    return A_.bar().withHeader("juu", "juu_value").with(PropertyType.REDIRECT_AFTER_ACTION, false);
+    return A_.bar().withHeader("juu", "juu_value").withNo(PropertyType.REDIRECT_AFTER_ACTION);
   }
 
   @juzu.View
