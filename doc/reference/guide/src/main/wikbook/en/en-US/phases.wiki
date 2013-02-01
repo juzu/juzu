@@ -82,7 +82,7 @@ is mapped on //POST// requests:
 
 [[image:images/request/interaction2.png||title="Action phase" align="center" html:scale="30" fo:width="30mm]]
 
-Now let's update our example and suppose that the application returns markup with a form that invokes an action phase.
+{{anchor id=redirect_after_post/}} Now let's update our example and suppose that the application returns markup with a form that invokes an action phase.
 When the user submits the form it triggers the action phase, which in returns updates the ##color## view parameter of the next
  view phase to the value //blue//.
 

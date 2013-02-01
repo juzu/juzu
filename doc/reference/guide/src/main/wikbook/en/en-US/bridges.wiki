@@ -1,0 +1,272 @@
+The bridge is the runtime in which Juzu executes, until now Juzu provides two bridges:
+
+* The servlet bridge executes a Juzu application in a servlet container like Tomcat
+* The portlet bridge executes a Juzu application in a portlet container inside a portal
+
+The main difference between the two bridges are the request and responses: the servlet bridge interacts with the http
+protocol whereas the portlet bridge interacts with the portal (which can turns into the WSRP prococol in
+the case of a remote portlet).
+
+In practice the main difference between servlet and portlet is the routing of the request: with the servlet bridge
+the controller methods needs to be bound to route.
+
+= Servlet bridge =
+
+The servlet bridge exposes a Juzu application as a servlet in a Servlet Container.
+
+== Juzu servlet ==
+
+The first step for using the servlet bridge is to configure the ##juzu.bridge.servlet.JuzuServlet## servlet for
+the application. There is a one to one mapping between a Juzu application and a Juzu servlet. Therefore
+if you project contains several applications, you should configure a Juzu servlet for each.
+
+=== Servlet configuration ===
+
+Declaring a Juzu servlet is done in the //web.xml// file of the web application:
+
+{{example title='The Juzu servlet configuration'}}
+{{xml}}
+<servlet>
+  <servlet-name>JuzuServlet</servlet-name>
+  <servlet-class>juzu.bridge.servlet.JuzuServlet</servlet-class>
+  <init-param>
+    <param-name>juzu.app_name></param-name>
+    <param-value>my.application</param-value>
+  </init-param>
+</servlet>
+<servlet-mapping>
+  <servlet-name>JuzuServlet</servlet-name>
+  <url-pattern>/</url-pattern>
+</servlet-mapping>
+{{/xml}}
+{{/example}}
+
+The //juzu.app_name// init parameter tells Juzu the package of the application to use. The servlet is bound
+on the ///// pattern as the default servlet of the web application.
+
+In case of several applications, each can be configured with a //path mapping// in addition of the default servlet:
+
+{{example title='Path mapping configuration'}}
+{{xml}}
+<servlet-mapping>
+  <servlet-name>JuzuServlet</servlet-name>
+  <url-pattern>/myapplication/*</url-pattern>
+</servlet-mapping>
+{{/xml}}
+{{/example}}
+
+{{warning}}Any other kind of //url-pattern// than the default servlet (/////) or path mapping is not supported
+and will raise an error during startup{{/warning}}
+
+=== Servlet generation ===
+
+In the previous section we showed how to configuration the Juzu servlet. Since Servlet 3.0, it is possible to
+annotate a servlet to configure one. Juzu leverages this capability and is able to generate a servlet for an
+application with the ##juzu.plugin.servlet.Servlet## annotation:
+
+{{example title='Juzu servlet generation'}}
+{{java}}
+@Application
+@Servlet("/")
+package my.application;
+{{/java}}
+{{/example}}
+
+== Request routing ==
+
+When Juzu handles a request it routes the request to a controller based on the request path. Request routing
+is based on a set of route declarations, each declaration binds a route to a controller method.
+
+=== Default controller ===
+
+Before discussing routing configuration, let's introduce the default controller method: the ##index## view
+controller method of the default controller will handle any unmatched request:
+
+{{java}}
+public void Controller {
+  @View
+  public void index() {
+    // Handle unmatched request
+  }
+}
+{{/java}}
+
+When the application has a single controller class, the default controller is this controller. When there
+are more than one controller, there is an ambiguity. In this situation the default controller should be specified
+in the ##@Application## annotation:
+
+{{java}}
+@Application(defaultController = Controller.class)
+{{/java}}
+
+=== Declaring a route ===
+
+The ##@Route## annotation declares the route for a controller with a ##path## and an optional ##priority##:
+
+{{java}}
+{@include juzu.Route}
+{{/java}}
+
+Controller method should declare an ##@Route## annotation, in practice with the servlet bridge the
+annotations ##@View##, ##@Action## and ##@Resource## are associated with an ##@Route## annotation.
+
+{{example title='Declaring a controller route'}}
+{{java}}
+@View @Route("/show")
+public void show() {
+  ...
+}
+{{/java}}
+{{/example}}
+
+The request ///show// will be dispatched to the ##show()## method.
+
+=== Route parameters ===
+
+Route can declare parameters:
+
+{{example title='Route parameters'}}
+{{java}}
+@View @Route("/show/{id}")
+public void show(String id) {
+  ...
+}
+{{/java}}
+{{/example}}
+
+In this example the route parameter ##id## will match the controller method parameter ##id## and a request like
+///show/123// will invoke the ##show(String id)## method with the //123// value.
+
+=== Route parameter pattern matching ===
+
+Optionally, route parameters can match regular expression. This can be achieved with the ##@Param## annotation:
+
+{{example title='Route parameter matching'}}
+{{java}}
+@View @Route("/show/{id}")
+public void show(@Param(pattern="[0-9]+") String id) {
+  ...
+}
+{{/java}}
+{{/example}}
+
+=== Route overloading ===
+
+The same route can bound to different phases, the dispatch behavior depends on the http method:
+
+* in a //GET// method the phases priority are //view//, //action//, //resource//
+* in a //POST// method the phases priority are //action//, //view//, //resource//
+
+{{example title='Route parameter matching'}}
+{{java}}
+@View @Route("/show")
+public void showWithView() {
+  ...
+}
+
+@Action @Route("/show")
+public void showWithAction() {
+  ...
+}
+{{/java}}
+{{/example}}
+
+With those rules:
+
+* A //GET// request on the ///show// path will invoke the ##showWithAction()## method
+* A //POST// request on the ///show// path will invoke the ##showWithView()## method
+
+=== Route priorities ===
+
+When several routes match the same request, the router will use the first route found. The ##priority##
+parameter of the ##@Route## annotation can be used to increase the priority of a route. This can
+be useful, specially when a route contains a parameter that could match another route instead.
+
+{{example title='Route priority'}}
+{{java}}
+@View @Route("/show/status", priority = 1)
+public void showStatus() {
+  ...
+}
+@View @Route("/show/{name}")
+public void show(String name) {
+  ...
+}
+{{/java}}
+{{/example}}
+
+In the example, the ##showStatus()## controller will be invoked when the route ///show/status// is requested.
+Without this higher priority, the ##show(String name)## controller might be invoked instead. When no priority is
+specified, the default priority is **0**.
+
+== Redirect after post ==
+
+As explained in the [[phases chapter>>#phases]], an action never produces markup, instead an action phase
+ is followed by a view phase that will return a markup response. Juzu handles this interaction with an http redirection
+ to the next view phase via the [[redirect after post pattern>>#redirect_after_post]].
+
+This behavior is good for the user because the browser will be updated with an URL of the view phase that is
+bookmarkable and safely refreshable (i.e the user an refresh the page safely).
+
+However Juzu does not enforce this behavior and it can be changed to have the view phase immediatly
+invoked after the action phase.
+
+{{java}}
+@Action
+@Route("/process")
+public Response.View process() {
+  return Controller_.index().withNo(PropertyType.REDIRECT_AFTER_ACTION);
+}
+
+@juzu.View
+@Route("/show")
+public void show() {
+  //
+}
+{{/java}}
+
+= Portlet bridge =
+
+The portlet bridge exposes a Juzu application as a portlet in a Portlet Container.
+
+== Juzu portlet ==
+
+The first step for using the portlet bridge is to configure the ##juzu.bridge.portlet.JuzuPortlet## portlet for
+the application. There is a one to one mapping between a Juzu application and a Juzu portlet. Therefore
+if you project contains several applications, you should configure a Juzu portlet for each.
+
+=== Portlet configuration ===
+
+Declaring a Juzu portlet is done in the //portlet.xml// file of the portlet application:
+
+{{example title='The Juzu portlet configuration'}}
+{{xml}}
+<portlet>
+  <portlet-name>JuzuPortlet</portlet-name>
+  <display-name xml:lang="EN">Juzu Portlet Application</display-name>
+  <portlet-class>juzu.bridge.portlet.PortletBridge</portlet-class>
+  <init-param>
+    <param-name>juzu.app_name></param-name>
+    <param-value>my.application</param-value>
+  </init-param>
+  <supports>
+    <mime-type>text/html</mime-type>
+  </supports>
+  <portlet-info>
+    <title>Portlet Application</title>
+  </portlet-info>
+</portlet>
+{{/xml}}
+{{/example}}
+
+The //juzu.app_name// init parameter tells Juzu the package of the application to use.
+
+== Request routing ==
+
+Unlike the servlet bridge, the portlet request routing does not require the ##@Route## annotation
+because portlet requests are managed by the portal.
+
+To achieve the routing of request, the portlet bridge uses a special portlet request parameter
+named //juzu.op// . This parameter is used by Juzu to determine which controller should be called
+during a phase. When the //juzu.op// parameter is not present, Juzu will look for the ##index##
+view controller.
