@@ -7,17 +7,17 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 
 {{include document=builddeploy.wiki/}}
 
-= Request {{anchor id=request /}} =
+= Phases {{anchor id=phases /}} =
 
-{{include document=request.wiki/}}
-
-= Responses {{anchor id=responses /}} =
-
-{{include document=responses.wiki/}}
+{{include document=phases.wiki/}}
 
 = Controllers {{anchor id=controllers /}} =
 
 {{include document=controllers.wiki/}}
+
+= Responses {{anchor id=responses /}} =
+
+{{include document=responses.wiki/}}
 
 = Inversion of Control {{anchor id=ioc /}} =
 
