@@ -26,9 +26,9 @@ to Maven, in the future we will provide additional examples or quickstart for al
 Juzu libraries are deployed in the [[Maven Central repository>>http://search.maven.org/]], compiling an application
  with require a few dependencies to find the correct jars.
 
-=== Using the Juzu Maven //builder// ===
+=== Using the Juzu Maven //bom// ===
 
-The //builder// is a Juzu artifact that serves the purpose of building and packaging an application:
+The //bom// is a Juzu artifact that serves the purpose of building and packaging an application:
 
 1. provide a set of dependencies that will be sufficient for compiling the application using its Maven transitive dependencies
 1. provide a predefined assembly descriptor that creates a war file containing the application classes, resources and libraries
@@ -38,7 +38,7 @@ To achieve the first step, we simply declare the following dependency in a Maven
 {{xml}}
 <dependency>
   <groupId>org.juzu</groupId>
-  <artifactId>juzu-packager</artifactId>
+  <artifactId>juzu-bom-core</artifactId>
   <version>$[juzu.version]</version>
 </dependency>
 {{/xml}}
@@ -46,55 +46,54 @@ To achieve the first step, we simply declare the following dependency in a Maven
 Assembling the application requires more XML but is very straightforward:
 
 {{xml}}
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.3</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.juzu</groupId>
-            <artifactId>juzu-packager</artifactId>
-            <version>$[juzu.version]</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>gatein</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <classifier>gatein</classifier>
-              <descriptorRefs>
-                <descriptorRef>gatein</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+<plugin>
+  <artifactId>maven-assembly-plugin</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-bom-core</artifactId>
+      <version>$[juzu.version]</version>
+    </dependency>
+  </dependencies>
+  <executions>
+    <execution>
+      <goals>
+        <goal>single</goal>
+      </goals>
+      <phase>package</phase>
+      <configuration>
+        <descriptorRefs>
+          <descriptorRef>tomcat-guice</descriptorRef>
+        </descriptorRefs>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
 {{/xml}}
 
 The //assembly// plugin takes care of packaging the application:
 
-1. The plugin dependency declares on the //juzu-packager// artifact because it contains the predefined descriptors such
- as the ##gatein## descriptor
-1. The goal //single// of the assembly plugin is executed on the //package// phase
-1. The predefined descriptor //gatein// packages the application
+1. The plugin dependency declares on the //juzu-bom-core// artifact because it contains the predefined descriptors such
+ as the ##tomcat-guice## descriptor
+1. The goal //single// of the assembly plugin is executed during the //package// phase
+1. The predefined descriptor //tomcat-guice// packages the application for the Tomcat server and with the Guice framework
 11. Any dependency on the application is packaged in //WEB-INF/lib//
 11. The application classes are copied in //WEB-INF/classes//
 11. The web application //src/main/webapp// files are copied to the root of the archive
 11. Specific deployment descriptors may be copied in the war file depending on the predefined descriptor
 
-In this example we used the //gatein// predefined descriptor, the same descriptor for the Liferay Portal server can
-also be used with the name //liferay//.
+In this example we used the //tomcat-guice// predefined descriptor. The bom relies on the
+[[Maven Assembly plugin>>http://maven.apache.org/plugins/maven-assembly-plugin/]], Juzu provides the
+[[predefined assembly descriptors>>http://maven.apache.org/plugins/maven-assembly-plugin/descriptor-refs.html]]
+that makes easy to package a Juzu application:
 
-The builder relies p, the [[Maven Assembly plugin>>http://maven.apache.org/plugins/maven-assembly-plugin/]]: Juzu
-provides the [[predefined assembly descriptors>>http://maven.apache.org/plugins/maven-assembly-plugin/descriptor-refs.html]]
- //gatein// and //liferay// that makes easy to package a Juzu application.
+
+(% title="The predefined descriptors" %)
+|=     |=tomcat       |=gatein       |=liferay
+|all   |tomcat        |gatein        |liferay
+|guice |tomcat-guice  |gatein-guice  |liferay-guice
+|spring|tomcat-spring |gatein-spring |liferay-spring
+|cdi   |tomcat-cdi    |gatein-cdi    |liferay-cdi
 
 {{note}}
 The predefined assembly descriptor does a similar job to the Maven //war// packaging but with more flexibility. To achieve
@@ -149,10 +148,15 @@ todo
 
 At the moment the supported (i.e tested) portal servers are
 
-* GateIn 3.2 / GateIn 3.3
+* Tomcat 6.x and 7.x
+* GateIn 3.2 / 3.3 / 3.4 and 3.5
 * Liferay 6.1
 
 Other server may work but we are not aware of that as it was not tested in other environments.
+
+== Tomcat ==
+
+No specific deployment instruction.
 
 == GateIn ==
 
