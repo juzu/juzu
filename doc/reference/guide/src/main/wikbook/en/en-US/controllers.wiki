@@ -10,7 +10,7 @@ public class Controller {
   @View public Response.Content index() {
      return Response.render("hello world");
   }
-}}
+}
 {{/java}}
 
 The annotation ##@juzu.View## declares a //view// controller, the name ##index## has a special meaning as it will
