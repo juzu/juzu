@@ -28,12 +28,14 @@ import juzu.impl.inject.ScopedContext;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
+import juzu.request.UserContext;
 import juzu.test.AbstractTestCase;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -41,7 +43,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class MockClient {
+public class MockClient implements UserContext {
 
   private MockRequestBridge create(String url) {
     //
@@ -102,12 +104,29 @@ public class MockClient {
   /** . */
   private final LinkedList<List<Scoped>> flashHistory;
 
+  /** . */
+  private LinkedList<Locale> locales;
+
   public MockClient(MockApplication<?> application) {
+
+    LinkedList<Locale> locales = new LinkedList<Locale>();
+    locales.add(Locale.ENGLISH);
+
+    //
     this.application = application;
     this.session = new ScopedContext();
     this.flash = null;
     this.flashHistory = new LinkedList<List<Scoped>>();
     this.controllers = application.getContext().getDescriptor().getControllers();
+    this.locales = locales;
+  }
+
+  public Locale getLocale() {
+    return locales.peekFirst();
+  }
+
+  public Iterable<Locale> getLocales() {
+    return locales;
   }
 
   public MockRenderBridge render(String methodId) throws ApplicationException {

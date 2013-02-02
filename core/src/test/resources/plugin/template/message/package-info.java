@@ -17,31 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.template.spi.juzu.dialect.gtmpl;
+@Application package plugin.template.message;
 
-import juzu.io.CharArray;
-
-/**
- * This object encapsulate the generation of a method that outputs the specified text.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-class TextConstant {
-
-  /** . */
-  final String name;
-
-  /** . */
-  final String text;
-
-  TextConstant(String name, String text) {
-    this.name = name;
-    this.text = text;
-  }
-
-  String getDeclaration() {
-    StringBuilder sb = new StringBuilder("");
-    juzu.impl.common.Tools.escape(text, sb);
-    return "public static final " + CharArray.Simple.class.getName() + " " + name + " = new " + CharArray.Simple.class.getName() + "('" + sb + "');";
-  }
-}
+import juzu.Application;

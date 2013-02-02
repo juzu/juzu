@@ -19,7 +19,6 @@
 
 package juzu.impl.plugin.template;
 
-import juzu.PropertyMap;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.application.ApplicationPlugin;
@@ -28,13 +27,9 @@ import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
-import juzu.template.Template;
-import juzu.template.TemplateRenderContext;
 
 import javax.inject.Inject;
 import java.lang.reflect.Constructor;
-import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -91,47 +86,5 @@ public class TemplatePlugin extends ApplicationPlugin {
 
     //
     return stub;
-  }
-
-  public TemplateRenderContext render(
-      Class<? extends TemplateStub> stubType,
-      Template template,
-      PropertyMap properties,
-      Map<String, ?> parameters,
-      Locale locale) {
-
-    //
-    Path path = template.getPath();
-    TemplateStub stub = stubs.get(path);
-    if (stub == null) {
-
-      //
-      try {
-        Constructor ctor = stubType.getConstructor(String.class);
-        stub = (TemplateStub)ctor.newInstance(template.getClass().getName());
-      }
-      catch (Exception e) {
-        throw new UnsupportedOperationException("Handle me gracefully", e);
-      }
-
-      //
-      TemplateStub phantom = stubs.putIfAbsent(path, stub);
-      if (phantom != null) {
-        stub = phantom;
-      } else {
-        stub.init(application.getClassLoader());
-      }
-    }
-
-    //
-//    TemplateStub stub = resolveTemplateStub(template.getPath());
-
-    //
-    return new TemplateRenderContextImpl(
-        this,
-        properties,
-        stub,
-        parameters,
-        locale);
   }
 }

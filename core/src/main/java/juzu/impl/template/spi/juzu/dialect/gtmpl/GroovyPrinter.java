@@ -101,6 +101,9 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
         o = dateFormat.format((Date)o);
       }
+    } else if (o instanceof MessageKey) {
+      MessageKey key = (MessageKey)o;
+      o = renderContext.resolveMessage(key);
     }
 
     //

@@ -99,6 +99,12 @@ public class TemplateParserTestCase extends AbstractTestCase {
   }
 
   @Test
+  public void testMessage() throws IOException {
+    assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Message("")), parse("&{}"));
+    assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.Message("a")), parse("&{a}"));
+  }
+
+  @Test
   public void testParseURL() throws IOException {
     assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parse("@{a()}"));
     assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parse("@{a(a=b)}"));

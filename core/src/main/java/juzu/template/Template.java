@@ -22,20 +22,27 @@ package juzu.template;
 import juzu.PropertyMap;
 import juzu.Response;
 import juzu.UndeclaredIOException;
+import juzu.impl.plugin.application.Application;
+import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.request.Request;
 import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.common.Path;
 import juzu.impl.template.spi.TemplateStub;
+import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;
 import juzu.io.Streamable;
+import juzu.request.ApplicationContext;
 import juzu.request.MimeContext;
 import juzu.request.RequestContext;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * <p></p>A template as seen by an application. A template is identified by its {@link #path} and can used to produce markup.
@@ -70,17 +77,20 @@ public abstract class Template {
   private final Path path;
 
   /** . */
-  private final TemplatePlugin applicationContext;
+  private final TemplatePlugin plugin;
 
   /** . */
   private final Class<? extends TemplateStub> stubType;
 
-  public Template(TemplatePlugin applicationContext, String path, Class<? extends TemplateStub> stubType) {
-    this(applicationContext, Path.parse(path), stubType);
+  @Inject
+  Application application;
+
+  public Template(TemplatePlugin plugin, String path, Class<? extends TemplateStub> stubType) {
+    this(plugin, Path.parse(path), stubType);
   }
 
-  public Template(TemplatePlugin applicationContext, Path path, Class<? extends TemplateStub> stubType) {
-    this.applicationContext = applicationContext;
+  public Template(TemplatePlugin plugin, Path path, Class<? extends TemplateStub> stubType) {
+    this.plugin = plugin;
     this.path = path;
     this.stubType = stubType;
   }
@@ -100,32 +110,28 @@ public abstract class Template {
   }
 
   /**
-   * Renders the template and returns a render response.
-   *
-   * @return the render response
+   * Renders the template and set the response on the current {@link MimeContext}
    */
-  public Response.Render render() throws TemplateExecutionException, UndeclaredIOException {
-    return with().render();
+  public void render() throws TemplateExecutionException, UndeclaredIOException {
+    with().render();
   }
 
   /**
    * Renders the template and set a the response on the current {@link MimeContext}.
    *
    * @param locale     the locale
-   * @return the render response
    */
-  public Response.Render render(Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    return with(locale).render();
+  public void render(Locale locale) throws TemplateExecutionException, UndeclaredIOException {
+    with(locale).render();
   }
 
   /**
    * Renders the template and set a the response on the current {@link MimeContext}.
    *
    * @param parameters the parameters
-   * @return the render response
    */
-  public Response.Render render(Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
-    return with(parameters).render();
+  public void render(Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
+    with(parameters).render();
   }
 
   /**
@@ -133,28 +139,27 @@ public abstract class Template {
    *
    * @param parameters the parameters
    * @param locale     the locale
-   * @return the render response
    */
-  public Response.Render render(final Map<String, ?> parameters, final Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    return with(parameters).locale(locale).render();
+  public void render(final Map<String, ?> parameters, final Locale locale) throws TemplateExecutionException, UndeclaredIOException {
+    with(parameters).locale(locale).render();
   }
 
   /**
-   * Renders the template and set the response on the current {@link MimeContext}.
+   * Renders the template.
    *
    * @return the ok resource response
    */
-  public final Response.Content ok() {
+  public final Response.Render ok() {
     return with().ok();
   }
 
   /**
-   * Renders the template and set the response on the current {@link MimeContext}.
+   * Renders the template.
    *
    * @param locale     the locale
    * @return the ok resource response
    */
-  public final Response.Content ok(Locale locale) {
+  public final Response.Render ok(Locale locale) {
     return with(locale).ok();
   }
 
@@ -164,63 +169,63 @@ public abstract class Template {
    * @param parameters the parameters
    * @return the ok resource response
    */
-  public final Response.Content ok(Map<String, ?> parameters) {
+  public final Response.Render ok(Map<String, ?> parameters) {
     return with(parameters).ok();
   }
 
   /**
-   * Renders the template and set the response on the current {@link MimeContext}.
+   * Renders the template.
    *
    * @param parameters the parameters
    * @param locale     the locale
    * @return the ok resource response
    */
-  public final Response.Content<Stream.Char> ok(Map<String, ?> parameters, Locale locale) {
+  public final Response.Render ok(Map<String, ?> parameters, Locale locale) {
     return with(parameters).locale(locale).ok();
   }
 
   /**
-   * Renders the template and set a 404 response on the current {@link MimeContext}.
+   * Renders the template.
    *
    * @return the not found resource response
    */
-  public final Response.Content notFound() {
+  public final Response.Render notFound() {
     return notFound(null, null);
   }
 
   /**
-   * Renders the template and set a 404 response on the current {@link MimeContext}.
+   * Renders the template.
    *
    * @param locale     the locale
    * @return the not found resource response
    */
-  public final Response.Content notFound(Locale locale) {
+  public final Response.Render notFound(Locale locale) {
     return notFound(null, locale);
   }
 
   /**
-   * Renders the template and set a 404 response on the current {@link MimeContext}.
+   * Renders the template.
    *
    * @param parameters the parameters
    * @return the not found resource response
    */
-  public final Response.Content notFound(Map<String, ?> parameters) {
+  public final Response.Render notFound(Map<String, ?> parameters) {
     return notFound(parameters, null);
   }
 
   /**
-   * Renders the template and set a 404 response on the current {@link MimeContext}.
+   * Renders the template.
    *
    * @param parameters the parameters
    * @param locale     the locale
    * @return the not found resource response
    */
-  public final Response.Content<Stream.Char> notFound(Map<String, ?> parameters, Locale locale) {
+  public final Response.Render notFound(Map<String, ?> parameters, Locale locale) {
     return with(parameters).locale(locale).notFound();
   }
 
   /**
-   * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+   * Renders the template to the specified appendable.
    *
    * @param appendable the appendable
    * @throws TemplateExecutionException any execution exception
@@ -231,7 +236,7 @@ public abstract class Template {
   }
 
   /**
-   * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+   * Renders the template to the specified appendable.
    *
    * @param appendable the appendable
    * @param locale     the locale
@@ -243,7 +248,7 @@ public abstract class Template {
   }
 
   /**
-   * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+   * Renders the template to the specified appendable.
    *
    * @param appendable the appendable
    * @param parameters the attributes
@@ -255,7 +260,7 @@ public abstract class Template {
   }
 
   /**
-   * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
+   * Renders the template to the specified printer.
    *
    * @param printer    the printer
    * @throws TemplateExecutionException any execution exception
@@ -266,7 +271,7 @@ public abstract class Template {
   }
 
   /**
-   * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
+   * Renders the template to the specified printer.
    *
    * @param printer    the printer
    * @param locale     the locale
@@ -279,7 +284,7 @@ public abstract class Template {
   }
 
   /**
-   * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
+   * Renders the template to the specified printer.
    *
    * @param printer    the printer
    * @param parameters the attributes
@@ -291,11 +296,20 @@ public abstract class Template {
   }
 
   /**
+   * Create a new builder.
+   *
+   * @return a new builder instance
+   */
+  protected abstract Builder builder();
+
+  /**
    * Returns a builder to further customize the template rendering.
    *
    * @return a new builder instance
    */
-  public abstract Builder with();
+  public Builder with() {
+    return builder();
+  }
 
   /**
    * Returns a builder to further customize the template rendering.
@@ -330,6 +344,92 @@ public abstract class Template {
     /** The locale. */
     private Locale locale;
 
+    private Locale computeLocale() {
+      if (locale == null) {
+        return Request.getCurrent().getContext().getUserContext().getLocale();
+      } else {
+        return locale;
+      }
+    }
+
+    private void doRender(PropertyMap properties, Stream.Char stream) {
+      try {
+
+        // Get the specified locale or the current user's one
+        final Locale locale = computeLocale();
+
+        //
+        TemplateStub stub = plugin.resolveTemplateStub(path);
+        if (stub == null) {
+          throw new UnsupportedOperationException("Handle me gracefully: couldn't get stub for template " + path);
+        }
+
+        //
+        TemplateRenderContext context = new TemplateRenderContext(
+            stub,
+            properties,
+            parameters,
+            locale
+        ) {
+
+          /** . */
+          ResourceBundle bundle = null;
+
+          /** . */
+          boolean bundleLoaded = false;
+
+          @Override
+          public TemplateStub resolveTemplate(String path) {
+            return plugin.resolveTemplateStub(path);
+          }
+
+          @Override
+          public Object resolveBean(String expression) throws ApplicationException {
+            return application.resolveBean(expression);
+          }
+
+          @Override
+          public String resolveMessage(MessageKey key) {
+
+            // Lazy load the bundle here
+            if (!bundleLoaded) {
+              bundleLoaded = true;
+              if (locale != null) {
+                ApplicationContext applicationContext = Request.getCurrent().getContext().getApplicationContext();
+                if (applicationContext != null) {
+                  bundle = applicationContext.resolveBundle(locale);
+                }
+              }
+            }
+
+            //
+            String value = null;
+            if (bundle != null) {
+              try {
+                value = bundle.getString(key.getValue());
+              }
+              catch (MissingResourceException notFound) {
+                System.out.println("Could not resolve message " + key.getValue());
+              }
+            }
+            return value != null ? value : "";
+          }
+        };
+
+        //
+        context.render(stream);
+      }
+      catch (IOException e) {
+        throw new UndeclaredIOException(e);
+      }
+    }
+
+    /**
+     * Update the locale.
+     *
+     * @param locale the new locale
+     * @return this builder
+     */
     public Builder locale(Locale locale) {
       this.locale = locale;
       return this;
@@ -366,7 +466,7 @@ public abstract class Template {
      *
      * @return the ok resource response
      */
-    public final Response.Content<Stream.Char> ok() {
+    public final Response.Render ok() {
       return status(200);
     }
 
@@ -375,7 +475,7 @@ public abstract class Template {
      *
      * @return the not found response
      */
-    public final Response.Content<Stream.Char> notFound() {
+    public final Response.Render notFound() {
       return status(404);
     }
 
@@ -386,20 +486,13 @@ public abstract class Template {
      */
     public final Response.Render status(int status) {
       StringBuilder sb = new StringBuilder();
-
-      try {
-        PropertyMap properties = new PropertyMap();
-        TemplateRenderContext trc = applicationContext.render(stubType, Template.this, properties, parameters, locale);
-        trc.render(new AppendableStream(sb));
-        return new Response.Render(status, properties,  new Streamable.CharSequence(sb));
-      }
-      catch (IOException e) {
-        throw new UndeclaredIOException(e);
-      }
+      PropertyMap properties = new PropertyMap();
+      doRender(properties, new AppendableStream(sb));
+      return new Response.Render(status, properties,  new Streamable.CharSequence(sb));
     }
 
     /**
-     * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
+     * Renders the template to the specified appendable.
      *
      * @param appendable the appendable
      * @throws TemplateExecutionException any execution exception
@@ -411,7 +504,7 @@ public abstract class Template {
     }
 
     /**
-     * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
+     * Renders the template to the specified printer.
      *
      * @param printer    the printer
      * @throws TemplateExecutionException any execution exception
@@ -421,28 +514,19 @@ public abstract class Template {
       if (printer == null) {
         throw new NullPointerException("No null printe provided");
       }
-      try {
-        TemplateRenderContext trc = applicationContext.render(stubType, Template.this, null, parameters, locale);
-        trc.render(printer);
-      }
-      catch (IOException e) {
-        throw new UndeclaredIOException(e);
-      }
+      doRender(null, printer);
     }
 
     /**
-     * Renders the template and returns a render response.
-     *
-     * @return the render response
+     * Renders the template and set the response on the current {@link MimeContext}
      */
-    public Response.Render render() throws TemplateExecutionException, UndeclaredIOException {
+    public void render() throws TemplateExecutionException, UndeclaredIOException {
       try {
         RequestContext context = Request.getCurrent().getContext();
         if (context instanceof MimeContext) {
           MimeContext mime = (MimeContext)context;
           Response.Render render = status(200);
           mime.setResponse(render);
-          return render;
         }
         else {
           throw new AssertionError("does not make sense");

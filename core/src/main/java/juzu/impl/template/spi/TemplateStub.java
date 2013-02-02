@@ -19,6 +19,7 @@
 
 package juzu.impl.template.spi;
 
+import juzu.impl.common.Logger;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
 

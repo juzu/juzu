@@ -172,11 +172,11 @@ public abstract class MockRequestBridge implements RequestBridge {
   }
 
   public UserContext getUserContext() {
-    return null;
+    return client;
   }
 
   public ApplicationContext getApplicationContext() {
-    return null;
+    return client.application;
   }
 
   public void close() {

@@ -24,6 +24,7 @@ import juzu.impl.template.spi.juzu.DialectTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.SectionType;
 import juzu.impl.common.Location;
 import juzu.impl.common.Tools;
+import juzu.io.CharArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,10 +42,10 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
   private StringBuilder out = new StringBuilder();
 
   /** . */
-  private List<TextConstant> textMethods = new ArrayList<TextConstant>();
+  private List<String> texts = new ArrayList<String>();
 
   /** . */
-  private int methodCount = 0;
+  private List<String> messageKeys = new ArrayList<String>();
 
   /** The line number table. */
   private HashMap<Integer, Foo> locationTable = new HashMap<Integer, Foo>();
@@ -98,8 +99,37 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
     builder.append("{").append(sep);
 
     // Add text constant
-    for (TextConstant method : textMethods) {
-      builder.append(method.getDeclaration()).append(sep);
+    for (int i = 0;i < texts.size();i++) {
+      String text = texts.get(i);
+      builder.
+          append("public static final ").
+          append(CharArray.Simple.class.getName()).
+          append(" s").
+          append(i).
+          append(" = new ").
+          append(CharArray.Simple.class.getName()).
+          append("('");
+      juzu.impl.common.Tools.escape(text, builder);
+      builder.
+          append("');").
+          append(sep);
+    }
+
+    // Add message keys
+    for (int i = 0;i < messageKeys.size();i++) {
+      String messageKey = messageKeys.get(i);
+      builder.
+          append("public static final ").
+          append(MessageKey.class.getName()).
+          append(" m").
+          append(i).
+          append(" = new ").
+          append(MessageKey.class.getName()).
+          append("('");
+      juzu.impl.common.Tools.escape(messageKey, builder);
+      builder.
+          append("');").
+          append(sep);
     }
 
     // Add line table
@@ -189,9 +219,8 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
   }
 
   public void appendText(String text) {
-    TextConstant m = new TextConstant("s" + methodCount++, text);
-    out.append(";out.print(").append(constants).append(".").append(m.name).append(");").append(sep);
-    textMethods.add(m);
+    out.append(";out.print(").append(constants).append(".s").append(texts.size()).append(");").append(sep);
+    texts.add(text);
     lineNumber++;
   }
 
@@ -226,6 +255,12 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
       out.append(methodArg);
     }
     out.append("));");
+  }
+
+  @Override
+  public void message(String key) {
+    out.append("out.print(").append(constants).append(".m").append(messageKeys.size()).append(");").append(sep);
+    messageKeys.add(key);
   }
 
   @Override

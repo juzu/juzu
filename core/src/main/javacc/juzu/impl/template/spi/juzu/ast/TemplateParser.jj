@@ -88,6 +88,7 @@ PARSER_END(TemplateParser)
 < OPEN_SCRIPTLET : "<%" > : IN_SCRIPTLET |
 < OPEN_EXPR : "<%=" > : IN_EXPR |
 < OPEN_CURLY_EXPR : "${" > : IN_CURLY_EXPR |
+< OPEN_MESSAGE : "&{" > : IN_MESSAGE |
 < OPEN_URL : "@{" > : IN_URL |
 < OPEN_START_OR_EMPTY_TAG : "#{" > : IN_START_OR_EMPTY_TAG |
 < STOP_TAG : "#{/" ["$","A"-"Z","_","a"-"z"] ( ["$","0"-"9","A"-"Z","_","a"-"z"] ) * "}" > |
@@ -110,6 +111,12 @@ PARSER_END(TemplateParser)
 {
 < CLOSE_CURLY_EXPR : "}" > : DEFAULT |
 < CURLY_EXPR_DATA : ~[] >
+}
+
+<IN_MESSAGE> TOKEN :
+{
+< CLOSE_MESSAGE : "}" > : DEFAULT |
+< MESSAGE_KEY : ~[] >
 }
 
 <IN_URL> TOKEN :
@@ -173,6 +180,7 @@ ASTNode.Template parse() : { list.addLast(new ArrayList<ASTNode.Block<?>>()); }
      parseScriptlet() |
      parseExpression() |
      parseCurlyExpression() |
+     parseMessage() |
      parseURL() |
      parseStartOrEmptyTag() |
      parseStopTag() |
@@ -218,6 +226,17 @@ void parseCurlyExpression() : { Token o,t,p; StringBuilder acc = new StringBuild
          o.getBegin(),
          p.getEnd(),
          SectionType.EXPR,
+         acc.toString()));
+   }
+}
+
+void parseMessage() : { Token o,t,p; StringBuilder acc = new StringBuilder(); }
+{
+   o = <OPEN_MESSAGE> ( t = <MESSAGE_KEY> { acc.append(t.image.charAt(0)); } ) * p = <CLOSE_MESSAGE>
+   {
+      list.getLast().add(new ASTNode.Message(
+         o.getBegin(),
+         p.getEnd(),
          acc.toString()));
    }
 }

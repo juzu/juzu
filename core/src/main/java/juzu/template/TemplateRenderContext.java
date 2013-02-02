@@ -23,6 +23,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.template.spi.TemplateStub;
+import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;
 
@@ -92,6 +93,10 @@ public class TemplateRenderContext {
 
   public Object resolveBean(String expression) throws ApplicationException {
     return null;
+  }
+
+  public String resolveMessage(MessageKey key) {
+    return key.toString();
   }
 
   public StringBuilder render() throws IOException {

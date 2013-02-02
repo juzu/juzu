@@ -17,29 +17,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.template.url.contextual;
+package juzu.impl.template.spi.juzu.dialect.gtmpl;
 
-import juzu.Path;
-import juzu.Response;
-import juzu.View;
-import juzu.template.Template;
+/**
+ * A message key.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public class MessageKey {
 
-import javax.inject.Inject;
+  /** . */
+  private final String value;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @Inject
-  @Path("index.gtmpl")
-  Template index;
-
-  @View
-  public Response.Render index() {
-    return index.ok();
+  public MessageKey(String value) {
+    this.value = value;
   }
 
-  @View
-  public Response.Render contextual(Object contextual) {
-    return Response.ok(contextual == null ? "pass" : "fail");
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return "MessageKey[" + value + "]";
   }
 }

@@ -92,8 +92,13 @@ public class EmitPhase extends CompilationPhase {
           ctx.writer.tag(className, tag.getArgs());
         }
       }
+      else if (block instanceof ASTNode.Message) {
+        ASTNode.Message message = (ASTNode.Message)block;
+        String key = message.getKey();
+        ctx.writer.message(key);
+      }
       else {
-        throw new AssertionError();
+        throw new AssertionError("Cannot such block " + block);
       }
     }
   }

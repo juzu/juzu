@@ -280,8 +280,13 @@ public class TemplateResolver implements Serializable {
       String baseBuilderName = juzu.template.Template.Builder.class.getCanonicalName();
       if (template.getParameters() != null) {
         // Implement abstract method with this class Builder covariant return type
-        writer.append("public Builder with() {\n");
+        writer.append("public Builder builder() {\n");
         writer.append("return new Builder();\n");
+        writer.append("}\n");
+
+        // Covariant return type of with()
+        writer.append("public Builder with() {\n");
+        writer.append("return (Builder)super.with();\n");
         writer.append("}\n");
 
         // Setters on builders
@@ -296,8 +301,8 @@ public class TemplateResolver implements Serializable {
         writer.append("}\n");
       }
       else {
-        // Implement abstract method
-        writer.append("public ").append(baseBuilderName).append(" with() {\n");
+        // Implement abstract factory method
+        writer.append("public ").append(baseBuilderName).append(" builder() {\n");
         writer.append("return new ").append(baseBuilderName).append("();\n");
         writer.append("}\n");
       }

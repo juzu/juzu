@@ -120,6 +120,13 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
   }
 
   @Test
+  public void testMessage() throws Exception {
+    String template = "&{a}";
+    String render = render(template);
+    assertEquals("MessageKey[a]", render);
+  }
+
+  @Test
   public void testLineBreak() throws Exception {
     String template = "\n";
     String render = render(template);

@@ -95,8 +95,6 @@ public abstract class ASTNode<N extends ASTNode<N>> implements Serializable {
     public Template() {
       super(new Location(0, 0), new ArrayList<Block<?>>());
     }
-
-
   }
 
   public abstract static class Block<B extends Block<B>> extends ASTNode<B> {
@@ -336,4 +334,47 @@ public abstract class ASTNode<N extends ASTNode<N>> implements Serializable {
     }
   }
 
+  public static class Message extends Block<Message> {
+
+    /** . */
+    private final String key;
+
+    public Message(String key) {
+      this(DUMB, DUMB, key);
+    }
+
+    public Message(Coordinate begin, Coordinate end, String key) {
+      super(begin, end, null);
+
+      //
+      if (key == null) {
+        throw new NullPointerException();
+      }
+
+
+      //
+      this.key = key;
+    }
+
+    public String getKey() {
+      return key;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (obj instanceof Message) {
+        Message that = (Message)obj;
+        return key.equals(that.key);
+      }
+      return false;
+    }
+
+    @Override
+    public String toString() {
+      return getClass().getSimpleName() + "[key=" + key + "]";
+    }
+  }
 }

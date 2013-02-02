@@ -31,6 +31,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Locale;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateTestCase extends AbstractInjectTestCase {
@@ -91,7 +92,14 @@ public class TemplateTestCase extends AbstractInjectTestCase {
   @Test
   public void testSyntaxError() throws Exception {
     MockApplication<?> app = application("plugin.template.syntaxerror").init();
+  }
 
+  @Test
+  public void testMessage() throws Exception {
+    MockApplication<?> app = application("plugin.template.message").init();
+    app.addMessage(Locale.ENGLISH, "the_key", "the_key_en");
+    MockClient client = app.client();
+    assertEquals("(the_key_en,)", client.render().assertStringResult());
   }
 
   @Test

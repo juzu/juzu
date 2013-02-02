@@ -50,6 +50,8 @@ public abstract class DialectTemplateEmitter {
 
   public abstract void url(String typeName, String methodName, List<String> args);
 
+  public abstract void message(String key);
+
   public abstract void openTag(String className, Map<String, String> args);
 
   public abstract void closeTag(String tagName, Map<String, String> args);
