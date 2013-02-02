@@ -14,11 +14,9 @@ Various things to do, not exhaustive that needs to go in the roadmap
 - try to integrate Dagger DI : http://square.github.com/dagger/
 - bind Juzu scopes to Java EE scopes in CDI
 - implement some kind of completion to see what it gives
-- in dev mode : only compile the package of the application to speed up build
 - translate Juzu scopes into other framework specific scopes : session scope to CDI scope, etc...
 - in standalone mode : implement portlet Preferences with cookie
 - improve startup error reporting, specially from plugins (cf asset plugin that validates classpath assets exist)
-- option for copying an asset to the output
 - send 404 when resource cannot be resolved with some warn in the log
 - implement java type in type safe template parameters like param name=foo type=int
 
