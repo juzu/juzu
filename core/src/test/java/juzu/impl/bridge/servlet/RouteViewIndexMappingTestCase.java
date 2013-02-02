@@ -20,7 +20,9 @@
 package juzu.impl.bridge.servlet;
 
 import juzu.test.AbstractWebTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -29,7 +31,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractRoutePathMappingTestCase extends AbstractWebTestCase {
+public class RouteViewIndexMappingTestCase extends AbstractRoutePathMappingTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.servlet.route.view.indexmapping");
+  }
 
   @Drone
   WebDriver driver;
@@ -39,14 +46,32 @@ public abstract class AbstractRoutePathMappingTestCase extends AbstractWebTestCa
 
     // Check unmatched send 404
     URL url = applicationURL();
-    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-    conn.connect();
-    assertEquals(404, conn.getResponseCode());
-
-    // Check mapping
-    url = applicationURL("/foo");
     driver.get(url.toString());
     String pass = driver.findElement(By.tagName("body")).getText();
     assertEquals("pass", pass);
+
+    //
+    url = applicationURL("/bar");
+    driver.get(url.toString());
+    pass = driver.findElement(By.tagName("body")).getText();
+    assertEquals("pass", pass);
+
+    //
+    url = applicationURL("/foo");
+    driver.get(url.toString());
+    pass = driver.findElement(By.tagName("body")).getText();
+    assertEquals("pass", pass);
+
+    //
+    url = applicationURL("/foo/");
+    driver.get(url.toString());
+    pass = driver.findElement(By.tagName("body")).getText();
+    assertEquals("pass", pass);
+
+    //
+    url = applicationURL("/foo/bar");
+    driver.get(url.toString());
+    pass = driver.findElement(By.tagName("body")).getText();
+    assertEquals("pass[bar]", pass);
   }
 }

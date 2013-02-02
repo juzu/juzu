@@ -17,36 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.servlet;
+package bridge.servlet.route.view.index;
 
-import juzu.test.AbstractWebTestCase;
-import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
+import juzu.Response;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractRoutePathMappingTestCase extends AbstractWebTestCase {
+public class A {
 
-  @Drone
-  WebDriver driver;
-
-  @Test
-  public void testRender() throws Exception {
-
-    // Check unmatched send 404
-    URL url = applicationURL();
-    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-    conn.connect();
-    assertEquals(404, conn.getResponseCode());
-
-    // Check mapping
-    url = applicationURL("/foo");
-    driver.get(url.toString());
-    String pass = driver.findElement(By.tagName("body")).getText();
-    assertEquals("pass", pass);
+  @View
+  public Response.Content<?> index() {
+    return Response.render("pass");
   }
 }

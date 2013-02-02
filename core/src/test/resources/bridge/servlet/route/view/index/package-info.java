@@ -17,18 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.servlet.route.view.mapping;
+@Application
+package bridge.servlet.route.view.index;
 
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @View
-  @Route("/foo")
-  public Response.Content<?> foo() {
-    return Response.ok("pass");
-  }
-}
+import juzu.Application;
