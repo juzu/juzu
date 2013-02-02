@@ -65,9 +65,6 @@ package my.application;
 {{/java}}
 {{/example}}
 
-== Request routing ==
-
-
 = Portlet bridge =
 
 The portlet bridge exposes a Juzu application as a portlet in a Portlet Container.
