@@ -142,7 +142,7 @@ public class ServletBridge extends HttpServlet {
     //
     if (module == null) {
       try {
-        module = ServletModule.leaseModule(getServletContext());
+        module = ServletModule.leaseModule(getServletContext(), Thread.currentThread().getContextClassLoader());
       }
       catch (Exception e) {
         throw wrap(e);

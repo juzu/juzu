@@ -45,10 +45,10 @@ public class ServletModule extends Module {
   /** . */
   private static final HashMap<String, ServletModule> modules = new HashMap<String, ServletModule>();
 
-  static synchronized ServletModule leaseModule(ServletContext context) throws Exception {
+  static synchronized ServletModule leaseModule(ServletContext context, ClassLoader classLoader) throws Exception {
     ServletModule module = modules.get(context.getContextPath());
     if (module == null) {
-      modules.put(context.getContextPath(), module = new ServletModule(context));
+      modules.put(context.getContextPath(), module = new ServletModule(context, classLoader));
     }
     module.leases.incrementAndGet();
     return module;
@@ -87,8 +87,8 @@ public class ServletModule extends Module {
     return (JSON)JSON.parse(s);
   }
 
-  private ServletModule(final ServletContext context) throws Exception {
-    super(context.getClassLoader(), getConfig(context.getClassLoader()));
+  private ServletModule(final ServletContext context, ClassLoader classLoader) throws Exception {
+    super(classLoader, getConfig(classLoader));
 
     //
     String srcPath = context.getInitParameter("juzu.src_path");
