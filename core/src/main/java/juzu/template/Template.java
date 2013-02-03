@@ -33,7 +33,6 @@ import juzu.request.MimeContext;
 import juzu.request.RequestContext;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -106,7 +105,7 @@ public abstract class Template {
    * @return the render response
    */
   public Response.Render render() throws TemplateExecutionException, UndeclaredIOException {
-    return render(null, null);
+    return with().render();
   }
 
   /**
@@ -116,7 +115,7 @@ public abstract class Template {
    * @return the render response
    */
   public Response.Render render(Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    return render(null, locale);
+    return with(locale).render();
   }
 
   /**
@@ -126,7 +125,7 @@ public abstract class Template {
    * @return the render response
    */
   public Response.Render render(Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
-    return render(parameters, null);
+    return with(parameters).render();
   }
 
   /**
@@ -137,25 +136,7 @@ public abstract class Template {
    * @return the render response
    */
   public Response.Render render(final Map<String, ?> parameters, final Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    try {
-      RequestContext context = Request.getCurrent().getContext();
-      if (context instanceof MimeContext) {
-        MimeContext mime = (MimeContext)context;
-        PropertyMap properties = new PropertyMap();
-        TemplateRenderContext streamable = applicationContext.render(stubType, Template.this, properties, parameters, locale);
-        StringBuilder sb = new StringBuilder();
-        streamable.render(new AppendableStream(sb));
-        Response.Render render = new Response.Content.Render(properties, new Streamable.CharSequence(sb));
-        mime.setResponse(render);
-        return render;
-      }
-      else {
-        throw new AssertionError("does not make sense");
-      }
-    }
-    catch (IOException e) {
-      throw new UndeclaredIOException(e);
-    }
+    return with(parameters).locale(locale).render();
   }
 
   /**
@@ -164,7 +145,7 @@ public abstract class Template {
    * @return the ok resource response
    */
   public final Response.Content ok() {
-    return ok(null, null);
+    return with().ok();
   }
 
   /**
@@ -174,7 +155,7 @@ public abstract class Template {
    * @return the ok resource response
    */
   public final Response.Content ok(Locale locale) {
-    return ok(null, locale);
+    return with(locale).ok();
   }
 
   /**
@@ -184,7 +165,7 @@ public abstract class Template {
    * @return the ok resource response
    */
   public final Response.Content ok(Map<String, ?> parameters) {
-    return ok(parameters, null);
+    return with(parameters).ok();
   }
 
   /**
@@ -195,9 +176,7 @@ public abstract class Template {
    * @return the ok resource response
    */
   public final Response.Content<Stream.Char> ok(Map<String, ?> parameters, Locale locale) {
-    StringBuilder sb = new StringBuilder();
-    renderTo(new AppendableStream(sb), parameters, locale);
-    return Response.ok(sb.toString());
+    return with(parameters).locale(locale).ok();
   }
 
   /**
@@ -237,9 +216,7 @@ public abstract class Template {
    * @return the not found resource response
    */
   public final Response.Content<Stream.Char> notFound(Map<String, ?> parameters, Locale locale) {
-    StringBuilder sb = new StringBuilder();
-    renderTo(new AppendableStream(sb), parameters, locale);
-    return Response.content(404, sb.toString());
+    return with(parameters).locale(locale).notFound();
   }
 
   /**
@@ -250,7 +227,7 @@ public abstract class Template {
    * @throws UndeclaredIOException      any io exception
    */
   public <A extends Appendable> A renderTo(A appendable) throws TemplateExecutionException, UndeclaredIOException {
-    return renderTo(appendable, Collections.<String, Object>emptyMap(), null);
+    return with().renderTo(appendable);
   }
 
   /**
@@ -262,7 +239,7 @@ public abstract class Template {
    * @throws UndeclaredIOException      any io exception
    */
   public <A extends Appendable> A renderTo(A appendable, Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    return renderTo(appendable, Collections.<String, Object>emptyMap(), locale);
+    return with(locale).renderTo(appendable);
   }
 
   /**
@@ -274,31 +251,7 @@ public abstract class Template {
    * @throws UndeclaredIOException      any io exception
    */
   public <A extends Appendable> A renderTo(A appendable, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
-    return renderTo(appendable, parameters, null);
-  }
-
-  /**
-   * Renders the template to the specified appendable, the current {@link MimeContext} will not be affected.
-   *
-   * @param appendable the appendable
-   * @param parameters the attributes
-   * @param locale     the locale
-   * @throws TemplateExecutionException any execution exception
-   * @throws UndeclaredIOException      any io exception
-   */
-  public <A extends Appendable> A renderTo(
-    A appendable,
-    Map<String, ?> parameters,
-    Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    if (appendable == null) {
-      throw new NullPointerException("No null appendable can be provided");
-    }
-
-    // Delegate rendering
-    renderTo(new AppendableStream(appendable), parameters, locale);
-
-    //
-    return appendable;
+    return with(parameters).renderTo(appendable);
   }
 
   /**
@@ -309,7 +262,7 @@ public abstract class Template {
    * @throws UndeclaredIOException      any io exception
    */
   public void renderTo(Stream.Char printer) throws TemplateExecutionException, UndeclaredIOException {
-    renderTo(printer, Collections.<String, Object>emptyMap(), null);
+    with().renderTo(printer);
   }
 
   /**
@@ -322,7 +275,7 @@ public abstract class Template {
 
    */
   public void renderTo(Stream.Char printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    renderTo(printer, Collections.<String, Object>emptyMap(), locale);
+    with(locale).renderTo(printer);
   }
 
   /**
@@ -334,32 +287,7 @@ public abstract class Template {
    * @throws UndeclaredIOException      any io exception
    */
   public void renderTo(Stream.Char printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
-    renderTo(printer, parameters, null);
-  }
-
-  /**
-   * Renders the template to the specified printer, the current {@link MimeContext} will not be affected.
-   *
-   * @param printer    the printer
-   * @param parameters the attributes
-   * @param locale     the locale
-   * @throws TemplateExecutionException any execution exception
-   * @throws UndeclaredIOException      any io exception
-   */
-  public void renderTo(
-    Stream.Char printer,
-    Map<String, ?> parameters,
-    Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    if (printer == null) {
-      throw new NullPointerException("No null printe provided");
-    }
-    try {
-      TemplateRenderContext trc = applicationContext.render(stubType, this, null, parameters, locale);
-      trc.render(printer);
-    }
-    catch (IOException e) {
-      throw new UndeclaredIOException(e);
-    }
+    with(parameters).renderTo(printer);
   }
 
   /**
@@ -368,6 +296,17 @@ public abstract class Template {
    * @return a new builder instance
    */
   public abstract Builder with();
+
+  /**
+   * Returns a builder to further customize the template rendering.
+   *
+   * @return a new builder instance
+   */
+  public Builder with(Map<String, ?> parameters) {
+    Builder builder = with();
+    builder.parameters = (Map<String, Object>)parameters;
+    return builder;
+  }
 
   /**
    * Returns a builder to further customize the template rendering.
@@ -390,6 +329,11 @@ public abstract class Template {
 
     /** The locale. */
     private Locale locale;
+
+    public Builder locale(Locale locale) {
+      this.locale = locale;
+      return this;
+    }
 
     /**
      * Update a parameter, if the value is not null the parameter with the specified name is set, otherwise the
@@ -418,30 +362,40 @@ public abstract class Template {
     }
 
     /**
-     * Renders the template and returns a render response.
-     *
-     * @return the render response
-     */
-    public Response.Render render() throws TemplateExecutionException, UndeclaredIOException {
-      return Template.this.render(parameters, locale);
-    }
-
-    /**
      * Renders the template and set the response on the current {@link MimeContext}.
      *
      * @return the ok resource response
      */
-    public final Response.Content ok() {
-      return Template.this.ok(parameters, locale);
+    public final Response.Content<Stream.Char> ok() {
+      return status(200);
     }
 
     /**
-     * Renders the template and set a 404 response on the current {@link MimeContext}.
+     * Renders the template and returns a response with the not found status.
      *
-     * @return the not found resource response
+     * @return the not found response
      */
-    public final Response.Content notFound() {
-      return Template.this.notFound(parameters, locale);
+    public final Response.Content<Stream.Char> notFound() {
+      return status(404);
+    }
+
+    /**
+     * Renders the template and returns a response with the specified status.
+     *
+     * @return the response
+     */
+    public final Response.Render status(int status) {
+      StringBuilder sb = new StringBuilder();
+
+      try {
+        PropertyMap properties = new PropertyMap();
+        TemplateRenderContext trc = applicationContext.render(stubType, Template.this, properties, parameters, locale);
+        trc.render(new AppendableStream(sb));
+        return new Response.Render(status, properties,  new Streamable.CharSequence(sb));
+      }
+      catch (IOException e) {
+        throw new UndeclaredIOException(e);
+      }
     }
 
     /**
@@ -452,7 +406,8 @@ public abstract class Template {
      * @throws UndeclaredIOException      any io exception
      */
     public <A extends Appendable> A renderTo(A appendable) throws TemplateExecutionException, UndeclaredIOException {
-      return Template.this.renderTo(appendable, parameters, locale);
+      renderTo(new AppendableStream(appendable));
+      return appendable;
     }
 
     /**
@@ -463,7 +418,39 @@ public abstract class Template {
      * @throws UndeclaredIOException      any io exception
      */
     public void renderTo(Stream.Char printer) throws TemplateExecutionException, UndeclaredIOException {
-      Template.this.renderTo(printer, parameters, locale);
+      if (printer == null) {
+        throw new NullPointerException("No null printe provided");
+      }
+      try {
+        TemplateRenderContext trc = applicationContext.render(stubType, Template.this, null, parameters, locale);
+        trc.render(printer);
+      }
+      catch (IOException e) {
+        throw new UndeclaredIOException(e);
+      }
+    }
+
+    /**
+     * Renders the template and returns a render response.
+     *
+     * @return the render response
+     */
+    public Response.Render render() throws TemplateExecutionException, UndeclaredIOException {
+      try {
+        RequestContext context = Request.getCurrent().getContext();
+        if (context instanceof MimeContext) {
+          MimeContext mime = (MimeContext)context;
+          Response.Render render = status(200);
+          mime.setResponse(render);
+          return render;
+        }
+        else {
+          throw new AssertionError("does not make sense");
+        }
+      }
+      catch (IOException e) {
+        throw new UndeclaredIOException(e);
+      }
     }
   }
 }

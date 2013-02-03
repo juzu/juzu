@@ -27,6 +27,6 @@ public class A {
   @View
   public Response.Render index() {
     String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
-    return Response.render(content);
+    return Response.ok(content);
   }
 }

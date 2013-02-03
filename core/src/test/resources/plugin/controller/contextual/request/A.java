@@ -30,6 +30,6 @@ public class A {
 
   @View
   public Response.Content.Render index(RequestContext context) throws IOException {
-    return Response.render(context != null ? "pass" : "fail");
+    return Response.ok(context != null ? "pass" : "fail");
   }
 }

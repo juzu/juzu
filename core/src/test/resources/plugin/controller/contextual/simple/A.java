@@ -30,8 +30,8 @@ import java.io.InputStream;
 public class A {
 
   @View
-  public Response.Content.Render index(InputStream in) throws IOException {
+  public Response.Render index(InputStream in) throws IOException {
     String s = Tools.read(in);
-    return Response.render(s);
+    return Response.ok(s);
   }
 }

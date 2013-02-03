@@ -435,6 +435,14 @@ public abstract class Response {
       super(200, Stream.Char.class);
     }
 
+    public Render(int status, PropertyMap properties, Streamable<Stream.Char> streamable) {
+      super(status, Stream.Char.class, properties, streamable);
+    }
+
+    public Render(int status, Streamable<Stream.Char> streamable) {
+      super(status, Stream.Char.class, streamable);
+    }
+
     public Render(PropertyMap properties, Streamable<Stream.Char> streamable) {
       super(200, Stream.Char.class, properties, streamable);
     }
@@ -513,32 +521,32 @@ public abstract class Response {
     return new Response.Redirect(location);
   }
 
-  public static Render render(CharSequence content) {
-    return render(null, content);
-  }
-
-  public static Render render(String title, CharSequence content) {
-    return new Render(new Streamable.CharSequence(content)).withTitle(title);
-  }
-
-  public static Content<Stream.Char> ok(CharSequence content) {
+  public static Render ok(CharSequence content) {
     return content(200, content);
+  }
+
+  public static Render notFound(CharSequence content) {
+    return content(404, content);
+  }
+
+  public static Render content(int code, CharSequence content) {
+    return content(code, new Streamable.CharSequence(content));
+  }
+
+  public static Render content(int code, Streamable<Stream.Char> content) {
+    return new Render(code, content).withMimeType("text/html");
+  }
+
+  private static Render content(int code, String mimeType, CharSequence content) {
+    return new Render(code, new Streamable.CharSequence(content)).withMimeType(mimeType);
   }
 
   public static Content<Stream.Binary> ok(InputStream content) {
     return content(200, null, content);
   }
 
-  public static Content<Stream.Char> notFound(CharSequence content) {
-    return content(404, content);
-  }
-
-  public static Content<Stream.Char> content(int code, CharSequence content) {
-    return content(code, new Streamable.CharSequence(content));
-  }
-
-  public static Content<Stream.Char> content(int code, Streamable<Stream.Char> content) {
-    return new Content<Stream.Char>(code, Stream.Char.class, content).withMimeType("text/html");
+  public static Content<Stream.Binary> notFound(InputStream content) {
+    return content(404, null, content);
   }
 
   public static Content<Stream.Binary> content(int code, InputStream content) {
@@ -547,9 +555,5 @@ public abstract class Response {
 
   private static Content<Stream.Binary> content(int code, String mimeType, InputStream content) {
     return new Content<Stream.Binary>(code, Stream.Binary.class, new Streamable.InputStream(content)).withMimeType(mimeType);
-  }
-
-  private static Content<Stream.Char> content(int code, String mimeType, CharSequence content) {
-    return new Content<Stream.Char>(code, Stream.Char.class, new Streamable.CharSequence(content)).withMimeType(mimeType);
   }
 }

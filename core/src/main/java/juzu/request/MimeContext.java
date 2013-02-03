@@ -41,15 +41,15 @@ public abstract class MimeContext extends RequestContext {
 
   public void setResponse(Response.Content response) throws IOException, IllegalStateException {
     // Consume response here
-    StringBuilder buffer = new StringBuilder();
-    AppendableStream printer = new AppendableStream(buffer);
-    response.send(printer);
-    if (response instanceof Response.Content.Render) {
-      response = Response.render(((Response.Content.Render)response).getTitle(), buffer.toString());
-    }
-    else {
-      response = Response.content(response.getStatus(), buffer.toString());
-    }
+//    StringBuilder buffer = new StringBuilder();
+//    AppendableStream printer = new AppendableStream(buffer);
+//    response.send(printer);
+//    if (response instanceof Response.Content.Render) {
+//      response = Response.render(((Response.Content.Render)response).getTitle(), buffer.toString());
+//    }
+//    else {
+//      response = Response.content(response.getStatus(), buffer.toString());
+//    }
 
     //
     request.setResponse(response);

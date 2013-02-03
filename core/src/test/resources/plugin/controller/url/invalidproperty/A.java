@@ -31,15 +31,15 @@ public class A {
   }
 
   @View
-  public Response index() {
+  public Response.Render index() {
     Dispatch builder = A_.index();
     try {
       builder.setProperty(new MyPropertyType(), "foo");
-      return Response.render("fail");
+      return Response.ok("fail");
     }
     catch (IllegalArgumentException e) {
       // OK
-      return Response.render("pass");
+      return Response.ok("pass");
     }
   }
 }

@@ -29,8 +29,8 @@ import java.io.ByteArrayInputStream;
 public class A {
 
   @View
-  public Response.Content<?> index(String p) {
-    return Response.render("" + A_.resource());
+  public Response.Render index(String p) {
+    return Response.ok("" + A_.resource());
   }
 
   @Resource

@@ -31,6 +31,6 @@ public class A {
     if (unresolved == null) {
       MethodParametersTestCase.WAS_NULL = true;
     }
-    return Response.render("" + A_.index());
+    return Response.ok("" + A_.index());
   }
 }

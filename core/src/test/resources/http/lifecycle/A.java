@@ -32,22 +32,22 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content<?> index() {
-    return Response.render(A_.action().toString());
+  public Response.Render index() {
+    return Response.ok(A_.action().toString());
   }
 
   @juzu.View
-  public Response.Content<?> done(String p) {
+  public Response.Render done(String p) {
     if ("d".equals(p)) {
-      return Response.render(A_.resource().toString());
+      return Response.ok(A_.resource().toString());
     }
     else {
-      return Response.render("<html><body>fail</body></html>");
+      return Response.ok("<html><body>fail</body></html>");
     }
   }
 
   @Resource
-  public Response.Content<?> resource() {
-    return Response.content(200, "<html><body>done</body></html>");
+  public Response.Render resource() {
+    return Response.ok("<html><body>done</body></html>");
   }
 }

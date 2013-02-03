@@ -26,6 +26,6 @@ import juzu.View;
 public class A {
   @View
   public Response.Render index() {
-    return Response.render("OK");
+    return Response.ok("OK");
   }
 }

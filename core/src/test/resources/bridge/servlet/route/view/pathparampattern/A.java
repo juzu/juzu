@@ -29,7 +29,7 @@ import juzu.test.AbstractTestCase;
 public class A {
 
   @View
-  public Response.Content<?> index() {
+  public Response.Render index() {
 
     // First check when it does not match the pattern
     try {
@@ -40,7 +40,7 @@ public class A {
     }
 
     //
-    return Response.render("<a id='trigger' href='" + A_.foo("juu") + "'>click</div>");
+    return Response.ok("<a id='trigger' href='" + A_.foo("juu") + "'>click</div>");
   }
 
   @View

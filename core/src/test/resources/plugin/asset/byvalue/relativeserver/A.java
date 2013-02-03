@@ -28,6 +28,6 @@ public class A {
   @View
   public Response.Render index() {
     String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
-    return Response.render(content).addScript(Asset.server("test.js"));
+    return Response.ok(content).addScript(Asset.server("test.js"));
   }
 }

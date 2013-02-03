@@ -27,8 +27,8 @@ import juzu.Route;
 public class A {
 
   @juzu.View
-  public Response.Content<?> index() {
-    return Response.render(
+  public Response.Render index() {
+    return Response.ok(
         "<form id='form' action='" + A_.foo(null) + "' method='post'>" +
         "<input type='hidden' name='juu' value='bar'/>" +
         "<input id='trigger' type='submit' name='click'/>" +

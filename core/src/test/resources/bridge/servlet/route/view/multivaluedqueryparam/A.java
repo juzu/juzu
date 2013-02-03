@@ -29,13 +29,13 @@ import java.util.Arrays;
 public class A {
 
   @View
-  public Response.Content<?> index() {
-    return Response.render("<a id='trigger' href='" + A_.foo(new String[]{"bar1","bar2"}) + "'>click</div>");
+  public Response.Render index() {
+    return Response.ok("<a id='trigger' href='" + A_.foo(new String[]{"bar1","bar2"}) + "'>click</div>");
   }
 
   @View
   @Route("/foo")
-  public Response.Content<?> foo(String[] juu) {
+  public Response.Render foo(String[] juu) {
     return Response.ok("" + Arrays.asList(juu));
   }
 }

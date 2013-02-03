@@ -30,9 +30,9 @@ public class A {
   static int count = 0;
 
   @juzu.View
-  public Response.Content<?> index() {
+  public Response.Render index() {
     count = 0;
-    return Response.render("" + A_.fooAction());
+    return Response.ok("" + A_.fooAction());
   }
 
   @Action

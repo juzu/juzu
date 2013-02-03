@@ -29,8 +29,8 @@ import java.io.IOException;
 public class A {
 
   @View
-  public Response.Content.Render index() throws IOException {
-    return Response.render(A_.action().toString(), "render_phase");
+  public Response.Render index() throws IOException {
+    return Response.ok("render_phase").withTitle(A_.action().toString());
   }
 
   @Action

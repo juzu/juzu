@@ -26,7 +26,7 @@ import juzu.View;
 public class A {
 
   @View
-  public Response.Content<?> index() {
-    return Response.render("pass");
+  public Response.Render index() {
+    return Response.ok("pass");
   }
 }

@@ -29,8 +29,8 @@ import juzu.request.RenderContext;
 public class A {
 
   @juzu.View
-  public Response.Content<?> index() {
-    return Response.render(
+  public Response.Render index() {
+    return Response.ok(
         "<form id='form' action='" + A_.foo() + "' method='post'>" +
             "<input id='trigger' type='submit' name='click'/>" +
             "</form>");
@@ -44,7 +44,7 @@ public class A {
 
   @juzu.View
   @Route("/bar")
-  public Response.Content<?> bar(String juu, RenderContext renderContext) {
+  public Response.Render bar(String juu, RenderContext renderContext) {
     String path = renderContext.getProperty(PropertyType.PATH);
     return Response.ok("/juzu/bar".equals(path) && "juu".equals(juu) ? "pass" : "fail");
   }

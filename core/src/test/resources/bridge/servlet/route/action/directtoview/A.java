@@ -29,8 +29,8 @@ import juzu.request.RenderContext;
 public class A {
 
   @juzu.View
-  public Response.Content<?> index() {
-    return Response.render(
+  public Response.Render index() {
+    return Response.ok(
         "<form id='form' action='" + A_.foo() + "' method='post'>" +
             "<input id='trigger' type='submit' name='click'/>" +
             "</form>");

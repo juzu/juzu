@@ -50,7 +50,7 @@ public class LiveModeTestCase extends AbstractWebTestCase {
 
     //
     JavaFile pkgFile = getCompiler().assertSource("bridge", "servlet", "livemode", "A.java");
-    pkgFile.assertSave(pkgFile.assertContent().replace("ok", "OK"));
+    pkgFile.assertSave(pkgFile.assertContent().replace("\"ok\"", "\"OK\""));
 
     //
     driver.get(applicationURL().toString());
@@ -60,7 +60,7 @@ public class LiveModeTestCase extends AbstractWebTestCase {
     assertEquals("OK", ok);
 
     //
-    pkgFile.assertSave(pkgFile.assertContent().replace("OK", "Ok"));
+    pkgFile.assertSave(pkgFile.assertContent().replace("\"OK\"", "\"Ok\""));
 
     //
     driver.get(applicationURL().toString());

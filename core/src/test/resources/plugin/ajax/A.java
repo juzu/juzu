@@ -82,27 +82,27 @@ public class A {
       "});\n" +
       "</script>\n";
 
-    return Response.render(content);
+    return Response.ok(content);
   }
 
   @Ajax
   @Resource
   @Route("/m1")
-  public Response.Content<?> m1() {
-    return Response.content(200, "m1()");
+  public Response.Render m1() {
+    return Response.ok("m1()");
   }
 
   @Ajax
   @Resource
   @Route("/m2")
-  public Response.Content<?> m2(String p) {
-    return Response.content(200, "m2(" + p + ")");
+  public Response.Render m2(String p) {
+    return Response.ok("m2(" + p + ")");
   }
 
   @Ajax
   @Resource
   @Route("/m3")
-  public Response.Content<?> m3() {
-    return Response.content(200, "m3()");
+  public Response.Render m3() {
+    return Response.ok("m3()");
   }
 }

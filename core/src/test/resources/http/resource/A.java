@@ -27,8 +27,8 @@ import juzu.asset.Asset;
 public class A {
 
   @View
-  public Response.Content<?> index(String p) {
-    return Response.render("foo")
+  public Response.Render index(String p) {
+    return Response.ok("foo")
       .addScript(Asset.server("assets/jquery-1.7.1.js"))
       .addStylesheet(Asset.server("assets/main.css"))
       .addStylesheet(Asset.server("assets/main.less"));

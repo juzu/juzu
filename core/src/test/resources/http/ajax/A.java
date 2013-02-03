@@ -29,7 +29,7 @@ import juzu.asset.AssetLocation;
 public class A {
 
   @View
-  public Response.Content<?> index(String p) {
+  public Response.Render index(String p) {
     String content =
       "<script>\n" +
         "$(function() {\n" +
@@ -46,11 +46,11 @@ public class A {
         "</script>\n" +
         "<a id='trigger' href='#'>click</a>\n" +
         "<div id='foo'>foo</div>";
-    return Response.render(content).addScript(Asset.of(AssetLocation.SERVER, "jquery.js"));
+    return Response.ok(content).addScript(Asset.of(AssetLocation.SERVER, "jquery.js"));
   }
 
   @Resource
-  public Response.Content<?> resource() {
+  public Response.Render resource() {
     return Response.ok("bar");
   }
 }

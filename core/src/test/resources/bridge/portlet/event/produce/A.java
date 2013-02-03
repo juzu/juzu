@@ -36,7 +36,7 @@ public class A {
   }
 
   @View
-  public Response.Content<?> index() {
-    return Response.render("<a id='trigger' href='" + A_.action() + "'>click</a>");
+  public Response.Render index() {
+    return Response.ok("<a id='trigger' href='" + A_.action() + "'>click</a>");
   }
 }

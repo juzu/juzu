@@ -29,12 +29,12 @@ public class A {
   @View
   @Route(value = "/{foo}", priority = -1)
   public Response.Render foo1(String foo) {
-    return Response.render("foo1");
+    return Response.ok("foo1");
   }
 
   @View
   @Route("/{foo}")
   public Response.Render foo2(String foo) {
-    return Response.render("foo2");
+    return Response.ok("foo2");
   }
 }

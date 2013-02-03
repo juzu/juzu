@@ -35,6 +35,6 @@ public class A {
       "});\n" +
       "</script>\n" +
       "<a id='trigger' href='#'>click</a>";
-    return Response.render(content);
+    return Response.ok(content);
   }
 }

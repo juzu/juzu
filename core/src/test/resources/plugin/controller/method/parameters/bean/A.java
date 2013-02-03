@@ -43,7 +43,7 @@ public class A {
 
   @juzu.View(id = "a")
   public Response.Content<?> a() {
-    return Response.render(A_.mA(bean).toString());
+    return Response.ok(A_.mA(bean).toString());
   }
 
   @juzu.View
@@ -66,7 +66,7 @@ public class A {
 
   @juzu.View(id = "b")
   public Response.Content<?> b() {
-    return Response.render(A_.mB(bean).toString());
+    return Response.ok(A_.mB(bean).toString());
   }
 
   @juzu.View
@@ -88,17 +88,17 @@ public class A {
   // ******************************************************************************************************************
 
   @juzu.View(id = "c")
-  public Response.Content<?> c() {
-    return Response.render(A_.mC(bean).toString());
+  public Response.Render c() {
+    return Response.ok(A_.mC(bean).toString());
   }
 
   @juzu.View
-  public Response.Content<?> mC(B foo) throws IOException {
+  public Response.Render mC(B foo) throws IOException {
     return Response.ok(foo.getC().toString());
   }
 
   @juzu.View(id = "cAction")
-  public Response.Content<?> cAction() {
+  public Response.Render cAction() {
     return Response.ok(A_.mCAction(bean).toString());
   }
 
@@ -112,7 +112,7 @@ public class A {
 
   @juzu.View(id = "d")
   public Response.Content<?> d() {
-    return Response.render(A_.mD(bean).toString());
+    return Response.ok(A_.mD(bean).toString());
   }
 
   @juzu.View
@@ -135,7 +135,7 @@ public class A {
 
   @juzu.View(id = "e")
   public Response.Content<?> e() {
-    return Response.render(A_.mE(bean).toString());
+    return Response.ok(A_.mE(bean).toString());
   }
 
   @juzu.View
@@ -158,7 +158,7 @@ public class A {
 
   @juzu.View(id = "f")
   public Response.Content<?> f() {
-    return Response.render(A_.mF(bean).toString());
+    return Response.ok(A_.mF(bean).toString());
   }
 
   @juzu.View
@@ -181,7 +181,7 @@ public class A {
 
   @juzu.View(id = "g")
   public Response.Content<?> g() {
-    return Response.render(A_.mG("s_value", bean).toString());
+    return Response.ok(A_.mG("s_value", bean).toString());
   }
 
   @juzu.View
@@ -204,7 +204,7 @@ public class A {
 
   @juzu.View(id = "h")
   public Response.Content<?> h() {
-    return Response.render(A_.mH("s_value", bean).toString());
+    return Response.ok(A_.mH("s_value", bean).toString());
   }
 
   @juzu.View
@@ -227,7 +227,7 @@ public class A {
 
   @juzu.View(id = "i")
   public Response.Content<?> i() {
-    return Response.render(A_.mI("s_value", bean).toString());
+    return Response.ok(A_.mI("s_value", bean).toString());
   }
 
   @juzu.View

@@ -31,13 +31,13 @@ public class A {
 
   @View
   @Route("/foo")
-  public Response.Content<?> index() {
+  public Response.Render index() {
     if (count == 0) {
       count = 1;
       String url = A_.index().toString();
-      return Response.render("<a id='trigger' href='" + url + "'>click</div>");
+      return Response.ok("<a id='trigger' href='" + url + "'>click</div>");
     } else {
-      return Response.render("ok");
+      return Response.ok("ok");
     }
   }
 }

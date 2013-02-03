@@ -28,7 +28,7 @@ public class A {
 
   @View
   @Route("/foo/{value}")
-  public Response.Content<?> index(String value) {
-    return Response.render(value != null ? "pass[" + value + "]" : "pass");
+  public Response.Render index(String value) {
+    return Response.ok(value != null ? "pass[" + value + "]" : "pass");
   }
 }

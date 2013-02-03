@@ -40,6 +40,6 @@ public class A {
 
   @View
   public Response.Render contextual(Object contextual) {
-    return Response.render(contextual == null ? "pass" : "fail");
+    return Response.ok(contextual == null ? "pass" : "fail");
   }
 }
