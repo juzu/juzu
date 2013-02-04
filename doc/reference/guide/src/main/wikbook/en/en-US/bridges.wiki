@@ -86,7 +86,7 @@ Declaring a Juzu portlet is done in the //portlet.xml// file of the portlet appl
   <display-name xml:lang="EN">Juzu Portlet Application</display-name>
   <portlet-class>juzu.bridge.portlet.PortletBridge</portlet-class>
   <init-param>
-    <param-name>juzu.app_name></param-name>
+    <param-name>juzu.app_name</param-name>
     <param-value>my.application</param-value>
   </init-param>
   <supports>
