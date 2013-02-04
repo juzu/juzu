@@ -246,14 +246,19 @@ Let's study a simple example with a provider for the current time:
 {{java}}
 package my;
 
-public class TimeProvider implements java.inject.ProviderFactory {
-   public <T> Provider<? extends T> getProvider(Class<T> implementationType) {
-      if (implementationType == java.util.Date.class) {
-         return implementationType.cast(new java.util.Date());
-      } else {
-         return null;
-      }
-   }
+public class TimeProviderFactory implements java.inject.ProviderFactory {
+  public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
+    if (implementationType == java.util.Date.class) {
+      return new Provider<T>() {
+        public T get() {
+          return implementationType.cast(new java.util.Date());
+        }
+      };
+    }
+    else {
+      return null;
+    }
+  }
 }
 {{/java}}
 {{/example}}
