@@ -25,6 +25,26 @@
       <version>${pom.version}</version>
     </dependency>
 
+    <!-- Junit for testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-bom-arquillian</artifactId>
+      <version>${pom.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
+      <version>${pom.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -57,7 +77,6 @@
         </configuration>
         <executions>
           <execution>
-            <id>${target}</id>
             <goals>
               <goal>single</goal>
             </goals>
@@ -65,7 +84,7 @@
             <configuration>
               <finalName>\${project.build.finalName}</finalName>
               <descriptorRefs>
-                <descriptorRef>${target}</descriptorRef>
+                <descriptorRef>${juzuServer}-${juzuInject}</descriptorRef>
               </descriptorRefs>
             </configuration>
           </execution>

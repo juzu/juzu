@@ -102,8 +102,9 @@ the same result, the usage of a war packaging with the overlay feature.
 
 === Juzu archetype ===
 
-The following produces a base Juzu application:
+The following produces a base Juzu application for Tomcat with the Guice injection container:
 
+{{example title='Generating an application for the Tomcat server and the Guice injection container'}}
 {{screen}}
 mvn archetype:generate \\
    -DarchetypeGroupId=org.juzu \\
@@ -114,9 +115,27 @@ mvn archetype:generate \\
    -DpackageName=org.example.myapp \\
    -Dversion=1.0.0-SNAPSHOT
 {{/screen}}
+{{/example}}
 
-The generated application is a quickstart ready to can be customzed for developing more complex applications. The archetype
-uses the packager described in the previous section.
+The generated application is a quickstart ready to can be customzed for developing more complex applications.
+The archetype uses the packager described in the previous section.
+
+It is possible to generate the application for a different server and injection container:
+
+{{example title='Generating an application for the Tomcat server and the Spring injection container'}}
+{{screen}}
+mvn archetype:generate \\
+   -DarchetypeGroupId=org.juzu \\
+   -DarchetypeArtifactId=juzu-archetype \\
+   -DarchetypeVersion=$[juzu.version] \\
+   -DgroupId=org.example \\
+   -DartifactId=myapp \\
+   -DpackageName=org.example.myapp \\
+   -Dversion=1.0.0-SNAPSHOT \\
+   -DjuzuServer=tomcat \\
+   -DjuzuInject=spring
+{{/screen}}
+{{/example}}
 
 == Using a prepackaged application ==
 

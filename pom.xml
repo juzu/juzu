@@ -27,8 +27,9 @@
     <!-- Encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Wikbook -->
+    <!-- Dependency versions -->
     <wikbook.version>0.9.45</wikbook.version>
+    <junit.version>4.8.2</junit.version>
 
     <!-- Test settings -->
     <juzu.test.compiler>javac</juzu.test.compiler>
@@ -435,7 +436,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.8.2</version>
+        <version>${junit.version}</version>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.htmlunit</groupId>

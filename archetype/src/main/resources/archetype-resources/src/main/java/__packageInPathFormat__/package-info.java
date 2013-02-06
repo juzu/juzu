@@ -1,1 +1,3 @@
-@juzu.Application package ${package};
+@juzu.Application
+@juzu.plugin.servlet.Servlet(value = "/")
+package ${package};

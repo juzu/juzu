@@ -1,14 +1,12 @@
 <archetype-descriptor name="juzu.archetype">
 
   <requiredProperties>
-    <requiredProperty key="target">
-      <defaultValue>gatein</defaultValue>
+    <requiredProperty key="juzuServer">
+      <defaultValue>tomcat</defaultValue>
     </requiredProperty>
-<!--
-    <requiredProperty key="server">
-      <defaultValue/>
+    <requiredProperty key="juzuInject">
+      <defaultValue>guice</defaultValue>
     </requiredProperty>
--->
   </requiredProperties>
 
   <fileSets>
@@ -18,8 +16,14 @@
         <include>**/*</include>
       </includes>
     </fileSet>
-    <fileSet filtered="false">
+    <fileSet filtered="true">
       <directory>src/main/webapp</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet filtered="true">
+      <directory>src/test/java</directory>
       <includes>
         <include>**/*</include>
       </includes>
