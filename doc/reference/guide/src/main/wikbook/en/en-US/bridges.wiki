@@ -13,7 +13,7 @@ The first step for using the servlet bridge is to configure the ##juzu.bridge.se
 the application. There is a one to one mapping between a Juzu application and a Juzu servlet. Therefore
 if you project contains several applications, you should configure a Juzu servlet for each.
 
-=== Servlet configuration ===
+== Servlet configuration ==
 
 Declaring a Juzu servlet is done in the //web.xml// file of the web application:
 
@@ -51,20 +51,6 @@ In case of several applications, each can be configured with a //path mapping// 
 {{warning}}Any other kind of //url-pattern// than the default servlet (/////) or path mapping is not supported
 and will raise an error during startup{{/warning}}
 
-=== Servlet generation ===
-
-In the previous section we showed how to configuration the Juzu servlet. Since Servlet 3.0, it is possible to
-annotate a servlet to configure one. Juzu leverages this capability and is able to generate a servlet for an
-application with the ##juzu.plugin.servlet.Servlet## annotation:
-
-{{example title='Juzu servlet generation'}}
-{{java}}
-@Application
-@Servlet("/")
-package my.application;
-{{/java}}
-{{/example}}
-
 = Portlet bridge =
 
 The portlet bridge exposes a Juzu application as a portlet in a Portlet Container.
@@ -75,7 +61,7 @@ The first step for using the portlet bridge is to configure the ##juzu.bridge.po
 the application. There is a one to one mapping between a Juzu application and a Juzu portlet. Therefore
 if you project contains several applications, you should configure a Juzu portlet for each.
 
-=== Portlet configuration ===
+== Portlet configuration ==
 
 Declaring a Juzu portlet is done in the //portlet.xml// file of the portlet application:
 

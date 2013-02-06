@@ -38,6 +38,24 @@ resolve relatively to the web archive context address.
 * classpath: the asset is served by Juzu //asset server// (a servlet configured in the web application) and the resource is located
  on the classpath.
 
+= Asset server =
+
+For serving classpath assets, Juzu requires the configuration of the asset server as a servlet declaration:
+
+{{xml}}
+<servlet>
+  <servlet-name>AssetServlet</servlet-name>
+  <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
+  <load-on-startup>0</load-on-startup>
+</servlet>
+<servlet-mapping>
+  <servlet-name>AssetServlet</servlet-name>
+  <url-pattern>/assets/*</url-pattern>
+</servlet-mapping>
+{{/xml}}
+
+This declaration should be in the //web.xml// of the application whether it is a servlet or a portlet application.
+
 = Declaring assets programmatically =
 
 When an application requires an asset, it adds the asset to the ##Response.Render## object:
