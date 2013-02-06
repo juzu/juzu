@@ -24,6 +24,11 @@
       <artifactId>juzu-bom-core</artifactId>
       <version>${pom.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-servlet</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
 
     <!-- Junit for testing -->
     <dependency>

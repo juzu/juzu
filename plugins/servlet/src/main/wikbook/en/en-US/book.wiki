@@ -1,0 +1,3 @@
+= Juzu Servlet Plugin =
+
+The servlet plugin enhance Juzu servlet applications.

@@ -1,42 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
   <packaging>jar</packaging>
 
   <parent>
     <groupId>org.juzu</groupId>
-    <artifactId>juzu-parent</artifactId>
+    <artifactId>juzu-plugins-parent</artifactId>
     <version>0.6.0-beta16-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
-  <artifactId>juzu-booking</artifactId>
+  <artifactId>juzu-plugins-servlet</artifactId>
   <version>0.6.0-beta16-SNAPSHOT</version>
 
-  <name>Juzu Booking</name>
-  <description>The infamous booking application</description>
+  <name>Juzu Servlet Plugin</name>
+  <description>The Servlet plugin</description>
 
   <dependencies>
 
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-bom-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-plugins-servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-plugins-portlet</artifactId>
+      <artifactId>juzu-core</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <!-- -->
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-bom-arquillian</artifactId>
@@ -47,42 +35,31 @@
       <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <build>
-    <finalName>juzu-booking</finalName>
     <plugins>
-
-      <!-- Precompile the template class in maven (this is optional) -->
       <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <fileset>
-                  <directory>${project.build.outputDirectory}</directory>
-                  <includes>
-                    <include>**/*.groovy</include>
-                  </includes>
-                </fileset>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgument>-proc:none</compilerArgument>
+        </configuration>
       </plugin>
-
+      <plugin>
+        <groupId>org.wikbook</groupId>
+        <artifactId>wikbook.maven</artifactId>
+        <configuration>
+          <format>chapter</format>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <dependencies>
           <dependency>
             <groupId>org.juzu</groupId>
-            <artifactId>juzu-bom-core</artifactId>
+            <artifactId>juzu-bom-plugin</artifactId>
             <version>${project.version}</version>
           </dependency>
         </dependencies>
@@ -91,22 +68,19 @@
         </configuration>
         <executions>
           <execution>
+            <id>gatein</id>
             <goals>
               <goal>single</goal>
             </goals>
             <phase>package</phase>
             <configuration>
               <descriptorRefs>
-                <descriptorRef>tomcat-guice</descriptorRef>
-                <descriptorRef>gatein</descriptorRef>
-                <descriptorRef>liferay</descriptorRef>
+                <descriptorRef>wikbook</descriptorRef>
               </descriptorRefs>
             </configuration>
           </execution>
         </executions>
-
       </plugin>
-
     </plugins>
   </build>
 

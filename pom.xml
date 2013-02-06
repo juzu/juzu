@@ -162,6 +162,18 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-servlet</artifactId>
+        <version>0.6.0-beta16-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-servlet</artifactId>
+        <classifier>sources</classifier>
+        <version>0.6.0-beta16-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-portlet</artifactId>
         <version>0.6.0-beta16-SNAPSHOT</version>
       </dependency>

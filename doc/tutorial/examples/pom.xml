@@ -26,6 +26,10 @@
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-portlet</artifactId>
     </dependency>
 

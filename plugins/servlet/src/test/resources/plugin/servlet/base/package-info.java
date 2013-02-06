@@ -17,26 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.servlet;
+@Application
+@Servlet("/whatever/*")
+package plugin.servlet.base;
 
-import juzu.impl.inject.spi.InjectorProvider;
-import juzu.test.AbstractInjectTestCase;
-import juzu.test.protocol.mock.MockApplication;
-import org.junit.Test;
-
-import java.net.URL;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletPluginTestCase extends AbstractInjectTestCase {
-
-  public ServletPluginTestCase(InjectorProvider di) {
-    super(di);
-  }
-
-  @Test
-  public void testBase() throws Exception {
-    MockApplication<?> app = application("plugin.servlet.base").init();
-    Class servlet = app.getContext().getClassLoader().loadClass("plugin.servlet.base.BaseServlet");
-//    assertNotNull(fragment);
-  }
-}
+import juzu.Application;
+import juzu.plugin.servlet.Servlet;
