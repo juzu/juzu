@@ -540,6 +540,32 @@
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-tomcat-embedded-7</artifactId>
         <version>1.0.0.CR3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-container-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-container-test-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.arquillian.protocol</groupId>
+            <artifactId>arquillian-protocol-servlet</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.arquillian.testenricher</groupId>
+            <artifactId>arquillian-testenricher-cdi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.arquillian.testenricher</groupId>
+            <artifactId>arquillian-testenricher-resource</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.arquillian.testenricher</groupId>
+            <artifactId>arquillian-testenricher-initialcontext</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
       <groupId>org.apache.tomcat.embed</groupId>

@@ -19,24 +19,35 @@
 
 package juzu.plugin.servlet;
 
-import juzu.impl.inject.spi.InjectorProvider;
-import juzu.test.AbstractInjectTestCase;
-import juzu.test.protocol.mock.MockApplication;
+import juzu.plugin.servlet.impl.ServletMetaModelPlugin;
+import juzu.test.AbstractWebTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 
-import java.net.URL;
+import java.io.File;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletPluginTestCase extends AbstractInjectTestCase {
+public class ServletPluginTestCase extends AbstractWebTestCase {
 
-  public ServletPluginTestCase(InjectorProvider di) {
-    super(di);
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() throws Exception {
+    File f = new File(ServletMetaModelPlugin.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+    WebArchive war = createServletDeployment(true, "plugin.servlet.base");
+    war.delete("WEB-INF/web.xml");
+    war.addAsLibrary(f);
+    return war;
   }
+
+  @Drone
+  WebDriver driver;
 
   @Test
   public void testBase() throws Exception {
-    MockApplication<?> app = application("plugin.servlet.base").init();
-    Class servlet = app.getContext().getClassLoader().loadClass("plugin.servlet.base.BaseServlet");
-//    assertNotNull(fragment);
+    driver.get(applicationURL().toString());
+    assertEquals("pass", driver.findElement(By.tagName("body")).getText());
   }
 }

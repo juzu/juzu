@@ -23,6 +23,11 @@
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+    </dependency>
 
     <!-- -->
     <dependency>
@@ -82,6 +87,28 @@
         </executions>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <classesDirectory>${project.build.directory}/foo</classesDirectory>
+              <additionalClasspathElements>
+                <additionalClasspathElement>${project.build.directory}/juzu-plugins-servlet-${pom.version}.jar</additionalClasspathElement>
+              </additionalClasspathElements>
+            </configuration>
+            <phase>integration-test</phase>
+          </execution>
+        </executions>
+      </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
 </project>

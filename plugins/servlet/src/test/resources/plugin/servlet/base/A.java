@@ -19,12 +19,13 @@
 
 package plugin.servlet.base;
 
+import juzu.Response;
 import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
   @View
-  public void index() {
-    // This won't be executed we just check that the servlet was correctly generated
+  public Response.Render index() {
+    return Response.ok("pass");
   }
 }

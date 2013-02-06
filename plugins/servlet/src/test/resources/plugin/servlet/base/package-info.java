@@ -18,7 +18,7 @@
  */
 
 @Application
-@Servlet("/whatever/*")
+@Servlet("/")
 package plugin.servlet.base;
 
 import juzu.Application;
