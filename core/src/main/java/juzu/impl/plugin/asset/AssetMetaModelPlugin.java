@@ -23,7 +23,6 @@ import juzu.impl.common.Name;
 import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ElementHandle;
-import juzu.impl.common.FileKey;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.metamodel.AnnotationKey;
@@ -51,9 +50,6 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   /** . */
   private HashMap<ElementHandle.Package, AnnotationState> annotations = new HashMap<ElementHandle.Package, AnnotationState>();
 
-  /** . */
-  private static final Name ASSETS = Name.create(Assets.class);
-
   public AssetMetaModelPlugin() {
     super("asset");
   }
@@ -65,16 +61,12 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    if (key.getType().equals(ASSETS) && metaModel.getHandle().equals(key.getElement())) {
-      annotations.put(metaModel.getHandle(), added);
-    }
+    annotations.put(metaModel.getHandle(), added);
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().equals(ASSETS) && metaModel.getHandle().equals(key.getElement())) {
-      annotations.remove(metaModel.getHandle());
-    }
+    annotations.remove(metaModel.getHandle());
   }
 
   private List<JSON> build(List<Map<String, Object>> scripts) {

@@ -51,9 +51,6 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final MessageCode CANNOT_WRITE_PORTLET_CLASS = new MessageCode("CANNOT_WRITE_PORTLET_CLASS", "The portlet class %1$s cannot be written");
 
   /** . */
-  private static final Name PORTLET = Name.create(Portlet.class);
-
-  /** . */
   private final HashMap<ElementHandle.Package, String[]> enabledMap = new HashMap<ElementHandle.Package, String[]>();
 
   /** . */
@@ -71,7 +68,7 @@ public class PortletMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     ElementHandle.Package pkg = metaModel.getHandle();
-    if (key.getType().equals(PORTLET) && key.getElement().getPackage().equals(pkg.getPackage())) {
+    if (key.getElement().getPackage().equals(pkg.getPackage())) {
       String name = (String)added.get("name");
       if (name == null) {
         name = metaModel.getBaseName() + "Portlet";

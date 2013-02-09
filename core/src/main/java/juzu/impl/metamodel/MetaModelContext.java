@@ -27,8 +27,10 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -45,10 +47,13 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
   /** The meta model. */
   private ArrayList<M> metaModels;
 
-  /** The meta model plugins. */
-  private final LinkedHashMap<String, P> plugins = new LinkedHashMap<String, P>();
+  /** The plugins. */
+  private LinkedHashMap<String, P> pluginMap;
 
-  /** . */
+  /** The supported annotations per plugin. */
+  private HashMap<P, HashSet<Name>> supportedAnnotationsMap;
+
+  /** All supported annotations. */
   private Set<Class<? extends java.lang.annotation.Annotation>> supportedAnnotations;
 
   /** . */
@@ -63,32 +68,33 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
   }
 
   public void init(ProcessingContext env) throws NullPointerException {
-//    if (env == null) {
-//      throw new NullPointerException("No null env accepted");
-//    }
-
-    //
     this.processingContext = env;
 
     //
-    LinkedHashMap<String, P> plugins = new LinkedHashMap<String, P>();
+    HashMap<P, HashSet<Name>> supportedAnnotationsMap = new HashMap<P, HashSet<Name>>();
+    LinkedHashMap<String, P> pluginMap = new LinkedHashMap<String, P>();
     StringBuilder msg = new StringBuilder("Using plugins:");
     for (P plugin : env.loadServices(pluginType)) {
       msg.append(" ").append(plugin.getName());
-      plugins.put(plugin.getName(), plugin);
+      pluginMap.put(plugin.getName(), plugin);
     }
     env.log(msg);
 
     // Collect processed annotations
     HashSet<Class<? extends java.lang.annotation.Annotation>> supportedAnnotations = new HashSet<Class<? extends java.lang.annotation.Annotation>>();
-    for (P plugin : plugins.values()) {
-      Set<Class<? extends java.lang.annotation.Annotation>> processed = plugin.init(env);
-      env.log("Plugin " + plugin.getName() + " wants to process " + processed);
-      supportedAnnotations.addAll(processed);
+    for (P plugin : pluginMap.values()) {
+      HashSet<Name> pluginSupportedAnnotations = new HashSet<Name>();
+      for (Class<? extends Annotation> annotationType : plugin.init(env)) {
+        pluginSupportedAnnotations.add(Name.create(annotationType));
+        supportedAnnotations.add(annotationType);
+      }
+      env.log("Plugin " + plugin.getName() + " supports " + pluginSupportedAnnotations);
+      supportedAnnotationsMap.put(plugin, pluginSupportedAnnotations);
     }
 
     //
-    this.plugins.putAll(plugins);
+    this.pluginMap = pluginMap;
+    this.supportedAnnotationsMap = supportedAnnotationsMap;
     this.supportedAnnotations = supportedAnnotations;
   }
 
@@ -101,7 +107,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
   }
 
   public Collection<P> getPlugins() {
-    return plugins.values();
+    return pluginMap.values();
   }
 
   public void add(M metaModel) {
@@ -109,7 +115,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
     metaModel.forward = true;
     metaModel.context = this;
     metaModel.init(processingContext);
-    for (P plugin : plugins.values()) {
+    for (P plugin : pluginMap.values()) {
       plugin.init(metaModel);
     }
     metaModels.add(metaModel);
@@ -119,40 +125,48 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
     this.processingContext = processingContext;
     for (M metaModel : metaModels) {
       metaModel.processingContext = processingContext;
-      for (P plugin : plugins.values()) {
+      for (P plugin : pluginMap.values()) {
         plugin.postActivate(metaModel);
       }
     }
   }
 
-  public void processAnnotationChanges(Iterable<AnnotationChange> delta) {
-    //
-    for (AnnotationChange change : delta) {
-      if (change.getAdded() == null) {
-        knownAnnotations.remove(change.getKey());
-      } else {
-        knownAnnotations.put(change.getKey(), change.getAdded());
-      }
-    }
+  public void processAnnotationChange(AnnotationChange change) {
 
-    //
-    ArrayList<AnnotationChange> all = new ArrayList<AnnotationChange>();
-    for (Map.Entry<AnnotationKey, AnnotationState> annotation : knownAnnotations.entrySet()) {
-      all.add(new AnnotationChange(annotation.getKey(), null, annotation.getValue()));
+    // Update state
+    if (change.getAdded() == null) {
+      knownAnnotations.remove(change.getKey());
+    } else {
+      knownAnnotations.put(change.getKey(), change.getAdded());
     }
 
     //
     for (M metaModel : metaModels) {
-      Iterable<AnnotationChange> changes;
       if (metaModel.forward) {
         metaModel.forward = false;
-        changes = all;
+        for (Map.Entry<AnnotationKey, AnnotationState> annotation : knownAnnotations.entrySet()) {
+          change = new AnnotationChange(annotation.getKey(), null, annotation.getValue());
+          for (P plugin : pluginMap.values()) {
+            HashSet<Name> supportedAnnotations = supportedAnnotationsMap.get(plugin);
+            if (supportedAnnotations.contains(change.key.type)) {
+              plugin.processAnnotationChange(metaModel, change);
+            }
+          }
+        }
       } else {
-        changes = delta;
+        for (P plugin : pluginMap.values()) {
+          HashSet<Name> supportedAnnotations = supportedAnnotationsMap.get(plugin);
+          if (supportedAnnotations.contains(change.key.type)) {
+            plugin.processAnnotationChange(metaModel, change);
+          }
+        }
       }
-      for (P plugin : plugins.values()) {
-        plugin.processAnnotationChanges(metaModel, changes);
-      }
+    }
+  }
+
+  public void processAnnotationChanges(Iterable<AnnotationChange> changes) {
+    for (AnnotationChange change : changes) {
+      processAnnotationChange(change);
     }
   }
 
@@ -185,7 +199,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
 
   public void postProcessAnnotations() throws ProcessingException {
     for (M metaModel : metaModels) {
-      for (P plugin : plugins.values()) {
+      for (P plugin : pluginMap.values()) {
         plugin.postProcessAnnotations(metaModel);
       }
     }
@@ -193,7 +207,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
 
   public void processEvents() {
     for (M metaModel : metaModels) {
-      for (P plugin : plugins.values()) {
+      for (P plugin : pluginMap.values()) {
         plugin.processEvents(metaModel, new EventQueue(metaModel.dispatch));
       }
       metaModel.dispatch.clear();
@@ -202,7 +216,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
 
   public void postProcessEvents() {
     for (M metaModel : metaModels) {
-      for (P plugin : plugins.values()) {
+      for (P plugin : pluginMap.values()) {
         plugin.postProcessEvents(metaModel);
       }
     }
@@ -210,7 +224,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
 
   public void prePassivate() {
     for (M metaModel : metaModels) {
-      for (P plugin : plugins.values()) {
+      for (P plugin : pluginMap.values()) {
         plugin.prePassivate(metaModel);
       }
       metaModel.processingContext = null;
@@ -226,7 +240,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
       metaModels.remove(metaModel);
 
       // Initialize plugins
-      for (P plugin : plugins.values()) {
+      for (P plugin : pluginMap.values()) {
         plugin.destroy(metaModel);
       }
     }

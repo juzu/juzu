@@ -60,25 +60,21 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    if (key.getType().equals(RouteMetaModel.FQN)) {
-      if (key.getElement() instanceof ElementHandle.Method) {
-        getRoutes(metaModel, true).annotations.put(key.getElement(), added);
-      } else if (key.getElement().equals(metaModel.getHandle())) {
-        getRoutes(metaModel, true).packageRoute = (String)added.get("value");
-        getRoutes(metaModel, true).packagePriority = (Integer)added.get("priority");
-      }
+    if (key.getElement() instanceof ElementHandle.Method) {
+      getRoutes(metaModel, true).annotations.put(key.getElement(), added);
+    } else if (key.getElement().equals(metaModel.getHandle())) {
+      getRoutes(metaModel, true).packageRoute = (String)added.get("value");
+      getRoutes(metaModel, true).packagePriority = (Integer)added.get("priority");
     }
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().equals(RouteMetaModel.FQN)) {
-      if (key.getElement() instanceof ElementHandle.Method) {
-        getRoutes(metaModel, true).annotations.remove(key.getElement());
-      } else if (key.getElement().equals(metaModel.getHandle())) {
-        getRoutes(metaModel, true).packageRoute = null;
-        getRoutes(metaModel, true).packagePriority = null;
-      }
+    if (key.getElement() instanceof ElementHandle.Method) {
+      getRoutes(metaModel, true).annotations.remove(key.getElement());
+    } else if (key.getElement().equals(metaModel.getHandle())) {
+      getRoutes(metaModel, true).packageRoute = null;
+      getRoutes(metaModel, true).packagePriority = null;
     }
   }
 

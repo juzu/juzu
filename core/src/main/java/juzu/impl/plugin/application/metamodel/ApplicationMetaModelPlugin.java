@@ -19,8 +19,7 @@
 
 package juzu.impl.plugin.application.metamodel;
 
-import juzu.impl.metamodel.AnnotationKey;
-import juzu.impl.metamodel.AnnotationState;
+import juzu.impl.metamodel.AnnotationChange;
 import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelPlugin;
@@ -43,9 +42,9 @@ public abstract class ApplicationMetaModelPlugin extends MetaModelPlugin<Applica
   }
 
   @Override
-  public final void processAnnotationChange(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
-    if (metaModel.getHandle().getPackage().isPrefix(key.getElement().getPackage())) {
-      super.processAnnotationChange(metaModel, key, removed, added);
+  public void processAnnotationChange(ApplicationMetaModel metaModel, AnnotationChange change) {
+    if (metaModel.getHandle().getPackage().isPrefix(change.getKey().getElement().getPackage())) {
+      super.processAnnotationChange(metaModel, change);
     }
   }
 

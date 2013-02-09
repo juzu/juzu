@@ -54,19 +54,13 @@ public class MetaModelPlugin<M extends MetaModel<P, M>, P extends MetaModelPlugi
   public void postActivate(M metaModel) {
   }
 
-  public void processAnnotationChanges(M metaModel, Iterable<AnnotationChange> changes) {
-    for (AnnotationChange change : changes) {
-      processAnnotationChange(metaModel, change.key, change.removed, change.added);
-    }
-  }
-
-  public void processAnnotationChange(M metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
-    if (added == null) {
-      processAnnotationRemoved(metaModel, key, removed);
-    } else if (removed == null) {
-      processAnnotationAdded(metaModel, key, added);
-    } else if (!removed.equals(added)) {
-      processAnnotationUpdated(metaModel, key, removed, added);
+  public void processAnnotationChange(M metaModel, AnnotationChange change) {
+    if (change.added == null) {
+      processAnnotationRemoved(metaModel, change.key, change.removed);
+    } else if (change.removed == null) {
+      processAnnotationAdded(metaModel, change.key, change.added);
+    } else if (!change.removed.equals(change.added)) {
+      processAnnotationUpdated(metaModel, change.key, change.removed, change.added);
     }
   }
 

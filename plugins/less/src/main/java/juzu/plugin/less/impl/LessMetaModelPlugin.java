@@ -19,7 +19,6 @@
 
 package juzu.plugin.less.impl;
 
-import juzu.impl.common.FileKey;
 import juzu.impl.common.Name;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
@@ -68,9 +67,6 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
   public static final MessageCode MALFORMED_PATH = new MessageCode("LESS_MALFORMED_PATH", "The resource path %1$s is malformed");
 
   /** . */
-  private static final Name LESS = Name.create(Less.class);
-
-  /** . */
   static final Logger log = BaseProcessor.getLogger(LessMetaModelPlugin.class);
 
   /** . */
@@ -91,12 +87,17 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationChange(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
-    if (key.getType().equals(LESS)) {
-      Name pkg = key.getElement().getPackage();
-      log.log("Recording less annotation for package " + pkg);
-      annotations.put(pkg, added);
-    }
+  public void processAnnotationAdded(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState added) {
+    Name pkg = key.getElement().getPackage();
+    log.log("Adding less annotation for package " + pkg);
+    annotations.put(pkg, added);
+  }
+
+  @Override
+  public void processAnnotationRemoved(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
+    Name pkg = key.getElement().getPackage();
+    log.log("Removing less annotation for package " + pkg);
+    annotations.remove(pkg);
   }
 
   @Override

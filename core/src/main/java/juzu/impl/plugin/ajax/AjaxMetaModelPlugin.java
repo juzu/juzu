@@ -19,7 +19,6 @@
 
 package juzu.impl.plugin.ajax;
 
-import juzu.impl.common.Name;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.metamodel.AnnotationKey;
@@ -37,9 +36,6 @@ import java.util.Set;
 public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private static final Name AJAX = Name.create(Ajax.class);
-
-  /** . */
   private final HashMap<ElementHandle.Package, Boolean> enabledMap = new HashMap<ElementHandle.Package, Boolean>();
 
   public AjaxMetaModelPlugin() {
@@ -53,18 +49,14 @@ public class AjaxMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    if (key.getType().equals(AJAX)) {
-      ElementHandle.Package handle = metaModel.getHandle();
-      enabledMap.put(handle, true);
-    }
+    ElementHandle.Package handle = metaModel.getHandle();
+    enabledMap.put(handle, true);
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().equals(AJAX)) {
-      ElementHandle.Package handle = metaModel.getHandle();
-      enabledMap.remove(handle);
-    }
+    ElementHandle.Package handle = metaModel.getHandle();
+    enabledMap.remove(handle);
   }
 
   @Override

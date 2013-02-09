@@ -19,7 +19,6 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.impl.common.Name;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
@@ -45,9 +44,6 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   public static final Pattern PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
-
-  /** . */
-  private static final Name PATH = Name.create(juzu.Path.class);
 
   /** . */
   Map<String, TemplateProvider> providers;
@@ -83,48 +79,42 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().equals(PATH)) {
-      if (key.getElement() instanceof ElementHandle.Field) {
-        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-        Path removedPath = Path.parse((String)removed.get("value"));
-        TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
-        metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath);
-        templates.remove(variableElt);
-      }
+    if (key.getElement() instanceof ElementHandle.Field) {
+      ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+      Path removedPath = Path.parse((String)removed.get("value"));
+      TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
+      metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath);
+      templates.remove(variableElt);
     }
   }
 
   @Override
   public void processAnnotationUpdated(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
-    if (key.getType().equals(PATH)) {
-      if (key.getElement() instanceof ElementHandle.Field) {
-        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-        Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
-        Path removedPath = Path.parse((String)removed.get("value"));
-        TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
-        metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
-        templates.remove(variableElt);
-        templates.add(variableElt, addedPath);
-      }
+    if (key.getElement() instanceof ElementHandle.Field) {
+      ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+      Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
+      Path removedPath = Path.parse((String)removed.get("value"));
+      TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
+      metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
+      templates.remove(variableElt);
+      templates.add(variableElt, addedPath);
     }
   }
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
-    if (key.getType().equals(PATH)) {
-      if (key.getElement() instanceof ElementHandle.Field) {
-        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-        TemplatesMetaModel templates = application.getChild(TemplatesMetaModel.KEY);
-        Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
-        application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
-        templates.add(variableElt, addedPath);
-      }
-      else if (key.getElement() instanceof ElementHandle.Class) {
-        // We ignore it on purpose
-      }
-      else {
-        throw MetaModelProcessor.ANNOTATION_UNSUPPORTED.failure(key);
-      }
+    if (key.getElement() instanceof ElementHandle.Field) {
+      ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+      TemplatesMetaModel templates = application.getChild(TemplatesMetaModel.KEY);
+      Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
+      application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
+      templates.add(variableElt, addedPath);
+    }
+    else if (key.getElement() instanceof ElementHandle.Class) {
+      // We ignore it on purpose
+    }
+    else {
+      throw MetaModelProcessor.ANNOTATION_UNSUPPORTED.failure(key);
     }
   }
 

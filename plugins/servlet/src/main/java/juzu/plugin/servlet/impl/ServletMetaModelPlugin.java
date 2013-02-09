@@ -45,9 +45,6 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final MessageCode CANNOT_WRITE_SERVLET_CLASS = new MessageCode("CANNOT_WRITE_SERVLET_CLASS", "The servlet class %1$s cannot be written");
 
   /** . */
-  private static final Name SERVLET = Name.create(Servlet.class);
-
-  /** . */
   private final HashMap<ElementHandle.Package, AnnotationState> servlets = new HashMap<ElementHandle.Package, AnnotationState>();
 
   public ServletMetaModelPlugin() {
@@ -62,7 +59,7 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     ElementHandle.Package pkg = metaModel.getHandle();
-    if (key.getType().equals(SERVLET) && key.getElement().getPackage().equals(pkg.getPackage())) {
+    if (key.getElement().getPackage().equals(pkg.getPackage())) {
       servlets.put(pkg, added);
     }
   }
@@ -70,7 +67,7 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     ElementHandle.Package pkg = metaModel.getHandle();
-    if (key.getType().equals(SERVLET) && key.getElement().getPackage().equals(pkg.getPackage())) {
+    if (key.getElement().getPackage().equals(pkg.getPackage())) {
       servlets.remove(pkg);
     }
   }

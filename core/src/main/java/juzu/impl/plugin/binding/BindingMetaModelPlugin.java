@@ -108,114 +108,112 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    if (key.getType().equals(BINDINGS)) {
-      ProcessingContext env = metaModel.model.processingContext;
+    ProcessingContext env = metaModel.model.processingContext;
 
-      //
-      TypeMirror providerFactoryTM = env.getTypeElement(ProviderFactory.class.getName()).asType();
-      TypeElement providerElt = env.getTypeElement("javax.inject.Provider");
-      DeclaredType providerTM = (DeclaredType)providerElt.asType();
-      TypeMirror rawProviderTM = env.erasure(providerTM);
+    //
+    TypeMirror providerFactoryTM = env.getTypeElement(ProviderFactory.class.getName()).asType();
+    TypeElement providerElt = env.getTypeElement("javax.inject.Provider");
+    DeclaredType providerTM = (DeclaredType)providerElt.asType();
+    TypeMirror rawProviderTM = env.erasure(providerTM);
 
-      //
-      List<Map<String, Object>> bindings = (List<Map<String, Object>>)added.get("value");
-      ArrayList<JSON> list = new ArrayList<JSON>();
-      if (bindings != null) {
-        for (Map<String, Object> binding : bindings) {
-          ElementHandle.Class bindingValue = (ElementHandle.Class)binding.get("value");
-          ElementHandle.Class bindingImplementation = (ElementHandle.Class)binding.get("implementation");
-          String scope = (String)binding.get("scope");
+    //
+    List<Map<String, Object>> bindings = (List<Map<String, Object>>)added.get("value");
+    ArrayList<JSON> list = new ArrayList<JSON>();
+    if (bindings != null) {
+      for (Map<String, Object> binding : bindings) {
+        ElementHandle.Class bindingValue = (ElementHandle.Class)binding.get("value");
+        ElementHandle.Class bindingImplementation = (ElementHandle.Class)binding.get("implementation");
+        String scope = (String)binding.get("scope");
+
+        //
+        JSON bindingJSON = new JSON().set("value", bindingValue.getFQN().toString());
+
+        //
+        TypeElement valueElt = env.get(bindingValue);
+        TypeMirror valueTM = valueElt.asType();
+
+        //
+        if (bindingImplementation != null) {
+          TypeElement implementationElt = env.get(bindingImplementation);
+          DeclaredType implementationTM = (DeclaredType)implementationElt.asType();
+
+          // Check class
+          if (implementationElt.getKind() != ElementKind.CLASS) {
+            throw IMPLEMENTATION_INVALID_TYPE.failure(env.get(key.getElement()), providerElt.getQualifiedName());
+          }
 
           //
-          JSON bindingJSON = new JSON().set("value", bindingValue.getFQN().toString());
+          Set<Modifier> modifiers = implementationElt.getModifiers();
+
+          // Check not abstract
+          if (modifiers.contains(Modifier.ABSTRACT)) {
+            throw IMPLEMENTATION_NOT_ABSTRACT.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
+          }
 
           //
-          TypeElement valueElt = env.get(bindingValue);
-          TypeMirror valueTM = valueElt.asType();
-
-          //
-          if (bindingImplementation != null) {
-            TypeElement implementationElt = env.get(bindingImplementation);
-            DeclaredType implementationTM = (DeclaredType)implementationElt.asType();
-
-            // Check class
-            if (implementationElt.getKind() != ElementKind.CLASS) {
-              throw IMPLEMENTATION_INVALID_TYPE.failure(env.get(key.getElement()), providerElt.getQualifiedName());
+          if (env.isAssignable(implementationTM, providerFactoryTM)) {
+            // Check public
+            if (!modifiers.contains(Modifier.PUBLIC)) {
+              throw PROVIDER_FACTORY_NOT_PUBLIC.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
             }
 
-            //
-            Set<Modifier> modifiers = implementationElt.getModifiers();
-
-            // Check not abstract
-            if (modifiers.contains(Modifier.ABSTRACT)) {
-              throw IMPLEMENTATION_NOT_ABSTRACT.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
-            }
-
-            //
-            if (env.isAssignable(implementationTM, providerFactoryTM)) {
-              // Check public
-              if (!modifiers.contains(Modifier.PUBLIC)) {
-                throw PROVIDER_FACTORY_NOT_PUBLIC.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
-              }
-
-              // Find zero arg constructor
-              ExecutableElement emptyCtor = null;
-              for (ExecutableElement ctorElt : ElementFilter.constructorsIn(env.getAllMembers(implementationElt))) {
-                if (ctorElt.getParameters().isEmpty()) {
-                  emptyCtor = ctorElt;
-                  break;
-                }
-              }
-
-              // Validate constructor
-              if (emptyCtor == null) {
-                throw PROVIDER_FACTORY_NO_ZERO_ARG_CTOR.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
-              }
-              if (!emptyCtor.getModifiers().contains(Modifier.PUBLIC)) {
-                throw PROVIDER_FACTORY_NO_PUBLIC_CTOR.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
+            // Find zero arg constructor
+            ExecutableElement emptyCtor = null;
+            for (ExecutableElement ctorElt : ElementFilter.constructorsIn(env.getAllMembers(implementationElt))) {
+              if (ctorElt.getParameters().isEmpty()) {
+                emptyCtor = ctorElt;
+                break;
               }
             }
-            else if (env.isAssignable(implementationTM, rawProviderTM)) {
-              TypeVariable T = (TypeVariable)providerTM.getTypeArguments().get(0);
-              TypeMirror resolved = env.asMemberOf(implementationTM, T.asElement());
-              if (env.isAssignable(resolved, valueTM)) {
-                // OK
-              }
-              else {
-                throw PROVIDER_NOT_ASSIGNABLE.failure(
-                    env.get(key.getElement()),
-                  implementationElt.getQualifiedName(),
-                  resolved,
-                  valueElt.getQualifiedName());
-              }
+
+            // Validate constructor
+            if (emptyCtor == null) {
+              throw PROVIDER_FACTORY_NO_ZERO_ARG_CTOR.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
             }
-            else if (env.isAssignable(implementationTM, valueTM)) {
+            if (!emptyCtor.getModifiers().contains(Modifier.PUBLIC)) {
+              throw PROVIDER_FACTORY_NO_PUBLIC_CTOR.failure(env.get(key.getElement()), implementationElt.getQualifiedName());
+            }
+          }
+          else if (env.isAssignable(implementationTM, rawProviderTM)) {
+            TypeVariable T = (TypeVariable)providerTM.getTypeArguments().get(0);
+            TypeMirror resolved = env.asMemberOf(implementationTM, T.asElement());
+            if (env.isAssignable(resolved, valueTM)) {
               // OK
             }
             else {
-              throw IMPLEMENTATION_NOT_ASSIGNABLE.failure(
+              throw PROVIDER_NOT_ASSIGNABLE.failure(
                   env.get(key.getElement()),
                 implementationElt.getQualifiedName(),
+                resolved,
                 valueElt.getQualifiedName());
             }
-
-            //
-            bindingJSON.set("implementation", bindingImplementation.getFQN().toString());
           }
-
-          // Add the declared scope if any
-          if (scope != null) {
-            bindingJSON.set("scope", scope);
+          else if (env.isAssignable(implementationTM, valueTM)) {
+            // OK
+          }
+          else {
+            throw IMPLEMENTATION_NOT_ASSIGNABLE.failure(
+                env.get(key.getElement()),
+              implementationElt.getQualifiedName(),
+              valueElt.getQualifiedName());
           }
 
           //
-          list.add(bindingJSON);
+          bindingJSON.set("implementation", bindingImplementation.getFQN().toString());
         }
-      }
 
-      //
-      state.put(metaModel.getHandle(), new JSON().set("bindings", list));
+        // Add the declared scope if any
+        if (scope != null) {
+          bindingJSON.set("scope", scope);
+        }
+
+        //
+        list.add(bindingJSON);
+      }
     }
+
+    //
+    state.put(metaModel.getHandle(), new JSON().set("bindings", list));
   }
 
   @Override

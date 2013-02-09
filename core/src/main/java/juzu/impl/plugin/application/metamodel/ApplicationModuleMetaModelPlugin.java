@@ -99,13 +99,13 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationChanges(ModuleMetaModel metaModel, Iterable<AnnotationChange> changes) {
+  public void processAnnotationChange(ModuleMetaModel metaModel, AnnotationChange change) {
 
     // Normal processing for now
-    super.processAnnotationChanges(metaModel, changes);
+    super.processAnnotationChange(metaModel, change);
 
     // Forward
-    context.processAnnotationChanges(changes);
+    context.processAnnotationChange(change);
   }
 
   @Override

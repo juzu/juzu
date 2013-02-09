@@ -88,13 +88,6 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final String CARDINALITY = Cardinality.class.getSimpleName();
 
   /** . */
-  private static final Set<Name> NAMES = Tools.set(
-      Name.create(Action.class),
-      Name.create(Consumes.class),
-      Name.create(View.class),
-      Name.create(Resource.class));
-
-  /** . */
   private HashSet<ControllerMetaModel> written = new HashSet<ControllerMetaModel>();
 
   public ControllerMetaModelPlugin() {
@@ -120,30 +113,26 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
-    if (NAMES.contains(key.getType())) {
-      ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
-      ElementHandle.Method m = (ElementHandle.Method)key.getElement();
-      ElementHandle.Class handle = ElementHandle.Class.create(m.getFQN());
-      ControllerMetaModel controller = ac.get(handle);
-      if (controller == null) {
-        ac.add(controller = new ControllerMetaModel(handle));
-      }
-      controller.addMethod(application.model, key, added);
+    ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
+    ElementHandle.Method m = (ElementHandle.Method)key.getElement();
+    ElementHandle.Class handle = ElementHandle.Class.create(m.getFQN());
+    ControllerMetaModel controller = ac.get(handle);
+    if (controller == null) {
+      ac.add(controller = new ControllerMetaModel(handle));
     }
+    controller.addMethod(application.model, key, added);
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (NAMES.contains(key.getType())) {
-      ElementHandle.Method methodHandle = (ElementHandle.Method)key.getElement();
-      ElementHandle.Class controllerHandle = ElementHandle.Class.create(methodHandle.getFQN());
-      ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
-      ControllerMetaModel controller = controllers.get(controllerHandle);
-      if (controller != null) {
-        controller.remove(methodHandle);
-        if (controller.getMethods().isEmpty()) {
-          controller.remove();
-        }
+    ElementHandle.Method methodHandle = (ElementHandle.Method)key.getElement();
+    ElementHandle.Class controllerHandle = ElementHandle.Class.create(methodHandle.getFQN());
+    ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
+    ControllerMetaModel controller = controllers.get(controllerHandle);
+    if (controller != null) {
+      controller.remove(methodHandle);
+      if (controller.getMethods().isEmpty()) {
+        controller.remove();
       }
     }
   }
