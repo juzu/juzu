@@ -25,37 +25,25 @@ import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.common.Content;
 
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.NestingKind;
 import javax.tools.JavaFileManager;
-import javax.tools.SimpleJavaFileObject;
+import javax.tools.JavaFileObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
-
-  private static URI toURI(JavaFileManager.Location location, FileKey key) throws IOException {
-    try {
-      String path;
-      if (key.packageFQN.length() == 0) {
-        path = "/" + key.name;
-      }
-      else {
-        path = "/" + key.packageFQN.replace('.', '/') + '/' + key.name;
-      }
-      return new URI("/" + location.getName() + path);
-    }
-    catch (URISyntaxException e) {
-      throw new IOException("Could not build location related URI for " + key);
-    }
-  }
+public class JavaFileObjectImpl<P> implements JavaFileObject {
 
   /***/
   final FileKey key;
@@ -72,8 +60,10 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
   /** . */
   private boolean writing;
 
+  /** . */
+  final URI uri;
+
   public JavaFileObjectImpl(JavaFileManager.Location location, FileKey key, ReadFileSystem<P> fs, P file) throws NullPointerException, IOException {
-    super(toURI(location, key), key.getKind());
 
     //
     if (file == null) {
@@ -81,10 +71,20 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
     }
 
     //
+    URI uri;
+    try {
+      uri = fs.getURL(file).toURI();
+    }
+    catch (URISyntaxException e) {
+      throw new IOException("Could not create uri for file " + file, e);
+    }
+
+    //
     this.key = key;
     this.fs = fs;
     this.file = file;
     this.writing = false;
+    this.uri = uri;
   }
 
   public FileKey getKey() {
@@ -109,7 +109,39 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
     return fs.getFile(file);
   }
 
-  @Override
+  public boolean isNameCompatible(String simpleName, Kind kind) {
+    String baseName = simpleName + kind.extension;
+    return kind.equals(getKind()) && (baseName.equals(toUri().getPath()) || toUri().getPath().endsWith("/" + baseName));
+  }
+
+  public Kind getKind() {
+    return key.getKind();
+  }
+
+  public NestingKind getNestingKind() {
+    return null;
+  }
+
+  public Modifier getAccessLevel() {
+    return null;
+  }
+
+  public URI toUri() {
+    return uri;
+  }
+
+  public Reader openReader(boolean ignoreEncodingErrors) throws IOException {
+    CharSequence charContent = getCharContent(ignoreEncodingErrors);
+    if (charContent == null) {
+      throw new IOException("No content");
+    }
+    return new StringReader(charContent.toString());
+  }
+
+  public boolean delete() {
+    return false;
+  }
+
   public String getName() {
     File f = fs.getFile(file);
     if (f != null) {
@@ -132,7 +164,6 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
     return key.rawName;
   }
 
-  @Override
   public long getLastModified() {
     try {
       return assertContent().getTime();
@@ -143,17 +174,14 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
     }
   }
 
-  @Override
   public final CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
     return assertContent().getObject().getCharSequence();
   }
 
-  @Override
   public final InputStream openInputStream() throws IOException {
     return assertContent().getObject().getInputStream();
   }
 
-  @Override
   public OutputStream openOutputStream() throws IOException {
     if (writing) {
       throw new IllegalStateException("Opened for writing");
@@ -175,7 +203,6 @@ public class JavaFileObjectImpl<P> extends SimpleJavaFileObject {
     }
   }
 
-  @Override
   public Writer openWriter() throws IOException {
     if (writing) {
       throw new IllegalStateException("Opened for writing");
