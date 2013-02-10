@@ -71,7 +71,7 @@ public class CompilerAssert<I, O> {
 
     //
     ReadFileSystem<Node> classPath = classPathCache.get(Thread.currentThread().getContextClassLoader());
-      if (classPath == null) {
+    if (classPath == null) {
       try {
         classPathCache.put(
             Thread.currentThread().getContextClassLoader(),
@@ -105,7 +105,7 @@ public class CompilerAssert<I, O> {
 
     //
     this.strategy.processorFactory = META_MODEL_PROCESSOR_FACTORY;
-    this.strategy.javaCompilerProvider = JavaCompilerProvider.DEFAULT;
+    this.strategy.javaCompiler = JavaCompilerProvider.DEFAULT;
   }
 
   public CompilerAssert(
@@ -138,7 +138,7 @@ public class CompilerAssert<I, O> {
   }
 
   public CompilerAssert<I, O> with(JavaCompilerProvider javaCompilerProvider) {
-    strategy.javaCompilerProvider = javaCompilerProvider;
+    strategy.javaCompiler = javaCompilerProvider;
     return this;
   }
 

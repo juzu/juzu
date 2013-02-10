@@ -78,7 +78,7 @@ public class Compiler {
     private Provider<? extends Processor> processor;
 
     /** . */
-    private JavaCompiler javaCompiler;
+    private Provider<? extends JavaCompiler> javaCompiler;
 
     /** . */
     private CompilerConfig config;
@@ -88,8 +88,13 @@ public class Compiler {
       ReadWriteFileSystem<?> sourceOutput,
       ReadWriteFileSystem<?> classOutput,
       List<ReadFileSystem<?>> classPaths) {
+      Provider<JavaCompiler> javaCompiler = new Provider<JavaCompiler>() {
+        public JavaCompiler get() {
+          return ToolProvider.getSystemJavaCompiler();
+        }
+      };
       this.processor = null;
-      this.javaCompiler = ToolProvider.getSystemJavaCompiler();
+      this.javaCompiler = javaCompiler;
       this.sourcePath = sourcePath;
       this.sourceOutput = sourceOutput;
       this.classOutput = classOutput;
@@ -97,7 +102,7 @@ public class Compiler {
       this.config = new CompilerConfig();
     }
 
-    public Builder javaCompiler(JavaCompiler javaCompiler) {
+    public Builder javaCompiler(Provider<? extends JavaCompiler> javaCompiler) {
       this.javaCompiler = javaCompiler;
       return this;
     }
@@ -155,7 +160,7 @@ public class Compiler {
         throw new IllegalStateException("No null source output");
       }
       Compiler compiler = new Compiler(
-        javaCompiler,
+        javaCompiler.get(),
         sourcePath,
         classPaths,
         sourceOutput,

@@ -145,7 +145,7 @@ public class CompilationTestCase extends AbstractTestCase {
 
     //
     RAMFileSystem output = new RAMFileSystem();
-    Compiler compiler = Compiler.builder().javaCompiler(compilerProvider.get()).sourcePath(input).output(output).build();
+    Compiler compiler = Compiler.builder().javaCompiler(compilerProvider).sourcePath(input).output(output).build();
     ProcessorImpl processor = new ProcessorImpl();
     compiler.addAnnotationProcessor(processor);
     compiler.compile();
@@ -259,7 +259,7 @@ public class CompilationTestCase extends AbstractTestCase {
   @Test
   public void testProcessorErrorOnElement() throws Exception {
     DiskFileSystem fs = diskFS("compiler.annotationexception");
-    Compiler compiler = Compiler.builder().javaCompiler(compilerProvider.get()).sourcePath(fs).output(new RAMFileSystem()).build();
+    Compiler compiler = Compiler.builder().javaCompiler(compilerProvider).sourcePath(fs).output(new RAMFileSystem()).build();
     @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
     @javax.annotation.processing.SupportedAnnotationTypes({"*"})
     class Processor1 extends AbstractProcessor {
@@ -304,7 +304,7 @@ public class CompilationTestCase extends AbstractTestCase {
     // Works only with javac
     if (compilerProvider == JavaCompilerProvider.JAVAC) {
       DiskFileSystem fs = diskFS("compiler.annotationexception");
-      Compiler compiler = Compiler.builder().javaCompiler(compilerProvider.get()).sourcePath(fs).output(new RAMFileSystem()).build();
+      Compiler compiler = Compiler.builder().javaCompiler(compilerProvider).sourcePath(fs).output(new RAMFileSystem()).build();
       @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
       @javax.annotation.processing.SupportedAnnotationTypes({"*"})
       class Processor2 extends AbstractProcessor {
@@ -351,7 +351,7 @@ public class CompilationTestCase extends AbstractTestCase {
     DiskFileSystem fs = diskFS("compiler.errorcode");
     Compiler compiler = Compiler.
       builder().
-      javaCompiler(compilerProvider.get()).
+      javaCompiler(compilerProvider).
       config(new CompilerConfig().withProcessorOption("juzu.error_reporting", "formal")).
       sourcePath(fs).
       output(new RAMFileSystem()).

@@ -266,6 +266,35 @@
         </executions>
       </plugin>
 
+      <!--
+        | Below is configuration for making test pass with eclipse compiler : eclipse compiler
+        | will search for .java source in the java.class.path so we contribute the resources
+        | to the classpath but directly instead of copying the resources to ${build.testOutputDirectory}/test-classes.
+        | This allow the JavaCompilerProvider#ECJ to remove
+       -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <configuration>
+              <additionalClasspathElements>
+                <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
+              </additionalClasspathElements>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-testResources</id>
+            <phase>prepare-package</phase>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
     

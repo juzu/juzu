@@ -31,7 +31,6 @@ import juzu.impl.common.Tools;
 
 import javax.annotation.processing.Processor;
 import javax.inject.Provider;
-import javax.tools.JavaCompiler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -56,7 +55,7 @@ public abstract class CompileStrategy<I, O> {
   final ReadWriteFileSystem<O> classOutput;
 
   /** . */
-  JavaCompilerProvider javaCompilerProvider;
+  JavaCompilerProvider javaCompiler;
 
   /** . */
   Provider<? extends Processor> processorFactory;
@@ -78,8 +77,7 @@ public abstract class CompileStrategy<I, O> {
 
   final Compiler.Builder builder() {
     Compiler.Builder builder = Compiler.builder();
-    JavaCompiler abc = javaCompilerProvider.get();
-    builder.javaCompiler(abc);
+    builder.javaCompiler(javaCompiler);
     builder.processor(processorFactory);
     builder.addClassPath(classPath);
     builder.sourcePath(sourcePath);

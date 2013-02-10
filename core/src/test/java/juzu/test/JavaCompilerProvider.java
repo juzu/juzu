@@ -19,11 +19,17 @@
 
 package juzu.test;
 
+import juzu.impl.common.Tools;
 import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
 
 import javax.inject.Provider;
+import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
+import java.io.Writer;
+import java.util.ArrayList;
 
 /**
  * Abstract compiler.
@@ -40,7 +46,31 @@ public enum JavaCompilerProvider implements Provider<JavaCompiler> {
 
   ECJ() {
     public JavaCompiler get() {
-      return new EclipseCompiler();
+      return new EclipseCompiler() {
+
+        @Override
+        public CompilationTask getTask(Writer out, JavaFileManager fileManager, DiagnosticListener<? super JavaFileObject> someDiagnosticListener, Iterable<String> options, Iterable<String> classes, Iterable<? extends JavaFileObject> compilationUnits) {
+
+          // Trick : we remove the test resources so Eclipse won't find them
+          // see the pom.xml
+          String prevClassPath = System.getProperty("java.class.path");
+          ArrayList<String> nextClassPath = new ArrayList<String>();
+          for (String s : Tools.split(prevClassPath, ':')) {
+            if (!s.endsWith("/src/test/resources")) {
+              nextClassPath.add(s);
+            }
+          }
+          System.setProperty("java.class.path", Tools.join(':', nextClassPath));
+
+          //
+          try {
+            return super.getTask(out, fileManager, someDiagnosticListener, options, classes, compilationUnits);
+          }
+          finally {
+            System.setProperty("java.class.path", Tools.join(':', prevClassPath));
+          }
+        }
+      };
     }
   };
 
