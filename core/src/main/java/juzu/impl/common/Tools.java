@@ -21,6 +21,7 @@ package juzu.impl.common;
 
 import juzu.UndeclaredIOException;
 
+import javax.annotation.processing.Completion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.DatatypeConverter;
@@ -46,6 +47,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,6 +77,13 @@ public class Tools {
 
     public void remove() {
       throw new UnsupportedOperationException();
+    }
+  };
+
+  /** . */
+  public static final Comparator<Completion> COMPLETION_COMPARATOR = new Comparator<Completion>() {
+    public int compare(Completion o1, Completion o2) {
+      return o1.getValue().compareTo(o2.getValue());
     }
   };
 

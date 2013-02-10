@@ -39,6 +39,7 @@ import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 
+import javax.annotation.processing.Completion;
 import javax.lang.model.element.PackageElement;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -106,6 +107,24 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
 
     // Forward
     context.processAnnotationChange(change);
+  }
+
+  @Override
+  public Iterable<? extends Completion> getCompletions(
+      ModuleMetaModel metaModel,
+      AnnotationKey annotationKey,
+      AnnotationState annotationState,
+      String member,
+      String userText) {
+    Iterable<? extends Completion> completions = super.getCompletions(metaModel, annotationKey, annotationState, member, userText);
+
+    // Forward
+    if (completions == null) {
+      completions = context.getCompletions(annotationKey, annotationState, member, userText);
+    }
+
+    //
+    return completions;
   }
 
   @Override

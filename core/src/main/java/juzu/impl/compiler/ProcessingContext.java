@@ -221,7 +221,14 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
   /** . */
   private Map<ElementHandle<?>, ReadFileSystem<File>> sourcePathMap = new HashMap<ElementHandle<?>, ReadFileSystem<File>>();
 
-  private ReadFileSystem<File> getSourcePath(ElementHandle.Package context) throws IllegalArgumentException {
+  /**
+   * Returns the source path, this may return null.
+   *
+   * @param context the package element related
+   * @return the source path
+   * @throws IllegalArgumentException if the package cannot be resolved
+   */
+  public ReadFileSystem<File> getSourcePath(ElementHandle.Package context) throws IllegalArgumentException {
     PackageElement element = context.get(env);
     if (element == null) {
       throw new IllegalArgumentException("Package element cannot be resolved " + context);

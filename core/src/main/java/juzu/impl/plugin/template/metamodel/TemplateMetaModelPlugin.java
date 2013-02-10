@@ -19,6 +19,8 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.Tools;
+import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
@@ -32,9 +34,14 @@ import juzu.impl.template.spi.Template;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
 
+import javax.annotation.processing.Completion;
+import javax.annotation.processing.Completions;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -141,6 +148,91 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void postProcessEvents(ApplicationMetaModel application) {
     application.processingContext.log("Processing templates of " + application.getHandle());
     application.getChild(TemplatesMetaModel.KEY).resolver.process(this, application.model.processingContext);
+  }
+
+  @Override
+  public Iterable<? extends Completion> getCompletions(
+      ApplicationMetaModel metaModel,
+      AnnotationKey annotationKey,
+      AnnotationState annotationState,
+      String member, String
+      userText) {
+    List<Completion> completions = Collections.emptyList();
+    ReadFileSystem<File> sourcePath = metaModel.getProcessingContext().getSourcePath(metaModel.getHandle());
+    if (sourcePath != null) {
+      try {
+        final File root = sourcePath.getPath(metaModel.getChild(TemplatesMetaModel.KEY).getQN());
+        if (root.isDirectory()) {
+          File[] children = root.listFiles();
+          if (children != null) {
+            if (userText != null && userText.length() > 0) {
+              try {
+                Path path = Path.parse(userText);
+                if (path.isRelative()) {
+                  File from;
+                  String suffix;
+                  if (path.getExt() == null) {
+                    from = sourcePath.getPath(root, path.getName());
+                    if (from == null) {
+                      from = sourcePath.getPath(root, path.getDirs());
+                      suffix = path.getSimpleName();
+                    } else {
+                      suffix = "";
+                    }
+                  } else {
+                    from = sourcePath.getPath(root, path.getDirs());
+                    suffix = path.getSimpleName();
+                  }
+                  if (from != null) {
+                    completions = list(root, from, suffix);
+                  }
+                }
+              }
+              catch (IllegalArgumentException ignore) {
+              }
+            } else {
+              completions = list(root, root, "");
+            }
+          }
+        }
+      }
+      catch (IOException ignore) {
+      }
+    }
+    return completions;
+  }
+
+  private void foo(StringBuilder buffer, File root, File file) {
+    if (file.equals(root)) {
+      buffer.setLength(0);
+    } else {
+      foo(buffer, root, file.getParentFile());
+      if (buffer.length() > 0) {
+        buffer.append('/');
+      }
+      buffer.append(file.getName());
+    }
+  }
+
+  private List<Completion> list(File root, File from, String suffix) {
+    File[] children = from.listFiles();
+    StringBuilder path = new StringBuilder();
+    if (children != null) {
+      ArrayList<Completion> completions = new ArrayList<Completion>();
+      for (final File child : children) {
+        if (child.getName().startsWith(suffix)) {
+          foo(path, root, child);
+          if (child.isDirectory()) {
+            path.append('/');
+          }
+          completions.add(Completions.of(path.toString()));
+        }
+      }
+      Collections.sort(completions, Tools.COMPLETION_COMPARATOR);
+      return completions;
+    } else {
+      return Collections.emptyList();
+    }
   }
 
   @Override

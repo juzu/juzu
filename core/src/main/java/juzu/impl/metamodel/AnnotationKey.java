@@ -22,7 +22,9 @@ package juzu.impl.metamodel;
 import juzu.impl.common.Name;
 import juzu.impl.compiler.ElementHandle;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -33,6 +35,11 @@ public class AnnotationKey implements Serializable {
 
   /** . */
   final Name type;
+
+  public AnnotationKey(Element element, AnnotationMirror mirror) {
+    this.element = ElementHandle.create(element);
+    this.type = Name.parse(((TypeElement)mirror.getAnnotationType().asElement()).getQualifiedName().toString());
+  }
 
   public AnnotationKey(Element element, Name type) {
     this.element = ElementHandle.create(element);

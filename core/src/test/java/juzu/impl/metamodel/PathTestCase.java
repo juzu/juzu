@@ -82,8 +82,8 @@ public class PathTestCase extends AbstractTestCase {
           list("controllers").
           set("handle", "ElementHandle.Package[qn=metamodel.path]").
           list("templates", json().
-            set("path", "bar.gtmpl").
-            list("refs")
+              set("path", "bar.gtmpl").
+              list("refs")
           )
         )
       );

@@ -22,6 +22,10 @@ package juzu.impl.metamodel;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ProcessingContext;
 
+import javax.annotation.processing.Completion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
@@ -62,6 +66,15 @@ public class MetaModelPlugin<M extends MetaModel<P, M>, P extends MetaModelPlugi
     } else if (!change.removed.equals(change.added)) {
       processAnnotationUpdated(metaModel, change.key, change.removed, change.added);
     }
+  }
+
+  public Iterable<? extends Completion> getCompletions(
+      M metaModel,
+      AnnotationKey annotationKey,
+      AnnotationState annotationState,
+      String member,
+      String userText) {
+    return null;
   }
 
   public void processAnnotationAdded(M metaModel, AnnotationKey key, AnnotationState added) {

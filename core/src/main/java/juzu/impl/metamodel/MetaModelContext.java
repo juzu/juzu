@@ -23,6 +23,7 @@ import juzu.impl.common.Name;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ProcessingException;
 
+import javax.annotation.processing.Completion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -195,6 +196,26 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
       delta.add(new AnnotationChange(annotation.getKey(), knownAnnotations.get(annotation.getKey()), annotation.getValue()));
     }
     processAnnotationChanges(delta);
+  }
+
+  public Iterable<? extends Completion> getCompletions(
+      AnnotationKey annotationKey,
+      AnnotationState annotationState,
+      String member,
+      String userText) {
+    Iterable<? extends Completion> completions = null;
+    for (M metaModel : metaModels) {
+      for (P plugin : pluginMap.values()) {
+        HashSet<Name> supportedAnnotations = supportedAnnotationsMap.get(plugin);
+        if (supportedAnnotations.contains(annotationKey.type)) {
+          completions = plugin.getCompletions(metaModel, annotationKey, annotationState, member, userText);
+          if (completions != null) {
+            break;
+          }
+        }
+      }
+    }
+    return completions;
   }
 
   public void postProcessAnnotations() throws ProcessingException {

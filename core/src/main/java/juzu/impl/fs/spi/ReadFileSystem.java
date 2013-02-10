@@ -29,7 +29,6 @@ import juzu.impl.fs.spi.jar.JarFileSystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -145,10 +144,6 @@ public abstract class ReadFileSystem<P> {
    */
   public abstract URL getURL(P path) throws NullPointerException, IOException;
 
-  public final P getPath(String... names) throws IOException {
-    return getPath(Arrays.asList(names));
-  }
-
   public final boolean isDir(P path) throws IOException {
     return typeOf(path) == PathType.DIR;
   }
@@ -192,13 +187,24 @@ public abstract class ReadFileSystem<P> {
     }
   }
 
+  public final P getPath(String... names) throws IOException {
+    return getPath(Arrays.asList(names));
+  }
+
   public final P getPath(Iterable<String> names) throws IOException {
-    P current = getRoot();
+    return getPath(getRoot(), names);
+  }
+
+  public final P getPath(P from, String... names) throws IOException {
+    return getPath(from, Arrays.asList(names));
+  }
+
+  public final P getPath(P from, Iterable<String> names) throws IOException {
     for (String name : names) {
-      if (isDir(current)) {
-        P child = getChild(current, name);
+      if (isDir(from)) {
+        P child = getChild(from, name);
         if (child != null) {
-          current = child;
+          from = child;
         }
         else {
           return null;
@@ -208,7 +214,7 @@ public abstract class ReadFileSystem<P> {
         throw new UnsupportedOperationException("handle me gracefully : was expecting " + Tools.list(names) + " to resolve");
       }
     }
-    return current;
+    return from;
   }
 
   public final int size(final int mode) throws IOException {

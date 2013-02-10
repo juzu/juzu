@@ -20,11 +20,14 @@
 package juzu.impl.plugin.application.metamodel;
 
 import juzu.impl.metamodel.AnnotationChange;
+import juzu.impl.metamodel.AnnotationKey;
+import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.metamodel.EventQueue;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelPlugin;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 
+import javax.annotation.processing.Completion;
 import java.io.Serializable;
 
 /**
@@ -45,6 +48,20 @@ public abstract class ApplicationMetaModelPlugin extends MetaModelPlugin<Applica
   public void processAnnotationChange(ApplicationMetaModel metaModel, AnnotationChange change) {
     if (metaModel.getHandle().getPackage().isPrefix(change.getKey().getElement().getPackage())) {
       super.processAnnotationChange(metaModel, change);
+    }
+  }
+
+  @Override
+  public Iterable<? extends Completion> getCompletions(
+      ApplicationMetaModel metaModel,
+      AnnotationKey annotationKey,
+      AnnotationState annotationState,
+      String member,
+      String userText) {
+    if (metaModel.getHandle().getPackage().isPrefix(annotationKey.getElement().getPackage())) {
+      return super.getCompletions(metaModel, annotationKey, annotationState, member, userText);
+    } else {
+      return null;
     }
   }
 

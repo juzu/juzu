@@ -246,7 +246,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
     finally {
       if (roundEnv.processingOver()) {
         String t = currentLog.get().toString();
-        currentLog.set(null);
+        currentLog.set(new StringBuilder());
 
         //
         if (t.length() > 0) {
