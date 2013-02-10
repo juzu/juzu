@@ -38,8 +38,8 @@ import javax.tools.StandardLocation;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -58,11 +58,42 @@ public abstract class MetaModelProcessor extends BaseProcessor {
   /** . */
   private final Logger log = BaseProcessor.getLogger(getClass());
 
+  /** . */
+  private HashSet<String> supportedAnnotations;
+
   @Override
   protected void doInit(ProcessingContext context) {
     log.log("Using processing env " + context.getClass().getName());
 
+    // Try to get state or create new one
+    if (state == null) {
+      InputStream in = null;
+      try {
+        FileObject file = getContext().getResource(StandardLocation.SOURCE_OUTPUT, "juzu", "metamodel.ser");
+        in = file.openInputStream();
+        ObjectInputStream ois = new ObjectInputStream(in);
+        state = (MetaModelState<?, ?>)ois.readObject();
+        log.log("Loaded model from " + file.toUri());
+      }
+      catch (Exception e) {
+        log.log("Created new meta model");
+        MetaModelState<?, ?> metaModel = new MetaModelState(getPluginType(), createMetaModel());
+        metaModel.init(getContext());
+        state = metaModel;
+      }
+      finally {
+        Tools.safeClose(in);
+      }
+    }
+
     //
+    HashSet<String> supportedAnnotations = new HashSet<String>();
+    for (Class<?> supportedAnnotation : state.context.getSupportedAnnotations()) {
+      supportedAnnotations.add(supportedAnnotation.getName());
+    }
+
+    //
+    this.supportedAnnotations = supportedAnnotations;
     this.index = 0;
   }
 
@@ -100,28 +131,23 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         log.log("Starting APT round #" + index);
 
         //
-        if (state == null) {
-          state = getState();
-        }
-
-        //
         log.log("Activating model");
         state.metaModel.postActivate(getContext());
 
         //
         LinkedHashMap<AnnotationKey, AnnotationState> updates = new LinkedHashMap<AnnotationKey, AnnotationState>();
-        Set<Class<? extends Annotation>> abc = state.metaModel.getSupportedAnnotations();
-        for (Class annotationType : abc) {
-          TypeElement annotationElt = getContext().getTypeElement(annotationType.getName());
-          log.log("Processing elements for annotation for " + annotationElt.getQualifiedName());
-          for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt)) {
-            if (annotatedElt.getAnnotation(Generated.class) == null) {
-              log.log("Processing element " + annotatedElt);
-              for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
-                if (annotationMirror.getAnnotationType().asElement().equals(annotationElt)) {
-                  AnnotationKey key = new AnnotationKey(annotatedElt, annotationMirror);
-                  AnnotationState state = AnnotationState.create(annotationMirror);
-                  updates.put(key, state);
+        for (TypeElement annotationElt : annotations) {
+          if (supportedAnnotations.contains(annotationElt.getQualifiedName().toString())) {
+            log.log("Processing elements for annotation for " + annotationElt.getQualifiedName());
+            for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt)) {
+              if (annotatedElt.getAnnotation(Generated.class) == null) {
+                log.log("Processing element " + annotatedElt);
+                for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
+                  if (annotationMirror.getAnnotationType().asElement().equals(annotationElt)) {
+                    AnnotationKey key = new AnnotationKey(annotatedElt, annotationMirror);
+                    AnnotationState state = AnnotationState.create(annotationMirror);
+                    updates.put(key, state);
+                  }
                 }
               }
             }
@@ -150,35 +176,12 @@ public abstract class MetaModelProcessor extends BaseProcessor {
     }
   }
 
-  private MetaModelState<?, ?> getState() {
-    MetaModelState<?, ?> state;
-    InputStream in = null;
-    try {
-      FileObject file = getContext().getResource(StandardLocation.SOURCE_OUTPUT, "juzu", "metamodel.ser");
-      in = file.openInputStream();
-      ObjectInputStream ois = new ObjectInputStream(in);
-      state = (MetaModelState<?, ?>)ois.readObject();
-      log.log("Loaded model from " + file.toUri());
-    }
-    catch (Exception e) {
-      log.log("Created new meta model");
-      MetaModelState<?, ?> metaModel = new MetaModelState(getPluginType(), createMetaModel());
-      metaModel.init(getContext());
-      state = metaModel;
-    }
-    finally {
-      Tools.safeClose(in);
-    }
-    return state;
-  }
-
   @Override
   public Iterable<? extends Completion> getCompletions(Element element, AnnotationMirror annotation, ExecutableElement member, String userText) {
     Iterable<? extends Completion> completions;
     // For now we don't provide completion when element is absent
     if (element != null) {
       // Get state (but we won't save it)
-      MetaModelState<?, ?> state = getState();
       log.log("Activating model");
       state.metaModel.postActivate(getContext());
       AnnotationKey annotationKey = new AnnotationKey(element, Name.parse(((TypeElement)annotation.getAnnotationType().asElement()).getQualifiedName().toString()));
