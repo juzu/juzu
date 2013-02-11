@@ -371,6 +371,49 @@ public class CompilationTestCase extends AbstractTestCase {
   }
 
   @Test
+  public void testDelete() throws Exception {
+    DeleteResourceProcessor processor = new DeleteResourceProcessor();
+    CompilerAssert<File, File> compiler = compiler("compiler.deleteresource").with(compilerProvider).with(processor);
+    File foo = compiler.getClassOutput().makePath(compiler.getClassOutput().getRoot(), "foo.txt");
+    Tools.write("foo", foo);
+    compiler.assertCompile();
+    assertTrue(processor.done);
+    boolean expected = compilerProvider == JavaCompilerProvider.ECJ;
+    assertEquals(expected, processor.deleted);
+    assertEquals(!expected, foo.exists());
+  }
+
+  @javax.annotation.processing.SupportedAnnotationTypes({"*"})
+  @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
+  public static class DeleteResourceProcessor extends AbstractProcessor {
+
+    /** . */
+    private boolean done;
+
+    /** . */
+    private boolean deleted;
+
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+      if (!done) {
+
+        try {
+          Filer filer = processingEnv.getFiler();
+          FileObject foo = filer.getResource(StandardLocation.CLASS_OUTPUT, "", "foo.txt");
+          deleted = foo.delete();
+          done = true;
+        }
+        catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      //
+      return true;
+    }
+  }
+
+  @Test
   public void testIncremental() throws IOException, CompilationException {
     CompilerAssert<File, File> compiler = compiler(true, Name.parse("compiler.incremental"), "").
         with(compilerProvider).

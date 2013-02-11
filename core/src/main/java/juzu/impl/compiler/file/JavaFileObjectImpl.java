@@ -139,7 +139,16 @@ public class JavaFileObjectImpl<P> implements JavaFileObject {
   }
 
   public boolean delete() {
-    return false;
+    if (fs instanceof ReadWriteFileSystem) {
+      try {
+        return ((ReadWriteFileSystem<P>)fs).removePath(file);
+      }
+      catch (IOException ignore) {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   public String getName() {

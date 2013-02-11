@@ -54,7 +54,7 @@ public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P> {
 
   public abstract long setContent(P file, Content content) throws IOException;
 
-  public abstract void removePath(P path) throws IOException;
+  public abstract boolean removePath(P path) throws IOException;
 
 
 }

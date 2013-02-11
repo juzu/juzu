@@ -212,12 +212,13 @@ public class RAMFileSystem extends ReadWriteFileSystem<String[]> {
   }
 
   @Override
-  public void removePath(String[] path) throws IOException {
+  public boolean removePath(String[] path) throws IOException {
     RAMPath foo = get(path);
     if (foo != null) {
       foo.parent.children.remove(foo.name);
       foo.parent = null;
     }
+    return true;
   }
 
   @Override

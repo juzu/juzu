@@ -209,8 +209,8 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
-  public void removePath(File path) throws IOException {
-    path.delete();
+  public boolean removePath(File path) throws IOException {
+    return path.delete();
   }
 
   @Override
