@@ -39,7 +39,7 @@ class SingletonBean extends AbstractBean {
   }
 
   @Override
-  void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory) {
+  void configure(String name, SpringInjector builder, DefaultListableBeanFactory factory) {
     AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
     definition.setScope("singleton");
     if (qualifiers != null) {

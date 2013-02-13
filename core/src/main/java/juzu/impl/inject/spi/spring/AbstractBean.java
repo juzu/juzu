@@ -65,6 +65,6 @@ abstract class AbstractBean {
     this.qualifiers = list;
   }
 
-  abstract void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory);
+  abstract void configure(String name, SpringInjector builder, DefaultListableBeanFactory factory);
 
 }

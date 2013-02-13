@@ -21,7 +21,7 @@ package inject.configuration;
 
 import inject.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.inject.spi.spring.SpringBuilder;
+import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.common.Tools;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ public class ConfigurationTestCase<B, I> extends AbstractInjectTestCase<B, I> {
       //
       init();
       bootstrap.declareBean(Injected.class, null, null, null);
-      ((SpringBuilder)bootstrap).setConfigurationURL(configurationURL);
+      ((SpringInjector)bootstrap).setConfigurationURL(configurationURL);
       boot();
 
       //

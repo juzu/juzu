@@ -63,7 +63,7 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
   /** . */
   private final Map<String, Key<?>> nameMap;
 
-  public GuiceContext(final GuiceBuilder bootstrap) {
+  public GuiceContext(final GuiceInjector bootstrap) {
 
     AbstractModule module = new AbstractModule() {
       @Override

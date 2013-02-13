@@ -19,9 +19,9 @@
 
 package juzu.impl.inject.spi;
 
-import juzu.impl.inject.spi.cdi.CDIBuilder;
-import juzu.impl.inject.spi.guice.GuiceBuilder;
-import juzu.impl.inject.spi.spring.SpringBuilder;
+import juzu.impl.inject.spi.cdi.CDIInjector;
+import juzu.impl.inject.spi.guice.GuiceInjector;
+import juzu.impl.inject.spi.spring.SpringInjector;
 
 import javax.inject.Provider;
 
@@ -30,19 +30,19 @@ public enum InjectorProvider implements Provider<Injector> {
 
   CDI_WELD("weld") {
     public Injector get() {
-      return new CDIBuilder();
+      return new CDIInjector();
     }
   },
 
   INJECT_GUICE("guice") {
     public Injector get() {
-      return new GuiceBuilder();
+      return new GuiceInjector();
     }
   },
 
   INJECT_SPRING("spring") {
     public Injector get() {
-      return new SpringBuilder();
+      return new SpringInjector();
     }
   };
 

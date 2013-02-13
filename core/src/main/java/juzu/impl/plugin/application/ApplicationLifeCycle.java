@@ -32,7 +32,7 @@ import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.inject.spi.spring.SpringBuilder;
+import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
@@ -169,11 +169,11 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     injector.setClassLoader(getModule().getClassLoader());
 
     //
-    if (injector instanceof SpringBuilder) {
+    if (injector instanceof SpringInjector) {
       R springName = resources.getPath("spring.xml");
       if (springName != null) {
         URL configurationURL = resources.getURL(springName);
-        ((SpringBuilder)injector).setConfigurationURL(configurationURL);
+        ((SpringInjector)injector).setConfigurationURL(configurationURL);
       }
     }
 

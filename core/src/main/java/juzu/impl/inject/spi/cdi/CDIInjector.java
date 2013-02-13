@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIBuilder extends Injector {
+public class CDIInjector extends Injector {
 
   /** . */
   private Set<Scope> scopes;
@@ -49,7 +49,7 @@ public class CDIBuilder extends Injector {
   /** . */
   private ArrayList<AbstractBean> boundBeans;
 
-  public CDIBuilder() {
+  public CDIInjector() {
     this.scopes = new HashSet<Scope>();
     this.fileSystems = new ArrayList<ReadFileSystem<?>>();
     this.boundBeans = new ArrayList<AbstractBean>();

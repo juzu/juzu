@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SpringBuilder extends Injector {
+public class SpringInjector extends Injector {
 
   /** . */
   private ClassLoader classLoader;

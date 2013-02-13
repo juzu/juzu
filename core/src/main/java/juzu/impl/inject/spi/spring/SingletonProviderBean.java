@@ -47,7 +47,7 @@ class SingletonProviderBean extends AbstractBean {
   }
 
   @Override
-  void configure(String name, SpringBuilder builder, DefaultListableBeanFactory factory) {
+  void configure(String name, SpringInjector builder, DefaultListableBeanFactory factory) {
     String id = Tools.nextUUID();
     AnnotatedGenericBeanDefinition def = new AnnotatedGenericBeanDefinition(provider.getClass());
     def.setScope("singleton");
