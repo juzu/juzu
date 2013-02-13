@@ -9,6 +9,10 @@
      <display-name xml:lang="EN">Juzu Sample Application</display-name>
      <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
      <init-param>
+       <name>juzu.app_name</name>
+       <value>${package}</value>
+     </init-param>
+     <init-param>
        <name>juzu.run_mode</name>
        <value>prod</value>
      </init-param>
