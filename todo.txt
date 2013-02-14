@@ -1,5 +1,11 @@
 Various things to do, not exhaustive that needs to go in the roadmap
 
+
+- Improve CDI integration:
+1/ bind Juzu scopes to CDI scopes
+2/ fire a CDI event from servlet context listener
+3/ start Juzu on CDI event binding
+
 - Enforce controller response to have the good return type: @Action -> Response.View, @View -> Response.Content, etc...
 - cleanup ApplicationLifeCycle of libs -> juzu-core.jar (???)
 
