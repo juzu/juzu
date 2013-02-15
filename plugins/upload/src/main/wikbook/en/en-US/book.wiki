@@ -11,7 +11,7 @@ File upload can be handled during an action of a portlet or a servlet:
 {{java}}
 @Action
 @Route("/upload")
-public void upload(org.apache.commons.fileupload.FileUpload file) {
+public void upload(org.apache.commons.fileupload.FileItem file) {
    if (file != null) {
       // Handle the file upload
    }
@@ -28,7 +28,7 @@ File upload can also be handled in a resource phase.
 {{java}}
 @Resource
 @Route("/upload")
-public Response.Content upload(org.apache.commons.fileupload.FileUpload file) {
+public Response.Content upload(org.apache.commons.fileupload.FileItem file) {
    if (file != null) {
       // Handle the file upload
    }
