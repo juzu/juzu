@@ -107,7 +107,7 @@ public class Application {
     return injectionContext;
   }
 
-  public void invoke(RequestBridge bridge) throws ApplicationException {
+  public void invoke(RequestBridge bridge) {
     Phase phase;
     if (bridge instanceof RenderBridge) {
       phase = Phase.VIEW;
@@ -175,20 +175,15 @@ public class Application {
     }
   }
 
-  public Object resolveBean(String name) throws ApplicationException {
+  public Object resolveBean(String name) throws InvocationTargetException {
     return resolveBean(injectionContext, name);
   }
 
-  private <B, I> Object resolveBean(InjectionContext<B, I> manager, String name) throws ApplicationException {
+  private <B, I> Object resolveBean(InjectionContext<B, I> manager, String name) throws InvocationTargetException {
     B bean = manager.resolveBean(name);
     if (bean != null) {
-      try {
-        I cc = manager.create(bean);
-        return manager.get(bean, cc);
-      }
-      catch (InvocationTargetException e) {
-        throw new ApplicationException(e.getCause());
-      }
+      I cc = manager.create(bean);
+      return manager.get(bean, cc);
     }
     else {
       return null;

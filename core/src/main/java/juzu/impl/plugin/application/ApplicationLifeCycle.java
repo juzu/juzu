@@ -211,7 +211,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
   }
 
-  private <B, I> InjectionContext<B, I> doStart(final ApplicationDescriptor descriptor, Injector injector) throws ApplicationException {
+  private <B, I> InjectionContext<B, I> doStart(final ApplicationDescriptor descriptor, Injector injector) {
 
     // Bind the application descriptor
     injector.bindBean(ApplicationDescriptor.class, null, descriptor);

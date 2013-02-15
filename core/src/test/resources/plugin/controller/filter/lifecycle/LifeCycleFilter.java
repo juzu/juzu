@@ -19,7 +19,6 @@
 
 package plugin.controller.filter.lifecycle;
 
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.test.Registry;
@@ -30,7 +29,7 @@ public class LifeCycleFilter implements RequestFilter {
     Registry.compareAndSet("request.filter.lifecycle", null, "created");
   }
 
-  public void invoke(Request request) throws ApplicationException {
+  public void invoke(Request request) {
     Registry.compareAndSet("request.filter.lifecycle", "created", "before");
     request.invoke();
     Registry.compareAndSet("request.filter.lifecycle", "before", "after");

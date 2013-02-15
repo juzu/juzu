@@ -28,52 +28,43 @@ import juzu.io.Stream;
 
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import java.io.IOException;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge {
-
-  /** . */
-  private Response.Content<?> response;
 
   PortletMimeBridge(Application application, Rq request, Rs response, PortletConfig config, boolean prod) {
     super(application, request, response, config, prod);
   }
 
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    super.setResponse(response);
-    if (response instanceof Response.Content<?>) {
-      this.response = (Response.Content<?>)response;
-    } else {
-      throw new IllegalArgumentException();
-    }
-  }
-
   @Override
-  public void send() throws IOException {
-    if (response != null) {
+  public void send() throws IOException, PortletException {
+    if (response instanceof Response.Content<?>) {
+
       //
-      String mimeType = response.getMimeType();
+      Response.Content<?> content = (Response.Content<?>)response;
+
+      //
+      String mimeType = content.getMimeType();
       if (mimeType != null) {
         this.resp.setContentType(mimeType);
       }
 
-      // Set headers
-      for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
-        for (String value : entry.getValue()) {
-          resp.addProperty(entry.getKey(), value);
-        }
-      }
+      // Send properties
+      sendProperties();
 
       // Send content
-      if (response.getKind() == Stream.Char.class) {
-        ((Response.Content<Stream.Char>)response).send(new AppendableStream(this.resp.getWriter()));
+      if (content.getKind() == Stream.Char.class) {
+        ((Response.Content<Stream.Char>)content).send(new AppendableStream(this.resp.getWriter()));
       }
       else {
-        ((Response.Content<Stream.Binary>)response).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
+        ((Response.Content<Stream.Binary>)content).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
       }
+    } else if (response instanceof Response.Error) {
+      Response.Error error = (Response.Error)response;
+      throw new PortletException(error.getCause());
     }
   }
 }

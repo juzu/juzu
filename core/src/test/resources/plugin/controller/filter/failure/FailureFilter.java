@@ -20,7 +20,6 @@
 package plugin.controller.filter.failure;
 
 import juzu.Response;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 
@@ -29,11 +28,9 @@ public class FailureFilter implements RequestFilter {
   public FailureFilter() {
   }
 
-  public void invoke(Request request) throws ApplicationException {
-    try {
-      request.invoke();
-    }
-    catch (ApplicationException e) {
+  public void invoke(Request request) {
+    request.invoke();
+    if (request.getResponse() instanceof Response.Error) {
       request.setResponse(Response.ok("pass"));
     }
   }

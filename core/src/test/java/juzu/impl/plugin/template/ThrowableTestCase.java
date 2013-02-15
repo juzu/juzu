@@ -20,11 +20,11 @@
 package juzu.impl.plugin.template;
 
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.template.TemplateExecutionException;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
+import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
 import javax.naming.AuthenticationException;
@@ -43,12 +43,9 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(AuthenticationException.class, assertInstanceOf(TemplateExecutionException.class, e.getCause()).getCause());
-    }
+    MockRenderBridge render = client.render();
+    TemplateExecutionException te = render.assertFailure(TemplateExecutionException.class);
+    assertInstanceOf(AuthenticationException.class, te.getCause());
   }
 
   @Test
@@ -57,12 +54,9 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(ConcurrentModificationException.class, assertInstanceOf(TemplateExecutionException.class, e.getCause()).getCause());
-    }
+    MockRenderBridge render = client.render();
+    TemplateExecutionException te = render.assertFailure(TemplateExecutionException.class);
+    assertInstanceOf(ConcurrentModificationException.class, te.getCause());
   }
 
   @Test
@@ -71,11 +65,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(UnknownError.class, e.getCause()).getCause();
-    }
+    MockRenderBridge render = client.render();
+    render.assertFailure(UnknownError.class);
   }
 }

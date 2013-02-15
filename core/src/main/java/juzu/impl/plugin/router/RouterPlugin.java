@@ -17,26 +17,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.test.protocol.mock;
+package juzu.impl.plugin.router;
 
-import juzu.Response;
-import juzu.impl.plugin.application.Application;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.common.MethodHandle;
-import juzu.request.ClientContext;
-import org.junit.Assert;
-
-import java.io.IOException;
-import java.util.Map;
+import juzu.impl.common.JSON;
+import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.application.ApplicationPlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockResourceBridge extends MockMimeBridge implements ResourceBridge {
+public class RouterPlugin extends ApplicationPlugin {
 
-  public MockResourceBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, target, parameters);
+  public RouterPlugin() {
+    super("router");
   }
 
-  public ClientContext getClientContext() {
-    throw new UnsupportedOperationException();
+  @Override
+  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
+    return config != null ? new RouteDescriptor(config) : null;
   }
 }

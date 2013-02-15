@@ -21,6 +21,7 @@ package juzu.test.protocol.mock;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
@@ -36,6 +37,7 @@ import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.ApplicationContext;
 import juzu.request.Phase;
 import juzu.request.UserContext;
+import juzu.test.AbstractTestCase;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,6 +76,9 @@ public abstract class MockRequestBridge implements RequestBridge {
 
   /** . */
   private final Map<String, ? extends Argument> arguments;
+
+  /** . */
+  protected Response response;
 
   public MockRequestBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
 
@@ -244,5 +249,14 @@ public abstract class MockRequestBridge implements RequestBridge {
   public void end() {
     attributesHistory.addAll(Tools.list(attributes));
     attributes.close();
+  }
+
+  public void setResponse(Response response) throws IllegalStateException, IOException {
+    this.response = response;
+  }
+
+  public <T extends Throwable> T assertFailure(Class<T> expected) {
+    Response.Error error = AbstractTestCase.assertInstanceOf(Response.Error.class, response);
+    return AbstractTestCase.assertInstanceOf(expected, error.getCause());
   }
 }

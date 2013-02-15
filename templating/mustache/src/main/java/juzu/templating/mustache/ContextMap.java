@@ -21,6 +21,8 @@ package juzu.templating.mustache;
 
 import juzu.template.TemplateRenderContext;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Map;
@@ -50,7 +52,12 @@ class ContextMap extends AbstractMap<String, Object> {
         value = attributes.get(key);
       }
       if (value == null) {
-        value = renderContext.resolveBean((String)key);
+        try {
+          value = renderContext.resolveBean((String)key);
+        }
+        catch (InvocationTargetException e) {
+          throw new UndeclaredThrowableException(e.getCause());
+        }
       }
     }
     return value;

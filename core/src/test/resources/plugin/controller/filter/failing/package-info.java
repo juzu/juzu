@@ -17,26 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.test.protocol.mock;
+@Bindings(@Binding(FailingFilter.class))
+@Application
+package plugin.controller.filter.failing;
 
-import juzu.Response;
-import juzu.impl.plugin.application.Application;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.common.MethodHandle;
-import juzu.request.ClientContext;
-import org.junit.Assert;
-
-import java.io.IOException;
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockResourceBridge extends MockMimeBridge implements ResourceBridge {
-
-  public MockResourceBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, target, parameters);
-  }
-
-  public ClientContext getClientContext() {
-    throw new UnsupportedOperationException();
-  }
-}
+import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

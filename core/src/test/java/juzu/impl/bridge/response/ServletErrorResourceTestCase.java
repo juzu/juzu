@@ -17,20 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.application;
+package juzu.impl.bridge.response;
 
-/**
- * A business exception.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public class ApplicationException extends RuntimeException {
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-  public ApplicationException(String message, Throwable cause) {
-    super(message, cause);
-  }
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public class ServletErrorResourceTestCase extends AbstractErrorResourceTestCase {
 
-  public ApplicationException(Throwable cause) {
-    super(cause);
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.response.error.resource");
   }
 }

@@ -27,6 +27,7 @@ import juzu.View;
 import juzu.impl.bridge.context.AbstractClientContextTestCase;
 import juzu.impl.common.Tools;
 import juzu.request.ClientContext;
+import org.omg.CORBA.ARG_IN;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,16 +37,18 @@ public class A {
 
   @Action
   @Route("/action")
-  public void action(ClientContext clientContext) throws IOException {
+  public Response.View action(ClientContext clientContext) throws IOException {
     test(clientContext);
     AbstractClientContextTestCase.kind = "action";
+    return A_.index();
   }
 
   @Resource
   @Route("/resource")
-  public void resource(ClientContext clientContext) throws IOException {
+  public Response.Content resource(ClientContext clientContext) throws IOException {
     test(clientContext);
     AbstractClientContextTestCase.kind = "resource";
+    return Response.ok("");
   }
 
   private void test(ClientContext client) throws IOException {

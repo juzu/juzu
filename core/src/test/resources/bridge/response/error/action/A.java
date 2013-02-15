@@ -17,26 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.test.protocol.mock;
+package bridge.response.error.action;
 
+import juzu.Action;
 import juzu.Response;
-import juzu.impl.plugin.application.Application;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.common.MethodHandle;
-import juzu.request.ClientContext;
-import org.junit.Assert;
+import juzu.Route;
+import juzu.View;
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.ConcurrentModificationException;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockResourceBridge extends MockMimeBridge implements ResourceBridge {
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public class A {
 
-  public MockResourceBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, target, parameters);
+  @Action
+  @Route("/process")
+  public void process() {
+    throw new ConcurrentModificationException();
   }
 
-  public ClientContext getClientContext() {
-    throw new UnsupportedOperationException();
+  @View
+  public Response.Render index() {
+    return Response.ok("<a id='link' href='" + A_.process() + "'>link</a>");
   }
 }

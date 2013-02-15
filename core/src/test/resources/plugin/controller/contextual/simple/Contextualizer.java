@@ -19,7 +19,6 @@
 
 package plugin.controller.contextual.simple;
 
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
@@ -29,7 +28,7 @@ import java.io.ByteArrayInputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Contextualizer implements RequestFilter {
-  public void invoke(Request request) throws ApplicationException {
+  public void invoke(Request request) {
     Method m = request.getContext().getMethod();
     ContextualParameter in = (ContextualParameter)m.getParameter("in");
     request.setArgument(in, new ByteArrayInputStream("__foo__".getBytes()));

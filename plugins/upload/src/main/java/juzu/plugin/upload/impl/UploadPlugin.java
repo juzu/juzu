@@ -19,9 +19,9 @@
 
 package juzu.plugin.upload.impl;
 
+import juzu.UndeclaredIOException;
 import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.request.ContextualParameter;
@@ -40,6 +40,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -55,7 +56,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
     return new Descriptor();
   }
 
-  public void invoke(Request request) throws ApplicationException {
+  public void invoke(Request request) {
 
     //
     RequestContext context = request.getContext();
@@ -113,7 +114,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
             }
           }
           catch (FileUploadException e) {
-            throw new ApplicationException(e);
+            throw new UndeclaredThrowableException(e);
           }
         }
       }

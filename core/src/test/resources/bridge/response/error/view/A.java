@@ -17,21 +17,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.router;
+package bridge.response.error.view;
 
-import juzu.impl.common.JSON;
-import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.Response;
+import juzu.View;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouterApplicationPlugin extends ApplicationPlugin {
+import java.util.ConcurrentModificationException;
 
-  public RouterApplicationPlugin() {
-    super("router");
-  }
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public class A {
 
-  @Override
-  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
-    return config != null ? new RouteDescriptor(config) : null;
+  @View
+  public Response.Render index() {
+    throw new ConcurrentModificationException();
   }
 }

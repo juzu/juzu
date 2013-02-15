@@ -21,13 +21,13 @@ package juzu.template;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
 import juzu.io.AppendableStream;
 import juzu.io.Stream;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -91,7 +91,7 @@ public class TemplateRenderContext {
     return null;
   }
 
-  public Object resolveBean(String expression) throws ApplicationException {
+  public Object resolveBean(String expression) throws InvocationTargetException {
     return null;
   }
 

@@ -27,6 +27,8 @@ import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
+import java.util.ConcurrentModificationException;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FilterTestCase extends AbstractInjectTestCase {
 
@@ -37,14 +39,9 @@ public class FilterTestCase extends AbstractInjectTestCase {
   @Test
   public void testLifeCycle() throws Exception {
     Registry.unset("request.filter.lifecycle");
-
     MockApplication<?> app = application("plugin.controller.filter.lifecycle").init();
-
-    //
     app.getContext().getLifecycles();
     assertEquals("created", Registry.get("request.filter.lifecycle"));
-
-    //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
     assertEquals("after", Registry.get("request.filter.lifecycle"));
@@ -53,10 +50,21 @@ public class FilterTestCase extends AbstractInjectTestCase {
   @Test
   public void testFailure() throws Exception {
     MockApplication<?> app = application("plugin.controller.filter.failure").init();
-
-    //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
     assertEquals("pass", render.assertStringResult());
+  }
+
+  @Test
+  public void testFailing() throws Exception {
+    MockApplication<?> app = application("plugin.controller.filter.failing").init();
+    MockClient client = app.client();
+    MockRenderBridge render = null;
+    try {
+      render = client.render();
+      fail("Was expecting " + ConcurrentModificationException.class + " to be thrown");
+    }
+    catch (ConcurrentModificationException expected) {
+    }
   }
 }

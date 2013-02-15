@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.spi.web;
 
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.common.MimeType;
 import juzu.impl.plugin.application.Application;
@@ -34,9 +35,6 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class WebActionBridge extends WebRequestBridge implements ActionBridge {
 
-  /** . */
-  Response response;
-
   WebActionBridge(
       Application application,
       Handler handler,
@@ -50,31 +48,31 @@ public class WebActionBridge extends WebRequestBridge implements ActionBridge {
     return http.getClientContext();
   }
 
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    super.setResponse(response);
-    if (response instanceof Response.View || response instanceof Response.Redirect) {
-      this.response = response;
-    } else {
-      throw new IllegalArgumentException("Cannot accept response " + response);
-    }
-  }
-
   @Override
-  void send() throws IOException {
-    if (response instanceof Response.View) {
+  boolean send() throws IOException {
+    if (super.send()) {
+      return true;
+    } else if (response instanceof Response.View) {
       Response.View update = (Response.View)response;
       DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
       Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
       String url = dispatch.with(MimeType.PLAIN).with(update.getProperties()).toString();
-      for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
-        http.setHeader(entry.getKey(), entry.getValue()[0]);
+      Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
+      if (headers != null) {
+        for (Map.Entry<String, String[]> entry : headers) {
+          http.setHeader(entry.getKey(), entry.getValue()[0]);
+        }
       }
       http.sendRedirect(url);
+      return true;
     }
     else if (response instanceof Response.Redirect) {
       Response.Redirect redirect = (Response.Redirect)response;
       String url = redirect.getLocation();
       http.sendRedirect(url);
+      return true;
+    } else {
+      return false;
     }
   }
 }

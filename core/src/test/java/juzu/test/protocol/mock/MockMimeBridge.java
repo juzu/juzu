@@ -27,6 +27,7 @@ import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
 import juzu.test.AbstractTestCase;
+import org.junit.Assert;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,45 +36,56 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge {
 
-  /** . */
-  private Object result;
-
-  /** . */
-  private String mimeType;
-
   public MockMimeBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
 
   public String assertStringResult() {
-    return AbstractTestCase.assertInstanceOf(String.class, result);
+    Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
+    AbstractTestCase.assertEquals(Stream.Char.class, content.getKind());
+    try {
+      StringBuilder builder = new StringBuilder();
+      ((Response.Content<Stream.Char>)content).send(new AppendableStream(builder));
+      return builder.toString();
+    }
+    catch (IOException e) {
+      throw AbstractTestCase.failure(e);
+    }
   }
 
   public byte[] assertBinaryResult() {
-    return AbstractTestCase.assertInstanceOf(byte[].class, result);
+    Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
+    AbstractTestCase.assertEquals(Stream.Binary.class, content.getKind());
+    try {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      BinaryOutputStream bos = new BinaryOutputStream(baos);
+      ((Response.Content<Stream.Binary>)content).send(bos);
+      return baos.toByteArray();
+    }
+    catch (IOException e) {
+      throw AbstractTestCase.failure(e);
+    }
   }
 
   public String getMimeType() {
-    return mimeType;
+    if (response instanceof Response.Content<?>) {
+      return ((Response.Content)response).getMimeType();
+    } else {
+      return null;
+    }
   }
 
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    if (response instanceof Response.Content<?>) {
-      Response.Content content = (Response.Content)response;
-      if (content.getKind() == Stream.Binary.class) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BinaryOutputStream bos = new BinaryOutputStream(baos);
-        content.send(bos);
-        result = baos.toByteArray();
-      }
-      else {
-        StringBuilder builder = new StringBuilder();
-        content.send(new AppendableStream(builder));
-        result = builder.toString();
-      }
-      mimeType = content.getMimeType();
-    } else {
-      throw new IllegalArgumentException();
-    }
+  public void assertOk() {
+    assertStatus(200);
+  }
+
+  public void assertNotFound() {
+    assertStatus(404);
+  }
+
+  public void assertStatus(int status) {
+    Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
+    Assert.assertNotNull(content.getStatus());
+    Assert.assertEquals((Integer)status, content.getStatus());
   }
 }

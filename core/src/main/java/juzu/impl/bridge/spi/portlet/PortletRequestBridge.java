@@ -46,6 +46,7 @@ import juzu.request.WindowContext;
 import javax.portlet.BaseURL;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
 import javax.portlet.PortletRequest;
@@ -65,9 +66,6 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge {
-
-  /** . */
-  protected Map<String, String[]> responseHeaders;
 
   /** . */
   protected final Application application;
@@ -322,17 +320,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     return context;
   }
 
-  public void setResponse(Response response) throws IllegalArgumentException, IOException {
-    responseHeaders = Collections.emptyMap();
-    Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
-    if (headers != null) {
-      for (Map.Entry<String, String[]> entry : headers) {
-        if (responseHeaders.isEmpty()) {
-          responseHeaders = new HashMap<String, String[]>();
-        }
-        responseHeaders.put(entry.getKey(), entry.getValue());
-      }
-    }
+  public final void setResponse(Response response) throws IllegalArgumentException, IOException {
+    this.response = response;
   }
 
   public void begin(Request request) {
@@ -349,9 +338,12 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
   }
 
-  public void send() throws IOException {
-    if (responseHeaders != null) {
-      for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
+  public abstract void send() throws IOException, PortletException;
+
+  protected void sendProperties() throws IOException {
+    Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
+    if (headers != null) {
+      for (Map.Entry<String, String[]> entry : headers) {
         resp.addProperty(entry.getKey(), entry.getValue()[0]);
       }
     }

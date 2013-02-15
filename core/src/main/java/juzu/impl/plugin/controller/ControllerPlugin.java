@@ -19,7 +19,6 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.ContextualParameter;
@@ -63,7 +62,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     return descriptor = new ControllersDescriptor(loader, config);
   }
 
-  public void invoke(Request request) throws ApplicationException {
+  public void invoke(Request request) {
     // Inject RequestContext in the arguments
     RequestContext context = request.getContext();
     Method<?> method = context.getMethod();

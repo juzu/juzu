@@ -556,4 +556,30 @@ public abstract class Response {
   private static Content<Stream.Binary> content(int code, String mimeType, InputStream content) {
     return new Content<Stream.Binary>(code, Stream.Binary.class, new Streamable.InputStream(content)).withMimeType(mimeType);
   }
+
+  public static class Error extends Response {
+
+    /** . */
+    private final Throwable cause;
+
+    public Error(Throwable cause) {
+      if (cause == null) {
+        cause = new Exception();
+      }
+      this.cause = cause;
+    }
+
+    public Error() {
+      this(null);
+    }
+
+    public Throwable getCause() {
+      return cause;
+    }
+
+    @Override
+    public String toString() {
+      return "Response.Error[" + (cause != null ? cause.getMessage() : "") + "]";
+    }
+  }
 }

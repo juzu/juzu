@@ -17,26 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.test.protocol.mock;
+package juzu.impl.bridge.response;
 
-import juzu.Response;
-import juzu.impl.plugin.application.Application;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.common.MethodHandle;
-import juzu.request.ClientContext;
-import org.junit.Assert;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import java.io.IOException;
-import java.util.Map;
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public class PortletErrorResourceTestCase extends AbstractErrorResourceTestCase {
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockResourceBridge extends MockMimeBridge implements ResourceBridge {
-
-  public MockResourceBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, target, parameters);
-  }
-
-  public ClientContext getClientContext() {
-    throw new UnsupportedOperationException();
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createPortletDeployment("bridge.response.error.resource");
   }
 }

@@ -36,9 +36,6 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockActionBridge extends MockRequestBridge implements ActionBridge {
 
-  /** . */
-  private Response response;
-
   public MockActionBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
@@ -105,14 +102,6 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
       AbstractTestCase.assertEquals("Was expecting a response " + expectedResponse + " instead of  " + response,
         expectedResponse,
         response);
-    }
-  }
-
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    if (response instanceof Response.View || response instanceof Response.Redirect) {
-      this.response = response;
-    } else {
-      throw new IllegalArgumentException();
     }
   }
 }

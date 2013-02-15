@@ -73,10 +73,10 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   protected Request request;
 
   /** . */
-  protected Map<String, String[]> responseHeaders;
+  protected UserContext userContext;
 
   /** . */
-  protected UserContext userContext;
+  protected Response response;
 
   WebRequestBridge(
       Application application,
@@ -278,16 +278,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public void setResponse(Response response) throws IllegalArgumentException, IOException {
-    responseHeaders = Collections.emptyMap();
-    Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
-    if (headers != null) {
-      for (Map.Entry<String, String[]> entry : headers) {
-        if (responseHeaders.isEmpty()) {
-          responseHeaders = new HashMap<String, String[]>();
-        }
-        responseHeaders.put(entry.getKey(), entry.getValue());
-      }
-    }
+    this.response = response;
   }
 
   public final void begin(Request request) {
@@ -310,6 +301,13 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   /**
    * Send the response to the client.
    */
-  void send() throws IOException {
+  boolean send() throws IOException {
+    if (response instanceof Response.Error) {
+      Response.Error error = (Response.Error)response;
+      http.setStatus(500);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

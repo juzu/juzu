@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.spi.web;
 
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ResourceBridge;
@@ -37,9 +38,6 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
 
-  /** . */
-  private Response.Content response;
-
   WebResourceBridge(
       Application application,
       Handler handler,
@@ -53,39 +51,38 @@ public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
     return http.getClientContext();
   }
 
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    super.setResponse(response);
-    if (response instanceof Response.Content) {
-      this.response = (Response.Content)response;
-    } else {
-      throw new IllegalArgumentException();
-    }
-  }
+  boolean send() throws IOException {
+    if (super.send()) {
+      return true;
+    } else if (response instanceof Response.Content<?>) {
 
-  void send() throws IOException {
-    if (response != null) {
+      Response.Content<?> content = (Response.Content<?>)response;
+
       //
-      int status = response.getStatus();
+      int status = content.getStatus();
       if (status != 200) {
         http.setStatus(status);
       }
 
       // Set mime type
-      String mimeType = response.getMimeType();
+      String mimeType = content.getMimeType();
       if (mimeType != null) {
         http.setContentType(mimeType);
       }
 
       // Set headers
-      for (Map.Entry<String, String[]> entry : responseHeaders.entrySet()) {
-        http.setHeader(entry.getKey(), entry.getValue()[0]);
+      Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
+      if (headers != null) {
+        for (Map.Entry<String, String[]> entry : headers) {
+          http.setHeader(entry.getKey(), entry.getValue()[0]);
+        }
       }
 
       // Send response
-      if (response.getKind() == Stream.Char.class) {
+      if (content.getKind() == Stream.Char.class) {
         Writer writer = http.getWriter();
         try {
-          response.send(new AppendableStream(writer));
+          ((Response.Content<Stream.Char>)content).send(new AppendableStream(writer));
         }
         finally {
           Tools.safeClose(writer);
@@ -94,12 +91,15 @@ public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
       else {
         OutputStream out = http.getOutputStream();
         try {
-          response.send(new BinaryOutputStream(out));
+          ((Response.Content<Stream.Binary>)content).send(new BinaryOutputStream(out));
         }
         finally {
           Tools.safeClose(out);
         }
       }
+      return true;
+    } else {
+      return false;
     }
   }
 }

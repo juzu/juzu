@@ -24,7 +24,6 @@ import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -120,7 +119,7 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
     return lifeCycle.getApplication();
   }
 
-  void invoke(RequestBridge bridge) throws ApplicationException {
+  void invoke(RequestBridge bridge) {
     lifeCycle.getApplication().invoke(bridge);
   }
 

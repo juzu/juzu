@@ -65,10 +65,6 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
     this.servlet = servlet;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
   public void setResponse(Response response) throws IllegalStateException, IOException {
     if (response instanceof Response.Content) {
       if (response instanceof Response.Render) {

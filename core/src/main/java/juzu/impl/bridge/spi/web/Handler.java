@@ -25,6 +25,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.impl.common.URIWriter;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.request.Method;
 import juzu.impl.router.PathParam;
@@ -162,8 +163,6 @@ public class Handler implements Closeable {
     // No method means we either send a server resource
     // or we look for the handler method
     if (requestMethod == null) {
-
-
       // If we have an handler we locate the index method
       requestMethod = this.bridge.application.getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
     }
@@ -192,12 +191,13 @@ public class Handler implements Closeable {
 
       //
       WebRequestBridge requestBridge;
+      Application application = this.bridge.application.getApplication();
       if (requestMethod.getPhase() == Phase.ACTION) {
-        requestBridge = new WebActionBridge(this.bridge.application.getApplication(), this, bridge, requestMethod, requestParameters);
+        requestBridge = new WebActionBridge(application, this, bridge, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.VIEW) {
-        requestBridge = new WebRenderBridge(this.bridge.application.getApplication(), this, bridge, requestMethod, requestParameters);
+        requestBridge = new WebRenderBridge(application, this, bridge, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.RESOURCE) {
-        requestBridge = new WebResourceBridge(this.bridge.application.getApplication(), this, bridge, requestMethod, requestParameters);
+        requestBridge = new WebResourceBridge(application, this, bridge, requestMethod, requestParameters);
       } else {
         throw new Exception("Cannot decode phase");
       }
@@ -213,14 +213,18 @@ public class Handler implements Closeable {
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
             Method<?> desc = this.bridge.application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
-            requestBridge = new WebRenderBridge(this.bridge.application.getApplication(), this, bridge, desc, update.getParameters());
+            requestBridge = new WebRenderBridge(application, this, bridge, desc, update.getParameters());
             this.bridge.invoke(requestBridge);
           }
         }
       }
 
       //
-      requestBridge.send();
+      if (requestBridge.send()) {
+        // ok
+      } else {
+        throw new UnsupportedOperationException("Not yet handled by " + requestBridge.getClass().getSimpleName() + ": " + requestBridge.response);
+      }
     }
   }
 

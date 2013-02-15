@@ -19,8 +19,6 @@
 
 package juzu.impl.request;
 
-import juzu.impl.plugin.application.ApplicationException;
-
 /**
  * The request filters should be implemented by beans wanting to filter the request.
  *
@@ -32,7 +30,6 @@ public interface RequestFilter {
    * Invoke the request.
    *
    * @param request the request
-   * @throws ApplicationException any application exception
    */
-  void invoke(Request request) throws ApplicationException;
+  void invoke(Request request);
 }

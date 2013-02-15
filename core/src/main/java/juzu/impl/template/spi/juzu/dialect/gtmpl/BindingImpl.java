@@ -20,9 +20,9 @@
 package juzu.impl.template.spi.juzu.dialect.gtmpl;
 
 import groovy.lang.Binding;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.template.TemplateRenderContext;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -55,7 +55,7 @@ class BindingImpl extends Binding {
       try {
         value = renderContext.resolveBean(name);
       }
-      catch (ApplicationException e) {
+      catch (InvocationTargetException e) {
         Throwable cause = e.getCause();
         if (cause instanceof RuntimeException) {
           throw (RuntimeException)cause;

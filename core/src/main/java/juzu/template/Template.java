@@ -23,7 +23,6 @@ import juzu.PropertyMap;
 import juzu.Response;
 import juzu.UndeclaredIOException;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.request.Request;
 import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.common.Path;
@@ -38,6 +37,7 @@ import juzu.request.RequestContext;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -384,7 +384,7 @@ public abstract class Template {
           }
 
           @Override
-          public Object resolveBean(String expression) throws ApplicationException {
+          public Object resolveBean(String expression) throws InvocationTargetException {
             return application.resolveBean(expression);
           }
 

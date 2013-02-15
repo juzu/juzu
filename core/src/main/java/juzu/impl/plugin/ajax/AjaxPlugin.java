@@ -26,7 +26,6 @@ import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
@@ -100,7 +99,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
     this.table = table;
   }
 
-  public void invoke(final Request request) throws ApplicationException {
+  public void invoke(final Request request) {
     request.invoke();
 
     //

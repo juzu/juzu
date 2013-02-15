@@ -25,7 +25,6 @@ import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.application.ApplicationPlugin;
@@ -179,7 +178,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     return assets.toArray(new Asset[assets.size()]);
   }
 
-  public void invoke(Request request) throws ApplicationException {
+  public void invoke(Request request) {
     request.invoke();
 
     //

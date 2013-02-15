@@ -30,31 +30,16 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockRenderBridge extends MockMimeBridge implements RenderBridge {
 
-  /** . */
-  private String title;
-
   public MockRenderBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
 
   public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  @Override
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    if (response instanceof Response.Content) {
-      super.setResponse(response);
-      if (response instanceof Response.Content.Render) {
-        Response.Content.Render stream = (Response.Content.Render)response;
-        title = stream.getTitle();
-      }
+    if (response instanceof Response.Content.Render) {
+      Response.Content.Render stream = (Response.Content.Render)response;
+      return stream.getTitle();
     } else {
-      throw new IllegalArgumentException();
+      return null;
     }
   }
 }

@@ -34,9 +34,6 @@ import java.io.IOException;
 public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge {
 
   /** . */
-  private int status = 200;
-
-  /** . */
   private final PortletClientContext clientContext;
 
   public PortletResourceBridge(Application application, ResourceRequest request, ResourceResponse response, PortletConfig config, boolean prod) {
@@ -56,24 +53,14 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
   }
 
   @Override
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    super.setResponse(response);
+  protected void sendProperties() throws IOException {
     if (response instanceof Response.Content) {
       Response.Content resource = (Response.Content)response;
-      status = resource.getStatus();
+      int status = resource.getStatus();
+      if (status != 200) {
+        resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
+      }
       super.setResponse(response);
-    } else {
-      throw new IllegalArgumentException();
     }
-  }
-
-  @Override
-  public void send() throws IOException {
-    if (status != 200) {
-      this.resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
-    }
-
-    //
-    super.send();
   }
 }

@@ -23,7 +23,6 @@ import juzu.Response;
 import juzu.Scope;
 import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
@@ -180,7 +179,7 @@ public class Request implements ScopingContext {
   /** . */
   private int index = 0;
 
-  public void invoke() throws ApplicationException {
+  public void invoke() {
     boolean set = current.get() == null;
     try {
       if (set) {
@@ -234,7 +233,7 @@ public class Request implements ScopingContext {
     }
   }
 
-  private static <B, I> Object doInvoke(Request request, Object[] args, InjectionContext<B, I> manager) throws ApplicationException {
+  private static <B, I> Object doInvoke(Request request, Object[] args, InjectionContext<B, I> manager) {
     RequestContext context = request.getContext();
     Class<?> type = context.getMethod().getType();
 
@@ -249,7 +248,7 @@ public class Request implements ScopingContext {
           controller = lifeCycle.get();
         }
         catch (InvocationTargetException e) {
-          throw new ApplicationException(e.getCause());
+          return new Response.Error(e.getCause());
         }
 
         // Begin request callback
@@ -262,7 +261,7 @@ public class Request implements ScopingContext {
           return context.getMethod().getMethod().invoke(controller, args);
         }
         catch (InvocationTargetException e) {
-          throw new ApplicationException(e.getCause());
+          return new Response.Error(e.getCause());
         }
         catch (IllegalAccessException e) {
           throw new UnsupportedOperationException("hanle me gracefully", e);

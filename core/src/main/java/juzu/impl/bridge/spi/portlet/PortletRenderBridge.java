@@ -46,12 +46,6 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
   /** . */
   private final Bridge bridge;
 
-  /** . */
-  private String title;
-
-  /** . */
-  private LinkedList<Element> headers = new LinkedList<Element>();
-
   public PortletRenderBridge(Application application, Bridge bridge, RenderRequest request, RenderResponse response, PortletConfig config, boolean prod) {
     super(application, request, response, config, prod);
 
@@ -64,21 +58,21 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     return Phase.VIEW;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
   @Override
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    super.setResponse(response);
+  protected void sendProperties() throws IOException {
     if (response instanceof Response.Content) {
       Response.Content content = (Response.Content)response;
+
+      // Http headers
+      super.sendProperties();
+
+      //
       PropertyMap properties = content.getProperties();
 
       //
       String title = properties.getValue(PropertyType.TITLE);
       if (title != null) {
-        this.title = title;
+        resp.setTitle(title);
       }
 
       //
@@ -92,7 +86,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           Element elt = this.resp.createElement("meta");
           elt.setAttribute("name", entry.getKey());
           elt.setAttribute("content", entry.getValue());
-          headers.add(elt);
+          resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
         }
       }
 
@@ -107,7 +101,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           elt.setAttribute("rel", "stylesheet");
           elt.setAttribute("type", "text/" + ext);
           elt.setAttribute("href", getAssetURL(stylesheet));
-          headers.add(elt);
+          resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
         }
       }
 
@@ -121,16 +115,12 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           elt.setAttribute("src", url);
           // This comment is needed for liferay to make the script pass the minifier
           // it forces to have a <script></script> tag
-          Comment comment = elt.getOwnerDocument().createComment(request.getApplication().getName() + " script ");
+          String data = bridge.application.getName() + " script ";
+          Comment comment = elt.getOwnerDocument().createComment(data);
           elt.appendChild(comment);
-          headers.add(elt);
+          resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
         }
       }
-
-      //
-      super.setResponse(response);
-    } else {
-      throw new IllegalArgumentException();
     }
   }
 
@@ -183,22 +173,5 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     if (context != null) {
       context.close();
     }
-  }
-
-  @Override
-  public void send() throws IOException {
-
-    // Set title
-    if (title != null) {
-      resp.setTitle(title);
-    }
-
-    // Add elements
-    for (Element elt : headers) {
-      resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-    }
-
-    //
-    super.send();
   }
 }

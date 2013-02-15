@@ -29,6 +29,7 @@ import juzu.impl.request.Method;
 import juzu.impl.request.Parameter;
 
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
 import javax.portlet.PortletRequest;
@@ -70,10 +71,8 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
     }
   }
 
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    super.setResponse(response);
-
-    //
+  @Override
+  public void send() throws IOException, PortletException {
     if (response instanceof Response.View) {
       Response.View update = (Response.View)response;
 
@@ -109,9 +108,9 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
           throw new IllegalArgumentException(e);
         }
       }
-    }
-    else {
-      throw new IllegalArgumentException();
+    } else if (response instanceof Response.Error) {
+      Response.Error error = (Response.Error)response;
+      throw new PortletException(error.getCause());
     }
   }
 }

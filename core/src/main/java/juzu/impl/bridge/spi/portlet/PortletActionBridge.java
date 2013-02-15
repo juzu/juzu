@@ -28,6 +28,7 @@ import juzu.request.Phase;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -52,12 +53,13 @@ public class PortletActionBridge extends PortletInteractionBridge<ActionRequest,
     return Phase.ACTION;
   }
 
-  public void setResponse(Response response) throws IllegalStateException, IOException {
+  @Override
+  public void send() throws IOException, PortletException {
     if (response instanceof Response.Redirect) {
       Response.Redirect redirect = (Response.Redirect)response;
       super.resp.sendRedirect(redirect.getLocation());
     } else {
-      super.setResponse(response);
+      super.send();
     }
   }
 }

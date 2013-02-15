@@ -20,11 +20,11 @@
 package juzu.impl.plugin.controller;
 
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockRequestBridge;
 import org.junit.Test;
 
 import javax.naming.AuthenticationException;
@@ -42,13 +42,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(AuthenticationException.class, e.getCause());
-    }
+    MockRenderBridge render = client.render();
+    render.assertFailure(AuthenticationException.class);
   }
 
   @Test
@@ -57,13 +52,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(ConcurrentModificationException.class, e.getCause());
-    }
+    MockRenderBridge render = client.render();
+    render.assertFailure(ConcurrentModificationException.class);
   }
 
   @Test
@@ -72,13 +62,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(UnknownError.class, e.getCause());
-    }
+    MockRenderBridge render = client.render();
+    render.assertFailure(UnknownError.class);
   }
 
   @Test
@@ -87,13 +72,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(AuthenticationException.class, e.getCause());
-    }
+    MockRenderBridge render = client.render();
+    render.assertFailure(AuthenticationException.class);
   }
 
   @Test
@@ -102,13 +82,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(ConcurrentModificationException.class, e.getCause());
-    }
+    MockRenderBridge render = client.render();
+    render.assertFailure(ConcurrentModificationException.class);
   }
 
   @Test
@@ -117,13 +92,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    try {
-      client.render();
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(UnknownError.class, e.getCause());
-    }
+    MockRenderBridge render = client.render();
+    render.assertFailure(UnknownError.class);
   }
 
   @Test
@@ -133,13 +103,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
-    try {
-      client.invoke(render.assertStringResult());
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(AuthenticationException.class, e.getCause());
-    }
+    MockRequestBridge request = client.invoke(render.assertStringResult());
+    request.assertFailure(AuthenticationException.class);
   }
 
   @Test
@@ -149,13 +114,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
-    try {
-      client.invoke(render.assertStringResult());
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(ConcurrentModificationException.class, e.getCause());
-    }
+    MockRequestBridge request = client.invoke(render.assertStringResult());
+    request.assertFailure(ConcurrentModificationException.class);
   }
 
   @Test
@@ -165,13 +125,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
-    try {
-      client.invoke(render.assertStringResult());
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(UnknownError.class, e.getCause());
-    }
+    MockRequestBridge request = client.invoke(render.assertStringResult());
+    request.assertFailure(UnknownError.class);
   }
 
   @Test
@@ -181,13 +136,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
-    try {
-      client.invoke(render.assertStringResult());
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(AuthenticationException.class, e.getCause());
-    }
+    MockRequestBridge request = client.invoke(render.assertStringResult());
+    request.assertFailure(AuthenticationException.class);
   }
 
   @Test
@@ -197,13 +147,8 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
-    try {
-      client.invoke(render.assertStringResult());
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(ConcurrentModificationException.class, e.getCause());
-    }
+    MockRequestBridge request = client.invoke(render.assertStringResult());
+    request.assertFailure(ConcurrentModificationException.class);
   }
 
   @Test
@@ -213,12 +158,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockRenderBridge render = client.render();
-    try {
-      client.invoke(render.assertStringResult());
-      fail();
-    }
-    catch (ApplicationException e) {
-      assertInstanceOf(UnknownError.class, e.getCause());
-    }
+    MockRequestBridge request = client.invoke(render.assertStringResult());
+    request.assertFailure(UnknownError.class);
   }
 }

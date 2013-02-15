@@ -19,7 +19,6 @@
 
 package juzu.test.protocol.mock;
 
-import juzu.impl.plugin.application.ApplicationException;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Method;
@@ -129,7 +128,7 @@ public class MockClient implements UserContext {
     return locales;
   }
 
-  public MockRenderBridge render(String methodId) throws ApplicationException {
+  public MockRenderBridge render(String methodId) {
     MethodHandle handle = null;
     Method method = null;
     if (methodId != null) {
@@ -145,11 +144,11 @@ public class MockClient implements UserContext {
     return render;
   }
 
-  public MockRenderBridge render() throws ApplicationException {
+  public MockRenderBridge render() {
     return render(null);
   }
 
-  public MockRequestBridge invoke(String url) throws ApplicationException {
+  public MockRequestBridge invoke(String url) {
     MockRequestBridge request = create(url);
     invoke(request);
     return request;
@@ -166,7 +165,7 @@ public class MockClient implements UserContext {
     flash.set(key, value);
   }
 
-  private void invoke(MockRequestBridge request) throws ApplicationException {
+  private void invoke(MockRequestBridge request) {
     try {
       application.invoke(request);
     }
