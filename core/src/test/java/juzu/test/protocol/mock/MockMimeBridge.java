@@ -40,6 +40,12 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
     super(application, client, target, parameters);
   }
 
+  public String assertStringResult(String expected) {
+    String actual = assertStringResult();
+    Assert.assertEquals(expected, actual);
+    return actual;
+  }
+
   public String assertStringResult() {
     Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
     AbstractTestCase.assertEquals(Stream.Char.class, content.getKind());

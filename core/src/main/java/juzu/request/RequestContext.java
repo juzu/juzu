@@ -20,6 +20,7 @@
 package juzu.request;
 
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;
@@ -133,6 +134,14 @@ public abstract class RequestContext {
 
   public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
     return (Phase.Resource.Dispatch)createDispatch(method, args, new ParameterHashMap());
+  }
+
+  public Response getResponse() {
+    return request.getResponse();
+  }
+
+  public void setResponse(Response response) {
+    request.setResponse(response);
   }
 
   private Dispatch createDispatch(Method<?> method, Object[] args, ParameterMap parameters) {

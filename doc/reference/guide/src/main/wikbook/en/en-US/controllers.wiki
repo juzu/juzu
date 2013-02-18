@@ -329,9 +329,44 @@ Let's have a look at the complete life cycle of a controller object during a Juz
 or the constructor annotated with ##@Inject##
 11. It injects the controller declared dependencies by the ##@Inject## annotation
 11. It invokes any method annotated with ##@PostConstruct##
-1. Juzu obtains a valid controller instance and simply invokes the controller method
+1. Juzu obtains a valid controller instance and [[dispatches>>#controller_dispatch]] that method on the controller
 1. After the invocation, Juzu releases the controller instance and delegates it to the IOC container again
 11. It invokes any method annotated with ##@PreDestroy##
 11. It makes the instance available to the garbage collector
 1. Juzu ends the request and use the ##Response## objet returned by the controller method
+
+== Controller dispatch {{anchor id=controller_dispatch /}} ==
+
+The bare minimum Juzu will do when dispatching to a controller method is to invoke this method with the proper
+arguments and use the optionally returned object as a response for the request.
+
+When the controller wants to deal with the dispatch in a generic manner (i.e detyped), it can implement the
+##juzu.request.RequestLifeCycle## interface that allows to:
+
+* Be aware of the request life cycle around (i.e before and after) the controller method dispatch
+* Control the response for the current request
+
+{{example title='The RequestLifeCycle interface'}}
+{{java}}
+public interface RequestLifeCycle {
+
+  void beginRequest(RequestContext context);
+
+  void endRequest(RequestContext context);
+
+}
+{{/java}}
+{{/example}}
+
+* The ##beginRequest## method is invoked before the controller method invocation and the ##endRequest## is invoked
+after the controller method invocation.
+* The ##RequestContext## object provides a read/write access to a ##juzu.Response## object that is set with the
+ response returned by the controller method invocation. The controller method can declare no return type and instead
+ set the response directly with the ##RequestContext#setResponse(juzu.Response)## method.
+* When the controller method invocation throws an exception, the ##endRequest## method will be invoked with a
+ ##juzu.Response.Error## response set on the ##RequestContext##.
+* The ##beginRequest## invocation can optionally set of response on the ##RequestContext##, when it does the dispatch
+ will stop here and the provided response will be the request response.
+* The ##endRequest## invocation can optionally set a response on the ##RequestContext##, when it does this overrides
+the previous response provided during the dispatch to the controller method.
 

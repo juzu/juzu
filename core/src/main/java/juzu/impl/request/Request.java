@@ -210,17 +210,7 @@ public class Request implements ScopingContext {
         }
 
         // Invoke
-        Object ret = doInvoke(this, args, application.getInjectionContext());
-
-        //
-        if (ret instanceof Response) {
-          // We should check that it matches....
-          // btw we should try to enforce matching during compilation phase
-          // @Action -> Response.Action
-          // @View -> Response.Mime
-          // as we can do it
-          response = (Response)ret;
-        }
+        doInvoke(this, args, application.getInjectionContext());
       }
       else {
         throw new AssertionError();
@@ -233,7 +223,7 @@ public class Request implements ScopingContext {
     }
   }
 
-  private static <B, I> Object doInvoke(Request request, Object[] args, InjectionContext<B, I> manager) {
+  private static <B, I> void doInvoke(Request request, Object[] args, InjectionContext<B, I> manager) {
     RequestContext context = request.getContext();
     Class<?> type = context.getMethod().getType();
 
@@ -248,31 +238,52 @@ public class Request implements ScopingContext {
           controller = lifeCycle.get();
         }
         catch (InvocationTargetException e) {
-          return new Response.Error(e.getCause());
+          request.response = new Response.Error(e.getCause());
+          controller = null;
         }
 
-        // Begin request callback
-        if (controller instanceof juzu.request.RequestLifeCycle) {
-          ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
-        }
+        //
+        if (controller != null) {
 
-        // Invoke method on controller
-        try {
-          return context.getMethod().getMethod().invoke(controller, args);
-        }
-        catch (InvocationTargetException e) {
-          return new Response.Error(e.getCause());
-        }
-        catch (IllegalAccessException e) {
-          throw new UnsupportedOperationException("hanle me gracefully", e);
-        }
-        finally {
+          // Begin request callback
           if (controller instanceof juzu.request.RequestLifeCycle) {
             try {
-              ((juzu.request.RequestLifeCycle)controller).endRequest(context);
+              ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
             }
             catch (Exception e) {
-              // Log me
+              request.response = new Response.Error(e);
+            }
+          }
+
+          // If we have no response yet
+          if (request.getResponse() == null) {
+            // We invoke method on controller
+            try {
+              Object ret = context.getMethod().getMethod().invoke(controller, args);
+              if (ret instanceof Response) {
+                // We should check that it matches....
+                // btw we should try to enforce matching during compilation phase
+                // @Action -> Response.Action
+                // @View -> Response.Mime
+                // as we can do it
+                request.response = (Response)ret;
+              }
+            }
+            catch (InvocationTargetException e) {
+              request.response = new Response.Error(e.getCause());
+            }
+            catch (IllegalAccessException e) {
+              throw new UnsupportedOperationException("hanle me gracefully", e);
+            }
+
+            // End request callback
+            if (controller instanceof juzu.request.RequestLifeCycle) {
+              try {
+                ((juzu.request.RequestLifeCycle)controller).endRequest(context);
+              }
+              catch (Exception e) {
+                request.response = new Response.Error(e);
+              }
             }
           }
         }
@@ -280,9 +291,6 @@ public class Request implements ScopingContext {
       finally {
         lifeCycle.close();
       }
-    }
-    else {
-      return null;
     }
   }
 }
