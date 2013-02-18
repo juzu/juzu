@@ -27,22 +27,22 @@ import juzu.test.protocol.mock.MockClient;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LifeCycleTestCase extends AbstractInjectTestCase {
+public class PreDestroyTestCase extends AbstractInjectTestCase {
 
-  public LifeCycleTestCase(InjectorProvider di) {
+  public PreDestroyTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testRenderPhase() throws Exception {
     if (getDI() == InjectorProvider.CDI_WELD) {
-      MockApplication<?> app = application("plugin.controller.lifecycle").init();
+      MockApplication<?> app = application("plugin.controller.predestroy").init();
 
       //
       MockClient client = app.client();
       client.render();
       Integer count = Registry.get("count");
-      assertEquals((Integer)2, count);
+      assertEquals((Integer)1, count);
     }
   }
 }

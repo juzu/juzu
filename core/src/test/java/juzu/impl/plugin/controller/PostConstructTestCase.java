@@ -17,29 +17,32 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.controller.lifecycle;
+package juzu.impl.plugin.controller;
 
-import juzu.View;
+import juzu.impl.inject.spi.InjectorProvider;
+import juzu.test.AbstractInjectTestCase;
 import juzu.test.Registry;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import juzu.test.protocol.mock.MockApplication;
+import juzu.test.protocol.mock.MockClient;
+import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+public class PostConstructTestCase extends AbstractInjectTestCase {
 
-  @View
-  public void index() {
-    Registry.compareAndSet("count", 0, 1);
+  public PostConstructTestCase(InjectorProvider di) {
+    super(di);
   }
 
-  @PostConstruct
-  public void after() {
-    Registry.compareAndSet("count", null, 0);
-  }
+  @Test
+  public void testRenderPhase() throws Exception {
+    if (getDI() == InjectorProvider.CDI_WELD) {
+      MockApplication<?> app = application("plugin.controller.postconstruct").init();
 
-  @PreDestroy
-  public void before() {
-    Registry.compareAndSet("count", 1, 2);
+      //
+      MockClient client = app.client();
+      client.render();
+      Integer count = Registry.get("count");
+      assertEquals((Integer)1, count);
+    }
   }
 }
