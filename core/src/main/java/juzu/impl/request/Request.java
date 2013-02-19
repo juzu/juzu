@@ -238,7 +238,7 @@ public class Request implements ScopingContext {
           controller = lifeCycle.get();
         }
         catch (InvocationTargetException e) {
-          request.response = new Response.Error(e.getCause());
+          request.response = Response.error(e.getCause());
           controller = null;
         }
 
@@ -270,7 +270,7 @@ public class Request implements ScopingContext {
               }
             }
             catch (InvocationTargetException e) {
-              request.response = new Response.Error(e.getCause());
+              request.response = Response.error(e.getCause());
             }
             catch (IllegalAccessException e) {
               throw new UnsupportedOperationException("hanle me gracefully", e);
@@ -282,7 +282,7 @@ public class Request implements ScopingContext {
                 ((juzu.request.RequestLifeCycle)controller).endRequest(context);
               }
               catch (Exception e) {
-                request.response = new Response.Error(e);
+                request.response = Response.error(e);
               }
             }
           }

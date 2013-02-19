@@ -517,6 +517,34 @@ public abstract class Response {
     }
   }
 
+  public static class Error extends Response {
+
+    /** . */
+    private final Throwable cause;
+
+    /** . */
+    private final String msg;
+
+    public Error(Throwable cause) {
+      this.cause = cause;
+      this.msg = cause.getMessage();
+    }
+
+    public Error(String message) {
+      this.cause = new Exception();
+      this.msg = message;
+    }
+
+    public Throwable getCause() {
+      return cause;
+    }
+
+    @Override
+    public String toString() {
+      return "Response.Error[" + (cause != null ? cause.getMessage() : "") + "]";
+    }
+  }
+
   public static Response.Redirect redirect(String location) {
     return new Response.Redirect(location);
   }
@@ -557,29 +585,11 @@ public abstract class Response {
     return new Content<Stream.Binary>(code, Stream.Binary.class, new Streamable.InputStream(content)).withMimeType(mimeType);
   }
 
-  public static class Error extends Response {
+  public static Error error(Throwable t) {
+    return new Error(t);
+  }
 
-    /** . */
-    private final Throwable cause;
-
-    public Error(Throwable cause) {
-      if (cause == null) {
-        cause = new Exception();
-      }
-      this.cause = cause;
-    }
-
-    public Error() {
-      this(null);
-    }
-
-    public Throwable getCause() {
-      return cause;
-    }
-
-    @Override
-    public String toString() {
-      return "Response.Error[" + (cause != null ? cause.getMessage() : "") + "]";
-    }
+  public static Error error(String msg) {
+    return new Error(msg);
   }
 }
