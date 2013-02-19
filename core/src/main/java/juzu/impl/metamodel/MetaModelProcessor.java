@@ -131,8 +131,10 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         log.log("Starting APT round #" + index);
 
         //
-        log.log("Activating model");
-        state.metaModel.postActivate(getContext());
+        if (index == 0) {
+          log.log("Activating model");
+          state.metaModel.postActivate(getContext());
+        }
 
         //
         LinkedHashMap<AnnotationKey, AnnotationState> updates = new LinkedHashMap<AnnotationKey, AnnotationState>();
