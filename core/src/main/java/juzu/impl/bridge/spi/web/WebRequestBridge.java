@@ -22,9 +22,11 @@ package juzu.impl.bridge.spi.web;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.asset.Asset;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MimeType;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
@@ -52,7 +54,7 @@ import java.util.Map;
 public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   /** . */
-  final Application application;
+  final Bridge bridge;
 
   /** . */
   final Handler handler;
@@ -79,7 +81,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   protected Response response;
 
   WebRequestBridge(
-      Application application,
+      Bridge bridge,
       Handler handler,
       WebBridge http,
       Method<?> target,
@@ -87,7 +89,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
     //
     this.arguments = target.getArguments(parameters);
-    this.application = application;
+    this.bridge = bridge;
     this.target = target;
     this.handler = handler;
     this.http = http;
@@ -210,12 +212,12 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) {
-    Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
+    Method method = bridge.getApplication().getDescriptor().getControllers().getMethodByHandle(target);
 
     //
     Route route = handler.getRoute(method.getHandle());
     if (route == null) {
-      if (application.getDescriptor().getControllers().getResolver().isIndex(method)) {
+      if (bridge.getApplication().getDescriptor().getControllers().getResolver().isIndex(method)) {
         route = handler.getRoot();
       }
     }
@@ -298,16 +300,32 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   public void close() {
   }
 
+  void invoke() throws Exception {
+    Application application = bridge.getApplication();
+    try {
+      application.invoke(this);
+    } finally {
+      Tools.safeClose(this);
+    }
+  }
+
   /**
    * Send the response to the client.
    */
   boolean send() throws IOException {
     if (response instanceof Response.Error) {
       Response.Error error = (Response.Error)response;
-      http.setStatus(500);
+      http.send(error, bridge.module.context.getRunMode().getPrettyFail());
       return true;
     } else {
       return false;
     }
+  }
+
+  private String getAssetURL(Asset.Value asset) throws IOException {
+    StringBuilder url = new StringBuilder();
+    String uri = asset.getURI();
+    http.renderAssetURL(asset.getLocation(), uri, url);
+    return url.toString();
   }
 }

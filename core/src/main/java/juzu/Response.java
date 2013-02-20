@@ -28,6 +28,9 @@ import juzu.io.Streamable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -520,23 +523,38 @@ public abstract class Response {
   public static class Error extends Response {
 
     /** . */
+    private final List<StackTraceElement> at;
+
+    /** . */
     private final Throwable cause;
 
     /** . */
     private final String msg;
 
     public Error(Throwable cause) {
-      this.cause = cause;
-      this.msg = cause.getMessage();
+      this(null, cause);
     }
 
     public Error(String message) {
-      this.cause = new Exception();
+      this(message, null);
+    }
+
+    private Error(String message, Throwable cause) {
+      this.at = Collections.unmodifiableList(Arrays.asList(new Exception().getStackTrace()));
+      this.cause = cause;
       this.msg = message;
+    }
+
+    public List<StackTraceElement> getAt() {
+      return at;
     }
 
     public Throwable getCause() {
       return cause;
+    }
+
+    public String getMessage() {
+      return msg;
     }
 
     @Override

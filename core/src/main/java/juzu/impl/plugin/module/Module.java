@@ -23,11 +23,17 @@ import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Module {
+
+  /** . */
+  final AtomicInteger leases;
+
+  /** . */
+  public final ModuleContext context;
 
   /** . */
   private final HashMap<String, ModulePlugin> plugins;
@@ -35,7 +41,7 @@ public class Module {
   /** . */
   private final HashMap<String, Descriptor> descriptors;
 
-  public Module(ClassLoader loader, JSON config) throws Exception {
+  public Module(ModuleContext context) throws Exception {
 
     //
     HashMap<String, ModulePlugin> plugins = new HashMap<String, ModulePlugin>();
@@ -46,8 +52,8 @@ public class Module {
     // Init plugins
     HashMap<String, Descriptor> descriptors = new HashMap<String, Descriptor>();
     for (ModulePlugin plugin : plugins.values()) {
-      JSON pluginConfig = config.getJSON(plugin.getName());
-      Descriptor desc = plugin.init(loader, pluginConfig);
+      JSON pluginConfig = context.getConfig().getJSON(plugin.getName());
+      Descriptor desc = plugin.init(context.getClassLoader(), pluginConfig);
       if (desc != null) {
         descriptors.put(plugin.getName(), desc);
       }
@@ -56,6 +62,8 @@ public class Module {
     //
     this.plugins = plugins;
     this.descriptors = descriptors;
+    this.context = context;
+    this.leases = new AtomicInteger();
   }
 
   public ModulePlugin getPlugin(String name) {
@@ -71,7 +79,17 @@ public class Module {
     return null;
   }
 
-  public Map<String, Descriptor> getDescriptors() {
-    return descriptors;
+  public synchronized void lease() {
+    leases.incrementAndGet();
+  }
+
+
+  /**
+   * Return true if the module has no references pointing to it.
+   *
+   * @return true when the module is not referenced anymore
+   */
+  public synchronized boolean release() {
+    return leases.decrementAndGet() == 0;
   }
 }

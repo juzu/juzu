@@ -8,10 +8,6 @@
      <portlet-name>weather1</portlet-name>
      <display-name xml:lang="EN">Juzu Kickstart</display-name>
      <portlet-class>examples.tutorial.weather1.Weather1Portlet</portlet-class>
-     <init-param>
-       <name>juzu.run_mode</name>
-       <value>prod</value>
-     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
@@ -24,10 +20,6 @@
      <portlet-name>weather2</portlet-name>
      <display-name xml:lang="EN">Juzu Template Overview</display-name>
      <portlet-class>examples.tutorial.weather2.Weather2Portlet</portlet-class>
-     <init-param>
-       <name>juzu.run_mode</name>
-       <value>prod</value>
-     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>
@@ -40,10 +32,6 @@
     <portlet-name>weather3</portlet-name>
     <display-name xml:lang="EN">Juzu Dependency Injection</display-name>
     <portlet-class>examples.tutorial.weather3.Weather3Portlet</portlet-class>
-    <init-param>
-      <name>juzu.run_mode</name>
-      <value>prod</value>
-    </init-param>
     <init-param>
       <name>juzu.inject</name>
       <value>spring</value>
@@ -63,10 +51,6 @@
     <portlet-name>weather4</portlet-name>
     <display-name xml:lang="EN">Juzu Views</display-name>
     <portlet-class>examples.tutorial.weather4.Weather4Portlet</portlet-class>
-    <init-param>
-      <name>juzu.run_mode</name>
-      <value>prod</value>
-    </init-param>
     <supports>
       <mime-type>text/html</mime-type>
     </supports>
@@ -79,10 +63,6 @@
     <portlet-name>weather5</portlet-name>
     <display-name xml:lang="EN">Juzu Actions</display-name>
     <portlet-class>examples.tutorial.weather5.Weather5Portlet</portlet-class>
-    <init-param>
-      <name>juzu.run_mode</name>
-      <value>prod</value>
-    </init-param>
     <supports>
       <mime-type>text/html</mime-type>
     </supports>
@@ -95,10 +75,6 @@
     <portlet-name>weather6</portlet-name>
     <display-name xml:lang="EN">Juzu Type Safe Templating</display-name>
     <portlet-class>examples.tutorial.weather6.Weather6Portlet</portlet-class>
-    <init-param>
-      <name>juzu.run_mode</name>
-      <value>prod</value>
-    </init-param>
     <supports>
       <mime-type>text/html</mime-type>
     </supports>
@@ -111,10 +87,6 @@
     <portlet-name>weather7</portlet-name>
     <display-name xml:lang="EN">Juzu Styled</display-name>
     <portlet-class>examples.tutorial.weather7.Weather7Portlet</portlet-class>
-    <init-param>
-      <name>juzu.run_mode</name>
-      <value>prod</value>
-    </init-param>
     <supports>
       <mime-type>text/html</mime-type>
     </supports>
@@ -127,10 +99,6 @@
     <portlet-name>weather8</portlet-name>
     <display-name xml:lang="EN">Juzu Ajaxified</display-name>
     <portlet-class>examples.tutorial.weather8.Weather8Portlet</portlet-class>
-    <init-param>
-      <name>juzu.run_mode</name>
-      <value>prod</value>
-    </init-param>
     <supports>
       <mime-type>text/html</mime-type>
     </supports>

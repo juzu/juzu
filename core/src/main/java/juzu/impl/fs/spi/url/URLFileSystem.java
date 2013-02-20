@@ -100,13 +100,23 @@ public class URLFileSystem extends ReadFileSystem<Node> {
           urls.remove(url);
         }
       }
+    } else {
+
     }
 
     // Add manually this one (fucked up jar: no META-INF/MANIFEST.MF)
-    if (Inject.class.getClassLoader() == from) {
-      URL url = from.getResource(Inject.class.getName().replace('.', '/') + ".class");
-      if (url != null) {
-        urls.add(url);
+    ClassLoader injectCL = Inject.class.getClassLoader();
+    URL injectURL = from.getResource(Inject.class.getName().replace('.', '/') + ".class");
+    if (injectURL != null) {
+      if (to != null) {
+        for (ClassLoader current = from;current != to;current = current.getParent()) {
+          if (current == injectCL) {
+            urls.add(injectURL);
+            break;
+          }
+        }
+      } else {
+        urls.add(injectURL);
       }
     }
 

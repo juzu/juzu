@@ -207,3 +207,35 @@ This configuration exposes the ##javax.annotation.processing## package to the cl
 == Liferay ==
 
 Liferay has been tested extensively with the Tomcat version, no specific deployment instruction is required.
+
+= Run =
+
+== Run modes ==
+
+Juzu defines three modes for running an application, called //run modes//:
+
+* Production (//prod//): error reporting is minimal
+* Development (//dev//): provides verbose error reporting
+* Live (//live//): allow to develop the application live with verbose error reporting
+
+== How to choose the right run mode ==
+
+* When you are running an application use the //prod// run mode
+* When you are developing an application with a build system use the //dev// run mode
+* When you are live developing an application use the //live// run mode
+
+== Configuring the run mode ==
+
+Run mode is configured via servlet context init parameters, by default the //prod// mode is enabled:
+
+* //juzu.run_mode// : possible values //prod//, //dev// or //live//
+* //juzu.src_path// : the source path of the source to compile for the live mode
+
+{{example title="Configuring the dev mode in web.xml"}}
+{{xml}}
+<context-param>
+  <param-name>juzu.run_mode</param-name>
+  <param-value>dev</param-value>
+</context-param>
+{{/xml}}
+{{/example}}

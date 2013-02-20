@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -47,7 +46,7 @@ public class Formatting {
    */
   public static void renderStyleSheet(Writer writer) throws IOException {
     // Get CSS
-    URL cssURL = JuzuPortlet.class.getResource("juzu.css");
+    URL cssURL = Formatting.class.getResource("juzu.css");
     String css = Tools.read(cssURL);
     css = css.replace("\"", "\\\"");
     css = css.replace("'", "\\'");
@@ -76,12 +75,12 @@ public class Formatting {
    * @param t the throwable
    * @throws IOException any io exception
    */
-  public static void renderThrowable(Writer writer, Throwable t) throws IOException {
+  public static void renderThrowable(Class<?> stop, Writer writer, Throwable t) throws IOException {
     // Trim the stack trace to remove stuff we don't want to see
     int size = 0;
     StackTraceElement[] trace = t.getStackTrace();
     for (StackTraceElement element : trace) {
-      if (element.getClassName().equals(JuzuPortlet.class.getName())) {
+      if (stop != null && element.getClassName().equals(stop.getName())) {
         break;
       }
       else {
@@ -98,23 +97,23 @@ public class Formatting {
       @Override
       public void println(Object x) {
         if (open.get()) {
-          super.append("</ul></pre>");
+          super.append("</ul></div>");
         }
-        super.append("<div class=\"juzu-message\">");
+        super.append("<p>");
         super.append(String.valueOf(x));
-        super.append("</div>");
+        super.append("</p>");
         open.set(false);
       }
 
       @Override
       public void println(String x) {
         if (!open.get()) {
-          super.append("<pre><ul>");
+          super.append("<div class=\"code\"><ul>");
           open.set(true);
         }
-        super.append("<li><span>");
+        super.append("<li><p>");
         super.append(x);
-        super.append("</span></li>");
+        super.append("</p></li>");
       }
 
       @Override
@@ -124,20 +123,18 @@ public class Formatting {
     };
 
     //
-    writer.append("<div class=\"juzu\">");
-    writer.append("<div class=\"juzu-box\">");
+    writer.append("<section>");
 
     // We hack a bit with our formatter
     t.printStackTrace(formatter);
 
     //
     if (open.get()) {
-      writer.append("</ul></pre>");
+      writer.append("</ul></div>");
     }
 
     //
-    writer.append("</div>");
-    writer.append("</div>");
+    writer.append("</section>");
   }
 
   /**
@@ -151,10 +148,9 @@ public class Formatting {
     renderStyleSheet(writer);
 
     //
-    writer.append("<div class=\"juzu\">");
     for (CompilationError error : errors) {
-      writer.append("<div class=\"juzu-box\">");
-      writer.append("<div class=\"juzu-message\">").append(error.getMessage()).append("</div>");
+      writer.append("<section>");
+      writer.append("<p>").append(error.getMessage()).append("</p>");
 
       // Display the source code
       File source = error.getSourceFile();
@@ -164,22 +160,21 @@ public class Formatting {
         int to = line + 3;
         BufferedReader reader = new BufferedReader(new FileReader(source));
         int count = 1;
-        writer.append("<pre><ol start=\"").append(String.valueOf(from)).append("\">");
+        writer.append("<div class=\"code\"><ol start=\"").append(String.valueOf(from)).append("\">");
         for (String s = reader.readLine();s != null;s = reader.readLine()) {
           if (count >= from && count < to) {
             if (count == line) {
-              writer.append("<li><span class=\"error\">").append(s).append("</span></li>");
+              writer.append("<li><p class=\"error\">").append(s).append("</p></li>");
             }
             else {
-              writer.append("<li><span>").append(s).append("</span></li>");
+              writer.append("<li><p>").append(s).append("</p></li>");
             }
           }
           count++;
         }
-        writer.append("</ol></pre>");
+        writer.append("</ol></div>");
       }
-      writer.append("</div>");
+      writer.append("</section>");
     }
-    writer.append("</div>");
   }
 }

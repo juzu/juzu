@@ -23,6 +23,7 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import juzu.impl.common.Name;
+import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
@@ -89,34 +90,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     return compiler;
   }
 
-  private static WebArchive createServletDeployment(String urlPattern, boolean asDefault, boolean incremental, String... applicationNames) {
-
-    String path;
-    if ("/".equals(urlPattern)) {
-      path = "";
-    } else if ("/*".equals(urlPattern)) {
-      throw failure("Not yet implemented");
-    } else if (urlPattern.startsWith("/") && urlPattern.endsWith("/*")) {
-      path = urlPattern.substring(1, urlPattern.length() - 1);
-    } else {
-      throw failure("Illegal url pattern " + urlPattern);
-    }
-
-    //
-    WebArchive war = createDeployment(asDefault, incremental, applicationNames);
-    AbstractWebTestCase.path = path;
-    AbstractWebTestCase.servlet = true;
-    return war;
-  }
-
-  private static WebArchive createPortletDeployment(boolean asDefault, boolean incremental, String... applicationNames) {
-    WebArchive war = createDeployment(asDefault, incremental, applicationNames);
-    AbstractWebTestCase.path = null;
-    AbstractWebTestCase.servlet = false;
-    return war;
-  }
-
-  private static WebArchive createDeployment(boolean asDefault, boolean incremental, String... applicationNames) {
+  private static WebArchive createDeployment(boolean asDefault, String... applicationNames) {
 
     //
     Name[] applicationQNs = new Name[applicationNames.length];
@@ -128,7 +102,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     }
 
     // Compile classes
-    CompilerAssert<File, File> compiler = compiler(incremental, packageQN);
+    CompilerAssert<File, File> compiler = compiler(false, packageQN);
     compiler.assertCompile();
 
     //
@@ -190,34 +164,46 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
-    return createServletDeployment(false, asDefault, applicationNames);
+    return createServletDeployment(RunMode.PROD, asDefault, applicationNames);
   }
 
   public static WebArchive createServletDeployment(String urlPattern, boolean asDefault, String... applicationNames) {
-    return createServletDeployment(false, urlPattern, asDefault, applicationNames);
+    return createServletDeployment(RunMode.PROD, urlPattern, asDefault, applicationNames);
   }
 
   public static WebArchive createServletDeployment(
-      boolean incremental,
+      RunMode runMode,
       boolean asDefault,
       String... applicationNames) {
-    return createServletDeployment(incremental, "/", asDefault, applicationNames);
+    return createServletDeployment(runMode, "/", asDefault, applicationNames);
   }
   public static WebArchive createServletDeployment(
-      boolean incremental,
+      RunMode runMode,
       String urlPattern,
       boolean asDefault,
       String... applicationNames) {
 
     // Create war
-    WebArchive war = createServletDeployment(urlPattern, asDefault, false, applicationNames);
+    String path;
+    if ("/".equals(urlPattern)) {
+      path = "";
+    } else if ("/*".equals(urlPattern)) {
+      throw failure("Not yet implemented");
+    } else if (urlPattern.startsWith("/") && urlPattern.endsWith("/*")) {
+      path = urlPattern.substring(1, urlPattern.length() - 1);
+    } else {
+      throw failure("Illegal url pattern " + urlPattern);
+    }
 
     //
-    String runModeValue;
+    WebArchive war = createDeployment(asDefault, applicationNames);
+    AbstractWebTestCase.path = path;
+    AbstractWebTestCase.servlet = true;
+
+    //
     String sourcePath;
     try {
-      runModeValue = incremental ? "dev" : "prod";
-      sourcePath = incremental ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
+      sourcePath = runMode.isDynamic() ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
     }
     catch (IOException e) {
       throw failure("Could not read obtain source path", e);
@@ -229,11 +215,11 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
       servlet = Tools.read(JuzuServlet.class.getResourceAsStream("web.xml"));
     }
     catch (IOException e) {
-      throw failure("Could not read portlet xml deployment descriptor", e);
+      throw failure("Could not read web xml deployment descriptor", e);
     }
     servlet = String.format(
         servlet,
-        runModeValue,
+        runMode.getValue(),
         sourcePath,
         urlPattern);
 
@@ -245,26 +231,26 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public static WebArchive createPortletDeployment(String packageName) {
-    return createPortletDeployment(false, packageName);
+    return createPortletDeployment(RunMode.PROD, packageName);
   }
 
-  public static WebArchive createPortletDeployment(boolean incremental, String packageName) {
+  public static WebArchive createPortletDeployment(RunMode runMode, String packageName) {
 
     //
-    WebArchive war = createPortletDeployment(true, incremental, packageName);
+    WebArchive war = createDeployment(asDefault, packageName);
+    AbstractWebTestCase.path = null;
+    AbstractWebTestCase.servlet = false;
 
     //
-    String runModeValue;
     String sourcePath;
     try {
-      runModeValue = incremental ? "dev" : "prod";
-      sourcePath = incremental ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
+      sourcePath = runMode.isDynamic() ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
     }
     catch (IOException e) {
       throw failure("Could not read obtain source path", e);
     }
 
-    // Descriptor
+    // portlet.xml descriptor
     String portlet;
     try {
       portlet = Tools.read(JuzuPortlet.class.getResourceAsStream("portlet.xml"));
@@ -274,12 +260,23 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     }
     portlet = String.format(
         portlet,
-        "weld",
-        runModeValue,
+        "weld");
+
+    // web.xml descriptor
+    String web;
+    try {
+      web = Tools.read(JuzuPortlet.class.getResourceAsStream("web.xml"));
+    }
+    catch (IOException e) {
+      throw failure("Could not read portlet xml deployment descriptor", e);
+    }
+    web = String.format(
+        web,
+        runMode.getValue(),
         sourcePath);
 
     //
-    war.setWebXML(JuzuPortlet.class.getResource("web.xml"));
+    war.setWebXML(new StringAsset(web));
     war.addAsWebInfResource(new StringAsset(portlet), "portlet.xml");
 
     //
@@ -287,11 +284,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public static WebArchive createPortletDeployment(String packageName, URL portletXML) {
-    return createPortletDeployment(false, packageName, portletXML);
-  }
-
-  public static WebArchive createPortletDeployment(boolean incremental, String packageName, URL portletXML) {
-    WebArchive war = createDeployment(true, incremental, packageName);
+    WebArchive war = createDeployment(true, packageName);
     war.setWebXML(JuzuPortlet.class.getResource("web.xml"));
     war.addAsWebInfResource(new UrlAsset(portletXML), "portlet.xml");
     return war;

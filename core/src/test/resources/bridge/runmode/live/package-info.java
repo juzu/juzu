@@ -17,28 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.web;
+@Application package bridge.runmode.live;
 
-import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.request.Method;
-import juzu.request.ClientContext;
-
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
-
-  WebResourceBridge(
-      Bridge bridge,
-      Handler handler,
-      WebBridge webBridge,
-      Method<?> target,
-      Map<String, String[]> parameters) {
-    super(bridge, handler, webBridge, target, parameters);
-  }
-
-  public ClientContext getClientContext() {
-    return http.getClientContext();
-  }
-}
+import juzu.Application;

@@ -17,6 +17,30 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application package bridge.servlet.livemode;
+package bridge.runmode.live;
 
-import juzu.Application;
+import juzu.Response;
+import juzu.Route;
+import juzu.View;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  /** . */
+  private static int count = 0;
+
+  @View
+  @Route("/foo")
+  public Response.Render index() {
+    if (count == 0) {
+      count = 1;
+      String url = A_.index().toString();
+      return Response.ok("<a id='trigger' href='" + url + "'>click</div>");
+    } else if (count == 1) {
+      count = 2;
+      return Response.ok("ok");
+    } else {
+      throw new RuntimeException("throwed");
+    }
+  }
+}

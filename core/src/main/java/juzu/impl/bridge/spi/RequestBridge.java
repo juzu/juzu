@@ -32,11 +32,12 @@ import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 import juzu.request.WindowContext;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface RequestBridge {
+public interface RequestBridge extends Closeable {
 
   /**
    * Returns the request target.

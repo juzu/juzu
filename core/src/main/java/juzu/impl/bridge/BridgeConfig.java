@@ -31,12 +31,6 @@ import java.util.Set;
 public class BridgeConfig {
 
   /** . */
-  public static final int STATIC_MODE = 0;
-
-  /** . */
-  public static final int DYNAMIC_MODE = 1;
-
-  /** . */
   public static final String RUN_MODE = "juzu.run_mode";
 
   /** . */
@@ -52,35 +46,14 @@ public class BridgeConfig {
   public static final Set<String> NAMES = Collections.unmodifiableSet(Tools.set(RUN_MODE, INJECT, APP_NAME));
 
   /** . */
-  public final int runMode;
-
-  /** . */
   public final Name name;
 
   /** . */
   public final InjectorProvider injectImpl;
 
-  public BridgeConfig(int runMode, Name name, InjectorProvider injectImpl) {
-    this.runMode = runMode;
-    this.name = name;
-    this.injectImpl = injectImpl;
-  }
-
   public static Name getApplicationName(Map<String, String> config) {
     String applicationName = config.get("juzu.app_name");
     return applicationName != null ? Name.parse(applicationName) : null;
-  }
-
-  public static int getRunMode(Map<String, String> config) {
-    String runMode = config.get("juzu.run_mode");
-    runMode = runMode == null ? "prod" : runMode.trim().toLowerCase();
-    int mode;
-    if ("dev".equals(runMode)) {
-      mode = DYNAMIC_MODE;
-    } else {
-      mode = STATIC_MODE;
-    }
-    return mode;
   }
 
   public static InjectorProvider getInjectImplementation(Map<String, String> config) throws Exception {
@@ -105,11 +78,6 @@ public class BridgeConfig {
 
   public BridgeConfig(Map<String, String> config) throws Exception {
     this.name = getApplicationName(config);
-    this.runMode = getRunMode(config);
     this.injectImpl = getInjectImplementation(config);
-  }
-
-  public boolean isProd() {
-    return runMode == STATIC_MODE;
   }
 }

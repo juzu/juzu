@@ -8,10 +8,6 @@
      <portlet-name>BookingPortlet</portlet-name>
      <display-name xml:lang="EN">Juzu Booking Application</display-name>
      <portlet-class>org.sample.booking.BookingPortlet</portlet-class>
-     <init-param>
-       <name>juzu.run_mode</name>
-       <value>prod</value>
-     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>

@@ -1,0 +1,78 @@
+@import "variables.less";
+@import "mixins.less";
+
+.juzu {
+  font-family: @sansFontFamily;
+
+  * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 100%;
+    line-height: 1;
+  }
+
+  // The section element is used for displaying a vertical list of items
+  section {
+    margin: 4px;
+    border: 1px solid rgba(0,0,0,.2);
+    .border-radius(@baseBorderRadius);
+    .box-shadow(0 1px 2px rgba(0,0,0,.1))
+  }
+
+  // A paragraph of text
+  p {
+    margin: 12px;
+    line-height: @baseLineHeight;
+  }
+
+  // Use code class for showing code: a code block should not directly contain text but instead use
+  // one of those containers:
+  // p : for just code
+  // ol > li > p : for a numbered line of code
+  // ul > li > p : for an unnumbered line of code
+  .code {
+    margin: 0 0 18px;
+    font-size: @baseFontSize;
+    line-height: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: @monoFontFamily;
+    overflow: hidden;
+    padding: 9px;
+
+    ol {
+      list-style: decimal;
+    }
+    ul {
+      list-style: none;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    ol, ul {
+      margin: 0 0 0 40px;
+      line-height: 0;
+
+      li {
+        padding: 0 5px;
+        color: @grayLight;
+        line-height: @baseFontSize;
+
+        p {
+          margin: 0;
+          padding: 0;
+          color: @black;
+        }
+
+        p.error {
+          color: @errorText;
+        }
+      }
+    }
+  }
+}

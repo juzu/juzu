@@ -19,13 +19,18 @@
 
 package juzu.impl.bridge.spi.servlet;
 
+import juzu.Response;
+import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.spi.web.Handler;
+import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
+import juzu.impl.compiler.CompilationException;
+import juzu.impl.plugin.module.Module;
+import juzu.impl.plugin.module.ModuleContext;
 import juzu.impl.resource.ResourceResolver;
 
 import javax.servlet.RequestDispatcher;
@@ -36,6 +41,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -44,22 +51,44 @@ import java.util.Iterator;
 public class ServletBridge extends HttpServlet {
 
   /** . */
-  ServletModule module;
+  Module module;
 
   /** . */
   Logger log;
 
   /** . */
+  private String path;
+
+  /** . */
   private BridgeConfig config;
+
+  /** . */
+  private Bridge bridge;
 
   /** . */
   private Handler handler;
 
-  /** . */
-  private String path;
-
   @Override
   public void init() throws ServletException {
+
+    //
+    String path = null;
+    ServletRegistration reg = getServletContext().getServletRegistration(getServletName());
+    for (String mapping : reg.getMappings()) {
+      if ("/".equals(mapping)) {
+        path = "";
+        break;
+      } else if ("/*".equals(mapping)) {
+        throw new UnsupportedOperationException("Implement me");
+      } else if (mapping.endsWith("/*")) {
+        path = mapping.substring(0, mapping.length() - 2);
+      } else {
+        throw new UnsupportedOperationException("Should not be possible");
+      }
+    }
+    if (path == null) {
+      throw new ServletException("Juzu servlet should be mounted on an url pattern");
+    }
 
     //
     final ServletConfig servletConfig = getServletConfig();
@@ -115,11 +144,10 @@ public class ServletBridge extends HttpServlet {
     }
 
     //
-    this.module = null;
     this.log = log;
     this.config = config;
     this.handler = null;
-    this.path = null;
+    this.path = path;
   }
 
   static ServletException wrap(Throwable e) {
@@ -137,100 +165,69 @@ public class ServletBridge extends HttpServlet {
     return config.getInitParameter("juzu.app_name");
   }
 
-  private void refresh() throws ServletException {
+  private void refresh() throws Exception {
 
     //
     if (module == null) {
-      try {
-        module = ServletModule.leaseModule(getServletContext(), Thread.currentThread().getContextClassLoader());
+      module = (Module)getServletContext().getAttribute("juzu.module");
+      if (module == null) {
+        try {
+          ModuleContext moduleContext = new ServletModuleContext(getServletContext());
+          getServletContext().setAttribute("juzu.module", module = new Module(moduleContext));
+        }
+        catch (Exception e) {
+          throw wrap(e);
+        }
       }
-      catch (Exception e) {
-        throw wrap(e);
-      }
+      module.lease();
+    }
+
+    // Get asset server
+    AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
+    if (server == null) {
+      server = new AssetServer();
+      getServletContext().setAttribute("asset.server", server);
     }
 
     //
-    try {
-      boolean stale = module.lifeCycle.refresh();
-      if (stale) {
-        if (handler != null) {
-          Tools.safeClose(handler);
-          handler = null;
-        }
-      }
+    if (bridge == null) {
+      // Create and configure bridge
+      bridge = new Bridge(
+          log,
+          module,
+          this.config,
+          module.context.getResourcePath(),
+          server,
+          new ResourceResolver() {
+            public URL resolve(String uri) {
+              try {
+                return getServletConfig().getServletContext().getResource(uri);
+              }
+              catch (MalformedURLException e) {
+                return null;
+              }
+            }
+          });
     }
-    catch (Exception e) {
-      throw wrap(e);
+
+    //
+    boolean stale = bridge.refresh();
+    if (stale) {
+      if (handler != null) {
+        Tools.safeClose(handler);
+        handler = null;
+      }
     }
 
     //
     if (handler == null) {
-
-      // Get application descriptor from module
-      ApplicationModuleDescriptor desc = (ApplicationModuleDescriptor)module.getDescriptors().get("application");
-
-      // Build application
-
-      // Create and configure bridge
-      Bridge bridge = new Bridge(
-          log,
-          this.module.lifeCycle,
-          this.config,
-          this.module.resources,
-          this.module.server,
-          new ResourceResolver() {
-        public URL resolve(String uri) {
-          try {
-            return getServletConfig().getServletContext().getResource(uri);
-          }
-          catch (MalformedURLException e) {
-            return null;
-          }
-        }
-      });
-
-      //
-      String path = null;
-      ServletRegistration reg = getServletContext().getServletRegistration(getServletName());
-      for (String mapping : reg.getMappings()) {
-        if ("/".equals(mapping)) {
-          path = "";
-          break;
-        } else if ("/*".equals(mapping)) {
-          throw new UnsupportedOperationException("Implement me");
-        } else if (mapping.endsWith("/*")) {
-          path = mapping.substring(0, mapping.length() - 2);
-        } else {
-          throw new UnsupportedOperationException("Should not be possible");
-        }
-      }
-
-      //
-      if (path == null) {
-        throw new ServletException("Juzu servlet should be mounted on an url pattern");
-      }
-
-      //
-      Handler handler = null;
-      try {
-        handler = new Handler(bridge);
-      }
-      catch (Exception e) {
-        throw wrap(e);
-      }
-
-      //
-      this.handler = handler;
-      this.path = path;
+      this.handler = new Handler(bridge);
     }
   }
 
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     if (req.getMethod().equals("GET") || req.getMethod().equals("POST")) {
-
-      //
-      refresh();
 
       //
       ServletWebBridge bridge = new ServletWebBridge(req, resp, path);
@@ -243,6 +240,21 @@ public class ServletBridge extends HttpServlet {
           dispatcher.include(bridge.getRequest(), bridge.getResponse());
           return;
         }
+      }
+
+      //
+      try {
+        refresh();
+      }
+      catch (CompilationException e) {
+        StringWriter writer = new StringWriter();
+        PrintWriter printer = new PrintWriter(writer);
+        Formatting.renderErrors(printer, e.getErrors());
+        bridge.send(Response.error(writer.getBuffer().toString()), true);
+        return;
+      }
+      catch (Exception e) {
+        throw wrap(e);
       }
 
       //
@@ -260,7 +272,9 @@ public class ServletBridge extends HttpServlet {
   @Override
   public void destroy() {
     if (module != null) {
-      module.release();
+      if (module.release()) {
+        // Should dispose module (todo later)
+      }
     }
     if (handler != null) {
       Tools.safeClose(handler);

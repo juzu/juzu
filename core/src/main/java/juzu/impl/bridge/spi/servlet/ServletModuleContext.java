@@ -17,27 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package bridge.servlet.livemode;
+package juzu.impl.bridge.spi.servlet;
 
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
+import juzu.impl.fs.spi.war.WarFileSystem;
+import juzu.impl.plugin.module.AbstractWarModuleContext;
+
+import javax.servlet.ServletContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+public class ServletModuleContext extends AbstractWarModuleContext {
 
   /** . */
-  private static int count = 0;
+  final ServletContext servletContext;
 
-  @View
-  @Route("/foo")
-  public Response.Render index() {
-    if (count == 0) {
-      count = 1;
-      String url = A_.index().toString();
-      return Response.ok("<a id='trigger' href='" + url + "'>click</div>");
-    } else {
-      return Response.ok("ok");
-    }
+  public ServletModuleContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
+  }
+
+  public ClassLoader getClassLoader() {
+    return servletContext.getClassLoader();
+  }
+
+  @Override
+  protected WarFileSystem createFileSystem(String mountPoint) {
+    return WarFileSystem.create(servletContext, mountPoint);
+  }
+
+  @Override
+  protected String getInitParameter(String parameterName) {
+    return servletContext.getInitParameter(parameterName);
   }
 }

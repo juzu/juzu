@@ -3,9 +3,9 @@ Juzu is a web framework based on MVC concepts for developing Portlet application
 open source project developed on GitHub [[project>>https://github.com/juzu/juzu]] licensed under the
 [[LGPL 2.1>>http://www.gnu.org/licenses/lgpl-2.1.html]] license.
 
-= Build and deploy {{anchor id=builddeploy /}} =
+= Build, deploy and run {{anchor id=builddeployrun /}} =
 
-{{include document=builddeploy.wiki/}}
+{{include document=builddeployrun.wiki/}}
 
 = Phases {{anchor id=phases /}} =
 

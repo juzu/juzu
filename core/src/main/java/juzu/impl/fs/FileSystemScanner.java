@@ -28,13 +28,9 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
+public abstract class FileSystemScanner<P> implements Filter<P> {
 
   public static <P> FileSystemScanner<P> createTimestamped(ReadFileSystem<P> fs) {
     return new Timestamped<P>(fs);
@@ -50,7 +46,7 @@ public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
     }
 
     @Override
-    protected long createValue(P file) throws IOException {
+    protected long stampOf(P file) throws IOException {
       return fs.getLastModified(file);
     }
 
@@ -66,7 +62,7 @@ public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
     }
 
     @Override
-    protected long createValue(P file) throws IOException {
+    protected long stampOf(P file) throws IOException {
       try {
         juzu.impl.common.Timestamped<Content> content = fs.getContent(file);
         MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -94,58 +90,18 @@ public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
   protected final ReadFileSystem<P> fs;
 
   /** . */
-  private ArrayList<String> stack = new ArrayList<String>();
-
-  /** . */
-  private Map<String, Data> snapshot;
+  final ArrayList<String> stack = new ArrayList<String>();
 
   private FileSystemScanner(ReadFileSystem<P> fs) {
-    this.snapshot = new HashMap<String, Data>();
     this.fs = fs;
-  }
-
-  private static class Data {
-
-    /** . */
-    private long lastModified;
-
-    /** . */
-    private Change change;
-
-    private Data(long lastModified) {
-      this.lastModified = lastModified;
-      this.change = Change.ADD;
-    }
   }
 
   public ReadFileSystem<P> getFileSystem() {
     return fs;
   }
 
-  public Map<String, Change> scan() throws IOException {
-    // Mark everything as removed
-    for (Data data : snapshot.values()) {
-      data.change = Change.REMOVE;
-    }
-
-    // Update map
-    fs.traverse(this, this);
-
-    // Cleanup map and build change map
-    Map<String, Change> changes = new LinkedHashMap<String, Change>();
-    for (Iterator<Map.Entry<String, Data>> i = snapshot.entrySet().iterator();i.hasNext();) {
-      Map.Entry<String, Data> entry = i.next();
-      Data data = entry.getValue();
-      if (data.change != null) {
-        changes.put(entry.getKey(), data.change);
-        if (data.change == Change.REMOVE) {
-          i.remove();
-        }
-      }
-    }
-
-    //
-    return changes;
+  public Snapshot<P> take() {
+    return new Snapshot<P>(this);
   }
 
   public boolean acceptDir(P dir, String name) throws IOException {
@@ -156,35 +112,8 @@ public abstract class FileSystemScanner<P> implements Visitor<P>, Filter<P> {
     return !name.startsWith(".");
   }
 
-  public void enterDir(P dir, String name) throws IOException {
-    stack.add(name);
-  }
-
-  public void file(P file, String name) throws IOException {
-    long lastModified = createValue(file);
-    stack.add(name);
-    String id = Tools.join('/', stack);
-    stack.remove(stack.size() - 1);
-    Data data = snapshot.get(id);
-    if (data == null) {
-      snapshot.put(id, new Data(lastModified));
-    }
-    else {
-      if (isModified(data.lastModified, lastModified)) {
-        data.lastModified = lastModified;
-        data.change = Change.UPDATE;
-      }
-      else {
-        data.change = null;
-      }
-    }
-  }
-
-  public void leaveDir(P dir, String name) throws IOException {
-    stack.remove(stack.size() - 1);
-  }
-
-  protected abstract long createValue(P file) throws IOException;
+  protected abstract long stampOf(P file) throws IOException;
 
   protected abstract boolean isModified(long snapshot, long current);
+
 }

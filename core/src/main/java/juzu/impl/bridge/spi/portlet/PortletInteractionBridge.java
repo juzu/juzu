@@ -22,7 +22,7 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.EventQueue;
 import juzu.Response;
 import juzu.bridge.portlet.JuzuPortlet;
-import juzu.impl.plugin.application.Application;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.request.ContextualArgument;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
@@ -42,15 +42,15 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs extends StateAwareResponse> extends PortletRequestBridge<Rq, Rs> {
 
-  protected PortletInteractionBridge(Application application, Rq req, Rs resp, PortletConfig config, boolean prod) {
-    super(application, req, resp, config, prod);
+  protected PortletInteractionBridge(Bridge bridge, Rq req, Rs resp, PortletConfig config) {
+    super(bridge, req, resp, config);
 
     //
     init();
   }
 
-  protected PortletInteractionBridge(Application application, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters, boolean prod) {
-    super(application, req, resp, config, target, parameters, prod);
+  protected PortletInteractionBridge(Bridge bridge, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
+    super(bridge, req, resp, config, target, parameters);
 
     //
     init();
@@ -82,7 +82,7 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
       }
 
       //
-      Method method = application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
+      Method method = bridge.getApplication().getDescriptor().getControllers().getMethodByHandle(update.getTarget());
 
       // Method id
       super.resp.setRenderParameter("juzu.op", method.getId());

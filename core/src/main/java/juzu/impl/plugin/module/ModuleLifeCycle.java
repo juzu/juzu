@@ -19,12 +19,13 @@
 
 package juzu.impl.plugin.module;
 
+import juzu.impl.common.DevClassLoader;
 import juzu.impl.common.Logger;
 import juzu.impl.compiler.*;
 import juzu.impl.compiler.Compiler;
-import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
 import juzu.impl.fs.Filter;
+import juzu.impl.fs.Snapshot;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.fs.spi.url.URLFileSystem;
@@ -33,7 +34,6 @@ import juzu.processor.MainProcessor;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Map;
 
 /**
  * The module life cycle.
@@ -68,9 +68,6 @@ public abstract class ModuleLifeCycle<C> {
   public static class Dynamic<S> extends ModuleLifeCycle<String[]> {
 
     /** . */
-    private final ReadFileSystem<S> source;
-
-    /** . */
     private final ClassLoader baseClassLoader;
 
     /** . */
@@ -80,41 +77,53 @@ public abstract class ModuleLifeCycle<C> {
     private FileSystemScanner<S> scanner;
 
     /** . */
+    private Snapshot<S> snapshot;
+
+    /** . */
     private ClassLoader classLoader;
+
+    /** . */
+    private ClassLoader devClassLoader;
 
     /** . */
     private ReadFileSystem<String[]> classes;
 
     /** . */
-    private boolean initialized;
+    private boolean failed;
 
     public Dynamic(Logger logger, ClassLoader baseClassLoader, ReadFileSystem<S> source) {
       super(logger);
+
+      //
       this.classLoader = null;
       this.baseClassLoader = baseClassLoader;
-      this.scanner = FileSystemScanner.createTimestamped(source);
-      this.source = source;
-      this.initialized = false;
+      this.devClassLoader = new DevClassLoader(baseClassLoader);
+      this.scanner = FileSystemScanner.createHashing(source);
+      this.snapshot = scanner.take();
+      this.classPath = null;
+      this.failed = false;
     }
 
     @Override
     public boolean refresh() throws Exception, CompilationException {
 
       // Lazy initialize
-      if (!initialized) {
-        classPath = new URLFileSystem().add(baseClassLoader, ClassLoader.getSystemClassLoader().getParent());
-        scanner = FileSystemScanner.createHashing(source);
-        initialized = true;
+      if (classPath == null) {
+        classPath = new URLFileSystem().add(devClassLoader, ClassLoader.getSystemClassLoader().getParent());
       }
 
-      //
-      Map<String, Change> changes = scanner.scan();
+      Snapshot<S> next = snapshot.scan();
 
       //
-      if (changes.size() > 0) {
-        logger.log("Detected changes : " + changes);
-
+      if (!failed && !next.hasChanges()) {
+        logger.log("No changes detected");
+        return false;
+      }
+      else {
         logger.log("Building application");
+
+        //
+        this.failed = true;
 
         //
         ReadFileSystem<S> sourcePath = scanner.getFileSystem();
@@ -139,15 +148,13 @@ public abstract class ModuleLifeCycle<C> {
         compiler.compile();
 
         //
-        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
+        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, devClassLoader);
         this.classes = classOutput;
+        this.snapshot = next;
+        this.failed = false;
 
         //
         return true;
-      }
-      else {
-        logger.log("No changes detected");
-        return false;
       }
     }
 

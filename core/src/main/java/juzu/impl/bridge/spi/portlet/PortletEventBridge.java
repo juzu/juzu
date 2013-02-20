@@ -20,6 +20,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Event;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.common.Introspector;
 import juzu.impl.plugin.application.Application;
@@ -37,14 +38,13 @@ import java.util.Map;
 public class PortletEventBridge extends PortletInteractionBridge<EventRequest, EventResponse> implements EventBridge {
 
   public PortletEventBridge(
-      Application application,
+      Bridge bridge,
       EventRequest req,
       EventResponse resp,
       PortletConfig config,
       Method<?> target,
-      Map<String, String[]> parameters,
-      boolean prod) {
-    super(application, req, resp, config, target, parameters, prod);
+      Map<String, String[]> parameters) {
+    super(bridge, req, resp, config, target, parameters);
 
     // Set event as part of contextual arguments
     for (Parameter parameter : target.getParameters()) {

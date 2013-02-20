@@ -41,6 +41,7 @@ import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ClassLoaderResolver;
 import juzu.impl.resource.ResourceResolver;
 
+import javax.inject.Provider;
 import java.io.Closeable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -74,7 +75,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   private final AssetServer assetServer;
 
   /** Contextual: module. */
-  private final ModuleLifeCycle<P> module;
+  private final ModuleLifeCycle<?> moduleLifeCycle;
 
   /** . */
   private ApplicationDescriptor descriptor;
@@ -91,9 +92,12 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   /** . */
   private BeanLifeCycle<Application> application;
 
+  /** The last used class loader : used for checking refresh. */
+  private ClassLoader classLoader;
+
   public ApplicationLifeCycle(
       Logger logger,
-      ModuleLifeCycle<P> module,
+      ModuleLifeCycle<?> moduleLifeCycle,
       InjectorProvider injectorProvider,
       Name name,
       ReadFileSystem<R> resources,
@@ -102,7 +106,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
 
     //
     this.logger = logger;
-    this.module = module;
+    this.moduleLifeCycle = moduleLifeCycle;
     this.injectorProvider = injectorProvider;
     this.name = name;
     this.resources = resources;
@@ -130,16 +134,9 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     return descriptor;
   }
 
-  public ModuleLifeCycle<P> getModule() {
-    return module;
-  }
-
   public boolean refresh() throws Exception {
-    boolean changed = getModule().refresh();
-
-    //
     if (application != null) {
-      if (changed) {
+      if (classLoader != moduleLifeCycle.getClassLoader()) {
         stop();
       }
     }
@@ -155,18 +152,19 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   }
 
   protected final void start() throws Exception {
-    ReadFileSystem<P> classes = getModule().getClasses();
+    ReadFileSystem<?> classes = moduleLifeCycle.getClasses();
 
     //
     Name fqn = name.append("Application");
 
     //
-    Class<?> clazz = getModule().getClassLoader().loadClass(fqn.toString());
+    Class<?> clazz = moduleLifeCycle.getClassLoader().loadClass(fqn.toString());
     ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
     //
-    Injector injector = injectorProvider.get();
+    Provider<Injector> provider = injectorProvider;
+    Injector injector = provider.get();
     injector.addFileSystem(classes);
-    injector.setClassLoader(getModule().getClassLoader());
+    injector.setClassLoader(moduleLifeCycle.getClassLoader());
 
     //
     if (injector instanceof SpringInjector) {
@@ -178,7 +176,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
 
     // Bind the resolver
-    ClassLoaderResolver resolver = new ClassLoaderResolver(getModule().getClassLoader());
+    ClassLoaderResolver resolver = new ClassLoaderResolver(moduleLifeCycle.getClassLoader());
     injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.classpath")), resolver);
     injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.server")), this.resourceResolver);
 
@@ -201,6 +199,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     this.stylesheetManager = assetPlugin.getStylesheetManager();
     this.descriptor = descriptor;
     this.application = application;
+    this.classLoader = moduleLifeCycle.getClassLoader();
 
     // For application start (perhaps we could remove that)
     try {
@@ -294,6 +293,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     stylesheetManager = null;
     scriptManager = null;
     descriptor = null;
+    classLoader = null;
   }
 
   public void close() {

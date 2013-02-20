@@ -34,36 +34,41 @@ public class ScannerTestCase extends AbstractTestCase {
   public void testFoo() throws IOException {
     RAMFileSystem fs = new RAMFileSystem();
     FileSystemScanner<String[]> scanner = FileSystemScanner.createTimestamped(fs);
-
+    
     //
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    Snapshot<String[]> snapshot = scanner.take();
+    assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
 
     //
     String[] foo = fs.makePath(fs.getRoot(), "foo");
     waitForOneMillis();
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    snapshot = snapshot.scan();
+    assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
 
     //
     String[] bar = fs.makePath(foo, "bar.txt");
     fs.setContent(bar, new Content(""));
     waitForOneMillis();
-    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.ADD), scanner.scan());
+    snapshot = snapshot.scan();
+    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.ADD), snapshot.getChanges());
     waitForOneMillis();
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    snapshot = snapshot.scan();
+    assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
 
     //
     fs.setContent(bar, new Content("value"));
     waitForOneMillis();
-    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.UPDATE), scanner.scan());
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    snapshot = snapshot.scan();
+    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.UPDATE), snapshot.getChanges());
 
     //
     fs.removePath(bar);
     waitForOneMillis();
-    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.REMOVE), scanner.scan());
+    snapshot = snapshot.scan();
+    assertEquals(Collections.singletonMap("/foo/bar.txt", Change.REMOVE), snapshot.getChanges());
     waitForOneMillis();
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    snapshot = snapshot.scan();
+    assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
   }
 
   @Test
@@ -72,11 +77,13 @@ public class ScannerTestCase extends AbstractTestCase {
     FileSystemScanner<String[]> scanner = FileSystemScanner.createTimestamped(fs);
 
     //
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    Snapshot<String[]> snapshot = scanner.take();
+    assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
     String[] foo = fs.makePath(fs.getRoot(), ".foo");
     fs.setContent(foo, new Content(""));
     waitForOneMillis();
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    snapshot = snapshot.scan();
+    assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
   }
 
   @Test
@@ -85,10 +92,12 @@ public class ScannerTestCase extends AbstractTestCase {
     FileSystemScanner<String[]> scanner = FileSystemScanner.createTimestamped(fs);
 
     //
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    Snapshot<String[]> snapshot = scanner.take();
+    assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
     String[] bar = fs.makePath(fs.makePath(fs.getRoot(), ".foo"), "bar.txt");
     fs.setContent(bar, new Content(""));
     waitForOneMillis();
-    assertEquals(Collections.<String, Change>emptyMap(), scanner.scan());
+    snapshot = snapshot.scan();
+    assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
   }
 }

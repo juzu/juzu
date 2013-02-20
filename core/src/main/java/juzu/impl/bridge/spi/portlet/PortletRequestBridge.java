@@ -22,9 +22,11 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MimeType;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.Tools;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
@@ -57,7 +59,6 @@ import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,7 +69,7 @@ import java.util.Map;
 public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge {
 
   /** . */
-  protected final Application application;
+  protected final Bridge bridge;
 
   /** . */
   protected final Rq req;
@@ -104,12 +105,9 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected Request request;
 
   /** . */
-  protected final boolean prod;
-
-  /** . */
   protected Response response;
 
-  PortletRequestBridge(Application application, Rq req, Rs resp, PortletConfig config, boolean prod) {
+  PortletRequestBridge(Bridge bridge, Rq req, Rs resp, PortletConfig config) {
     String methodId = null;
     Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
     for (Iterator<Map.Entry<String, String[]>> i = parameters.entrySet().iterator();i.hasNext();) {
@@ -125,7 +123,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
     //
     Phase phase = getPhase();
-    ApplicationDescriptor descriptor = application.getDescriptor();
+    ApplicationDescriptor descriptor = bridge.getApplication().getDescriptor();
     ControllersDescriptor controllers = descriptor.getControllers();
     ControllerResolver<Method> resolver = controllers.getResolver();
     Method<?> target;
@@ -139,7 +137,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     HashMap<String, Argument> arguments = new HashMap<String, Argument>(target.getArguments(parameters));
 
     //
-    this.application = application;
+    this.bridge = bridge;
     this.req = req;
     this.resp = resp;
     this.target = target;
@@ -150,16 +148,15 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.windowContext = new PortletWindowContext(this);
     this.userContext = new PortletUserContext(req);
     this.applicationContext = new PortletApplicationContext(config);
-    this.prod = prod;
   }
 
-  PortletRequestBridge(Application application, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters, boolean prod) {
+  PortletRequestBridge(Bridge bridge,  Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
 
     // Get argument map
     HashMap<String, Argument> arguments = new HashMap<String, Argument>(target.getArguments(parameters));
 
     //
-    this.application = application;
+    this.bridge = bridge;
     this.req = req;
     this.resp = resp;
     this.target = target;
@@ -170,7 +167,6 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.windowContext = new PortletWindowContext(this);
     this.userContext = new PortletUserContext(req);
     this.applicationContext = new PortletApplicationContext(config);
-    this.prod = prod;
   }
 
   protected abstract Phase getPhase();
@@ -338,6 +334,15 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
   }
 
+  public void invoke() throws Exception {
+    Application application = bridge.getApplication();
+    try {
+      application.invoke(this);
+    } finally {
+      Tools.safeClose(this);
+    }
+  }
+
   public abstract void send() throws IOException, PortletException;
 
   protected void sendProperties() throws IOException {
@@ -403,7 +408,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           MimeResponse mimeResp = (MimeResponse)resp;
 
           //
-          Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
+          Method method = bridge.getApplication().getDescriptor().getControllers().getMethodByHandle(target);
 
           //
           BaseURL url;

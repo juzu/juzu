@@ -23,9 +23,7 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.Tools;
 import juzu.impl.common.URIWriter;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.request.Method;
 import juzu.impl.router.PathParam;
@@ -63,9 +61,6 @@ public class Handler implements Closeable {
 
   public Handler(Bridge bridge) throws Exception {
     this.bridge = bridge;
-
-    //
-    bridge.refresh();
 
     //
     HashMap<MethodHandle, Route> forwardRoutes = new HashMap<MethodHandle, Route>();
@@ -191,19 +186,18 @@ public class Handler implements Closeable {
 
       //
       WebRequestBridge requestBridge;
-      Application application = this.bridge.application.getApplication();
       if (requestMethod.getPhase() == Phase.ACTION) {
-        requestBridge = new WebActionBridge(application, this, bridge, requestMethod, requestParameters);
+        requestBridge = new WebActionBridge(this.bridge, this, bridge, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.VIEW) {
-        requestBridge = new WebRenderBridge(application, this, bridge, requestMethod, requestParameters);
+        requestBridge = new WebRenderBridge(this.bridge, this, bridge, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.RESOURCE) {
-        requestBridge = new WebResourceBridge(application, this, bridge, requestMethod, requestParameters);
+        requestBridge = new WebResourceBridge(this.bridge, this, bridge, requestMethod, requestParameters);
       } else {
         throw new Exception("Cannot decode phase");
       }
 
       //
-      this.bridge.invoke(requestBridge);
+      requestBridge.invoke();
 
       // Implement the two phases in one
       if (requestBridge instanceof WebActionBridge) {
@@ -213,8 +207,8 @@ public class Handler implements Closeable {
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
             Method<?> desc = this.bridge.application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
-            requestBridge = new WebRenderBridge(application, this, bridge, desc, update.getParameters());
-            this.bridge.invoke(requestBridge);
+            requestBridge = new WebRenderBridge(this.bridge, this, bridge, desc, update.getParameters());
+            requestBridge.invoke();
           }
         }
       }
@@ -229,6 +223,5 @@ public class Handler implements Closeable {
   }
 
   public void close() throws IOException {
-    Tools.safeClose(bridge);
   }
 }

@@ -1,72 +1,93 @@
-/* http://www.colourlovers.com/palette/625987/dont_you_go_down */
-
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.juzu {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 .juzu * {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-weight: normal;
-    font-style: normal;
-    font-size: 100%;
-    line-height: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 100%;
+  line-height: 1;
 }
-
-.juzu-box {
-
-    margin: 4px;
-
-    border: 1px solid rgba(0,0,0,.2);
-    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.1);
-    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.1);
-    box-shadow: 0 1px 2px rgba(0,0,0,.1);
-
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
+.juzu section {
+  margin: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-
-.juzu pre {
-    display: block;
-    margin: 0 0 18px;
-    line-height: 18px;
-    font-size: 12px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-
-    font-family: Monaco, Andale Mono, Courier New, monospace;
-
-    overflow: hidden;
-
-    padding: 9px;
+.juzu p {
+  margin: 12px;
+  line-height: 20px;
 }
-
-.juzu pre ol, .juzu pre ul {
-    margin: 0 0 0 40px;
-    line-height: 0;
+.juzu .code {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  overflow: hidden;
+  padding: 9px;
 }
-
-.juzu pre ol {
-    list-style: decimal;
+.juzu .code ol {
+  list-style: decimal;
 }
-
-.juzu pre ul {
-    list-style: none;
+.juzu .code ul {
+  list-style: none;
 }
-
-.juzu pre ol li, .juzu pre ul li {
-    padding: 0 5px;
-    color: #94C7B6;
-    line-height: 20px;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
+.juzu .code p {
+  margin: 0;
 }
-
-.juzu pre ol li span, .juzu pre ul li span { color: #403B33; }
-.juzu pre ol li span.error, .juzu pre ul li span.error { color: #D3643B; }
-
-.juzu .juzu-message {
-    margin: 12px;
-    line-height: 18px;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 16px;
+.juzu .code ol,
+.juzu .code ul {
+  margin: 0 0 0 40px;
+  line-height: 0;
+}
+.juzu .code ol li,
+.juzu .code ul li {
+  padding: 0 5px;
+  color: #999999;
+  line-height: 14px;
+}
+.juzu .code ol li p,
+.juzu .code ul li p {
+  margin: 0;
+  padding: 0;
+  color: #000000;
+}
+.juzu .code ol li p.error,
+.juzu .code ul li p.error {
+  color: #b94a48;
 }

@@ -25,6 +25,7 @@ import juzu.impl.compiler.Compiler;
 import juzu.impl.compiler.CompilerConfig;
 import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
+import juzu.impl.fs.Snapshot;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.common.Tools;
@@ -104,6 +105,9 @@ public abstract class CompileStrategy<I, O> {
     /** . */
     final FileSystemScanner<I> scanner;
 
+    /** . */
+    private Snapshot<I> snapshot;
+
     public Incremental(
         ReadFileSystem<?> classPath,
         ReadWriteFileSystem<I> sourcePath,
@@ -114,6 +118,7 @@ public abstract class CompileStrategy<I, O> {
       //
       this.classPath = new LinkedList<ReadFileSystem<?>>();
       this.scanner = FileSystemScanner.createHashing(sourcePath);
+      this.snapshot  = scanner.take();
     }
 
     void compile() throws IOException, CompilationException {
@@ -124,7 +129,8 @@ public abstract class CompileStrategy<I, O> {
       List<String> toDelete = new ArrayList<String>();
 
       //
-      for (Map.Entry<String, Change> change : scanner.scan().entrySet()) {
+      snapshot = snapshot.scan();
+      for (Map.Entry<String, Change> change : snapshot.getChanges().entrySet()) {
         String path = change.getKey();
         if (path.endsWith(".java")) {
           switch (change.getValue()) {

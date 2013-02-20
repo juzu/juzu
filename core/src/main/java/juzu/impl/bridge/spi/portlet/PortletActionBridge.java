@@ -20,7 +20,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
-import juzu.impl.plugin.application.Application;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
@@ -37,8 +37,8 @@ public class PortletActionBridge extends PortletInteractionBridge<ActionRequest,
   /** . */
   private final PortletClientContext clientContext;
 
-  public PortletActionBridge(Application application, ActionRequest request, ActionResponse response, PortletConfig config, boolean prod) {
-    super(application, request, response, config, prod);
+  public PortletActionBridge(Bridge bridge, ActionRequest request, ActionResponse response, PortletConfig config) {
+    super(bridge, request, response, config);
 
     //
     this.clientContext = new PortletClientContext(request);

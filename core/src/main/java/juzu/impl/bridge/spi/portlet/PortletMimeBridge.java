@@ -20,8 +20,9 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
-import juzu.impl.plugin.application.Application;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.MimeBridge;
+import juzu.impl.common.Formatting;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
@@ -31,12 +32,13 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge {
 
-  PortletMimeBridge(Application application, Rq request, Rs response, PortletConfig config, boolean prod) {
-    super(application, request, response, config, prod);
+  PortletMimeBridge(Bridge bridge, Rq request, Rs response, PortletConfig config) {
+    super(bridge, request, response, config);
   }
 
   @Override
@@ -64,7 +66,21 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
       }
     } else if (response instanceof Response.Error) {
       Response.Error error = (Response.Error)response;
-      throw new PortletException(error.getCause());
+      if (bridge.module.context.getRunMode().getPrettyFail()) {
+        resp.setContentType("text/html");
+        PrintWriter writer = resp.getWriter();
+        writer.append("<div class=\"juzu\">");
+        Throwable cause = error.getCause();
+        if (cause != null) {
+          Formatting.renderThrowable(null, writer, cause);
+        } else {
+          writer.append(error.getMessage());
+        }
+        writer.append("</div>");
+        writer.close();
+      } else {
+        throw new PortletException(error.getCause());
+      }
     }
   }
 }

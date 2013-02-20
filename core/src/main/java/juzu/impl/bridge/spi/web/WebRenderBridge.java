@@ -19,32 +19,23 @@
 
 package juzu.impl.bridge.spi.web;
 
-import juzu.PropertyMap;
-import juzu.PropertyType;
-import juzu.Response;
-import juzu.asset.Asset;
-import juzu.impl.plugin.application.Application;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
-import juzu.impl.common.Tools;
 import juzu.impl.request.Method;
-import juzu.io.AppendableStream;
-import juzu.io.Stream;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class WebRenderBridge extends WebMimeBridge implements RenderBridge {
 
   WebRenderBridge(
-      Application application,
+      Bridge bridge,
       Handler handler,
       WebBridge http,
       Method<?> target,
       Map<String, String[]> parameters) {
-    super(application, handler, http, target, parameters);
+    super(bridge, handler, http, target, parameters);
   }
 
   @Override
@@ -56,124 +47,5 @@ public class WebRenderBridge extends WebMimeBridge implements RenderBridge {
     if (context != null) {
       context.close();
     }
-  }
-
-  @Override
-  boolean send() throws IOException {
-    if (super.send()) {
-      return true;
-    } else if (response instanceof Response.Content<?>) {
-
-      //
-      Response.Content<?> content = (Response.Content)response;
-
-      //
-      PropertyMap properties = response.getProperties();
-
-      //
-      http.setContentType(content.getMimeType());
-
-      //
-      Integer status = content.getStatus();
-      if (status != null) {
-        http.setStatus(status);
-      }
-
-      //
-      Iterable<Map.Entry<String, String[]>> headers = properties.getValues(PropertyType.HEADER);
-      if (headers != null) {
-        for (Map.Entry<String, String[]> entry : headers) {
-          http.setHeader(entry.getKey(), entry.getValue()[0]);
-        }
-      }
-
-      //
-      Writer writer = null;
-      try {
-        writer = http.getWriter();
-
-        //
-        writer.append("<!DOCTYPE html>\n");
-        writer.append("<html>\n");
-        writer.append("<head>\n");
-
-        //
-        String title = properties.getValue(PropertyType.TITLE);
-        if (title != null) {
-          writer.append("<title>");
-          writer.append(title);
-          writer.append("</title>\n");
-        }
-
-        //
-        Iterable<Map.Entry<String, String>> metaProps = properties.getValues(PropertyType.META_TAG);
-        if (metaProps != null) {
-          for (Map.Entry<String, String> meta : metaProps) {
-            writer.append("<meta name=\"");
-            writer.append(meta.getKey());
-            writer.append("\" content=\"");
-            writer.append(meta.getValue());
-            writer.append("\">\n");
-          }
-        }
-
-        //
-        Iterable<Asset> stylesheetProps = properties.getValues(PropertyType.STYLESHEET);
-        if (stylesheetProps != null) {
-          Iterable<Asset.Value> stylesheets =  handler.getBridge().application.getStylesheetManager().resolveAssets(stylesheetProps);
-          for (Asset.Value stylesheet : stylesheets) {
-            String path = stylesheet.getURI();
-            int pos = path.lastIndexOf('.');
-            String ext = pos == -1 ? "css" : path.substring(pos + 1);
-            writer.append("<link rel=\"stylesheet\" type=\"text/");
-            writer.append(ext);
-            writer.append("\" href=\"");
-            writer.append(getAssetURL(stylesheet));
-            writer.append("\"></link>\n");
-          }
-        }
-
-        //
-        Iterable<Asset> scriptsProp = properties.getValues(PropertyType.SCRIPT);
-        if (scriptsProp != null) {
-          Iterable<Asset.Value> scripts = handler.getBridge().application.getScriptManager().resolveAssets(scriptsProp);
-          for (Asset.Value script : scripts) {
-            writer.append("<script type=\"text/javascript\" src=\"");
-            writer.append(getAssetURL(script));
-            writer.append("\"></script>\n");
-          }
-        }
-
-        //
-        writer.append("</head>\n");
-        writer.append("<body>\n");
-
-        // Send response
-        if (content.getKind() == Stream.Char.class) {
-          ((Response.Content<Stream.Char>)content).send(new AppendableStream(writer));
-        } else {
-          throw new UnsupportedOperationException("Not yet handled");
-        }
-
-        //
-        writer.append("</body>\n");
-        writer.append("</html>\n");
-      }
-      finally {
-        Tools.safeClose(writer);
-      }
-
-      //
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private String getAssetURL(Asset.Value asset) throws IOException {
-    StringBuilder url = new StringBuilder();
-    String uri = asset.getURI();
-    http.renderAssetURL(asset.getLocation(), uri, url);
-    return url.toString();
   }
 }

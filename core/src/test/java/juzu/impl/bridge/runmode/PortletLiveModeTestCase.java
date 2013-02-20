@@ -17,28 +17,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.bridge.spi.web;
+package juzu.impl.bridge.runmode;
 
-import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.request.Method;
-import juzu.request.ClientContext;
+import juzu.impl.common.RunMode;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import java.util.Map;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
+public class PortletLiveModeTestCase extends AbstractLiveModeTestCase {
 
-  WebResourceBridge(
-      Bridge bridge,
-      Handler handler,
-      WebBridge webBridge,
-      Method<?> target,
-      Map<String, String[]> parameters) {
-    super(bridge, handler, webBridge, target, parameters);
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createPortletDeployment(RunMode.LIVE, "bridge.runmode.live");
   }
 
-  public ClientContext getClientContext() {
-    return http.getClientContext();
+  @Override
+  protected URL getURL() {
+    return applicationURL();
+  }
+
+  @Override
+  protected int getErrorStatus() {
+    return 200;
   }
 }

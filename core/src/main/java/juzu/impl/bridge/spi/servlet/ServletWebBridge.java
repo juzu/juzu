@@ -41,7 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletWebBridge implements WebBridge, HttpContext, ClientContext, UserContext {
+public class ServletWebBridge extends WebBridge implements HttpContext, ClientContext, UserContext {
 
   /** . */
   private final HttpServletRequest req;

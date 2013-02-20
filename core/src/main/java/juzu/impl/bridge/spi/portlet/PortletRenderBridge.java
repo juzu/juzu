@@ -23,8 +23,9 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.common.Formatting;
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.request.Phase;
@@ -37,25 +38,38 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge {
 
-  /** . */
-  private final Bridge bridge;
-
-  public PortletRenderBridge(Application application, Bridge bridge, RenderRequest request, RenderResponse response, PortletConfig config, boolean prod) {
-    super(application, request, response, config, prod);
-
-    //
-    this.bridge = bridge;
+  public PortletRenderBridge(Bridge bridge, RenderRequest request, RenderResponse response, PortletConfig config) {
+    super(bridge, request, response, config);
   }
 
   @Override
   protected Phase getPhase() {
     return Phase.VIEW;
+  }
+
+  @Override
+  public void invoke() throws Exception {
+    try {
+      bridge.refresh();
+    }
+    catch (CompilationException e) {
+      StringWriter buffer = new StringWriter();
+      PrintWriter printer = new PrintWriter(buffer);
+      Formatting.renderErrors(printer, e.getErrors());
+      setResponse(Response.error(buffer.toString()));
+      purgeSession();
+      return;
+    }
+
+    //
+    super.invoke();
   }
 
   @Override
@@ -139,7 +153,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
         url = sb.toString();
         break;
       case CLASSPATH:
-        if (prod) {
+        if (bridge.module.context.getRunMode().isStatic()) {
           sb = new StringBuilder();
           sb.append(req.getContextPath()).append("/assets");
           if (!uri.startsWith("/")) {
