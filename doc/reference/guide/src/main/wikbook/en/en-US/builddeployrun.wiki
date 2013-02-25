@@ -226,7 +226,7 @@ Juzu defines three modes for running an application, called //run modes//:
 
 == Configuring the run mode ==
 
-Run mode is configured via servlet context init parameters, by default the //prod// mode is enabled:
+Run mode is configured via servlet context parameters, by default the //prod// mode is enabled:
 
 * //juzu.run_mode// : possible values //prod//, //dev// or //live//
 * //juzu.src_path// : the source path of the source to compile for the live mode

@@ -1,30 +1,43 @@
 Juzu provides native support for Injection of Control (known as //IOC//) and relies on the specification
-[[JSR-330>>http://docs.oracle.com/javaee/6/api/javax/inject/package-summary.html]] (known as //@Inject//) for providing
-implementation free IOC.
+[[JSR 330>>http://docs.oracle.com/javaee/6/api/javax/inject/package-summary.html]] (known as //@Inject//).
 
-Although the JSR-330 is quite small it provides the necessary ground for building Juzu applications. Juzu itself relies
+Although the JSR-330 is quite small it provides the necessary ground for building Juzu applications. Juzu relies
 on the injection container for wiring the entire Juzu runtime (controllers, templates, plugins, etc...).
 
-We will explain how Juzu uses IOC for its runtime, we will suppose that the reader is familliar with IOC and with the @Inject
+We will explain how Juzu uses IOC for its runtime, we suppose the reader is familliar with IOC and with the ##@Inject##
 specification, in particular the notion of injection, scope and qualifier should be familliar.
 
-= Juzu IOC =
+= Containers =
 
-== IOC containers ==
-
-The JSR-330 is implemented by several projects, we refer to them as IOC containers, they are *implementations* of the
-JSR-330 specification:
+At the moment Juzu supports three containers implementing the JSR 330:
 
 * [[Spring Core 3>>http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/]]
 * Context and Dependency Injection also know as //CDI// implemented by the [[Weld>>http://seamframework.org/Weld]] project
 * [[Google Guice 3>>http://code.google.com/p/google-guice/wiki/Guice30]]
 
-Juzu is able to run with any of those implementation and leaves you the choice of the IOC implementation you want to
-use.
-
 {{note}}CDI is a specification that extends the //@Inject// specification: CDI provides more features than @Inject, however
 this specification is only implemented by Weld. Nevertheless if your choice is to use CDI you will be leverage its specific
 features in your Juzu application{{/note}}
+
+Juzu can run with any of those implementation and leaves you the choice of the IOC implementation you want to use. The container
+to selection is done via the servlet context parameter //juzu.inject//:
+
+* //guice// for Google Guice
+* //spring// for Spring
+* //weld// for JBoss Weld
+
+{{example title="Configuring the Spring container in web.xml"}}
+{{xml}}
+<context-param>
+  <param-name>juzu.inject</param-name>
+  <param-value>spring</param-value>
+</context-param>
+{{/xml}}
+{{/example}}
+
+{{warning}}When no IOC container is specified the Guice container will be used{{/warning}}
+
+= Inversion Of Control =
 
 == Beans ==
 

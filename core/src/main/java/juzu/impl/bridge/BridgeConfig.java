@@ -60,7 +60,7 @@ public class BridgeConfig {
     String inject = config.get("juzu.inject");
     InjectorProvider implementation;
     if (inject == null) {
-      implementation = InjectorProvider.CDI_WELD;
+      implementation = InjectorProvider.INJECT_GUICE;
     } else {
       inject = inject.trim().toLowerCase();
       if ("weld".equals(inject)) {
