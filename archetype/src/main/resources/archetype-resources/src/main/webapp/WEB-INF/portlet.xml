@@ -9,11 +9,8 @@
      <display-name xml:lang="EN">Juzu Sample Application</display-name>
      <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
      <init-param>
-       <name>juzu.inject</name>
-       <value>weld</value>
-       <!--
-       <value>spring</value>
-       -->
+       <name>juzu.app_name</name>
+       <value>${package}</value>
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
