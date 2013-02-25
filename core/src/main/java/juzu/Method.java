@@ -17,28 +17,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.request;
+package juzu;
 
-import juzu.Method;
+/**
+ * Http methods.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public enum Method {
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface HttpContext {
-
-  /**
-   * Returns the http method.
-   *
-   * @return the http method.
-   */
-  Method getMethod();
-
-  javax.servlet.http.Cookie[] getCookies();
-
-  String getScheme();
-
-  int getServerPort();
-
-  String getServerName();
-
-  String getContextPath();
+  GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT
 
 }

@@ -75,6 +75,9 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   /** . */
   protected Request request;
 
+  /** . */
+  private final juzu.Method method;
+
   RequestBridgeImpl(
       Application application,
       HttpServletRequest req,
@@ -93,6 +96,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     this.parameters = parameters;
     this.request = null;
     this.arguments = arguments;
+    this.method = juzu.Method.valueOf(req.getMethod());
   }
 
   //
@@ -115,8 +119,8 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
 
   //
 
-  public String getMethod() {
-    return req.getMethod();
+  public juzu.Method getMethod() {
+    return method;
   }
 
   public Cookie[] getCookies() {

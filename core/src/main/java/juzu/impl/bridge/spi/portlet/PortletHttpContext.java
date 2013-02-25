@@ -19,11 +19,11 @@
 
 package juzu.impl.bridge.spi.portlet;
 
+import juzu.Method;
 import juzu.request.HttpContext;
 
 import javax.portlet.ClientDataRequest;
 import javax.portlet.PortletRequest;
-import javax.portlet.RenderRequest;
 import javax.servlet.http.Cookie;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -32,16 +32,16 @@ public class PortletHttpContext implements HttpContext {
   /** . */
   private final PortletRequest request;
 
+  /** . */
+  private final Method method;
+
   public PortletHttpContext(PortletRequest request) {
     this.request = request;
+    this.method = request instanceof ClientDataRequest ? Method.valueOf(((ClientDataRequest)request).getMethod()) : Method.GET;
   }
 
-  public String getMethod() {
-    if (request instanceof RenderRequest) {
-      return GET_METHOD;
-    } else {
-      return ((ClientDataRequest)request).getMethod();
-    }
+  public Method getMethod() {
+    return method;
   }
 
   public Cookie[] getCookies() {

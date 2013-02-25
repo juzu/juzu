@@ -19,6 +19,7 @@
 
 package juzu.test.protocol.mock;
 
+import juzu.Method;
 import juzu.request.HttpContext;
 
 import javax.servlet.http.Cookie;
@@ -57,8 +58,8 @@ public class MockHttpContext implements HttpContext {
     this.contextPath = "";
   }
 
-  public String getMethod() {
-    return "GET";
+  public Method getMethod() {
+    return Method.GET;
   }
 
   public Cookie[] getCookies() {

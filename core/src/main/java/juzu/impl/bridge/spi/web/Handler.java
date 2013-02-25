@@ -48,6 +48,9 @@ public class Handler implements Closeable {
   private static final Phase[] POST_PHASES = {Phase.ACTION, Phase.VIEW, Phase.RESOURCE};
 
   /** . */
+  private static final Phase[] OTHER_PHASES = {Phase.RESOURCE};
+
+  /** . */
   final Bridge bridge;
 
   /** . */
@@ -129,12 +132,12 @@ public class Handler implements Closeable {
       Map<Phase, MethodHandle> m = getMethods(requestMatch.getRoute());
       if (m != null) {
         Phase[] phases;
-        if ("GET".equals(bridge.getHttpContext().getMethod())) {
+        if (juzu.Method.GET == bridge.getHttpContext().getMethod()) {
           phases = GET_PHASES;
-        } else if ("POST".equals(bridge.getHttpContext().getMethod())) {
+        } else if (juzu.Method.POST == bridge.getHttpContext().getMethod()) {
           phases = POST_PHASES;
         } else {
-          throw new UnsupportedOperationException("handle me gracefully");
+          phases = OTHER_PHASES;
         }
         for (Phase phase : phases) {
           MethodHandle handle = m.get(phase);

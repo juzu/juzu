@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.spi.servlet;
 
+import juzu.Method;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.web.WebBridge;
 import juzu.impl.common.Tools;
@@ -55,11 +56,15 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   /** . */
   private final String path;
 
+  /** . */
+  private final Method method;
+
   public ServletWebBridge(HttpServletRequest req, HttpServletResponse resp, String path) {
     this.req = req;
     this.resp = resp;
     this.requestPath = req.getRequestURI().substring(req.getContextPath().length());
     this.path = path;
+    this.method = Method.valueOf(req.getMethod());
   }
 
   public HttpServletRequest getRequest() {
@@ -221,8 +226,8 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
 
   // HttpContext implementation
 
-  public String getMethod() {
-    return req.getMethod();
+  public Method getMethod() {
+    return method;
   }
 
   public Cookie[] getCookies() {

@@ -17,28 +17,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.request;
+@Application package bridge.servlet.route.resource.method;
 
-import juzu.Method;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface HttpContext {
-
-  /**
-   * Returns the http method.
-   *
-   * @return the http method.
-   */
-  Method getMethod();
-
-  javax.servlet.http.Cookie[] getCookies();
-
-  String getScheme();
-
-  int getServerPort();
-
-  String getServerName();
-
-  String getContextPath();
-
-}
+import juzu.Application;

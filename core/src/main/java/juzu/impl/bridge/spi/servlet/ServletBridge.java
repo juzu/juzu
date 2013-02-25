@@ -227,45 +227,41 @@ public class ServletBridge extends HttpServlet {
 
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    if (req.getMethod().equals("GET") || req.getMethod().equals("POST")) {
 
-      //
-      ServletWebBridge bridge = new ServletWebBridge(req, resp, path);
+    //
+    ServletWebBridge bridge = new ServletWebBridge(req, resp, path);
 
-      // Do we need to send a server resource ?
-      if (bridge.getRequestPath().length() > 1 && !bridge.getRequestPath().startsWith("/WEB-INF/")) {
-        URL url = getServletContext().getResource(bridge.getRequestPath());
-        if (url != null) {
-          RequestDispatcher dispatcher = getServletContext().getNamedDispatcher("default");
-          dispatcher.include(bridge.getRequest(), bridge.getResponse());
-          return;
-        }
-      }
-
-      //
-      try {
-        refresh();
-      }
-      catch (CompilationException e) {
-        StringWriter writer = new StringWriter();
-        PrintWriter printer = new PrintWriter(writer);
-        Formatting.renderErrors(printer, e.getErrors());
-        bridge.send(Response.error(writer.getBuffer().toString()), true);
+    // Do we need to send a server resource ?
+    if (bridge.getRequestPath().length() > 1 && !bridge.getRequestPath().startsWith("/WEB-INF/")) {
+      URL url = getServletContext().getResource(bridge.getRequestPath());
+      if (url != null) {
+        RequestDispatcher dispatcher = getServletContext().getNamedDispatcher("default");
+        dispatcher.include(bridge.getRequest(), bridge.getResponse());
         return;
       }
-      catch (Exception e) {
-        throw wrap(e);
-      }
+    }
 
-      //
-      try {
-        handler.handle(bridge);
-      }
-      catch (Throwable throwable) {
-        throw wrap(throwable);
-      }
-    } else {
-      super.service(req, resp);
+    //
+    try {
+      refresh();
+    }
+    catch (CompilationException e) {
+      StringWriter writer = new StringWriter();
+      PrintWriter printer = new PrintWriter(writer);
+      Formatting.renderErrors(printer, e.getErrors());
+      bridge.send(Response.error(writer.getBuffer().toString()), true);
+      return;
+    }
+    catch (Exception e) {
+      throw wrap(e);
+    }
+
+    //
+    try {
+      handler.handle(bridge);
+    }
+    catch (Throwable throwable) {
+      throw wrap(throwable);
     }
   }
 
