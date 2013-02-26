@@ -23,6 +23,7 @@ import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.inject.ProviderFactory;
 
@@ -40,7 +41,9 @@ public class BindingPlugin extends ApplicationPlugin {
   }
 
   @Override
-  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
+  public Descriptor init(PluginContext context) throws Exception {
+    JSON config = context.getConfig();
+    ClassLoader loader = context.getClassLoader();
     if (config != null) {
 
       // Load factories via servicer loader mechanism

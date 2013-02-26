@@ -19,23 +19,14 @@
 
 package juzu.impl.plugin.application.descriptor;
 
-import juzu.impl.plugin.application.ApplicationPlugin;
-import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.Plugin;
-import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationDescriptor extends Descriptor {
@@ -64,16 +55,7 @@ public class ApplicationDescriptor extends Descriptor {
   private final Class<?> packageClass;
 
   /** . */
-  private final ControllersDescriptor controllers;
-
-  /** . */
-  private final TemplatesDescriptor templates;
-
-  /** . */
-  private final Map<String, Descriptor> pluginDescriptors;
-
-  /** . */
-  private final Map<String, ApplicationPlugin> plugins;
+  private final JSON config;
 
   public ApplicationDescriptor(Class<?> applicationClass) throws Exception {
     // Load config
@@ -102,80 +84,24 @@ public class ApplicationDescriptor extends Descriptor {
       throw ae;
     }
 
-    //
-    HashMap<String, ApplicationPlugin> pluginMap = new HashMap<String, ApplicationPlugin>();
-    for (ApplicationPlugin plugin : ServiceLoader.load(ApplicationPlugin.class)) {
-      pluginMap.put(plugin.getName(), plugin);
-    }
-
     // Init this first before initing plugin so they can use it
     this.applicationClass = applicationClass;
     this.name = applicationClass.getSimpleName();
     this.packageName = applicationClass.getPackage().getName();
     this.packageClass = packageClass;
 
-    //
-    HashSet<String> names = new HashSet<String>(config.names());
-    HashMap<ApplicationPlugin, JSON> configs = new HashMap<ApplicationPlugin, JSON>();
-    for (ApplicationPlugin plugin : pluginMap.values()) {
-      String name = plugin.getName();
-      if (names.remove(name)) {
-        configs.put(plugin, config.getJSON(plugin.getName()));
-      } else {
-        configs.put(plugin, null);
-      }
-    }
 
     //
-    if (names.size() > 0) {
-      throw new UnsupportedOperationException("Handle me gracefully : missing plugins " + names);
-    }
-
-    //
-    HashMap<String, Descriptor> pluginDescriptors = new HashMap<String, Descriptor>();
-    for (Map.Entry<ApplicationPlugin, JSON> entry : configs.entrySet()) {
-      ApplicationPlugin plugin = entry.getKey();
-      Descriptor descriptor = plugin.init(this, entry.getValue());
-      if (descriptor != null) {
-        pluginDescriptors.put(plugin.getName(), descriptor);
-      }
-    }
-
-    //
-    for (Iterator<String> i = pluginMap.keySet().iterator();i.hasNext();) {
-      String name = i.next();
-      if (!pluginDescriptors.containsKey(name)) {
-        i.remove();
-      }
-    }
-
-    //
-    this.templates = (TemplatesDescriptor)pluginDescriptors.get("template");
-    this.controllers = (ControllersDescriptor)pluginDescriptors.get("controller");
-    this.pluginDescriptors = pluginDescriptors;
-    this.plugins = pluginMap;
+    this.config = config;
   }
 
-  public Map<String, ApplicationPlugin> getPlugins() {
-    return plugins;
+  public JSON getConfig() {
+    return config;
   }
 
   @Override
   public Iterable<BeanDescriptor> getBeans() {
-    ArrayList<BeanDescriptor> beans = new ArrayList<BeanDescriptor>();
-    for (Descriptor descriptor : pluginDescriptors.values()) {
-      Tools.addAll(beans, descriptor.getBeans());
-    }
-    return beans;
-  }
-
-  public Descriptor getPluginDescriptor(String name) {
-    return pluginDescriptors.get(name);
-  }
-
-  public void addPlugin(ApplicationPlugin plugin) throws Exception {
-    plugins.put(plugin.getName(), plugin);
-    pluginDescriptors.put(name,  plugin.init(this, new JSON()));
+    return Collections.emptyList();
   }
 
   public Class<?> getPackageClass() {
@@ -196,13 +122,5 @@ public class ApplicationDescriptor extends Descriptor {
 
   public String getName() {
     return name;
-  }
-
-  public ControllersDescriptor getControllers() {
-    return controllers;
-  }
-
-  public TemplatesDescriptor getTemplates() {
-    return templates;
   }
 }

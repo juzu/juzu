@@ -27,12 +27,11 @@ import juzu.asset.AssetLocation;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
-import juzu.impl.resource.ResourceResolver;
 import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
@@ -56,6 +55,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   private AssetDescriptor descriptor;
 
   /** . */
+  private PluginContext context;
+
+  /** . */
   @Inject
   @Named("juzu.asset_manager.script")
   AssetManager scriptManager;
@@ -64,16 +66,6 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   @Inject
   @Named("juzu.asset_manager.stylesheet")
   AssetManager stylesheetManager;
-
-  /** . */
-  @Inject
-  @Named("juzu.resource_resolver.classpath")
-  ResourceResolver classPathResolver;
-
-  /** . */
-  @Inject
-  @Named("juzu.resource_resolver.server")
-  ResourceResolver serverResolver;
 
   public AssetPlugin() {
     super("asset");
@@ -88,7 +80,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @Override
-  public Descriptor init(ApplicationDescriptor application, JSON config) throws Exception {
+  public Descriptor init(PluginContext context) throws Exception {
+    JSON config = context.getConfig();
+    AssetDescriptor descriptor;
     if (config != null) {
       String packageName = config.getString("package");
       AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
@@ -97,10 +91,13 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       }
       List<AssetMetaData> scripts = load(packageName, location, config.getList("scripts", JSON.class));
       List<AssetMetaData> stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
-      return descriptor = new AssetDescriptor(scripts, stylesheets);
+      descriptor = new AssetDescriptor(scripts, stylesheets);
     } else {
-      return descriptor = new AssetDescriptor(Collections.<AssetMetaData>emptyList(), Collections.<AssetMetaData>emptyList());
+      descriptor = new AssetDescriptor(Collections.<AssetMetaData>emptyList(), Collections.<AssetMetaData>emptyList());
     }
+    this.descriptor = descriptor;
+    this.context = context;
+    return descriptor;
   }
 
   private List<AssetMetaData> load(
@@ -159,12 +156,12 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       AssetLocation location = script.getLocation();
       URL url;
       if (location == AssetLocation.CLASSPATH) {
-        url = classPathResolver.resolve(script.getValue());
+        url = context.getApplicationResolver().resolve(script.getValue());
         if (url == null) {
           throw new Exception("Could not resolve classpath assets " + script.getValue());
         }
       } else if (location == AssetLocation.SERVER && !script.getValue().startsWith("/")) {
-        url = serverResolver.resolve("/" + script.getValue());
+        url = context.getServerResolver().resolve("/" + script.getValue());
         if (url == null) {
           throw new Exception("Could not resolve server assets " + script.getValue());
         }

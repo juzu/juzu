@@ -19,11 +19,9 @@
 
 package juzu.plugin.upload.impl;
 
-import juzu.UndeclaredIOException;
-import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Parameter;
 import juzu.impl.request.PhaseParameter;
@@ -51,7 +49,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @Override
-  public Descriptor init(ApplicationDescriptor application, JSON config) throws Exception {
+  public Descriptor init(PluginContext context) throws Exception {
     // We always load the plugin
     return new Descriptor();
   }

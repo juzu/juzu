@@ -25,7 +25,7 @@ import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
+import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -151,20 +151,20 @@ public abstract class RequestContext {
   }
 
   private Dispatch createDispatch(Method<?> method, DispatchSPI spi) {
-    ApplicationDescriptor desc = application.getDescriptor();
+    ControllersDescriptor desc = application.getControllerPlugin().getDescriptor();
     Dispatch dispatch;
     if (method.getPhase() == Phase.ACTION) {
       dispatch = new Phase.Action.Dispatch(spi);
     } else if (method.getPhase() == Phase.VIEW) {
       dispatch = new Phase.View.Dispatch(spi);
-      dispatch.escapeXML(desc.getControllers().getEscapeXML());
+      dispatch.escapeXML(desc.getEscapeXML());
     } else if (method.getPhase() == Phase.RESOURCE) {
       dispatch = new Phase.Resource.Dispatch(spi);
-      dispatch.escapeXML(desc.getControllers().getEscapeXML());
+      dispatch.escapeXML(desc.getEscapeXML());
     } else {
       throw new AssertionError();
     }
-    dispatch.escapeXML(desc.getControllers().getEscapeXML());
+    dispatch.escapeXML(desc.getEscapeXML());
     return dispatch;
   }
 }

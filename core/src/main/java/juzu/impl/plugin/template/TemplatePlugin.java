@@ -19,13 +19,13 @@
 
 package juzu.impl.plugin.template;
 
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
-import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
 
 import javax.inject.Inject;
@@ -51,9 +51,13 @@ public class TemplatePlugin extends ApplicationPlugin {
     this.stubs = new ConcurrentHashMap<Path, TemplateStub>();
   }
 
+  public TemplatesDescriptor getDescriptor() {
+    return descriptor;
+  }
+
   @Override
-  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
-    return descriptor = new TemplatesDescriptor(loader, config);
+  public Descriptor init(PluginContext context) throws Exception {
+    return descriptor = new TemplatesDescriptor(context.getClassLoader(), context.getConfig());
   }
 
   public TemplateStub resolveTemplateStub(String path) {

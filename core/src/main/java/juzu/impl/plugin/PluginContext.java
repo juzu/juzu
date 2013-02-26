@@ -17,26 +17,44 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.impl.plugin.module;
+package juzu.impl.plugin;
 
 import juzu.impl.common.JSON;
-import juzu.impl.common.RunMode;
-import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.resource.ResourceResolver;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ModuleContext {
+/**
+ * The context of a plugin.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
+public interface PluginContext {
 
+  /**
+   * Returns the plugin configuration.
+   *
+   * @return the plugin configuraiton
+   */
+  JSON getConfig();
+
+  /**
+   * Reurns the classloader.
+   *
+   * @return the classloader
+   */
   ClassLoader getClassLoader();
 
-  JSON getConfig() throws Exception;
-
+  /**
+   * Returns the resource resolver for server resources.
+   *
+   * @return the server resolver
+   */
   ResourceResolver getServerResolver();
 
-  ReadFileSystem<?> getResourcePath();
-
-  ModuleLifeCycle<?> getLifeCycle();
-
-  RunMode getRunMode();
+  /**
+   * Returns the resource resolver for applications resources.
+   *
+   * @return the application resolver
+   */
+  ResourceResolver getApplicationResolver();
 
 }

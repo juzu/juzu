@@ -56,16 +56,16 @@ public class Application {
   final InjectionContext<?, ?> injectionContext;
 
   /** . */
-  private final ControllerPlugin controller;
+  private final ControllerPlugin controllerPlugin;
 
   /** . */
   public ArrayList<RequestFilter> lifecycles;
 
   @Inject
-  public Application(InjectionContext injectionContext, ApplicationDescriptor descriptor, ControllerPlugin controller) throws Exception {
+  public Application(InjectionContext injectionContext, ApplicationDescriptor descriptor, ControllerPlugin controllerPlugin) throws Exception {
     this.descriptor = descriptor;
     this.injectionContext = injectionContext;
-    this.controller = controller;
+    this.controllerPlugin = controllerPlugin;
   }
 
   // This is done lazyly to avoid circular references issues
@@ -80,6 +80,10 @@ public class Application {
       lifecycles = lifeCycles;
     }
     return lifecycles;
+  }
+
+  public ControllerPlugin getControllerPlugin() {
+    return controllerPlugin;
   }
 
   public String getName() {
@@ -130,7 +134,7 @@ public class Application {
 
     //
     MethodHandle handle = bridge.getTarget();
-    Method method = controller.getDescriptor().getMethodByHandle(handle);
+    Method method = controllerPlugin.getDescriptor().getMethodByHandle(handle);
 
     //
     if (method == null) {

@@ -27,6 +27,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.Application;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
@@ -212,12 +213,12 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) {
-    Method method = bridge.getApplication().getDescriptor().getControllers().getMethodByHandle(target);
+    Method method = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
     //
     Route route = handler.getRoute(method.getHandle());
     if (route == null) {
-      if (bridge.getApplication().getDescriptor().getControllers().getResolver().isIndex(method)) {
+      if (bridge.application.getPlugin(ControllerPlugin.class).getResolver().isIndex(method)) {
         route = handler.getRoot();
       }
     }

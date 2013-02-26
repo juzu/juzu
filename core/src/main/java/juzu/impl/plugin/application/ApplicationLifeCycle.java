@@ -23,8 +23,8 @@ import juzu.Scope;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.Filter;
+import juzu.impl.common.JSON;
 import juzu.impl.common.Name;
-import juzu.impl.common.NameLiteral;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.BeanDescriptor;
@@ -34,20 +34,24 @@ import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.common.Logger;
+import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.plugin.module.ModuleLifeCycle;
-import juzu.impl.resource.ClassLoaderResolver;
 import juzu.impl.resource.ResourceResolver;
 
 import javax.inject.Provider;
 import java.io.Closeable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * The application life cycle.
@@ -95,6 +99,12 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   /** The last used class loader : used for checking refresh. */
   private ClassLoader classLoader;
 
+  /** . */
+  private Map<String, ApplicationPlugin> plugins;
+
+  /** . */
+  private Map<String, Descriptor> pluginDescriptors;
+
   public ApplicationLifeCycle(
       Logger logger,
       ModuleLifeCycle<?> moduleLifeCycle,
@@ -134,6 +144,15 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     return descriptor;
   }
 
+  public <P extends Plugin> P getPlugin(Class<P> pluginType) {
+    for (ApplicationPlugin plugin : plugins.values()) {
+      if (pluginType.isInstance(plugin)) {
+        return pluginType.cast(plugin);
+      }
+    }
+    return null;
+  }
+
   public boolean refresh() throws Exception {
     if (application != null) {
       if (classLoader != moduleLifeCycle.getClassLoader()) {
@@ -160,6 +179,66 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     //
     Class<?> clazz = moduleLifeCycle.getClassLoader().loadClass(fqn.toString());
     ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
+
+    // Take care of plugins
+    HashMap<String, ApplicationPlugin> plugins = new HashMap<String, ApplicationPlugin>();
+    for (ApplicationPlugin plugin : ServiceLoader.load(ApplicationPlugin.class)) {
+      plugins.put(plugin.getName(), plugin);
+    }
+    HashSet<String> names = new HashSet<String>(descriptor.getConfig().names());
+    HashMap<ApplicationPlugin, JSON> configs = new HashMap<ApplicationPlugin, JSON>();
+    for (ApplicationPlugin plugin : plugins.values()) {
+      String name = plugin.getName();
+      if (names.remove(name)) {
+        configs.put(plugin, descriptor.getConfig().getJSON(plugin.getName()));
+      } else {
+        configs.put(plugin, null);
+      }
+    }
+    if (names.size() > 0) {
+      throw new UnsupportedOperationException("Handle me gracefully : missing plugins " + names);
+    }
+
+    //
+    final ResourceResolver applicationResolver = new ResourceResolver() {
+      public URL resolve(String uri) {
+        return moduleLifeCycle.getClassLoader().getResource(uri.substring(1));
+      }
+    };
+
+    //
+    HashMap<String, Descriptor> pluginDescriptors = new HashMap<String, Descriptor>();
+    for (final Map.Entry<ApplicationPlugin, JSON> entry : configs.entrySet()) {
+      ApplicationPlugin plugin = entry.getKey();
+      PluginContext pluginContext = new PluginContext() {
+        public JSON getConfig() {
+          return entry.getValue();
+        }
+        public ClassLoader getClassLoader() {
+          return moduleLifeCycle.getClassLoader();
+        }
+        public ResourceResolver getServerResolver() {
+          return resourceResolver;
+        }
+        public ResourceResolver getApplicationResolver() {
+          return applicationResolver;
+        }
+      };
+      plugin.setApplication(descriptor);
+      Descriptor pluginDescriptor = plugin.init(pluginContext);
+      if (pluginDescriptor != null) {
+        pluginDescriptors.put(plugin.getName(), pluginDescriptor);
+      }
+    }
+
+    //
+    for (Iterator<String> i = plugins.keySet().iterator();i.hasNext();) {
+      String name = i.next();
+      if (!pluginDescriptors.containsKey(name)) {
+        i.remove();
+      }
+    }
+
     //
     Provider<Injector> provider = injectorProvider;
     Injector injector = provider.get();
@@ -175,14 +254,9 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
       }
     }
 
-    // Bind the resolver
-    ClassLoaderResolver resolver = new ClassLoaderResolver(moduleLifeCycle.getClassLoader());
-    injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.classpath")), resolver);
-    injector.bindBean(ResourceResolver.class, Collections.<Annotation>singletonList(new NameLiteral("juzu.resource_resolver.server")), this.resourceResolver);
-
     //
     logger.log("Starting " + descriptor.getName());
-    InjectionContext<?, ?> injectionContext = doStart(descriptor, injector);
+    InjectionContext<?, ?> injectionContext = doStart(descriptor, injector, plugins.values(), pluginDescriptors.values());
 
     //
     AssetPlugin assetPlugin = injectionContext.get(AssetPlugin.class).get();
@@ -200,6 +274,8 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     this.descriptor = descriptor;
     this.application = application;
     this.classLoader = moduleLifeCycle.getClassLoader();
+    this.plugins = plugins;
+    this.pluginDescriptors = pluginDescriptors;
 
     // For application start (perhaps we could remove that)
     try {
@@ -210,7 +286,11 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
   }
 
-  private <B, I> InjectionContext<B, I> doStart(final ApplicationDescriptor descriptor, Injector injector) {
+  private static <B, I> InjectionContext<B, I> doStart(
+      final ApplicationDescriptor descriptor,
+      Injector injector,
+      Collection<ApplicationPlugin> plugins,
+      Collection<Descriptor> pluginDescriptors) {
 
     // Bind the application descriptor
     injector.bindBean(ApplicationDescriptor.class, null, descriptor);
@@ -224,15 +304,19 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
 
     // Bind the plugins
-    for (Plugin plugin : descriptor.getPlugins().values()) {
+    for (Plugin plugin : plugins) {
+
+      // Bind the plugin as a bean
       Class aClass = plugin.getClass();
       Object o = plugin;
       injector.bindBean(aClass, null, o);
     }
 
     // Bind the beans
-    for (BeanDescriptor bean : descriptor.getBeans()) {
-      bean.bind(injector);
+    for (Descriptor pluginDescriptor : pluginDescriptors) {
+      for (BeanDescriptor bean : pluginDescriptor.getBeans()) {
+        bean.bind(injector);
+      }
     }
 
     // Filter the classes:
@@ -294,6 +378,8 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     scriptManager = null;
     descriptor = null;
     classLoader = null;
+    plugins = null;
+    pluginDescriptors = null;
   }
 
   public void close() {

@@ -21,6 +21,7 @@ package juzu.impl.plugin.application;
 
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
+import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Method;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
@@ -40,7 +41,8 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
-    assertSame(aClass, desc.getControllers().getDefault());
+    ControllersDescriptor controller = new ControllersDescriptor(desc);
+    assertSame(aClass, controller.getDefault());
   }
 
   public void _testMethodId() throws Exception {
@@ -51,9 +53,10 @@ public class ApplicationTestCase extends AbstractTestCase {
 
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
-    Method a = desc.getControllers().getMethod(aClass, "a");
-    Method b = desc.getControllers().getMethod(aClass, "b");
-    Method c = desc.getControllers().getMethod(aClass, "c");
+    ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
+    Method a = controllerDesc.getMethod(aClass, "a");
+    Method b = controllerDesc.getMethod(aClass, "b");
+    Method c = controllerDesc.getMethod(aClass, "c");
 
     //
     assertEquals("foo", a.getId());
@@ -61,9 +64,9 @@ public class ApplicationTestCase extends AbstractTestCase {
     assertEquals("juu", c.getId());
 
     //
-    assertSame(a, desc.getControllers().getMethodById("foo"));
-    assertSame(b, desc.getControllers().getMethodById("bar"));
-    assertSame(c, desc.getControllers().getMethodById("juu"));
+    assertSame(a, controllerDesc.getMethodById("foo"));
+    assertSame(b, controllerDesc.getMethodById("bar"));
+    assertSame(c, controllerDesc.getMethodById("juu"));
   }
 
   public void _testDuplicateMethod() throws Exception {
@@ -87,12 +90,14 @@ public class ApplicationTestCase extends AbstractTestCase {
     Class<?> app1Class = compiler.assertClass("plugin.application.multiple.app1.Application");
     Class<?> a1Class = compiler.assertClass("plugin.application.multiple.app1.A");
     ApplicationDescriptor desc1 = ApplicationDescriptor.create(app1Class);
-    assertSame(a1Class, desc1.getControllers().getControllers().get(0).getType());
+    ControllersDescriptor controllerDesc1 = new ControllersDescriptor(desc1);
+    assertSame(a1Class, controllerDesc1.getControllers().get(0).getType());
 
     //
     Class<?> app2Class = compiler.assertClass("plugin.application.multiple.app2.Application");
     Class<?> a2Class = compiler.assertClass("plugin.application.multiple.app2.A");
     ApplicationDescriptor desc2 = ApplicationDescriptor.create(app2Class);
-    assertSame(a2Class, desc2.getControllers().getControllers().get(0).getType());
+    ControllersDescriptor controllerDesc2 = new ControllersDescriptor(desc2);
+    assertSame(a2Class, controllerDesc2.getControllers().get(0).getType());
   }
 }

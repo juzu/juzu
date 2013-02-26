@@ -21,8 +21,11 @@ package juzu.impl.bridge.spi.portlet;
 
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.plugin.module.AbstractWarModuleContext;
+import juzu.impl.resource.ResourceResolver;
 
 import javax.portlet.PortletContext;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletModuleContext extends AbstractWarModuleContext {
@@ -33,9 +36,26 @@ public class PortletModuleContext extends AbstractWarModuleContext {
   /** . */
   private final ClassLoader classLoader;
 
+  /** . */
+  private final ResourceResolver resolver;
+
   public PortletModuleContext(PortletContext portletContext, ClassLoader classLoader) {
     this.portletContext = portletContext;
     this.classLoader = classLoader;
+    this.resolver = new ResourceResolver() {
+      public URL resolve(String uri) {
+        try {
+          return PortletModuleContext.this.portletContext.getResource(uri);
+        }
+        catch (MalformedURLException e) {
+          return null;
+        }
+      }
+    };
+  }
+
+  public ResourceResolver getServerResolver() {
+    return resolver;
   }
 
   @Override

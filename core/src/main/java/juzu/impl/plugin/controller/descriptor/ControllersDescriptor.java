@@ -21,6 +21,7 @@ package juzu.impl.plugin.controller.descriptor;
 
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.BeanDescriptor;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
@@ -55,6 +56,10 @@ public class ControllersDescriptor extends Descriptor {
 
   /** . */
   private final Map<MethodHandle, Method> byHandle;
+
+  public ControllersDescriptor(ApplicationDescriptor desc) throws Exception {
+    this(desc.getApplicationLoader(), desc.getConfig().getJSON("controller"));
+  }
 
   public ControllersDescriptor(ClassLoader loader, JSON config) throws Exception {
     List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();

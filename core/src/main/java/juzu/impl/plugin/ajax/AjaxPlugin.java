@@ -24,12 +24,12 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
-import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
@@ -53,7 +53,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
   Map<String, Method> table;
 
   @Inject
-  ApplicationDescriptor desc;
+  ControllerPlugin controllerPlugin;
 
   @Inject
   @Named("juzu.asset_manager.script")
@@ -64,8 +64,8 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @Override
-  public Descriptor init(ApplicationDescriptor application, JSON config) throws Exception {
-    return config != null ? new Descriptor() : null;
+  public Descriptor init(PluginContext context) throws Exception {
+    return context.getConfig() != null ? new Descriptor() : null;
   }
 
   @PostConstruct
@@ -88,7 +88,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
     //
     Map<String, Method> table = new HashMap<String, Method>();
-    for (Method cm : desc.getControllers().getMethods()) {
+    for (Method cm : controllerPlugin.getDescriptor().getMethods()) {
       Ajax ajax = cm.getMethod().getAnnotation(Ajax.class);
       if (ajax != null) {
         table.put(cm.getName(), cm);

@@ -19,12 +19,12 @@
 
 package juzu.impl.plugin.controller;
 
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.common.JSON;
 import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
@@ -32,8 +32,6 @@ import juzu.request.ActionContext;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
-import juzu.request.MimeContext;
-import juzu.request.RenderContext;
 import juzu.request.RequestContext;
 import juzu.request.ResourceContext;
 import juzu.request.SecurityContext;
@@ -58,8 +56,8 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
   }
 
   @Override
-  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
-    return descriptor = new ControllersDescriptor(loader, config);
+  public Descriptor init(PluginContext context) throws Exception {
+    return descriptor = new ControllersDescriptor(context.getClassLoader(), context.getConfig());
   }
 
   public void invoke(Request request) {

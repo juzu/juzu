@@ -33,6 +33,7 @@ import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.module.ModuleContext;
@@ -217,7 +218,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   }
 
   public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException {
-    ControllerResolver<Method> resolver = bridge.application.getApplication().getDescriptor().getControllers().getResolver();
+    ControllerResolver<Method> resolver = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getResolver();
     List<Method> methods = resolver.resolveMethods(Phase.EVENT, null, request.getParameterMap().keySet());
 
     //

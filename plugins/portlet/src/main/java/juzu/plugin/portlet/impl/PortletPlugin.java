@@ -20,7 +20,7 @@
 package juzu.plugin.portlet.impl;
 
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.common.JSON;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 
 /**
@@ -34,7 +34,7 @@ public class PortletPlugin extends ApplicationPlugin {
   }
 
   @Override
-  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
+  public Descriptor init(PluginContext context) throws Exception {
     return PortletDescriptor.INSTANCE;
   }
 }

@@ -52,7 +52,7 @@ public class Bridge implements Closeable {
   public final Module module;
 
   /** . */
-  public ApplicationLifeCycle application;
+  public ApplicationLifeCycle<?, ?> application;
 
   public Bridge(Logger log, Module module, BridgeConfig config, ReadFileSystem<?> resources, AssetServer server, ResourceResolver resolver) {
     this.log = log;

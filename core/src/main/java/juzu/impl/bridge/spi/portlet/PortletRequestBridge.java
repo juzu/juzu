@@ -27,9 +27,8 @@ import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
-import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
@@ -123,9 +122,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
     //
     Phase phase = getPhase();
-    ApplicationDescriptor descriptor = bridge.getApplication().getDescriptor();
-    ControllersDescriptor controllers = descriptor.getControllers();
-    ControllerResolver<Method> resolver = controllers.getResolver();
+    ControllerResolver<Method> resolver = bridge.application.getPlugin(ControllerPlugin.class).getResolver();
     Method<?> target;
     if (methodId != null) {
       target = resolver.resolveMethod(phase, methodId, parameters.keySet());
@@ -408,7 +405,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           MimeResponse mimeResp = (MimeResponse)resp;
 
           //
-          Method method = bridge.getApplication().getDescriptor().getControllers().getMethodByHandle(target);
+          Method method = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
           //
           BaseURL url;

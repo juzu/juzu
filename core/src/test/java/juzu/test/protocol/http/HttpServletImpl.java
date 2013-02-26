@@ -24,6 +24,7 @@ import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.request.Phase;
 
@@ -73,11 +74,11 @@ public class HttpServletImpl extends HttpServlet {
     }
 
     //
-    MethodHandle method = methodId != null ? application.getDescriptor().getControllers().getMethodById(methodId).getHandle() : null;
+    MethodHandle method = methodId != null ? application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodById(methodId).getHandle() : null;
 
     //
     if (method == null) {
-      Method descriptor = application.getApplication().getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+      Method descriptor = application.getPlugin(ControllerPlugin.class).getDescriptor().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
       method = descriptor != null ? descriptor.getHandle() : null;
     }
 

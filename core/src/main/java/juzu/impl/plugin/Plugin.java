@@ -20,7 +20,6 @@
 package juzu.impl.plugin;
 
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.common.JSON;
 
 /**
  * Base class for a plugin.
@@ -43,12 +42,11 @@ public abstract class Plugin {
   /**
    * Returns the plugin descriptor or null if the plugin should not be loaded.
    *
-   * @param loader the loader
-   * @param config the plugin config
+   * @param context the plugin context
    * @return the descriptor
    * @throws Exception any exception
    */
-  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
+  public Descriptor init(PluginContext context) throws Exception {
     return null;
   }
 }

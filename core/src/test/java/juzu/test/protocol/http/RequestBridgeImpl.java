@@ -85,7 +85,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
       MethodHandle target,
       Map<String, String[]> parameters) {
 
-    Method<?> desc = application.getDescriptor().getControllers().getMethodByHandle(target);
+    Method<?> desc = application.getControllerPlugin().getDescriptor().getMethodByHandle(target);
     Map<String, ? extends Argument> arguments = desc.getArguments(parameters);
 
     //
@@ -276,7 +276,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
 
         //
-        Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
+        Method method = application.getControllerPlugin().getDescriptor().getMethodByHandle(target);
 
         //
         appendable.append(req.getScheme());

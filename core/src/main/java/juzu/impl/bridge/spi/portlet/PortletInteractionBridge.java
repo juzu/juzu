@@ -23,6 +23,7 @@ import juzu.EventQueue;
 import juzu.Response;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.ContextualArgument;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
@@ -82,7 +83,7 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
       }
 
       //
-      Method method = bridge.getApplication().getDescriptor().getControllers().getMethodByHandle(update.getTarget());
+      Method method = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
 
       // Method id
       super.resp.setRenderParameter("juzu.op", method.getId());

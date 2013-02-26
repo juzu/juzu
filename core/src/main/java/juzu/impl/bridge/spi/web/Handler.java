@@ -24,7 +24,9 @@ import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.URIWriter;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.router.RouteDescriptor;
+import juzu.impl.plugin.router.RouterPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
@@ -71,10 +73,9 @@ public class Handler implements Closeable {
 
     //
     Route root;
-    RouteDescriptor routesDesc = (RouteDescriptor)bridge.application.getDescriptor().getPluginDescriptor("router");
-    if (routesDesc != null) {
-      Map<RouteDescriptor, Route> ret;
-      ret = routesDesc.create();
+    RouterPlugin router = bridge.application.getPlugin(RouterPlugin.class);
+    if (router != null) {
+      Map<RouteDescriptor, Route> ret = router.getDescriptor().create();
       root = ret.values().iterator().next();
       for (Map.Entry<RouteDescriptor, Route> entry : ret.entrySet()) {
         for (Map.Entry<String, String> entry2 : entry.getKey().getTargets().entrySet()) {
@@ -142,7 +143,7 @@ public class Handler implements Closeable {
         for (Phase phase : phases) {
           MethodHandle handle = m.get(phase);
           if (handle != null) {
-            requestMethod =  this.bridge.application.getDescriptor().getControllers().getMethodByHandle(handle);
+            requestMethod =  this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(handle);
             if (requestMatch.getMatched().size() > 0 || bridge.getParameters().size() > 0) {
               requestParameters = new HashMap<String, String[]>();
               for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet()) {
@@ -162,7 +163,7 @@ public class Handler implements Closeable {
     // or we look for the handler method
     if (requestMethod == null) {
       // If we have an handler we locate the index method
-      requestMethod = this.bridge.application.getDescriptor().getControllers().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+      requestMethod = this.bridge.application.getPlugin(ControllerPlugin.class).getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
     }
 
     // No method -> not found
@@ -209,7 +210,7 @@ public class Handler implements Closeable {
           Response.View update = (Response.View)response;
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
-            Method<?> desc = this.bridge.application.getDescriptor().getControllers().getMethodByHandle(update.getTarget());
+            Method<?> desc = this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
             requestBridge = new WebRenderBridge(this.bridge, this, bridge, desc, update.getParameters());
             requestBridge.invoke();
           }

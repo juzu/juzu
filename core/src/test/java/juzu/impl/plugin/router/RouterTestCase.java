@@ -40,7 +40,7 @@ public class RouterTestCase extends AbstractInjectTestCase {
 
     //
     ApplicationDescriptor descriptor = application.getContext().getDescriptor();
-    RouteDescriptor desc = (RouteDescriptor)descriptor.getPluginDescriptor("router");
+    RouteDescriptor desc = new RouteDescriptor(descriptor.getConfig().getJSON("router"));
     List<RouteDescriptor> routes = desc.getChildren();
     assertEquals(3, routes.size());
   }

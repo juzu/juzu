@@ -83,7 +83,7 @@ public abstract class MockRequestBridge implements RequestBridge {
   public MockRequestBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
 
     //
-    Method<?> descriptor = application.getDescriptor().getControllers().getMethodByHandle(target);
+    Method<?> descriptor = application.getControllerPlugin().getDescriptor().getMethodByHandle(target);
     Map<String, ? extends Argument> arguments = descriptor.getArguments(parameters);
 
     //
@@ -214,7 +214,7 @@ public abstract class MockRequestBridge implements RequestBridge {
 
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
         //
-        Method method = application.getDescriptor().getControllers().getMethodByHandle(target);
+        Method method = application.getControllerPlugin().getDescriptor().getMethodByHandle(target);
 
         //
         JSON props = new JSON();

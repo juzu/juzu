@@ -19,19 +19,29 @@
 
 package juzu.impl.plugin.router;
 
-import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouterPlugin extends ApplicationPlugin {
+
+  /** . */
+  private RouteDescriptor descriptor;
 
   public RouterPlugin() {
     super("router");
   }
 
   @Override
-  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
-    return config != null ? new RouteDescriptor(config) : null;
+  public Descriptor init(PluginContext context) throws Exception {
+    if (context.getConfig() != null) {
+      descriptor = new RouteDescriptor(context.getConfig());
+    }
+    return descriptor;
+  }
+
+  public RouteDescriptor getDescriptor() {
+    return descriptor;
   }
 }

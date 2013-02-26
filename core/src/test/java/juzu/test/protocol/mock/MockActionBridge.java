@@ -83,7 +83,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   }
 
   public void assertRender(String expectedTarget, Map<String, String> expectedArguments) {
-    assertRender(application.getDescriptor().getControllers().getMethodById(expectedTarget).getHandle(), expectedArguments);
+    assertRender(application.getControllerPlugin().getDescriptor().getMethodById(expectedTarget).getHandle(), expectedArguments);
   }
 
   private void assertResponse(Response expectedResponse) {

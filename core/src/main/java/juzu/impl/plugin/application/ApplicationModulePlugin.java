@@ -19,8 +19,8 @@
 
 package juzu.impl.plugin.application;
 
-import juzu.impl.common.JSON;
 import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.plugin.module.ModulePlugin;
 
@@ -32,7 +32,7 @@ public class ApplicationModulePlugin extends ModulePlugin {
   }
 
   @Override
-  public Descriptor init(ClassLoader loader, JSON config) throws Exception {
-    return new ApplicationModuleDescriptor(config);
+  public Descriptor init(PluginContext context) throws Exception {
+    return new ApplicationModuleDescriptor(context.getConfig());
   }
 }

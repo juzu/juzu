@@ -62,7 +62,7 @@ public class MockClient implements UserContext {
       Method method = null;
       if (json.getString("target") != null) {
         MethodHandle target = MethodHandle.parse(json.getString("target"));
-        method = application.getContext().getDescriptor().getControllers().getMethodByHandle(target);
+        method = application.getContext().getControllerPlugin().getDescriptor().getMethodByHandle(target);
       }
 
       //
@@ -116,7 +116,7 @@ public class MockClient implements UserContext {
     this.session = new ScopedContext();
     this.flash = null;
     this.flashHistory = new LinkedList<List<Scoped>>();
-    this.controllers = application.getContext().getDescriptor().getControllers();
+    this.controllers = application.getContext().getControllerPlugin().getDescriptor();
     this.locales = locales;
   }
 

@@ -19,7 +19,6 @@
 
 package juzu.impl.plugin.module;
 
-import juzu.impl.common.DevClassLoader;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
