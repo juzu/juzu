@@ -46,6 +46,7 @@ import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
 import juzu.plugin.webresource.Util;
 import juzu.plugin.webresource.annotation.Groups;
 import ro.isdc.wro.model.resource.Resource;
+import ro.isdc.wro.model.resource.ResourceType;
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
 
@@ -169,7 +170,7 @@ public class WRO4JPlugin extends ModuleMetaModelPlugin {
                     Path path = Path.parse((String) annon.get("path"));
                     Path.Absolute absolute = wro4jPkg.resolve(path);
                     FileObject f = processingContext.resolveResource(pkgHandle, absolute);
-                    Resource r = Resource.create(f.toUri().toString());
+                    Resource r = Resource.create(f.toUri().toString(), ResourceType.valueOf(resultType.name()));
                     builder.withResource(r);
                 }
             }
