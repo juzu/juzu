@@ -19,7 +19,6 @@
 
 package juzu.request;
 
-import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RenderBridge;
@@ -30,8 +29,8 @@ public class RenderContext extends MimeContext {
   /** . */
   private RenderBridge bridge;
 
-  public RenderContext(Request request, Application application, Method method, RenderBridge bridge) {
-    super(request, application, method);
+  public RenderContext(Request request, Method method, RenderBridge bridge) {
+    super(request, method);
 
     //
     this.bridge = bridge;

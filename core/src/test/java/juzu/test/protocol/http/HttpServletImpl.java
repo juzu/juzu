@@ -19,7 +19,6 @@
 
 package juzu.test.protocol.http;
 
-import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
@@ -84,11 +83,11 @@ public class HttpServletImpl extends HttpServlet {
 
     //
     if (phase == Phase.ACTION) {
-      return new ActionBridgeImpl(application.getApplication(), req, resp, method, parameters);
+      return new ActionBridgeImpl(application, req, resp, method, parameters);
     } else if (phase == Phase.VIEW) {
-      return new RenderBridgeImpl(this, application.getApplication(), req, resp, method, parameters);
+      return new RenderBridgeImpl(this, application, req, resp, method, parameters);
     } else if (phase == Phase.RESOURCE) {
-      return new ResourceBridgeImpl(application.getApplication(), req, resp, method, parameters);
+      return new ResourceBridgeImpl(application, req, resp, method, parameters);
     } else {
       throw new AssertionError();
     }
@@ -144,8 +143,7 @@ public class HttpServletImpl extends HttpServlet {
     else {
       RequestBridgeImpl requestBridge = create(req, resp);
       try {
-        Application context = application.getApplication();
-        context.invoke(requestBridge);
+        application.getPlugin(ControllerPlugin.class).invoke(requestBridge);
       }
       finally {
         requestBridge.close();

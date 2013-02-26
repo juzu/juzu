@@ -75,19 +75,24 @@ public class Handler implements Closeable {
     Route root;
     RouterPlugin router = bridge.application.getPlugin(RouterPlugin.class);
     if (router != null) {
-      Map<RouteDescriptor, Route> ret = router.getDescriptor().create();
-      root = ret.values().iterator().next();
-      for (Map.Entry<RouteDescriptor, Route> entry : ret.entrySet()) {
-        for (Map.Entry<String, String> entry2 : entry.getKey().getTargets().entrySet()) {
-          MethodHandle handle = MethodHandle.parse(entry2.getValue());
-          Phase phase = Phase.valueOf(entry2.getKey());
-          forwardRoutes.put(handle, entry.getValue());
-          Map<Phase, MethodHandle> map =  backwardRoutes.get(entry.getValue());
-          if (map == null) {
-            backwardRoutes.put(entry.getValue(), map = new HashMap<Phase, MethodHandle>());
+      RouteDescriptor route = router.getDescriptor();
+      if (route != null) {
+        Map<RouteDescriptor, Route> ret = route.create();
+        root = ret.values().iterator().next();
+        for (Map.Entry<RouteDescriptor, Route> entry : ret.entrySet()) {
+          for (Map.Entry<String, String> entry2 : entry.getKey().getTargets().entrySet()) {
+            MethodHandle handle = MethodHandle.parse(entry2.getValue());
+            Phase phase = Phase.valueOf(entry2.getKey());
+            forwardRoutes.put(handle, entry.getValue());
+            Map<Phase, MethodHandle> map =  backwardRoutes.get(entry.getValue());
+            if (map == null) {
+              backwardRoutes.put(entry.getValue(), map = new HashMap<Phase, MethodHandle>());
+            }
+            map.put(phase, handle);
           }
-          map.put(phase, handle);
         }
+      } else {
+        root = new Router();
       }
     } else {
       root = new Router();

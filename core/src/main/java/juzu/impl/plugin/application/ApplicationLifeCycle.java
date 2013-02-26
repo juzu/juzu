@@ -145,12 +145,13 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   }
 
   public <P extends Plugin> P getPlugin(Class<P> pluginType) {
-    for (ApplicationPlugin plugin : plugins.values()) {
-      if (pluginType.isInstance(plugin)) {
-        return pluginType.cast(plugin);
-      }
+    try {
+      BeanLifeCycle<P> pluginLifeCycle = injectionContext.get(pluginType);
+      return pluginLifeCycle != null ? pluginLifeCycle.get() : null;
     }
-    return null;
+    catch (InvocationTargetException e) {
+      throw new UnsupportedOperationException("Handle me gracefully", e);
+    }
   }
 
   public boolean refresh() throws Exception {

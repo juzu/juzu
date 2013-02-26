@@ -20,10 +20,10 @@
 package juzu.test.protocol.http;
 
 import juzu.Response;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.io.AppendableStream;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
@@ -43,7 +43,7 @@ public class ResourceBridgeImpl extends MimeBridgeImpl implements ResourceBridge
   private Response.Content response;
 
   ResourceBridgeImpl(
-      Application application,
+      ApplicationLifeCycle<?, ?> application,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,

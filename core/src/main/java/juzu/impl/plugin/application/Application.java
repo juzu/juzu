@@ -19,31 +19,12 @@
 
 package juzu.impl.plugin.application;
 
-import juzu.Response;
-import juzu.UndeclaredIOException;
-import juzu.impl.bridge.spi.EventBridge;
-import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
-import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Method;
-import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.spi.InjectionContext;
-import juzu.impl.request.Request;
-import juzu.impl.request.RequestFilter;
-import juzu.impl.bridge.spi.ActionBridge;
-import juzu.impl.bridge.spi.RenderBridge;
-import juzu.impl.bridge.spi.RequestBridge;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.request.Phase;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Singleton
@@ -55,48 +36,14 @@ public class Application {
   /** . */
   final InjectionContext<?, ?> injectionContext;
 
-  /** . */
-  private final ControllerPlugin controllerPlugin;
-
-  /** . */
-  public ArrayList<RequestFilter> lifecycles;
-
   @Inject
-  public Application(InjectionContext injectionContext, ApplicationDescriptor descriptor, ControllerPlugin controllerPlugin) throws Exception {
-    this.descriptor = descriptor;
+  public Application(InjectionContext injectionContext, ApplicationDescriptor descriptor) throws Exception {
     this.injectionContext = injectionContext;
-    this.controllerPlugin = controllerPlugin;
-  }
-
-  // This is done lazyly to avoid circular references issues
-  private <B, I> ArrayList<RequestFilter> getLifecycles(InjectionContext<B, I> manager) throws Exception {
-    if (lifecycles == null) {
-      ArrayList<RequestFilter> lifeCycles = new ArrayList<RequestFilter>();
-      for (B lifeCycleBean : manager.resolveBeans(RequestFilter.class)) {
-        I lifeCycleInstance = manager.create(lifeCycleBean);
-        RequestFilter lifeCycle = (RequestFilter)manager.get(lifeCycleBean, lifeCycleInstance);
-        lifeCycles.add(lifeCycle);
-      }
-      lifecycles = lifeCycles;
-    }
-    return lifecycles;
-  }
-
-  public ControllerPlugin getControllerPlugin() {
-    return controllerPlugin;
+    this.descriptor = descriptor;
   }
 
   public String getName() {
     return descriptor.getName();
-  }
-
-  public List<RequestFilter> getLifecycles() {
-    try {
-      return getLifecycles(injectionContext);
-    }
-    catch (Exception e) {
-      throw new UnsupportedOperationException("handle me cracefully", e);
-    }
   }
 
   public ClassLoader getClassLoader() {
@@ -105,78 +52,6 @@ public class Application {
 
   public ApplicationDescriptor getDescriptor() {
     return descriptor;
-  }
-
-  public InjectionContext<?, ?> getInjectionContext() {
-    return injectionContext;
-  }
-
-  public void invoke(RequestBridge bridge) {
-    Phase phase;
-    if (bridge instanceof RenderBridge) {
-      phase = Phase.VIEW;
-    }
-    else if (bridge instanceof ActionBridge) {
-      phase = Phase.ACTION;
-    }
-    else if (bridge instanceof EventBridge) {
-      phase = Phase.EVENT;
-    }
-    else if (bridge instanceof ResourceBridge) {
-      phase = Phase.RESOURCE;
-    }
-    else {
-      throw new AssertionError();
-    }
-
-    //
-    Map<String, String[]> parameters = bridge.getParameters();
-
-    //
-    MethodHandle handle = bridge.getTarget();
-    Method method = controllerPlugin.getDescriptor().getMethodByHandle(handle);
-
-    //
-    if (method == null) {
-      StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
-        "phase=").append(phase).append(" handle=").append(handle).append(" parameters={");
-      int index = 0;
-      for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
-        if (index++ > 0) {
-          sb.append(',');
-        }
-        sb.append(entry.getKey()).append('=').append(Arrays.asList(entry.getValue()));
-      }
-      sb.append("}");
-      throw new UnsupportedOperationException(sb.toString());
-    }
-
-    //
-    Request request = new Request(this, method, parameters, bridge);
-
-    //
-    ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
-    try {
-      ClassLoader classLoader = injectionContext.getClassLoader();
-      Thread.currentThread().setContextClassLoader(classLoader);
-      ScopeController.begin(request);
-      bridge.begin(request);
-      request.invoke();
-      Response response = request.getResponse();
-      if (response != null) {
-        try {
-          bridge.setResponse(response);
-        }
-        catch (IOException e) {
-          throw new UndeclaredIOException(e);
-        }
-      }
-    }
-    finally {
-      bridge.end();
-      ScopeController.end();
-      Thread.currentThread().setContextClassLoader(oldCL);
-    }
   }
 
   public Object resolveBean(String name) throws InvocationTargetException {

@@ -20,19 +20,17 @@
 package juzu.request;
 
 import juzu.Response;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.MimeBridge;
-import juzu.io.AppendableStream;
 
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MimeContext extends RequestContext {
 
-  protected MimeContext(Request request, Application application, Method method) {
-    super(request, application, method);
+  protected MimeContext(Request request, Method method) {
+    super(request, method);
   }
 
   @Override

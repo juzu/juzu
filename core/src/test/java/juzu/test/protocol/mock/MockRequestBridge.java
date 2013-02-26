@@ -23,8 +23,9 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.common.MimeType;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
@@ -48,7 +49,7 @@ import java.util.Map;
 public abstract class MockRequestBridge implements RequestBridge {
 
   /** . */
-  protected final Application application;
+  protected final ApplicationLifeCycle<?, ?> application;
 
   /** . */
   protected final MockClient client;
@@ -80,10 +81,10 @@ public abstract class MockRequestBridge implements RequestBridge {
   /** . */
   protected Response response;
 
-  public MockRequestBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockRequestBridge(ApplicationLifeCycle<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
 
     //
-    Method<?> descriptor = application.getControllerPlugin().getDescriptor().getMethodByHandle(target);
+    Method<?> descriptor = application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
     Map<String, ? extends Argument> arguments = descriptor.getArguments(parameters);
 
     //
@@ -214,7 +215,7 @@ public abstract class MockRequestBridge implements RequestBridge {
 
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
         //
-        Method method = application.getControllerPlugin().getDescriptor().getMethodByHandle(target);
+        Method method = application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
         //
         JSON props = new JSON();

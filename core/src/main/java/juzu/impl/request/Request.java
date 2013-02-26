@@ -21,8 +21,8 @@ package juzu.impl.request;
 
 import juzu.Response;
 import juzu.Scope;
+import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.impl.bridge.spi.EventBridge;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
@@ -31,14 +31,19 @@ import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.bridge.spi.ResourceBridge;
+import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.request.ActionContext;
+import juzu.request.Dispatch;
 import juzu.request.EventContext;
+import juzu.request.Phase;
 import juzu.request.RenderContext;
 import juzu.request.RequestContext;
 import juzu.request.ResourceContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -52,7 +57,7 @@ public class Request implements ScopingContext {
   private static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
   /** . */
-  private final Application application;
+  private final ControllerPlugin plugin;
 
   /** . */
   private final RequestBridge bridge;
@@ -70,7 +75,8 @@ public class Request implements ScopingContext {
   private Response response;
 
   public Request(
-    Application application,
+    ControllerPlugin plugin,
+//    Application application,
     Method method,
     Map<String, String[]> parameters,
     RequestBridge bridge) {
@@ -81,28 +87,24 @@ public class Request implements ScopingContext {
 
     //
     if (bridge instanceof RenderBridge) {
-      context = new RenderContext(this, application, method, (RenderBridge)bridge);
+      context = new RenderContext(this, method, (RenderBridge)bridge);
     }
     else if (bridge instanceof ActionBridge) {
-      context = new ActionContext(this, application, method, (ActionBridge)bridge);
+      context = new ActionContext(this, method, (ActionBridge)bridge);
     }
     else if (bridge instanceof EventBridge) {
-      context = new EventContext(this, application, method, (EventBridge)bridge);
+      context = new EventContext(this, method, (EventBridge)bridge);
     }
     else {
-      context = new ResourceContext(this, application, method, (ResourceBridge)bridge);
+      context = new ResourceContext(this, method, (ResourceBridge)bridge);
     }
 
     //
     this.context = context;
     this.bridge = bridge;
     this.parameters = parameters;
-    this.application = application;
     this.arguments = arguments;
-  }
-
-  public Application getApplication() {
-    return application;
+    this.plugin = plugin;
   }
 
   public RequestBridge getBridge() {
@@ -186,8 +188,12 @@ public class Request implements ScopingContext {
         current.set(this);
       }
 
-      if (index >= 0 && index < application.getLifecycles().size()) {
-        RequestFilter plugin = application.getLifecycles().get(index);
+      //
+      List<RequestFilter> filters = plugin.getFilters();
+
+      //
+      if (index >= 0 && index < filters.size()) {
+        RequestFilter plugin = filters.get(index);
         try {
           index++;
           plugin.invoke(this);
@@ -196,7 +202,7 @@ public class Request implements ScopingContext {
           index--;
         }
       }
-      else if (index == application.getLifecycles().size()) {
+      else if (index == filters.size()) {
 
         // Get arguments
         Method<?> method = context.getMethod();
@@ -210,7 +216,7 @@ public class Request implements ScopingContext {
         }
 
         // Invoke
-        doInvoke(this, args, application.getInjectionContext());
+        doInvoke(this, args, plugin.getInjectionContext());
       }
       else {
         throw new AssertionError();
@@ -292,5 +298,23 @@ public class Request implements ScopingContext {
         lifeCycle.close();
       }
     }
+  }
+
+  public Dispatch createDispatch(Method<?> method, DispatchSPI spi) {
+    ControllersDescriptor desc = plugin.getDescriptor();
+    Dispatch dispatch;
+    if (method.getPhase() == Phase.ACTION) {
+      dispatch = new Phase.Action.Dispatch(spi);
+    } else if (method.getPhase() == Phase.VIEW) {
+      dispatch = new Phase.View.Dispatch(spi);
+      dispatch.escapeXML(desc.getEscapeXML());
+    } else if (method.getPhase() == Phase.RESOURCE) {
+      dispatch = new Phase.Resource.Dispatch(spi);
+      dispatch.escapeXML(desc.getEscapeXML());
+    } else {
+      throw new AssertionError();
+    }
+    dispatch.escapeXML(desc.getEscapeXML());
+    return dispatch;
   }
 }

@@ -20,15 +20,15 @@
 package juzu.test.protocol.mock;
 
 import juzu.Response;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.request.ClientContext;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
 import juzu.test.AbstractTestCase;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockActionBridge extends MockRequestBridge implements ActionBridge {
 
-  public MockActionBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockActionBridge(ApplicationLifeCycle<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
 
@@ -83,7 +83,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   }
 
   public void assertRender(String expectedTarget, Map<String, String> expectedArguments) {
-    assertRender(application.getControllerPlugin().getDescriptor().getMethodById(expectedTarget).getHandle(), expectedArguments);
+    assertRender(application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodById(expectedTarget).getHandle(), expectedArguments);
   }
 
   private void assertResponse(Response expectedResponse) {

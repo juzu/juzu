@@ -20,9 +20,9 @@
 package juzu.test.protocol.http;
 
 import juzu.Response;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.request.ClientContext;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
@@ -39,7 +39,7 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
   private Response response;
 
   ActionBridgeImpl(
-      Application application,
+      ApplicationLifeCycle<?, ?> application,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,

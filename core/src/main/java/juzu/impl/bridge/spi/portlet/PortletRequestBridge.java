@@ -26,7 +26,6 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.request.Method;
@@ -332,9 +331,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   }
 
   public void invoke() throws Exception {
-    Application application = bridge.getApplication();
     try {
-      application.invoke(this);
+      bridge.application.getPlugin(ControllerPlugin.class).invoke(this);
     } finally {
       Tools.safeClose(this);
     }

@@ -19,20 +19,17 @@
 
 package juzu.test.protocol.mock;
 
-import juzu.Response;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.request.ClientContext;
-import org.junit.Assert;
 
-import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockResourceBridge extends MockMimeBridge implements ResourceBridge {
 
-  public MockResourceBridge(Application application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockResourceBridge(ApplicationLifeCycle<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
 

@@ -24,8 +24,6 @@ import juzu.Response;
 import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.impl.common.ParameterHashMap;
 import juzu.impl.common.ParameterMap;
-import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -39,22 +37,14 @@ public abstract class RequestContext {
   private static final Object[] EMPTY = new Object[0];
 
   /** . */
-  protected final Application application;
-
-  /** . */
   protected final Method method;
 
   /** . */
   protected final Request request;
 
-  public RequestContext(Request request, Application application, Method method) {
+  public RequestContext(Request request, Method method) {
     this.request = request;
-    this.application = application;
     this.method = method;
-  }
-
-  public Application getApplication() {
-    return application;
   }
 
   public Method getMethod() {
@@ -97,7 +87,7 @@ public abstract class RequestContext {
    */
   public Dispatch createDispatch(Method<?> method) {
     DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), ParameterMap.EMPTY);
-    return createDispatch(method, spi);
+    return request.createDispatch(method, spi);
   }
 
   public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method) {
@@ -147,24 +137,6 @@ public abstract class RequestContext {
   private Dispatch createDispatch(Method<?> method, Object[] args, ParameterMap parameters) {
     method.setArgs(args, parameters);
     DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
-    return createDispatch(method, spi);
-  }
-
-  private Dispatch createDispatch(Method<?> method, DispatchSPI spi) {
-    ControllersDescriptor desc = application.getControllerPlugin().getDescriptor();
-    Dispatch dispatch;
-    if (method.getPhase() == Phase.ACTION) {
-      dispatch = new Phase.Action.Dispatch(spi);
-    } else if (method.getPhase() == Phase.VIEW) {
-      dispatch = new Phase.View.Dispatch(spi);
-      dispatch.escapeXML(desc.getEscapeXML());
-    } else if (method.getPhase() == Phase.RESOURCE) {
-      dispatch = new Phase.Resource.Dispatch(spi);
-      dispatch.escapeXML(desc.getEscapeXML());
-    } else {
-      throw new AssertionError();
-    }
-    dispatch.escapeXML(desc.getEscapeXML());
-    return dispatch;
+    return request.createDispatch(method, spi);
   }
 }

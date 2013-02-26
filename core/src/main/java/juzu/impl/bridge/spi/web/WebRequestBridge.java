@@ -26,7 +26,6 @@ import juzu.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
@@ -302,9 +301,8 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   void invoke() throws Exception {
-    Application application = bridge.getApplication();
     try {
-      application.invoke(this);
+      bridge.application.getPlugin(ControllerPlugin.class).invoke(this);
     } finally {
       Tools.safeClose(this);
     }

@@ -20,7 +20,7 @@
 package juzu.test.protocol.mock;
 
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
+import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
@@ -62,22 +62,22 @@ public class MockClient implements UserContext {
       Method method = null;
       if (json.getString("target") != null) {
         MethodHandle target = MethodHandle.parse(json.getString("target"));
-        method = application.getContext().getControllerPlugin().getDescriptor().getMethodByHandle(target);
+        method = controllerPlugin.getDescriptor().getMethodByHandle(target);
       }
 
       //
       if (method != null) {
         if (method.getPhase() == Phase.ACTION) {
-          request = new MockActionBridge(application.getContext(), this, method.getHandle(), parameters);
+          request = new MockActionBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
         } else if (method.getPhase() == Phase.VIEW) {
-          request = new MockRenderBridge(application.getContext(), this, method.getHandle(), parameters);
+          request = new MockRenderBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
         } else if (method.getPhase() == Phase.RESOURCE) {
-          request = new MockResourceBridge(application.getContext(), this, method.getHandle(), parameters);
+          request = new MockResourceBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
         } else {
           throw new AssertionError();
         }
       } else {
-        request = new MockRenderBridge(application.getContext(), this, null, parameters);
+        request = new MockRenderBridge(application.getLifeCycle(), this, null, parameters);
       }
     }
     catch (Exception e) {
@@ -92,7 +92,7 @@ public class MockClient implements UserContext {
   final MockApplication<?> application;
 
   /** . */
-  private final ControllersDescriptor controllers;
+  private final ControllerPlugin controllerPlugin;
 
   /** . */
   private ScopedContext session;
@@ -110,13 +110,14 @@ public class MockClient implements UserContext {
 
     LinkedList<Locale> locales = new LinkedList<Locale>();
     locales.add(Locale.ENGLISH);
+    ControllerPlugin controllerPlugin = application.getLifeCycle().getPlugin(ControllerPlugin.class);
 
     //
     this.application = application;
     this.session = new ScopedContext();
     this.flash = null;
     this.flashHistory = new LinkedList<List<Scoped>>();
-    this.controllers = application.getContext().getControllerPlugin().getDescriptor();
+    this.controllerPlugin = controllerPlugin;
     this.locales = locales;
   }
 
@@ -132,14 +133,14 @@ public class MockClient implements UserContext {
     MethodHandle handle = null;
     Method method = null;
     if (methodId != null) {
-      method = controllers.getMethodById(methodId);
+      method = controllerPlugin.getDescriptor().getMethodById(methodId);
     } else {
-      method = controllers.getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+      method = controllerPlugin.getDescriptor().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
     }
     if (method != null) {
       handle = method.getHandle();
     }
-    MockRenderBridge render = new MockRenderBridge(application.getContext(), this, handle, new HashMap<String, String[]>());
+    MockRenderBridge render = new MockRenderBridge(application.getLifeCycle(), this, handle, new HashMap<String, String[]>());
     invoke(render);
     return render;
   }
