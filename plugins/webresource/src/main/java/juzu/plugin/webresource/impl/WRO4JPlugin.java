@@ -35,6 +35,7 @@ import javax.tools.StandardLocation;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
 import juzu.impl.common.Path;
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -44,7 +45,6 @@ import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
 import juzu.plugin.webresource.Util;
 import juzu.plugin.webresource.annotation.Groups;
-import org.apache.commons.io.IOUtils;
 import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
@@ -54,8 +54,6 @@ import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
  * @date 2/19/13
  */
 public class WRO4JPlugin extends ModuleMetaModelPlugin {
-
-    private static final Name GROUPS = Name.create(Groups.class);
 
     private static final Logger log = BaseProcessor.getLogger(WRO4JPlugin.class);
 
@@ -206,7 +204,7 @@ public class WRO4JPlugin extends ModuleMetaModelPlugin {
             } catch (IOException ioEx) {
                 log.log("IO exception while write optimized output for " + r.type.name() + " of group " + r.name);
             } finally {
-                IOUtils.closeQuietly(writer);
+                Tools.safeClose(writer);
             }
         }
     }
