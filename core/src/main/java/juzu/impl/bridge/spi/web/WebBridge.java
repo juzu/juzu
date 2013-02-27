@@ -22,7 +22,7 @@ package juzu.impl.bridge.spi.web;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.asset.Asset;
+import juzu.impl.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
@@ -44,10 +44,10 @@ import java.util.Map;
 public abstract class WebBridge {
 
   /** . */
-  public static final PropertyType<Asset.Value> STYLESHEET = new PropertyType<Asset.Value>() {};
+  public static final PropertyType<Asset> STYLESHEET = new PropertyType<Asset>() {};
 
   /** . */
-  public static final PropertyType<Asset.Value> SCRIPT = new PropertyType<Asset.Value>() {};
+  public static final PropertyType<Asset> SCRIPT = new PropertyType<Asset>() {};
 
   public final void send(Response.Error error, boolean verbose) throws IOException {
     if (verbose) {
@@ -151,9 +151,9 @@ public abstract class WebBridge {
     }
 
     //
-    Iterable<Asset.Value> stylesheets = properties.getValues(STYLESHEET);
+    Iterable<Asset> stylesheets = properties.getValues(STYLESHEET);
     if (stylesheets != null) {
-      for (Asset.Value stylesheet : stylesheets) {
+      for (Asset stylesheet : stylesheets) {
         String path = stylesheet.getURI();
         int pos = path.lastIndexOf('.');
         String ext = pos == -1 ? "css" : path.substring(pos + 1);
@@ -166,9 +166,9 @@ public abstract class WebBridge {
     }
 
     //
-    Iterable<Asset.Value> scripts = properties.getValues(SCRIPT);
+    Iterable<Asset> scripts = properties.getValues(SCRIPT);
     if (scripts != null) {
-      for (Asset.Value script : scripts) {
+      for (Asset script : scripts) {
         writer.append("<script type=\"text/javascript\" src=\"");
         renderAssetURL(script.getLocation(), script.getURI(), writer);
         writer.append("\"></script>\n");

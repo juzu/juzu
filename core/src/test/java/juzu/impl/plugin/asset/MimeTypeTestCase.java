@@ -25,6 +25,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlLink;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.UserAgent;
 import juzu.test.protocol.http.AbstractHttpTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -33,11 +35,13 @@ import java.util.List;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MimeTypeTestCase extends AbstractHttpTestCase {
 
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createDeployment("plugin.asset.mimetype");
+  }
+
   @Test
   public void testSatisfied() throws Exception {
-    assertDeploy("plugin.asset.mimetype");
-
-    //
     UserAgent ua = assertInitialPage();
     HtmlPage page = ua.getHomePage();
 

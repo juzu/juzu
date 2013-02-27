@@ -20,7 +20,9 @@
 package juzu.impl.http;
 
 import juzu.test.protocol.http.AbstractHttpTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -29,13 +31,17 @@ import org.openqa.selenium.WebElement;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AjaxTestCase extends AbstractHttpTestCase {
 
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createDeployment("http.ajax");
+  }
+
   @Drone
   WebDriver driver;
 
   @Test
   public void testAjax() throws Exception {
-    assertDeploy("http.ajax");
-    driver.get(deploymentURL.toString());
+    driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
     trigger.click();
     String bar = driver.findElement(By.id("foo")).getText();

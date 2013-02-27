@@ -22,7 +22,7 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.asset.Asset;
+import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.compiler.CompilationException;
@@ -90,8 +90,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       }
 
       //
-      Iterable<Asset> scriptsProp = properties.getValues(PropertyType.SCRIPT);
-      Iterable<Asset> stylesheetsProp = properties.getValues(PropertyType.STYLESHEET);
+      Iterable<String> scriptsProp = properties.getValues(PropertyType.SCRIPT);
+      Iterable<String> stylesheetsProp = properties.getValues(PropertyType.STYLESHEET);
       Iterable<Map.Entry<String, String>> metas = properties.getValues(PropertyType.META_TAG);
 
       //
@@ -106,8 +106,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
       //
       if (stylesheetsProp != null) {
-        Iterable<Asset.Value> stylesheets = bridge.application.getStylesheetManager().resolveAssets(stylesheetsProp);
-        for (Asset.Value stylesheet : stylesheets) {
+        Iterable<Asset> stylesheets = bridge.application.getStylesheetManager().resolveAssets(stylesheetsProp);
+        for (Asset stylesheet : stylesheets) {
           int pos = stylesheet.getURI().lastIndexOf('.');
           String ext = pos == -1 ? "css" : stylesheet.getURI().substring(pos + 1);
           Element elt = this.resp.createElement("link");
@@ -121,8 +121,8 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
       //
       if (scriptsProp != null) {
-        Iterable<Asset.Value> scripts = bridge.application.getScriptManager().resolveAssets(scriptsProp);
-        for (Asset.Value script : scripts) {
+        Iterable<Asset> scripts = bridge.application.getScriptManager().resolveAssets(scriptsProp);
+        for (Asset script : scripts) {
           String url = getAssetURL(script);
           Element elt = this.resp.createElement("script");
           elt.setAttribute("type", "text/javascript");
@@ -138,7 +138,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     }
   }
 
-  private String getAssetURL(Asset.Value asset) {
+  private String getAssetURL(Asset asset) {
     StringBuilder sb;
     String url;
     String uri = asset.getURI();

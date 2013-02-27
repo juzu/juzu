@@ -20,7 +20,7 @@
 package juzu.test.protocol.http;
 
 import juzu.Response;
-import juzu.asset.Asset;
+import juzu.impl.asset.Asset;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
@@ -44,10 +44,10 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
   private Response.Content response;
 
   /** . */
-  private Iterable<Asset.Value> scripts;
+  private Iterable<Asset> scripts;
 
   /** . */
-  private Iterable<Asset.Value> stylesheets;
+  private Iterable<Asset> stylesheets;
 
   /** Unused for now. */
   private String title;
@@ -70,8 +70,8 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
       if (response instanceof Response.Render) {
         Response.Render render = (Response.Render)response;
         try {
-          Iterable<Asset.Value> scripts = servlet.scriptManager.resolveAssets(render.getScripts());
-          Iterable<Asset.Value> stylesheets = servlet.stylesheetManager.resolveAssets(render.getStylesheets());
+          Iterable<Asset> scripts = servlet.scriptManager.resolveAssets(render.getScripts());
+          Iterable<Asset> stylesheets = servlet.stylesheetManager.resolveAssets(render.getStylesheets());
           this.scripts = scripts;
           this.stylesheets = stylesheets;
         }
@@ -85,7 +85,7 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
     }
   }
 
-  private void renderAssetURL(Asset.Value asset, Appendable appendable) throws IOException {
+  private void renderAssetURL(Asset asset, Appendable appendable) throws IOException {
     String uri = asset.getURI();
     switch (asset.getLocation()) {
       case SERVER:
@@ -139,7 +139,7 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
         //
         if (response instanceof Response.Render) {
           writer.println("<head>");
-          for (Asset.Value stylesheet : stylesheets) {
+          for (Asset stylesheet : stylesheets) {
             String path = stylesheet.getURI();
             int pos = path.lastIndexOf('.');
             String ext = pos == -1 ? "css" : path.substring(pos + 1);
@@ -151,7 +151,7 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
           }
 
           //
-          for (Asset.Value script : scripts) {
+          for (Asset script : scripts) {
             writer.print("<script type=\"text/javascript\" src=\"");
             renderAssetURL(script, writer);
             writer.println("\"></script>");

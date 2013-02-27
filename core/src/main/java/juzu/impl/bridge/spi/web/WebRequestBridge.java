@@ -22,7 +22,7 @@ package juzu.impl.bridge.spi.web;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.asset.Asset;
+import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
@@ -321,7 +321,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     }
   }
 
-  private String getAssetURL(Asset.Value asset) throws IOException {
+  private String getAssetURL(Asset asset) throws IOException {
     StringBuilder url = new StringBuilder();
     String uri = asset.getURI();
     http.renderAssetURL(asset.getLocation(), uri, url);

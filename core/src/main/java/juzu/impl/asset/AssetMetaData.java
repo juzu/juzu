@@ -22,7 +22,6 @@ package juzu.impl.asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Tools;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
@@ -70,6 +69,6 @@ public class AssetMetaData {
 
   @Override
   public String toString() {
-    return "AssetDescriptor[id=" + id + ",location=" + location + ",value=" + value + ",dependencies=" + Arrays.asList(dependencies) + "]";
+    return "AssetDescriptor[id=" + id + ",location=" + location + ",value=" + value + ",dependencies=" + dependencies + "]";
   }
 }

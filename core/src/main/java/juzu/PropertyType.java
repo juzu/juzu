@@ -19,8 +19,6 @@
 
 package juzu;
 
-import juzu.asset.Asset;
-
 import java.util.Map;
 
 /**
@@ -33,10 +31,10 @@ import java.util.Map;
 public abstract class PropertyType<T> {
 
   /** Script. */
-  public static PropertyType<Asset> SCRIPT = new PropertyType<Asset>(){};
+  public static PropertyType<String> SCRIPT = new PropertyType<String>(){};
 
   /** Stylesheet. */
-  public static PropertyType<Asset> STYLESHEET = new PropertyType<Asset>(){};
+  public static PropertyType<String> STYLESHEET = new PropertyType<String>(){};
 
   /** Title. */
   public static PropertyType<String> TITLE = new PropertyType<String>(){};

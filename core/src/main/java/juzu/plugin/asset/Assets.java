@@ -50,6 +50,16 @@ public @interface Assets {
   Stylesheet[] stylesheets() default {};
 
   /**
+   * Declare a set of scripts for the application, those scripts are not sent.
+   *
+   * @return
+   */
+  Stylesheet[] declaredScripts() default {};
+
+
+  Script[] declaredStylesheet() default {};
+
+  /**
    * The default asset location used by the contained assets when no location
    * is explicitly defined.
    *

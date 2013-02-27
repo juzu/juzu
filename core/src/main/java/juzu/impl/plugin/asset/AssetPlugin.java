@@ -22,7 +22,6 @@ package juzu.impl.plugin.asset;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.asset.AssetManager;
@@ -46,10 +45,10 @@ import java.util.List;
 public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
-  private Asset[] scripts;
+  private String[] scripts;
 
   /** . */
-  private Asset[] stylesheets;
+  private String[] stylesheets;
 
   /** . */
   private AssetDescriptor descriptor;
@@ -141,16 +140,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     this.stylesheets = process(descriptor.getStylesheets(), stylesheetManager);
   }
 
-  private Asset[] process(List<AssetMetaData> data, AssetManager manager) throws Exception {
-    ArrayList<Asset> assets = new ArrayList<Asset>();
+  private String[] process(List<AssetMetaData> data, AssetManager manager) throws Exception {
+    ArrayList<String> assets = new ArrayList<String>();
     for (AssetMetaData script : data) {
-      String id = script.getId();
-      if (id != null) {
-        assets.add(Asset.ref(id));
-      }
-      else {
-        assets.add(Asset.of(script.getLocation(), script.getValue()));
-      }
 
       // Validate assets
       AssetLocation location = script.getLocation();
@@ -160,19 +152,26 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         if (url == null) {
           throw new Exception("Could not resolve classpath assets " + script.getValue());
         }
-      } else if (location == AssetLocation.SERVER && !script.getValue().startsWith("/")) {
-        url = context.getServerResolver().resolve("/" + script.getValue());
-        if (url == null) {
-          throw new Exception("Could not resolve server assets " + script.getValue());
+      } else if (location == AssetLocation.SERVER) {
+        if (!script.getValue().startsWith("/")) {
+          url = context.getServerResolver().resolve("/" + script.getValue());
+          if (url == null) {
+            throw new Exception("Could not resolve server assets " + script.getValue());
+          }
+        } else {
+          url = null;
         }
       } else {
         url = null;
       }
 
       //
-      manager.addAsset(script, url);
+      String id = manager.addAsset(script, url);
+      assets.add(id);
     }
-    return assets.toArray(new Asset[assets.size()]);
+
+    //
+    return assets.toArray(new String[assets.size()]);
   }
 
   public void invoke(Request request) {

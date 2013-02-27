@@ -21,15 +21,14 @@ package http.ajax;
 
 import juzu.Resource;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
-import juzu.asset.Asset;
-import juzu.asset.AssetLocation;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
   @View
-  public Response.Render index(String p) {
+  public Response.Render index() {
     String content =
       "<script>\n" +
         "$(function() {\n" +
@@ -46,10 +45,11 @@ public class A {
         "</script>\n" +
         "<a id='trigger' href='#'>click</a>\n" +
         "<div id='foo'>foo</div>";
-    return Response.ok(content).addScript(Asset.of(AssetLocation.SERVER, "jquery.js"));
+    return Response.ok(content).withScripts("jquery");
   }
 
   @Resource
+  @Route("/resource")
   public Response.Render resource() {
     return Response.ok("bar");
   }

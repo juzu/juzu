@@ -19,75 +19,28 @@
 
 package juzu.test.protocol.http;
 
-import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.test.AbstractWebTestCase;
-import juzu.test.protocol.mock.MockApplication;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.net.URL;
-import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractHttpTestCase extends AbstractWebTestCase {
 
-  /** . */
-  private static AbstractHttpTestCase currentTest;
-
-  /** The currently deployed application. */
-  private MockApplication<?> application;
-
   public static ApplicationLifeCycle<?, ?> getCurrentApplication() throws IllegalStateException {
-    if (currentTest == null) {
-      throw new IllegalStateException("No deployed test");
-    }
-    return currentTest.application.getLifeCycle();
+    throw new UnsupportedOperationException();
   }
 
-  @Override
-  public void setUp() {
-    currentTest = this;
-  }
-
-  @Override
-  public void tearDown() {
-    super.tearDown();
-    if (application != null) {
-      assertUndeploy();
-    }
-    currentTest = null;
-  }
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    URL descriptor = HttpServletImpl.class.getResource("web.xml");
+  public static WebArchive createDeployment(String applicationName) {
     URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
     URL test = HttpServletImpl.class.getResource("test.js");
-    URL stylesheet = HttpServletImpl.class.getResource("main.css");
-    return ShrinkWrap.create(WebArchive.class, "juzu.war").
+    URL css = HttpServletImpl.class.getResource("main.css");
+    URL less = HttpServletImpl.class.getResource("main.less");
+    return createServletDeployment(true, applicationName).
       addAsWebResource(jquery, "jquery.js").
       addAsWebResource(test, "test.js").
-      addAsWebResource(stylesheet, "main.css").
-      setWebXML(descriptor);
-  }
-
-  public void assertUndeploy() {
-    if (application == null) {
-      throw failure("No application to undeploy");
-    }
-    MockApplication<?> app = application;
-    application = null;
-    app.getLifeCycle().close();
-  }
-
-  public final MockApplication<?> assertDeploy(String packageName) {
-    try {
-      return application = application(InjectorProvider.CDI_WELD, packageName);
-    }
-    catch (Exception e) {
-      throw failure("Could not deploy application " + Arrays.asList(packageName), e);
-    }
+      addAsWebResource(css, "main.css").
+      addAsWebResource(css, "main.less");
   }
 }

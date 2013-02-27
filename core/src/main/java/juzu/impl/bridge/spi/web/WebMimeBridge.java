@@ -22,7 +22,7 @@ package juzu.impl.bridge.spi.web;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.asset.Asset;
+import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.request.Method;
@@ -53,16 +53,16 @@ public abstract class WebMimeBridge extends WebRequestBridge implements MimeBrid
       PropertyMap properties = response.getProperties();
 
       // Resolve stylesheets Asset -> Asset.Value
-      Iterable<Asset> stylesheets = properties.getValues(PropertyType.STYLESHEET);
+      Iterable<String> stylesheets = properties.getValues(PropertyType.STYLESHEET);
       if (stylesheets != null) {
-        Iterable<Asset.Value> stylesheetValues =  handler.getBridge().application.getStylesheetManager().resolveAssets(stylesheets);
+        Iterable<Asset> stylesheetValues =  handler.getBridge().application.getStylesheetManager().resolveAssets(stylesheets);
         properties.setValues(WebBridge.STYLESHEET, stylesheetValues);
       }
 
       // Resolve scripts Asset -> Asset.Value
-      Iterable<Asset> scripts = properties.getValues(PropertyType.SCRIPT);
+      Iterable<String> scripts = properties.getValues(PropertyType.SCRIPT);
       if (scripts != null) {
-        Iterable<Asset.Value> scriptValues = handler.getBridge().application.getScriptManager().resolveAssets(scripts);
+        Iterable<Asset> scriptValues = handler.getBridge().application.getScriptManager().resolveAssets(scripts);
         properties.setValues(WebBridge.SCRIPT, scriptValues);
       }
 

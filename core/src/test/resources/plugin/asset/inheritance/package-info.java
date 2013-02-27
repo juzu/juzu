@@ -19,7 +19,7 @@
 
 @Application()
 @Assets(
-  scripts = @Script(id = "jquery", src = "/juzu/jquery.js"),
+  scripts = @Script(id = "jquery", src = "jquery.js"),
   location = AssetLocation.SERVER
 )
 package plugin.asset.inheritance;

@@ -17,7 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package juzu.asset;
+package juzu.impl.asset;
+
+import juzu.asset.AssetLocation;
 
 /**
  * <p>Representation of an asset at runtime, an asset can be a reference or a value.</p>
@@ -29,10 +31,17 @@ package juzu.asset;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Asset {
+public class Asset {
 
-  public static Id ref(String id) {
-    return new Id(id);
+  /** . */
+  private final AssetLocation location;
+
+  /** . */
+  private final String uri;
+
+  public Asset(AssetLocation location, String uri) {
+    this.location = location;
+    this.uri = uri;
   }
 
   /**
@@ -41,7 +50,7 @@ public abstract class Asset {
    * @param uri the asset uri
    * @return the asset
    */
-  public static Value server(String uri) {
+  public static Asset server(String uri) {
     return of(AssetLocation.SERVER, uri);
   }
 
@@ -51,7 +60,7 @@ public abstract class Asset {
    * @param uri the asset uri
    * @return the asset
    */
-  public static Value classpath(String uri) {
+  public static Asset classpath(String uri) {
     return of(AssetLocation.CLASSPATH, uri);
   }
 
@@ -61,7 +70,7 @@ public abstract class Asset {
    * @param uri the asset uri
    * @return the asset
    */
-  public static Value url(String uri) {
+  public static Asset url(String uri) {
     return of(AssetLocation.URL, uri);
   }
 
@@ -72,49 +81,15 @@ public abstract class Asset {
    * @param uri the asset uri
    * @return the asset
    */
-  public static Value of(AssetLocation location, String uri) {
-    return new Value(location, uri);
+  public static Asset of(AssetLocation location, String uri) {
+    return new Asset(location, uri);
   }
 
-  /**
-   * A valued asset.
-   */
-  public static class Value extends Asset {
-
-    /** . */
-    private final AssetLocation location;
-
-    /** . */
-    private final String uri;
-
-    private Value(AssetLocation location, String uri) {
-      this.location = location;
-      this.uri = uri;
-    }
-
-    public AssetLocation getLocation() {
-      return location;
-    }
-
-    public String getURI() {
-      return uri;
-    }
+  public AssetLocation getLocation() {
+    return location;
   }
 
-  /**
-   * An identified asset.
-   */
-  public static class Id extends Asset {
-
-    /** . */
-    private final String value;
-
-    private Id(String value) {
-      this.value = value;
-    }
-
-    public String getValue() {
-      return value;
-    }
+  public String getURI() {
+    return uri;
   }
 }

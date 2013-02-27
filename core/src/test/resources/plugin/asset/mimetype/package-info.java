@@ -19,10 +19,10 @@
 
 @Application()
 @Assets(
-  scripts = @Script(id = "jquery", src = "/juzu/jquery.js", location = AssetLocation.SERVER),
+  scripts = @Script(src = "jquery.js", location = AssetLocation.SERVER),
   stylesheets = {
-    @Stylesheet(src = "/juzu/main.css", location = AssetLocation.SERVER),
-    @Stylesheet(src = "/juzu/main.less", location = AssetLocation.SERVER)
+    @Stylesheet(src = "main.css", location = AssetLocation.SERVER),
+    @Stylesheet(src = "main.less", location = AssetLocation.SERVER)
   }
 )
 package plugin.asset.mimetype;

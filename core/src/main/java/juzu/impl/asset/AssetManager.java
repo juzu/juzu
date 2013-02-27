@@ -19,7 +19,6 @@
 
 package juzu.impl.asset;
 
-import juzu.asset.Asset;
 import juzu.impl.common.Tools;
 
 import java.net.URL;
@@ -40,44 +39,52 @@ public class AssetManager {
   private final HashMap<String, URL> resources = new HashMap<String, URL>();
 
   /**
-   * Attempt to add an asset to the manager.
+   * Attempt to add an asset to the manager, the manager will return the asset id
+   * if the asset was registered or null if it was not.
    *
    * @param data the asset description
    * @param url the asset url
+   * @return the asset id
    * @throws NullPointerException     if the metaData argument is nul
    * @throws IllegalArgumentException if the metaData does not have an id set
    */
-  public void addAsset(AssetMetaData data, URL url) throws NullPointerException, IllegalArgumentException {
+  public String addAsset(AssetMetaData data, URL url) throws NullPointerException, IllegalArgumentException {
     String id = data.id;
-    if (id != null) {
-      if (!assets.keySet().contains(id)) {
-        AssetNode asset = new AssetNode(id, data.location, data.value, data.dependencies);
-        for (AssetNode deployed : assets.values()) {
-          if (deployed.iDependOn.contains(id)) {
-            asset.dependsOnMe = Tools.addToHashSet(asset.dependsOnMe, deployed.id);
-          }
-          if (asset.iDependOn.contains(deployed.id)) {
-            deployed.dependsOnMe = Tools.addToHashSet(deployed.dependsOnMe, id);
-          }
-        }
-        assets.put(id, asset);
-      }
-      else {
-        // log it ?
-        return;
-      }
+
+    // Use value hashcode if no id is provided
+    if (id == null) {
+      id = "" + data.getValue().hashCode();
     }
 
     //
-    switch (data.location) {
-      case CLASSPATH:
-      case SERVER:
-        resources.put(data.getValue(), url);
-        break;
-      default:
-        // Nothing to do
-        break;
+    if (!assets.keySet().contains(id)) {
+      AssetNode asset = new AssetNode(id, data.location, data.value, data.dependencies);
+      for (AssetNode deployed : assets.values()) {
+        if (deployed.iDependOn.contains(id)) {
+          asset.dependsOnMe = Tools.addToHashSet(asset.dependsOnMe, deployed.id);
+        }
+        if (asset.iDependOn.contains(deployed.id)) {
+          deployed.dependsOnMe = Tools.addToHashSet(deployed.dependsOnMe, id);
+        }
+      }
+      assets.put(id, asset);
+
+      //
+      switch (data.location) {
+        case CLASSPATH:
+        case SERVER:
+          resources.put(data.getValue(), url);
+          break;
+        default:
+          // Nothing to do
+          break;
+      }
+    } else {
+      // log it ?
     }
+
+    //
+    return id;
   }
 
   /**
@@ -98,27 +105,22 @@ public class AssetManager {
    * @throws NullPointerException     if the asset id argument is null
    * @throws IllegalArgumentException when script dependencies cannot be resolved
    */
-  public Iterable<Asset.Value> resolveAssets(Iterable<juzu.asset.Asset> scripts) throws
+  public Iterable<Asset> resolveAssets(Iterable<String> scripts) throws
     NullPointerException,
     IllegalArgumentException {
     LinkedHashMap<String, HashSet<String>> sub = new LinkedHashMap<String, HashSet<String>>();
-    for (juzu.asset.Asset script : scripts) {
-      if (script instanceof Asset.Value) {
-        // resolved.addLast(script);
+    for (String script : scripts) {
+      AssetNode asset = assets.get(script);
+      if (asset != null) {
+        sub.put(asset.id, new HashSet<String>(asset.iDependOn));
       }
       else {
-        AssetNode asset = assets.get(((Asset.Id)script).getValue());
-        if (asset != null) {
-          sub.put(asset.id, new HashSet<String>(asset.iDependOn));
-        }
-        else {
-          throw new IllegalArgumentException("Cannot resolve asset " + script);
-        }
+        throw new IllegalArgumentException("Cannot resolve asset " + script);
       }
     }
 
     //
-    LinkedList<Asset.Value> resolved = new LinkedList<Asset.Value>();
+    LinkedList<Asset> resolved = new LinkedList<Asset>();
     while (sub.size() > 0) {
       boolean found = false;
       for (Iterator<Map.Entry<String, HashSet<String>>> i = sub.entrySet().iterator();i.hasNext();) {
@@ -143,15 +145,6 @@ public class AssetManager {
           sb.append(entry.getKey()).append(" -> ").append(entry.getValue());
         }
         throw new IllegalArgumentException(sb.toString());
-      }
-    }
-
-    //
-    for (juzu.asset.Asset script : scripts) {
-      if (script instanceof Asset.Value) {
-        Asset.Value script1 = (Asset.Value)script;
-        String uri = script1.getURI();
-        resolved.addLast(Asset.of(script1.getLocation(), uri));
       }
     }
 

@@ -19,7 +19,6 @@
 
 package juzu;
 
-import juzu.asset.Asset;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.io.Stream;
@@ -468,29 +467,29 @@ public abstract class Response {
       return this;
     }
 
-    public Iterable<Asset> getScripts() {
-      Iterable<Asset> scripts = properties.getValues(PropertyType.SCRIPT);
-      return scripts != null ? scripts : Tools.<Asset>emptyIterable();
+    public Iterable<String> getScripts() {
+      Iterable<String> scripts = properties.getValues(PropertyType.SCRIPT);
+      return scripts != null ? scripts : Tools.<String>emptyIterable();
     }
 
-    public Render addScript(Asset script) throws NullPointerException {
-      if (script == null) {
+    public Render withScripts(String... scripts) throws NullPointerException {
+      if (scripts == null) {
         throw new NullPointerException("No null script accepted");
       }
-      properties.addValue(PropertyType.SCRIPT, script);
+      properties.addValues(PropertyType.SCRIPT, scripts);
       return this;
     }
 
-    public Iterable<Asset> getStylesheets() {
-      Iterable<Asset> stylesheets = properties.getValues(PropertyType.STYLESHEET);
-      return stylesheets != null ? stylesheets : Tools.<Asset>emptyIterable();
+    public Iterable<String> getStylesheets() {
+      Iterable<String> stylesheets = properties.getValues(PropertyType.STYLESHEET);
+      return stylesheets != null ? stylesheets : Tools.<String>emptyIterable();
     }
 
-    public Render addStylesheet(Asset stylesheet) throws NullPointerException {
-      if (stylesheet == null) {
+    public Render withStylesheets(String... stylesheets) throws NullPointerException {
+      if (stylesheets == null) {
         throw new NullPointerException("No null stylesheet accepted");
       }
-      properties.addValue(PropertyType.STYLESHEET, stylesheet);
+      properties.addValues(PropertyType.STYLESHEET, stylesheets);
       return this;
     }
 
