@@ -490,7 +490,7 @@ public abstract class Response {
       if (stylesheet == null) {
         throw new NullPointerException("No null stylesheet accepted");
       }
-      properties.addValue(PropertyType.SCRIPT, stylesheet);
+      properties.addValue(PropertyType.STYLESHEET, stylesheet);
       return this;
     }
 
