@@ -55,7 +55,7 @@ public @interface Script {
    *
    * @return the location
    */
-  AssetLocation location() default AssetLocation.CLASSPATH;
+  AssetLocation location() default AssetLocation.APPLICATION;
 
   /**
    * The script source.

@@ -80,7 +80,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
     manager.addAsset(
         new AssetMetaData(
             "juzu.ajax",
-            AssetLocation.CLASSPATH,
+            AssetLocation.APPLICATION,
             "/juzu/impl/plugin/ajax/script.js",
             "jquery"),
         url);

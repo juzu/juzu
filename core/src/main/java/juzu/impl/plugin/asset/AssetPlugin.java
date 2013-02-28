@@ -86,7 +86,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       String packageName = config.getString("package");
       AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
       if (location == null) {
-        location = AssetLocation.CLASSPATH;
+        location = AssetLocation.APPLICATION;
       }
       List<AssetMetaData> scripts = load(packageName, location, config.getList("scripts", JSON.class));
       List<AssetMetaData> stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
@@ -117,7 +117,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
         //
         String value = script.getString("src");
-        if (!value.startsWith("/") && location == AssetLocation.CLASSPATH) {
+        if (!value.startsWith("/") && location == AssetLocation.APPLICATION) {
           value = "/" + packageName.replace('.', '/') + "/" + value;
         }
 
@@ -147,16 +147,16 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       // Validate assets
       AssetLocation location = script.getLocation();
       URL url;
-      if (location == AssetLocation.CLASSPATH) {
+      if (location == AssetLocation.APPLICATION) {
         url = context.getApplicationResolver().resolve(script.getValue());
         if (url == null) {
-          throw new Exception("Could not resolve classpath assets " + script.getValue());
+          throw new Exception("Could not resolve application  " + script.getValue());
         }
       } else if (location == AssetLocation.SERVER) {
         if (!script.getValue().startsWith("/")) {
           url = context.getServerResolver().resolve("/" + script.getValue());
           if (url == null) {
-            throw new Exception("Could not resolve server assets " + script.getValue());
+            throw new Exception("Could not resolve server asset " + script.getValue());
           }
         } else {
           url = null;

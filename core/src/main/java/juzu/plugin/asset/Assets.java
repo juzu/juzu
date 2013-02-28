@@ -65,6 +65,6 @@ public @interface Assets {
    *
    * @return the default asset location
    */
-  AssetLocation location() default AssetLocation.CLASSPATH;
+  AssetLocation location() default AssetLocation.APPLICATION;
 
 }

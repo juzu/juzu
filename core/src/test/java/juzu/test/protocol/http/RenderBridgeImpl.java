@@ -95,7 +95,7 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
         }
         appendable.append(uri);
         break;
-      case CLASSPATH:
+      case APPLICATION:
         appendable.append(req.getContextPath());
         if (!uri.startsWith("/")) {
           appendable.append('/');

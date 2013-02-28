@@ -34,9 +34,9 @@ public enum AssetLocation {
   SERVER,
 
   /**
-   * A classpath served asset.
+   * An application served asset.
    */
-  CLASSPATH;
+  APPLICATION;
 
   public static AssetLocation safeValueOf(String name) {
     if (name != null) {

@@ -55,13 +55,13 @@ public class Asset {
   }
 
   /**
-   * Wraps an URI as a classpath located asset.
+   * Wraps an URI as a application located asset.
    *
    * @param uri the asset uri
    * @return the asset
    */
-  public static Asset classpath(String uri) {
-    return of(AssetLocation.CLASSPATH, uri);
+  public static Asset application(String uri) {
+    return of(AssetLocation.APPLICATION, uri);
   }
 
   /**

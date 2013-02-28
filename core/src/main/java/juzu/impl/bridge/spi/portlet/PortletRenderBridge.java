@@ -152,7 +152,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
         sb.append(uri);
         url = sb.toString();
         break;
-      case CLASSPATH:
+      case APPLICATION:
         if (bridge.module.context.getRunMode().isStatic()) {
           sb = new StringBuilder();
           sb.append(req.getContextPath()).append("/assets");
