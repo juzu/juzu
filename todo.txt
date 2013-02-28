@@ -1,5 +1,6 @@
 Various things to do, not exhaustive that needs to go in the roadmap
 
+- servlet bridge : no response -> show index ???? or use referer ?
 
 - Improve CDI integration:
 1/ bind Juzu scopes to CDI scopes
