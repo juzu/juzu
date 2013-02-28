@@ -83,7 +83,7 @@ public abstract class WeatherTestCase {
     driver.get(url.toString());
     WebElement body = driver.findElement(By.tagName("body"));
     assertTrue(body.getText().contains("temperature in marseille"));
-    assertTrue(body.getText().contains("10 degrees"));
+    assertTrue("Was expecting to find <10 degrees> in " + body.getText(), body.getText().contains("10 degrees"));
     WebElement parisElt = driver.
         findElement(By.linkText("Paris"));
     parisElt.click();

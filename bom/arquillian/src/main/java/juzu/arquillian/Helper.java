@@ -62,8 +62,18 @@ public class Helper {
    *
    * @return the base portlet deployment
    */
+  public static WebArchive createBasePortletDeployment(String injectorVendor) {
+    return createBaseDeployment("portlet/web.xml", injectorVendor);
+  }
+
+  /**
+   * Create a base portlet war file. The returned war file is configured for running the GateIn
+   * embedded portlet container.
+   *
+   * @return the base portlet deployment
+   */
   public static WebArchive createBasePortletDeployment() {
-    return createBaseDeployment("portlet/web.xml", "weld");
+    return createBasePortletDeployment("weld");
   }
 
   private static WebArchive createBaseDeployment(String webXMLPath, String injectorProvider) {

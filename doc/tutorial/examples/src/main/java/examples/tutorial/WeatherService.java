@@ -32,6 +32,10 @@ public class WeatherService {
   /** A cache for temperatures. */
   private final HashMap<String, String> cache = new HashMap<String, String>();
 
+  public WeatherService() {
+    System.out.println("aezfzef");
+  }
+
   /**
    * Returns the temperature for the specifed location in celsius degrees.
    *

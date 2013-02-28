@@ -32,7 +32,7 @@ public class WeatherPortletTestCase extends WeatherTestCase {
 
   @Deployment
   public static WebArchive deployment() {
-    WebArchive war = Helper.createBasePortletDeployment();
+    WebArchive war = Helper.createBasePortletDeployment("spring");
     war.addAsWebInfResource(new File("src/main/webapp/WEB-INF/portlet.xml"));
     war.addAsWebInfResource(new File("src/test/resources/spring.xml"));
     war.addPackages(true, "examples.tutorial");
