@@ -34,6 +34,9 @@
     <!-- Test settings -->
     <juzu.test.compiler>javac</juzu.test.compiler>
 
+    <!-- Used by the wikbook doc -->
+    <juzu.version>${project.version}</juzu.version>
+
     <!-- Wikbook settings -->
     <wikbook.source>${pom.basedir}/src/main/wikbook</wikbook.source>
     <wikbook.target>${project.build.directory}/wikbook</wikbook.target>

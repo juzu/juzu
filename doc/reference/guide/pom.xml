@@ -15,10 +15,6 @@
   <name>Juzu Reference Guide</name>
   <description>The reference guide</description>
 
-  <properties>
-    <juzu.version>${project.version}</juzu.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.juzu</groupId>
