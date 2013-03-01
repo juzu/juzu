@@ -61,7 +61,7 @@ public @interface Assets {
    *
    * @return the declared stylesheets
    */
-  Script[] declaredStylesheet() default {};
+  Stylesheet[] declaredStylesheets() default {};
 
   /**
    * The default asset location used by the contained assets when no location

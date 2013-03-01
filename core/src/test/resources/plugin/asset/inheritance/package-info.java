@@ -19,7 +19,8 @@
 
 @Application()
 @Assets(
-  scripts = @Script(id = "jquery", src = "jquery.js"),
+  scripts = @Script(src = "jquery.js"),
+  stylesheets = @Stylesheet(src = "main.css"),
   location = AssetLocation.SERVER
 )
 package plugin.asset.inheritance;
@@ -28,3 +29,4 @@ import juzu.Application;
 import juzu.asset.AssetLocation;
 import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Stylesheet;

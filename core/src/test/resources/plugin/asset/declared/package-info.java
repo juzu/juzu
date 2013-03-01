@@ -18,9 +18,13 @@
  */
 
 @Application()
-@Assets(declaredScripts = @Script(id = "test", src = "test.js"))
+@Assets(
+    declaredScripts = @Script(id = "test", src = "test.js"),
+    declaredStylesheets = @Stylesheet(id = "main", src = "main.css")
+)
 package plugin.asset.declared;
 
 import juzu.Application;
 import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Stylesheet;
