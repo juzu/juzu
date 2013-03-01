@@ -4,7 +4,7 @@
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-parent</artifactId>
-  <version>0.6.0-beta18</version>
+  <version>0.6.0-beta19-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Juzu Web Framework</name>
@@ -74,149 +74,149 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
         <classifier>sources</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
         <type>test-jar</type>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
         <classifier>javadoc</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-archetype</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-bom-core</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-bom-arquillian</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-bom-plugin</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <classifier>sources</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <classifier>gatein</classifier>
         <type>war</type>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <type>war</type>
         <classifier>liferay</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less</artifactId>
         <classifier>sources</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-servlet</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-servlet</artifactId>
         <classifier>sources</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-portlet</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-portlet</artifactId>
         <classifier>sources</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-templating-mustache</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-templating-mustache</artifactId>
         <classifier>sources</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
         <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
         <classifier>test-sources</classifier>
       </dependency>
       <dependency>
@@ -224,34 +224,34 @@
         <artifactId>juzu-doc-tutorial-examples</artifactId>
         <classifier>tomcat</classifier>
         <type>war</type>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
         <classifier>gatein</classifier>
         <type>war</type>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
         <type>war</type>
         <classifier>liferay</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-guide</artifactId>
         <classifier>html</classifier>
         <type>zip</type>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-guide</artifactId>
         <type>pdf</type>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
@@ -259,19 +259,19 @@
         <artifactId>juzu-doc-reference-guide</artifactId>
         <classifier>html</classifier>
         <type>zip</type>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-reference-api</artifactId>
         <classifier>javadoc</classifier>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-reference-guide</artifactId>
         <type>pdf</type>
-        <version>0.6.0-beta18</version>
+        <version>0.6.0-beta19-SNAPSHOT</version>
       </dependency>
 
       <dependency>
