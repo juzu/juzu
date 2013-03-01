@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.asset.byid.relativeclasspath;
+package plugin.asset.unsatisfied;
 
 import juzu.Response;
 import juzu.View;
@@ -26,7 +26,6 @@ import juzu.View;
 public class A {
   @View
   public Response.Render index() {
-    String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
-    return Response.ok(content);
+    return Response.ok("nothing");
   }
 }

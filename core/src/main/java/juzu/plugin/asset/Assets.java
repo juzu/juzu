@@ -43,6 +43,13 @@ public @interface Assets {
   Script[] scripts() default {};
 
   /**
+   * Declare a set of scripts for the application, those scripts are not sent.
+   *
+   * @return the declared scripts
+   */
+  Script[] declaredScripts() default {};
+
+  /**
    * The application stylesheets.
    *
    * @return a list of stylesheet
@@ -50,13 +57,10 @@ public @interface Assets {
   Stylesheet[] stylesheets() default {};
 
   /**
-   * Declare a set of scripts for the application, those scripts are not sent.
+   * Declare a set of stylesheet for the application, those scripts are not sent.
    *
-   * @return
+   * @return the declared stylesheets
    */
-  Stylesheet[] declaredScripts() default {};
-
-
   Script[] declaredStylesheet() default {};
 
   /**

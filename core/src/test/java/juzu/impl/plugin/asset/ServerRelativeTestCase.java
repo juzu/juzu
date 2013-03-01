@@ -23,9 +23,9 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ByIdAbsoluteClassPathLocationTestCase extends AbstractLocationTestCase {
+public class ServerRelativeTestCase extends AbstractLocationTestCase {
   @Deployment
   public static WebArchive createDeployment() {
-    return createLocationDeployment("plugin.asset.byid.absoluteclasspath");
+    return createLocationDeployment("plugin.asset.location.serverrelative");
   }
 }

@@ -35,14 +35,26 @@ import java.util.List;
 public class AssetDescriptor extends Descriptor {
 
   /** . */
-  private List<AssetMetaData> scripts;
+  private final List<AssetMetaData> scripts;
 
   /** . */
-  private List<AssetMetaData> stylesheets;
+  private final List<AssetMetaData> stylesheets;
 
-  public AssetDescriptor(List<AssetMetaData> scripts, List<AssetMetaData> stylesheets) {
+  /** . */
+  private final List<AssetMetaData> declaredScripts;
+
+  /** . */
+  private final List<AssetMetaData> declaredStylesheets;
+
+  AssetDescriptor(
+      List<AssetMetaData> scripts,
+      List<AssetMetaData> declaredScripts,
+      List<AssetMetaData> stylesheets,
+      List<AssetMetaData> declaredStylesheets) {
     this.scripts = scripts;
     this.stylesheets = stylesheets;
+    this.declaredScripts = declaredScripts;
+    this.declaredStylesheets = declaredStylesheets;
   }
 
   public List<AssetMetaData> getScripts() {
@@ -51,6 +63,14 @@ public class AssetDescriptor extends Descriptor {
 
   public List<AssetMetaData> getStylesheets() {
     return stylesheets;
+  }
+
+  public List<AssetMetaData> getDeclaredScripts() {
+    return declaredScripts;
+  }
+
+  public List<AssetMetaData> getDeclaredStylesheets() {
+    return declaredStylesheets;
   }
 
   @Override

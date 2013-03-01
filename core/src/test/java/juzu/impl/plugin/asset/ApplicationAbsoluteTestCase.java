@@ -19,21 +19,13 @@
 
 package juzu.impl.plugin.asset;
 
-import juzu.test.protocol.http.AbstractHttpTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ByIdUnsatisfiedTestCase extends AbstractHttpTestCase {
-
-  @Deployment(testable = false)
+public class ApplicationAbsoluteTestCase extends AbstractLocationTestCase {
+  @Deployment
   public static WebArchive createDeployment() {
-    return createDeployment("plugin.asset.byid.unsatisfied");
-  }
-
-  @Test
-  public void testRequestFail() {
-    assertInternalError();
+    return createLocationDeployment("plugin.asset.location.applicationabsolute");
   }
 }

@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.asset.byid.absoluteserver;
+package plugin.asset.location.serverabsolute;
 
 import juzu.Response;
 import juzu.View;

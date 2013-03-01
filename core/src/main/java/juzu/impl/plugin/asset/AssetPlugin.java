@@ -48,7 +48,13 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   private String[] scripts;
 
   /** . */
+  private String[] declaredScripts;
+
+  /** . */
   private String[] stylesheets;
+
+  /** . */
+  private String[] declaredStylesheets;
 
   /** . */
   private AssetDescriptor descriptor;
@@ -81,20 +87,27 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   @Override
   public Descriptor init(PluginContext context) throws Exception {
     JSON config = context.getConfig();
-    AssetDescriptor descriptor;
+    List<AssetMetaData> scripts;
+    List<AssetMetaData> declaredScripts;
+    List<AssetMetaData> stylesheets;
+    List<AssetMetaData> declaredStylesheets;
     if (config != null) {
       String packageName = config.getString("package");
       AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
       if (location == null) {
         location = AssetLocation.APPLICATION;
       }
-      List<AssetMetaData> scripts = load(packageName, location, config.getList("scripts", JSON.class));
-      List<AssetMetaData> stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
-      descriptor = new AssetDescriptor(scripts, stylesheets);
+      scripts = load(packageName, location, config.getList("scripts", JSON.class));
+      declaredScripts = load(packageName, location, config.getList("declaredScripts", JSON.class));
+      stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
+      declaredStylesheets = load(packageName, location, config.getList("declaredStylesheets", JSON.class));
     } else {
-      descriptor = new AssetDescriptor(Collections.<AssetMetaData>emptyList(), Collections.<AssetMetaData>emptyList());
+      scripts = Collections.emptyList();
+      declaredScripts = Collections.emptyList();
+      stylesheets = Collections.emptyList();
+      declaredStylesheets = Collections.emptyList();
     }
-    this.descriptor = descriptor;
+    this.descriptor = new AssetDescriptor(scripts, declaredScripts, stylesheets, declaredStylesheets);
     this.context = context;
     return descriptor;
   }
@@ -137,7 +150,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   @PostConstruct
   public void start() throws Exception {
     this.scripts = process(descriptor.getScripts(), scriptManager);
+    this.declaredScripts = process(descriptor.getDeclaredScripts(), scriptManager);
     this.stylesheets = process(descriptor.getStylesheets(), stylesheetManager);
+    this.declaredStylesheets = process(descriptor.getDeclaredStylesheets(), stylesheetManager);
   }
 
   private String[] process(List<AssetMetaData> data, AssetManager manager) throws Exception {

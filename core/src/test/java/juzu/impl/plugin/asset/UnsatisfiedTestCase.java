@@ -19,30 +19,21 @@
 
 package juzu.impl.plugin.asset;
 
-import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.test.CompilerAssert;
+import juzu.test.protocol.http.AbstractHttpTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
-import java.io.File;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ByIdRelativeClassPathLocationTestCase extends AbstractLocationTestCase {
-  @Deployment
+public class UnsatisfiedTestCase extends AbstractHttpTestCase {
+
+  @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createLocationDeployment("plugin.asset.byid.relativeclasspath");
+    return createDeployment("plugin.asset.unsatisfied");
   }
 
   @Test
-  @RunAsClient
-  public final void testCopyAsset() throws Exception {
-    CompilerAssert<File, File> compiler = getCompiler();
-    ReadWriteFileSystem<File> classOutput = compiler.getClassOutput();
-    File file = classOutput.getPath("plugin", "asset", "byid", "relativeclasspath", "assets", "test.js");
-    assertNotNull(file);
-    assertTrue(file.exists());
-    assertTrue(file.isFile());
+  public void testRequestFail() {
+    assertInternalError();
   }
 }

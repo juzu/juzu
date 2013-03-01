@@ -17,11 +17,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-@Application()
-@Assets(scripts = @Script(id = "jquery", src = "/juzu/jquery.js", depends = "foo", location = AssetLocation.SERVER))
-package plugin.asset.byid.unsatisfied;
+package juzu.impl.plugin.asset;
 
-import juzu.Application;
-import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class DeclaredTestCase extends AbstractLocationTestCase {
+
+  @Deployment
+  public static WebArchive createDeployment() {
+    return createLocationDeployment("plugin.asset.declared");
+  }
+}

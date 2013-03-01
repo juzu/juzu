@@ -17,15 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package plugin.asset.byid.unsatisfied;
+@Application()
+@Assets(declaredScripts = @Script(id = "test", src = "test.js"))
+package plugin.asset.declared;
 
-import juzu.Response;
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public Response.Render index() {
-    return Response.ok("nothing");
-  }
-}
+import juzu.Application;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;

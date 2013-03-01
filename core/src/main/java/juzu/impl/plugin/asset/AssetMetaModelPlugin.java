@@ -48,6 +48,9 @@ import java.util.Set;
 public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
+  private static final String[] KINDS = {"scripts","declaredScripts","stylesheets","declaredStylesheets"};
+
+  /** . */
   private HashMap<ElementHandle.Package, AnnotationState> annotations = new HashMap<ElementHandle.Package, AnnotationState>();
 
   public AssetMetaModelPlugin() {
@@ -84,8 +87,6 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
     return foo;
   }
 
-  private static final String[] KINDS = {"scripts","stylesheets"};
-
   @Override
   public void prePassivate(ApplicationMetaModel metaModel) {
     AnnotationState annotation = annotations.get(metaModel.getHandle());
@@ -101,11 +102,10 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
             if ((location == null && classpath) || "CLASSPATH".equals(location)) {
               String value = (String)script.get("src");
               Path path = Path.parse(value);
-              Path.Absolute absolute;
               if (path.isRelative()) {
                 context.log("Found classpath asset to copy " + value);
                 Name qn = metaModel.getHandle().getPackage().append("assets");
-                absolute = qn.resolve(path);
+                Path.Absolute absolute = qn.resolve(path);
                 FileObject src = context.resolveResource(metaModel.getHandle(), absolute);
                 if (src != null) {
                   URI srcURI = src.toUri();
@@ -148,7 +148,9 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
     if (annotation != null) {
       JSON json = new JSON();
       json.set("scripts", build((List<Map<String, Object>>)annotation.get("scripts")));
+      json.set("declaredScripts", build((List<Map<String, Object>>)annotation.get("declaredScripts")));
       json.set("stylesheets", build((List<Map<String, Object>>)annotation.get("stylesheets")));
+      json.set("declaredStylesheets", build((List<Map<String, Object>>)annotation.get("declaredStylesheets")));
       json.set("package", application.getName().append("assets").toString());
       json.set("location", annotation.get("location"));
       return json;
