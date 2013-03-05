@@ -98,6 +98,7 @@
     <module>portlet</module>
     <module>less</module>
     <module>upload</module>
+    <module>webresource</module>
   </modules>
 
   <profiles>
