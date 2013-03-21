@@ -64,7 +64,6 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       PrintWriter printer = new PrintWriter(buffer);
       Formatting.renderErrors(printer, e.getErrors());
       setResponse(Response.error(buffer.toString()));
-      purgeSession();
       return;
     }
 

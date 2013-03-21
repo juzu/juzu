@@ -68,9 +68,13 @@ public class Bridge implements Closeable {
   }
 
   public boolean refresh() throws Exception {
+    return refresh(true);
+  }
+
+  public boolean refresh(boolean recompile) throws Exception {
 
     // For now refresh module first
-    module.context.getLifeCycle().refresh();
+    module.context.getLifeCycle().refresh(recompile);
 
     //
     if (application == null) {

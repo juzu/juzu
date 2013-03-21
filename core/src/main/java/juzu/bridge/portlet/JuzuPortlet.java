@@ -261,14 +261,16 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
 
   public void render(final RenderRequest req, final RenderResponse resp) throws PortletException, IOException {
 
-    //
+    // THIS CODE SHOULD BE REMOVED
+    // BECAUSE IT DOES NOT BEHAVE CORRECTLY WHEN USED IN PRETTY FAIL MODE
+    // AND IT IS ALSO HANDLED IN THE REQUEST BRIDGE
     if (!initialized) {
       try {
         bridge.refresh();
         initialized = true;
       }
       catch (Exception e) {
-        String msg = "Could not compile application";
+        String msg = "Could not initialize application";
         if (e instanceof PortletException) {
           String nested = e.getMessage();
           if (nested != null) {
@@ -293,6 +295,30 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   }
 
   public void serveResource(final ResourceRequest req, final ResourceResponse resp) throws PortletException, IOException {
+
+    // THIS CODE SHOULD BE REMOVED
+    // BECAUSE IT DOES NOT BEHAVE CORRECTLY WHEN USED IN PRETTY FAIL MODE
+    // AND IT IS ALSO HANDLED IN THE REQUEST BRIDGE
+    if (!initialized) {
+      try {
+        bridge.refresh();
+        initialized = true;
+      }
+      catch (Exception e) {
+        String msg = "Could not initialize application";
+        if (e instanceof PortletException) {
+          String nested = e.getMessage();
+          if (nested != null) {
+            msg += ":" + nested;
+          }
+          throw new PortletException(msg, e.getCause());
+        } else {
+          throw new PortletException(msg, e);
+        }
+      }
+    }
+
+    //
     boolean assetRequest = "assets".equals(req.getParameter("juzu.request"));
 
     //

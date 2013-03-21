@@ -49,7 +49,15 @@ public abstract class ModuleLifeCycle<C> {
     this.logger = logger;
   }
 
-  public abstract boolean refresh() throws Exception, CompilationException ;
+  /**
+   * Refresh the module.
+   *
+   * @param recompile true if recompilation can occur
+   * @return true when the refresh operation has triggered changes
+   * @throws Exception any exception
+   * @throws CompilationException any compilation exception
+   */
+  public abstract boolean refresh(boolean recompile) throws Exception, CompilationException ;
 
   /**
    * Returns the module classloader.
@@ -105,7 +113,12 @@ public abstract class ModuleLifeCycle<C> {
     }
 
     @Override
-    public boolean refresh() throws Exception, CompilationException {
+    public boolean refresh(boolean recompile) throws Exception, CompilationException {
+
+      //
+      if (!recompile) {
+        throw new UnsupportedOperationException("Not yet implemented");
+      }
 
       // Lazy initialize
       if (classPath == null) {
@@ -186,7 +199,7 @@ public abstract class ModuleLifeCycle<C> {
     }
 
     @Override
-    public boolean refresh() {
+    public boolean refresh(boolean recompile) {
       return false;
     }
 
