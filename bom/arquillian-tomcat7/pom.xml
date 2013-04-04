@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-bom</artifactId>
-    <version>0.6.0-cr3</version>
+    <version>0.6.0-cr4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
-  <version>0.6.0-cr3</version>
+  <version>0.6.0-cr4-SNAPSHOT</version>
 
   <name>Juzu Arquillian Tomcat7 BOM</name>
   <description>The Juzu BOM for Arquillian testing with Tomcat7</description>
