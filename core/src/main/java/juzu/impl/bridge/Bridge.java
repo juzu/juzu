@@ -34,7 +34,7 @@ import java.io.Closeable;
 public class Bridge implements Closeable {
 
   /** . */
-  private final Logger log;
+  public final Logger log;
 
   /** . */
   private final AssetServer server;

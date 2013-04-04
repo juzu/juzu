@@ -66,26 +66,12 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
       InjectorProvider implementation,
       Name name) throws Exception {
 
-    /** . */
-    Logger log = new Logger() {
-      public void log(CharSequence msg) {
-//        System.out.println("[" + name + "] " + msg);
-        System.out.println("[" + "] " + msg);
-      }
-
-      public void log(CharSequence msg, Throwable t) {
-//        System.err.println("[" + name + "] " + msg);
-        System.err.println("[" + "] " + msg);
-        t.printStackTrace(System.err);
-      }
-    };
-
     //
-    ModuleLifeCycle<P> module = new ModuleLifeCycle.Static<P>(log, classLoader, classes);
+    ModuleLifeCycle<P> module = new ModuleLifeCycle.Static<P>(Logger.SYSTEM, classLoader, classes);
 
     //
     ApplicationLifeCycle<P, P> lifeCycle = new ApplicationLifeCycle<P, P>(
-        log,
+        Logger.SYSTEM,
         module,
         implementation,
         name,

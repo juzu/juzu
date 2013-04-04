@@ -16,28 +16,32 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package juzu.impl.bridge.spi.servlet;
 
-package juzu.test.protocol.http;
-
-import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.Logger;
-import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.application.ApplicationLifeCycle;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MimeBridgeImpl extends RequestBridgeImpl implements MimeBridge {
+public class ServletLogger implements Logger {
 
-  MimeBridgeImpl(
-      Logger log,
-      ApplicationLifeCycle<?, ?> application,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      MethodHandle target,
-      Map<String, String[]> parameters) {
-    super(log, application, req, resp, target, parameters);
+  /** . */
+  private final ServletConfig servletConfig;
+
+  public ServletLogger(Servlet servlet) {
+    this.servletConfig = servlet.getServletConfig();
+  }
+
+  public ServletLogger(ServletConfig servletConfig) {
+    this.servletConfig = servletConfig;
+  }
+
+  public void log(CharSequence msg) {
+    servletConfig.getServletContext().log("[" + servletConfig.getServletName() + "] " + msg);
+  }
+
+  public void log(CharSequence msg, Throwable t) {
+    servletConfig.getServletContext().log("[" + servletConfig.getServletName() + "] " + msg, t);
   }
 }

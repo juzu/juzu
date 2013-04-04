@@ -283,7 +283,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected final ScopedContext getRequestContext(boolean create) {
     ScopedContext context = (ScopedContext)req.getAttribute("juzu.request_scope");
     if (context == null && create) {
-      req.setAttribute("juzu.request_scope", context = new ScopedContext());
+      req.setAttribute("juzu.request_scope", context = new ScopedContext(bridge.log));
     }
     return context;
   }
@@ -294,7 +294,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.flash_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.flash_scope", context = new ScopedContext());
+        session.setAttribute("juzu.flash_scope", context = new ScopedContext(bridge.log));
       }
     }
     return context;
@@ -306,7 +306,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.session_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.session_scope", context = new ScopedContext());
+        session.setAttribute("juzu.session_scope", context = new ScopedContext(bridge.log));
       }
     }
     return context;

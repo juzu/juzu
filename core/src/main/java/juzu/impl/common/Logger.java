@@ -26,6 +26,16 @@ package juzu.impl.common;
  */
 public interface Logger {
 
+  Logger SYSTEM = new Logger() {
+    public void log(CharSequence msg) {
+      System.out.println(msg);
+    }
+    public void log(CharSequence msg, Throwable t) {
+      System.err.println(msg);
+      t.printStackTrace();
+    }
+  };
+
   /**
    * Log a message.
    *

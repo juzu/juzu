@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.spi.portlet;
 
+import juzu.impl.common.Logger;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.plugin.module.AbstractWarModuleContext;
 import juzu.impl.resource.ResourceResolver;
@@ -39,7 +40,10 @@ public class PortletModuleContext extends AbstractWarModuleContext {
   /** . */
   private final ResourceResolver resolver;
 
-  public PortletModuleContext(PortletContext portletContext, ClassLoader classLoader) {
+  public PortletModuleContext(PortletContext portletContext, ClassLoader classLoader, Logger log) {
+    super(log);
+
+    //
     this.portletContext = portletContext;
     this.classLoader = classLoader;
     this.resolver = new ResourceResolver() {

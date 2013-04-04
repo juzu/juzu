@@ -34,6 +34,9 @@ import java.net.URL;
 public abstract class AbstractWarModuleContext implements ModuleContext {
 
   /** . */
+  private final Logger log;
+
+  /** . */
   private WarFileSystem resourcePath;
 
   /** . */
@@ -42,17 +45,9 @@ public abstract class AbstractWarModuleContext implements ModuleContext {
   /** . */
   private RunMode runMode;
 
-  /** . */
-  private final Logger log = new Logger() {
-    public void log(CharSequence msg) {
-      System.out.println(msg);
-    }
-
-    public void log(CharSequence msg, Throwable t) {
-      System.out.println(msg);
-      t.printStackTrace();
-    }
-  };
+  protected AbstractWarModuleContext(Logger log) {
+    this.log = log;
+  }
 
   public JSON getConfig() throws Exception {
     URL cfg = getClassLoader().getResource("juzu/config.json");
@@ -77,7 +72,7 @@ public abstract class AbstractWarModuleContext implements ModuleContext {
       if (runModeValue != null) {
         runMode = RunMode.parse(runModeValue);
         if (runMode == null) {
-          System.out.println("Unparseable run mode " + runModeValue + " will use prod instead");
+          log.log("Unparseable run mode " + runModeValue + " will use prod instead");
           runMode = RunMode.PROD;
         }
       } else {

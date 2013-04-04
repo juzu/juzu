@@ -409,7 +409,7 @@ public abstract class Template {
                 value = bundle.getString(key.getValue());
               }
               catch (MissingResourceException notFound) {
-                System.out.println("Could not resolve message " + key.getValue());
+                // System.out.println("Could not resolve message " + key.getValue());
               }
             }
             return value != null ? value : "";

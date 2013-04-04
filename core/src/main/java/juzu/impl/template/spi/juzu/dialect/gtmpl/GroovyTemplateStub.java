@@ -117,11 +117,7 @@ public class GroovyTemplateStub extends TemplateStub {
         return baos.toString();
       }
       else {
-        System.out.println("Could not load resource " + path);
-        System.out.println("Could not load resource " + path);
-        System.out.println("Could not load resource " + path);
-        System.out.println("Could not load resource " + path);
-        System.out.println("Could not load resource " + path);
+        // Should log that
       }
     }
     catch (IOException e) {

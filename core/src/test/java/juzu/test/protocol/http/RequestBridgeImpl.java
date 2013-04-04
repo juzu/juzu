@@ -21,6 +21,7 @@ package juzu.test.protocol.http;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.common.Logger;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
@@ -79,7 +80,11 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   /** . */
   private final juzu.Method method;
 
+  /** . */
+  private final Logger log;
+
   RequestBridgeImpl(
+      Logger log,
       ApplicationLifeCycle<?, ?> application,
       HttpServletRequest req,
       HttpServletResponse resp,
@@ -98,6 +103,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     this.request = null;
     this.arguments = arguments;
     this.method = juzu.Method.valueOf(req.getMethod());
+    this.log = log;
   }
 
   //
@@ -316,7 +322,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   protected final ScopedContext getRequestContext(boolean create) {
     ScopedContext context = (ScopedContext)req.getAttribute("juzu.request_scope");
     if (context == null && create) {
-      req.setAttribute("juzu.request_scope", context = new ScopedContext());
+      req.setAttribute("juzu.request_scope", context = new ScopedContext(log));
     }
     return context;
   }
@@ -327,7 +333,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.flash_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.flash_scope", context = new ScopedContext());
+        session.setAttribute("juzu.flash_scope", context = new ScopedContext(log));
       }
     }
     return context;
@@ -339,7 +345,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.session_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.session_scope", context = new ScopedContext());
+        session.setAttribute("juzu.session_scope", context = new ScopedContext(log));
       }
     }
     return context;

@@ -21,6 +21,7 @@ package juzu.test.protocol.http;
 
 import juzu.Response;
 import juzu.impl.bridge.spi.ActionBridge;
+import juzu.impl.common.Logger;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.request.ClientContext;
@@ -39,12 +40,13 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
   private Response response;
 
   ActionBridgeImpl(
+      Logger log,
       ApplicationLifeCycle<?, ?> application,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,
       Map<String, String[]> parameters) {
-    super(application, req, resp, target, parameters);
+    super(log, application, req, resp, target, parameters);
   }
 
   public ClientContext getClientContext() {

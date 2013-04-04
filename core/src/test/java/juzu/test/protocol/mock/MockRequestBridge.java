@@ -22,6 +22,7 @@ package juzu.test.protocol.mock;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.impl.common.Logger;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
@@ -92,7 +93,7 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.client = client;
     this.target = target;
     this.parameters = parameters;
-    this.attributes = new ScopedContext();
+    this.attributes = new ScopedContext(Logger.SYSTEM);
     this.httpContext = new MockHttpContext();
     this.securityContext = new MockSecurityContext();
     this.windowContext = new MockWindowContext();

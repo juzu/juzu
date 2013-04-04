@@ -16,28 +16,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package juzu.impl.bridge.spi.portlet;
 
-package juzu.test.protocol.http;
-
-import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.Logger;
-import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.application.ApplicationLifeCycle;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import javax.portlet.PortletConfig;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MimeBridgeImpl extends RequestBridgeImpl implements MimeBridge {
+public class PortletLogger implements Logger {
 
-  MimeBridgeImpl(
-      Logger log,
-      ApplicationLifeCycle<?, ?> application,
-      HttpServletRequest req,
-      HttpServletResponse resp,
-      MethodHandle target,
-      Map<String, String[]> parameters) {
-    super(log, application, req, resp, target, parameters);
+  /** . */
+  private final PortletConfig config;
+
+  public PortletLogger(PortletConfig config) {
+    this.config = config;
+  }
+
+  public void log(CharSequence msg) {
+    config.getPortletContext().log("[" + config.getPortletName() + "] " + msg);
+  }
+
+  public void log(CharSequence msg, Throwable t) {
+    config.getPortletContext().log("[" + config.getPortletName() + "] " + msg, t);
   }
 }

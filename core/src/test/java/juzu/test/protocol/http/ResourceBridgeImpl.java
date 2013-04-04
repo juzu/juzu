@@ -21,6 +21,7 @@ package juzu.test.protocol.http;
 
 import juzu.Response;
 import juzu.impl.bridge.spi.ResourceBridge;
+import juzu.impl.common.Logger;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
@@ -43,12 +44,13 @@ public class ResourceBridgeImpl extends MimeBridgeImpl implements ResourceBridge
   private Response.Content response;
 
   ResourceBridgeImpl(
+      Logger log,
       ApplicationLifeCycle<?, ?> application,
       HttpServletRequest req,
       HttpServletResponse resp,
       MethodHandle target,
       Map<String, String[]> parameters) {
-    super(application, req, resp, target, parameters);
+    super(log, application, req, resp, target, parameters);
   }
 
   public ClientContext getClientContext() {

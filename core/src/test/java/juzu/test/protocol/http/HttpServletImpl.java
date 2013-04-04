@@ -19,6 +19,8 @@
 
 package juzu.test.protocol.http;
 
+import juzu.impl.bridge.spi.servlet.ServletLogger;
+import juzu.impl.common.Logger;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
@@ -52,6 +54,9 @@ public class HttpServletImpl extends HttpServlet {
   /** . */
   AssetManager stylesheetManager;
 
+  /** . */
+  Logger log = Logger.SYSTEM;
+
   private RequestBridgeImpl create(HttpServletRequest req, HttpServletResponse resp) {
     Phase phase = Phase.VIEW;
     Map<String, String[]> parameters = new HashMap<String, String[]>();
@@ -83,11 +88,11 @@ public class HttpServletImpl extends HttpServlet {
 
     //
     if (phase == Phase.ACTION) {
-      return new ActionBridgeImpl(application, req, resp, method, parameters);
+      return new ActionBridgeImpl(log, application, req, resp, method, parameters);
     } else if (phase == Phase.VIEW) {
-      return new RenderBridgeImpl(this, application, req, resp, method, parameters);
+      return new RenderBridgeImpl(log, this, application, req, resp, method, parameters);
     } else if (phase == Phase.RESOURCE) {
-      return new ResourceBridgeImpl(application, req, resp, method, parameters);
+      return new ResourceBridgeImpl(log, application, req, resp, method, parameters);
     } else {
       throw new AssertionError();
     }
@@ -111,6 +116,7 @@ public class HttpServletImpl extends HttpServlet {
 
       //
       this.application = application;
+      this.log = new ServletLogger(getServletConfig());
     }
     catch (Exception e) {
       throw new ServletException(e);

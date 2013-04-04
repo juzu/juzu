@@ -19,6 +19,7 @@
 
 package juzu.impl.bridge.spi.servlet;
 
+import juzu.impl.common.Logger;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.plugin.module.AbstractWarModuleContext;
 import juzu.impl.resource.ResourceResolver;
@@ -36,7 +37,10 @@ public class ServletModuleContext extends AbstractWarModuleContext {
   /** . */
   final ResourceResolver resolver;
 
-  public ServletModuleContext(ServletContext servletContext) {
+  public ServletModuleContext(ServletContext servletContext, Logger log) {
+    super(log);
+
+    //
     this.servletContext = servletContext;
     this.resolver = new ResourceResolver() {
       public URL resolve(String uri) {

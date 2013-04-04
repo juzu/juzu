@@ -67,7 +67,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   private final InjectorProvider injectorProvider;
 
   /** Contextual: logger. */
-  private final Logger logger;
+  private final Logger log;
 
   /** Contextual: resources. */
   private final ReadFileSystem<R> resources;
@@ -106,7 +106,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   private Map<String, Descriptor> pluginDescriptors;
 
   public ApplicationLifeCycle(
-      Logger logger,
+      Logger log,
       ModuleLifeCycle<?> moduleLifeCycle,
       InjectorProvider injectorProvider,
       Name name,
@@ -115,7 +115,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
       ResourceResolver resourceResolver) {
 
     //
-    this.logger = logger;
+    this.log = log;
     this.moduleLifeCycle = moduleLifeCycle;
     this.injectorProvider = injectorProvider;
     this.name = name;
@@ -163,7 +163,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
 
     //
     if (application == null) {
-      logger.log("Building application");
+      log.log("Building application");
       start();
       return true;
     } else {
@@ -256,7 +256,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
 
     //
-    logger.log("Starting " + descriptor.getName());
+    log.log("Starting " + descriptor.getName());
     InjectionContext<?, ?> injectionContext = doStart(descriptor, injector, plugins.values(), pluginDescriptors.values());
 
     //

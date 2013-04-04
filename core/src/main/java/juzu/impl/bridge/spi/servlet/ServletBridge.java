@@ -92,18 +92,7 @@ public class ServletBridge extends HttpServlet {
 
     //
     final ServletConfig servletConfig = getServletConfig();
-
-    //
-    Logger log = new Logger() {
-      public void log(CharSequence msg) {
-        System.out.println("[" + servletConfig.getServletName() + "] " + msg);
-      }
-
-      public void log(CharSequence msg, Throwable t) {
-        System.err.println("[" + servletConfig.getServletName() + "] " + msg);
-        t.printStackTrace();
-      }
-    };
+    Logger log = new ServletLogger(servletConfig);
 
     //
     BridgeConfig config;
@@ -172,7 +161,7 @@ public class ServletBridge extends HttpServlet {
       module = (Module)getServletContext().getAttribute("juzu.module");
       if (module == null) {
         try {
-          ModuleContext moduleContext = new ServletModuleContext(getServletContext());
+          ModuleContext moduleContext = new ServletModuleContext(getServletContext(), log);
           getServletContext().setAttribute("juzu.module", module = new Module(moduleContext));
         }
         catch (Exception e) {
@@ -229,7 +218,7 @@ public class ServletBridge extends HttpServlet {
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
     //
-    ServletWebBridge bridge = new ServletWebBridge(req, resp, path);
+    ServletWebBridge bridge = new ServletWebBridge(req, resp, path, log);
 
     // Do we need to send a server resource ?
     if (bridge.getRequestPath().length() > 1 && !bridge.getRequestPath().startsWith("/WEB-INF/")) {

@@ -25,6 +25,7 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.spi.portlet.PortletEventBridge;
+import juzu.impl.bridge.spi.portlet.PortletLogger;
 import juzu.impl.bridge.spi.portlet.PortletModuleContext;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.bridge.spi.portlet.PortletActionBridge;
@@ -86,16 +87,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   private Module module;
 
   public void init(final PortletConfig config) throws PortletException {
-    Logger log = new Logger() {
-      public void log(CharSequence msg) {
-        System.out.println("[" + config.getPortletName() + "] " + msg);
-      }
 
-      public void log(CharSequence msg, Throwable t) {
-        System.err.println("[" + config.getPortletName() + "] " + msg);
-        t.printStackTrace();
-      }
-    };
+    //
+    Logger log = new PortletLogger(config);
 
     //
     AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
@@ -151,7 +145,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     Module module = (Module)config.getPortletContext().getAttribute("juzu.module");
     if (module == null) {
       try {
-        ModuleContext moduleContext = new PortletModuleContext(config.getPortletContext(), Thread.currentThread().getContextClassLoader());
+        ModuleContext moduleContext = new PortletModuleContext(config.getPortletContext(), Thread.currentThread().getContextClassLoader(), log);
         config.getPortletContext().setAttribute("juzu.module", module = new Module(moduleContext));
       }
       catch (Exception e) {

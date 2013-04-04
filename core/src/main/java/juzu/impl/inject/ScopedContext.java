@@ -19,6 +19,8 @@
 
 package juzu.impl.inject;
 
+import juzu.impl.common.Logger;
+
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import java.util.Collections;
@@ -37,6 +39,13 @@ public final class ScopedContext implements HttpSessionBindingListener, Iterable
 
   /** . */
   private HashMap<Object, Scoped> state;
+
+  /** . */
+  private final Logger log;
+
+  public ScopedContext(Logger log) {
+    this.log = log;
+  }
 
   public Scoped get(Object key) throws NullPointerException {
     if (key == null) {
@@ -87,10 +96,7 @@ public final class ScopedContext implements HttpSessionBindingListener, Iterable
           scoped.destroy();
         }
         catch (Throwable t) {
-          // Should not happen somehow ?
-          // question is does the destroy() method provide some guarantee it does not happen ?
-          System.out.println("Error when destroying object (should log better of course)");
-          t.printStackTrace();
+          log.log("Error when destroying object", t);
         }
       }
     }
