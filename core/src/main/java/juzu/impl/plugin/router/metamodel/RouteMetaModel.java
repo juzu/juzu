@@ -19,6 +19,7 @@ package juzu.impl.plugin.router.metamodel;
 import juzu.Route;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Name;
+import juzu.impl.plugin.router.ParamDescriptor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class RouteMetaModel implements Serializable {
   final Integer priority;
 
   /** . */
-  HashMap<String, String> parameters;
+  HashMap<String, ParamDescriptor> parameters;
 
   public RouteMetaModel(String path, Integer priority) {
     this.path = path;
@@ -108,7 +109,7 @@ public class RouteMetaModel implements Serializable {
     }
   }
 
-  RouteMetaModel addChild(int priority, String path, HashMap<String, String> parameters) {
+  RouteMetaModel addChild(int priority, String path, HashMap<String, ParamDescriptor> parameters) {
     if (children == null) {
       children = new ArrayList<RouteMetaModel>();
     }
@@ -124,7 +125,7 @@ public class RouteMetaModel implements Serializable {
     }
     if (parameters != null && parameters.size() > 0) {
       if (found.parameters == null) {
-        found.parameters = new LinkedHashMap<String, String>();
+        found.parameters = new LinkedHashMap<String, ParamDescriptor>();
       }
       found.parameters.putAll(parameters);
     }
@@ -139,7 +140,7 @@ public class RouteMetaModel implements Serializable {
     return targets;
   }
 
-  public Map<String, String> getParameters() {
+  public Map<String, ParamDescriptor> getParameters() {
     return parameters;
   }
 
@@ -161,8 +162,13 @@ public class RouteMetaModel implements Serializable {
     //
     if (parameters != null && parameters.size() > 0) {
       JSON b = new JSON();
-      for (Map.Entry<String, String> parameter : parameters.entrySet()) {
-        b.set(parameter.getKey(), new JSON().set("pattern", parameter.getValue()));
+      for (Map.Entry<String, ParamDescriptor> parameter : parameters.entrySet()) {
+        ParamDescriptor value = parameter.getValue();
+        b.set(parameter.getKey(), new JSON().
+          set("pattern", value.getPattern()).
+          set("preserve-path", value.getPreservePath()).
+          set("capture-group", value.getCaptureGroup())
+        );
       }
       json.set("parameters", b);
     }

@@ -12,21 +12,37 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ */package juzu.impl.plugin.router;
 
-package metamodel.router.param.pattern;
-
-import juzu.Param;
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
+import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+public class ParamDescriptor implements Serializable {
 
-  @View
-  @Route(value = "/{foo}")
-  public Response index(@Param(pattern = ".*") String foo) {
-    throw new UnsupportedOperationException();
+  /** . */
+  final String pattern;
+
+  /** . */
+  final Boolean preservePath;
+
+  /** . */
+  final Boolean captureGroup;
+
+  public ParamDescriptor(String pattern, Boolean preservePath, Boolean captureGroup) {
+    this.pattern = pattern;
+    this.preservePath = preservePath;
+    this.captureGroup = captureGroup;
+  }
+
+  public String getPattern() {
+    return pattern;
+  }
+
+  public Boolean getPreservePath() {
+    return preservePath;
+  }
+
+  public Boolean getCaptureGroup() {
+    return captureGroup;
   }
 }

@@ -231,5 +231,13 @@ public class PathParam {
     public void setCaptureGroup(boolean captureGroup) {
       this.captureGroup = captureGroup;
     }
+
+    public boolean getPreservePath() {
+      return preservePath;
+    }
+
+    public void setPreservePath(boolean preservePath) {
+      this.preservePath = preservePath;
+    }
   }
 }

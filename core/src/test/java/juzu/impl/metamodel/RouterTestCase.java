@@ -22,6 +22,7 @@ import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
+import juzu.impl.plugin.router.ParamDescriptor;
 import juzu.impl.plugin.router.metamodel.RouteMetaModel;
 import juzu.impl.plugin.router.metamodel.RouterMetaModel;
 import juzu.test.AbstractTestCase;
@@ -49,16 +50,20 @@ public class RouterTestCase extends AbstractTestCase {
   }
 
   @Test
-  public void testParamPattern() throws Exception {
-    CompilerAssert<File, File> helper = compiler("metamodel.router.param.pattern").formalErrorReporting(true);
+  public void testParam() throws Exception {
+    CompilerAssert<File, File> helper = compiler("metamodel.router.param").formalErrorReporting(true);
     helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
-    ApplicationMetaModel application = mm.getChild(Key.of(ElementHandle.Package.create(Name.parse("metamodel.router.param.pattern")), ApplicationMetaModel.class));
+    ApplicationMetaModel application = mm.getChild(Key.of(ElementHandle.Package.create(Name.parse("metamodel.router.param")), ApplicationMetaModel.class));
     RouterMetaModel router = application.getChild(Key.of(RouterMetaModel.class));
     RouteMetaModel root = router.getRoot();
     RouteMetaModel route = root.getChildren().get(0);
     assertEquals("/{foo}", route.getPath());
-    assertEquals(Collections.singletonMap("foo", ".*"), route.getParameters());
+    assertEquals(Collections.singleton("foo"), route.getParameters().keySet());
+    ParamDescriptor foo =  route.getParameters().get("foo");
+    assertEquals(".*", foo.getPattern());
+    assertEquals(Boolean.TRUE, foo.getPreservePath());
+    assertEquals(Boolean.FALSE, foo.getCaptureGroup());
   }
 }

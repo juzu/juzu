@@ -17,7 +17,6 @@
 package juzu.impl.plugin.controller.metamodel;
 
 import juzu.Mapped;
-import juzu.Param;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -30,7 +29,6 @@ import juzu.impl.common.Cardinality;
 import juzu.impl.common.JSON;
 import juzu.request.Phase;
 
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -125,16 +123,6 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
             String typeLiteral = context.processingContext.getLiteralName(parameterTypeMirror);
 
             //
-            String pattern = null;
-            for (AnnotationMirror annotationMirror : parameterVariableElt.getAnnotationMirrors()) {
-              boolean match = ((TypeElement)annotationMirror.getAnnotationType().asElement()).getQualifiedName().toString().equals(Param.class.getName());
-              if (match) {
-                AnnotationState state = AnnotationState.create(annotationMirror);
-                pattern = (String)state.get("pattern");
-              }
-            }
-
-            //
             String parameterName = parameterVariableElt.getSimpleName().toString();
 
             // Determine cardinality
@@ -180,7 +168,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
 
             //
             if (te.toString().equals("java.lang.String") || te.getAnnotation(Mapped.class) != null) {
-              parameters.add(new PhaseParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral, pattern));
+              parameters.add(new PhaseParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral));
             } else {
               parameters.add(new ContextualParameterMetaModel(parameterName, typeLiteral));
             }

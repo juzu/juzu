@@ -50,4 +50,8 @@ public @interface Param {
    */
   String pattern() default "";
 
+  boolean preservePath() default false;
+
+  boolean captureGroup() default false;
+
 }

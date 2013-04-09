@@ -43,7 +43,7 @@ public class RouteDescriptor extends Descriptor {
   private final List<RouteDescriptor> children;
 
   /** . */
-  private final HashMap<String, String> parameters;
+  private final HashMap<String, ParamDescriptor> parameters;
 
   public RouteDescriptor(JSON json) {
 
@@ -77,13 +77,15 @@ public class RouteDescriptor extends Descriptor {
     }
 
     //
-    HashMap<String, String> parameters = null;
+    HashMap<String, ParamDescriptor> parameters = null;
     JSON foo = json.getJSON("parameters");
     if (foo != null) {
-      parameters = new HashMap<String, String>();
+      parameters = new HashMap<String, ParamDescriptor>();
       for (String name : foo.names()) {
         String pattern = foo.getJSON(name).getString("pattern");
-        parameters.put(name, pattern);
+        Boolean preservePath = foo.getJSON((name)).getBoolean("preserve-path");
+        Boolean captureGroup = foo.getJSON((name)).getBoolean("capture-group");
+        parameters.put(name, new ParamDescriptor(pattern, preservePath, captureGroup));
       }
     }
 
@@ -105,7 +107,7 @@ public class RouteDescriptor extends Descriptor {
     return children;
   }
 
-  public HashMap<String, String> getParameters() {
+  public HashMap<String, ParamDescriptor> getParameters() {
     return parameters;
   }
 
@@ -127,8 +129,16 @@ public class RouteDescriptor extends Descriptor {
     Map<String, PathParam.Builder> parameters;
     if (this.parameters != null && this.parameters.size() > 0) {
       parameters = new HashMap<String, PathParam.Builder>(this.parameters.size());
-      for (Map.Entry<String, String> parameter : this.parameters.entrySet()) {
-        parameters.put(parameter.getKey(), PathParam.matching(parameter.getValue()));
+      for (Map.Entry<String, ParamDescriptor> parameter : this.parameters.entrySet()) {
+        ParamDescriptor paramDescriptor = parameter.getValue();
+        PathParam.Builder builder = PathParam.matching(paramDescriptor.pattern);
+        if (paramDescriptor.preservePath != null) {
+          builder.setPreservePath(paramDescriptor.preservePath);
+        }
+        if (paramDescriptor.captureGroup != null) {
+          builder.setCaptureGroup(paramDescriptor.captureGroup);
+        }
+        parameters.put(parameter.getKey(), builder);
       }
     } else {
       parameters = Collections.emptyMap();

@@ -29,21 +29,16 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
   /** . */
   final ElementHandle.Class type;
 
-  /** . */
-  final String pattern;
-
   public PhaseParameterMetaModel(
       String name,
       Cardinality cardinality,
       ElementHandle.Class type,
-      String typeLiteral,
-      String pattern) {
+      String typeLiteral) {
     super(name, typeLiteral);
 
     //
     this.cardinality = cardinality;
     this.type = type;
-    this.pattern = pattern;
   }
 
   public Cardinality getCardinality() {
@@ -54,17 +49,12 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
     return type;
   }
 
-  public String getPattern() {
-    return pattern;
-  }
-
   @Override
   public JSON toJSON() {
     return new JSON().
         set("name", name).
         set("type", type).
         set("typeLiteral", typeLiteral).
-        set("cardinality", cardinality).
-        set("pattern", pattern);
+        set("cardinality", cardinality);
   }
 }

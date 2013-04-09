@@ -16,6 +16,7 @@
 
 package juzu.impl.plugin.router.metamodel;
 
+import juzu.Param;
 import juzu.Route;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
@@ -29,7 +30,10 @@ import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
+import juzu.impl.plugin.router.ParamDescriptor;
 
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashMap;
@@ -90,15 +94,20 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
             if (annotation != null) {
               String path = (String)annotation.get("value");
               Integer priority = (Integer)annotation.get("priority");
-              HashMap<String, String> parameters = null;
-              for (ParameterMetaModel parameter : method.getParameters()) {
-                if (parameter instanceof PhaseParameterMetaModel) {
-                  PhaseParameterMetaModel invocationParameter = (PhaseParameterMetaModel)parameter;
-                  if (invocationParameter.getPattern() != null) {
-                    if (parameters == null) {
-                      parameters = new HashMap<String, String>();
-                    }
-                    parameters.put(invocationParameter.getName(), invocationParameter.getPattern());
+              HashMap<String, ParamDescriptor> parameters = null;
+              ExecutableElement exe = metaModel.processingContext.get(method.getHandle());
+              for (VariableElement ve : exe.getParameters()) {
+                Param param = ve.getAnnotation(Param.class);
+                if (param != null) {
+                  if (parameters == null) {
+                    parameters = new HashMap<String, ParamDescriptor>();
+                  }
+                  String name = ve.getSimpleName().toString();
+                  ParameterMetaModel a = method.parameterBy(name);
+                  if (a instanceof PhaseParameterMetaModel) {
+                    parameters.put(name, new ParamDescriptor(param.pattern(),  param.preservePath(),  param.captureGroup()));
+                  } else {
+                    throw new UnsupportedOperationException("Handle me gracefully");
                   }
                 }
               }

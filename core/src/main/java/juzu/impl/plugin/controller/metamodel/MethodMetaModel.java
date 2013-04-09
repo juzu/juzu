@@ -107,8 +107,20 @@ public class MethodMetaModel extends MetaModelObject {
     return parameters;
   }
 
-  public ParameterMetaModel getParameter(int index) {
+  public ParameterMetaModel parameterAt(int index) {
     return parameters.get(index);
+  }
+
+  public ParameterMetaModel parameterBy(String name) throws NullPointerException {
+    if (name == null) {
+      throw new NullPointerException("No null name allowed");
+    }
+    for (ParameterMetaModel parameter : parameters) {
+      if (parameter.getName().equals(name)) {
+        return parameter;
+      }
+    }
+    return null;
   }
 
   public Set<String> getParameterNames() {

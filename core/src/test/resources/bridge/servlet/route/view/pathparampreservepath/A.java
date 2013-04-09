@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
-@Application
-package metamodel.router.param.pattern;
+package bridge.servlet.route.view.pathparampreservepath;
 
-import juzu.Application;
+import juzu.Param;
+import juzu.Response;
+import juzu.Route;
+import juzu.View;
+import juzu.test.AbstractTestCase;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @View
+  public Response.Render index() {
+    return Response.ok("<a id='trigger' href='" + A_.foo("juu/daa") + "'>click</div>");
+  }
+
+  @View
+  @Route(value = "/foo/{juu}")
+  public Response.Content<?> foo(@Param(pattern = ".*", preservePath = true) String juu) {
+    return Response.ok("" + juu);
+  }
+}
