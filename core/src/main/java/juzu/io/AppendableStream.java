@@ -55,11 +55,6 @@ public class AppendableStream implements Stream.Char {
     return this;
   }
 
-  public Stream.Char append(CharArray chars) throws IOException {
-    chars.write(delegate);
-    return this;
-  }
-
   public void close() throws IOException {
     if (delegate instanceof Closeable) {
       ((Closeable)delegate).close();

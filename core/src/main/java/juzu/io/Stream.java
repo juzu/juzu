@@ -22,10 +22,9 @@ import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface Stream extends Flushable, Closeable {
-  /** A stream that extends the appendable interface and add support for the {@link juzu.io.CharArray} class. */
-  interface Char extends Stream, Appendable {
 
-    Char append(CharArray chars) throws IOException;
+  /** A stream that extends the appendable interface. */
+  interface Char extends Stream, Appendable {
 
     Char append(CharSequence csq) throws IOException;
 

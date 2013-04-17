@@ -21,7 +21,6 @@ import juzu.impl.template.spi.juzu.DialectTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.SectionType;
 import juzu.impl.common.Location;
 import juzu.impl.common.Tools;
-import juzu.io.CharArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,15 +99,13 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
       String text = texts.get(i);
       builder.
           append("public static final ").
-          append(CharArray.Simple.class.getName()).
+          append("String").
           append(" s").
           append(i).
-          append(" = new ").
-          append(CharArray.Simple.class.getName()).
-          append("('");
+          append(" = '");
       juzu.impl.common.Tools.escape(text, builder);
       builder.
-          append("');").
+          append("';").
           append(sep);
     }
 

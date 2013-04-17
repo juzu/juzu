@@ -19,7 +19,6 @@ package juzu.impl.template.spi.juzu.dialect.gtmpl;
 import groovy.lang.GString;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
-import juzu.io.CharArray;
 import juzu.template.TemplateRenderContext;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 
@@ -121,10 +120,7 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
   }
 
   public final void print(Object o) throws IOException {
-    if (o instanceof CharArray) {
-      renderContext.getPrinter().append((CharArray)o);
-    }
-    else if (o instanceof GString) {
+    if (o instanceof GString) {
       GString gs = (GString)o;
       Object[] values = gs.getValues();
       for (int i = 0;i < values.length;i++) {
