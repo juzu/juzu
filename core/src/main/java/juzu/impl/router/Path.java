@@ -19,7 +19,6 @@ package juzu.impl.router;
 import juzu.UndeclaredIOException;
 import juzu.impl.common.PercentCodec;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -37,124 +36,39 @@ class Path {
 
   private static final class Data {
 
-    private int hex(char c) {
-      if (c >= '0' && c <= '9') {
-        return c - '0';
-      }
-      else if (c >= 'A' && c <= 'F') {
-        return c + 10 - 'A';
-      }
-      else if (c >= 'a' && c <= 'f') {
-        return c + 10 - 'a';
-      }
-      else {
-        throw new IllegalArgumentException("Invalid hex code in " + rawValue);
-      }
-    }
-
-    /** . */
-    private final String rawValue;
-
     /** . */
     private final String value;
 
     /** . */
-    private final int[] mapping;
+    private final boolean[] escaped;
 
     private Data(String rawValue) throws IOException, IllegalArgumentException {
-      this.rawValue = rawValue;
-
-      //
       int len = rawValue.length();
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      int[] mapping = new int[len];
+      StringBuilder buffer = new StringBuilder();
+      boolean[] escaped = new boolean[len];
       int count = 0;
 
       //
       int i = 0;
       while (i < len) {
-        char c = rawValue.charAt(i);
-        mapping[count++] = i;
-
-        //
-        if (PercentCodec.PATH_SEGMENT.accept(c)) {
-          baos.write((int)c);
-          i++;
-        }
-        else if (c == '%') {
-          if (i + 2 >= len) {
-            throw new IllegalArgumentException("Invalid percent escape in " + rawValue);
-          }
-          int h = (hex(rawValue.charAt(i + 1)) << 4) + hex(rawValue.charAt(i + 2));
-          baos.write(h);
-          i += 3;
-
-          // Compute the number of bytes to read for this char
-          int size = 0;
-          for (int j = h;(j & 0x80) != 0;j = j << 1) {
-            size++;
-          }
-          if (size == 0) {
-            size = 1;
-          }
-          else if (size > 6) {
-            throw new IllegalArgumentException("Invalid percent escape in " + rawValue);
-          }
-
-          // Compute the offset we need to read those bytes
-          int to = i + (size - 1) * 3;
-          if (to > len) {
-            throw new IllegalArgumentException("Invalid percent escape in " + rawValue);
-          }
-
-          // Read what we need
-          while (i < to) {
-            if (rawValue.charAt(i) != '%') {
-              throw new IllegalArgumentException("Invalid percent escape in " + rawValue);
-            }
-            h = (hex(rawValue.charAt(i + 1)) << 4) + hex(rawValue.charAt(i + 2));
-            baos.write(h);
-            i += 3;
-          }
-        }
-        else if (c == '/') {
-          baos.write('/');
-          i++;
-        }
-        else {
-          throw new IllegalArgumentException("Unsupported char value in path " + (int)c + " / " + c);
-        }
+        int delta = PercentCodec.PATH.decodeChar(rawValue, i, len, buffer);
+        escaped[count++] = delta > 1;
+        i += delta;
       }
 
       //
-      this.value = baos.toString("UTF-8");
-      this.mapping = mapping;
+      this.value = buffer.toString();
+      this.escaped = escaped;
     }
 
-    int getRawStart(int index) {
+    boolean isEscaped(int index) {
       if (index < 0) {
         throw new IndexOutOfBoundsException("No negative index accepted");
       }
       if (index >= value.length()) {
         throw new IndexOutOfBoundsException("Index can't be greater than length");
       }
-      return mapping[index];
-    }
-
-    int getRawEnd(int index) {
-      if (index < 0) {
-        throw new IndexOutOfBoundsException("No negative index accepted");
-      }
-      if (index >= value.length()) {
-        throw new IndexOutOfBoundsException("Index can't be greater than length");
-      }
-      index++;
-      if (index == value.length()) {
-        return rawValue.length();
-      }
-      else {
-        return mapping[index];
-      }
+      return escaped[index];
     }
   }
 
@@ -177,16 +91,8 @@ class Path {
     return value;
   }
 
-  int getRawStart(int index) {
-    return data.getRawStart(innerIndex(index)) - data.getRawStart(offset);
-  }
-
-  int getRawEnd(int index) {
-    return data.getRawEnd(innerIndex(index)) - data.getRawStart(offset);
-  }
-
-  int getRawLength(int index) {
-    return getRawEnd(index) - getRawStart(index);
+  boolean isEscaped(int index) {
+    return data.isEscaped(innerIndex(index));
   }
 
   char charAt(int pos) {

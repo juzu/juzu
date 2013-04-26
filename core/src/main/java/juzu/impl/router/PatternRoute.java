@@ -54,7 +54,7 @@ class PatternRoute extends Route {
     //
     String[] encodedChunks = new String[chunks.size()];
     for (int i = 0;i < chunks.size();i++) {
-      encodedChunks[i] = PercentCodec.PATH_SEGMENT.encode(chunks.get(i));
+      encodedChunks[i] = PercentCodec.PATH_SEGMENT.encodeSequence(chunks.get(i));
     }
 
     //

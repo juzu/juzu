@@ -33,42 +33,22 @@ public class PathTestCase extends AbstractTestCase {
     //
     Path p2 = Path.parse("_");
     assertEquals("_", p2.getValue());
-    assertEquals(0, p2.getRawStart(0));
-    assertEquals(1, p2.getRawEnd(0));
-    assertEquals(1, p2.getRawLength(0));
+    assertFalse(p2.isEscaped(0));
 
     //
     Path p3 = Path.parse("a%5Fb%5Fc");
     assertEquals("a_b_c", p3.getValue());
-    assertEquals(0, p3.getRawStart(0));
-    assertEquals(1, p3.getRawEnd(0));
-    assertEquals(1, p3.getRawLength(0));
-    assertEquals(1, p3.getRawStart(1));
-    assertEquals(4, p3.getRawEnd(1));
-    assertEquals(3, p3.getRawLength(1));
-    assertEquals(4, p3.getRawStart(2));
-    assertEquals(5, p3.getRawEnd(2));
-    assertEquals(1, p3.getRawLength(2));
-    assertEquals(5, p3.getRawStart(3));
-    assertEquals(8, p3.getRawEnd(3));
-    assertEquals(3, p3.getRawLength(3));
-    assertEquals(8, p3.getRawStart(4));
-    assertEquals(9, p3.getRawEnd(4));
-    assertEquals(1, p3.getRawLength(4));
+    assertFalse(p3.isEscaped(0));
+    assertTrue(p3.isEscaped(1));
+    assertFalse(p3.isEscaped(2));
+    assertTrue(p3.isEscaped(3));
+    assertFalse(p3.isEscaped(4));
 
     //
     Path p4 = p3.subPath(2);
-    assertEquals(0, p4.getRawStart(0));
-    assertEquals(1, p4.getRawEnd(0));
-    assertEquals(1, p4.getRawLength(0));
-
-    assertEquals(1, p4.getRawStart(1));
-    assertEquals(4, p4.getRawEnd(1));
-    assertEquals(3, p4.getRawLength(1));
-
-    assertEquals(4, p4.getRawStart(2));
-    assertEquals(5, p4.getRawEnd(2));
-    assertEquals(1, p4.getRawLength(2));
+    assertFalse(p4.isEscaped(0));
+    assertTrue(p4.isEscaped(1));
+    assertFalse(p4.isEscaped(2));
   }
 
   @Test
@@ -80,9 +60,7 @@ public class PathTestCase extends AbstractTestCase {
   public void testPercent1() {
     Path path = Path.parse("%5F");
     assertEquals("_", path.getValue());
-    assertEquals(0, path.getRawStart(0));
-    assertEquals(3, path.getRawEnd(0));
-    assertEquals(3, path.getRawLength(0));
+    assertTrue(path.isEscaped(0));
   }
 
   @Test
@@ -90,9 +68,7 @@ public class PathTestCase extends AbstractTestCase {
     Path path = Path.parse("%C2%A2");
     assertEquals(1, path.length());
     assertEquals('\u00A2', path.charAt(0));
-    assertEquals(0, path.getRawStart(0));
-    assertEquals(6, path.getRawEnd(0));
-    assertEquals(6, path.getRawLength(0));
+    assertTrue(path.isEscaped(0));
   }
 
   @Test
@@ -100,9 +76,7 @@ public class PathTestCase extends AbstractTestCase {
     Path path = Path.parse("%E2%82%AC");
     assertEquals(1, path.length());
     assertEquals('\u20AC', path.charAt(0));
-    assertEquals(0, path.getRawStart(0));
-    assertEquals(9, path.getRawEnd(0));
-    assertEquals(9, path.getRawLength(0));
+    assertTrue(path.isEscaped(0));
   }
 
   @Test

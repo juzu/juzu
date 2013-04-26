@@ -40,6 +40,6 @@ class SegmentRoute extends Route {
 
     //
     this.name = name;
-    this.encodedName = PercentCodec.PATH_SEGMENT.encode(name);
+    this.encodedName = PercentCodec.PATH_SEGMENT.encodeSequence(name);
   }
 }

@@ -546,7 +546,7 @@ public class Route {
                       StringBuilder sb = new StringBuilder();
                       for (int from = match.getStart();from < match.getEnd();from++) {
                         char c = path.charAt(from);
-                        if (c == child.router.separatorEscape && path.getRawLength(from) == 1) {
+                        if (c == child.router.separatorEscape && !path.isEscaped(from)) {
                           c = '/';
                         }
                         sb.append(c);

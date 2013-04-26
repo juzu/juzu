@@ -88,7 +88,7 @@ public final class URIWriter {
     if (questionMarkDone) {
       throw new IllegalStateException("Query separator already written");
     }
-    PercentCodec.PATH_SEGMENT.encode(c, appendable);
+    PercentCodec.PATH_SEGMENT.encodeChar(c, appendable);
   }
 
   /**
@@ -135,9 +135,9 @@ public final class URIWriter {
 
     //
     appendable.append(questionMarkDone ? mt.amp : "?");
-    PercentCodec.QUERY_PARAM.encode(parameterName, appendable);
+    PercentCodec.QUERY_PARAM.encodeSequence(parameterName, appendable);
     appendable.append('=');
-    PercentCodec.QUERY_PARAM.encode(paramaterValue, appendable);
+    PercentCodec.QUERY_PARAM.encodeSequence(paramaterValue, appendable);
     questionMarkDone = true;
   }
 

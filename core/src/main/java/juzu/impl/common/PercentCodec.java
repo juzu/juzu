@@ -19,10 +19,7 @@ package juzu.impl.common;
 import juzu.UndeclaredIOException;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CharacterCodingException;
 import java.util.BitSet;
 
 /**
@@ -32,59 +29,17 @@ import java.util.BitSet;
  */
 public final class PercentCodec {
 
-  /** . */
-  private static final byte[] codes;
+  /** Path segment. */
+  public static final PercentCodec PATH_SEGMENT;
 
-  /** . */
-  private static final int[] indices;
+  /** Path. */
+  public static final PercentCodec PATH;
 
-  static {
-
-    Charset UTF8 = Charset.forName("UTF-8");
-    CharsetEncoder encoder = UTF8.newEncoder();
-
-    CharBuffer in = CharBuffer.allocate(1);
-    ByteBuffer out = ByteBuffer.allocate(8);
-
-    int size = 1000;
-
-    // Original estimate size * 2
-    byte[] _codes = new byte[size * 2];
-    int[] _indices = new int[size + 1];
-
-    int ptr = 0;
-
-    for (char c = 0;c < size;c++) {
-      switch (Character.getType(c)) {
-        case Character.SURROGATE:
-        case Character.PRIVATE_USE:
-          break;
-        default:
-          if (encoder.canEncode(c)) {
-            in.rewind();
-            out.rewind();
-            in.put(0, c);
-            encoder.reset();
-            encoder.encode(in, out, true);
-            encoder.flush(out);
-            int length = out.position();
-            System.arraycopy(out.array(), 0, _codes, ptr, length);
-            ptr += length;
-          }
-          else {
-            //
-          }
-      }
-      _indices[c + 1] = ptr;
-    }
-
-    //
-    codes = _codes;
-    indices = _indices;
-  }
+  /** Query params name or value. */
+  public static final PercentCodec QUERY_PARAM;
 
   static {
-    BitSet allowed = new BitSet();
+    BitSet allowed = new BitSet(128);
 
     // Unreserved
     for (char c = 'A';c <= 'Z';c++) {
@@ -120,6 +75,13 @@ public final class PercentCodec {
 
     //
     PATH_SEGMENT = new PercentCodec(allowed);
+  }
+
+  static {
+    BitSet allowed = new BitSet(128);
+    allowed.or(PATH_SEGMENT.allowed);
+    allowed.set('/');
+    PATH = new PercentCodec(allowed);
   }
 
   static {
@@ -164,12 +126,6 @@ public final class PercentCodec {
   /** . */
   private static final char[] ALPHABET = "0123456789ABCDEF".toCharArray();
 
-  /** Path segment. */
-  public static final PercentCodec PATH_SEGMENT;
-
-  /** Query params name or value. */
-  public static final PercentCodec QUERY_PARAM;
-
   /** . */
   private final BitSet allowed;
 
@@ -178,20 +134,20 @@ public final class PercentCodec {
   }
 
   public boolean accept(char c) {
-    return c < allowed.length() && allowed.get(c);
+    return c < 128 && allowed.get(c);
   }
 
-  public void encode(CharSequence s, Appendable appendable) throws IOException {
+  public void encodeSequence(CharSequence s, Appendable appendable) throws IOException {
     for (int len = s.length(), i = 0;i < len;i++) {
       char c = s.charAt(i);
-      encode(c, appendable);
+      encodeChar(c, appendable);
     }
   }
 
-  public String encode(CharSequence s) {
+  public String encodeSequence(CharSequence s) {
     try {
       StringBuilder sb = new StringBuilder(s.length());
-      encode(s, sb);
+      encodeSequence(s, sb);
       return sb.toString();
     }
     catch (IOException e) {
@@ -199,24 +155,140 @@ public final class PercentCodec {
     }
   }
 
-  public void encode(char c, Appendable appendable) throws IOException {
-    if (accept(c)) {
-      appendable.append(c);
+  public void encodeChar(char c, Appendable appendable) throws IOException {
+    if (c < 2 << 6) {
+      if (allowed.get(c)) {
+        appendable.append(c);
+      } else {
+        appendable.append('%');
+        appendable.append(ALPHABET[(c & 0xF0) >> 4]);
+        appendable.append(ALPHABET[c & 0xF]);
+      }
+    } else if (c < 2 << 10) {
+      int c0 = 0x80 | (c & 0x3F);
+      int c1 = 0xC0 | ((c & 0x7C0) >> 6);
+      appendable.append('%');
+      appendable.append(ALPHABET[(c1 & 0xF0) >> 4]);
+      appendable.append(ALPHABET[c1 & 0xF]);
+      appendable.append('%');
+      appendable.append(ALPHABET[(c0 & 0xF0) >> 4]);
+      appendable.append(ALPHABET[c0 & 0xF]);
+    } else if (c < 2 << 15) {
+      int c0 = 0x80 | (c & 0x3F);
+      int c1 = 0x80 | ((c & 0xFC0) >> 6);
+      int c2 = 0xE0 | ((c & 0xF000) >> 12);
+      appendable.append('%');
+      appendable.append(ALPHABET[(c2 & 0xF0) >> 4]);
+      appendable.append(ALPHABET[c2 & 0xF]);
+      appendable.append('%');
+      appendable.append(ALPHABET[(c1 & 0xF0) >> 4]);
+      appendable.append(ALPHABET[c1 & 0xF]);
+      appendable.append('%');
+      appendable.append(ALPHABET[(c0 & 0xF0) >> 4]);
+      appendable.append(ALPHABET[c0 & 0xF]);
+    } else {
+      // Java primitive type cannot handle more than 16 bits
+      throw new CharacterCodingException();
     }
-    else {
-      if (c < indices.length - 1) {
-        int from = indices[c];
-        int to = indices[c + 1];
-        while (from < to) {
-          byte b = codes[from++];
-          appendable.append('%');
-          appendable.append(ALPHABET[(b & 0xF0) >> 4]);
-          appendable.append(ALPHABET[b & 0xF]);
+  }
+
+  public String decodeSequence(CharSequence s) throws UndeclaredIOException {
+    try {
+      StringBuilder sb = new StringBuilder(s.length());
+      decodeSequence(s, sb);
+      return sb.toString();
+    }
+    catch (IOException e) {
+      throw new UndeclaredIOException(e);
+    }
+  }
+
+  public void decodeSequence(CharSequence s, Appendable appendable) throws IOException {
+    decodeSequence(s, 0, s.length(), appendable);
+  }
+
+  public void decodeSequence(CharSequence s, int from, int len, Appendable to) throws IOException {
+    while (len > 0) {
+      int delta = decodeChar(s, from, len, to);
+      len -= delta;
+      from += delta;
+    }
+  }
+
+  /**
+   * Decode a single char.
+   *
+   * @param s the sequence
+   * @param from the offset
+   * @param len the len of the sequence
+   * @param to the destination
+   * @return the number of consumed chars
+   * @throws IOException
+   */
+  public int decodeChar(CharSequence s, int from, int len, Appendable to) throws IOException {
+    final int prev = len;
+    char c = s.charAt(from++);
+    if (c == '%') {
+      if (len < 3) {
+        throw new IllegalArgumentException();
+      } else {
+        len -= 3;
+        char c1 = (char)((hex(s.charAt(from++)) << 4) + hex(s.charAt(from++)));
+        if ((c1 & 0x80) == 0x00) {
+          to.append(c1);
+        } else {
+          if (len < 3) {
+            throw new IllegalArgumentException();
+          } else {
+            if (s.charAt(from++) != '%') {
+              throw new IllegalArgumentException();
+            }
+            len -= 3;
+            char c2 = (char)((hex(s.charAt(from++)) << 4) + hex(s.charAt(from++)));
+            if ((c1 & 0xE0) == 0xC0) {
+              to.append((char)(((c1 & 0x1F) << 6) + (c2 & 0x3F)));
+            } else {
+              if (len < 3) {
+                throw new IllegalArgumentException();
+              } else {
+                if (s.charAt(from++) != '%') {
+                  throw new IllegalArgumentException();
+                }
+                len -= 3;
+                char c3 = (char)((hex(s.charAt(from++)) << 4) + hex(s.charAt(from++)));
+                if ((c1 & 0xF0) == 0xE0) {
+                  to.append((char)(((c1 & 0x0F) << 12) + ((c2 & 0x3F) << 6) + (c3 & 0x3F)));
+                } else {
+                  // Java primitive type cannot handle more than 16 bits
+                  throw new IllegalArgumentException();
+                }
+              }
+            }
+          }
         }
       }
-      else {
-        throw new UnsupportedOperationException("Not handled yet");
+    } else {
+      if (accept(c)) {
+        to.append(c);
+        len--;
+      } else {
+        throw new IllegalArgumentException("Illegal char " + (int)c);
       }
+    }
+    return prev - len;
+  }
+
+  private int hex(char c) throws IOException {
+    if (c >= '0' && c <= '9') {
+      return c - '0';
+    }
+    else if (c >= 'A' && c <= 'F') {
+      return c + 10 - 'A';
+    }
+    else if (c >= 'a' && c <= 'f') {
+      return c + 10 - 'a';
+    } else {
+      throw new IllegalArgumentException();
     }
   }
 }
