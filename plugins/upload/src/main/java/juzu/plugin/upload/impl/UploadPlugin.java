@@ -19,8 +19,11 @@ package juzu.plugin.upload.impl;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.request.Argument;
 import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.Method;
 import juzu.impl.request.Parameter;
+import juzu.impl.request.PhaseArgument;
 import juzu.impl.request.PhaseParameter;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
@@ -36,7 +39,9 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
@@ -94,18 +99,40 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
           //
           try {
             List<FileItem> list = (List<FileItem>)upload.parseRequest(ctx);
+            HashMap<String, String[]> parameters = new HashMap<String, String[]>();
             for (FileItem file : list) {
               String name = file.getFieldName();
-              Parameter parameter = request.getContext().getMethod().getParameter(name);
               if (file.isFormField()) {
-                if (parameter instanceof PhaseParameter) {
-                  request.setArgument(parameter, file.getString());
+                String[] previous = parameters.get(name);
+                String[] value;
+                if (previous != null) {
+                  value = new String[previous.length];
+                  System.arraycopy(previous, 0, value, 0, previous.length);
+                  value[previous.length] = file.getString();
+                } else {
+                  value = new String[]{file.getString()};
                 }
+                parameters.put(name, value);
               } else {
+                Parameter parameter = request.getContext().getMethod().getParameter(name);
                 if (parameter instanceof ContextualParameter && FileItem.class.isAssignableFrom(parameter.getType())) {
                   request.setArgument(parameter, file);
                 }
               }
+            }
+
+            // Keep original parameters that may come from the request path
+            for (Map.Entry<String, String[]> entry : request.getParameters().entrySet()) {
+              if (!parameters.containsKey(entry.getKey())) {
+                parameters.put(entry.getKey(), entry.getValue());
+              }
+            }
+
+            // Redecode phase arguments from updated request
+            Method<?> method = request.getContext().getMethod();
+            Map<String, PhaseArgument> arguments = method.getArguments(parameters);
+            for (Map.Entry<String, PhaseArgument> a : arguments.entrySet()) {
+              request.setArgument(a.getValue().getParameter(), a.getValue().getValue());
             }
           }
           catch (FileUploadException e) {

@@ -41,6 +41,9 @@ public abstract class AbstractUploadTestCase extends AbstractWebTestCase {
   /** . */
   public static String text;
 
+  /** . */
+  public static String field;
+
   @Drone
   WebDriver driver;
 
@@ -52,6 +55,7 @@ public abstract class AbstractUploadTestCase extends AbstractWebTestCase {
     WebElement submit = driver.findElement(By.id("submit"));
     WebElement file = driver.findElement(By.id("file"));
     WebElement text = driver.findElement(By.id("text"));
+    WebElement field = driver.findElement(By.id("field"));
     File f = File.createTempFile("juzu", ".txt");
     f.deleteOnExit();
     FileWriter writer = new FileWriter(f);
@@ -59,6 +63,7 @@ public abstract class AbstractUploadTestCase extends AbstractWebTestCase {
     writer.close();
     file.sendKeys(f.getAbsolutePath());
     text.sendKeys("text_value");
+    field.sendKeys("field_value");
     AbstractUploadTestCase.contentType = null;
     AbstractUploadTestCase.content = null;
     AbstractUploadTestCase.text = null;
@@ -66,5 +71,6 @@ public abstract class AbstractUploadTestCase extends AbstractWebTestCase {
     assertEquals("text/plain", AbstractUploadTestCase.contentType);
     assertEquals("HELLO", AbstractUploadTestCase.content);
     assertEquals("text_value", AbstractUploadTestCase.text);
+    assertEquals("field_value", AbstractUploadTestCase.field);
   }
 }
