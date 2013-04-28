@@ -30,12 +30,13 @@ public class A {
 
   @Action
   @Route("/action")
-  public void action(FileItem file, String text) throws IOException {
+  public Response.View action(FileItem file, String text) throws IOException {
     if (file != null) {
       AbstractUploadTestCase.contentType = file.getContentType();
       AbstractUploadTestCase.content = file.getString();
       AbstractUploadTestCase.text = text;
     }
+    return A_.index();
   }
 
   @View
