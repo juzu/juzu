@@ -138,4 +138,10 @@ public class MethodParametersTestCase extends AbstractInjectTestCase {
 
 //    MockRenderBridge mv = (MockRenderBridge)client.invoke(render.assertStringResult());
   }
+
+  @Test
+  public void testContextualFactory() throws Exception {
+    // We just check that compilation happens
+    MockApplication<?> app = application("plugin.controller.method.parameters.context.factory").init();
+  }
 }

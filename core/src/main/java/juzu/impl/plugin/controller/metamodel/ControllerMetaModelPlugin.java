@@ -336,7 +336,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
                 if (j > 0) {
                   writer.append(",");
                 }
-                writer.append(method.parameterAt(j).getName());
+                writer.append(parameters.get(j).getName());
               }
               writer.append('}');
               break;
