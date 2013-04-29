@@ -31,6 +31,7 @@ import juzu.impl.request.Argument;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
+import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.common.URIWriter;
@@ -45,7 +46,9 @@ import juzu.request.WindowContext;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class WebRequestBridge implements RequestBridge, WindowContext {
@@ -254,13 +257,24 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
             // Render base URL
             http.renderRequestURL(appendable);
 
-            //
+            // Render path
             URIWriter writer = new URIWriter(appendable, mimeType);
             match.render(writer);
-            for (Map.Entry<String, String> entry : match.getUnmatched().entrySet()) {
-              String[] values = parameters.get(entry.getKey());
-              for (String value : values) {
-                writer.appendQueryParameter(entry.getKey(), value);
+
+            // Retain matched parameters for filtering later
+            Set<String> matched = match.getMatched().isEmpty() ? Collections.<String>emptySet() : new HashSet<String>(match.getMatched().size());
+            for (PathParam param : match.getMatched().keySet()) {
+              matched.add(param.getName());
+            }
+
+            // Render remaining parameters which have not been rendered yet
+            for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+              String parameter = entry.getKey();
+              if (!matched.contains(parameter)) {
+                String[] values = parameters.get(parameter);
+                for (String value : values) {
+                  writer.appendQueryParameter(parameter, value);
+                }
               }
             }
           }

@@ -194,6 +194,12 @@ public abstract class Response {
     return this;
   }
 
+  public static abstract class Action extends Response {
+
+    public abstract Map<String, String[]> getParameters();
+
+  }
+
   /**
    * A response instructing to execute a render phase of a controller method after the current interaction.
    */

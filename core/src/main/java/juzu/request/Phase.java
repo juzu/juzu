@@ -69,6 +69,7 @@ public abstract class Phase implements Serializable {
     public String name() {
       return "ACTION";
     }
+
     @Override
     public String id(Annotation annotation) throws ClassCastException {
       return ((juzu.Action)annotation).id();
@@ -101,6 +102,10 @@ public abstract class Phase implements Serializable {
       public <T> juzu.request.Dispatch setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException {
         delegate.setProperty(propertyType, propertyValue);
         return this;
+      }
+
+      public Map<String, String[]> getParameters() {
+        return delegate.getParameters();
       }
 
       @Override
@@ -177,7 +182,7 @@ public abstract class Phase implements Serializable {
 
       @Override
       public Map<String, String[]> getParameters() {
-        return delegate.spi.getParameters();
+        return delegate.getParameters();
       }
 
       @Override
@@ -211,28 +216,32 @@ public abstract class Phase implements Serializable {
         this.delegate = new AbstractDispatch(delegate);
       }
 
-      public juzu.request.Dispatch with(MimeType mimeType) {
+      public final juzu.request.Dispatch with(MimeType mimeType) {
         delegate.with(mimeType);
         return this;
       }
 
-      public juzu.request.Dispatch with(PropertyMap properties) {
+      public final juzu.request.Dispatch with(PropertyMap properties) {
         delegate.with(properties);
         return this;
       }
 
-      public juzu.request.Dispatch escapeXML(Boolean escapeXML) {
+      public final juzu.request.Dispatch escapeXML(Boolean escapeXML) {
         delegate.escapeXML(escapeXML);
         return this;
       }
 
-      public <T> juzu.request.Dispatch setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException {
+      public final <T> juzu.request.Dispatch setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException {
         delegate.setProperty(propertyType, propertyValue);
         return this;
       }
 
+      public final Map<String, String[]> getParameters() {
+        return delegate.getParameters();
+      }
+
       @Override
-      public String toString() {
+      public final String toString() {
         return delegate.toString();
       }
     }
@@ -325,6 +334,10 @@ public abstract class Phase implements Serializable {
       }
       properties.setValue(propertyType, propertyValue);
       return this;
+    }
+
+    public Map<String, String[]> getParameters() {
+      return spi.getParameters();
     }
 
     public String toString() {

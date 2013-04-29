@@ -88,39 +88,39 @@ public abstract class RequestContext {
   }
 
   public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method) {
-    return (Phase.Action.Dispatch)createDispatch(method, EMPTY, ParameterMap.EMPTY);
+    return (Phase.Action.Dispatch)createDispatch(method, EMPTY);
   }
 
   public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object arg) {
-    return (Phase.Action.Dispatch)createDispatch(method, new Object[]{arg}, new ParameterHashMap());
+    return (Phase.Action.Dispatch)createDispatch(method, new Object[]{arg});
   }
 
   public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object[] args) {
-    return (Phase.Action.Dispatch)createDispatch(method, args, new ParameterHashMap());
+    return (Phase.Action.Dispatch)createDispatch(method, args);
   }
 
   public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method) {
-    return (Phase.View.Dispatch)createDispatch(method, EMPTY, ParameterMap.EMPTY);
+    return (Phase.View.Dispatch)createDispatch(method, EMPTY);
   }
 
   public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object arg) {
-    return (Phase.View.Dispatch)createDispatch(method, new Object[]{arg}, new ParameterHashMap());
+    return (Phase.View.Dispatch)createDispatch(method, new Object[]{arg});
   }
 
   public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object[] args) {
-    return (Phase.View.Dispatch)createDispatch(method, args, new ParameterHashMap());
+    return (Phase.View.Dispatch)createDispatch(method, args);
   }
 
   public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method) {
-    return (Phase.Resource.Dispatch)createDispatch(method, EMPTY, ParameterMap.EMPTY);
+    return (Phase.Resource.Dispatch)createDispatch(method, EMPTY);
   }
 
   public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object arg) {
-    return (Phase.Resource.Dispatch)createDispatch(method, new Object[]{arg}, new ParameterHashMap());
+    return (Phase.Resource.Dispatch)createDispatch(method, new Object[]{arg});
   }
 
   public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
-    return (Phase.Resource.Dispatch)createDispatch(method, args, new ParameterHashMap());
+    return (Phase.Resource.Dispatch)createDispatch(method, args);
   }
 
   public Response getResponse() {
@@ -131,7 +131,8 @@ public abstract class RequestContext {
     request.setResponse(response);
   }
 
-  private Dispatch createDispatch(Method<?> method, Object[] args, ParameterMap parameters) {
+  private Dispatch createDispatch(Method<?> method, Object[] args) {
+    ParameterHashMap parameters = new ParameterHashMap();
     method.setArgs(args, parameters);
     DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
     return request.createDispatch(method, spi);

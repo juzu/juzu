@@ -20,6 +20,8 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.common.MimeType;
 
+import java.util.Map;
+
 /**
  * <p>The <code>Dispatch</code> object represents the dispatch to a controller method. It can be used for generating
  * URL or as a {@link juzu.Response.View} objects. A dispatch object can be obtained from a {@link juzu.request.RequestContext}
@@ -65,6 +67,8 @@ public interface Dispatch  {
    * @throws IllegalArgumentException if the property is not valid
    */
   <T> Dispatch setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException;
+
+  Map<String, String[]> getParameters();
 
   String toString();
 
