@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-package metamodel.router.param;
+@Application package bridge.request.action.pathparamaliasing;
 
-import juzu.Param;
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @View
-  @Route(value = "/{foo}")
-  public Response index(@Param(name = "foo", pattern = ".*", preservePath = true, captureGroup = false) String foo) {
-    throw new UnsupportedOperationException();
-  }
-}
+import juzu.Application;

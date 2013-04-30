@@ -19,12 +19,9 @@ package juzu.plugin.upload.impl;
 import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
-import juzu.impl.request.Argument;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Parameter;
-import juzu.impl.request.PhaseArgument;
-import juzu.impl.request.PhaseParameter;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.ActionContext;
@@ -130,10 +127,17 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
 
             // Redecode phase arguments from updated request
             Method<?> method = request.getContext().getMethod();
-            Map<String, PhaseArgument> arguments = method.getArguments(parameters);
-            for (Map.Entry<String, PhaseArgument> a : arguments.entrySet()) {
-              request.setArgument(a.getValue().getParameter(), a.getValue().getValue());
+            Map<Parameter, Object> arguments = method.getArguments(parameters);
+
+            // Update with existing contextual arguments
+            for (Map.Entry<Parameter, Object> argument : request.getArguments().entrySet()) {
+              if (argument.getKey() instanceof ContextualParameter) {
+                arguments.put(argument.getKey(), argument.getValue());
+              }
             }
+
+            // Replace all arguments
+            request.setArguments(arguments);
           }
           catch (FileUploadException e) {
             throw new UndeclaredThrowableException(e);

@@ -17,6 +17,7 @@
 package juzu.impl.plugin.controller.metamodel;
 
 import juzu.Mapped;
+import juzu.Param;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -168,7 +169,12 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
 
             //
             if (te.toString().equals("java.lang.String") || te.getAnnotation(Mapped.class) != null) {
-              parameters.add(new PhaseParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral));
+              // Not sure we should use @Param for this (i.e for now it looks hackish)
+              // however it does make sense later to use the regex part for non router
+              // parameters
+              Param param = parameterVariableElt.getAnnotation(Param.class);
+              String alias = param != null && param.name().length() > 0 ? param.name() : null;
+              parameters.add(new PhaseParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral, alias));
             } else {
               parameters.add(new ContextualParameterMetaModel(parameterName, typeLiteral));
             }

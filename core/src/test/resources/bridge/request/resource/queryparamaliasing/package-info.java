@@ -14,29 +14,6 @@
  * limitations under the License.
  */
 
-package juzu.impl.request;
+@Application package bridge.request.resource.queryparamaliasing;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class PhaseArgument extends Argument {
-
-  /** . */
-  private final PhaseParameter descriptor;
-
-  /** . */
-  private final Object value;
-
-  public PhaseArgument(PhaseParameter descriptor, Object value) {
-    this.descriptor = descriptor;
-    this.value = value;
-  }
-
-  @Override
-  public PhaseParameter getParameter() {
-    return descriptor;
-  }
-
-  @Override
-  public Object getValue() {
-    return value;
-  }
-}
+import juzu.Application;

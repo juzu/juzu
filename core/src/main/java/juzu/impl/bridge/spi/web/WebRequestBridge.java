@@ -27,7 +27,7 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
-import juzu.impl.request.Argument;
+import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
@@ -69,7 +69,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   final Method<?> target;
 
   /** . */
-  final Map<String, ? extends Argument> arguments;
+  final Map<Parameter, Object> arguments;
 
   /** . */
   protected Request request;
@@ -103,7 +103,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     return target.getHandle();
   }
 
-  public Map<String, ? extends Argument> getArguments() {
+  public Map<Parameter, Object> getArguments() {
     return arguments;
   }
 

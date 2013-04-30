@@ -21,7 +21,6 @@ import juzu.Response;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.ContextualArgument;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Parameter;
@@ -63,7 +62,7 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
         final ContextualParameter contextualParameter = (ContextualParameter)parameter;
         if (EventQueue.class.isAssignableFrom(contextualParameter.getType())) {
           final PortletEventProducer producer = new PortletEventProducer();
-          arguments.put(contextualParameter.getName(), new ContextualArgument(contextualParameter, producer));
+          arguments.put(contextualParameter, producer);
         }
       }
     }

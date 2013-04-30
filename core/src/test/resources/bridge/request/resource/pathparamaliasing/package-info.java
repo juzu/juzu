@@ -14,23 +14,6 @@
  * limitations under the License.
  */
 
-package juzu.impl.request;
+@Application package bridge.request.resource.pathparamaliasing;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Argument {
-
-  /**
-   * Returns the parameter associated with the argument.
-   *
-   * @return the parameter
-   */
-  public abstract Parameter getParameter();
-
-  /**
-   * Returns the argument value.
-   *
-   * @return the argument value
-   */
-  public abstract Object getValue();
-
-}
+import juzu.Application;

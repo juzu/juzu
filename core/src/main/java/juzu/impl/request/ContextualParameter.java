@@ -40,7 +40,12 @@ public class ContextualParameter extends Parameter {
   }
 
   @Override
-  public ContextualArgument create(final Object value) {
-    return new ContextualArgument(this, value);
+  public boolean equals(Object obj) {
+    if (obj instanceof ContextualParameter) {
+      ContextualParameter that = (ContextualParameter)obj;
+      return super.equals(that) && genericType.equals(that.genericType);
+    } else {
+      return false;
+    }
   }
 }

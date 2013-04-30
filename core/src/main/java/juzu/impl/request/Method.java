@@ -184,7 +184,7 @@ public final class Method<P extends Phase> {
         PhaseParameter phaseParameter = (PhaseParameter)parameter;
         Object value = args[index++];
         if (value != null) {
-          String name = parameter.getName();
+          String name = phaseParameter.getMappedName();
           switch (phaseParameter.getCardinality()) {
             case SINGLE: {
               if (phaseParameter.getType().isAnnotationPresent(Mapped.class)) {
@@ -271,8 +271,8 @@ public final class Method<P extends Phase> {
     }
   }
 
-  public Map<String, PhaseArgument> getArguments(Map<String, String[]> parameterMap) {
-    Map<String, PhaseArgument> arguments = new HashMap<String, PhaseArgument>();
+  public Map<Parameter, Object> getArguments(Map<String, String[]> parameterMap) {
+    Map<Parameter, Object> arguments = new HashMap<Parameter, Object>();
     for (Parameter parameter : this.parameterMap.values()) {
       if (parameter instanceof PhaseParameter) {
         PhaseParameter phaseParameter = (PhaseParameter)parameter;
@@ -282,14 +282,14 @@ public final class Method<P extends Phase> {
           // build bean parameter
           Object o = null;
           try {
-            o = createMappedBean(type, parameter.getName(), parameterMap);
+            o = createMappedBean(type, phaseParameter.getMappedName(), parameterMap);
           }
           catch (Exception e) {
           }
           values = new Object[]{o};
         }
         else {
-          values = parameterMap.get(parameter.getName());
+          values = parameterMap.get(phaseParameter.getMappedName());
         }
         if (values != null) {
           Object arg;
@@ -308,57 +308,11 @@ public final class Method<P extends Phase> {
             default:
               throw new UnsupportedOperationException("Handle me gracefully");
           }
-          arguments.put(parameter.getName(), new PhaseArgument(phaseParameter, arg));
+          arguments.put(parameter, arg);
         }
       }
     }
     return arguments;
-  }
-
-  public Object[] getArgs(Map<String, String[]> parameterMap) {
-    // Prepare method parameters
-    Class<?>[] paramsType = method.getParameterTypes();
-    Object[] args = new Object[parameterList.size()];
-    for (int i = 0;i < args.length;i++) {
-      Parameter parameter = parameterList.get(i);
-      if (parameter instanceof PhaseParameter) {
-        PhaseParameter invocationParameter = (PhaseParameter)parameter;
-        Object[] values;
-        if (paramsType[i].isAnnotationPresent(Mapped.class)) {
-          // build bean parameter
-          Object o = null;
-          try {
-            o = createMappedBean(paramsType[i], parameter.getName(), parameterMap);
-          }
-          catch (Exception e) {
-          }
-          values = new Object[]{o};
-        }
-        else {
-          values = parameterMap.get(parameter.getName());
-        }
-        if (values != null) {
-          switch (invocationParameter.getCardinality()) {
-            case SINGLE:
-              args[i] = (values.length > 0) ? values[0] : null;
-              break;
-            case ARRAY:
-              args[i] = values.clone();
-              break;
-            case LIST:
-              ArrayList<Object> list = new ArrayList<Object>(values.length);
-              Collections.addAll(list, values);
-              args[i] = list;
-              break;
-            default:
-              throw new UnsupportedOperationException("Handle me gracefully");
-          }
-        }
-      }
-    }
-
-    //
-    return args;
   }
 
   private <T> T createMappedBean(Class<T> clazz, String beanName, Map<String, String[]> parameters) throws IllegalAccessException, InstantiationException {

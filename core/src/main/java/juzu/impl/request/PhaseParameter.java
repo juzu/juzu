@@ -17,6 +17,7 @@
 package juzu.impl.request;
 
 import juzu.impl.common.Cardinality;
+import juzu.impl.common.Tools;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PhaseParameter extends Parameter {
@@ -24,7 +25,10 @@ public class PhaseParameter extends Parameter {
   /** . */
   private final Cardinality cardinality;
 
-  public PhaseParameter(String name, Class<?> type, Cardinality cardinality) throws NullPointerException {
+  /** . */
+  private final String alias;
+
+  public PhaseParameter(String name, Class<?> type, Cardinality cardinality, String alias) throws NullPointerException {
     super(name, type);
 
     //
@@ -34,11 +38,20 @@ public class PhaseParameter extends Parameter {
 
     //
     this.cardinality = cardinality;
+    this.alias = alias;
   }
 
-  @Override
-  public PhaseArgument create(Object value) {
-    return new PhaseArgument(this, value);
+  /**
+   * Return the parameter mapped name.
+   *
+   * @return the mapped name
+   */
+  public String getMappedName() {
+    return alias != null ? alias : name;
+  }
+
+  public String getAlias() {
+    return alias;
   }
 
   /**
@@ -48,5 +61,15 @@ public class PhaseParameter extends Parameter {
    */
   public Cardinality getCardinality() {
     return cardinality;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof PhaseParameter) {
+      PhaseParameter that = (PhaseParameter)obj;
+      return super.equals(that) && cardinality.equals(that.cardinality) && Tools.safeEquals(alias, that.alias);
+    } else {
+      return false;
+    }
   }
 }

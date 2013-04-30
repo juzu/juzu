@@ -66,7 +66,7 @@ public class Request implements ScopingContext {
   private final Map<String, String[]> parameters;
 
   /** . */
-  private final Map<String, Argument> arguments;
+  private final Map<Parameter, Object> arguments;
 
   /** The response. */
   private Response response;
@@ -80,7 +80,7 @@ public class Request implements ScopingContext {
     RequestContext context;
 
     // Make a copy of the original arguments provided by the bridge
-    HashMap<String, Argument> arguments = new HashMap<String, Argument>(bridge.getArguments());
+    Map<Parameter, Object> arguments = new HashMap<Parameter, Object>(bridge.getArguments());
 
     //
     if (bridge instanceof RenderBridge) {
@@ -124,12 +124,17 @@ public class Request implements ScopingContext {
     return context;
   }
 
-  public Argument getArgument(String name) {
-    return arguments.get(name);
+  public Map<Parameter, Object> getArguments() {
+    return arguments;
+  }
+
+  public void setArguments(Map<Parameter, Object> arguments) {
+    this.arguments.clear();
+    this.arguments.putAll(arguments);
   }
 
   public void setArgument(Parameter parameter, Object value) {
-    this.arguments.put(parameter.getName(), parameter.create(value));
+    this.arguments.put(parameter, value);
   }
 
   public final Scoped getContextualValue(Scope scope, Object key) {
@@ -206,10 +211,7 @@ public class Request implements ScopingContext {
         Object[] args = new Object[method.getParameters().size()];
         for (int i = 0;i < args.length;i++) {
           Parameter parameter = method.getParameters().get(i);
-          Argument argument = arguments.get(parameter.getName());
-          if (argument != null) {
-            args[i] = argument.getValue();
-          }
+          args[i] = arguments.get(parameter);
         }
 
         // Invoke

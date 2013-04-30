@@ -68,6 +68,6 @@ public class RenderMethodTestCase extends AbstractTestCase {
     Method cm = controllerDescriptor.getMethod(aClass, "oneArg", String.class);
     assertEquals("oneArg", cm.getName());
     assertEquals(Phase.VIEW, cm.getPhase());
-    assertEquals(Arrays.asList(new PhaseParameter("foo", null, Cardinality.SINGLE)), cm.getParameters());
+    assertEquals(Arrays.asList(new PhaseParameter("foo", null, Cardinality.SINGLE, null)), cm.getParameters());
   }
 }

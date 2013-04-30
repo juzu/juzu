@@ -29,16 +29,21 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
   /** . */
   final ElementHandle.Class type;
 
+  /** . */
+  final String alias;
+
   public PhaseParameterMetaModel(
       String name,
       Cardinality cardinality,
       ElementHandle.Class type,
-      String typeLiteral) {
+      String typeLiteral,
+      String alias) {
     super(name, typeLiteral);
 
     //
     this.cardinality = cardinality;
     this.type = type;
+    this.alias = alias;
   }
 
   public Cardinality getCardinality() {
@@ -47,6 +52,14 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
 
   public ElementHandle.Class getType() {
     return type;
+  }
+
+  public String getAlias() {
+    return alias;
+  }
+
+  public String getMappedName() {
+    return alias != null ? alias : name;
   }
 
   @Override

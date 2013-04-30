@@ -26,7 +26,7 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
-import juzu.impl.request.Argument;
+import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
@@ -69,7 +69,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   final MethodHandle target;
 
   /** . */
-  final Map<String, ? extends Argument> arguments;
+  final Map<Parameter, Object> arguments;
 
   /** . */
   protected Request request;
@@ -89,7 +89,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
       Map<String, String[]> parameters) {
 
     Method<?> desc = application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
-    Map<String, ? extends Argument> arguments = desc.getArguments(parameters);
+    Map<Parameter, Object> arguments = desc.getArguments(parameters);
 
     //
     this.application = application;
@@ -166,7 +166,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     return target;
   }
 
-  public Map<String, ? extends Argument> getArguments() {
+  public Map<Parameter, Object> getArguments() {
     return arguments;
   }
 

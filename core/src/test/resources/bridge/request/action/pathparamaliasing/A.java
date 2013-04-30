@@ -14,19 +14,40 @@
  * limitations under the License.
  */
 
-package metamodel.router.param;
+package bridge.request.action.pathparamaliasing;
 
+import juzu.Action;
 import juzu.Param;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
+import juzu.impl.bridge.request.RequestPathParamAliasing;
+import juzu.request.RequestContext;
+import juzu.request.RequestLifeCycle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+public class A implements RequestLifeCycle {
+
+  /** . */
+  RequestContext context;
+
+  public void beginRequest(RequestContext context) {
+    this.context = context;
+  }
+
+  public void endRequest(RequestContext context) {
+    this.context = null;
+  }
 
   @View
-  @Route(value = "/{foo}")
-  public Response index(@Param(name = "foo", pattern = ".*", preservePath = true, captureGroup = false) String foo) {
-    throw new UnsupportedOperationException();
+  public Response.Render index() {
+    return Response.ok("<a id='trigger' href='" + A_.foo("abc_value") + "'>click</div>");
+  }
+
+  @Action
+  @Route("/foo/{a.b.c}")
+  public Response.View foo(@Param(name = "a.b.c") String abc) {
+    RequestPathParamAliasing.value = abc;
+    return A_.index();
   }
 }

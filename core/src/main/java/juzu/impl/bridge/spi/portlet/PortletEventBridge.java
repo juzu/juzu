@@ -51,7 +51,7 @@ public class PortletEventBridge extends PortletInteractionBridge<EventRequest, E
           Class payloadType = Introspector.resolveToClass(contextualParameter.getGenericType(), Event.class, 0);
           if (payloadType.isInstance(req.getEvent().getValue())) {
             Event event = new Event(req.getEvent().getName(), req.getEvent().getValue());
-            arguments.put(parameter.getName(), contextualParameter.create(event));
+            arguments.put(parameter, event);
           }
         }
       }

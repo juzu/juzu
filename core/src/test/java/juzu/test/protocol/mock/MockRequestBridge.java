@@ -27,7 +27,7 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
-import juzu.impl.request.Argument;
+import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
@@ -74,7 +74,7 @@ public abstract class MockRequestBridge implements RequestBridge {
   private final List<Scoped> attributesHistory;
 
   /** . */
-  private final Map<String, ? extends Argument> arguments;
+  private final Map<Parameter, Object> arguments;
 
   /** . */
   protected Response response;
@@ -83,7 +83,7 @@ public abstract class MockRequestBridge implements RequestBridge {
 
     //
     Method<?> descriptor = application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
-    Map<String, ? extends Argument> arguments = descriptor.getArguments(parameters);
+    Map<Parameter, Object> arguments = descriptor.getArguments(parameters);
 
     //
     this.application = application;
@@ -98,7 +98,7 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.arguments = arguments;
   }
 
-  public Map<String, ? extends Argument> getArguments() {
+  public Map<Parameter, Object> getArguments() {
     return arguments;
   }
 

@@ -24,7 +24,7 @@ package juzu.impl.request;
 public abstract class Parameter {
 
   /** . */
-  private final String name;
+  protected final String name;
 
   /** . */
   private final Class<?> type;
@@ -51,8 +51,6 @@ public abstract class Parameter {
   public Class<?> getType() {
     return type;
   }
-
-  public abstract Argument create(Object value);
 
   @Override
   public boolean equals(Object obj) {

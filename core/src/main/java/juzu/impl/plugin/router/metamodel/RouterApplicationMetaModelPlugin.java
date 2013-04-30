@@ -105,7 +105,9 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
                   String name = ve.getSimpleName().toString();
                   ParameterMetaModel a = method.parameterBy(name);
                   if (a instanceof PhaseParameterMetaModel) {
-                    parameters.put(name, new ParamDescriptor(param.pattern(),  param.preservePath(),  param.captureGroup()));
+                    PhaseParameterMetaModel b = (PhaseParameterMetaModel)a;
+                    String pattern = param.pattern().length() == 0 ? null : param.pattern();
+                    parameters.put(b.getMappedName(), new ParamDescriptor(pattern,  param.preservePath(),  param.captureGroup()));
                   } else {
                     throw new UnsupportedOperationException("Handle me gracefully");
                   }

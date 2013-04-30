@@ -20,7 +20,7 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
-import juzu.impl.request.Argument;
+import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
@@ -48,7 +48,7 @@ public interface RequestBridge extends Closeable {
    *
    * @return the request arguments.
    */
-  Map<String, ? extends Argument> getArguments();
+  Map<Parameter, Object> getArguments();
 
   /**
    * Returns the request parameters.

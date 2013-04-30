@@ -28,7 +28,7 @@ import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
-import juzu.impl.request.Argument;
+import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.bridge.portlet.JuzuPortlet;
@@ -76,7 +76,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected final Method<?> target;
 
   /** . */
-  protected final HashMap<String, Argument> arguments;
+  protected final HashMap<Parameter, Object> arguments;
 
   /** . */
   protected final Map<String, String[]> parameters;
@@ -127,7 +127,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
 
     // Get argument map
-    HashMap<String, Argument> arguments = new HashMap<String, Argument>(target.getArguments(parameters));
+    HashMap<Parameter, Object> arguments = new HashMap<Parameter, Object>(target.getArguments(parameters));
 
     //
     this.bridge = bridge;
@@ -146,7 +146,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   PortletRequestBridge(Bridge bridge,  Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
 
     // Get argument map
-    HashMap<String, Argument> arguments = new HashMap<String, Argument>(target.getArguments(parameters));
+    HashMap<Parameter, Object> arguments = new HashMap<Parameter, Object>(target.getArguments(parameters));
 
     //
     this.bridge = bridge;
@@ -164,7 +164,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   protected abstract Phase getPhase();
 
-  public Map<String, ? extends Argument> getArguments() {
+  public Map<Parameter, Object> getArguments() {
     return arguments;
   }
 

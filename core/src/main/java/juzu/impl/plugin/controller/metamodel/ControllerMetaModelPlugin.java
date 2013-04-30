@@ -288,8 +288,13 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
                 append(INVOCATION_PARAMETER).append('(').
                 append('"').append(parameter.getName()).append('"').append(',').
                 append(parameter.typeLiteral).append(".class").append(',').
-                append(CARDINALITY).append('.').append(invocationParameter.getCardinality().name()).
-                append(')');
+                append(CARDINALITY).append('.').append(invocationParameter.getCardinality().name()).append(',');
+            if (invocationParameter.getAlias() != null) {
+              writer.append('"').append(invocationParameter.getAlias()).append('"');
+            } else {
+              writer.append("null");
+            }
+            writer.append(')');
           } else {
             writer.append("new ").
                 append(CONTEXTUAL_PARAMETER).append('(').

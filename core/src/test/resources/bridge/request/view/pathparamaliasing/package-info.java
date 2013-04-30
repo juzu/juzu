@@ -14,29 +14,6 @@
  * limitations under the License.
  */
 
-package juzu.impl.request;
+@Application package bridge.request.view.pathparamaliasing;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public final class ContextualArgument extends Argument {
-
-  /** . */
-  private final ContextualParameter descriptor;
-
-  /** . */
-  private final Object value;
-
-  public ContextualArgument(ContextualParameter descriptor, Object value) {
-    this.descriptor = descriptor;
-    this.value = value;
-  }
-
-  @Override
-  public ContextualParameter getParameter() {
-    return descriptor;
-  }
-
-  @Override
-  public Object getValue() {
-    return value;
-  }
-}
+import juzu.Application;

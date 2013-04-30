@@ -43,6 +43,15 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER})
 public @interface Param {
 
+
+  /**
+   * The parameter name, when set overrides the introspected name. This is useful when a parameter name cannot
+   * be expressed as a valid java identifier, for example a parameter name containing a dot character.
+   *
+   * @return the parametre name
+   */
+  String name() default "";
+
   /**
    * The parameter pattern as a valid regular expression.
    *
