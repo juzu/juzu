@@ -17,12 +17,13 @@
 package juzu.test.protocol.http;
 
 import juzu.Response;
+import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.ActionBridge;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.request.ClientContext;
-import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,8 +62,8 @@ public class ActionBridgeImpl extends RequestBridgeImpl implements ActionBridge 
   public void close() {
     try {
       if (response instanceof Response.View) {
-        Response.View update = (Response.View)response;
-        DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
+        Phase.View.Dispatch update = (Phase.View.Dispatch)response;
+        DispatchBridge spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
         Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
         String url = dispatch.with(update.getProperties()).toString();
         resp.sendRedirect(url);

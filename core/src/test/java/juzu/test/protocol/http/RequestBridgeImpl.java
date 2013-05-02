@@ -18,6 +18,8 @@ package juzu.test.protocol.http;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.bridge.Parameters;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
@@ -32,7 +34,6 @@ import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
-import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.SecurityContext;
@@ -261,14 +262,14 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     }
   }
 
-  public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-    return new DispatchSPI() {
+  public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Parameters parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchBridge() {
 
       public MethodHandle getTarget() {
         return target;
       }
 
-      public Map<String, String[]> getParameters() {
+      public Parameters getParameters() {
         return parameters;
       }
 
@@ -298,11 +299,12 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
         appendable.append("&juzu.op=").append(method.getId());
 
         //
-        for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
-          String name = parameter.getKey();
+        for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+          String name = parameter.getName();
           try {
             String encName = URLEncoder.encode(name, "UTF-8");
-            for (String value : parameter.getValue()) {
+            for (int i = 0;i < parameter.getSize();i++) {
+              String value = parameter.getValue(i);
               String encValue = URLEncoder.encode(value, "UTF-8");
               appendable.append("&").append(encName).append('=').append(encValue);
             }

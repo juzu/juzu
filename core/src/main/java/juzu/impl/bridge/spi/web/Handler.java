@@ -19,7 +19,9 @@ package juzu.impl.bridge.spi.web;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.Parameters;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.Tools;
 import juzu.impl.common.URIWriter;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.router.RouteDescriptor;
@@ -209,11 +211,11 @@ public class Handler implements Closeable {
       if (requestBridge instanceof WebActionBridge) {
         Response response = ((WebActionBridge)requestBridge).response;
         if (response instanceof Response.View) {
-          Response.View update = (Response.View)response;
+          Phase.View.Dispatch update = (Phase.View.Dispatch)response;
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
             Method<?> desc = this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
-            requestBridge = new WebRenderBridge(this.bridge, this, bridge, desc, update.getParameters());
+            requestBridge = new WebRenderBridge(this.bridge, this, bridge, desc, Tools.toHashMap((Parameters)update.getParameters()));
             requestBridge.invoke();
           }
         }

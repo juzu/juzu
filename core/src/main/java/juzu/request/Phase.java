@@ -21,9 +21,11 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.UndeclaredIOException;
-import juzu.impl.bridge.spi.DispatchSPI;
+import juzu.impl.bridge.Parameters;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.MimeType;
+import juzu.io.Encoding;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -80,7 +82,7 @@ public abstract class Phase implements Serializable {
       /** . */
       private final AbstractDispatch delegate;
 
-      public Dispatch(DispatchSPI delegate) {
+      public Dispatch(DispatchBridge delegate) {
         this.delegate = new AbstractDispatch(delegate);
       }
 
@@ -104,8 +106,34 @@ public abstract class Phase implements Serializable {
         return this;
       }
 
-      public Map<String, String[]> getParameters() {
-        return delegate.getParameters();
+      public final Dispatch setParameter(String name, String value) throws NullPointerException {
+        delegate.setParameter(name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(Encoding encoding, String name, String value) throws NullPointerException {
+        delegate.setParameter(encoding, name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameter(name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(Encoding encoding, String name, String[] value) throws NullPointerException {
+        delegate.setParameter(encoding, name, value);
+        return this;
+      }
+
+      public final Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameters(parameters);
+        return this;
+      }
+
+      public final Dispatch setParameters(Encoding encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameters(encoding, parameters);
+        return this;
       }
 
       @Override
@@ -141,6 +169,7 @@ public abstract class Phase implements Serializable {
     public String name() {
       return "VIEW";
     }
+
     @Override
     public String id(Annotation annotation) throws ClassCastException {
       return ((juzu.View)annotation).id();
@@ -151,7 +180,7 @@ public abstract class Phase implements Serializable {
       /** . */
       private final AbstractDispatch delegate;
 
-      public Dispatch(DispatchSPI delegate) {
+      public Dispatch(DispatchBridge delegate) {
         this.delegate = new AbstractDispatch(delegate);
       }
 
@@ -175,18 +204,57 @@ public abstract class Phase implements Serializable {
         return this;
       }
 
-      @Override
-      public MethodHandle getTarget() {
-        return delegate.spi.getTarget();
-      }
-
-      @Override
-      public Map<String, String[]> getParameters() {
+      public Parameters getParameters() {
         return delegate.getParameters();
       }
 
+      public MethodHandle getTarget() {
+        return delegate.bridge.getTarget();
+      }
+
+      public final Dispatch setParameter(String name, String value) throws NullPointerException {
+        delegate.setParameter(name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(Encoding encoding, String name, String value) throws NullPointerException {
+        delegate.setParameter(encoding, name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameter(name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(Encoding encoding, String name, String[] value) throws NullPointerException {
+        delegate.setParameter(encoding, name, value);
+        return this;
+      }
+
+      public final Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameters(parameters);
+        return this;
+      }
+
+      public final Dispatch setParameters(Encoding encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameters(encoding, parameters);
+        return this;
+      }
+
+      public boolean equals(Object obj) {
+        if (obj == this) {
+          return true;
+        }
+        if (obj instanceof Dispatch) {
+          Dispatch that = (Dispatch)obj;
+          return getParameters().equals(that.getParameters()) && properties.equals(that.properties);
+        }
+        return false;
+      }
+
       @Override
-      public String toString() {
+      public final String toString() {
         return delegate.toString();
       }
     }
@@ -212,7 +280,7 @@ public abstract class Phase implements Serializable {
       /** . */
       private final AbstractDispatch delegate;
 
-      public Dispatch(DispatchSPI delegate) {
+      public Dispatch(DispatchBridge delegate) {
         this.delegate = new AbstractDispatch(delegate);
       }
 
@@ -236,8 +304,34 @@ public abstract class Phase implements Serializable {
         return this;
       }
 
-      public final Map<String, String[]> getParameters() {
-        return delegate.getParameters();
+      public final Dispatch setParameter(String name, String value) throws NullPointerException {
+        delegate.setParameter(name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(Encoding encoding, String name, String value) throws NullPointerException {
+        delegate.setParameter(encoding, name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameter(name, value);
+        return this;
+      }
+
+      public final Dispatch setParameter(Encoding encoding, String name, String[] value) throws NullPointerException {
+        delegate.setParameter(encoding, name, value);
+        return this;
+      }
+
+      public final Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameters(parameters);
+        return this;
+      }
+
+      public final Dispatch setParameters(Encoding Encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+        delegate.setParameters(Encoding, parameters);
+        return this;
       }
 
       @Override
@@ -301,12 +395,12 @@ public abstract class Phase implements Serializable {
     private MimeType mimeType;
 
     /** . */
-    private final DispatchSPI spi;
+    private final DispatchBridge bridge;
 
-    private AbstractDispatch(DispatchSPI spi) {
+    private AbstractDispatch(DispatchBridge bridge) {
       this.properties = null;
       this.mimeType = null;
-      this.spi = spi;
+      this.bridge = bridge;
     }
 
     public Dispatch with(MimeType mimeType) {
@@ -324,8 +418,38 @@ public abstract class Phase implements Serializable {
       return this;
     }
 
+    public Dispatch setParameter(String name, String value) throws NullPointerException {
+      bridge.getParameters().setParameter(name, value);
+      return this;
+    }
+
+    public Dispatch setParameter(Encoding encoding, String name, String value) throws NullPointerException {
+      bridge.getParameters().setParameter(encoding, name, value);
+      return this;
+    }
+
+    public Dispatch setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException {
+      bridge.getParameters().setParameter(name, value);
+      return this;
+    }
+
+    public Dispatch setParameter(Encoding encoding, String name, String[] value) throws NullPointerException {
+      bridge.getParameters().setParameter(encoding, name, value);
+      return this;
+    }
+
+    public Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+      bridge.getParameters().setParameters(parameters);
+      return this;
+    }
+
+    public Dispatch setParameters(Encoding encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+      bridge.getParameters().setParameters(encoding, parameters);
+      return this;
+    }
+
     public <T> Dispatch setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException {
-      String invalid = spi.checkPropertyValidity(propertyType, propertyValue);
+      String invalid = bridge.checkPropertyValidity(propertyType, propertyValue);
       if (invalid != null) {
         throw new IllegalArgumentException(invalid);
       }
@@ -336,14 +460,14 @@ public abstract class Phase implements Serializable {
       return this;
     }
 
-    public Map<String, String[]> getParameters() {
-      return spi.getParameters();
+    public Parameters getParameters() {
+      return bridge.getParameters();
     }
 
     public String toString() {
       try {
         StringBuilder builder = new StringBuilder();
-        spi.renderURL(properties, mimeType, builder);
+        bridge.renderURL(properties, mimeType, builder);
         return builder.toString();
       }
       catch (IOException e) {

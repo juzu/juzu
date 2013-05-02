@@ -21,6 +21,8 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.Parameters;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerPlugin;
@@ -35,7 +37,6 @@ import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
 import juzu.impl.common.URIWriter;
-import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
@@ -211,7 +212,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     http.purgeSession();
   }
 
-  public final DispatchSPI createDispatch(Phase phase, final MethodHandle target, final Map<String, String[]> parameters) {
+  public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Parameters parameters) {
     Method method = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
     //
@@ -229,21 +230,21 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
         params = Collections.emptyMap();
       } else {
         params = new HashMap<String, String>(parameters.size());
-        for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
-          params.put(entry.getKey(), entry.getValue()[0]);
+        for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+          params.put(parameter.getName(), parameter.getValue(0));
         }
       }
 
       //
       final RouteMatch match = route.matches(params);
       if (match != null) {
-        return new DispatchSPI() {
+        return new DispatchBridge() {
 
           public MethodHandle getTarget() {
             return target;
           }
 
-          public Map<String, String[]> getParameters() {
+          public Parameters getParameters() {
             return parameters;
           }
 
@@ -268,22 +269,17 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
             }
 
             // Render remaining parameters which have not been rendered yet
-            for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
-              String parameter = entry.getKey();
-              if (!matched.contains(parameter)) {
-                String[] values = parameters.get(parameter);
-                for (String value : values) {
-                  writer.appendQueryParameter(parameter, value);
+            for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+              if (!matched.contains(parameter.getName())) {
+                for (int i = 0;i < parameter.getSize();i++) {
+                  writer.appendQueryParameter(parameter.getEncoding(), parameter.getName(), parameter.getValue(i));
                 }
               }
             }
           }
         };
       } else {
-        StringBuilder msg = new StringBuilder("The parameters ");
-        Tools.toString(parameters.entrySet(), msg);
-        msg.append(" are not valid");
-        throw new IllegalArgumentException(msg.toString());
+        throw new IllegalArgumentException("The parameters " + parameters + " are not valid");
       }
     } else {
       throw new UnsupportedOperationException("handle me gracefully method not mapped " + method.getHandle());

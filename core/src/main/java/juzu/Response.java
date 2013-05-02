@@ -16,10 +16,10 @@
 
 package juzu;
 
-import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.io.Stream;
 import juzu.io.Streamable;
+import juzu.request.Dispatch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -203,11 +203,7 @@ public abstract class Response {
   /**
    * A response instructing to execute a render phase of a controller method after the current interaction.
    */
-  public static abstract class View extends Response {
-
-    public abstract MethodHandle getTarget();
-
-    public abstract Map<String, String[]> getParameters();
+  public static abstract class View extends Response implements Dispatch {
 
     @Override
     public <T> View with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
@@ -234,22 +230,8 @@ public abstract class Response {
       return (View)super.withNo(propertyType);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-      if (obj == this) {
-        return true;
-      }
-      if (obj instanceof View) {
-        View that = (View)obj;
-        return getParameters().equals(that.getParameters()) && properties.equals(that.properties);
-      }
-      return false;
-    }
+    public abstract boolean equals(Object obj);
 
-    @Override
-    public String toString() {
-      return "Response.View[target=" + getTarget() + ",parameters" + getParameters() + ",properties=" + properties + "]";
-    }
   }
 
   /**

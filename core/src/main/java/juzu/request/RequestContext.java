@@ -18,9 +18,8 @@ package juzu.request;
 
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.impl.bridge.spi.DispatchSPI;
-import juzu.impl.common.ParameterHashMap;
-import juzu.impl.common.ParameterMap;
+import juzu.impl.bridge.Parameters;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -83,7 +82,7 @@ public abstract class RequestContext {
    * @return the corresponding dispatch object
    */
   public Dispatch createDispatch(Method<?> method) {
-    DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), ParameterMap.EMPTY);
+    DispatchBridge spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), new Parameters());
     return request.createDispatch(method, spi);
   }
 
@@ -132,9 +131,9 @@ public abstract class RequestContext {
   }
 
   private Dispatch createDispatch(Method<?> method, Object[] args) {
-    ParameterHashMap parameters = new ParameterHashMap();
+    Parameters parameters = new Parameters();
     method.setArgs(args, parameters);
-    DispatchSPI spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
+    DispatchBridge spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
     return request.createDispatch(method, spi);
   }
 }

@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package juzu.impl.common;
+package juzu.impl.bridge;
 
-import java.util.Arrays;
+import juzu.io.Encoding;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ParameterHashMap extends HashMap<String, String[]> implements ParameterMap {
+public class Parameters extends HashMap<String, Parameter> {
 
   public void setParameter(String name, String value) throws NullPointerException {
+    setParameter(Encoding.RFC3986, name, value);
+  }
+
+  public void setParameter(Encoding encoding, String name, String value) throws NullPointerException {
     if (name == null) {
       throw new NullPointerException("No null name can be used");
     }
@@ -31,14 +36,14 @@ public class ParameterHashMap extends HashMap<String, String[]> implements Param
       throw new IllegalArgumentException("Parameter name cannot be prefixed with juzu.");
     }
     if (value != null) {
-      put(name, new String[]{value});
+      put(name, Parameter.create(encoding, name, value));
     }
     else {
       remove(name);
     }
   }
 
-  public void setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException {
+  public void setParameter(Encoding encoding, String name, String[] value) throws NullPointerException {
     if (name == null) {
       throw new NullPointerException("No null name can be used");
     }
@@ -57,8 +62,16 @@ public class ParameterHashMap extends HashMap<String, String[]> implements Param
           throw new IllegalArgumentException("Argument array cannot contain null value");
         }
       }
-      put(name, value.clone());
+      put(name, Parameter.create(encoding, name, value.clone()));
     }
+  }
+
+  public void setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException {
+    setParameter(Encoding.RFC3986, name, value);
+  }
+
+  public void setParameters(Encoding encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
+    throw new UnsupportedOperationException("todo");
   }
 
   public void setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
@@ -74,31 +87,5 @@ public class ParameterHashMap extends HashMap<String, String[]> implements Param
       }
       setParameter(entry.getKey(), entry.getValue());
     }
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (o instanceof ParameterMap) {
-      ParameterMap that = (ParameterMap)o;
-      if (keySet().equals(that.keySet())) {
-        for (Map.Entry<String, String[]> entry : entrySet()) {
-          String[] value1 = entry.getValue();
-          String[] value2 = that.get(entry.getKey());
-          if (value2 == null || !Arrays.equals(value1, value2)) {
-            return false;
-          }
-        }
-        return true;
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    return Tools.toString(this.entrySet(), new StringBuilder()).toString();
   }
 }

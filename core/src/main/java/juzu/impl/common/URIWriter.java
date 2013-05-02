@@ -16,6 +16,8 @@
 
 package juzu.impl.common;
 
+import juzu.io.Encoding;
+
 import java.io.IOException;
 
 /**
@@ -88,7 +90,7 @@ public final class URIWriter {
     if (questionMarkDone) {
       throw new IllegalStateException("Query separator already written");
     }
-    PercentCodec.PATH_SEGMENT.encodeChar(c, appendable);
+    PercentCodec.RFC3986_SEGMENT.encode(c, appendable);
   }
 
   /**
@@ -110,20 +112,32 @@ public final class URIWriter {
   }
 
   /**
+   * @param name  the parameter name
+   * @param value the parameter value
+   * @throws NullPointerException if any argument value is null
+   * @throws IOException          any IOException
+   * @see #appendQueryParameter(juzu.io.Encoding, String, String)
+   */
+  public void appendQueryParameter(String name, String value) throws NullPointerException, IOException {
+    appendQueryParameter(Encoding.RFC3986, name, value);
+  }
+
+  /**
    * Append a query parameter to the parameter set. Note that the query parameters are ordered and the sequence of call
    * to this method should be honoured when an URL is generated. Note also that the same parameter name can be used
    * multiple times.
    *
-   * @param parameterName  the parameter name
-   * @param paramaterValue the parameter value
+   * @param encoding the parameter encoding
+   * @param name  the parameter name
+   * @param value the parameter value
    * @throws NullPointerException if any argument value is null
    * @throws IOException          any IOException
    */
-  public void appendQueryParameter(String parameterName, String paramaterValue) throws NullPointerException, IOException {
-    if (parameterName == null) {
+  public void appendQueryParameter(Encoding encoding, String name, String value) throws NullPointerException, IOException {
+    if (name == null) {
       throw new NullPointerException("No null parameter name accepted");
     }
-    if (paramaterValue == null) {
+    if (value == null) {
       throw new NullPointerException("No null parameter value accepted");
     }
 
@@ -135,9 +149,9 @@ public final class URIWriter {
 
     //
     appendable.append(questionMarkDone ? mt.amp : "?");
-    PercentCodec.QUERY_PARAM.encodeSequence(parameterName, appendable);
+    encoding.encodeQueryParamName(name, appendable);
     appendable.append('=');
-    PercentCodec.QUERY_PARAM.encodeSequence(paramaterValue, appendable);
+    encoding.encodeQueryParamValue(value, appendable);
     questionMarkDone = true;
   }
 

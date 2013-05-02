@@ -51,7 +51,7 @@ class Path {
       //
       int i = 0;
       while (i < len) {
-        int delta = PercentCodec.PATH.decodeChar(rawValue, i, len, buffer);
+        int delta = PercentCodec.RFC3986_PATH.decodeChar(rawValue, i, len, buffer);
         escaped[count++] = delta > 1;
         i += delta;
       }

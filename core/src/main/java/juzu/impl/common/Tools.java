@@ -17,6 +17,8 @@
 package juzu.impl.common;
 
 import juzu.UndeclaredIOException;
+import juzu.impl.bridge.Parameter;
+import juzu.impl.bridge.Parameters;
 
 import javax.annotation.processing.Completion;
 import javax.lang.model.element.AnnotationMirror;
@@ -36,6 +38,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -951,5 +954,31 @@ public class Tools {
 
   public static String nextUUID() {
     return UUID.randomUUID().toString();
+  }
+
+  public static HashMap<String, String[]> toHashMap(Parameters parameters) {
+    HashMap<String, String[]> map = new HashMap<String, String[]>();
+    for (Parameter parameter : parameters.values()) {
+      map.put(parameter.getName(), parameter.toArray());
+    }
+    return map;
+  }
+
+  public static BigInteger bitSet(CharSequence s) {
+    BigInteger current = BigInteger.ZERO;
+    for (int i = s.length() - 1;i >= 0;i--) {
+      char c = s.charAt(i);
+      current = current.setBit(c);
+
+    }
+    return current;
+  }
+
+  public static BigInteger bitSet(char... chars) {
+    BigInteger current = BigInteger.ZERO;
+    for (char c : chars) {
+      current = current.setBit(c);
+    }
+    return current;
   }
 }

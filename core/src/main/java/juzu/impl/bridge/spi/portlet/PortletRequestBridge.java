@@ -20,6 +20,8 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.Parameters;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
@@ -32,7 +34,6 @@ import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.bridge.portlet.JuzuPortlet;
-import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
@@ -379,14 +380,14 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
   }
 
-  public DispatchSPI createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-    return new DispatchSPI() {
+  public DispatchBridge createDispatch(final Phase phase, final MethodHandle target, final Parameters parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchBridge() {
 
       public MethodHandle getTarget() {
         return target;
       }
 
-      public Map<String, String[]> getParameters() {
+      public Parameters getParameters() {
         return parameters;
       }
 
@@ -415,7 +416,9 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           }
 
           // Set generic parameters
-          url.setParameters(parameters);
+          for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+            url.setParameter(parameter.getName(), parameter.toArray());
+          }
 
           //
           boolean escapeXML = false;

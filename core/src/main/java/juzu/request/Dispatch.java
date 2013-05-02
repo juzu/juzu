@@ -19,6 +19,7 @@ package juzu.request;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.common.MimeType;
+import juzu.io.Encoding;
 
 import java.util.Map;
 
@@ -50,7 +51,6 @@ import java.util.Map;
  */
 public interface Dispatch  {
 
-
   Dispatch with(MimeType mimeType);
 
   Dispatch with(PropertyMap properties);
@@ -68,7 +68,73 @@ public interface Dispatch  {
    */
   <T> Dispatch setProperty(PropertyType<T> propertyType, T propertyValue) throws IllegalArgumentException;
 
-  Map<String, String[]> getParameters();
+  /**
+   * <p>Set a parameter on the URL that will be built by this builder. This method replaces the parameter with the
+   * given name . A parameter value of <code>null</code> indicates that this parameter should be removed.</p>
+   *
+   * @param name  the parameter name
+   * @param value the parameter value
+   * @throws NullPointerException if the name parameter is null
+   */
+  Dispatch setParameter(String name, String value) throws NullPointerException;
+
+  /**
+   * <p>Set a parameter on the URL that will be built by this builder. This method replaces the parameter with the
+   * given name . A parameter value of <code>null</code> indicates that this parameter should be removed.</p>
+   *
+   * @param encoding the character encoding
+   * @param name  the parameter name
+   * @param value the parameter value
+   * @throws NullPointerException if the name parameter is null
+   * @throws IllegalArgumentException if the encoding is not allowed
+   */
+  Dispatch setParameter(Encoding encoding, String name, String value) throws NullPointerException;
+
+  /**
+   * Set a parameter. This method replaces the parameter with the given name . An zero length parameter value indicates
+   * that this parameter should be removed.
+   * <p/>
+   * The inserted value is cloned before its insertion in the map.
+   *
+   * @param name  the parameter name
+   * @param value the parameter value
+   * @throws NullPointerException     if the name parameter or the value parameter is null
+   * @throws IllegalArgumentException if any component of the value is null
+   */
+  Dispatch setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException;
+
+  /**
+   * <p>Set a parameter on the URL that will be built by this builder. This method replaces the parameter with the
+   * given name . A parameter value of <code>null</code> indicates that this parameter should be removed.</p>
+   *
+   * @param encoding the character encoding
+   * @param name  the parameter name
+   * @param value the parameter value
+   * @throws NullPointerException if the name parameter is null
+   * @throws IllegalArgumentException if the encoding is not allowed, if any component of the value is null
+   */
+  Dispatch setParameter(Encoding encoding, String name, String[] value) throws IllegalArgumentException, NullPointerException;
+
+  /**
+   * <p>Set all parameters contained in the map. This method replaces the parameter with the given name . A parameter
+   * value of with a zero length value array indicates that this parameter should be removed. Inserted values are cloned.</p>
+   *
+   * @param parameters the parameters
+   * @throws NullPointerException     if the parameters argument is null
+   * @throws IllegalArgumentException if any key is null or any value in the map is null or contains a null element
+   */
+  Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
+
+  /**
+   * <p>Set all parameters contained in the map. This method replaces the parameter with the given name . A parameter
+   * value of with a zero length value array indicates that this parameter should be removed. Inserted values are cloned.</p>
+   *
+   * @param encoding the character encoding
+   * @param parameters the parameters
+   * @throws NullPointerException     if the parameters argument is null
+   * @throws IllegalArgumentException if the encoding is not allowed, if any key is null or any value in the map is null or contains a null element
+   */
+  Dispatch setParameters(Encoding encoding, Map <String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
 
   String toString();
 

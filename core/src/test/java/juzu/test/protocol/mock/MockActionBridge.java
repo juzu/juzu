@@ -16,18 +16,18 @@
 
 package juzu.test.protocol.mock;
 
+import junit.framework.Assert;
 import juzu.Response;
+import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.ActionBridge;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.request.ClientContext;
-import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.Phase;
 import juzu.test.AbstractTestCase;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -43,8 +43,8 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
 
   public String assertUpdate() {
     if (response instanceof Response.View) {
-      Response.View update = (Response.View)response;
-      DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
+      Phase.View.Dispatch update = (Phase.View.Dispatch)response;
+      DispatchBridge spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
       Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
       return dispatch.with(update.getProperties()).toString();
     }
@@ -62,21 +62,13 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   }
 
   public void assertRender(final MethodHandle expectedTarget, Map<String, String> expectedArguments) {
-    final HashMap<String, String[]> a = new HashMap<String, String[]>();
-    for (Map.Entry<String, String> entry : expectedArguments.entrySet()) {
-      a.put(entry.getKey(), new String[]{entry.getValue()});
+    Assert.assertEquals(expectedTarget, ((Phase.View.Dispatch)response).getTarget());
+    Parameters parameters = ((Phase.View.Dispatch)response).getParameters();
+    Assert.assertEquals(expectedArguments.keySet(), parameters.keySet());
+    for (Map.Entry<String, String> argument : expectedArguments.entrySet()) {
+      Assert.assertEquals(1, parameters.get(argument.getKey()).getSize());
+      Assert.assertEquals(argument.getValue(), parameters.get(argument.getKey()).getValue(0));
     }
-    Response.View resp = new Response.View() {
-      @Override
-      public MethodHandle getTarget() {
-        return expectedTarget;
-      }
-      @Override
-      public Map<String, String[]> getParameters() {
-        return a;
-      }
-    };
-    assertResponse(resp);
   }
 
   public void assertRender(String expectedTarget, Map<String, String> expectedArguments) {
@@ -85,15 +77,7 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
 
   private void assertResponse(Response expectedResponse) {
     if (expectedResponse instanceof Response.View) {
-      Response.View expected = (Response.View)expectedResponse;
-      Response.View resp = (Response.View)response;
-
-      AbstractTestCase.assertEquals(expected.getParameters().size(), expected.getParameters().size());
-      for (String key : resp.getParameters().keySet()) {
-        AbstractTestCase.assertEquals(
-          Arrays.asList(expected.getParameters().get(key)),
-          Arrays.asList(resp.getParameters().get(key)));
-      }
+      throw new UnsupportedOperationException("fixme");
     }
     else {
       AbstractTestCase.assertEquals("Was expecting a response " + expectedResponse + " instead of  " + response,

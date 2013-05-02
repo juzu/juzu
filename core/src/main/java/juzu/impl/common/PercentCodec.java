@@ -19,135 +19,117 @@ package juzu.impl.common;
 import juzu.UndeclaredIOException;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.CharacterCodingException;
-import java.util.BitSet;
 
-/**
- * Utility class for performing percent encoding / decoding.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public final class PercentCodec {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class PercentCodec extends BigInteger {
 
-  /** Path segment. */
-  public static final PercentCodec PATH_SEGMENT;
+  /** . */
+  public static final PercentCodec RFC3986_GEN_DELIMS;
 
-  /** Path. */
-  public static final PercentCodec PATH;
+  /** . */
+  public static final PercentCodec RFC3986_SUB_DELIMS;
 
-  /** Query params name or value. */
-  public static final PercentCodec QUERY_PARAM;
+  /** . */
+  public static final PercentCodec RFC3986_RESERVED_;
+
+  /** . */
+  public static final PercentCodec RFC3986_UNRESERVED;
+
+  /** . */
+  public static final PercentCodec RFC3986_PCHAR;
+
+  /** . */
+  public static final PercentCodec RFC3986_SEGMENT;
+
+  /** . */
+  public static final PercentCodec RFC3986_PATH;
+
+  /** . */
+  public static final PercentCodec RFC3986_QUERY;
 
   static {
-    BitSet allowed = new BitSet(128);
 
-    // Unreserved
+    // rfc3986 : http://www.ietf.org/rfc/rfc3986.txt
+
+    // gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
+    RFC3986_GEN_DELIMS = PercentCodec.create(Tools.bitSet(":/?#[]&"));
+
+    // sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+    RFC3986_SUB_DELIMS = PercentCodec.create(Tools.bitSet("!$&'()*+,;="));
+
+    // reserved = gen-delims / sub-delims
+    RFC3986_RESERVED_ = PercentCodec.create(RFC3986_GEN_DELIMS.or(RFC3986_SUB_DELIMS));
+
+    // unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+    StringBuilder sb = new StringBuilder();
     for (char c = 'A';c <= 'Z';c++) {
-      allowed.set(c);
+      sb.append(c);
     }
     for (char c = 'a';c <= 'z';c++) {
-      allowed.set(c);
+      sb.append(c);
     }
     for (char c = '0';c <= '9';c++) {
-      allowed.set(c);
+      sb.append(c);
     }
-    allowed.set('_');
-    allowed.set('.');
-    allowed.set('-');
-    allowed.set('~');
+    sb.append("_.-~");
+    RFC3986_UNRESERVED = PercentCodec.create(Tools.bitSet(sb));
 
-    // sub-delims
-    allowed.set('!');
-    allowed.set('$');
-    allowed.set('&');
-    allowed.set('\'');
-    allowed.set('(');
-    allowed.set(')');
-    allowed.set('*');
-    allowed.set('+');
-    allowed.set(',');
-    allowed.set(';');
-    allowed.set('=');
+    // pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+    RFC3986_PCHAR = PercentCodec.create(RFC3986_UNRESERVED.or(RFC3986_SUB_DELIMS).or(Tools.bitSet(":@")));
 
-    // ':' | '@'
-    allowed.set(':');
-    allowed.set('@');
+    // segment  = pchar
+    RFC3986_SEGMENT = PercentCodec.create(RFC3986_PCHAR);
 
-    //
-    PATH_SEGMENT = new PercentCodec(allowed);
+    // path = segment / "/"
+    RFC3986_PATH = PercentCodec.create(RFC3986_SEGMENT.or(Tools.bitSet("/")));
+
+    // query / "/" / "?"
+    RFC3986_QUERY = PercentCodec.create(RFC3986_PCHAR.or(Tools.bitSet("/?")));
   }
 
-  static {
-    BitSet allowed = new BitSet(128);
-    allowed.or(PATH_SEGMENT.allowed);
-    allowed.set('/');
-    PATH = new PercentCodec(allowed);
-  }
+  /** Not defined by the RFC. */
+  public static final PercentCodec RFC3986_QUERY_PARAM_NAME;
+
+  /** Not defined by the RFC. */
+  public static final PercentCodec RFC3986_QUERY_PARAM_VALUE;
 
   static {
-    BitSet allowed = new BitSet(128);
-    for (char c = 'A';c <= 'Z';c++) {
-      allowed.set(c);
-    }
-    for (char c = 'a';c <= 'z';c++) {
-      allowed.set(c);
-    }
-    for (char c = '0';c <= '9';c++) {
-      allowed.set(c);
-    }
-    allowed.set('_');
-    allowed.set('.');
-    allowed.set('-');
-    allowed.set('~');
-
-    // sub-delims without ( '&' | '=' )
-    allowed.set('!');
-    allowed.set('$');
-    allowed.set('\'');
-    allowed.set('(');
-    allowed.set(')');
-    allowed.set('*');
-    allowed.set('+');
-    allowed.set(',');
-    allowed.set(';');
-
-    // ':' | '@'
-    allowed.set(':');
-    allowed.set('@');
-
-    // '?' | '/'
-    allowed.set('?');
-    allowed.set('/');
-
-    //
-    QUERY_PARAM = new PercentCodec(allowed);
+    RFC3986_QUERY_PARAM_NAME = PercentCodec.create(RFC3986_QUERY.clearBit('='));
+    RFC3986_QUERY_PARAM_VALUE = PercentCodec.create(RFC3986_QUERY.clearBit('&'));
   }
 
   /** . */
-  private static final char[] ALPHABET = "0123456789ABCDEF".toCharArray();
+  public static final char[] ALPHABET = "0123456789ABCDEF".toCharArray();
 
-  /** . */
-  private final BitSet allowed;
-
-  private PercentCodec(BitSet allowed) {
-    this.allowed = allowed;
+  public static PercentCodec create(BigInteger bitSet) {
+    if (bitSet instanceof PercentCodec) {
+      return (PercentCodec)bitSet;
+    } else {
+      return new PercentCodec(bitSet);
+    }
   }
 
+  private PercentCodec(BigInteger val) {
+    super(val.toByteArray());
+  }
+  
   public boolean accept(char c) {
-    return c < 128 && allowed.get(c);
+    return testBit(c);
   }
 
-  public void encodeSequence(CharSequence s, Appendable appendable) throws IOException {
+  public void encode(CharSequence s, Appendable appendable) throws IOException {
     for (int len = s.length(), i = 0;i < len;i++) {
       char c = s.charAt(i);
-      encodeChar(c, appendable);
+      encode(c, appendable);
     }
   }
 
-  public String encodeSequence(CharSequence s) {
+  public String encode(CharSequence s) {
     try {
       StringBuilder sb = new StringBuilder(s.length());
-      encodeSequence(s, sb);
+      encode(s, sb);
       return sb.toString();
     }
     catch (IOException e) {
@@ -155,9 +137,9 @@ public final class PercentCodec {
     }
   }
 
-  public void encodeChar(char c, Appendable appendable) throws IOException {
+  public void encode(char c, Appendable appendable) throws IOException {
     if (c < 2 << 6) {
-      if (allowed.get(c)) {
+      if (testBit(c)) {
         appendable.append(c);
       } else {
         appendable.append('%');
@@ -192,10 +174,10 @@ public final class PercentCodec {
     }
   }
 
-  public String decodeSequence(CharSequence s) throws UndeclaredIOException {
+  public String decode(CharSequence s) throws UndeclaredIOException {
     try {
       StringBuilder sb = new StringBuilder(s.length());
-      decodeSequence(s, sb);
+      decode(s, sb);
       return sb.toString();
     }
     catch (IOException e) {
@@ -203,11 +185,11 @@ public final class PercentCodec {
     }
   }
 
-  public void decodeSequence(CharSequence s, Appendable appendable) throws IOException {
-    decodeSequence(s, 0, s.length(), appendable);
+  public void decode(CharSequence s, Appendable appendable) throws IOException {
+    decode(s, 0, s.length(), appendable);
   }
 
-  public void decodeSequence(CharSequence s, int from, int len, Appendable to) throws IOException {
+  public void decode(CharSequence s, int from, int len, Appendable to) throws IOException {
     while (len > 0) {
       int delta = decodeChar(s, from, len, to);
       len -= delta;

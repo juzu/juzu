@@ -22,32 +22,32 @@ import org.junit.Test;
 public class PercentCodecTestCase extends AbstractTestCase {
 
   /** . */
-  private static final PercentCodec codec = PercentCodec.QUERY_PARAM;
+  private static final PercentCodec codec = PercentCodec.RFC3986_QUERY_PARAM_NAME;
 
   @Test
   public void testEncode() {
-    assertEquals("_", codec.encodeSequence("_"));
-    assertEquals("a", codec.encodeSequence("a"));
-    assertEquals("A", codec.encodeSequence("A"));
-    assertEquals("0", codec.encodeSequence("0"));
-    assertEquals("%25", codec.encodeSequence("%"));
-    assertEquals("%5B", codec.encodeSequence("["));
-    assertEquals("%7F", codec.encodeSequence(Character.toString(((char)127))));
-    assertEquals("%C3%A7", codec.encodeSequence("ç"));
-    assertEquals("%E2%82%AC", codec.encodeSequence("€"));
+    assertEquals("_", codec.encode("_"));
+    assertEquals("a", codec.encode("a"));
+    assertEquals("A", codec.encode("A"));
+    assertEquals("0", codec.encode("0"));
+    assertEquals("%25", codec.encode("%"));
+    assertEquals("%5B", codec.encode("["));
+    assertEquals("%7F", codec.encode(Character.toString(((char)127))));
+    assertEquals("%C3%A7", codec.encode("ç"));
+    assertEquals("%E2%82%AC", codec.encode("€"));
   }
 
   @Test
   public void testDecode() {
-    assertEquals("_", codec.decodeSequence("_"));
-    assertEquals("a", codec.decodeSequence("a"));
-    assertEquals("A", codec.decodeSequence("A"));
-    assertEquals("0", codec.decodeSequence("0"));
-    assertEquals("%", codec.decodeSequence("%25"));
-    assertEquals("[", codec.decodeSequence("%5B"));
-    assertEquals(Character.toString(((char)127)), codec.decodeSequence("%7F"));
-    assertEquals("ç", codec.decodeSequence("%C3%A7"));
-    assertEquals("€", codec.decodeSequence("%E2%82%AC"));
+    assertEquals("_", codec.decode("_"));
+    assertEquals("a", codec.decode("a"));
+    assertEquals("A", codec.decode("A"));
+    assertEquals("0", codec.decode("0"));
+    assertEquals("%", codec.decode("%25"));
+    assertEquals("[", codec.decode("%5B"));
+    assertEquals(Character.toString(((char)127)), codec.decode("%7F"));
+    assertEquals("ç", codec.decode("%C3%A7"));
+    assertEquals("€", codec.decode("%E2%82%AC"));
 
     //
     assertDecodeException("%5_");
@@ -57,7 +57,7 @@ public class PercentCodecTestCase extends AbstractTestCase {
 
   private void assertDecodeException(String coded) {
     try {
-      codec.decodeSequence(coded);
+      codec.decode(coded);
       fail();
     }
     catch (IllegalArgumentException e) {

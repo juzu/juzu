@@ -17,8 +17,8 @@
 package juzu.impl.request;
 
 import juzu.Mapped;
+import juzu.impl.bridge.Parameters;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.ParameterMap;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
 
@@ -177,7 +177,7 @@ public final class Method<P extends Phase> {
     return parameterMap.keySet();
   }
 
-  public void setArgs(Object[] args, ParameterMap parameterMap) {
+  public void setArgs(Object[] args, Parameters parameterMap) {
     int index = 0;
     for (Parameter parameter : parameterList) {
       if (parameter instanceof PhaseParameter) {

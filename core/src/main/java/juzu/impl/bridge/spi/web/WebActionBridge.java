@@ -23,8 +23,6 @@ import juzu.impl.common.MimeType;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.request.Method;
 import juzu.request.ClientContext;
-import juzu.impl.bridge.spi.DispatchSPI;
-import juzu.request.Phase;
 
 import java.io.IOException;
 import java.util.Map;
@@ -51,9 +49,7 @@ public class WebActionBridge extends WebRequestBridge implements ActionBridge {
       return true;
     } else if (response instanceof Response.View) {
       Response.View update = (Response.View)response;
-      DispatchSPI spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
-      Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
-      String url = dispatch.with(MimeType.PLAIN).with(update.getProperties()).toString();
+      String url = update.with(MimeType.PLAIN).with(update.getProperties()).toString();
       Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
       if (headers != null) {
         for (Map.Entry<String, String[]> entry : headers) {

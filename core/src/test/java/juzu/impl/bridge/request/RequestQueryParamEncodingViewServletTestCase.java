@@ -14,32 +14,16 @@
  * limitations under the License.
  */
 
-package juzu.impl.router;
+package juzu.impl.bridge.request;
 
-import juzu.impl.common.PercentCodec;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-/**
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- * @version $Revision$
- */
-class SegmentRoute extends Route {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class RequestQueryParamEncodingViewServletTestCase extends AbstractRequestQueryParamEncoding {
 
-  /** . */
-  final String name;
-
-  /** . */
-  final String encodedName;
-
-  SegmentRoute(Router router, String name, int terminal) {
-    super(router, terminal);
-
-    //
-    if (name.length() == 0) {
-      throw new AssertionError();
-    }
-
-    //
-    this.name = name;
-    this.encodedName = PercentCodec.RFC3986_SEGMENT.encode(name);
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.request.view.queryparamencoding");
   }
 }

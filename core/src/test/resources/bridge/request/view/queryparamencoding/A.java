@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package bridge.request.view.detypedparam;
+package bridge.request.view.queryparamencoding;
 
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.impl.bridge.request.AbstractRequestDetypedParam;
+import juzu.impl.bridge.request.AbstractRequestQueryParamEncoding;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.request.RequestLifeCycle;
@@ -41,14 +41,14 @@ public class A implements RequestLifeCycle {
   @View
   public Response.Render index() {
     Phase.View.Dispatch dispatch = A_.foo();
-    dispatch.setParameter("detyped", "detyped_value");
-    return Response.ok("<a id='trigger' href='" + dispatch + "'>click</div>");
+    dispatch.setParameter(AbstractRequestQueryParamEncoding.CUSTOM, "encoded", "(:,)");
+    AbstractRequestQueryParamEncoding.value = dispatch.toString();
+    return Response.ok("");
   }
 
   @View
   @Route("/foo")
   public Response.Render foo() {
-    AbstractRequestDetypedParam.value = context.getParameters().get("detyped");
     return Response.ok("");
   }
 }

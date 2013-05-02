@@ -19,6 +19,8 @@ package juzu.test.protocol.mock;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.impl.bridge.Parameters;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
@@ -32,7 +34,6 @@ import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
-import juzu.impl.bridge.spi.DispatchSPI;
 import juzu.request.ApplicationContext;
 import juzu.request.Phase;
 import juzu.request.UserContext;
@@ -40,6 +41,7 @@ import juzu.test.AbstractTestCase;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -196,14 +198,14 @@ public abstract class MockRequestBridge implements RequestBridge {
     }
   }
 
-  public final DispatchSPI createDispatch(final Phase phase, final MethodHandle target, final Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-    return new DispatchSPI() {
+  public final DispatchBridge createDispatch(final Phase phase, final MethodHandle target, final Parameters parameters) throws NullPointerException, IllegalArgumentException {
+    return new DispatchBridge() {
 
       public MethodHandle getTarget() {
         return target;
       }
 
-      public Map<String, String[]> getParameters() {
+      public Parameters getParameters() {
         return parameters;
       }
 
@@ -231,9 +233,15 @@ public abstract class MockRequestBridge implements RequestBridge {
         }
 
         //
+        HashMap<String, String[]> foo = new HashMap<String, String[]>();
+        for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+          foo.put(parameter.getName(), parameter.toArray());
+        }
+
+        //
         JSON url = new JSON();
         url.set("target", target.toString());
-        url.map("parameters", parameters);
+        url.map("parameters", foo);
         url.set("properties", props);
 
         //

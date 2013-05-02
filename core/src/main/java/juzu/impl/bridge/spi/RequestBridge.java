@@ -18,6 +18,7 @@ package juzu.impl.bridge.spi;
 
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.impl.bridge.Parameters;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
 import juzu.impl.request.Parameter;
@@ -127,5 +128,5 @@ public interface RequestBridge extends Closeable {
    * @throws IllegalArgumentException if any parameter is not valid
    * @throws NullPointerException if any argument is null
    */
-  DispatchSPI createDispatch(Phase phase, MethodHandle target, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
+  DispatchBridge createDispatch(Phase phase, MethodHandle target, Parameters parameters) throws NullPointerException, IllegalArgumentException;
 }

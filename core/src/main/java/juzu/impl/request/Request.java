@@ -18,7 +18,7 @@ package juzu.impl.request;
 
 import juzu.Response;
 import juzu.Scope;
-import juzu.impl.bridge.spi.DispatchSPI;
+import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
@@ -299,7 +299,7 @@ public class Request implements ScopingContext {
     }
   }
 
-  public Dispatch createDispatch(Method<?> method, DispatchSPI spi) {
+  public Dispatch createDispatch(Method<?> method, DispatchBridge spi) {
     ControllersDescriptor desc = plugin.getDescriptor();
     Dispatch dispatch;
     if (method.getPhase() == Phase.ACTION) {

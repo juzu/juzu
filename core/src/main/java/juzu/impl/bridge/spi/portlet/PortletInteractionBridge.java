@@ -20,10 +20,12 @@ import juzu.EventQueue;
 import juzu.Response;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.Parameters;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Parameter;
+import juzu.request.Phase;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -71,11 +73,12 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
   @Override
   public void send() throws IOException, PortletException {
     if (response instanceof Response.View) {
-      Response.View update = (Response.View)response;
+      Phase.View.Dispatch update = (Phase.View.Dispatch)response;
 
-      // Parameters
-      for (Map.Entry<String, String[]> entry : update.getParameters().entrySet()) {
-        super.resp.setRenderParameter(entry.getKey(), entry.getValue());
+      // Parameters : need to remove that nasty cast
+      Parameters parameters = (Parameters)update.getParameters();
+      for (juzu.impl.bridge.Parameter entry : parameters.values()) {
+        super.resp.setRenderParameter(entry.getName(), entry.toArray());
       }
 
       //
