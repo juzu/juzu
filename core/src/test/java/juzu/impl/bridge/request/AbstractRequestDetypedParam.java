@@ -26,37 +26,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestQueryParamAliasing extends AbstractWebTestCase {
-
-  public static class ViewServletTestCase extends RequestQueryParamAliasing {
-
-    @Deployment(testable = false)
-    public static WebArchive createDeployment() {
-      return createServletDeployment(true, "bridge.request.view.queryparamaliasing");
-    }
-  }
-
-  public static class ActionServletTestCase extends RequestQueryParamAliasing {
-
-    @Deployment(testable = false)
-    public static WebArchive createDeployment() {
-      return createServletDeployment(true, "bridge.request.action.queryparamaliasing");
-    }
-  }
-
-  public static class ResourceServletTestCase extends RequestQueryParamAliasing {
-
-    @Deployment(testable = false)
-    public static WebArchive createDeployment() {
-      return createServletDeployment(true, "bridge.request.resource.queryparamaliasing");
-    }
-  }
+public abstract class AbstractRequestDetypedParam extends AbstractWebTestCase {
 
   /** . */
-  public static String value;
+  public static String[] value;
 
   @Drone
   WebDriver driver;
@@ -65,11 +42,9 @@ public abstract class RequestQueryParamAliasing extends AbstractWebTestCase {
   public void testPathParam() throws Exception {
     driver.get(applicationURL().toString());
     WebElement trigger = driver.findElement(By.id("trigger"));
-    String href = trigger.getAttribute("href");
-    URL url = new URL(href);
-    Assert.assertNotNull(url.getQuery());
-    Assert.assertTrue(url.getQuery().contains("a.b.c=abc_value"));
+    value = null;
     trigger.click();
-    Assert.assertEquals("abc_value", value);
+    Assert.assertNotNull(value);
+    Assert.assertEquals(Collections.singletonList("detyped_value"), Arrays.<String>asList(value));
   }
 }

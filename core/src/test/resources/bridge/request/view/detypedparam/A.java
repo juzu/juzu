@@ -19,7 +19,7 @@ package bridge.request.view.detypedparam;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.impl.bridge.request.RequestDetypedParam;
+import juzu.impl.bridge.request.AbstractRequestDetypedParam;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.request.RequestLifeCycle;
@@ -48,7 +48,7 @@ public class A implements RequestLifeCycle {
   @View
   @Route("/foo")
   public Response.Render foo() {
-    RequestDetypedParam.value = context.getParameters().get("detyped");
+    AbstractRequestDetypedParam.value = context.getParameters().get("detyped");
     return Response.ok("");
   }
 }

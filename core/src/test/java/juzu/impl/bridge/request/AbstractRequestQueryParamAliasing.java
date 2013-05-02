@@ -29,31 +29,7 @@ import org.openqa.selenium.WebElement;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestPathParamAliasing extends AbstractWebTestCase {
-
-  public static class ViewServletTestCase extends RequestPathParamAliasing {
-
-    @Deployment(testable = false)
-    public static WebArchive createDeployment() {
-      return createServletDeployment(true, "bridge.request.view.pathparamaliasing");
-    }
-  }
-
-  public static class ActionServletTestCase extends RequestPathParamAliasing {
-
-    @Deployment(testable = false)
-    public static WebArchive createDeployment() {
-      return createServletDeployment(true, "bridge.request.action.pathparamaliasing");
-    }
-  }
-
-  public static class ResourceServletTestCase extends RequestPathParamAliasing {
-
-    @Deployment(testable = false)
-    public static WebArchive createDeployment() {
-      return createServletDeployment(true, "bridge.request.resource.pathparamaliasing");
-    }
-  }
+public abstract class AbstractRequestQueryParamAliasing extends AbstractWebTestCase {
 
   /** . */
   public static String value;
@@ -67,8 +43,8 @@ public abstract class RequestPathParamAliasing extends AbstractWebTestCase {
     WebElement trigger = driver.findElement(By.id("trigger"));
     String href = trigger.getAttribute("href");
     URL url = new URL(href);
-    Assert.assertNotNull(url.getPath());
-    Assert.assertTrue(url.getPath().endsWith("/foo/abc_value"));
+    Assert.assertNotNull(url.getQuery());
+    Assert.assertTrue(url.getQuery().contains("a.b.c=abc_value"));
     trigger.click();
     Assert.assertEquals("abc_value", value);
   }

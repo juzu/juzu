@@ -21,7 +21,7 @@ import juzu.Param;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.impl.bridge.request.RequestQueryParamAliasing;
+import juzu.impl.bridge.request.AbstractRequestQueryParamAliasing;
 import juzu.request.RequestContext;
 import juzu.request.RequestLifeCycle;
 
@@ -47,7 +47,7 @@ public class A implements RequestLifeCycle {
   @Action
   @Route("/foo")
   public Response.View foo(@Param(name = "a.b.c") String abc) {
-    RequestQueryParamAliasing.value = abc;
+    AbstractRequestQueryParamAliasing.value = abc;
     return A_.index();
   }
 }
