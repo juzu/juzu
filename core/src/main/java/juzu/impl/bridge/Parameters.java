@@ -16,7 +16,7 @@
 
 package juzu.impl.bridge;
 
-import juzu.impl.request.ResponseParameter;
+import juzu.request.ResponseParameter;
 import juzu.io.Encoding;
 
 import java.util.HashMap;

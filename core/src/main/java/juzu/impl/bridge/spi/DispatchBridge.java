@@ -18,18 +18,19 @@ package juzu.impl.bridge.spi;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.impl.bridge.Parameters;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.MimeType;
+import juzu.request.ResponseParameter;
 
 import java.io.IOException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface DispatchBridge {
 
   MethodHandle getTarget();
 
-  Parameters getParameters();
+  Map<String, ResponseParameter> getParameters();
 
   /**
    * @param propertyType  the property type

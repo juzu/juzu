@@ -21,7 +21,6 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.UndeclaredIOException;
-import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.MimeType;
@@ -126,16 +125,6 @@ public abstract class Phase implements Serializable {
         return this;
       }
 
-      public final Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-        delegate.setParameters(parameters);
-        return this;
-      }
-
-      public final Dispatch setParameters(Encoding encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-        delegate.setParameters(encoding, parameters);
-        return this;
-      }
-
       @Override
       public String toString() {
         return delegate.toString();
@@ -204,7 +193,7 @@ public abstract class Phase implements Serializable {
         return this;
       }
 
-      public Parameters getParameters() {
+      public Map<String, ResponseParameter> getParameters() {
         return delegate.getParameters();
       }
 
@@ -229,16 +218,6 @@ public abstract class Phase implements Serializable {
 
       public final Dispatch setParameter(Encoding encoding, String name, String[] value) throws NullPointerException {
         delegate.setParameter(encoding, name, value);
-        return this;
-      }
-
-      public final Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-        delegate.setParameters(parameters);
-        return this;
-      }
-
-      public final Dispatch setParameters(Encoding encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-        delegate.setParameters(encoding, parameters);
         return this;
       }
 
@@ -321,16 +300,6 @@ public abstract class Phase implements Serializable {
 
       public final Dispatch setParameter(Encoding encoding, String name, String[] value) throws NullPointerException {
         delegate.setParameter(encoding, name, value);
-        return this;
-      }
-
-      public final Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-        delegate.setParameters(parameters);
-        return this;
-      }
-
-      public final Dispatch setParameters(Encoding Encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-        delegate.setParameters(Encoding, parameters);
         return this;
       }
 
@@ -419,32 +388,22 @@ public abstract class Phase implements Serializable {
     }
 
     public Dispatch setParameter(String name, String value) throws NullPointerException {
-      bridge.getParameters().setParameter(name, value);
+      ResponseParameter.create(name, value).addTo(bridge.getParameters());
       return this;
     }
 
     public Dispatch setParameter(Encoding encoding, String name, String value) throws NullPointerException {
-      bridge.getParameters().setParameter(encoding, name, value);
+      ResponseParameter.create(encoding, name, value).addTo(bridge.getParameters());
       return this;
     }
 
     public Dispatch setParameter(String name, String[] value) throws NullPointerException, IllegalArgumentException {
-      bridge.getParameters().setParameter(name, value);
+      ResponseParameter.create(name, value).addTo(bridge.getParameters());
       return this;
     }
 
     public Dispatch setParameter(Encoding encoding, String name, String[] value) throws NullPointerException {
-      bridge.getParameters().setParameter(encoding, name, value);
-      return this;
-    }
-
-    public Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-      bridge.getParameters().setParameters(parameters);
-      return this;
-    }
-
-    public Dispatch setParameters(Encoding encoding, Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException {
-      bridge.getParameters().setParameters(encoding, parameters);
+      ResponseParameter.create(encoding, name, value).addTo(bridge.getParameters());
       return this;
     }
 
@@ -460,7 +419,7 @@ public abstract class Phase implements Serializable {
       return this;
     }
 
-    public Parameters getParameters() {
+    public Map<String, ResponseParameter> getParameters() {
       return bridge.getParameters();
     }
 

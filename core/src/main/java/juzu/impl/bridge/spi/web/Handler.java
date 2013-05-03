@@ -26,7 +26,7 @@ import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.plugin.router.RouterPlugin;
 import juzu.impl.request.Method;
 import juzu.request.RequestParameter;
-import juzu.impl.request.ResponseParameter;
+import juzu.request.ResponseParameter;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;

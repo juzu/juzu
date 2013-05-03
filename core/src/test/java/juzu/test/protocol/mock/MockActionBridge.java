@@ -18,7 +18,6 @@ package juzu.test.protocol.mock;
 
 import junit.framework.Assert;
 import juzu.Response;
-import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
@@ -26,6 +25,7 @@ import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
+import juzu.request.ResponseParameter;
 import juzu.test.AbstractTestCase;
 
 import java.util.Map;
@@ -63,11 +63,11 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
 
   public void assertRender(final MethodHandle expectedTarget, Map<String, String> expectedArguments) {
     Assert.assertEquals(expectedTarget, ((Phase.View.Dispatch)response).getTarget());
-    Parameters parameters = ((Phase.View.Dispatch)response).getParameters();
+    Map<String, ResponseParameter> parameters = ((Phase.View.Dispatch)response).getParameters();
     Assert.assertEquals(expectedArguments.keySet(), parameters.keySet());
     for (Map.Entry<String, String> argument : expectedArguments.entrySet()) {
-      Assert.assertEquals(1, parameters.get(argument.getKey()).getSize());
-      Assert.assertEquals(argument.getValue(), parameters.get(argument.getKey()).getValue(0));
+      Assert.assertEquals(1, parameters.get(argument.getKey()).size());
+      Assert.assertEquals(argument.getValue(), parameters.get(argument.getKey()).get(0));
     }
   }
 

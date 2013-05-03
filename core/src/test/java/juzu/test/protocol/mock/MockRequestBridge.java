@@ -22,7 +22,7 @@ import juzu.Response;
 import juzu.impl.bridge.Parameters;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
-import juzu.impl.request.ResponseParameter;
+import juzu.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MimeType;
@@ -211,14 +211,14 @@ public abstract class MockRequestBridge implements RequestBridge {
     }
   }
 
-  public final DispatchBridge createDispatch(final Phase phase, final MethodHandle target, final Parameters parameters) throws NullPointerException, IllegalArgumentException {
+  public final DispatchBridge createDispatch(final Phase phase, final MethodHandle target, final Map<String, ResponseParameter> parameters) throws NullPointerException, IllegalArgumentException {
     return new DispatchBridge() {
 
       public MethodHandle getTarget() {
         return target;
       }
 
-      public Parameters getParameters() {
+      public Map<String, ResponseParameter> getParameters() {
         return parameters;
       }
 

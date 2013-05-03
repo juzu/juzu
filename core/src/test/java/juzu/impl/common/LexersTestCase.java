@@ -175,6 +175,6 @@ public class LexersTestCase extends AbstractTestCase {
 
     //
     assertEquals("%2B", Lexers.queryParser("a=%2B").next().getRaw(0));
-    assertEquals("+", Lexers.queryParser("a=%2B").next().getValue(0));
+    assertEquals("+", Lexers.queryParser("a=%2B").next().get(0));
   }
 }

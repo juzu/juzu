@@ -18,30 +18,83 @@ package juzu.request;
 
 import juzu.impl.common.Tools;
 
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Map;
 
 /**
- * A request parameter.
+ * A unmodifiable request parameter, it provides access to the parameter name and the parameter values.
+ * The parameter name and values are decoded according, the request parameter provides access to the
+ * raw parameter x-www-formurl-encoded values when they are available.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class RequestParameter {
+public final class RequestParameter extends AbstractList<String> {
 
-  public static RequestParameter create(String name, String value) {
+  /**
+   * Create new parameter.
+   *
+   * @param name the parameter name
+   * @param value the parameter value
+   * @return the new parameter
+   * @throws NullPointerException if the name of the value is null
+   */
+  public static RequestParameter create(String name, String value) throws NullPointerException {
+    if (value == null) {
+      throw new NullPointerException("No null value accepted");
+    }
     return new RequestParameter(name, null, new String[]{value});
   }
 
-  public static RequestParameter create(String name, String raw, String value) {
+  /**
+   * Create new parameter.
+   *
+   * @param name the parameter name
+   * @param value the parameter value
+   * @return the new parameter
+   * @throws NullPointerException if the name of the value is null
+   */
+  public static RequestParameter create(String name, String raw, String value) throws NullPointerException {
+    if (value == null) {
+      throw new NullPointerException("No null value accepted");
+    }
     return new RequestParameter(name, new String[]{raw}, new String[]{value});
   }
 
-  public static RequestParameter create(String name, String[] value) {
+  /**
+   * Create new parameter.
+   *
+   * @param name the parameter name
+   * @param value the parameter value
+   * @return the new parameter
+   * @throws NullPointerException if the name of the value is null
+   * @throws IllegalArgumentException if the value is empty or contains a null component
+   */
+  public static RequestParameter create(String name, String[] value) throws NullPointerException, IllegalArgumentException {
     return new RequestParameter(name, null, value);
   }
 
-  public static RequestParameter create(Map.Entry<String, String[]> entry) {
-    return new RequestParameter(entry.getKey(), null, entry.getValue());
+  /**
+   * Create new parameter.
+   *
+   * @param entry the parameter entry
+   * @return the new parameter
+   * @throws NullPointerException if the entry is null
+   * @throws IllegalArgumentException if entry provides a null name or an illegal value
+   */
+  public static RequestParameter create(Map.Entry<String, String[]> entry) throws NullPointerException, IllegalArgumentException {
+    if (entry == null) {
+      throw new NullPointerException("No null entry accepted");
+    }
+    String name = entry.getKey();
+    if (name == null) {
+      throw new IllegalArgumentException("No null name accepted");
+    }
+    String[] value = entry.getValue();
+    if (value == null) {
+      throw new IllegalArgumentException("No null value accepted");
+    }
+    return new RequestParameter(name, null, value);
   }
 
   /** . */
@@ -53,42 +106,85 @@ public final class RequestParameter {
   /** . */
   private final String[] value;
 
-  private RequestParameter(String name, String[] raw, String[] value) {
+  private RequestParameter(String name, String[] raw, String[] value) throws NullPointerException, IllegalArgumentException {
+    if (name == null) {
+      throw new NullPointerException("No null name accepted");
+    }
+    if (value == null) {
+      throw new NullPointerException("No null value accepted");
+    }
+    for (String s : value) {
+      if (s == null) {
+        throw new IllegalArgumentException("Parameter value cannot contain null");
+      }
+    }
+    if (value.length == 0) {
+      throw new IllegalArgumentException("Value length cannot be lesser than 1");
+    }
+
+    //
     this.name = name;
     this.raw = raw;
     this.value = value;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public int getSize() {
-    return value.length;
-  }
-
-  public String getValue() {
-    return value.length > 0 ? value[0] : null;
-  }
-
-  public String getValue(int index) {
+  @Override
+  public String get(int index) {
     if (index < 0 || index > value.length) {
-      throw new IndexOutOfBoundsException("Wrong index: " + index);
+      throw new IndexOutOfBoundsException("Bad index " + index);
     }
     return value[index];
   }
 
-  public String getRaw(int index) {
-    if (index < 0 || index > value.length) {
-      throw new IndexOutOfBoundsException("Wrong index: " + index);
-    }
-    return raw != null ? raw[index] : null;
+  @Override
+  public int size() {
+    return value.length;
   }
 
+  /**
+   * @return the parameter name
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return the first parameter value
+   */
+  public String getValue() {
+    return value[0];
+  }
+
+  /**
+   * Returns the value at specified index.
+   *
+   * @param index the index of the value
+   * @return the value or null if the index is out of bounds
+   */
+  public String getRaw(int index) {
+    if (index < 0 || index > value.length) {
+      throw new IndexOutOfBoundsException("Bad index " + index);
+    } else {
+      return raw != null ? raw[index] : null;
+    }
+  }
+
+  /**
+   * Clone the value and returns it.
+   *
+   * @return the value as a <code>String[]</code>
+   */
   public String[] toArray() {
     return value.clone();
   }
 
+  /**
+   * Add this parameter to a map.
+   *
+   * @param map the map to add to
+   * @param <M> the map generic type
+   * @return the map argument
+   */
   public <M extends Map<String, RequestParameter>> M addTo(M map) {
     map.put(name, this);
     return map;

@@ -21,8 +21,6 @@ import juzu.PropertyType;
 import juzu.impl.common.MimeType;
 import juzu.io.Encoding;
 
-import java.util.Map;
-
 /**
  * <p>The <code>Dispatch</code> object represents the dispatch to a controller method. It can be used for generating
  * URL or as a {@link juzu.Response.View} objects. A dispatch object can be obtained from a {@link juzu.request.RequestContext}
@@ -114,27 +112,6 @@ public interface Dispatch  {
    * @throws IllegalArgumentException if the encoding is not allowed, if any component of the value is null
    */
   Dispatch setParameter(Encoding encoding, String name, String[] value) throws IllegalArgumentException, NullPointerException;
-
-  /**
-   * <p>Set all parameters contained in the map. This method replaces the parameter with the given name . A parameter
-   * value of with a zero length value array indicates that this parameter should be removed. Inserted values are cloned.</p>
-   *
-   * @param parameters the parameters
-   * @throws NullPointerException     if the parameters argument is null
-   * @throws IllegalArgumentException if any key is null or any value in the map is null or contains a null element
-   */
-  Dispatch setParameters(Map<String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
-
-  /**
-   * <p>Set all parameters contained in the map. This method replaces the parameter with the given name . A parameter
-   * value of with a zero length value array indicates that this parameter should be removed. Inserted values are cloned.</p>
-   *
-   * @param encoding the character encoding
-   * @param parameters the parameters
-   * @throws NullPointerException     if the parameters argument is null
-   * @throws IllegalArgumentException if the encoding is not allowed, if any key is null or any value in the map is null or contains a null element
-   */
-  Dispatch setParameters(Encoding encoding, Map <String, String[]> parameters) throws NullPointerException, IllegalArgumentException;
 
   String toString();
 

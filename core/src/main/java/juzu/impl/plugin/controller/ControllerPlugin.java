@@ -143,11 +143,11 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
           sb.append(',');
         }
         sb.append(parameter.getName()).append("=[");
-        for (int i = 0;i < parameter.getSize();i++) {
+        for (int i = 0;i < parameter.size();i++) {
           if (i > 0) {
             sb.append(',');
           }
-          sb.append(parameter.getValue(i));
+          sb.append(parameter.get(i));
         }
         sb.append(']');
       }

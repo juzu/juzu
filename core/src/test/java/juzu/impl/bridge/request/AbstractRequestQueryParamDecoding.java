@@ -38,8 +38,8 @@ public abstract class AbstractRequestQueryParamDecoding extends AbstractWebTestC
     driver.get(applicationURL().toString());
     WebElement link = driver.findElement(By.id("link"));
     link.click();
-    assertEquals(1, value.getSize());
+    assertEquals(1, value.size());
     assertEquals("%7B", value.getRaw(0));
-    assertEquals("{", value.getValue(0));
+    assertEquals("{", value.get(0));
   }
 }

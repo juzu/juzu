@@ -21,10 +21,9 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.Parameters;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
-import juzu.impl.request.ResponseParameter;
+import juzu.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
@@ -214,7 +213,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     http.purgeSession();
   }
 
-  public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Parameters parameters) {
+  public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Map<String, ResponseParameter> parameters) {
     Method method = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
     //
@@ -233,7 +232,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       } else {
         params = new HashMap<String, String>(parameters.size());
         for (ResponseParameter parameter : parameters.values()) {
-          params.put(parameter.getName(), parameter.getValue(0));
+          params.put(parameter.getName(), parameter.get(0));
         }
       }
 
@@ -246,7 +245,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
             return target;
           }
 
-          public Parameters getParameters() {
+          public Map<String, ResponseParameter> getParameters() {
             return parameters;
           }
 
@@ -273,8 +272,8 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
             // Render remaining parameters which have not been rendered yet
             for (ResponseParameter parameter : parameters.values()) {
               if (!matched.contains(parameter.getName())) {
-                for (int i = 0;i < parameter.getSize();i++) {
-                  writer.appendQueryParameter(parameter.getEncoding(), parameter.getName(), parameter.getValue(i));
+                for (int i = 0;i < parameter.size();i++) {
+                  writer.appendQueryParameter(parameter.getEncoding(), parameter.getName(), parameter.get(i));
                 }
               }
             }

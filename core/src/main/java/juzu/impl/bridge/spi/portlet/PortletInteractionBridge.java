@@ -20,9 +20,8 @@ import juzu.EventQueue;
 import juzu.Response;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.Parameters;
 import juzu.impl.request.ControlParameter;
-import juzu.impl.request.ResponseParameter;
+import juzu.request.ResponseParameter;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
@@ -76,8 +75,8 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
     if (response instanceof Response.View) {
       Phase.View.Dispatch update = (Phase.View.Dispatch)response;
 
-      // Parameters : need to remove that nasty cast
-      Parameters parameters = (Parameters)update.getParameters();
+      //
+      Map<String, ResponseParameter> parameters = update.getParameters();
       for (ResponseParameter entry : parameters.values()) {
         super.resp.setRenderParameter(entry.getName(), entry.toArray());
       }

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package juzu.impl.request;
+package juzu.request;
 
 import juzu.io.Encoding;
 
+import java.util.AbstractList;
+import java.util.Map;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseParameter {
+public class ResponseParameter extends AbstractList<String> {
 
   public static ResponseParameter create(String name, String value) {
     return create(Encoding.RFC3986, name, value);
@@ -43,9 +46,24 @@ public class ResponseParameter {
   /** . */
   final String name;
 
+  @Override
+  public String get(int index) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int size() {
+    throw new UnsupportedOperationException();
+  }
+
   private ResponseParameter(Encoding encoding, String name) {
     this.encoding = encoding;
     this.name = name;
+  }
+
+  public <M extends Map<String, ResponseParameter>> M addTo(M map) {
+    map.put(name, this);
+    return map;
   }
 
   public Encoding getEncoding() {
@@ -56,16 +74,13 @@ public class ResponseParameter {
     return name;
   }
 
-  public String getValue(int index) {
-    throw new UnsupportedOperationException();
-  }
-
-  public int getSize() {
-    throw new UnsupportedOperationException();
-  }
-
   public String[] toArray() {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String toString() {
+    return "Parameter[name=" + name + ",value=" + super.toString() + "]";
   }
 
   private static class SingleValued extends ResponseParameter {
@@ -81,7 +96,7 @@ public class ResponseParameter {
     }
 
     @Override
-    public String getValue(int index) {
+    public String get(int index) {
       if (index != 0) {
         throw new IndexOutOfBoundsException("Wrong index " + index);
       }
@@ -89,18 +104,13 @@ public class ResponseParameter {
     }
 
     @Override
-    public int getSize() {
+    public int size() {
       return 1;
     }
 
     @Override
     public String[] toArray() {
       return new String[]{value};
-    }
-
-    @Override
-    public String toString() {
-      return "Parameter[encoded=" + encoding + ",name=" + name + ",value=" + value + "]";
     }
   }
 
@@ -117,7 +127,7 @@ public class ResponseParameter {
     }
 
     @Override
-    public String getValue(int index) {
+    public String get(int index) {
       if (index < 0 || index > value.length) {
         throw new IndexOutOfBoundsException("Wrong index " + index);
       }
@@ -125,29 +135,13 @@ public class ResponseParameter {
     }
 
     @Override
-    public int getSize() {
+    public int size() {
       return value.length;
     }
 
     @Override
     public String[] toArray() {
       return value.clone();
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder("Parameter[encoding=").append(encoding.getDisplayName()).append(",name=").append(name).append(",value=(");
-      boolean first = true;
-      for (String s : value) {
-        if (first) {
-          first = false;
-        } else {
-          sb.append(',');
-        }
-        sb.append(s);
-      }
-      sb.append(")]");
-      return sb.toString();
     }
   }
 }

@@ -17,7 +17,7 @@
 package juzu.impl.common;
 
 import juzu.UndeclaredIOException;
-import juzu.impl.request.ResponseParameter;
+import juzu.request.ResponseParameter;
 import juzu.impl.bridge.Parameters;
 
 import javax.annotation.processing.Completion;
