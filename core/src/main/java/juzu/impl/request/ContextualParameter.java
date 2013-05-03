@@ -19,7 +19,7 @@ package juzu.impl.request;
 import java.lang.reflect.Type;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ContextualParameter extends Parameter {
+public class ContextualParameter extends ControlParameter {
 
   /** . */
   private final Type genericType;

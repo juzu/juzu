@@ -23,6 +23,7 @@ import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.request.Method;
+import juzu.request.RequestParameter;
 
 import java.io.IOException;
 import java.util.Map;
@@ -35,7 +36,7 @@ public abstract class WebMimeBridge extends WebRequestBridge implements MimeBrid
       Handler handler,
       WebBridge http,
       Method<?> target,
-      Map<String, String[]> parameters) {
+      Map<String, RequestParameter> parameters) {
     super(bridge, handler, http, target, parameters);
   }
 

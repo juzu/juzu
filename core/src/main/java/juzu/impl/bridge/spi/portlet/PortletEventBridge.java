@@ -20,10 +20,9 @@ import juzu.Event;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.common.Introspector;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
-import juzu.impl.request.Parameter;
 import juzu.request.Phase;
 
 import javax.portlet.EventRequest;
@@ -44,7 +43,7 @@ public class PortletEventBridge extends PortletInteractionBridge<EventRequest, E
     super(bridge, req, resp, config, target, parameters);
 
     // Set event as part of contextual arguments
-    for (Parameter parameter : target.getParameters()) {
+    for (ControlParameter parameter : target.getParameters()) {
       if (parameter instanceof ContextualParameter) {
         ContextualParameter contextualParameter = (ContextualParameter)parameter;
         if (Event.class.isAssignableFrom(contextualParameter.getType())) {

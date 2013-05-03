@@ -16,6 +16,13 @@
 
 package juzu.impl.common;
 
+import juzu.request.RequestParameter;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 /**
@@ -23,7 +30,7 @@ import java.util.regex.Pattern;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-class Lexers {
+public class Lexers {
 
   /** The name validator. */
   static final Pattern NAME_VALIDATOR = Pattern.compile("(?!\\.)" + "[^/]+" + "(?<!\\.)");
@@ -45,7 +52,7 @@ class Lexers {
    * @return the parsed path as a String[]
    * @throws IllegalArgumentException if the path is not valid
    */
-  static String[] parsePath(int mode, String[] base, int padding, String path, int off) throws IllegalArgumentException {
+  public static String[] parsePath(int mode, String[] base, int padding, String path, int off) throws IllegalArgumentException {
     return parsePath(mode, base, padding, path, off, 0);
   }
 
@@ -139,7 +146,7 @@ class Lexers {
    * @return the parsed identifiers
    * @throws IllegalArgumentException
    */
-  static String[] parseName(CharSequence s, int from, int end) throws IllegalArgumentException {
+  public static String[] parseName(CharSequence s, int from, int end) throws IllegalArgumentException {
     if (from < 0) {
       throw new IllegalArgumentException("From bound " + from + " cannot be negative");
     }
@@ -171,4 +178,92 @@ class Lexers {
     }
     return identifiers;
   }
+
+  public static Map<String, RequestParameter> parseQuery(String s) {
+    return parseQuery(s, 0, s.length());
+  }
+
+  public static Map<String, RequestParameter> parseQuery(CharSequence s, int from, int to) {
+    Map<String, RequestParameter> parameters = Collections.emptyMap();
+    Iterator<RequestParameter> parser = queryParser(s, from, to);
+    while (parser.hasNext()) {
+      RequestParameter current = parser.next();
+      if (parameters.isEmpty()) {
+        parameters = new HashMap<String, RequestParameter>();
+      }
+      RequestParameter parameter = parameters.get(current.getName());
+      if (parameter != null) {
+        current = parameter.append(current);
+      }
+      parameters.put(current.getName(), current);
+    }
+    return parameters;
+  }
+
+  public static Iterator<RequestParameter> queryParser(final CharSequence s) {
+    return queryParser(s, 0, s.length());
+
+  }
+
+  public static Iterator<RequestParameter> queryParser(final CharSequence s, final int from, final int to) {
+
+
+    return new Iterator<RequestParameter>() {
+
+      int current = from;
+      RequestParameter next = null;
+
+      private RequestParameter parse(int from, int to) {
+        int pos = Tools.indexOf(s, '=', from, to);
+        if (pos == -1) {
+          String name = s.subSequence(from, to).toString();
+          String decodeName = PercentCodec.RFC3986_QUERY_PARAM_NAME.safeDecode(name);
+          if (decodeName != null) {
+            return RequestParameter.create(decodeName, "");
+          }
+        } else if (pos > 0) {
+          String value = s.subSequence(pos + 1, to).toString();
+          String decodedValue = PercentCodec.RFC3986_QUERY_PARAM_VALUE.safeDecode(value);
+          if (decodedValue != null) {
+            String name = s.subSequence(from, pos).toString();
+            String decodedName = PercentCodec.RFC3986_QUERY_PARAM_NAME.safeDecode(name);
+            if (decodedName != null) {
+              return RequestParameter.create(decodedName, value, decodedValue);
+            }
+          }
+        }
+        return null;
+      }
+
+      public boolean hasNext() {
+        while (next == null && current < to) {
+          int pos = Tools.indexOf(s, '&', current, to);
+          if (pos == 0) {
+            throw new UnsupportedOperationException("todo");
+          } else if (pos == -1) {
+            next = parse(current, to);
+            current = to;
+          } else {
+            next = parse(current, pos);
+            current = pos + 1;
+          }
+        }
+        return next != null;
+      }
+
+      public RequestParameter next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        RequestParameter tmp = next;
+        next = null;
+        return tmp;
+      }
+
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    };
+  }
+
 }

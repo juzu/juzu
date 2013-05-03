@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge;
+package juzu.impl.request;
 
 import juzu.io.Encoding;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Parameter {
+public class ResponseParameter {
 
-  public static Parameter create(String name, String value) {
+  public static ResponseParameter create(String name, String value) {
     return create(Encoding.RFC3986, name, value);
   }
 
-  public static Parameter create(String name, String... value) {
+  public static ResponseParameter create(String name, String... value) {
     return create(Encoding.RFC3986, name, value);
   }
 
-  public static Parameter create(Encoding encoded, String name, String value) {
+  public static ResponseParameter create(Encoding encoded, String name, String value) {
     return new SingleValued(encoded, name, value);
   }
 
-  public static Parameter create(Encoding encoded, String name, String... value) {
+  public static ResponseParameter create(Encoding encoded, String name, String... value) {
     return new MultiValued(encoded, name, value);
   }
 
@@ -43,7 +43,7 @@ public class Parameter {
   /** . */
   final String name;
 
-  private Parameter(Encoding encoding, String name) {
+  private ResponseParameter(Encoding encoding, String name) {
     this.encoding = encoding;
     this.name = name;
   }
@@ -68,7 +68,7 @@ public class Parameter {
     throw new UnsupportedOperationException();
   }
 
-  private static class SingleValued extends Parameter {
+  private static class SingleValued extends ResponseParameter {
 
     /** . */
     private final String value;
@@ -104,7 +104,7 @@ public class Parameter {
     }
   }
 
-  private static class MultiValued extends Parameter {
+  private static class MultiValued extends ResponseParameter {
 
     /** . */
     private final String[] value;

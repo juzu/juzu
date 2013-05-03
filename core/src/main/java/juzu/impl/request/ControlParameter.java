@@ -17,11 +17,11 @@
 package juzu.impl.request;
 
 /**
- * A parameter of a controller
+ * A parameter of a controller.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Parameter {
+public abstract class ControlParameter {
 
   /** . */
   protected final String name;
@@ -29,7 +29,7 @@ public abstract class Parameter {
   /** . */
   private final Class<?> type;
 
-  public Parameter(String name, Class<?> type) throws NullPointerException {
+  public ControlParameter(String name, Class<?> type) throws NullPointerException {
     if (name == null) {
       throw new NullPointerException("No null parameter name accepted");
     }
@@ -57,8 +57,8 @@ public abstract class Parameter {
     if (obj == this) {
       return true;
     }
-    else if (obj instanceof Parameter) {
-      Parameter that = (Parameter)obj;
+    else if (obj instanceof ControlParameter) {
+      ControlParameter that = (ControlParameter)obj;
       return name.equals(that.name);
     }
     else {

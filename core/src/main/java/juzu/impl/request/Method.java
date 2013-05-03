@@ -21,6 +21,7 @@ import juzu.impl.bridge.Parameters;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
+import juzu.request.RequestParameter;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -57,10 +58,10 @@ public final class Method<P extends Phase> {
   private final java.lang.reflect.Method method;
 
   /** . */
-  private final List<Parameter> parameterList;
+  private final List<ControlParameter> parameterList;
 
   /** . */
-  private final Map<String, Parameter> parameterMap;
+  private final Map<String, ControlParameter> parameterMap;
 
   /** . */
   private final boolean requiresPrefix;
@@ -73,14 +74,14 @@ public final class Method<P extends Phase> {
       P phase,
       Class<?> type,
       java.lang.reflect.Method method,
-      List<Parameter> parameterList) {
+      List<ControlParameter> parameterList) {
 
     // Fix parameter list
     Class<?>[] parameterTypes = method.getParameterTypes();
     Type[] genericParameterTypes = method.getGenericParameterTypes();
-    parameterList = new ArrayList<Parameter>(parameterList);
+    parameterList = new ArrayList<ControlParameter>(parameterList);
     for (int i = 0;i < parameterList.size();i++) {
-      Parameter parameter = parameterList.get(i);
+      ControlParameter parameter = parameterList.get(i);
       if (parameter instanceof ContextualParameter) {
         Type genericParameterType = genericParameterTypes[i];
         parameterList.set(i, new ContextualParameter(parameter.getName(), parameterTypes[i], genericParameterType));
@@ -88,15 +89,15 @@ public final class Method<P extends Phase> {
     }
 
     //
-    LinkedHashMap<String, Parameter> argumentMap = new LinkedHashMap<String, Parameter>();
-    for (Parameter argument : parameterList) {
+    LinkedHashMap<String, ControlParameter> argumentMap = new LinkedHashMap<String, ControlParameter>();
+    for (ControlParameter argument : parameterList) {
       argumentMap.put(argument.getName(), argument);
     }
 
     //
     boolean requiresPrefix = false;
     HashSet<String> set = new HashSet<String>();
-    for (Parameter parameter : parameterList) {
+    for (ControlParameter parameter : parameterList) {
       if (parameter instanceof PhaseParameter) {
         PhaseParameter phaseParameter = (PhaseParameter)parameter;
         if (phaseParameter.getType() == String.class) {
@@ -165,11 +166,11 @@ public final class Method<P extends Phase> {
     return method.getName();
   }
 
-  public Parameter getParameter(String name) {
+  public ControlParameter getParameter(String name) {
     return parameterMap.get(name);
   }
 
-  public List<Parameter> getParameters() {
+  public List<ControlParameter> getParameters() {
     return parameterList;
   }
 
@@ -179,7 +180,7 @@ public final class Method<P extends Phase> {
 
   public void setArgs(Object[] args, Parameters parameterMap) {
     int index = 0;
-    for (Parameter parameter : parameterList) {
+    for (ControlParameter parameter : parameterList) {
       if (parameter instanceof PhaseParameter) {
         PhaseParameter phaseParameter = (PhaseParameter)parameter;
         Object value = args[index++];
@@ -271,11 +272,11 @@ public final class Method<P extends Phase> {
     }
   }
 
-  public Map<Parameter, Object> getArguments(Map<String, String[]> parameterMap) {
-    Map<Parameter, Object> arguments = new HashMap<Parameter, Object>();
-    for (Parameter parameter : this.parameterMap.values()) {
-      if (parameter instanceof PhaseParameter) {
-        PhaseParameter phaseParameter = (PhaseParameter)parameter;
+  public Map<ControlParameter, Object> getArguments(Map<String, RequestParameter> parameterMap) {
+    Map<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>();
+    for (ControlParameter controlParam : this.parameterMap.values()) {
+      if (controlParam instanceof PhaseParameter) {
+        PhaseParameter phaseParameter = (PhaseParameter)controlParam;
         Class<?> type = phaseParameter.getType();
         Object[] values;
         if (type.isAnnotationPresent(Mapped.class)) {
@@ -289,7 +290,8 @@ public final class Method<P extends Phase> {
           values = new Object[]{o};
         }
         else {
-          values = parameterMap.get(phaseParameter.getMappedName());
+          RequestParameter requestParam = parameterMap.get(phaseParameter.getMappedName());
+          values = requestParam != null ? requestParam.toArray() : null;
         }
         if (values != null) {
           Object arg;
@@ -308,21 +310,21 @@ public final class Method<P extends Phase> {
             default:
               throw new UnsupportedOperationException("Handle me gracefully");
           }
-          arguments.put(parameter, arg);
+          arguments.put(controlParam, arg);
         }
       }
     }
     return arguments;
   }
 
-  private <T> T createMappedBean(Class<T> clazz, String beanName, Map<String, String[]> parameters) throws IllegalAccessException, InstantiationException {
+  private <T> T createMappedBean(Class<T> clazz, String beanName, Map<String, RequestParameter> parameters) throws IllegalAccessException, InstantiationException {
     // Extract parameters
     Map<String, String[]> beanParams = new HashMap<String, String[]>();
     String prefix = requiresPrefix ? beanName + "." : "";
     for (String key : parameters.keySet()) {
       if (key.startsWith(prefix)) {
         String paramName = key.substring(prefix.length());
-        beanParams.put(paramName, parameters.get(key));
+        beanParams.put(paramName, parameters.get(key).toArray());
       }
     }
 

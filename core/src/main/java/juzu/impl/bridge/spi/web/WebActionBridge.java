@@ -22,6 +22,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.request.Method;
+import juzu.request.RequestParameter;
 import juzu.request.ClientContext;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class WebActionBridge extends WebRequestBridge implements ActionBridge {
       Handler handler,
       WebBridge http,
       Method<?> target,
-      Map<String, String[]> parameters) {
+      Map<String, RequestParameter> parameters) {
     super(bridge, handler, http, target, parameters);
   }
 

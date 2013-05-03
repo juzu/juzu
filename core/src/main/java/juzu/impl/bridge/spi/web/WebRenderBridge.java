@@ -20,6 +20,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.request.Method;
+import juzu.request.RequestParameter;
 
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class WebRenderBridge extends WebMimeBridge implements RenderBridge {
       Handler handler,
       WebBridge http,
       Method<?> target,
-      Map<String, String[]> parameters) {
+      Map<String, RequestParameter> parameters) {
     super(bridge, handler, http, target, parameters);
   }
 

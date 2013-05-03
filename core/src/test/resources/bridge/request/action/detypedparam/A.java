@@ -49,7 +49,7 @@ public class A implements RequestLifeCycle {
   @Action
   @Route("/foo")
   public Response.View foo() {
-    AbstractRequestDetypedParam.value = context.getParameters().get("detyped");
+    AbstractRequestDetypedParam.value = context.getParameters().get("detyped").toArray();
     return A_.index();
   }
 }

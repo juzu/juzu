@@ -174,7 +174,16 @@ public class PercentCodec extends BigInteger {
     }
   }
 
-  public String decode(CharSequence s) throws UndeclaredIOException {
+  public String safeDecode(CharSequence s) throws UndeclaredIOException {
+    try {
+      return decode(s);
+    }
+    catch (IllegalArgumentException e) {
+      return null;
+    }
+  }
+
+  public String decode(CharSequence s) throws IllegalArgumentException, UndeclaredIOException {
     try {
       StringBuilder sb = new StringBuilder(s.length());
       decode(s, sb);
@@ -185,11 +194,11 @@ public class PercentCodec extends BigInteger {
     }
   }
 
-  public void decode(CharSequence s, Appendable appendable) throws IOException {
+  public void decode(CharSequence s, Appendable appendable) throws IllegalArgumentException, IOException {
     decode(s, 0, s.length(), appendable);
   }
 
-  public void decode(CharSequence s, int from, int len, Appendable to) throws IOException {
+  public void decode(CharSequence s, int from, int len, Appendable to) throws IllegalArgumentException, IOException {
     while (len > 0) {
       int delta = decodeChar(s, from, len, to);
       len -= delta;
@@ -207,7 +216,7 @@ public class PercentCodec extends BigInteger {
    * @return the number of consumed chars
    * @throws IOException
    */
-  public int decodeChar(CharSequence s, int from, int len, Appendable to) throws IOException {
+  public int decodeChar(CharSequence s, int from, int len, Appendable to) throws IllegalArgumentException, IOException {
     final int prev = len;
     char c = s.charAt(from++);
     if (c == '%') {

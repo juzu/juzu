@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.spi.web;
+package juzu.impl.bridge.request;
 
-import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.request.Method;
-import juzu.request.RequestParameter;
-import juzu.request.ClientContext;
-
-import java.util.Map;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
+public class RequestQueryParamDecodingViewServletTestCase extends AbstractRequestQueryParamDecoding {
 
-  WebResourceBridge(
-      Bridge bridge,
-      Handler handler,
-      WebBridge webBridge,
-      Method<?> target,
-      Map<String, RequestParameter> parameters) {
-    super(bridge, handler, webBridge, target, parameters);
-  }
-
-  public ClientContext getClientContext() {
-    return http.getClientContext();
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.request.view.queryparamdecoding");
   }
 }

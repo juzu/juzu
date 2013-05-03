@@ -20,13 +20,14 @@ import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.ActionContext;
 import juzu.request.ClientContext;
 import juzu.request.RequestContext;
+import juzu.request.RequestParameter;
 import juzu.request.ResourceContext;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
@@ -96,22 +97,19 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
           //
           try {
             List<FileItem> list = (List<FileItem>)upload.parseRequest(ctx);
-            HashMap<String, String[]> parameters = new HashMap<String, String[]>();
+            HashMap<String, RequestParameter> parameters = new HashMap<String, RequestParameter>();
             for (FileItem file : list) {
               String name = file.getFieldName();
               if (file.isFormField()) {
-                String[] previous = parameters.get(name);
-                String[] value;
-                if (previous != null) {
-                  value = new String[previous.length];
-                  System.arraycopy(previous, 0, value, 0, previous.length);
-                  value[previous.length] = file.getString();
+                RequestParameter parameter = parameters.get(name);
+                if (parameter != null) {
+                  parameter = parameter.append(new String[]{file.getString()});
                 } else {
-                  value = new String[]{file.getString()};
+                  parameter = RequestParameter.create(name, file.getString());
                 }
-                parameters.put(name, value);
+                parameter.addTo(parameters);
               } else {
-                Parameter parameter = request.getContext().getMethod().getParameter(name);
+                ControlParameter parameter = request.getContext().getMethod().getParameter(name);
                 if (parameter instanceof ContextualParameter && FileItem.class.isAssignableFrom(parameter.getType())) {
                   request.setArgument(parameter, file);
                 }
@@ -119,18 +117,18 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
             }
 
             // Keep original parameters that may come from the request path
-            for (Map.Entry<String, String[]> entry : request.getParameters().entrySet()) {
-              if (!parameters.containsKey(entry.getKey())) {
-                parameters.put(entry.getKey(), entry.getValue());
+            for (RequestParameter parameter : request.getParameters().values()) {
+              if (!parameters.containsKey(parameter.getName())) {
+                parameter.addTo(parameters);
               }
             }
 
             // Redecode phase arguments from updated request
             Method<?> method = request.getContext().getMethod();
-            Map<Parameter, Object> arguments = method.getArguments(parameters);
+            Map<ControlParameter, Object> arguments = method.getArguments(parameters);
 
             // Update with existing contextual arguments
-            for (Map.Entry<Parameter, Object> argument : request.getArguments().entrySet()) {
+            for (Map.Entry<ControlParameter, Object> argument : request.getArguments().entrySet()) {
               if (argument.getKey() instanceof ContextualParameter) {
                 arguments.put(argument.getKey(), argument.getValue());
               }

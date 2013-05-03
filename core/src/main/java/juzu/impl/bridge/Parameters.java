@@ -16,13 +16,14 @@
 
 package juzu.impl.bridge;
 
+import juzu.impl.request.ResponseParameter;
 import juzu.io.Encoding;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Parameters extends HashMap<String, Parameter> {
+public class Parameters extends HashMap<String, ResponseParameter> {
 
   public void setParameter(String name, String value) throws NullPointerException {
     setParameter(Encoding.RFC3986, name, value);
@@ -36,7 +37,7 @@ public class Parameters extends HashMap<String, Parameter> {
       throw new IllegalArgumentException("Parameter name cannot be prefixed with juzu.");
     }
     if (value != null) {
-      put(name, Parameter.create(encoding, name, value));
+      put(name, ResponseParameter.create(encoding, name, value));
     }
     else {
       remove(name);
@@ -62,7 +63,7 @@ public class Parameters extends HashMap<String, Parameter> {
           throw new IllegalArgumentException("Argument array cannot contain null value");
         }
       }
-      put(name, Parameter.create(encoding, name, value.clone()));
+      put(name, ResponseParameter.create(encoding, name, value.clone()));
     }
   }
 

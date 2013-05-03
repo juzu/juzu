@@ -19,9 +19,10 @@ package juzu.impl.bridge.spi;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Parameters;
+import juzu.impl.request.ControlParameter;
+import juzu.request.RequestParameter;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.Scoped;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
@@ -49,14 +50,14 @@ public interface RequestBridge extends Closeable {
    *
    * @return the request arguments.
    */
-  Map<Parameter, Object> getArguments();
+  Map<ControlParameter, Object> getArguments();
 
   /**
    * Returns the request parameters.
    *
    * @return the request parameters
    */
-  Map<String, String[]> getParameters();
+  Map<String, RequestParameter> getRequestParameters();
 
   <T> T getProperty(PropertyType<T> propertyType);
 

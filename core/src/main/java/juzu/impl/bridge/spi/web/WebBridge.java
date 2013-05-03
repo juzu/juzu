@@ -25,6 +25,7 @@ import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
 import juzu.io.AppendableStream;
+import juzu.request.RequestParameter;
 import juzu.io.Stream;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
@@ -184,7 +185,7 @@ public abstract class WebBridge {
 
   //
 
-  public abstract Map<String, String[]> getParameters();
+  public abstract Map<String, RequestParameter> getParameters();
 
   public abstract String getRequestURI();
 

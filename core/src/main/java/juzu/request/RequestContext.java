@@ -47,7 +47,7 @@ public abstract class RequestContext {
     return method;
   }
 
-  public Map<String, String[]> getParameters() {
+  public Map<String, RequestParameter> getParameters() {
     return request.getParameters();
   }
 

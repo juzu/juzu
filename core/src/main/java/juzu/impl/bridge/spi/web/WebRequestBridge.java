@@ -22,6 +22,9 @@ import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.Parameters;
+import juzu.impl.request.ControlParameter;
+import juzu.request.RequestParameter;
+import juzu.impl.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
@@ -29,7 +32,6 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
@@ -64,19 +66,19 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   final WebBridge http;
 
   /** . */
-  final Map<String, String[]> parameters;
-
-  /** . */
   final Method<?> target;
 
   /** . */
-  final Map<Parameter, Object> arguments;
+  final Map<ControlParameter, Object> arguments;
 
   /** . */
   protected Request request;
 
   /** . */
   protected UserContext userContext;
+
+  /** . */
+  protected Map<String, RequestParameter> requestParameters;
 
   /** . */
   protected Response response;
@@ -86,25 +88,29 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       Handler handler,
       WebBridge http,
       Method<?> target,
-      Map<String, String[]> parameters) {
+      Map<String, RequestParameter> requestParameters) {
 
     //
-    this.arguments = target.getArguments(parameters);
+    this.arguments = target.getArguments(requestParameters);
+    this.requestParameters = requestParameters;
     this.bridge = bridge;
     this.target = target;
     this.handler = handler;
     this.http = http;
-    this.parameters = parameters;
     this.request = null;
   }
 
   //
 
+  public Map<String, RequestParameter> getRequestParameters() {
+    return requestParameters;
+  }
+
   public MethodHandle getTarget() {
     return target.getHandle();
   }
 
-  public Map<Parameter, Object> getArguments() {
+  public Map<ControlParameter, Object> getArguments() {
     return arguments;
   }
 
@@ -125,10 +131,6 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     return "window_id";
   }
   //
-
-  public final Map<String, String[]> getParameters() {
-    return parameters;
-  }
 
   public final HttpContext getHttpContext() {
     return http.getHttpContext();
@@ -230,7 +232,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
         params = Collections.emptyMap();
       } else {
         params = new HashMap<String, String>(parameters.size());
-        for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+        for (ResponseParameter parameter : parameters.values()) {
           params.put(parameter.getName(), parameter.getValue(0));
         }
       }
@@ -269,7 +271,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
             }
 
             // Render remaining parameters which have not been rendered yet
-            for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+            for (ResponseParameter parameter : parameters.values()) {
               if (!matched.contains(parameter.getName())) {
                 for (int i = 0;i < parameter.getSize();i++) {
                   writer.appendQueryParameter(parameter.getEncoding(), parameter.getName(), parameter.getValue(i));

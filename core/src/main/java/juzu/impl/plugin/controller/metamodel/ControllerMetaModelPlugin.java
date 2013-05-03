@@ -30,8 +30,8 @@ import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.PhaseParameter;
 import juzu.impl.plugin.controller.descriptor.ControllerDescriptor;
 import juzu.impl.metamodel.MetaModelEvent;
@@ -67,7 +67,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   private static final String CONTROLLER_DESCRIPTOR = ControllerDescriptor.class.getSimpleName();
 
   /** . */
-  private static final String PARAMETER = Parameter.class.getSimpleName();
+  private static final String PARAMETER = ControlParameter.class.getSimpleName();
 
   /** . */
   private static final String INVOCATION_PARAMETER = PhaseParameter.class.getSimpleName();
@@ -234,7 +234,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       // Imports
       writer.append("import ").append(Method.class.getCanonicalName()).append(";\n");
-      writer.append("import ").append(Parameter.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(ControlParameter.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(PhaseParameter.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(ContextualParameter.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(Tools.class.getCanonicalName()).append(";\n");

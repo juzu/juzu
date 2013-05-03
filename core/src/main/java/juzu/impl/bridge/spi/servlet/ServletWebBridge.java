@@ -19,22 +19,26 @@ package juzu.impl.bridge.spi.servlet;
 import juzu.Method;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.web.WebBridge;
+import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
+import juzu.request.RequestParameter;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
 import juzu.request.UserContext;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -60,13 +64,59 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   /** . */
   private final Logger log;
 
+  /** . */
+  private final Map<String, RequestParameter> requestParameters;
+
   public ServletWebBridge(HttpServletRequest req, HttpServletResponse resp, String path, Logger log) {
+
+    //
+    Map<String, RequestParameter> requestParameters = Collections.emptyMap();
+    String query = req.getQueryString();
+    if (query != null) {
+      for (Iterator<RequestParameter> i = Lexers.queryParser(query);i.hasNext();) {
+        if (requestParameters.isEmpty()) {
+          requestParameters = new HashMap<String, RequestParameter>();
+        }
+        RequestParameter parameter = i.next();
+        RequestParameter requestParameter = requestParameters.get(parameter.getName());
+        if (requestParameter != null) {
+          requestParameter = requestParameter.append(parameter);
+        } else {
+          requestParameter = parameter;
+        }
+        requestParameter.addTo(requestParameters);
+      }
+    }
+
+    //
+    if ("POST".equals(req.getMethod()) && "application/x-www-form-urlencoded".equals(req.getContentType())) {
+      try {
+        for (Map.Entry<String, String[]> parameter : HttpUtils.parsePostData(req.getContentLength(), req.getInputStream()).entrySet()) {
+          if (requestParameters.isEmpty()) {
+            requestParameters = new HashMap<String, RequestParameter>();
+          }
+          RequestParameter requestParameter = requestParameters.get(parameter.getKey());
+          if (requestParameter != null) {
+            requestParameter = requestParameter.append(parameter.getValue());
+          } else {
+            requestParameter = RequestParameter.create(parameter);
+          }
+          requestParameter.addTo(requestParameters);
+        }
+      }
+      catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    //
     this.req = req;
     this.resp = resp;
     this.requestPath = req.getRequestURI().substring(req.getContextPath().length());
     this.path = path;
     this.method = Method.valueOf(req.getMethod());
     this.log = log;
+    this.requestParameters = requestParameters;
   }
 
   public HttpServletRequest getRequest() {
@@ -79,8 +129,8 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
 
   // HttpBridge implementation
 
-  public Map<String, String[]> getParameters() {
-    return req.getParameterMap();
+  public Map<String, RequestParameter> getParameters() {
+    return requestParameters;
   }
 
   public String getRequestPath() {

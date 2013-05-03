@@ -21,6 +21,9 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.Parameters;
+import juzu.impl.request.ControlParameter;
+import juzu.request.RequestParameter;
+import juzu.impl.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
@@ -30,7 +33,6 @@ import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.bridge.portlet.JuzuPortlet;
@@ -55,6 +57,7 @@ import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,10 +80,10 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected final Method<?> target;
 
   /** . */
-  protected final HashMap<Parameter, Object> arguments;
+  protected final HashMap<ControlParameter, Object> arguments;
 
   /** . */
-  protected final Map<String, String[]> parameters;
+  protected  final Map<String ,RequestParameter> requestParameters;
 
   /** . */
   protected final PortletHttpContext httpContext;
@@ -106,14 +109,20 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   PortletRequestBridge(Bridge bridge, Rq req, Rs resp, PortletConfig config) {
     String methodId = null;
     Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
+    Map<String ,RequestParameter> requestParameters = Collections.emptyMap();
     for (Iterator<Map.Entry<String, String[]>> i = parameters.entrySet().iterator();i.hasNext();) {
       Map.Entry<String, String[]> parameter = i.next();
-      String key = parameter.getKey();
-      if (key.startsWith("juzu.")) {
-        if (parameter.getKey().equals("juzu.op")) {
+      String name = parameter.getKey();
+      if (name.startsWith("juzu.")) {
+        if (name.equals("juzu.op")) {
           methodId = parameter.getValue()[0];
         }
         i.remove();
+      } else {
+        if (requestParameters.isEmpty()) {
+          requestParameters = new HashMap<String, RequestParameter>();
+        }
+        requestParameters.put(name, RequestParameter.create(parameter));
       }
     }
 
@@ -128,7 +137,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
 
     // Get argument map
-    HashMap<Parameter, Object> arguments = new HashMap<Parameter, Object>(target.getArguments(parameters));
+    HashMap<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(target.getArguments(requestParameters));
 
     //
     this.bridge = bridge;
@@ -136,18 +145,27 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.resp = resp;
     this.target = target;
     this.arguments = arguments;
-    this.parameters = parameters;
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
     this.windowContext = new PortletWindowContext(this);
     this.userContext = new PortletUserContext(req);
     this.applicationContext = new PortletApplicationContext(config);
+    this.requestParameters = requestParameters;
   }
 
   PortletRequestBridge(Bridge bridge,  Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
 
+    //
+    Map<String, RequestParameter> requestParameters = Collections.emptyMap();
+    for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
+      if (requestParameters.isEmpty()) {
+        requestParameters = new HashMap<String, RequestParameter>();
+      }
+      RequestParameter.create(parameter).addTo(requestParameters);
+    }
+
     // Get argument map
-    HashMap<Parameter, Object> arguments = new HashMap<Parameter, Object>(target.getArguments(parameters));
+    HashMap<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(target.getArguments(requestParameters));
 
     //
     this.bridge = bridge;
@@ -155,7 +173,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.resp = resp;
     this.target = target;
     this.arguments = arguments;
-    this.parameters = parameters;
+    this.requestParameters = requestParameters;
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
     this.windowContext = new PortletWindowContext(this);
@@ -165,7 +183,11 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   protected abstract Phase getPhase();
 
-  public Map<Parameter, Object> getArguments() {
+  public Map<String, RequestParameter> getRequestParameters() {
+    return requestParameters;
+  }
+
+  public Map<ControlParameter, Object> getArguments() {
     return arguments;
   }
 
@@ -182,10 +204,6 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   public MethodHandle getTarget() {
     return target.getHandle();
-  }
-
-  public final Map<String, String[]> getParameters() {
-    return parameters;
   }
 
   public final HttpContext getHttpContext() {
@@ -416,7 +434,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           }
 
           // Set generic parameters
-          for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+          for (ResponseParameter parameter : parameters.values()) {
             url.setParameter(parameter.getName(), parameter.toArray());
           }
 

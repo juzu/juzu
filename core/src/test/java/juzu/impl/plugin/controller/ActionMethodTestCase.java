@@ -18,8 +18,8 @@ package juzu.impl.plugin.controller;
 
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
+import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.PhaseParameter;
 import juzu.impl.common.Cardinality;
 import juzu.request.Phase;
@@ -60,7 +60,7 @@ public class ActionMethodTestCase extends AbstractTestCase {
     Method cm = controllerDescriptor.getMethod(aClass, "noArg");
     assertEquals("noArg", cm.getName());
     assertEquals(Phase.ACTION, cm.getPhase());
-    assertEquals(Collections.<Parameter>emptyList(), cm.getParameters());
+    assertEquals(Collections.<ControlParameter>emptyList(), cm.getParameters());
   }
 
   @Test

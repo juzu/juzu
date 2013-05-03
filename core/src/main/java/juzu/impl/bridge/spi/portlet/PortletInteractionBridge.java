@@ -21,10 +21,11 @@ import juzu.Response;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.Parameters;
+import juzu.impl.request.ControlParameter;
+import juzu.impl.request.ResponseParameter;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
-import juzu.impl.request.Parameter;
 import juzu.request.Phase;
 
 import javax.portlet.PortletConfig;
@@ -59,7 +60,7 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
    * Set event producer as a contextual argument.
    */
   private void init() {
-    for (Parameter parameter : target.getParameters()) {
+    for (ControlParameter parameter : target.getParameters()) {
       if (parameter instanceof ContextualParameter) {
         final ContextualParameter contextualParameter = (ContextualParameter)parameter;
         if (EventQueue.class.isAssignableFrom(contextualParameter.getType())) {
@@ -77,7 +78,7 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
 
       // Parameters : need to remove that nasty cast
       Parameters parameters = (Parameters)update.getParameters();
-      for (juzu.impl.bridge.Parameter entry : parameters.values()) {
+      for (ResponseParameter entry : parameters.values()) {
         super.resp.setRenderParameter(entry.getName(), entry.toArray());
       }
 

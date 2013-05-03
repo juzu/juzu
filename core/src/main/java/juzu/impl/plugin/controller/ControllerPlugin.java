@@ -30,11 +30,12 @@ import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
 import juzu.impl.metadata.Descriptor;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
+import juzu.request.RequestParameter;
 import juzu.request.ActionContext;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
@@ -48,7 +49,6 @@ import juzu.request.UserContext;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -127,7 +127,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     }
 
     //
-    Map<String, String[]> parameters = bridge.getParameters();
+    Map<String, RequestParameter> parameters = bridge.getRequestParameters();
 
     //
     MethodHandle handle = bridge.getTarget();
@@ -138,11 +138,18 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
       StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
           "phase=").append(phase).append(" handle=").append(handle).append(" parameters={");
       int index = 0;
-      for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+      for (RequestParameter parameter : parameters.values()) {
         if (index++ > 0) {
           sb.append(',');
         }
-        sb.append(entry.getKey()).append('=').append(Arrays.asList(entry.getValue()));
+        sb.append(parameter.getName()).append("=[");
+        for (int i = 0;i < parameter.getSize();i++) {
+          if (i > 0) {
+            sb.append(',');
+          }
+          sb.append(parameter.getValue(i));
+        }
+        sb.append(']');
       }
       sb.append("}");
       throw new UnsupportedOperationException(sb.toString());
@@ -180,7 +187,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     // Inject RequestContext in the arguments
     RequestContext context = request.getContext();
     Method<?> method = context.getMethod();
-    for (Parameter parameter : method.getParameters()) {
+    for (ControlParameter parameter : method.getParameters()) {
       if (parameter instanceof ContextualParameter) {
         ContextualParameter contextualParameter = (ContextualParameter)parameter;
         tryInject(request, contextualParameter, RequestContext.class, context);

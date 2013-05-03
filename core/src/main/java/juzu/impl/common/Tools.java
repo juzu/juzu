@@ -17,7 +17,7 @@
 package juzu.impl.common;
 
 import juzu.UndeclaredIOException;
-import juzu.impl.bridge.Parameter;
+import juzu.impl.request.ResponseParameter;
 import juzu.impl.bridge.Parameters;
 
 import javax.annotation.processing.Completion;
@@ -958,7 +958,7 @@ public class Tools {
 
   public static HashMap<String, String[]> toHashMap(Parameters parameters) {
     HashMap<String, String[]> map = new HashMap<String, String[]>();
-    for (Parameter parameter : parameters.values()) {
+    for (ResponseParameter parameter : parameters.values()) {
       map.put(parameter.getName(), parameter.toArray());
     }
     return map;
@@ -980,5 +980,20 @@ public class Tools {
       current = current.setBit(c);
     }
     return current;
+  }
+
+  public static String[] safeConcat(String[] first, String[] second) {
+    if (first != null) {
+      if (second != null) {
+        String[] concat = new String[first.length + second.length];
+        System.arraycopy(first, 0, concat, 0, first.length);
+        System.arraycopy(second, 0, concat, second.length, second.length);
+        return concat;
+      } else {
+        return first;
+      }
+    } else {
+      return second;
+    }
   }
 }

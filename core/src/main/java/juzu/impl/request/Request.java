@@ -36,6 +36,7 @@ import juzu.request.EventContext;
 import juzu.request.Phase;
 import juzu.request.RenderContext;
 import juzu.request.RequestContext;
+import juzu.request.RequestParameter;
 import juzu.request.ResourceContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -63,10 +64,10 @@ public class Request implements ScopingContext {
   private final RequestContext context;
 
   /** . */
-  private final Map<String, String[]> parameters;
+  private final Map<String, RequestParameter> parameters;
 
   /** . */
-  private final Map<Parameter, Object> arguments;
+  private final Map<ControlParameter, Object> arguments;
 
   /** The response. */
   private Response response;
@@ -75,12 +76,12 @@ public class Request implements ScopingContext {
     ControllerPlugin plugin,
 //    Application application,
     Method method,
-    Map<String, String[]> parameters,
+    Map<String, RequestParameter> parameters,
     RequestBridge bridge) {
     RequestContext context;
 
     // Make a copy of the original arguments provided by the bridge
-    Map<Parameter, Object> arguments = new HashMap<Parameter, Object>(bridge.getArguments());
+    Map<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(bridge.getArguments());
 
     //
     if (bridge instanceof RenderBridge) {
@@ -116,7 +117,7 @@ public class Request implements ScopingContext {
     this.response = response;
   }
 
-  public Map<String, String[]> getParameters() {
+  public Map<String, RequestParameter> getParameters() {
     return parameters;
   }
 
@@ -124,16 +125,16 @@ public class Request implements ScopingContext {
     return context;
   }
 
-  public Map<Parameter, Object> getArguments() {
+  public Map<ControlParameter, Object> getArguments() {
     return arguments;
   }
 
-  public void setArguments(Map<Parameter, Object> arguments) {
+  public void setArguments(Map<ControlParameter, Object> arguments) {
     this.arguments.clear();
     this.arguments.putAll(arguments);
   }
 
-  public void setArgument(Parameter parameter, Object value) {
+  public void setArgument(ControlParameter parameter, Object value) {
     this.arguments.put(parameter, value);
   }
 
@@ -210,7 +211,7 @@ public class Request implements ScopingContext {
         Method<?> method = context.getMethod();
         Object[] args = new Object[method.getParameters().size()];
         for (int i = 0;i < args.length;i++) {
-          Parameter parameter = method.getParameters().get(i);
+          ControlParameter parameter = method.getParameters().get(i);
           args[i] = arguments.get(parameter);
         }
 

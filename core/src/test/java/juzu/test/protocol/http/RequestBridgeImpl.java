@@ -19,6 +19,9 @@ package juzu.test.protocol.http;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.impl.bridge.Parameters;
+import juzu.impl.request.ControlParameter;
+import juzu.request.RequestParameter;
+import juzu.impl.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MimeType;
@@ -28,7 +31,6 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;
@@ -48,7 +50,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -64,13 +68,10 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   final HttpServletResponse resp;
 
   /** . */
-  final Map<String, String[]> parameters;
-
-  /** . */
   final MethodHandle target;
 
   /** . */
-  final Map<Parameter, Object> arguments;
+  final Map<ControlParameter, Object> arguments;
 
   /** . */
   protected Request request;
@@ -89,15 +90,24 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
       MethodHandle target,
       Map<String, String[]> parameters) {
 
+    //
+    Map<String, RequestParameter> requestParameters = Collections.emptyMap();
+    for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
+      if (requestParameters.isEmpty()) {
+        requestParameters = new HashMap<String, RequestParameter>();
+      }
+      RequestParameter.create(parameter).addTo(requestParameters);
+    }
+
+    //
     Method<?> desc = application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
-    Map<Parameter, Object> arguments = desc.getArguments(parameters);
+    Map<ControlParameter, Object> arguments = desc.getArguments(requestParameters);
 
     //
     this.application = application;
     this.req = req;
     this.resp = resp;
     this.target = target;
-    this.parameters = parameters;
     this.request = null;
     this.arguments = arguments;
     this.method = juzu.Method.valueOf(req.getMethod());
@@ -105,6 +115,10 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
   }
 
   //
+
+  public Map<String, RequestParameter> getRequestParameters() {
+    throw new UnsupportedOperationException();
+  }
 
   public String getContentType() {
     return req.getContentType();
@@ -167,12 +181,8 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
     return target;
   }
 
-  public Map<Parameter, Object> getArguments() {
+  public Map<ControlParameter, Object> getArguments() {
     return arguments;
-  }
-
-  public final Map<String, String[]> getParameters() {
-    return parameters;
   }
 
   public final HttpContext getHttpContext() {
@@ -299,7 +309,7 @@ public abstract class RequestBridgeImpl implements RequestBridge, HttpContext, W
         appendable.append("&juzu.op=").append(method.getId());
 
         //
-        for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+        for (ResponseParameter parameter : parameters.values()) {
           String name = parameter.getName();
           try {
             String encName = URLEncoder.encode(name, "UTF-8");

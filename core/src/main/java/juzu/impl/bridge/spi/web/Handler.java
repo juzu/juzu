@@ -19,14 +19,14 @@ package juzu.impl.bridge.spi.web;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.Parameters;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.Tools;
 import juzu.impl.common.URIWriter;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.plugin.router.RouterPlugin;
 import juzu.impl.request.Method;
+import juzu.request.RequestParameter;
+import juzu.impl.request.ResponseParameter;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
@@ -132,7 +132,7 @@ public class Handler implements Closeable {
 
     // Determine a method + parameters if we have a match
     Method requestMethod = null;
-    Map<String, String[]> requestParameters = Collections.emptyMap();
+    Map<String, RequestParameter> requestParameters = Collections.emptyMap();
     if (requestMatch != null) {
       Map<Phase, MethodHandle> m = getMethods(requestMatch.getRoute());
       if (m != null) {
@@ -149,12 +149,13 @@ public class Handler implements Closeable {
           if (handle != null) {
             requestMethod =  this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(handle);
             if (requestMatch.getMatched().size() > 0 || bridge.getParameters().size() > 0) {
-              requestParameters = new HashMap<String, String[]>();
-              for (Map.Entry<String, String[]> entry : bridge.getParameters().entrySet()) {
-                requestParameters.put(entry.getKey(), entry.getValue().clone());
+              requestParameters = new HashMap<String, RequestParameter>();
+              for (RequestParameter requestParameter : bridge.getParameters().values()) {
+                requestParameters.put(requestParameter.getName(), requestParameter);
               }
               for (Map.Entry<PathParam, String> entry : requestMatch.getMatched().entrySet()) {
-                requestParameters.put(entry.getKey().getName(), new String[]{entry.getValue()});
+                RequestParameter requestParameter = RequestParameter.create(entry.getKey().getName(), entry.getValue());
+                requestParameters.put(requestParameter.getName(), requestParameter);
               }
             }
             break;
@@ -215,7 +216,15 @@ public class Handler implements Closeable {
           Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
           if (redirect != null && !redirect) {
             Method<?> desc = this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
-            requestBridge = new WebRenderBridge(this.bridge, this, bridge, desc, Tools.toHashMap((Parameters)update.getParameters()));
+            Map<String, RequestParameter> rp = Collections.emptyMap();
+            for (ResponseParameter parameter : update.getParameters().values()) {
+              if (rp.isEmpty()) {
+                rp = new HashMap<String, RequestParameter>();
+              }
+              RequestParameter requestParameter = RequestParameter.create(parameter.getName(), parameter.toArray());
+              rp.put(requestParameter.getName(), requestParameter);
+            }
+            requestBridge = new WebRenderBridge(this.bridge, this, bridge, desc, rp);
             requestBridge.invoke();
           }
         }

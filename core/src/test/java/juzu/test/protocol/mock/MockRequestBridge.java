@@ -20,6 +20,9 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Parameters;
+import juzu.impl.request.ControlParameter;
+import juzu.request.RequestParameter;
+import juzu.impl.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MimeType;
@@ -29,7 +32,6 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopedContext;
-import juzu.impl.request.Parameter;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
@@ -41,6 +43,7 @@ import juzu.test.AbstractTestCase;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,9 +61,6 @@ public abstract class MockRequestBridge implements RequestBridge {
   private final MethodHandle target;
 
   /** . */
-  private final Map<String, String[]> parameters;
-
-  /** . */
   private final ScopedContext attributes;
 
   /** . */
@@ -76,7 +76,10 @@ public abstract class MockRequestBridge implements RequestBridge {
   private final List<Scoped> attributesHistory;
 
   /** . */
-  private final Map<Parameter, Object> arguments;
+  private final Map<ControlParameter, Object> arguments;
+
+  /** . */
+  protected Map<String, RequestParameter> requestParameters;
 
   /** . */
   protected Response response;
@@ -84,23 +87,37 @@ public abstract class MockRequestBridge implements RequestBridge {
   public MockRequestBridge(ApplicationLifeCycle<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
 
     //
+    Map<String, RequestParameter> requestParameters = Collections.emptyMap();
+    for (Map.Entry<String, String[]> parameter : parameters.entrySet()) {
+      if (requestParameters.isEmpty()) {
+        requestParameters = new HashMap<String, RequestParameter>();
+      }
+      RequestParameter.create(parameter).addTo(requestParameters);
+    }
+
+    //
     Method<?> descriptor = application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
-    Map<Parameter, Object> arguments = descriptor.getArguments(parameters);
+    Map<ControlParameter, Object> arguments = descriptor.getArguments(requestParameters);
+
 
     //
     this.application = application;
     this.client = client;
     this.target = target;
-    this.parameters = parameters;
     this.attributes = new ScopedContext(Logger.SYSTEM);
     this.httpContext = new MockHttpContext();
     this.securityContext = new MockSecurityContext();
     this.windowContext = new MockWindowContext();
     this.attributesHistory = new ArrayList<Scoped>();
     this.arguments = arguments;
+    this.requestParameters = requestParameters;
   }
 
-  public Map<Parameter, Object> getArguments() {
+  public Map<String, RequestParameter> getRequestParameters() {
+    return requestParameters;
+  }
+
+  public Map<ControlParameter, Object> getArguments() {
     return arguments;
   }
 
@@ -114,10 +131,6 @@ public abstract class MockRequestBridge implements RequestBridge {
 
   public <T> T getProperty(PropertyType<T> propertyType) {
     return null;
-  }
-
-  public Map<String, String[]> getParameters() {
-    return parameters;
   }
 
   public Scoped getFlashValue(Object key) {
@@ -234,7 +247,7 @@ public abstract class MockRequestBridge implements RequestBridge {
 
         //
         HashMap<String, String[]> foo = new HashMap<String, String[]>();
-        for (juzu.impl.bridge.Parameter parameter : parameters.values()) {
+        for (ResponseParameter parameter : parameters.values()) {
           foo.put(parameter.getName(), parameter.toArray());
         }
 
