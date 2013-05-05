@@ -113,7 +113,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         //
         final Streamable<Stream.Char> decorated = render.getStreamable();
         Streamable<Stream.Char> decorator = new Streamable<Stream.Char>() {
-          public void send(Stream.Char stream) throws IOException {
+          public void send(final Stream.Char stream) throws IOException {
             // FOR NOW WE DO WITH THE METHOD NAME
             // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
 
@@ -132,10 +132,35 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
             }
 
             // The page
-            decorated.send(stream);
+            decorated.send(new Stream.Char() {
+              public Char append(java.lang.CharSequence csq) throws IOException {
+                stream.append(csq);
+                return this;
+              }
 
-            //
-            stream.append("</div>");
+              public Char append(java.lang.CharSequence csq, int start, int end) throws IOException {
+                stream.append(csq, start, end);
+                return this;
+              }
+
+              public Char append(char c) throws IOException {
+                stream.append(c);
+                return this;
+              }
+
+              public void flush() throws IOException {
+                stream.flush();
+              }
+
+              public void close() throws IOException {
+                try {
+                  stream.append("</div>");
+                }
+                finally {
+                  stream.close();
+                }
+              }
+            });
           }
         };
 

@@ -20,7 +20,7 @@ import juzu.Response;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
-import juzu.io.AppendableStream;
+import juzu.io.Streams;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
 import juzu.test.AbstractTestCase;
@@ -48,7 +48,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
     AbstractTestCase.assertEquals(Stream.Char.class, content.getKind());
     try {
       StringBuilder builder = new StringBuilder();
-      ((Response.Content<Stream.Char>)content).send(new AppendableStream(builder));
+      ((Response.Content<Stream.Char>)content).send(Streams.appendable(builder));
       return builder.toString();
     }
     catch (IOException e) {

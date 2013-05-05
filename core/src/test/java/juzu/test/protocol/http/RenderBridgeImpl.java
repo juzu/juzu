@@ -24,7 +24,7 @@ import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
-import juzu.io.AppendableStream;
+import juzu.io.Streams;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -167,7 +167,7 @@ public class RenderBridgeImpl extends MimeBridgeImpl implements RenderBridge {
         writer.println("<body>");
 
         // Send response
-        response.send(new AppendableStream(writer));
+        response.send(Streams.flushable(writer));
 
         //
         writer.println("</body>");

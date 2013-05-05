@@ -27,6 +27,9 @@ import juzu.request.RequestParameter;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
 import juzu.request.UserContext;
+import juzu.io.Stream;
+
+import javax.servlet.AsyncContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,8 +37,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUtils;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -181,6 +183,66 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     }
   }
 
+  @Override
+  public Stream.Char getOutputStream() throws IOException {
+    return new StreamImpl(resp.getWriter());
+  }
+
+  @Override
+  protected void end(Stream.Char stream) {
+    ((StreamImpl)stream).end();
+  }
+
+  class StreamImpl implements Stream.Char {
+
+    /** . */
+    private final PrintWriter writer;
+
+    /** . */
+    private boolean closed;
+
+    /** . */
+    private AsyncContext context;
+
+    StreamImpl(PrintWriter writer) {
+      this.writer = writer;
+    }
+
+    public Char append(CharSequence csq) throws IOException {
+      writer.append(csq);
+      return this;
+    }
+
+    public Char append(CharSequence csq, int start, int end) throws IOException {
+      writer.append(csq, start, end);
+      return this;
+    }
+
+    public Char append(char c) throws IOException {
+      writer.append(c);
+      return this;
+    }
+
+    public void flush() throws IOException {
+      writer.flush();
+    }
+
+    public void close() throws IOException {
+      closed = true;
+      if (context != null) {
+        System.out.println("COMPLETING ASYNC");
+        context.complete();
+      }
+    }
+
+    void end() {
+      if (!closed) {
+        System.out.println("STARTING ASYNC");
+        context = req.startAsync();
+      }
+    }
+  }
+
   public ClientContext getClientContext() {
     return this;
   }
@@ -250,15 +312,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     resp.setStatus(status);
   }
 
-  public Writer getWriter() throws IOException {
-    return resp.getWriter();
-  }
-
-  public OutputStream getOutputStream() throws IOException {
-    return resp.getOutputStream();
-  }
-
-// ClientContext implementation
+  // ClientContext implementation
 
   public String getContentType() {
     return req.getContentType();

@@ -16,6 +16,8 @@
 
 package juzu.io;
 
+import juzu.impl.common.Tools;
+
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -30,7 +32,12 @@ public interface Streamable<S extends Stream> {
     }
 
     public void send(Stream.Char stream) throws IOException {
-      stream.append(s);
+      try {
+        stream.append(s);
+      }
+      finally {
+        Tools.safeClose(stream);
+      }
     }
   }
 

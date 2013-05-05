@@ -22,7 +22,7 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
-import juzu.io.AppendableStream;
+import juzu.io.Streams;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
 import juzu.request.ClientContext;
@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -79,13 +78,7 @@ public class ResourceBridgeImpl extends MimeBridgeImpl implements ResourceBridge
       // Send response
       try {
         if (response.getKind() == Stream.Char.class) {
-          PrintWriter writer = resp.getWriter();
-          try {
-            response.send(new AppendableStream(writer));
-          }
-          finally {
-            Tools.safeClose(writer);
-          }
+          response.send(Streams.closeable(resp.getWriter()));
         }
         else {
           OutputStream out = resp.getOutputStream();

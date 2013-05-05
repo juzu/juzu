@@ -25,7 +25,7 @@ import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.common.Path;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
-import juzu.io.AppendableStream;
+import juzu.io.Streams;
 import juzu.io.Stream;
 import juzu.io.Streamable;
 import juzu.request.ApplicationContext;
@@ -484,7 +484,7 @@ public abstract class Template {
     public final Response.Render status(int status) {
       StringBuilder sb = new StringBuilder();
       PropertyMap properties = new PropertyMap();
-      doRender(properties, new AppendableStream(sb));
+      doRender(properties, Streams.appendable(sb));
       return new Response.Render(status, properties,  new Streamable.CharSequence(sb));
     }
 
@@ -496,7 +496,7 @@ public abstract class Template {
      * @throws UndeclaredIOException      any io exception
      */
     public <A extends Appendable> A renderTo(A appendable) throws TemplateExecutionException, UndeclaredIOException {
-      renderTo(new AppendableStream(appendable));
+      renderTo(Streams.appendable(appendable));
       return appendable;
     }
 

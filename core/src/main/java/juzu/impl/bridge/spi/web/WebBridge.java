@@ -24,7 +24,6 @@ import juzu.asset.AssetLocation;
 import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
-import juzu.io.AppendableStream;
 import juzu.request.RequestParameter;
 import juzu.io.Stream;
 import juzu.request.ClientContext;
@@ -32,7 +31,6 @@ import juzu.request.HttpContext;
 import juzu.request.UserContext;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -68,13 +66,13 @@ public abstract class WebBridge {
     }
     if (verbose) {
       setContentType("text/html");
-      Writer writer = getWriter();
+      Stream.Char writer = getOutputStream();
       writer.append(error.getMessage());
       writer.close();
     }
   }
 
-  public final <S extends Stream> void send(Response.Content<S> content, boolean bilto) throws IOException {
+  public final Stream.Char send(Response.Content<Stream.Char> content, boolean bilto) throws IOException {
 
     //
     PropertyMap properties = content.getProperties();
@@ -95,9 +93,9 @@ public abstract class WebBridge {
     }
 
     //
-    Writer writer = null;
+    Stream.Char writer = null;
     try {
-      writer = getWriter();
+      writer = getOutputStream();
 
       //
       if (bilto) {
@@ -106,23 +104,25 @@ public abstract class WebBridge {
 
       // Send response
       if (content.getKind() == Stream.Char.class) {
-        ((Response.Content<Stream.Char>)content).send(new AppendableStream(writer));
+        ViewStreamable vs = new ViewStreamable(content.getStreamable(), bilto);
+        vs.send(writer);
       } else {
         throw new UnsupportedOperationException("Not yet handled");
       }
-
-      //
-      if (bilto) {
-        sendFooter(writer);
-      }
     }
     finally {
-      Tools.safeClose(writer);
+      end(writer);
     }
 
+    //
+    return writer;
   }
 
-  private void sendHeader(PropertyMap properties, Writer writer) throws IOException {
+  protected void end(Stream.Char stream) {
+    Tools.safeClose(stream);
+  }
+
+  private void sendHeader(PropertyMap properties, Stream.Char writer) throws IOException {
     //
     writer.append("<!DOCTYPE html>\n");
     writer.append("<html>\n");
@@ -227,9 +227,7 @@ public abstract class WebBridge {
 
   public abstract void sendRedirect(String location) throws IOException;
 
-  public abstract Writer getWriter() throws IOException;
-
-  public abstract OutputStream getOutputStream() throws IOException;
+  public abstract Stream.Char getOutputStream() throws IOException;
 
 
 

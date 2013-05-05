@@ -20,7 +20,8 @@ import juzu.Path;
 import juzu.Response;
 import juzu.UndeclaredIOException;
 import juzu.View;
-import juzu.io.AppendableStream;
+import juzu.io.Stream;
+import juzu.io.Streams;
 import juzu.template.Template;
 
 import javax.inject.Inject;
@@ -36,7 +37,7 @@ public class A {
   @View
   public Response.Content<?> index() {
     String ret = "";
-    AppendableStream printer = new AppendableStream(new Appendable() {
+    Stream.Char printer = Streams.appendable(new Appendable() {
       public Appendable append(CharSequence csq) throws IOException {
         throw new IOException();
       }

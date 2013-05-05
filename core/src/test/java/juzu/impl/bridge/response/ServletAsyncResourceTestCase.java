@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package juzu.test.protocol.mock;
+package juzu.impl.bridge.response;
 
-import juzu.io.AppendableStream;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockPrinter extends AppendableStream {
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public class ServletAsyncResourceTestCase extends AbstractAsyncResourceTestCase {
 
-  public MockPrinter() {
-    super(new StringBuilder());
-  }
-
-  public StringBuilder getContent() {
-    return (StringBuilder)delegate;
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.response.async.resource");
   }
 }

@@ -17,10 +17,9 @@
 package juzu.impl.template.spi.juzu.ast;
 
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateStub;
-import juzu.io.AppendableStream;
+import juzu.io.Streams;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
-import juzu.test.protocol.mock.MockPrinter;
 import org.junit.Test;
 
 import java.awt.*;
@@ -363,14 +362,14 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
     out = null;
     Writer writer = new StringWriter();
     GroovyTemplateStub template = template("<% " + TemplateRenderingTestCase.class.getName() + ".out = out; %>");
-    new TemplateRenderContext(template).render(new AppendableStream(writer));
+    new TemplateRenderContext(template).render(Streams.closeable(writer));
     assertNotNull(out);
   }
 
   private void assertLineNumber(int expectedLineNumber, String expectedText, String script) throws IOException {
     GroovyTemplateStub template = template(script);
     try {
-      new TemplateRenderContext(template).render(new MockPrinter());
+      new TemplateRenderContext(template).render(Streams.empty());
       fail();
     }
     catch (TemplateExecutionException t) {

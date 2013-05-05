@@ -24,6 +24,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.request.Method;
 import juzu.request.RequestParameter;
+import juzu.io.Stream;
 
 import java.io.IOException;
 import java.util.Map;
@@ -46,8 +47,8 @@ public abstract class WebMimeBridge extends WebRequestBridge implements MimeBrid
       return true;
     } else if (response instanceof Response.Content<?>) {
 
-      //
-      Response.Content<?> content = (Response.Content)response;
+      // For now we hardcode this
+      Response.Content<Stream.Char> content = (Response.Content<Stream.Char>)response;
       PropertyMap properties = response.getProperties();
 
       // Resolve stylesheets Asset -> Asset.Value
