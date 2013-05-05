@@ -24,6 +24,6 @@ public class RequestDetypedParamActionPortletTestCase extends AbstractRequestDet
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createPortletDeployment("bridge.request.action.detypedparam");
+    return createPortletDeployment("bridge.request.detypedparam.action");
   }
 }

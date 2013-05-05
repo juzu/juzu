@@ -24,6 +24,6 @@ public class RequestQueryParamEncodingViewServletTestCase extends AbstractReques
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.request.view.queryparamencoding");
+    return createServletDeployment(true, "bridge.request.queryparamencoding.view");
   }
 }

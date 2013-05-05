@@ -21,10 +21,9 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.impl.bridge.context.AbstractClientContextTestCase;
+import juzu.impl.bridge.context.AbstractContextClientTestCase;
 import juzu.impl.common.Tools;
 import juzu.request.ClientContext;
-import org.omg.CORBA.ARG_IN;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +35,7 @@ public class A {
   @Route("/action")
   public Response.View action(ClientContext clientContext) throws IOException {
     test(clientContext);
-    AbstractClientContextTestCase.kind = "action";
+    AbstractContextClientTestCase.kind = "action";
     return A_.index();
   }
 
@@ -44,16 +43,16 @@ public class A {
   @Route("/resource")
   public Response.Content resource(ClientContext clientContext) throws IOException {
     test(clientContext);
-    AbstractClientContextTestCase.kind = "resource";
+    AbstractContextClientTestCase.kind = "resource";
     return Response.ok("");
   }
 
   private void test(ClientContext client) throws IOException {
     InputStream in = client.getInputStream();
-    AbstractClientContextTestCase.content = Tools.read(in, " UTF-8");
-    AbstractClientContextTestCase.contentLength = client.getContentLenth();
-    AbstractClientContextTestCase.charset = client.getCharacterEncoding();
-    AbstractClientContextTestCase.contentType = client.getContentType();
+    AbstractContextClientTestCase.content = Tools.read(in, " UTF-8");
+    AbstractContextClientTestCase.contentLength = client.getContentLenth();
+    AbstractContextClientTestCase.charset = client.getCharacterEncoding();
+    AbstractContextClientTestCase.contentType = client.getContentType();
   }
 
   @View

@@ -24,6 +24,6 @@ public class RequestPathParamAliasingResourceServletTestCase extends AbstractReq
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.request.resource.pathparamaliasing");
+    return createServletDeployment(true, "bridge.request.pathparamaliasing.resource");
   }
 }

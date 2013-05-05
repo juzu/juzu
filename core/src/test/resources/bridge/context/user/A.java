@@ -18,14 +18,14 @@ package bridge.context.user;
 
 import juzu.Response;
 import juzu.View;
-import juzu.impl.bridge.context.AbstractUserContextTestCase;
+import juzu.impl.bridge.context.AbstractContextUserTestCase;
 import juzu.request.UserContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
   @View
   public Response.Content<?> index(UserContext userContext) {
-    AbstractUserContextTestCase.locale = userContext.getLocale();
+    AbstractContextUserTestCase.locale = userContext.getLocale();
     return Response.ok("");
   }
 }

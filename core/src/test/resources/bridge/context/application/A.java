@@ -18,10 +18,8 @@ package bridge.context.application;
 
 import juzu.Response;
 import juzu.View;
-import juzu.impl.bridge.context.AbstractApplicationContextTestCase;
-import juzu.impl.bridge.context.AbstractUserContextTestCase;
+import juzu.impl.bridge.context.AbstractContextApplicationTestCase;
 import juzu.request.ApplicationContext;
-import juzu.request.UserContext;
 
 import java.util.Locale;
 
@@ -29,7 +27,7 @@ import java.util.Locale;
 public class A {
   @View
   public Response.Content<?> index(ApplicationContext applicationContext) {
-    AbstractApplicationContextTestCase.bundle = applicationContext.resolveBundle(Locale.FRANCE);
+    AbstractContextApplicationTestCase.bundle = applicationContext.resolveBundle(Locale.FRANCE);
     return Response.ok("");
   }
 }

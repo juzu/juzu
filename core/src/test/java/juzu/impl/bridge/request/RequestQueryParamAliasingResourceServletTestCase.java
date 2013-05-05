@@ -24,6 +24,6 @@ public class RequestQueryParamAliasingResourceServletTestCase extends AbstractRe
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.request.resource.queryparamaliasing");
+    return createServletDeployment(true, "bridge.request.queryparamaliasing.resource");
   }
 }

@@ -24,6 +24,6 @@ public class RequestDetypedParamActionServletTestCase extends AbstractRequestDet
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.request.action.detypedparam");
+    return createServletDeployment(true, "bridge.request.detypedparam.action");
   }
 }

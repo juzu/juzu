@@ -24,6 +24,6 @@ public class RequestDetypedParamViewPortletTestCase extends AbstractRequestDetyp
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createPortletDeployment("bridge.request.view.detypedparam");
+    return createPortletDeployment("bridge.request.detypedparam.view");
   }
 }
