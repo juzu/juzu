@@ -208,28 +208,6 @@ public class Handler implements Closeable {
       //
       requestBridge.invoke();
 
-      // Implement the two phases in one here (perhaps it could be moved to the requestBridge.send()
-      // note that we handle one level of redirect and there could be more than one (assuming it's not a bug in
-      // application). This design would not achieve that but handling that in send would likely handle it
-      // but for now we keep this design
-      if (requestBridge.response instanceof Response.View) {
-        Phase.View.Dispatch update = (Phase.View.Dispatch)requestBridge.response;
-        Boolean redirect = requestBridge.response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
-        if (redirect != null && !redirect) {
-          Method<?> desc = this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
-          Map<String, RequestParameter> rp = Collections.emptyMap();
-          for (ResponseParameter parameter : update.getParameters().values()) {
-            if (rp.isEmpty()) {
-              rp = new HashMap<String, RequestParameter>();
-            }
-            RequestParameter requestParameter = RequestParameter.create(parameter.getName(), parameter.toArray());
-            rp.put(requestParameter.getName(), requestParameter);
-          }
-          requestBridge = new WebRenderBridge(this.bridge, this, bridge, desc, rp);
-          requestBridge.invoke();
-        }
-      }
-
       //
       if (requestBridge.send()) {
         // ok

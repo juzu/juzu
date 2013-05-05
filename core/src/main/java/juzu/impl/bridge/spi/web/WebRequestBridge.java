@@ -319,22 +319,39 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   /**
    * Send the response to the client.
    */
-  boolean send() throws IOException {
+  boolean send() throws Exception {
     if (response instanceof Response.Error) {
       Response.Error error = (Response.Error)response;
       http.send(error, bridge.module.context.getRunMode().getPrettyFail());
       return true;
     } else if (response instanceof Response.View) {
-      Response.View update = (Response.View)response;
-      String url = update.with(MimeType.PLAIN).with(update.getProperties()).toString();
-      Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
-      if (headers != null) {
-        for (Map.Entry<String, String[]> entry : headers) {
-          http.setHeader(entry.getKey(), entry.getValue()[0]);
+
+      Phase.View.Dispatch update = (Phase.View.Dispatch)response;
+      Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
+      if (redirect != null && !redirect) {
+        Method<?> desc = this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
+        Map<String, RequestParameter> rp = Collections.emptyMap();
+        for (ResponseParameter parameter : update.getParameters().values()) {
+          if (rp.isEmpty()) {
+            rp = new HashMap<String, RequestParameter>();
+          }
+          RequestParameter requestParameter = RequestParameter.create(parameter.getName(), parameter.toArray());
+          rp.put(requestParameter.getName(), requestParameter);
         }
+        WebRenderBridge requestBridge = new WebRenderBridge(bridge, handler, http, desc, rp);
+        requestBridge.invoke();
+        return requestBridge.send();
+      } else {
+        String url = update.with(MimeType.PLAIN).with(update.getProperties()).toString();
+        Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
+        if (headers != null) {
+          for (Map.Entry<String, String[]> entry : headers) {
+            http.setHeader(entry.getKey(), entry.getValue()[0]);
+          }
+        }
+        http.sendRedirect(url);
+        return true;
       }
-      http.sendRedirect(url);
-      return true;
     }
     else if (response instanceof Response.Redirect) {
       Response.Redirect redirect = (Response.Redirect)response;

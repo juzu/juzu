@@ -42,7 +42,7 @@ public abstract class WebMimeBridge extends WebRequestBridge implements MimeBrid
   }
 
   @Override
-  boolean send() throws IOException {
+  boolean send() throws Exception {
     if (super.send()) {
       return true;
     } else if (response instanceof Response.Content<?>) {
