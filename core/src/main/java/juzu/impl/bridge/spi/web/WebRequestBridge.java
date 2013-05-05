@@ -324,6 +324,23 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       Response.Error error = (Response.Error)response;
       http.send(error, bridge.module.context.getRunMode().getPrettyFail());
       return true;
+    } else if (response instanceof Response.View) {
+      Response.View update = (Response.View)response;
+      String url = update.with(MimeType.PLAIN).with(update.getProperties()).toString();
+      Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
+      if (headers != null) {
+        for (Map.Entry<String, String[]> entry : headers) {
+          http.setHeader(entry.getKey(), entry.getValue()[0]);
+        }
+      }
+      http.sendRedirect(url);
+      return true;
+    }
+    else if (response instanceof Response.Redirect) {
+      Response.Redirect redirect = (Response.Redirect)response;
+      String url = redirect.getLocation();
+      http.sendRedirect(url);
+      return true;
     } else {
       return false;
     }

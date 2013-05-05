@@ -13,36 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package bridge.servlet.route.action.redirecttoview;
+package bridge.response.viewnoredirect.action;
 
 import juzu.Action;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.Route;
-import juzu.request.RenderContext;
+import juzu.View;
+import juzu.impl.bridge.response.AbstractResponseViewNoRedirectActionTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
-  @juzu.View
-  public Response.Render index() {
-    return Response.ok(
-        "<form id='form' action='" + A_.foo() + "' method='post'>" +
-            "<input id='trigger' type='submit' name='click'/>" +
-            "</form>");
+  @View
+  public Response.Content index() {
+    AbstractResponseViewNoRedirectActionTestCase.url = A_.process().toString();
+    return Response.ok("");
   }
 
   @Action
-  @Route("/foo")
-  public Response.View foo() {
-    return A_.bar("juu");
+  @Route("/process")
+  public Response.View process() {
+    return A_.foo("bar_value").with(PropertyType.REDIRECT_AFTER_ACTION, false)
+        ;
   }
 
-  @juzu.View
-  @Route("/bar")
-  public Response.Render bar(String juu, RenderContext renderContext) {
-    String path = renderContext.getProperty(PropertyType.PATH);
-    return Response.ok("/juzu/bar".equals(path) && "juu".equals(juu) ? "pass" : "fail");
+  @View
+  @Route("/foo")
+  public Response.Content foo(String bar) {
+    AbstractResponseViewNoRedirectActionTestCase.bar = bar;
+    return Response.ok("");
   }
 }

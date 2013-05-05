@@ -14,43 +14,35 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.servlet;
+package juzu.impl.bridge.response;
 
 import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseActionDirectToViewTestCase extends AbstractWebTestCase {
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public abstract class AbstractResponseViewNoRedirectViewTestCase extends AbstractWebTestCase {
 
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.servlet.response.header.actiondirecttoview");
-  }
+  /** . */
+  public static String bar;
 
   @Drone
   WebDriver driver;
 
   @Test
   public void testPathParam() throws Exception {
-    driver.get(applicationURL().toString());
-    WebElement trigger = driver.findElement(By.tagName("body"));
-    URL url = new URL(trigger.getText());
+    URL url = applicationURL();
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
     conn.setInstanceFollowRedirects(false);
+    bar = null;
     conn.connect();
-    Map<String, String> headers = Tools.responseHeaders(conn);
-    assertTrue(headers.containsKey("daa"));
-    assertEquals("daa_value", headers.get("daa"));
+    assertEquals(200, conn.getResponseCode());
+    assertEquals("bar_value", bar);
   }
 }

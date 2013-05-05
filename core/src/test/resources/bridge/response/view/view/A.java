@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package bridge.response.view.view;
 
-package juzu.impl.bridge.servlet;
-
-import juzu.test.AbstractWebTestCase;
-import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import juzu.Response;
+import juzu.Route;
+import juzu.View;
+import juzu.impl.bridge.response.AbstractResponseViewViewTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractRouteActionToViewTestCase extends AbstractWebTestCase {
+public class A {
 
-  @Drone
-  WebDriver driver;
+  @View
+  public Response.View index() {
+    return A_.foo("bar_value");
+  }
 
-  @Test
-  public void testPathParam() throws Exception {
-    driver.get(applicationURL().toString());
-    WebElement trigger = driver.findElement(By.id("trigger"));
-    trigger.click();
-    String pass = driver.findElement(By.tagName("body")).getText();
-    assertEquals("pass", pass);
+  @View
+  @Route("/foo")
+  public Response.Content foo(String bar) {
+    AbstractResponseViewViewTestCase.bar = bar;
+    return Response.ok("");
   }
 }

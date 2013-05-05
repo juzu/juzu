@@ -13,36 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package bridge.servlet.route.action.directtoview;
+package bridge.response.view.action;
 
 import juzu.Action;
-import juzu.PropertyType;
 import juzu.Response;
 import juzu.Route;
-import juzu.request.RenderContext;
+import juzu.View;
+import juzu.impl.bridge.response.AbstractResponseViewActionTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
-  @juzu.View
-  public Response.Render index() {
-    return Response.ok(
-        "<form id='form' action='" + A_.foo() + "' method='post'>" +
-            "<input id='trigger' type='submit' name='click'/>" +
-            "</form>");
+  @View
+  public Response.Content index() {
+    AbstractResponseViewActionTestCase.url = A_.process().toString();
+    return Response.ok("");
   }
 
   @Action
-  @Route("/foo")
-  public Response.View foo() {
-    return A_.bar("juu").with(PropertyType.REDIRECT_AFTER_ACTION, false);
+  @Route("/process")
+  public Response.View process() {
+    return A_.foo("bar_value");
   }
 
-  @juzu.View
-  @Route("/bar")
-  public Response.Content<?> bar(String juu, RenderContext renderContext) {
-    String path = renderContext.getProperty(PropertyType.PATH);
-    return Response.ok("/juzu/foo".equals(path) && "juu".equals(juu) ? "pass" : "fail");
+  @View
+  @Route("/foo")
+  public Response.Content foo(String bar) {
+    AbstractResponseViewActionTestCase.bar = bar;
+    return Response.ok("");
   }
 }

@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package bridge.response.viewnoredirect.view;
 
-package juzu.impl.bridge.servlet;
-
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import juzu.PropertyType;
+import juzu.Response;
+import juzu.Route;
+import juzu.View;
+import juzu.impl.bridge.response.AbstractResponseViewNoRedirectViewTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteActionRedirectToViewTestCase extends AbstractRouteActionToViewTestCase {
+public class A {
 
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.servlet.route.action.redirecttoview");
+  @View
+  public Response.View index() {
+    return A_.foo("bar_value").with(PropertyType.REDIRECT_AFTER_ACTION, false);
+  }
+
+  @View
+  @Route("/foo")
+  public Response.Content foo(String bar) {
+    AbstractResponseViewNoRedirectViewTestCase.bar = bar;
+    return Response.ok("");
   }
 }

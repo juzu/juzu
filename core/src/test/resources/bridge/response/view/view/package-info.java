@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.servlet;
+@Application package bridge.response.view.view;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteActionDirectToViewTestCase extends AbstractRouteActionToViewTestCase {
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.servlet.route.action.directtoview");
-  }
-}
+import juzu.Application;

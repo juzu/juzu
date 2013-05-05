@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.bridge.response;
 
-@Application package bridge.servlet.route.action.directtoview;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import juzu.Application;
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ResponseViewActionServletTestCase extends AbstractResponseViewActionTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.response.view.action");
+  }
+}
