@@ -16,6 +16,7 @@
 
 package juzu.impl.plugin.asset;
 
+import juzu.asset.AssetLocation;
 import juzu.impl.common.Name;
 import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
@@ -89,14 +90,14 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
     AnnotationState annotation = annotations.get(metaModel.getHandle());
     if (annotation != null) {
       String location = (String)annotation.get("location");
-      boolean classpath = location == null || "CLASSPATH".equals(location);
+      boolean classpath = location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(location));
       for (String kind : KINDS) {
         List<AnnotationState> scripts = (List<AnnotationState>)annotation.get(kind);
         ProcessingContext context = metaModel.getProcessingContext();
         if (scripts != null) {
           for (AnnotationState script : scripts) {
             location = (String)script.get("location");
-            if ((location == null && classpath) || "CLASSPATH".equals(location)) {
+            if ((location == null && classpath) || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(location))) {
               String value = (String)script.get("src");
               Path path = Path.parse(value);
               if (path.isRelative()) {
