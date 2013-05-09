@@ -1,0 +1,172 @@
+The AMD plugin aims to declare and manage javascript modules by annotations. It uses [[RequireJS>>http://requirejs.org/]] to load and relies on ##AssetManager## to manage javascript modules.
+Basically, It is inspired from [[Javascript in GateIn>>https://docs.jboss.org/author/display/GTNPORTAL35/JavaScript+in+GateIn]] for basic functions
+and [[Asset plugin>>#assets]] to manage assets
+
+= Define module =
+
+The ##@Defines## and ##@Define## are used to declare the javascript which is modular or self-executing function.
+If the javascript is self-executing function, it wraps this javascript content to expected RequireJS format
+{{note}}
+The Juzu AMD definition wraps only the javascript locates at ##AssetLocation.APPLICATION##
+{{/note}} 
+{{example title="Defines a normal AMD module"}}
+{{java}}
+@Defines(value={@Define(name="Foo", path="foo.js")})
+
+package my.application
+{{/java}}
+{{/example}}
+##foo.js## is self-executing function
+{{java}}
+(function () {
+  //Do something
+})();
+{{/java}}
+or RequireJS format
+{{java}}
+define("Foo", function() {
+  return //Something
+});
+{{/java}}
+{{example title="Defines modules with dependencies"}}
+{{java}}
+@Defines(
+  value = {
+    @Define(name="Foo", path="foo.js"),
+    @Define(name="Bar", path="bar.js", dependencies={@Dependency(name="Foo", alias="foo")}}
+)
+{{/java}}
+##bar.js## is self-execution function
+{{java}}
+(function(foo) {
+  //Do something
+})(foo);
+{{/java}}
+or RequireJS format
+{{java}}
+define("Bar", ["Foo"], function(foo) {
+  return //Something
+});
+{{/java}}
+{{/example}}
+
+Same as [[GateIn>>https://docs.jboss.org/author/display/GTNPORTAL35/JavaScript+in+GateIn]], the Juzu AMD definition provides custom adapter for adapting the script to the expected format. 
+To provide this bit of flexibility it is possible to declare an adapter that will wrap the adapted script.
+The jQuery library is a good example of how a custom adapter is useful, thanks to the adapter we can reuse the jQuery without any change.
+ 
+The jQuery uses the following construct for defining itself:
+{{java}}
+(function(window, undefined) {
+})(window);
+{{/java}}
+The main issue with this construct is that it will bind jQuery to the window but most importantly it will not return any value as expected by the dependency system. Thanks to the custom adapter we can integrate it trivially:
+{{java}}
+@Define(
+  name = "jquery",
+  path="jquery-1.7.1.js",
+  adapter="(function() { @{include} return jQuery.noConflict(true);})();")
+{{/java}}
+The adapter attribute can contains mixed content and the ##@{include}## will perform a mere inclusion (as C language includes) of the original jQuery script in the resulting module:
+{{java}}
+define("jquery", [], function() {
+  return (function() {
+    (function(window, undefined) {
+    })(window);
+    return jQuery.noConflict(true);
+  })();
+});
+{{/java}}
+
+{{note}}
+The Juzu AMD definition adapts only the javascript locates at ##AssetLocation.APPLICATION##
+{{/note}}
+
+= Require module =
+
+The Juzu AMD requisite only register javascript module for RequireJS Loader. It does not wrap or adapt content and not manage module dependencies
+
+This is example usage ##@Requires## and ##@Require## to register ##foo.js## and ##bar.js## which is depend on ##foo.js##
+{{java}}
+@Requires (
+  value = {
+    @Require(name = "Foo", path = "foo.js"), 
+    @Require(name = "Bar", path = "bar.js")}
+)
+package my.application;
+{{/java}}
+##foo.js## is modularity
+{{java}}
+define("Foo", function() {
+  return {
+    text: "Hello"
+  };
+});
+{{/java}}
+##bar.js## is modularity
+{{java}}
+define("Bar", ["Foo"], function(foo) {
+  return {
+    text : foo.text + " World"
+  };
+});
+{{/java}}
+
+= Webjars integration =
+[[Webjars>>http://www.webjars.org/]] is client-side web libraries (e.g. jQuery & Bootstrap) packaged into JAR (Java Archive) files.
+
+{{example title="Use foo.js packaged by webjars"}}
+{{xml}}
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>foo</artifactId>
+  <version>1.0</version>
+</dependency>
+{{/xml}}
+{{java}}
+@Defines(value={@Define(name="Foo", path="/webjars!foo.js")})
+package my.application;
+{{/java}}
+{{/example}}
+
+In this example above, the application declare a foo webjars as maven dependency. The foo.js is packaged by webjars will locate at ##foo.jar!/META-INF/resources/webjars/foo/1.0/foo.js##
+The ##path## attribute of ##@Define## and ##@Require## has pattern ##/webjars!{js-name}##
+{{example title="Use webjars with dependencies"}}
+{{xml}}
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>foo</artifactId>
+  <version>1.0</version>
+</dependency>
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>bar</artifactId>
+  <version>1.0</version>
+</dependency>
+{{/xml}}
+{{java}}
+@Defines(
+  value = {
+    @Define(name="Foo", path="/webjars!foo.js"),
+    @Define(name="Bar", path="/webjars!foo.js", 
+    	dependencies={@Dependency(name="Foo", alias="foo")}}
+)
+{{/java}}
+{{/example}}
+{{example title="Use webjars with adapter"}}
+{{xml}}
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>jquery</artifactId>
+  <version>2.0.0</version>
+</dependency>
+{{/xml}}
+{{java}}
+@Define(
+  name = "jquery",
+  path="/webjars!jquery.min.js",
+  adapter="(function() { @{include} return jQuery.noConflict(true);})();")
+{{/java}}
+{{/example}}
+{{note}}
+Usage ##@Require## integration with webjars same as ##@Define## but without wrapping and adapting
+{{/note}}

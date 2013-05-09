@@ -35,8 +35,12 @@ public class Asset {
 
   /** . */
   private final String uri;
+  
+  /** only used by AMD for now.*/
+  private final String id;
 
-  public Asset(AssetLocation location, String uri) {
+  public Asset(String id, AssetLocation location, String uri) {
+    this.id = id;
     this.location = location;
     this.uri = uri;
   }
@@ -48,7 +52,7 @@ public class Asset {
    * @return the asset
    */
   public static Asset server(String uri) {
-    return of(AssetLocation.SERVER, uri);
+    return of(null, AssetLocation.SERVER, uri);
   }
 
   /**
@@ -58,17 +62,17 @@ public class Asset {
    * @return the asset
    */
   public static Asset application(String uri) {
-    return of(AssetLocation.APPLICATION, uri);
+    return of(null, AssetLocation.APPLICATION, uri);
   }
 
   /**
    * Wraps an URI as an absolute uri.
-   *
+   * @param id the id of asset (only used by AMD for now)
    * @param uri the asset uri
    * @return the asset
    */
-  public static Asset url(String uri) {
-    return of(AssetLocation.URL, uri);
+  public static Asset url(String id, String uri) {
+    return of(id, AssetLocation.URL, uri);
   }
 
   /**
@@ -78,8 +82,8 @@ public class Asset {
    * @param uri the asset uri
    * @return the asset
    */
-  public static Asset of(AssetLocation location, String uri) {
-    return new Asset(location, uri);
+  public static Asset of(String id, AssetLocation location, String uri) {
+    return new Asset(id, location, uri);
   }
 
   public AssetLocation getLocation() {
@@ -88,5 +92,9 @@ public class Asset {
 
   public String getURI() {
     return uri;
+  }
+  
+  public String getId() {
+    return id;
   }
 }

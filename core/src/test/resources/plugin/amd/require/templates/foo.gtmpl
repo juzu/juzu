@@ -1,0 +1,5 @@
+<script type="text/javascript">
+	require(["Foo"], function(foo) {
+		alert(foo.text);
+	});
+</script>

@@ -30,10 +30,10 @@ import java.util.Map;
 public class AssetManager {
 
   /** . */
-  private final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
+  protected final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
 
   /** . */
-  private final HashMap<String, URL> resources = new HashMap<String, URL>();
+  protected final HashMap<String, URL> resources = new HashMap<String, URL>();
 
   /**
    * Attempt to add an asset to the manager, the manager will return the asset id
@@ -125,7 +125,7 @@ public class AssetManager {
         if (entry.getValue().isEmpty()) {
           i.remove();
           AssetNode asset = assets.get(entry.getKey());
-          resolved.addLast(Asset.of(asset.getLocation(), asset.getValue()));
+          resolved.addLast(Asset.of(asset.getId(), asset.getLocation(), asset.getValue()));
           for (String dependency : asset.dependsOnMe) {
             HashSet<String> foo = sub.get(dependency);
             if (foo != null) {

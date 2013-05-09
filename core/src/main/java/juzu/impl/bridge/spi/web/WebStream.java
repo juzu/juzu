@@ -26,6 +26,8 @@ import juzu.io.Stream;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -55,14 +57,18 @@ public abstract class WebStream implements AsyncStream {
 
   /** . */
   private final AssetManager scriptManager;
+  
+  /** .*/
+  private final AssetManager amdManager;
 
   /** The current document being assembled. */
   private final Page page;
 
-  public WebStream(HttpStream stream, AssetManager stylesheetManager, AssetManager scriptManager) {
+  public WebStream(HttpStream stream, AssetManager stylesheetManager, AssetManager scriptManager, AssetManager amdManager) {
     this.stream = stream;
     this.stylesheetManager = stylesheetManager;
     this.scriptManager = scriptManager;
+    this.amdManager = amdManager;
     this.page = new Page();
   }
 
@@ -80,6 +86,8 @@ public abstract class WebStream implements AsyncStream {
           page.stylesheets.add(((String)property.value));
         } else if (property.type == PropertyType.SCRIPT) {
           page.scripts.add(((String)property.value));
+        } else if (property.type == PropertyType.AMD) {
+          page.amds.add(((String)property.value));
         } else if (property.type == PropertyType.HEADER_TAG) {
           page.headerTags.add(((Element)property.value));
         } else {
@@ -94,6 +102,10 @@ public abstract class WebStream implements AsyncStream {
           if (page.scripts.size() > 0 && scriptManager != null) {
             Iterable<Asset> scriptAssets =  scriptManager.resolveAssets(page.scripts);
             Tools.addAll(page.scriptAssets, scriptAssets);
+          }
+          if (page.amds.size() > 0 && amdManager != null) {
+            Iterable<Asset> amdAssets = amdManager.resolveAssets(page.amds);
+            Tools.addAll(page.amdAssets, amdAssets);
           }
           status = STREAMING;
           page.sendHeader(stream);
@@ -166,6 +178,9 @@ public abstract class WebStream implements AsyncStream {
 
     /** . */
     private final LinkedList<String> scripts = new LinkedList<String>();
+    
+    /** . */
+    private final LinkedList<String> amds = new LinkedList<String>();
 
     /** . */
     private final LinkedList<Element> headerTags = new LinkedList<Element>();
@@ -175,6 +190,9 @@ public abstract class WebStream implements AsyncStream {
 
     /** . */
     private final LinkedList<Asset> stylesheetAssets = new LinkedList<Asset>();
+    
+    /** .*/
+    private final LinkedList<Asset> amdAssets = new LinkedList<Asset>();
 
     void clear() {
       this.title = null;
@@ -182,6 +200,7 @@ public abstract class WebStream implements AsyncStream {
       this.stylesheetAssets.clear();
       this.scriptAssets.clear();
       this.headerTags.clear();
+      this.amdAssets.clear();
     }
 
     void sendHeader(Stream stream) {
@@ -218,6 +237,12 @@ public abstract class WebStream implements AsyncStream {
         stream.provide(Chunk.create(url));
         stream.provide(Chunk.create("\"></script>\n"));
       }
+      
+      //
+      if (!amdAssets.isEmpty()) {
+        renderAMD(amdAssets, stream);
+      }
+      
       for (Element headerTag : headerTags) {
         try {
           StringBuilder buffer = new StringBuilder();
@@ -237,6 +262,48 @@ public abstract class WebStream implements AsyncStream {
       stream.provide(Chunk.create(
           "</body>\n" +
               "</html>\n"));
+    }
+    
+    private void renderAMD(Iterable<Asset> modules, Stream stream) {
+      Asset require = null;
+      Asset wrapper = null;
+      ArrayList<Asset> paths = new ArrayList<Asset>();
+      StringBuilder buffer = new StringBuilder();
+      for (Asset module : modules) {
+        if (module.getId().equals("juzu.amd")) {
+          require = module;
+        } else if (module.getId().equals("juzu.amd.wrapper")) {
+          wrapper = module;
+        } else {
+          paths.add(module);
+        }
+      }
+      buffer.append("<script type=\"text/javascript\">");
+      buffer.append(" var require={");
+      buffer.append("\"paths\":{");
+      for (Iterator<Asset> i = paths.iterator(); i.hasNext();) {
+        Asset path = i.next();
+        buffer.append("\"").append(path.getId()).append("\":\"");
+        String uri = path.getURI();
+        uri = uri.substring(0, uri.lastIndexOf(".js"));
+        buffer.append(renderAssetURL(path.getLocation(), uri));
+        buffer.append("\"");
+        if (i.hasNext()) {
+          buffer.append(",");
+        }
+      }
+      buffer.append("}");
+      buffer.append("};");
+      buffer.append("</script>");
+
+      buffer.append("<script type=\"text/javascript\" src=\"");
+      buffer.append(renderAssetURL(require.getLocation(), require.getURI()));
+      buffer.append("\"></script>\n");
+
+      buffer.append("<script type=\"text/javascript\" src=\"");
+      buffer.append(renderAssetURL(wrapper.getLocation(), wrapper.getURI()));
+      buffer.append("\"></script>\n");
+      stream.provide(Chunk.create(buffer));
     }
   }
 }
