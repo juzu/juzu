@@ -15,11 +15,13 @@
  */
 
 @Application()
-@Assets(scripts = @Script(src = "test.js"), stylesheets =  @Stylesheet(src = "main.css"), location = AssetLocation.APPLICATION)
-package plugin.asset.location.applicationrelative;
+@Assets(
+    scripts = @Script(src = "/plugin/asset/location/applicationabsolute/test.js"),
+    stylesheets = @Stylesheet(src = "/plugin/asset/location/applicationabsolute/main.css")
+)
+package plugin.asset.location.defaultabsolute;
 
 import juzu.Application;
-import juzu.asset.AssetLocation;
 import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Stylesheet;
