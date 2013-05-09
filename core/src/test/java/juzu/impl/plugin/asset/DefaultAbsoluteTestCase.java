@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-@Application()
-@Assets(scripts = @Script(src = "test.js"), stylesheets =  @Stylesheet(src = "main.css"), location = AssetLocation.APPLICATION)
-package plugin.asset.location.applicationrelative;
+package juzu.impl.plugin.asset;
 
-import juzu.Application;
-import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class DefaultAbsoluteTestCase extends AbstractLocationTestCase {
+  @Deployment
+  public static WebArchive createDeployment() {
+    return createLocationDeployment("plugin.asset.location.defaultabsolute");
+  }
+}

@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-@Application()
-@Assets(scripts = @Script(src = "test.js"), stylesheets =  @Stylesheet(src = "main.css"), location = AssetLocation.APPLICATION)
-package plugin.asset.location.applicationrelative;
+package plugin.asset.location.defaultrelative;
 
-import juzu.Application;
-import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;
+import juzu.Response;
+import juzu.View;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+  @View
+  public Response.Content index() {
+    String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
+    return Response.ok(content);
+  }
+}
