@@ -29,6 +29,7 @@ import juzu.impl.plugin.template.metamodel.TemplatesMetaModel;
 import juzu.impl.common.JSON;
 
 import javax.tools.FileObject;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, ApplicationMetaModel> {
@@ -51,9 +52,13 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   /** . */
   final String baseName;
 
+  /** Resource aliases. */
+  final Map<String, String> resourceAliases;
+
   ApplicationMetaModel(
     ElementHandle.Package handle,
-    String baseName) {
+    String baseName,
+    Map<String, String> resourceAliases) {
     //
     if (baseName == null) {
       String s = handle.getPackage().toString();
@@ -65,6 +70,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
     this.handle = handle;
     this.modified = false;
     this.baseName = baseName;
+    this.resourceAliases = resourceAliases;
   }
 
   public Name getName() {
@@ -89,8 +95,19 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
    * @throws IllegalArgumentException if the context package is not valid
    */
   public FileObject resolveResource(Name location, Path.Relative path) throws NullPointerException, IllegalArgumentException {
-    Path.Absolute p = getName().append(location).resolve(path);
-    return model.processingContext.resolveResource(handle, p);
+    String resolved = resourceAliases.get(path.getCanonical());
+    FileObject o;
+    if (resolved != null) {
+      Path.Absolute p = (Path.Absolute)Path.parse(resolved);
+      o = model.processingContext.resolveResourceFromSourcePath(handle, p);
+      if (o == null) {
+        o = model.processingContext.resolveResourceFromClassPath(handle, p);
+      }
+    } else {
+      Path.Absolute p = getName().append(location).resolve(path);
+      o = model.processingContext.resolveResourceFromSourcePath(handle, p);
+    }
+    return o;
   }
 
   public JSON toJSON() {

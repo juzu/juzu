@@ -91,7 +91,6 @@ public class CompilerAssert<I, O> {
 
     //
     this.strategy = incremental ? new CompileStrategy.Incremental<I, O>(
-      classPath,
       sourcePath,
       sourceOutput,
       classOutput) : new CompileStrategy.Batch<I, O>(
@@ -101,6 +100,7 @@ public class CompilerAssert<I, O> {
       classOutput);
 
     //
+    this.strategy.addClassPath(classPath);
     this.strategy.processorFactory = META_MODEL_PROCESSOR_FACTORY;
     this.strategy.javaCompiler = JavaCompilerProvider.DEFAULT;
   }

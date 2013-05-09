@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 public abstract class CompileStrategy<I, O> {
 
   /** . */
-  final ReadFileSystem<?> classPath;
+  final LinkedList<ReadFileSystem<?>> classPath;
 
   /** . */
   final ReadWriteFileSystem<I> sourcePath;
@@ -62,11 +62,12 @@ public abstract class CompileStrategy<I, O> {
   final CompilerConfig config;
 
   public CompileStrategy(
-      ReadFileSystem<?> classPath,
     ReadWriteFileSystem<I> sourcePath,
     ReadWriteFileSystem<O> sourceOutput,
     ReadWriteFileSystem<O> classOutput) {
-    this.classPath = classPath;
+
+    //
+    this.classPath = new LinkedList<ReadFileSystem<?>>();
     this.sourcePath = sourcePath;
     this.sourceOutput = sourceOutput;
     this.classOutput = classOutput;
@@ -89,15 +90,14 @@ public abstract class CompileStrategy<I, O> {
 
   abstract void compile() throws IOException, CompilationException;
 
-  abstract void addClassPath(ReadFileSystem<?> classPath);
+  void addClassPath(ReadFileSystem<?> classPath) {
+    this.classPath.add(classPath);
+  }
 
   /** . */
   private static final Pattern javaFilePattern = Pattern.compile("(.+)\\.java");
 
   public static class Incremental<I, O> extends CompileStrategy<I, O> {
-
-    /** . */
-    final LinkedList<ReadFileSystem<?>> classPath;
 
     /** . */
     final FileSystemScanner<I> scanner;
@@ -106,14 +106,12 @@ public abstract class CompileStrategy<I, O> {
     private Snapshot<I> snapshot;
 
     public Incremental(
-        ReadFileSystem<?> classPath,
         ReadWriteFileSystem<I> sourcePath,
         ReadWriteFileSystem<O> sourceOutput,
         ReadWriteFileSystem<O> classOutput) {
-      super(classPath, sourcePath, sourceOutput, classOutput);
+      super(sourcePath, sourceOutput, classOutput);
 
       //
-      this.classPath = new LinkedList<ReadFileSystem<?>>();
       this.scanner = FileSystemScanner.createHashing(sourcePath);
       this.snapshot  = scanner.take();
     }
@@ -166,11 +164,6 @@ public abstract class CompileStrategy<I, O> {
       compiler = builder.build();
       compiler.compile(toCompile.toArray(new String[toCompile.size()]));
     }
-
-    @Override
-    void addClassPath(ReadFileSystem<?> classPath) {
-      this.classPath.add(classPath);
-    }
   }
 
   public static class Batch<I, O> extends CompileStrategy<I, O> {
@@ -179,16 +172,12 @@ public abstract class CompileStrategy<I, O> {
         ReadWriteFileSystem<I> sourcePath,
         ReadWriteFileSystem<O> sourceOutput,
         ReadWriteFileSystem<O> classOutput) {
-      super(classPath, sourcePath, sourceOutput, classOutput);
+      super(sourcePath, sourceOutput, classOutput);
     }
 
     void compile() throws IOException, CompilationException {
       compiler = builder().build();
       compiler.compile();
-    }
-
-    @Override
-    void addClassPath(ReadFileSystem<?> classPath) {
     }
   }
 }

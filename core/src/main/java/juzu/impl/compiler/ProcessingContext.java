@@ -298,8 +298,8 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
    * @throws NullPointerException if any argument is null
    * @throws IllegalArgumentException if the context package is not valid
    */
-  public FileObject resolveResource(ElementHandle.Package context, Path.Absolute path) throws NullPointerException, IllegalArgumentException {
-    return resolveResource(context, FileKey.newName(path));
+  public FileObject resolveResourceFromSourcePath(ElementHandle.Package context, Path.Absolute path) throws NullPointerException, IllegalArgumentException {
+    return resolveResourceFromSourcePath(context, FileKey.newName(path));
   }
 
   /**
@@ -311,7 +311,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
    * @throws NullPointerException if any argument is null
    * @throws IllegalArgumentException if the context package is not valid
    */
-  public FileObject resolveResource(ElementHandle.Package context, FileKey key) throws NullPointerException, IllegalArgumentException {
+  public FileObject resolveResourceFromSourcePath(ElementHandle.Package context, FileKey key) throws NullPointerException, IllegalArgumentException {
     if (context == null) {
       throw new NullPointerException("No null package accepted");
     }
@@ -348,6 +348,49 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
           log.log("Could not resolve resource " + key + " from " + location.getName(), e);
         }
       }
+    }
+    return null;
+  }
+
+  /**
+   * Resolve a resource from the provided context and path.
+   *
+   * @param context the context of the application that will help to resolve the path source code
+   * @param path the path of the resource to resolve
+   * @return the resolved resource or null if it cannot be determined
+   * @throws NullPointerException if any argument is null
+   * @throws IllegalArgumentException if the context package is not valid
+   */
+  public FileObject resolveResourceFromClassPath(ElementHandle.Package context, Path.Absolute path) throws NullPointerException, IllegalArgumentException {
+    return resolveResourceFromClassPath(context, FileKey.newName(path));
+  }
+
+  /**
+   * Resolve a resource from the provided context and key.
+   *
+   * @param context the context of the application that will help to resolve the path source code
+   * @param key the key of the resource to resolve
+   * @return the resolved resource or null if it cannot be determined
+   * @throws NullPointerException if any argument is null
+   * @throws IllegalArgumentException if the context package is not valid
+   */
+  public FileObject resolveResourceFromClassPath(ElementHandle.Package context, FileKey key) throws NullPointerException, IllegalArgumentException {
+    if (context == null) {
+      throw new NullPointerException("No null package accepted");
+    }
+    if (key == null) {
+      throw new NullPointerException("No null path accepted");
+    }
+    try {
+      log.log("Attempt to resolve " + key + " from classpath");
+      Filer classPath = env.getFiler();
+      FileObject object = classPath.getResource(StandardLocation.CLASS_PATH, key.packageFQN, key.name);
+      if (object != null && object.getLastModified() > 0) {
+        return object;
+      }
+    }
+    catch (IOException e) {
+      log.log("Could not resolve " + key + " from classpath", e);
     }
 
     //

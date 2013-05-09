@@ -103,7 +103,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
                 context.log("Found classpath asset to copy " + value);
                 Name qn = metaModel.getHandle().getPackage().append("assets");
                 Path.Absolute absolute = qn.resolve(path);
-                FileObject src = context.resolveResource(metaModel.getHandle(), absolute);
+                FileObject src = context.resolveResourceFromSourcePath(metaModel.getHandle(), absolute);
                 if (src != null) {
                   URI srcURI = src.toUri();
                   context.log("Found asset " + absolute + " on source path " + srcURI);

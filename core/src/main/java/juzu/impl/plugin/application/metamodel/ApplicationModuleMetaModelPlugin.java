@@ -44,7 +44,11 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -129,15 +133,22 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
     if (key.getType().equals(APPLICATION)) {
       ElementHandle.Package pkg = (ElementHandle.Package)key.getElement();
       String name = (String)added.get("name");
-      add(metaModel, pkg, name);
+      Map<String, String> resourceAliases;
+      List<Map<String, Object>> resourceAliasesDecl = (List<Map<String, Object>>)added.get("resourceAliases");
+      if (resourceAliasesDecl != null && resourceAliasesDecl.size() > 0) {
+        resourceAliases = new HashMap<String, String>(resourceAliasesDecl.size());
+        for (Map<String, Object> _import : resourceAliasesDecl) {
+          String from = (String)_import.get("of");
+          String as = (String)_import.get("as");
+          resourceAliases.put(as, from);
+        }
+      } else {
+        resourceAliases = Collections.emptyMap();
+      }
+      ApplicationMetaModel application = new ApplicationMetaModel(pkg, name, resourceAliases);
+      metaModel.addChild(Key.of(pkg, ApplicationMetaModel.class), application);
+      context.add(application);
     }
-  }
-
-  private ApplicationMetaModel add(ModuleMetaModel metaModel, ElementHandle.Package handle, String applicationName) {
-    ApplicationMetaModel application = new ApplicationMetaModel(handle, applicationName);
-    metaModel.addChild(Key.of(handle, ApplicationMetaModel.class), application);
-    context.add(application);
-    return application;
   }
 
   @Override

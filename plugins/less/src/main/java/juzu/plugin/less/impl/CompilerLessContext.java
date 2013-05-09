@@ -16,7 +16,6 @@
 
 package juzu.plugin.less.impl;
 
-import juzu.impl.common.FileKey;
 import juzu.impl.common.Name;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -50,7 +49,7 @@ class CompilerLessContext implements LessContext {
   public String load(String ref) {
     try {
       Path.Absolute path = pkg.resolve(ref);
-      FileObject c = processingContext.resolveResource(context, path);
+      FileObject c = processingContext.resolveResourceFromSourcePath(context, path);
       if (c != null) {
         try {
           return c.getCharContent(true).toString();

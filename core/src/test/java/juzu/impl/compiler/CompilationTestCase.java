@@ -634,7 +634,7 @@ public class CompilationTestCase extends AbstractTestCase {
           try {
             ProcessingContext ctx = new ProcessingContext(processingEnv);
             ElementHandle.Package pkg = ElementHandle.Package.create(ctx.getPackageElement("compiler.dot.foo"));
-            FileObject file = ctx.resolveResource(pkg, FileKey.newName("compiler.dot.foo", "a.b.txt"));
+            FileObject file = ctx.resolveResourceFromSourcePath(pkg, FileKey.newName("compiler.dot.foo", "a.b.txt"));
             InputStream in = file.openInputStream();
             FileObject o = ctx.createResource(StandardLocation.CLASS_OUTPUT, FileKey.newName("compiler.dot.foo", "a.b.css"));
             OutputStream out = o.openOutputStream();
