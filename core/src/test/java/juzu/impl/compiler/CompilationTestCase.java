@@ -23,6 +23,7 @@ import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.jar.JarFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
@@ -30,6 +31,10 @@ import juzu.impl.metamodel.AnnotationState;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.JavaCompilerProvider;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -62,6 +67,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -112,52 +118,86 @@ public class CompilationTestCase extends AbstractTestCase {
     assertEquals(1, helper.getClassOutput().size(ReadFileSystem.FILE));
   }
 
-  @Test
-  public void testGetResourceFromProcessor() throws Exception {
-    DiskFileSystem input = diskFS("compiler.getresource");
+  //
+  @javax.annotation.processing.SupportedAnnotationTypes({"*"})
+  @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
+  static class GetResource extends AbstractProcessor {
 
-    //
-    @javax.annotation.processing.SupportedAnnotationTypes({"*"})
-    @javax.annotation.processing.SupportedSourceVersion(javax.lang.model.SourceVersion.RELEASE_6)
-    class ProcessorImpl extends AbstractProcessor {
+    /** . */
+    Object result = null;
 
-      /** . */
-      Object result = null;
+    /** . */
+    final StandardLocation location;
 
-      @Override
-      public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (roundEnv.processingOver()) {
-          try {
-            Filer filer = processingEnv.getFiler();
-            FileObject o = filer.getResource(StandardLocation.SOURCE_PATH, "compiler.getresource", "A.txt");
-            result = o.getCharContent(false);
-          }
-          catch (IOException e) {
-            result = e;
-          }
-        }
-        return false;
-      }
+    /** . */
+    final FileKey key;
+
+    GetResource(StandardLocation location, FileKey key) {
+      this.location = location;
+      this.key = key;
     }
 
-    //
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+      if (roundEnv.processingOver()) {
+        try {
+          Filer filer = processingEnv.getFiler();
+          FileObject o = filer.getResource(location, key.packageFQN, key.name);
+          result = o.getCharContent(false);
+        }
+        catch (IOException e) {
+          result = e;
+        }
+      }
+      return false;
+    }
+
+    void assertResource(String expected) {
+      if (result instanceof Exception) {
+        AssertionFailedError afe = new AssertionFailedError();
+        afe.initCause((Throwable)result);
+        throw afe;
+      }
+      else if (result instanceof CharSequence) {
+        assertEquals(expected, result.toString());
+      }
+      else {
+        fail("Was not expecting result to be " + result);
+      }
+    }
+  }
+
+  @Test
+  public void testGetResourceFromSourcePath() throws Exception {
+    DiskFileSystem input = diskFS("compiler.getresource");
     RAMFileSystem output = new RAMFileSystem();
     Compiler compiler = Compiler.builder().javaCompiler(compilerProvider).sourcePath(input).output(output).build();
-    ProcessorImpl processor = new ProcessorImpl();
+    GetResource processor = new GetResource(StandardLocation.SOURCE_PATH, FileKey.newResourceName("compiler.getresource", "A.txt"));
     compiler.addAnnotationProcessor(processor);
     compiler.compile();
     assertEquals(1, output.size(ReadFileSystem.FILE));
-    if (processor.result instanceof Exception) {
-      AssertionFailedError afe = new AssertionFailedError();
-      afe.initCause((Throwable)processor.result);
-      throw afe;
-    }
-    else if (processor.result instanceof CharSequence) {
-      assertEquals("value", processor.result.toString());
-    }
-    else {
-      fail("Was not expecting result to be " + processor.result);
-    }
+    processor.assertResource("value");
+  }
+
+  @Test
+  public void testGetResourceFromClassPath() throws Exception {
+    File fic = File.createTempFile("test", ".jar");
+    fic.deleteOnExit();
+    JavaArchive jar = ShrinkWrap.create(JavaArchive.class);
+    jar.addAsResource(new StringAsset("the_resource"), "resource.txt");
+    jar.as(ZipExporter.class).exportTo(fic, true);
+    JarFileSystem classpath = new JarFileSystem(new JarFile(fic));
+    RAMFileSystem output = new RAMFileSystem();
+    Compiler compiler = Compiler.builder().
+        javaCompiler(compilerProvider).
+        config(new CompilerConfig().force(true)).
+        addClassPath(classpath).
+        sourcePath(new RAMFileSystem()).
+        output(output).build();
+    GetResource processor = new GetResource(StandardLocation.CLASS_PATH, FileKey.newResourceName("", "resource.txt"));
+    compiler.addAnnotationProcessor(processor);
+    compiler.compile();
+    processor.assertResource("the_resource");
   }
 
   // For now we don't support this until we figure the feature fully

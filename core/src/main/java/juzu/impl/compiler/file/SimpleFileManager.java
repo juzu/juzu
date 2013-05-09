@@ -69,7 +69,7 @@ public class SimpleFileManager<P> extends FileManager {
     entries.clear();
   }
 
-  public JavaFileObject getReadable(FileKey key) throws IOException {
+  public JavaFileObjectImpl getReadable(FileKey key) throws IOException {
     JavaFileObjectImpl<P> entry = entries.get(key);
     if (entry == null) {
       P file = fs.getPath(key.names);
@@ -80,19 +80,19 @@ public class SimpleFileManager<P> extends FileManager {
     return entry;
   }
 
-  public JavaFileObject getWritable(FileKey key) throws IOException {
-    if (fs instanceof ReadWriteFileSystem<?>) {
-      ReadWriteFileSystem<P> rwFS = (ReadWriteFileSystem<P>)fs;
-      JavaFileObjectImpl<P> entry = entries.get(key);
-      if (entry == null) {
+  public JavaFileObjectImpl getWritable(FileKey key) throws IOException {
+    JavaFileObjectImpl entry = getReadable(key);
+    if (entry == null) {
+      if (fs instanceof ReadWriteFileSystem<?>) {
+        ReadWriteFileSystem<P> rwFS = (ReadWriteFileSystem<P>)fs;
         P file = rwFS.makePath(key.names);
         entries.put(key, entry = new JavaFileObjectImpl<P>(location, key, fs, file));
       }
-      return entry;
+      else {
+        throw new IOException("File system is not writable");
+      }
     }
-    else {
-      throw new UnsupportedOperationException("File system is not writable");
-    }
+    return entry;
   }
 
   @Override

@@ -317,7 +317,7 @@ public class Compiler {
   private <P> Collection<JavaFileObject> getFromSourcePath(final SimpleFileManager<P> fileManager) throws IOException {
     final ArrayList<JavaFileObject> javaFiles = new ArrayList<JavaFileObject>();
     final StringBuilder buffer = new StringBuilder();
-    ((ReadFileSystem<P>)fileManager.getFileSystem()).traverse(new Visitor.Default<P>() {
+    fileManager.getFileSystem().traverse(new Visitor.Default<P>() {
       @Override
       public void enterDir(Object dir, String name) throws IOException {
         if (name.length() > 0) {
