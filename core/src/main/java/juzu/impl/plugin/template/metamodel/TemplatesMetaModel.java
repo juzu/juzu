@@ -33,6 +33,9 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
   public final static Key<TemplatesMetaModel> KEY = Key.of(TemplatesMetaModel.class);
 
   /** . */
+  public static final Name LOCATION = Name.parse("templates");
+
+  /** . */
   ApplicationMetaModel application;
 
   /** . */
@@ -103,7 +106,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
   protected void postAttach(MetaModelObject parent) {
     if (parent instanceof ApplicationMetaModel) {
       this.application = (ApplicationMetaModel)parent;
-      this.qn = application.getName().append("templates");
+      this.qn = application.getName().append(LOCATION);
       this.resolver = new TemplateResolver(application);
     }
   }

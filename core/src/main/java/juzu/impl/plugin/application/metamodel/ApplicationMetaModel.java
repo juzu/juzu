@@ -17,6 +17,7 @@
 package juzu.impl.plugin.application.metamodel;
 
 import juzu.impl.common.Name;
+import juzu.impl.common.Path;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.metamodel.MetaModelEvent;
@@ -26,6 +27,8 @@ import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.template.metamodel.TemplatesMetaModel;
 import juzu.impl.common.JSON;
+
+import javax.tools.FileObject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, ApplicationMetaModel> {
@@ -74,6 +77,20 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
 
   public ElementHandle.Package getHandle() {
     return handle;
+  }
+
+  /**
+   * Resolve a resource from the provided folder.
+   *
+   * @param location the name of the folder to resolve from
+   * @param path the path of the resource to resolve
+   * @return the resolved resource or null if it cannot be determined
+   * @throws NullPointerException if any argument is null
+   * @throws IllegalArgumentException if the context package is not valid
+   */
+  public FileObject resolveResource(Name location, Path.Relative path) throws NullPointerException, IllegalArgumentException {
+    Path.Absolute p = getName().append(location).resolve(path);
+    return model.processingContext.resolveResource(handle, p);
   }
 
   public JSON toJSON() {

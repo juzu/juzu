@@ -144,7 +144,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     application.processingContext.log("Processing templates of " + application.getHandle());
-    application.getChild(TemplatesMetaModel.KEY).resolver.process(this, application.model.processingContext);
+    application.getChild(TemplatesMetaModel.KEY).resolver.process(this);
   }
 
   @Override

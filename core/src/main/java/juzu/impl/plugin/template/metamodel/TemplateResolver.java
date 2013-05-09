@@ -22,7 +22,6 @@ import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
-import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.Template;
@@ -98,7 +97,7 @@ public class TemplateResolver implements Serializable {
     classCache.clear();
   }
 
-  public void process(TemplateMetaModelPlugin plugin, ProcessingContext context) throws ProcessingException {
+  public void process(TemplateMetaModelPlugin plugin) throws ProcessingException {
 
     //
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
@@ -107,8 +106,7 @@ public class TemplateResolver implements Serializable {
     log.log("Synchronizing existing templates " + templates.keySet());
     for (Iterator<Template<?>> i = templates.values().iterator();i.hasNext();) {
       Template<?> template = i.next();
-      Path.Absolute absolute = metaModel.resolvePath(template.getRelativePath());
-      FileObject resource = context.resolveResource(application.getHandle(), absolute);
+      FileObject resource = application.resolveResource(TemplatesMetaModel.LOCATION, template.getRelativePath());
       if (resource == null) {
         // That will generate a template not found error
         i.remove();
@@ -131,7 +129,7 @@ public class TemplateResolver implements Serializable {
       Template<?> template = copy.get(templateMeta.getPath());
       if (template == null) {
         log.log("Compiling template " + templateMeta.getPath());
-        ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<Path, Template<?>>(copy), context);
+        ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<Path, Template<?>>(copy), application.getProcessingContext());
         Collection<Template<?>> resolved = compiler.resolve(templateMeta);
         for (Template<?> added : resolved) {
           copy.put(added.getRelativePath(), added);
@@ -156,22 +154,22 @@ public class TemplateResolver implements Serializable {
       final Element[] elements = new Element[types.size()];
       int index = 0;
       for (Name type : types) {
-        elements[index++] = context.getTypeElement(type);
+        elements[index++] = application.getProcessingContext().getTypeElement(type);
       }
 
       // If CCE that would mean there is an internal bug
       TemplateProvider<?> provider = (TemplateProvider<?>)plugin.providers.get(template.getRelativePath().getExt());
 
       // Resolve the qualified class
-      resolvedQualified(provider, template, context, elements);
+      resolvedQualified(provider, template, elements);
 
       //
-      resolveScript(template, plugin, context, elements);
+      resolveScript(template, plugin, elements);
     }
   }
 
-  private <M extends Serializable> void resolveScript(final Template<M> template, final TemplateMetaModelPlugin plugin, final ProcessingContext context, final Element[] elements) {
-    context.executeWithin(elements[0], new Callable<Void>() {
+  private <M extends Serializable> void resolveScript(final Template<M> template, final TemplateMetaModelPlugin plugin, final Element[] elements) {
+    application.getProcessingContext().executeWithin(elements[0], new Callable<Void>() {
       public Void call() throws Exception {
 
         //
@@ -189,10 +187,10 @@ public class TemplateResolver implements Serializable {
           try {
             EmitContext emitCtx = new EmitContext() {
               public void createResource(String rawName, String ext, CharSequence content) throws IOException {
-                Path bar = template.getRelativePath().as(rawName, ext);
+                Path.Relative bar = template.getRelativePath().as(rawName, ext);
                 Path.Absolute absolute = metaModel.resolvePath(bar);
                 FileKey key = FileKey.newName(absolute);
-                FileObject scriptFile = context.createResource(StandardLocation.CLASS_OUTPUT, key, elements);
+                FileObject scriptFile = application.getProcessingContext().createResource(StandardLocation.CLASS_OUTPUT, key, elements);
                 Writer writer = null;
                 try {
                   writer = scriptFile.openWriter();
@@ -229,7 +227,6 @@ public class TemplateResolver implements Serializable {
   private <M extends Serializable> void resolvedQualified(
       TemplateProvider<?> provider,
       Template<M> template,
-      ProcessingContext context,
       Element[] elements) {
 
     //
@@ -249,7 +246,7 @@ public class TemplateResolver implements Serializable {
     Writer writer = null;
     try {
       // Template qualified class
-      FileObject classFile = context.createSourceFile(resolvedPath.getName(), elements);
+      FileObject classFile = application.getProcessingContext().createSourceFile(resolvedPath.getName(), elements);
       writer = classFile.openWriter();
       writer.append("package ").append(resolvedPath.getDirs()).append(";\n");
       writer.append("import ").append(TemplateDescriptor.class.getCanonicalName()).append(";\n");

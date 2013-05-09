@@ -26,6 +26,7 @@ import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
 import juzu.impl.plugin.controller.metamodel.PhaseParameterMetaModel;
+import juzu.impl.common.Resource;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
@@ -101,20 +102,16 @@ class ModelTemplateProcessContext extends ProcessContext {
   }
 
   @Override
-  protected Path.Absolute resolvePath(Path.Relative path) {
+  protected Resource<Timestamped<Content>> resolveResource(Path.Relative path) {
     TemplatesMetaModel tmm = templateMetaModel.getTemplates();
-    return tmm.resolvePath(path);
-  }
-
-  protected Timestamped<Content> resolveResource(Path.Absolute path) {
-    TemplatesMetaModel tmm = templateMetaModel.getTemplates();
-    ElementHandle.Package context = tmm.getApplication().getHandle();
-    FileObject resource = env.resolveResource(context, path);
+    FileObject resource = tmm.application.resolveResource(TemplatesMetaModel.LOCATION, path);
     if (resource != null) {
       try {
+        Path.Absolute foo = templateMetaModel.getTemplates().resolvePath(path);
         byte[] bytes = Tools.bytes(resource.openInputStream());
         long lastModified = resource.getLastModified();
-        return new Timestamped<Content>(lastModified, new Content(bytes, Charset.defaultCharset()));
+        Timestamped<Content> content = new Timestamped<Content>(lastModified, new Content(bytes, Charset.defaultCharset()));
+        return new Resource<Timestamped<Content>>(foo, content);
       }
       catch (Exception e) {
         env.log("Could not get resource content " + path.getCanonical(), e);
