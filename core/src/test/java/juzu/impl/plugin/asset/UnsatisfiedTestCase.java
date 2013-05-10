@@ -16,21 +16,29 @@
 
 package juzu.impl.plugin.asset;
 
-import juzu.test.protocol.http.AbstractHttpTestCase;
+import juzu.impl.common.Tools;
+import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
+import java.net.HttpURLConnection;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class UnsatisfiedTestCase extends AbstractHttpTestCase {
+public class UnsatisfiedTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("plugin.asset.unsatisfied");
+    return createServletDeployment(true, "plugin.asset.unsatisfied");
   }
 
   @Test
-  public void testRequestFail() {
-    assertInternalError();
+  public void testWhat() throws Exception {
+    HttpURLConnection conn = (HttpURLConnection)applicationURL().openConnection();
+    conn.connect();
+    assertEquals(500, conn.getResponseCode());
+    String ret = Tools.read(conn.getErrorStream());
+    assertTrue(ret.contains("Cannot satisfy asset dependencies"));
+    assertTrue(ret.contains("jquery"));
   }
 }
