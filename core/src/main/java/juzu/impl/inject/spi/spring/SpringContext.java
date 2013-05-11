@@ -16,7 +16,7 @@
 
 package juzu.impl.inject.spi.spring;
 
-import juzu.AmbiguousResolutionException;
+import juzu.impl.plugin.controller.AmbiguousResolutionException;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;

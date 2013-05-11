@@ -16,7 +16,7 @@
 
 package juzu.impl.inject.spi.cdi;
 
-import juzu.AmbiguousResolutionException;
+import juzu.impl.plugin.controller.AmbiguousResolutionException;
 import juzu.impl.common.Filter;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;

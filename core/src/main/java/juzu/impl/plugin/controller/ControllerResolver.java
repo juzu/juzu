@@ -16,7 +16,6 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.AmbiguousResolutionException;
 import juzu.request.Phase;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ import java.util.Set;
  * <ul> <li>Filter the list of controllers, this is specific to the resolve method.</li> <li>When no method is retained,
  * the null value is returned.</li> <li>When several methods are retained the resulting list is sorted according
  * <i>resolution order</i>. If a first value is greater than all the others, this result is returned, otherwise a {@link
- * juzu.AmbiguousResolutionException} is thrown.</li> </ul>
+ * AmbiguousResolutionException} is thrown.</li> </ul>
  * <p/>
  * The <i>resolution order</i> uses three criteria for comparing two methods in the context of the specified parameter
  * names.
@@ -133,7 +132,7 @@ public abstract class ControllerResolver<M> {
    * @param parameterNames the parameter names
    * @return the resolved controller method
    * @throws NullPointerException if the parameter names set is nul
-   * @throws juzu.AmbiguousResolutionException
+   * @throws AmbiguousResolutionException
    *                              if more than a single result is found
    */
   public final M resolve(Phase phase, Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
@@ -167,7 +166,7 @@ public abstract class ControllerResolver<M> {
    * @param parameterNames the parameter names
    * @return the resolved controller method
    * @throws NullPointerException if any parameter is nul
-   * @throws juzu.AmbiguousResolutionException
+   * @throws AmbiguousResolutionException
    *                              if more than a single result is found
    */
   public final M resolveMethod(Phase phase, String methodId, final Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
@@ -198,7 +197,7 @@ public abstract class ControllerResolver<M> {
    * @param parameterNames the parameter names
    * @return the resolved controller method
    * @throws NullPointerException if any parameter is nul
-   * @throws juzu.AmbiguousResolutionException
+   * @throws AmbiguousResolutionException
    *                              if more than a single result is found
    */
   public final List<M> resolveMethods(Phase phase, String methodId, final Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {
@@ -236,7 +235,7 @@ public abstract class ControllerResolver<M> {
    * @param parameterNames the parameter names
    * @return the resolved controller method
    * @throws NullPointerException if the methodName or parameterNames argument is null
-   * @throws juzu.AmbiguousResolutionException
+   * @throws AmbiguousResolutionException
    *                              if more than a single result is found
    */
   public M resolve(String typeName, String methodName, Set<String> parameterNames) throws NullPointerException, AmbiguousResolutionException {

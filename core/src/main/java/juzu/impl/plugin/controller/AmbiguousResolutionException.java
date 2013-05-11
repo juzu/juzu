@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package juzu;
+package juzu.impl.plugin.controller;
 
 /**
  * Denoates something ambiguous that could not be resolved.

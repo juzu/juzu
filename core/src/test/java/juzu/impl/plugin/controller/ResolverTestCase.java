@@ -16,7 +16,6 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.AmbiguousResolutionException;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Method;
