@@ -20,21 +20,29 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlLink;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import juzu.test.AbstractWebTestCase;
 import juzu.test.UserAgent;
-import juzu.test.protocol.http.AbstractHttpTestCase;
+import juzu.test.protocol.http.HttpServletImpl;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MimeTypeTestCase extends AbstractHttpTestCase {
+public class MimeTypeTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("plugin.asset.mimetype");
+    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
+    URL css = HttpServletImpl.class.getResource("main.css");
+    URL less = HttpServletImpl.class.getResource("main.less");
+    return createServletDeployment(true, "plugin.asset.mimetype").
+        addAsWebResource(jquery, "jquery.js").
+        addAsWebResource(css, "main.css").
+        addAsWebResource(css, "main.less");
   }
 
   @Test
