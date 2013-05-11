@@ -16,8 +16,8 @@
 
 package juzu.impl.plugin.asset;
 
-import juzu.test.protocol.http.AbstractHttpTestCase;
-import juzu.test.protocol.http.HttpServletImpl;
+import juzu.test.AbstractWebTestCase;
+import juzu.test.protocol.servlet.JuzuServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -29,14 +29,14 @@ import org.openqa.selenium.WebElement;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxTestCase extends AbstractHttpTestCase {
+public class AjaxTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
-    URL test = HttpServletImpl.class.getResource("test.js");
-    URL css = HttpServletImpl.class.getResource("main.css");
-    URL less = HttpServletImpl.class.getResource("main.less");
+    URL jquery = JuzuServlet.class.getResource("jquery-1.7.1.js");
+    URL test = JuzuServlet.class.getResource("test.js");
+    URL css = JuzuServlet.class.getResource("main.css");
+    URL less = JuzuServlet.class.getResource("main.less");
     return createServletDeployment(true, "plugin.asset.ajax").
         addAsWebResource(jquery, "jquery.js").
         addAsWebResource(test, "test.js").

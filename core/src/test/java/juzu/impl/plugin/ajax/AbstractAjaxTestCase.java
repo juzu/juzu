@@ -20,7 +20,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.UserAgent;
-import juzu.test.protocol.http.HttpServletImpl;
+import juzu.test.protocol.servlet.JuzuServlet;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -33,9 +33,9 @@ import java.util.List;
 public abstract class AbstractAjaxTestCase extends AbstractWebTestCase {
 
   protected static WebArchive createDeployment(WebArchive war) {
-    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
-    URL test = HttpServletImpl.class.getResource("test.js");
-    URL stylesheet = HttpServletImpl.class.getResource("main.css");
+    URL jquery = JuzuServlet.class.getResource("jquery-1.7.1.js");
+    URL test = JuzuServlet.class.getResource("test.js");
+    URL stylesheet = JuzuServlet.class.getResource("main.css");
     return war.
         addAsWebResource(jquery, "jquery.js").
         addAsWebResource(test, "test.js").

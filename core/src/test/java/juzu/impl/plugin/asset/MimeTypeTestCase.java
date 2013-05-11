@@ -22,7 +22,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlLink;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.UserAgent;
-import juzu.test.protocol.http.HttpServletImpl;
+import juzu.test.protocol.servlet.JuzuServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
@@ -36,9 +36,9 @@ public class MimeTypeTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
-    URL css = HttpServletImpl.class.getResource("main.css");
-    URL less = HttpServletImpl.class.getResource("main.less");
+    URL jquery = JuzuServlet.class.getResource("jquery-1.7.1.js");
+    URL css = JuzuServlet.class.getResource("main.css");
+    URL less = JuzuServlet.class.getResource("main.less");
     return createServletDeployment(true, "plugin.asset.mimetype").
         addAsWebResource(jquery, "jquery.js").
         addAsWebResource(css, "main.css").
