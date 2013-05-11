@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package juzu.impl.metadata;
+package juzu.impl.plugin;
 
 import juzu.impl.inject.BeanDescriptor;
 
 import java.util.Collections;
 
 /**
- * Base descriptor class.
+ * Base plugin descriptor class.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class Descriptor {
+public class PluginDescriptor {
 
   /**
    * Returns the list of bean to install.

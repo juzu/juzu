@@ -16,7 +16,7 @@
 
 package juzu.impl.plugin.module.descriptor;
 
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,9 +25,9 @@ import java.util.Map;
 public class ModuleDescriptor {
 
   /** . */
-  private final Map<String, Descriptor> plugins;
+  private final Map<String, PluginDescriptor> plugins;
 
   public ModuleDescriptor() {
-    this.plugins = new HashMap<String, Descriptor>();
+    this.plugins = new HashMap<String, PluginDescriptor>();
   }
 }

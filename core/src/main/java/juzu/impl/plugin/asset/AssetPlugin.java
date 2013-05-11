@@ -20,7 +20,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.AssetLocation;
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.PluginContext;
@@ -82,7 +82,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @Override
-  public Descriptor init(PluginContext context) throws Exception {
+  public PluginDescriptor init(PluginContext context) throws Exception {
     JSON config = context.getConfig();
     List<AssetMetaData> scripts;
     List<AssetMetaData> declaredScripts;

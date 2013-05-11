@@ -20,7 +20,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.AssetLocation;
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
@@ -60,8 +60,8 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @Override
-  public Descriptor init(PluginContext context) throws Exception {
-    return context.getConfig() != null ? new Descriptor() : null;
+  public PluginDescriptor init(PluginContext context) throws Exception {
+    return context.getConfig() != null ? new PluginDescriptor() : null;
   }
 
   @PostConstruct

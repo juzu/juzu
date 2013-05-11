@@ -16,9 +16,9 @@
 
 package juzu.impl.plugin.binding;
 
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
@@ -38,7 +38,7 @@ public class BindingPlugin extends ApplicationPlugin {
   }
 
   @Override
-  public Descriptor init(PluginContext context) throws Exception {
+  public PluginDescriptor init(PluginContext context) throws Exception {
     JSON config = context.getConfig();
     ClassLoader loader = context.getClassLoader();
     if (config != null) {

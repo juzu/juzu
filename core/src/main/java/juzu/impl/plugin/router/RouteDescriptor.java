@@ -17,7 +17,7 @@
 package juzu.impl.plugin.router;
 
 import juzu.impl.common.JSON;
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.Router;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteDescriptor extends Descriptor {
+public class RouteDescriptor extends PluginDescriptor {
 
   /** . */
   private final String path;

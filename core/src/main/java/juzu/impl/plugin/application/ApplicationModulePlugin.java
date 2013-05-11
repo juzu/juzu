@@ -16,7 +16,7 @@
 
 package juzu.impl.plugin.application;
 
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
 import juzu.impl.plugin.module.ModulePlugin;
@@ -29,7 +29,7 @@ public class ApplicationModulePlugin extends ModulePlugin {
   }
 
   @Override
-  public Descriptor init(PluginContext context) throws Exception {
+  public PluginDescriptor init(PluginContext context) throws Exception {
     return new ApplicationModuleDescriptor(context.getConfig());
   }
 }

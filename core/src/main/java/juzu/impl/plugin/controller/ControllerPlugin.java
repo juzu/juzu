@@ -17,6 +17,7 @@
 package juzu.impl.plugin.controller;
 
 import juzu.Response;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.EventBridge;
@@ -32,7 +33,6 @@ import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
-import juzu.impl.metadata.Descriptor;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.RequestParameter;
@@ -77,7 +77,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
   }
 
   @Override
-  public Descriptor init(PluginContext context) throws Exception {
+  public PluginDescriptor init(PluginContext context) throws Exception {
     return descriptor = new ControllersDescriptor(context.getClassLoader(), context.getConfig());
   }
 

@@ -22,6 +22,7 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.common.Filter;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Name;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.BeanDescriptor;
@@ -31,7 +32,6 @@ import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.common.Logger;
-import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.Plugin;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
@@ -100,7 +100,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   private Map<String, ApplicationPlugin> plugins;
 
   /** . */
-  private Map<String, Descriptor> pluginDescriptors;
+  private Map<String, PluginDescriptor> pluginDescriptors;
 
   public ApplicationLifeCycle(
       Logger log,
@@ -205,7 +205,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     };
 
     //
-    HashMap<String, Descriptor> pluginDescriptors = new HashMap<String, Descriptor>();
+    HashMap<String, PluginDescriptor> pluginDescriptors = new HashMap<String, PluginDescriptor>();
     for (final Map.Entry<ApplicationPlugin, JSON> entry : configs.entrySet()) {
       ApplicationPlugin plugin = entry.getKey();
       PluginContext pluginContext = new PluginContext() {
@@ -223,7 +223,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
         }
       };
       plugin.setApplication(descriptor);
-      Descriptor pluginDescriptor = plugin.init(pluginContext);
+      PluginDescriptor pluginDescriptor = plugin.init(pluginContext);
       if (pluginDescriptor != null) {
         pluginDescriptors.put(plugin.getName(), pluginDescriptor);
       }
@@ -288,7 +288,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
       final ApplicationDescriptor descriptor,
       Injector injector,
       Collection<ApplicationPlugin> plugins,
-      Collection<Descriptor> pluginDescriptors) {
+      Collection<PluginDescriptor> pluginDescriptors) {
 
     // Bind the application descriptor
     injector.bindBean(ApplicationDescriptor.class, null, descriptor);
@@ -311,7 +311,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
 
     // Bind the beans
-    for (Descriptor pluginDescriptor : pluginDescriptors) {
+    for (PluginDescriptor pluginDescriptor : pluginDescriptors) {
       for (BeanDescriptor bean : pluginDescriptor.getBeans()) {
         bean.bind(injector);
       }

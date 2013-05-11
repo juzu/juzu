@@ -16,9 +16,9 @@
 
 package juzu.impl.plugin.template;
 
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.metadata.Descriptor;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.template.spi.TemplateStub;
@@ -53,7 +53,7 @@ public class TemplatePlugin extends ApplicationPlugin {
   }
 
   @Override
-  public Descriptor init(PluginContext context) throws Exception {
+  public PluginDescriptor init(PluginContext context) throws Exception {
     return descriptor = new TemplatesDescriptor(context.getClassLoader(), context.getConfig());
   }
 

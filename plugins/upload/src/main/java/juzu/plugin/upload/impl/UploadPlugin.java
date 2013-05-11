@@ -16,7 +16,7 @@
 
 package juzu.plugin.upload.impl;
 
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.ContextualParameter;
@@ -49,9 +49,9 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   @Override
-  public Descriptor init(PluginContext context) throws Exception {
+  public PluginDescriptor init(PluginContext context) throws Exception {
     // We always load the plugin
-    return new Descriptor();
+    return new PluginDescriptor();
   }
 
   public void invoke(Request request) {

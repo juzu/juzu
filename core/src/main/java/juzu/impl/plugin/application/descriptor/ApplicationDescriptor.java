@@ -16,8 +16,8 @@
 
 package juzu.impl.plugin.application.descriptor;
 
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 
@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationDescriptor extends Descriptor {
+public class ApplicationDescriptor extends PluginDescriptor {
 
   /**
    * Encapsulate application descriptor loading from an application class.

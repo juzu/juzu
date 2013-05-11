@@ -18,13 +18,13 @@ package juzu.impl.plugin.application.descriptor;
 
 import juzu.impl.common.JSON;
 import juzu.impl.common.Name;
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationModuleDescriptor extends Descriptor {
+public class ApplicationModuleDescriptor extends PluginDescriptor {
 
   /** . */
   private LinkedHashSet<Name> names;

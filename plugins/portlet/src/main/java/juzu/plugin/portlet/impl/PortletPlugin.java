@@ -16,7 +16,7 @@
 
 package juzu.plugin.portlet.impl;
 
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 
@@ -31,7 +31,7 @@ public class PortletPlugin extends ApplicationPlugin {
   }
 
   @Override
-  public Descriptor init(PluginContext context) throws Exception {
+  public PluginDescriptor init(PluginContext context) throws Exception {
     return PortletDescriptor.INSTANCE;
   }
 }

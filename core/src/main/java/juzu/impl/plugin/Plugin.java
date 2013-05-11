@@ -16,8 +16,6 @@
 
 package juzu.impl.plugin;
 
-import juzu.impl.metadata.Descriptor;
-
 /**
  * Base class for a plugin.
  *
@@ -43,7 +41,7 @@ public abstract class Plugin {
    * @return the descriptor
    * @throws Exception any exception
    */
-  public Descriptor init(PluginContext context) throws Exception {
+  public PluginDescriptor init(PluginContext context) throws Exception {
     return null;
   }
 }

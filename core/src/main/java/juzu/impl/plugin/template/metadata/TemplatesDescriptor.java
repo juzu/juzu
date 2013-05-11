@@ -16,8 +16,8 @@
 
 package juzu.impl.plugin.template.metadata;
 
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.metadata.Descriptor;
 import juzu.impl.common.JSON;
 import juzu.template.Template;
 
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplatesDescriptor extends Descriptor {
+public class TemplatesDescriptor extends PluginDescriptor {
 
   /** . */
   private final List<TemplateDescriptor> templates;

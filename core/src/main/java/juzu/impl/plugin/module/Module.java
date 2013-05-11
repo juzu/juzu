@@ -17,7 +17,7 @@
 package juzu.impl.plugin.module;
 
 import juzu.impl.common.JSON;
-import juzu.impl.metadata.Descriptor;
+import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.resource.ResourceResolver;
 
@@ -39,7 +39,7 @@ public class Module {
   private final HashMap<String, ModulePlugin> plugins;
 
   /** . */
-  private final HashMap<String, Descriptor> descriptors;
+  private final HashMap<String, PluginDescriptor> descriptors;
 
   public Module(final ModuleContext context) throws Exception {
 
@@ -57,7 +57,7 @@ public class Module {
     };
 
     // Init plugins
-    HashMap<String, Descriptor> descriptors = new HashMap<String, Descriptor>();
+    HashMap<String, PluginDescriptor> descriptors = new HashMap<String, PluginDescriptor>();
     for (ModulePlugin plugin : plugins.values()) {
       final JSON pluginConfig = context.getConfig().getJSON(plugin.getName());
 
@@ -78,7 +78,7 @@ public class Module {
       };
 
       //
-      Descriptor desc = plugin.init(pluginContext);
+      PluginDescriptor desc = plugin.init(pluginContext);
       if (desc != null) {
         descriptors.put(plugin.getName(), desc);
       }
