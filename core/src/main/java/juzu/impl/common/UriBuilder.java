@@ -21,11 +21,11 @@ import juzu.io.Encoding;
 import java.io.IOException;
 
 /**
- * An uri writer.
+ * An uri builder.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class URIWriter {
+public final class UriBuilder {
 
   /** . */
   private MimeType mimeType;
@@ -43,7 +43,7 @@ public final class URIWriter {
    * @param mimeType   the mime type
    * @throws NullPointerException if the appendable argument is null
    */
-  public URIWriter(Appendable appendable, MimeType mimeType) throws NullPointerException {
+  public UriBuilder(Appendable appendable, MimeType mimeType) throws NullPointerException {
     if (appendable == null) {
       throw new NullPointerException("No null appendable accepted");
     }
@@ -59,7 +59,7 @@ public final class URIWriter {
    * @param appendable the appendable
    * @throws NullPointerException if the appendable argument is null
    */
-  public URIWriter(Appendable appendable) throws NullPointerException {
+  public UriBuilder(Appendable appendable) throws NullPointerException {
     this(appendable, null);
   }
 

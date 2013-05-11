@@ -17,7 +17,7 @@
 package juzu.impl.router;
 
 import juzu.impl.common.MimeType;
-import juzu.impl.common.URIWriter;
+import juzu.impl.common.UriBuilder;
 
 import javax.servlet.http.HttpUtils;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class URIHelper implements Appendable {
   private StringBuilder sb;
 
   /** . */
-  final URIWriter writer;
+  final UriBuilder writer;
 
   public URIHelper() {
     this(new StringBuilder());
@@ -41,7 +41,7 @@ public class URIHelper implements Appendable {
 
   public URIHelper(StringBuilder sb) {
     this.sb = sb;
-    this.writer = new URIWriter(this, MimeType.PLAIN);
+    this.writer = new UriBuilder(this, MimeType.PLAIN);
   }
 
   public String getPath() {

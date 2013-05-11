@@ -21,6 +21,7 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.common.UriBuilder;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
@@ -37,7 +38,6 @@ import juzu.impl.common.Tools;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
-import juzu.impl.common.URIWriter;
 import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
@@ -260,7 +260,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
             http.renderRequestURL(appendable);
 
             // Render path
-            URIWriter writer = new URIWriter(appendable, mimeType);
+            UriBuilder writer = new UriBuilder(appendable, mimeType);
             match.render(writer);
 
             // Retain matched parameters for filtering later

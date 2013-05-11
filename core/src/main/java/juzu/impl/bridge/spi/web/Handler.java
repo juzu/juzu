@@ -16,17 +16,14 @@
 
 package juzu.impl.bridge.spi.web;
 
-import juzu.PropertyType;
-import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.URIWriter;
+import juzu.impl.common.UriBuilder;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.plugin.router.RouterPlugin;
 import juzu.impl.request.Method;
 import juzu.request.RequestParameter;
-import juzu.request.ResponseParameter;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 import juzu.impl.router.RouteMatch;
@@ -181,7 +178,7 @@ public class Handler implements Closeable {
           requestMatch = requestRoute.matches(Collections.<String, String>emptyMap());
           if (requestMatch != null) {
             StringBuilder sb = new StringBuilder();
-            requestMatch.render(new URIWriter(sb));
+            requestMatch.render(new UriBuilder(sb));
             if (!sb.toString().equals(requestPath)) {
               StringBuilder redirect = new StringBuilder();
               bridge.renderRequestURL(redirect);

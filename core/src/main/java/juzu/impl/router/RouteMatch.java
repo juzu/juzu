@@ -16,9 +16,9 @@
 
 package juzu.impl.router;
 
+import juzu.impl.common.UriBuilder;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.common.MimeType;
-import juzu.impl.common.URIWriter;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -60,14 +60,14 @@ public class RouteMatch {
     return unmatched;
   }
 
-  public void render(URIWriter writer) throws IOException {
+  public void render(UriBuilder writer) throws IOException {
     route.renderPath(this, writer, false);
   }
 
   public String render() {
     try {
       StringBuilder sb = new StringBuilder();
-      URIWriter writer = new URIWriter(sb, MimeType.PLAIN);
+      UriBuilder writer = new UriBuilder(sb, MimeType.PLAIN);
       render(writer);
       return sb.toString();
     }

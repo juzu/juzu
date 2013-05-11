@@ -16,8 +16,8 @@
 
 package juzu.impl.router;
 
+import juzu.impl.common.UriBuilder;
 import juzu.io.UndeclaredIOException;
-import juzu.impl.common.URIWriter;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class RouteMatchTestCase extends AbstractControllerTestCase {
     RouteMatch match = route.matches(parameters);
     assertNotNull("Was expecting to match " + expected, match);
     StringBuilder sb = new StringBuilder();
-    URIWriter writer = new URIWriter(sb);
+    UriBuilder writer = new UriBuilder(sb);
     try {
       match.render(writer);
       for (Map.Entry<String, String> entry : match.getUnmatched().entrySet()) {

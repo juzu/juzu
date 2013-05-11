@@ -18,7 +18,7 @@ package juzu.impl.router;
 
 //import javanet.staxutils.IndentingXMLStreamWriter;
 
-import juzu.impl.common.URIWriter;
+import juzu.impl.common.UriBuilder;
 import juzu.impl.router.parser.RouteParser;
 import juzu.impl.router.parser.RouteParserHandler;
 import juzu.impl.router.regex.RE;
@@ -188,7 +188,7 @@ public class Route {
     return path;
   }
 
-  final boolean renderPath(RouteMatch match, URIWriter writer, boolean hasChildren) throws IOException {
+  final boolean renderPath(RouteMatch match, UriBuilder writer, boolean hasChildren) throws IOException {
 
     //
     boolean endWithSlash = parent != null && parent.renderPath(match, writer, true);
