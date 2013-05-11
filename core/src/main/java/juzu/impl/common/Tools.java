@@ -41,7 +41,6 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -61,9 +60,6 @@ import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Tools {
-
-  /** . */
-  public static final Charset UTF_8 = Charset.forName("UTF-8");
 
   /** . */
   private static final Iterator EMPTY_ITERATOR = new Iterator() {
@@ -548,6 +544,7 @@ public class Tools {
     return set;
   }
 
+
   public static <E> Iterable<E> iterable(final Enumeration<E> elements) throws NullPointerException {
     return new Iterable<E>() {
       public Iterator<E> iterator() {
@@ -598,71 +595,123 @@ public class Tools {
     };
   }
 
-  public static <E> Iterable<E> iterable(final E... elements) throws NullPointerException {
-    return new Iterable<E>() {
-      public Iterator<E> iterator() {
-        return Tools.iterator(0, elements);
+  public static class ArrayIterator<E> implements Iterator<E> {
+
+    /** . */
+    private final E[] elements;
+
+    /** . */
+    private final int to;
+
+    /** . */
+    private int current;
+
+    ArrayIterator(E[] elements, int to, int current) throws NullPointerException, IndexOutOfBoundsException, IllegalArgumentException {
+      if (elements == null) {
+        throw new NullPointerException("No null elements accepted");
       }
-    };
+      if (current < 0) {
+        throw new IndexOutOfBoundsException("From index cannot be negative");
+      }
+      if (to > elements.length + 1) {
+        throw new IndexOutOfBoundsException("To index cannot be greater than the array size + 1");
+      }
+      if (current > to) {
+        throw new IllegalArgumentException("From index cannot be greater than the to index");
+      }
+
+      //
+      this.elements = elements;
+      this.current = current;
+      this.to = to;
+    }
+
+    public boolean hasNext() {
+      return current < to;
+    }
+
+    public E next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      return elements[current++];
+    }
+
+    public void remove() {
+      throw new NoSuchElementException();
+    }
+  }
+
+  public static class IterableArray<E> implements Iterable<E> {
+
+    /** . */
+    private final E[] elements;
+
+    /** . */
+    private final int from;
+
+    /** . */
+    private final int to;
+
+    IterableArray(E[] elements, int from, int to) throws NullPointerException, IndexOutOfBoundsException, IllegalArgumentException {
+      if (elements == null) {
+        throw new NullPointerException("No null elements accepted");
+      }
+      if (from < 0) {
+        throw new IndexOutOfBoundsException("From index cannot be negative");
+      }
+      if (to > elements.length + 1) {
+        throw new IndexOutOfBoundsException("To index cannot be greater than the array size + 1");
+      }
+      if (from > to) {
+        throw new IllegalArgumentException("From index cannot be greater than the to index");
+      }
+
+      //
+      this.elements = elements;
+      this.from = from;
+      this.to = to;
+    }
+
+    public Iterator<E> iterator() {
+      return new ArrayIterator<E>(elements, to, from);
+    }
+  }
+
+  public static <E> Iterable<E> iterable(final E... elements) throws NullPointerException {
+    return new IterableArray<E>(elements, 0, elements.length);
   }
 
   public static <E> Iterator<E> iterator(E... elements) throws NullPointerException {
-    return iterator(0, elements);
+    return new ArrayIterator<E>(elements, elements.length, 0);
+  }
+
+  /**
+   * Create an iterable from the array and bounds
+   *
+   * @param elements the elements to wrap
+   * @param from the from bound
+   * @param to the to bound
+   * @param <E> the element generic type
+   * @return the iterable
+   * @throws NullPointerException if the array is null
+   * @throws IndexOutOfBoundsException when the bounds are outside of the array
+   * @throws IllegalArgumentException if the from argument is greater than the to index
+   */
+  public static <E> IterableArray<E> iterable(E[] elements, int from, int to) throws NullPointerException, IndexOutOfBoundsException, IllegalArgumentException {
+    return new IterableArray<E>(elements, from, to);
   }
 
   public static <E> Iterator<E> iterator(int from, final E... elements) throws NullPointerException, IndexOutOfBoundsException {
-    if (elements == null) {
-      throw new NullPointerException("No null element array accepted");
-    }
-    return iterator(from, elements.length, elements);
+    return new ArrayIterator<E>(elements, elements.length, from);
   }
 
   public static <E> Iterable<E> iterable(final int from, final int to, final E... elements) throws NullPointerException, IndexOutOfBoundsException {
-    return new Iterable<E>() {
-      public Iterator<E> iterator() {
-        return Tools.iterator(from, to, elements);
-      }
-    };
+    return new IterableArray<E>(elements, from, to);
   }
 
   public static <E> Iterator<E> iterator(final int from, final int to, final E... elements) throws NullPointerException, IndexOutOfBoundsException {
-    if (elements == null) {
-      throw new NullPointerException("No null element array accepted");
-    }
-    if (from < 0) {
-      throw new IndexOutOfBoundsException("From value " + from + " cannot be negative");
-    }
-    if (to > elements.length) {
-      throw new IndexOutOfBoundsException("To value " + from + " cannot be greater than the array length " + elements.length);
-    }
-    if (from > to) {
-      throw new IndexOutOfBoundsException("From value " + from + " cannot be greater than the from value " + elements.length);
-    }
-    if (from == to) {
-      return Collections.<E>emptyList().iterator();
-    }
-    else {
-      return new Iterator<E>() {
-
-        /** . */
-        private int index = from;
-
-        public boolean hasNext() {
-          return index < to;
-        }
-
-        public E next() {
-          if (!hasNext()) {
-            throw new NoSuchElementException();
-          }
-          return elements[index++];
-        }
-
-        public void remove() {
-          throw new UnsupportedOperationException();
-        }
-      };
-    }
+    return new ArrayIterator<E>(elements, to, from);
   }
 
   public static <E> Iterator<E> emptyIterator() {

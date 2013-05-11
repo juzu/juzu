@@ -141,8 +141,8 @@ public class FileKey implements Serializable {
     abc[abc.length - 1] = name;
 
     //
-    this.packageNames = new IterableArray<String>(abc, 0, abc.length - 1);
-    this.names = new IterableArray<String>(abc, 0, abc.length);
+    this.packageNames = Tools.iterable(abc, 0, abc.length - 1);
+    this.names = Tools.iterable(abc, 0, abc.length);
     this.packageFQN = packageFQN;
     this.rawName = rawName;
     this.fqn = fqn;

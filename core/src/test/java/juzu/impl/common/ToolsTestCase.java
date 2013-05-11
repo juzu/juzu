@@ -171,4 +171,13 @@ public class ToolsTestCase extends AbstractTestCase {
     assertSame(bar, foo.get("bar"));
     assertSame(bar, foo.add("bar"));
   }
+
+  @Test
+  public void testIterableArray() {
+    String[] a = {"a", "b"};
+    assertEquals(Collections.<String>emptyList(), Tools.list(Tools.iterable(a, 0, 0)));
+    assertEquals(Arrays.asList("a"), Tools.list(Tools.iterable(a, 0, 1)));
+    assertEquals(Arrays.asList("a", "b"), Tools.list(Tools.iterable(a, 0, 2)));
+    assertEquals(Arrays.asList("b"), Tools.list(Tools.iterable(a, 1, 2)));
+  }
 }
