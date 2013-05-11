@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package http.ajax;
+package plugin.asset.ajax;
 
 import juzu.Resource;
 import juzu.Response;

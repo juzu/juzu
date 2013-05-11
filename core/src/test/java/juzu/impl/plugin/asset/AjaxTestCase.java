@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package juzu.impl.http;
+package juzu.impl.plugin.asset;
 
 import juzu.test.protocol.http.AbstractHttpTestCase;
+import juzu.test.protocol.http.HttpServletImpl;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -25,12 +26,22 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.net.URL;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AjaxTestCase extends AbstractHttpTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createDeployment("http.ajax");
+    URL jquery = HttpServletImpl.class.getResource("jquery-1.7.1.js");
+    URL test = HttpServletImpl.class.getResource("test.js");
+    URL css = HttpServletImpl.class.getResource("main.css");
+    URL less = HttpServletImpl.class.getResource("main.less");
+    return createServletDeployment(true, "plugin.asset.ajax").
+        addAsWebResource(jquery, "jquery.js").
+        addAsWebResource(test, "test.js").
+        addAsWebResource(css, "main.css").
+        addAsWebResource(css, "main.less");
   }
 
   @Drone
