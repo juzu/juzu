@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi.filter;
 
-import juzu.UndeclaredIOException;
+import juzu.io.UndeclaredIOException;
 import juzu.impl.common.Content;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.Filter;

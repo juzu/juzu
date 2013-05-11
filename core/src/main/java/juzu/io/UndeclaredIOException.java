@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package juzu;
+package juzu.io;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;

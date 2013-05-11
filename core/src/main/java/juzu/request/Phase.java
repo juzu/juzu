@@ -20,7 +20,7 @@ import juzu.Consumes;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.UndeclaredIOException;
+import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.MimeType;

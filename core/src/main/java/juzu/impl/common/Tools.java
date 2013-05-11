@@ -16,7 +16,7 @@
 
 package juzu.impl.common;
 
-import juzu.UndeclaredIOException;
+import juzu.io.UndeclaredIOException;
 import juzu.request.ResponseParameter;
 import juzu.impl.bridge.Parameters;
 

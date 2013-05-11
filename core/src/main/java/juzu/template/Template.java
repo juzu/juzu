@@ -18,7 +18,7 @@ package juzu.template;
 
 import juzu.PropertyMap;
 import juzu.Response;
-import juzu.UndeclaredIOException;
+import juzu.io.UndeclaredIOException;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Request;
 import juzu.impl.plugin.template.TemplatePlugin;

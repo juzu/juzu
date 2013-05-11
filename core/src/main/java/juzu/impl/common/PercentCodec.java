@@ -16,7 +16,7 @@
 
 package juzu.impl.common;
 
-import juzu.UndeclaredIOException;
+import juzu.io.UndeclaredIOException;
 
 import java.io.IOException;
 import java.math.BigInteger;

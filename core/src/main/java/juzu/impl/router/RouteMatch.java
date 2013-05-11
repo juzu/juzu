@@ -16,7 +16,7 @@
 
 package juzu.impl.router;
 
-import juzu.UndeclaredIOException;
+import juzu.io.UndeclaredIOException;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.URIWriter;
 

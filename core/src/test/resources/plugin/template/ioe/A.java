@@ -18,7 +18,7 @@ package plugin.template.ioe;
 
 import juzu.Path;
 import juzu.Response;
-import juzu.UndeclaredIOException;
+import juzu.io.UndeclaredIOException;
 import juzu.View;
 import juzu.io.Stream;
 import juzu.io.Streams;

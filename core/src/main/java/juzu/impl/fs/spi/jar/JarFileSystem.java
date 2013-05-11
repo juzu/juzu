@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi.jar;
 
-import juzu.UndeclaredIOException;
+import juzu.io.UndeclaredIOException;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.PathType;
