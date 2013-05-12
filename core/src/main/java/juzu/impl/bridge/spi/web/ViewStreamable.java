@@ -28,11 +28,11 @@ class ViewStreamable implements Streamable<Stream.Char> {
   private final Streamable<Stream.Char> wrapped;
 
   /** . */
-  private final boolean bilto;
+  private final boolean decorated;
 
-  ViewStreamable(Streamable<Stream.Char> wrapped, boolean bilto) {
+  ViewStreamable(Streamable<Stream.Char> wrapped, boolean decorated) {
     this.wrapped = wrapped;
-    this.bilto = bilto;
+    this.decorated = decorated;
   }
 
   public void send(final Stream.Char stream) throws IOException {
@@ -59,7 +59,7 @@ class ViewStreamable implements Streamable<Stream.Char> {
 
       public void close() throws IOException {
         try {
-          if (bilto) {
+          if (decorated) {
             sendFooter(stream);
           }
         }

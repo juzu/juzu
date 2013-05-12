@@ -72,7 +72,7 @@ public abstract class WebBridge {
     }
   }
 
-  public final Stream.Char send(Response.Content<Stream.Char> content, boolean bilto) throws IOException {
+  public final Stream.Char send(Response.Content<Stream.Char> content, boolean decorated) throws IOException {
 
     //
     PropertyMap properties = content.getProperties();
@@ -93,25 +93,20 @@ public abstract class WebBridge {
     }
 
     //
-    Stream.Char writer = null;
-    try {
-      writer = getOutputStream();
+    Stream.Char writer = getOutputStream();
 
-      //
-      if (bilto) {
-        sendHeader(properties, writer);
-      }
-
-      // Send response
-      if (content.getKind() == Stream.Char.class) {
-        ViewStreamable vs = new ViewStreamable(content.getStreamable(), bilto);
-        vs.send(writer);
-      } else {
-        throw new UnsupportedOperationException("Not yet handled");
-      }
+    // Send page header
+    if (decorated) {
+      sendHeader(properties, writer);
     }
-    finally {
-      end(writer);
+
+    // Send response
+    if (content.getKind() == Stream.Char.class) {
+      ViewStreamable vs = new ViewStreamable(content.getStreamable(), decorated);
+      vs.send(writer);
+    } else {
+      writer.close();
+      throw new UnsupportedOperationException("Not yet handled");
     }
 
     //
@@ -176,11 +171,6 @@ public abstract class WebBridge {
     //
     writer.append("</head>\n");
     writer.append("<body>\n");
-  }
-
-  private void sendFooter(Writer writer) throws IOException {
-    writer.append("</body>\n");
-    writer.append("</html>\n");
   }
 
   //
