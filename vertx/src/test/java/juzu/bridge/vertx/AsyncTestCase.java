@@ -13,36 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bridge.response.async.view;
 
-import juzu.Response;
-import juzu.View;
+package juzu.bridge.vertx;
+
+import junit.framework.Assert;
 import juzu.impl.common.Tools;
-import juzu.io.AsyncStreamable;
+import org.junit.Test;
+import org.vertx.java.test.TestModule;
 
-import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+@TestModule(
+    name = "juzu-v1.0",
+    jsonConfig = "{ \"main\":\"async\"}")
+public class AsyncTestCase extends VertxTestCase {
 
-  @View
-  public Response.Render index() throws IOException {
-    final AsyncStreamable content = new AsyncStreamable();
-    new Thread() {
-      @Override
-      public void run() {
-        try {
-          Thread.sleep(500);
-          content.append("pass");
-        }
-        catch (Exception e) {
-          e.printStackTrace();
-        }
-        finally {
-          Tools.safeClose(content);
-        }
-      }
-    }.start();
-    return Response.content(200, content);
+  @Test
+  public void testFoo() throws Exception {
+    URL url = new URL("http://localhost:8080/");
+    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+    conn.connect();
+    Assert.assertEquals(200, conn.getResponseCode());
+    String result = Tools.read(conn.getInputStream());
+    Assert.assertTrue(result.contains("pass"));
   }
 }

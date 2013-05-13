@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bridge.response.async.view;
+
+package async;
 
 import juzu.Response;
 import juzu.View;
 import juzu.impl.common.Tools;
 import juzu.io.AsyncStreamable;
 
-import java.io.IOException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
   @View
-  public Response.Render index() throws IOException {
+  public Response.Render index() throws Exception {
     final AsyncStreamable content = new AsyncStreamable();
     new Thread() {
       @Override
