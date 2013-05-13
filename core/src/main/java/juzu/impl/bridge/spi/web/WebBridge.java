@@ -64,12 +64,6 @@ public abstract class WebBridge {
       // For now only that
       setStatus(500);
     }
-    if (verbose) {
-      setContentType("text/html");
-      Stream.Char writer = getOutputStream();
-      writer.append(error.getMessage());
-      writer.close();
-    }
   }
 
   public final Stream.Char send(Response.Content<Stream.Char> content, boolean decorated) throws IOException {
