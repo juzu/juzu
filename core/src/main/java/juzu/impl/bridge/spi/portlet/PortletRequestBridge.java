@@ -160,7 +160,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
       if (requestParameters.isEmpty()) {
         requestParameters = new HashMap<String, RequestParameter>();
       }
-      RequestParameter.create(parameter).addTo(requestParameters);
+      RequestParameter.create(parameter).appendTo(requestParameters);
     }
 
     // Get argument map

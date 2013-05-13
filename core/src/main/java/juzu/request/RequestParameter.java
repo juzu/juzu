@@ -185,8 +185,13 @@ public final class RequestParameter extends AbstractList<String> {
    * @param <M> the map generic type
    * @return the map argument
    */
-  public <M extends Map<String, RequestParameter>> M addTo(M map) {
-    map.put(name, this);
+  public <M extends Map<String, RequestParameter>> M appendTo(M map) {
+    RequestParameter param = map.get(name);
+    if (param != null) {
+      map.put(name, param.append(this));
+    } else {
+      map.put(name, this);
+    }
     return map;
   }
 

@@ -80,13 +80,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
           requestParameters = new HashMap<String, RequestParameter>();
         }
         RequestParameter parameter = i.next();
-        RequestParameter requestParameter = requestParameters.get(parameter.getName());
-        if (requestParameter != null) {
-          requestParameter = requestParameter.append(parameter);
-        } else {
-          requestParameter = parameter;
-        }
-        requestParameter.addTo(requestParameters);
+        parameter.appendTo(requestParameters);
       }
     }
 
@@ -103,7 +97,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
           } else {
             requestParameter = RequestParameter.create(parameter);
           }
-          requestParameter.addTo(requestParameters);
+          requestParameter.appendTo(requestParameters);
         }
       }
       catch (IOException e) {

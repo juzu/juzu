@@ -19,7 +19,6 @@ package juzu.test.protocol.mock;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.impl.bridge.Parameters;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
@@ -92,7 +91,7 @@ public abstract class MockRequestBridge implements RequestBridge {
       if (requestParameters.isEmpty()) {
         requestParameters = new HashMap<String, RequestParameter>();
       }
-      RequestParameter.create(parameter).addTo(requestParameters);
+      RequestParameter.create(parameter).appendTo(requestParameters);
     }
 
     //
