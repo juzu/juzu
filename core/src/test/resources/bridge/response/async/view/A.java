@@ -17,6 +17,7 @@ package bridge.response.async.view;
 
 import juzu.Response;
 import juzu.View;
+import juzu.impl.common.Tools;
 import juzu.io.AsyncStreamable;
 
 import java.io.IOException;
@@ -37,7 +38,9 @@ public class A {
         catch (InterruptedException e) {
           e.printStackTrace();
         }
-        content.close();
+        finally {
+          Tools.safeClose(content);
+        }
       }
     }.start();
     return Response.content(200, content);

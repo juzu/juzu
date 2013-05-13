@@ -18,6 +18,7 @@ package juzu.io;
 import juzu.impl.common.CharBuffer;
 import juzu.impl.common.Tools;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -30,7 +31,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class AsyncStreamable implements Streamable<Stream.Char>, Appendable {
+public class AsyncStreamable implements Streamable<Stream.Char>, Appendable, Closeable {
 
   /** . */
   private final CharBuffer buffer = new CharBuffer(512);
