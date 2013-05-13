@@ -143,6 +143,9 @@ public class Application {
     cfg.put(BridgeConfig.APP_NAME, main.toString());
     BridgeConfig config = new BridgeConfig(cfg);
 
+    // Bind vertx singleton
+    config.injectImpl.bindBean(Vertx.class, null, vertx);
+
     //
     final Bridge bridge = new Bridge(log, module, config, lifeCycle.getClasses(), null, new ClassLoaderResolver(lifeCycle.getClassLoader()));
 
