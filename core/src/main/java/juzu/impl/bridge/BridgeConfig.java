@@ -17,6 +17,7 @@
 package juzu.impl.bridge;
 
 import juzu.impl.common.Name;
+import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.Tools;
 
@@ -46,7 +47,7 @@ public class BridgeConfig {
   public final Name name;
 
   /** . */
-  public final InjectorProvider injectImpl;
+  public final Injector injectImpl;
 
   public static Name getApplicationName(Map<String, String> config) {
     String applicationName = config.get("juzu.app_name");
@@ -75,6 +76,6 @@ public class BridgeConfig {
 
   public BridgeConfig(Map<String, String> config) throws Exception {
     this.name = getApplicationName(config);
-    this.injectImpl = getInjectImplementation(config);
+    this.injectImpl = getInjectImplementation(config).get();
   }
 }

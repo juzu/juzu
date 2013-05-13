@@ -40,7 +40,7 @@ public class CopyTestCase<B, I> extends AbstractInjectTestCase<B, I> {
     HashSet singleton = new HashSet();
     bootstrap.declareBean(Properties.class, Scope.SINGLETON, null, null);
     bootstrap.bindBean(HashSet.class, null, singleton);
-    Injector injector = bootstrap.copy();
+    Injector injector = bootstrap.get();
     bootstrap.declareBean(Date.class, Scope.SINGLETON, null, null);
     boot();
     InjectionContext context = boot(injector);

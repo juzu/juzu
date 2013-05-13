@@ -196,7 +196,7 @@ public class SpringInjector extends Injector {
   }
 
   @Override
-  public Injector copy() {
+  public Injector get() {
     return new SpringInjector(this);
   }
 }

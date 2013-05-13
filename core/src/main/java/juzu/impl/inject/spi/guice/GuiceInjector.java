@@ -98,7 +98,7 @@ public class GuiceInjector extends Injector {
   }
 
   @Override
-  public Injector copy() {
+  public Injector get() {
     return new GuiceInjector(this);
   }
 }

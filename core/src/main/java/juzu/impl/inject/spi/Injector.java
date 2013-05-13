@@ -28,7 +28,7 @@ import java.lang.annotation.Annotation;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Injector {
+public abstract class Injector implements Provider<Injector> {
 
   private static final Filter<Class<?>> ALL = new Filter<Class<?>>() {
     public boolean accept(Class<?> elt) {
@@ -106,6 +106,11 @@ public abstract class Injector {
 
   public abstract InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception;
 
-  public abstract Injector copy();
+  /**
+   * Clone this injector.
+   *
+   * @return a close of this injector
+   */
+  public abstract Injector get();
 
 }

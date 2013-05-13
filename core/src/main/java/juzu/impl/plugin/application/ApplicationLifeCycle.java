@@ -61,7 +61,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   private final Name name;
 
   /** Configuration: injector provider. */
-  private final InjectorProvider injectorProvider;
+  private final Provider<Injector> injectorProvider;
 
   /** Contextual: logger. */
   private final Logger log;
@@ -105,7 +105,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   public ApplicationLifeCycle(
       Logger log,
       ModuleLifeCycle<?> moduleLifeCycle,
-      InjectorProvider injectorProvider,
+      Provider<Injector> injectorProvider,
       Name name,
       ReadFileSystem<R> resources,
       AssetServer assetServer,
@@ -238,8 +238,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
 
     //
-    Provider<Injector> provider = injectorProvider;
-    Injector injector = provider.get();
+    Injector injector = injectorProvider.get();
     injector.addFileSystem(classes);
     injector.setClassLoader(moduleLifeCycle.getClassLoader());
 

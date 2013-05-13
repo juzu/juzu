@@ -112,7 +112,7 @@ public class CDIInjector extends Injector {
   }
 
   @Override
-  public Injector copy() {
+  public Injector get() {
     return new CDIInjector(this);
   }
 }
