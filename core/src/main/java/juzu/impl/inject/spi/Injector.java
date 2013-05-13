@@ -106,4 +106,6 @@ public abstract class Injector {
 
   public abstract InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception;
 
+  public abstract Injector copy();
+
 }

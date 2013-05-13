@@ -48,8 +48,16 @@ public class CDIInjector extends Injector {
 
   public CDIInjector() {
     this.scopes = new HashSet<Scope>();
+    this.classLoader = null;
     this.fileSystems = new ArrayList<ReadFileSystem<?>>();
     this.boundBeans = new ArrayList<AbstractBean>();
+  }
+
+  public CDIInjector(CDIInjector that) {
+    this.scopes = new HashSet<Scope>(that.scopes);
+    this.classLoader = that.classLoader;
+    this.fileSystems = new ArrayList<ReadFileSystem<?>>(that.fileSystems);
+    this.boundBeans = new ArrayList<AbstractBean>(that.boundBeans);
   }
 
   @Override
@@ -101,5 +109,10 @@ public class CDIInjector extends Injector {
       container.addFileSystem(fs);
     }
     return new CDIContext(container, filter, boundBeans);
+  }
+
+  @Override
+  public Injector copy() {
+    return new CDIInjector(this);
   }
 }

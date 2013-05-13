@@ -51,19 +51,37 @@ public class SpringInjector extends Injector {
   private ClassLoader classLoader;
 
   /** . */
-  private Map<String, AbstractBean> beans = new LinkedHashMap<String, AbstractBean>();
+  private LinkedHashMap<String, AbstractBean> beans;
 
   /** The live instances. */
-  final Map<String, Object> instances = new HashMap<String, Object>();
+  final HashMap<String, Object> instances;
 
   /** . */
-  private Set<Scope> scopes = new LinkedHashSet<Scope>();
+  private final LinkedHashSet<Scope> scopes;
 
   /** . */
   private URL configurationURL;
 
   /** . */
-  final ScopeMetadataResolverImpl scopeResolver = new ScopeMetadataResolverImpl(scopes);
+  final ScopeMetadataResolverImpl scopeResolver;
+
+  public SpringInjector() {
+    this.classLoader = null;
+    this.beans = new LinkedHashMap<String, AbstractBean>();
+    this.instances = new HashMap<String, Object>();
+    this.scopes = new LinkedHashSet<Scope>();
+    this.configurationURL = null;
+    this.scopeResolver = new ScopeMetadataResolverImpl(scopes);
+  }
+
+  private SpringInjector(SpringInjector that) {
+    this.classLoader = that.classLoader;
+    this.beans = new LinkedHashMap<String, AbstractBean>(that.beans);
+    this.instances = new HashMap<String, Object>(that.instances);
+    this.scopes = new LinkedHashSet<Scope>(that.scopes);
+    this.configurationURL = that.configurationURL;
+    this.scopeResolver = new ScopeMetadataResolverImpl(scopes);
+  }
 
   public URL getConfigurationURL() {
     return configurationURL;
@@ -175,5 +193,10 @@ public class SpringInjector extends Injector {
 
     //
     return new SpringContext(factory, classLoader);
+  }
+
+  @Override
+  public Injector copy() {
+    return new SpringInjector(this);
   }
 }

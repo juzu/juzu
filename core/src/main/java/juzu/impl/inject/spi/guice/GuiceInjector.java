@@ -46,6 +46,11 @@ public class GuiceInjector extends Injector {
     this.scopes = new HashSet<Scope>();
   }
 
+  public GuiceInjector(GuiceInjector that) {
+    this.bindings = new ArrayList<BeanBinding>(that.bindings);
+    this.scopes = new HashSet<Scope>(that.scopes);
+  }
+
   @Override
   public <T> Injector declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType) {
     bindings.add(new BeanBinding.ToType<T>(type, beanScope, qualifiers, implementationType));
@@ -90,5 +95,10 @@ public class GuiceInjector extends Injector {
   @Override
   public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
     return new GuiceContext(this);
+  }
+
+  @Override
+  public Injector copy() {
+    return new GuiceInjector(this);
   }
 }

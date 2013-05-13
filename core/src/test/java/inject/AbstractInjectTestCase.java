@@ -69,26 +69,38 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
   }
 
   protected final void boot(Scope... scopes) throws Exception {
-    boot(null, scopes);
+    boot((Filter<Class<?>>)null, scopes);
   }
 
   protected final void boot(Filter<Class<?>> filter, Scope... scopes) throws Exception {
+    mgr = boot(bootstrap, filter, scopes);
+  }
+
+  protected static <B, I> InjectionContext<B, I> boot(Injector injector, Scope... scopes) throws Exception {
+    return boot(injector, null, scopes);
+  }
+
+  protected static <B, I> InjectionContext<B, I> boot(Injector injector, Filter<Class<?>> filter, Scope... scopes) throws Exception {
     for (Scope scope : scopes) {
-      bootstrap.addScope(scope);
+      injector.addScope(scope);
     }
     if (filter == null) {
-      mgr = (InjectionContext<B, I>)bootstrap.create();
+      return (InjectionContext<B, I>)injector.create();
     } else {
-      mgr = (InjectionContext<B, I>)bootstrap.create(filter);
+      return (InjectionContext<B, I>)injector.create(filter);
     }
   }
 
   protected final <T> T getBean(Class<T> beanType) throws Exception {
-    B bean = mgr.resolveBean(beanType);
+    return getBean(mgr, beanType);
+  }
+
+  protected static <B, I, T> T getBean(InjectionContext<B, I> context, Class<T> beanType) throws Exception {
+    B bean = context.resolveBean(beanType);
     assertNotNull("Could not resolve bean of type " + beanType, bean);
-    I beanInstance = mgr.create(bean);
+    I beanInstance = context.create(bean);
     assertNotNull("Could not create bean instance of type " + beanType + " from bean " + bean, beanInstance);
-    Object o = mgr.get(bean, beanInstance);
+    Object o = context.get(bean, beanInstance);
     assertNotNull("Could not obtain bean object from bean instance " + beanInstance + " of type " + beanType, o);
     return beanType.cast(o);
   }
