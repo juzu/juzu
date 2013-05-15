@@ -88,28 +88,33 @@ public abstract class WebBridge {
     }
 
     //
-    Stream.Char writer = getOutputStream();
+    Stream.Char stream = getOutputStream();
 
     // Send page header
     if (decorated) {
-      sendHeader(properties, writer);
+      sendHeader(properties, stream);
     }
 
     // Send response
     if (content.getKind() == Stream.Char.class) {
       ViewStreamable vs = new ViewStreamable(content.getStreamable(), decorated);
-      vs.send(writer);
+      try {
+        vs.send(stream);
+      }
+      finally {
+        end(stream);
+      }
     } else {
-      writer.close();
+      stream.close();
       throw new UnsupportedOperationException("Not yet handled");
     }
 
     //
-    return writer;
+    return stream;
   }
 
   protected void end(Stream.Char stream) {
-    Tools.safeClose(stream);
+    // Do nothing by default
   }
 
   private void sendHeader(PropertyMap properties, Stream.Char writer) throws IOException {
