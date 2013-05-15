@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package juzu.plugin.portlet.impl;
+package juzu.impl.plugin.bundle;
 
-import juzu.Scope;
+import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.common.Tools;
-
-import javax.portlet.PortletPreferences;
+import juzu.impl.plugin.application.ApplicationPlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletDescriptor extends PluginDescriptor {
+public class BundlePlugin extends ApplicationPlugin {
 
-  /** . */
-  public static PortletDescriptor INSTANCE = new PortletDescriptor();
-
-  private PortletDescriptor() {
+  public BundlePlugin() {
+    super("bundle");
   }
 
   @Override
-  public Iterable<BeanDescriptor> getBeans() {
-    return Tools.list(
-        BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class)
-    );
+  public PluginDescriptor init(PluginContext context) throws Exception {
+    return BundleDescriptor.INSTANCE;
   }
 }

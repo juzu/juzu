@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package juzu.plugin.portlet.impl;
+package plugin.bundle.message;
 
-import juzu.Scope;
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.common.Tools;
+import juzu.Path;
+import juzu.Response;
+import juzu.View;
+import juzu.template.Template;
 
-import javax.portlet.PortletPreferences;
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletDescriptor extends PluginDescriptor {
+public class A {
 
-  /** . */
-  public static PortletDescriptor INSTANCE = new PortletDescriptor();
+  @Inject
+  @Path("index.gtmpl")
+  Template index;
 
-  private PortletDescriptor() {
-  }
-
-  @Override
-  public Iterable<BeanDescriptor> getBeans() {
-    return Tools.list(
-        BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class)
-    );
+  @View
+  public Response.Render index() {
+    return index.ok();
   }
 }

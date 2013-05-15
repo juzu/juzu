@@ -31,13 +31,17 @@ public class ContextApplicationServletTestCase extends AbstractContextApplicatio
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() throws IOException {
-    WebArchive war = createServletDeployment(true, "bridge.context.application");
+    return createDeployment("bridge.context.application");
+  }
+
+  public static WebArchive createDeployment(String packageName) throws IOException {
+    WebArchive war = createServletDeployment(true, packageName);
     Node node = war.get("/WEB-INF/web.xml");
     ArchivePath path = node.getPath();
     String s = Tools.read(node.getAsset().openStream(), "UTF-8");
     s = s.replace("<async-supported>true</async-supported>",
         "<init-param><param-name>juzu.resource_bundle</param-name><param-value>bundle</param-value></init-param>" +
-        "<async-supported>true</async-supported>");
+            "<async-supported>true</async-supported>");
     war.delete(path);
     war.add(new StringAsset(s), path);
     war.addAsResource(new StringAsset("abc=def"), "bundle_fr_FR.properties");

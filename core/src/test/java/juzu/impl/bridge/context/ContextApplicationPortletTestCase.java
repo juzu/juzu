@@ -31,7 +31,11 @@ public class ContextApplicationPortletTestCase extends AbstractContextApplicatio
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() throws IOException {
-    WebArchive war = createPortletDeployment("bridge.context.application");
+    return createDeployment("bridge.context.application");
+  }
+
+  public static WebArchive createDeployment(String packageName) throws IOException {
+    WebArchive war = createPortletDeployment(packageName);
     Node node = war.get("WEB-INF/portlet.xml");
     ArchivePath path = node.getPath();
     String s = Tools.read(node.getAsset().openStream(), "UTF-8");

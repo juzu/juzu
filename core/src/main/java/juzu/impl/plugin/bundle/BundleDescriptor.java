@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package juzu.plugin.portlet;
+package juzu.impl.plugin.bundle;
 
-import juzu.test.AbstractWebTestCase;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
+import juzu.Scope;
+import juzu.impl.common.Tools;
+import juzu.impl.inject.BeanDescriptor;
+import juzu.impl.plugin.PluginDescriptor;
 
-import java.net.HttpURLConnection;
 import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletInjectTestCase extends AbstractWebTestCase {
+public class BundleDescriptor extends PluginDescriptor {
 
   /** . */
-  public static boolean prefs;
+  static BundleDescriptor INSTANCE = new BundleDescriptor();
 
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createPortletDeployment("plugin.portlet.inject");
+  private BundleDescriptor() {
   }
 
-  @Test
-  public void testInjection() throws Exception {
-    prefs = false;
-    HttpURLConnection conn = (HttpURLConnection)getPortletURL().openConnection();
-    assertEquals(200, conn.getResponseCode());
-    assertTrue(prefs);
+  @Override
+  public Iterable<BeanDescriptor> getBeans() {
+    return Tools.list(
+        BeanDescriptor.createFromProviderType(ResourceBundle.class, Scope.REQUEST, null, BundleProvider.class)
+    );
   }
 }

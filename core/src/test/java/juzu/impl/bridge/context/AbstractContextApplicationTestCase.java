@@ -33,6 +33,7 @@ public abstract class AbstractContextApplicationTestCase extends AbstractWebTest
     bundle = null;
     HttpURLConnection conn = (HttpURLConnection)initialURL.openConnection();
     assertEquals(200, conn.getResponseCode());
+    assertNotNull(bundle);
     assertEquals(Locale.FRANCE, bundle.getLocale());
     assertEquals("def", bundle.getString("abc"));
   }

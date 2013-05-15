@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package plugin.portlet.inject;
+@Application
+package plugin.bundle.injection;
 
-import juzu.View;
-import juzu.plugin.portlet.PortletInjectTestCase;
-
-import javax.inject.Inject;
-import javax.portlet.PortletPreferences;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @Inject
-  PortletPreferences preferences;
-
-  @View
-  public void index() {
-    PortletInjectTestCase.prefs = preferences != null;
-  }
-}
+import juzu.Application;

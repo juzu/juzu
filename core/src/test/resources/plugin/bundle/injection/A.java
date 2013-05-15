@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package plugin.portlet.message;
+package plugin.bundle.injection;
 
-import juzu.Path;
 import juzu.Response;
 import juzu.View;
-import juzu.plugin.portlet.PortletInjectTestCase;
-import juzu.template.Template;
+import juzu.impl.plugin.bundle.AbstractBundleInjectionTestCase;
 
 import javax.inject.Inject;
-import javax.portlet.PortletPreferences;
 import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
   @Inject
-  @Path("index.gtmpl")
-  Template index;
+  ResourceBundle bundle;
 
   @View
   public Response.Render index() {
-    return index.ok();
+    AbstractBundleInjectionTestCase.bundle = bundle;
+    return Response.ok("pass");
   }
 }

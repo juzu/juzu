@@ -13,33 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.plugin.bundle;
 
-package juzu.plugin.portlet;
-
-import juzu.test.AbstractWebTestCase;
+import juzu.impl.bridge.context.ContextApplicationPortletTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
 
-import java.net.HttpURLConnection;
-import java.util.ResourceBundle;
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletInjectTestCase extends AbstractWebTestCase {
-
-  /** . */
-  public static boolean prefs;
+public class MessagePortletTestCase extends AbstractMessageTestCase {
 
   @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createPortletDeployment("plugin.portlet.inject");
-  }
-
-  @Test
-  public void testInjection() throws Exception {
-    prefs = false;
-    HttpURLConnection conn = (HttpURLConnection)getPortletURL().openConnection();
-    assertEquals(200, conn.getResponseCode());
-    assertTrue(prefs);
+  public static WebArchive createDeployment() throws IOException {
+    return ContextApplicationPortletTestCase.createDeployment("plugin.bundle.message");
   }
 }

@@ -14,32 +14,20 @@
  * limitations under the License.
  */
 
-package juzu.plugin.portlet;
+package juzu.impl.plugin.bundle;
 
-import juzu.test.AbstractWebTestCase;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
+import juzu.impl.request.Request;
 
-import java.net.HttpURLConnection;
+import javax.inject.Provider;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletInjectTestCase extends AbstractWebTestCase {
+public class BundleProvider implements Provider<ResourceBundle> {
 
-  /** . */
-  public static boolean prefs;
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createPortletDeployment("plugin.portlet.inject");
-  }
-
-  @Test
-  public void testInjection() throws Exception {
-    prefs = false;
-    HttpURLConnection conn = (HttpURLConnection)getPortletURL().openConnection();
-    assertEquals(200, conn.getResponseCode());
-    assertTrue(prefs);
+  public ResourceBundle get() {
+    Request request = Request.getCurrent();
+    Locale locale = request.getContext().getUserContext().getLocale();
+    return request.getContext().getApplicationContext().resolveBundle(locale);
   }
 }

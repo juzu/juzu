@@ -15,6 +15,6 @@
  */
 
 @Application
-package plugin.portlet.message;
+package plugin.bundle.message;
 
 import juzu.Application;
