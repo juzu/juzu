@@ -24,6 +24,7 @@ import juzu.asset.AssetLocation;
 import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
+import juzu.request.ApplicationContext;
 import juzu.request.RequestParameter;
 import juzu.io.Stream;
 import juzu.request.ClientContext;
@@ -200,6 +201,8 @@ public abstract class WebBridge {
   public abstract ClientContext getClientContext();
 
   public abstract UserContext getUserContext();
+
+  public abstract ApplicationContext getApplicationContext();
 
   //
 

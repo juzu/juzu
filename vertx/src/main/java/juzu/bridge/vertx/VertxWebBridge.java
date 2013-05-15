@@ -27,6 +27,7 @@ import juzu.impl.common.Logger;
 import juzu.impl.inject.ScopedContext;
 import juzu.io.Stream;
 import juzu.io.Streams;
+import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
 import juzu.request.RequestParameter;
@@ -39,10 +40,19 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class VertxWebBridge extends WebBridge implements HttpContext {
+
+  /** . */
+  private static final ApplicationContext APPLICATION_CONTEXT = new ApplicationContext() {
+    public ResourceBundle resolveBundle(Locale locale) {
+      return null;
+    }
+  };
 
   /** . */
   private final Application application;
@@ -164,6 +174,10 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
 
   public ClientContext getClientContext() {
     throw new UnsupportedOperationException("todo");
+  }
+
+  public ApplicationContext getApplicationContext() {
+    return APPLICATION_CONTEXT;
   }
 
   public void setContentType(String contentType) {

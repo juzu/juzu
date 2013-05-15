@@ -23,6 +23,7 @@ import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
+import juzu.request.ApplicationContext;
 import juzu.request.RequestParameter;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
@@ -69,7 +70,15 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   /** . */
   private final Map<String, RequestParameter> requestParameters;
 
-  public ServletWebBridge(HttpServletRequest req, HttpServletResponse resp, String path, Logger log) {
+  /** . */
+  private final ServletBridge servlet;
+
+  public ServletWebBridge(
+      ServletBridge servlet,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String path,
+      Logger log) {
 
     //
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
@@ -113,6 +122,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     this.method = Method.valueOf(req.getMethod());
     this.log = log;
     this.requestParameters = requestParameters;
+    this.servlet = servlet;
   }
 
   public HttpServletRequest getRequest() {
@@ -247,6 +257,11 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
 
   public UserContext getUserContext() {
     return this;
+  }
+
+  @Override
+  public ApplicationContext getApplicationContext() {
+    return servlet.applicationContext;
   }
 
   public ScopedContext getRequestScope(boolean create) {

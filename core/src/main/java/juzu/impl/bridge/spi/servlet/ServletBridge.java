@@ -47,6 +47,9 @@ import java.util.Iterator;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletBridge extends HttpServlet {
 
+  /** The resource bundle name. */
+  public static final String BUNDLE_NAME = "juzu.resource_bundle";
+
   /** . */
   Module module;
 
@@ -64,6 +67,12 @@ public class ServletBridge extends HttpServlet {
 
   /** . */
   private Handler handler;
+
+  /** . */
+  private String bundleName;
+
+  /** . */
+  ServletApplicationContext applicationContext;
 
   @Override
   public void init() throws ServletException {
@@ -129,11 +138,14 @@ public class ServletBridge extends HttpServlet {
       throw new ServletException("No application configured");
     }
 
+    // Future resource bundle
+
     //
     this.log = log;
     this.config = config;
     this.handler = null;
     this.path = path;
+    this.bundleName = servletConfig.getInitParameter(BUNDLE_NAME);
   }
 
   static ServletException wrap(Throwable e) {
@@ -202,12 +214,14 @@ public class ServletBridge extends HttpServlet {
       if (handler != null) {
         Tools.safeClose(handler);
         handler = null;
+        applicationContext = null;
       }
     }
 
     //
     if (handler == null) {
       this.handler = new Handler(bridge);
+      this.applicationContext = new ServletApplicationContext(getServletContext().getClassLoader(), bundleName);
     }
   }
 
@@ -215,7 +229,7 @@ public class ServletBridge extends HttpServlet {
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
     //
-    ServletWebBridge bridge = new ServletWebBridge(req, resp, path, log);
+    ServletWebBridge bridge = new ServletWebBridge(this, req, resp, path, log);
 
     // Do we need to send a server resource ?
     if (bridge.getRequestPath().length() > 1 && !bridge.getRequestPath().startsWith("/WEB-INF/")) {

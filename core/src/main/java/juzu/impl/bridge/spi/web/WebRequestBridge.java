@@ -148,7 +148,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public ApplicationContext getApplicationContext() {
-    return null;
+    return http.getApplicationContext();
   }
 
   public final Scoped getRequestValue(Object key) {
