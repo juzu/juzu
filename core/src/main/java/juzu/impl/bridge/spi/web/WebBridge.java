@@ -22,8 +22,8 @@ import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Formatting;
-import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
+import juzu.io.Streamable;
 import juzu.request.ApplicationContext;
 import juzu.request.RequestParameter;
 import juzu.io.Stream;
@@ -34,7 +34,6 @@ import juzu.request.UserContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -67,7 +66,7 @@ public abstract class WebBridge {
     }
   }
 
-  public final Stream.Char send(Response.Content<Stream.Char> content, boolean decorated) throws IOException {
+  public final Stream.Char send(Response.Content content, boolean decorated) throws IOException {
 
     //
     PropertyMap properties = content.getProperties();
@@ -97,7 +96,7 @@ public abstract class WebBridge {
 
     // Send response
     if (content.getStreamable().getKind() == Stream.Char.class) {
-      ViewStreamable vs = new ViewStreamable(content.getStreamable(), decorated);
+      ViewStreamable vs = new ViewStreamable((Streamable)content.getStreamable(), decorated);
       try {
         vs.send(stream);
       }

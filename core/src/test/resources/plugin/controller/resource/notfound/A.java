@@ -30,12 +30,12 @@ public class A {
   }
 
   @Resource
-  public Response.Content<?> resource() throws AuthenticationException {
+  public Response.Content resource() throws AuthenticationException {
     return Response.notFound("not_found");
   }
 
   @View
-  public Response.Content<?> index() throws IOException {
+  public Response.Content index() throws IOException {
     return Response.ok(A_.resource().toString());
   }
 }

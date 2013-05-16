@@ -20,6 +20,7 @@ import juzu.Response;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.io.Streamable;
 import juzu.io.Streams;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
@@ -44,11 +45,11 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
   }
 
   public String assertStringResult() {
-    Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
+    Response.Content content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
     AbstractTestCase.assertEquals(Stream.Char.class, content.getStreamable().getKind());
     try {
       StringBuilder builder = new StringBuilder();
-      ((Response.Content<Stream.Char>)content).send(Streams.appendable(builder));
+      ((Streamable)content.getStreamable()).send(Streams.appendable(builder));
       return builder.toString();
     }
     catch (IOException e) {
@@ -57,12 +58,12 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
   }
 
   public byte[] assertBinaryResult() {
-    Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
+    Response.Content content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
     AbstractTestCase.assertEquals(Stream.Binary.class, content.getStreamable().getKind());
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       BinaryOutputStream bos = new BinaryOutputStream(baos);
-      ((Response.Content<Stream.Binary>)content).send(bos);
+      ((Streamable)content.getStreamable()).send(bos);
       return baos.toByteArray();
     }
     catch (IOException e) {
@@ -71,7 +72,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
   }
 
   public String getMimeType() {
-    if (response instanceof Response.Content<?>) {
+    if (response instanceof Response.Content) {
       return ((Response.Content)response).getMimeType();
     } else {
       return null;
@@ -87,7 +88,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
   }
 
   public void assertStatus(int status) {
-    Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
+    Response.Content content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
     Assert.assertNotNull(content.getStatus());
     Assert.assertEquals((Integer)status, content.getStatus());
   }

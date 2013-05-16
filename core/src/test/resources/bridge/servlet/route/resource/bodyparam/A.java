@@ -35,7 +35,7 @@ public class A {
 
   @Resource
   @Route("/foo")
-  public Response.Content<?> foo(String juu) {
+  public Response.Content foo(String juu) {
     return Response.ok("" + juu).withMimeType("text/html");
   }
 }

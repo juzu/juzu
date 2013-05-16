@@ -111,7 +111,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         properties.addValues(PropertyType.SCRIPT, "juzu.ajax");
 
         //
-        final Streamable<Stream.Char> decorated = render.getStreamable();
+        final Streamable<Stream.Char> decorated = (Streamable<Stream.Char>)render.getStreamable();
         Streamable<Stream.Char> decorator = new Streamable<Stream.Char>() {
 
           public Class<Stream.Char> getKind() {

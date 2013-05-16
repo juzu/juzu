@@ -25,7 +25,7 @@ public class A {
 
   @View
   @Route("/foo")
-  public Response.Content<?> foo() {
+  public Response.Content foo() {
     return Response.ok("pass");
   }
 }

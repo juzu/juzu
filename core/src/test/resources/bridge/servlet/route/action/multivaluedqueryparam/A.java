@@ -38,7 +38,7 @@ public class A {
 
   @juzu.View
   @Route("/bar")
-  public Response.Content<?> bar(String[] juu) {
+  public Response.Content bar(String[] juu) {
     return Response.ok("" + Arrays.asList(juu));
   }
 }

@@ -31,12 +31,12 @@ public class A {
   }
 
   @Resource
-  public Response.Content<?> resource() throws AuthenticationException {
+  public Response.Content resource() throws AuthenticationException {
     return Response.ok(new ByteArrayInputStream("hello".getBytes())).withMimeType("application/octet-stream");
   }
 
   @View
-  public Response.Content<?> index() throws IOException {
+  public Response.Content index() throws IOException {
     return Response.ok(A_.resource().toString());
   }
 }

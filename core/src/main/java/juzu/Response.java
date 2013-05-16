@@ -21,7 +21,6 @@ import juzu.io.Stream;
 import juzu.io.Streamable;
 import juzu.request.Dispatch;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -293,13 +292,13 @@ public abstract class Response {
     }
   }
 
-  public static class Content<S extends Stream> extends Response {
+  public static class Content extends Response {
 
     /** . */
     private int status;
 
     /** . */
-    private Streamable<S> streamable;
+    private Streamable<?> streamable;
 
     protected Content(int status) {
       this.status = status;
@@ -314,12 +313,12 @@ public abstract class Response {
       this.streamable = null;
     }
 
-    protected Content(int status, Streamable<S> streamable) {
+    protected Content(int status, Streamable<?> streamable) {
       this.status = status;
       this.streamable = streamable;
     }
 
-    protected Content(int status, PropertyMap properties, Streamable<S> streamable) {
+    protected Content(int status, PropertyMap properties, Streamable<?> streamable) {
       super(properties);
 
       //
@@ -327,7 +326,7 @@ public abstract class Response {
       this.streamable = streamable;
     }
 
-    public Streamable<S> getStreamable() {
+    public Streamable<?> getStreamable() {
       return streamable;
     }
 
@@ -335,52 +334,42 @@ public abstract class Response {
       return properties.getValue(PropertyType.MIME_TYPE);
     }
 
-    public Content<S> withMimeType(String mimeType) {
+    public Content withMimeType(String mimeType) {
       properties.setValue(PropertyType.MIME_TYPE, mimeType);
       return this;
     }
 
     @Override
-    public Content<S> withHeader(String name, String... value) {
-      return (Content<S>)super.withHeader(name, value);
+    public Content withHeader(String name, String... value) {
+      return (Content)super.withHeader(name, value);
     }
 
     @Override
-    public <T> Content<S> with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Content<S>)super.with(propertyType, propertyValue);
+    public <T> Content with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (Content)super.with(propertyType, propertyValue);
     }
 
     @Override
-    public <T> Content<S> without(PropertyType<T> propertyType) throws NullPointerException {
-      return (Content<S>)super.without(propertyType);
+    public <T> Content without(PropertyType<T> propertyType) throws NullPointerException {
+      return (Content)super.without(propertyType);
     }
 
     @Override
-    public Content<S> with(PropertyType<Boolean> propertyType) throws NullPointerException {
-      return (Content<S>)super.with(propertyType);
+    public Content with(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Content)super.with(propertyType);
     }
 
     @Override
-    public Content<S> withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
-      return (Content<S>)super.withNo(propertyType);
+    public Content withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Content)super.withNo(propertyType);
     }
 
     public Integer getStatus() {
       return status;
     }
-
-    /**
-     * Send the response on the stream argument, Juzu invokes it when it needs to render the content object.
-     *
-     * @param stream the stream for sending the response
-     * @throws IOException any io exception
-     */
-    public void send(S stream) throws IOException {
-      streamable.send(stream);
-    }
   }
 
-  public static class Render extends Content<Stream.Char> {
+  public static class Render extends Content {
 
     @Override
     public <T> Render with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
@@ -560,20 +549,20 @@ public abstract class Response {
     return new Render(code, new Streamable.CharSequence(content)).withMimeType(mimeType);
   }
 
-  public static Content<Stream.Binary> ok(InputStream content) {
+  public static Content ok(InputStream content) {
     return content(200, null, content);
   }
 
-  public static Content<Stream.Binary> notFound(InputStream content) {
+  public static Content notFound(InputStream content) {
     return content(404, null, content);
   }
 
-  public static Content<Stream.Binary> content(int code, InputStream content) {
+  public static Content content(int code, InputStream content) {
     return content(code, null, content);
   }
 
-  private static Content<Stream.Binary> content(int code, String mimeType, InputStream content) {
-    return new Content<Stream.Binary>(code, new Streamable.InputStream(content)).withMimeType(mimeType);
+  private static Content content(int code, String mimeType, InputStream content) {
+    return new Content(code, new Streamable.InputStream(content)).withMimeType(mimeType);
   }
 
   public static Error error(Throwable t) {

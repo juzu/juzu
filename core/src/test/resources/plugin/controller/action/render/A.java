@@ -25,7 +25,7 @@ import java.io.IOException;
 public class A {
 
   @juzu.View
-  public Response.Content<?> index() throws IOException {
+  public Response.Content index() throws IOException {
     return Response.ok(A_.action().toString());
   }
 

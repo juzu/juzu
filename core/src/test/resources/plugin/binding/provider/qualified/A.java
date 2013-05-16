@@ -35,7 +35,7 @@ public class A {
   Service barService;
 
   @View
-  public Response.Content<?> index() throws IOException {
+  public Response.Content index() throws IOException {
     String resp;
     if (fooService == null) {
       resp = "failed: no foo service";

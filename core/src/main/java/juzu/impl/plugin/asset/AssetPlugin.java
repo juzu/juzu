@@ -28,6 +28,7 @@ import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
+import juzu.io.Streamable;
 import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
@@ -201,7 +202,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         properties.addValues(PropertyType.SCRIPT, scripts);
 
         // Use a new response
-        request.setResponse(new Response.Render(properties, render.getStreamable()));
+        request.setResponse(new Response.Render(properties, (Streamable)render.getStreamable()));
       }
     }
   }

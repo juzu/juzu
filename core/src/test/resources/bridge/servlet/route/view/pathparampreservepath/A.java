@@ -20,7 +20,6 @@ import juzu.Param;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.test.AbstractTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
@@ -32,7 +31,7 @@ public class A {
 
   @View
   @Route(value = "/foo/{juu}")
-  public Response.Content<?> foo(@Param(pattern = ".*", preservePath = true) String juu) {
+  public Response.Content foo(@Param(pattern = ".*", preservePath = true) String juu) {
     return Response.ok("" + juu);
   }
 }

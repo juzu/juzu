@@ -35,7 +35,7 @@ public class A {
   Template index;
 
   @View
-  public Response.Content<?> index() {
+  public Response.Content index() {
     String ret = "";
     Stream.Char printer = Streams.appendable(new Appendable() {
       public Appendable append(CharSequence csq) throws IOException {

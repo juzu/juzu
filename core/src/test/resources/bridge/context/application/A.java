@@ -26,7 +26,7 @@ import java.util.Locale;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
   @View
-  public Response.Content<?> index(ApplicationContext applicationContext) {
+  public Response.Content index(ApplicationContext applicationContext) {
     AbstractContextApplicationTestCase.bundle = applicationContext.resolveBundle(Locale.FRANCE);
     return Response.ok("");
   }

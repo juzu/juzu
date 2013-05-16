@@ -28,27 +28,27 @@ import java.util.List;
 public class A {
 
   @View(id = "none")
-  public Response.Content<?> none() throws IOException {
+  public Response.Content none() throws IOException {
     return Response.ok(A_.mv(null).toString());
   }
 
   @View(id = "0")
-  public Response.Content<?> zero() throws IOException {
+  public Response.Content zero() throws IOException {
     return Response.ok(A_.mv(Collections.emptyList()).toString());
   }
 
   @View(id = "1")
-  public Response.Content<?> one() throws IOException {
+  public Response.Content one() throws IOException {
     return Response.ok(A_.mv(Arrays.asList("bar")).toString());
   }
 
   @View(id = "2")
-  public Response.Content<?> two() throws IOException {
+  public Response.Content two() throws IOException {
     return Response.ok(A_.mv(Arrays.asList("bar_1", "bar_2")).toString());
   }
 
   @View
-  public Response.Content<?> mv(List<String> foo) throws IOException {
+  public Response.Content mv(List<String> foo) throws IOException {
     return Response.ok(foo != null ? foo.toString() : "");
   }
 }

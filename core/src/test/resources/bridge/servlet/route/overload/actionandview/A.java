@@ -41,7 +41,7 @@ public class A {
 
   @juzu.View
   @Route("/foo")
-  public Response.Content<?> fooView() {
+  public Response.Content fooView() {
     return Response.ok(count == 1 ? "pass" : "fail");
   }
 }

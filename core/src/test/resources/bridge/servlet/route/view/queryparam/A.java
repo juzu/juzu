@@ -30,7 +30,7 @@ public class A {
 
   @View
   @Route("/foo")
-  public Response.Content<?> foo(String juu) {
+  public Response.Content foo(String juu) {
     return Response.ok("" + juu);
   }
 }

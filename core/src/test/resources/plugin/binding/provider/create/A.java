@@ -29,7 +29,7 @@ public class A {
   Service service;
 
   @View
-  public Response.Content<?> index() throws IOException {
+  public Response.Content index() throws IOException {
     return Response.ok(service != null ? "pass" : "");
   }
 }

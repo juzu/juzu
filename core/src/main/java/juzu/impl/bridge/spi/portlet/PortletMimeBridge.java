@@ -20,6 +20,7 @@ import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.Formatting;
+import juzu.io.Streamable;
 import juzu.io.Streams;
 import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
@@ -40,10 +41,10 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
 
   @Override
   public void send() throws IOException, PortletException {
-    if (response instanceof Response.Content<?>) {
+    if (response instanceof Response.Content) {
 
       //
-      Response.Content<?> content = (Response.Content<?>)response;
+      Response.Content content = (Response.Content)response;
 
       //
       String mimeType = content.getMimeType();
@@ -56,10 +57,10 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
 
       // Send content
       if (content.getStreamable().getKind() == Stream.Char.class) {
-        ((Response.Content<Stream.Char>)content).send(Streams.closeable(this.resp.getWriter()));
+        ((Streamable)content.getStreamable()).send(Streams.closeable(this.resp.getWriter()));
       }
       else {
-        ((Response.Content<Stream.Binary>)content).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
+        ((Streamable)content.getStreamable()).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
       }
     } else if (response instanceof Response.Error) {
       Response.Error error = (Response.Error)response;

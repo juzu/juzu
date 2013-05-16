@@ -32,7 +32,7 @@ public class A {
 
   @Resource
   @Route(value = "/foo/{juu}")
-  public Response.Content<?> foo(@Param(pattern = ".*", preservePath = true) String juu) {
+  public Response.Content foo(@Param(pattern = ".*", preservePath = true) String juu) {
     return Response.ok("" + juu).withMimeType("text/html");
   }
 }

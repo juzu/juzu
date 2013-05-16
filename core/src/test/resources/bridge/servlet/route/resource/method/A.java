@@ -25,7 +25,7 @@ import juzu.request.HttpContext;
 public class A {
   @Resource
   @Route("/")
-  public Response.Content<?> foo(HttpContext context) {
+  public Response.Content foo(HttpContext context) {
     return Response.ok("ok[" + context.getMethod() + "]");
   }
 }
