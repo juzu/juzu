@@ -18,11 +18,19 @@ package plugin.servlet.base;
 
 import juzu.Response;
 import juzu.View;
+import juzu.plugin.servlet.ServletPluginTestCase;
+
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
+
+  @Inject
+  java.util.ResourceBundle bundle;
+
   @View
   public Response.Render index() {
+    ServletPluginTestCase.bundle = bundle;
     return Response.ok("pass");
   }
 }

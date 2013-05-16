@@ -20,12 +20,14 @@ import juzu.plugin.servlet.impl.ServletMetaModelPlugin;
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletPluginTestCase extends AbstractWebTestCase {
@@ -34,6 +36,7 @@ public class ServletPluginTestCase extends AbstractWebTestCase {
   public static WebArchive createDeployment() throws Exception {
     File f = new File(ServletMetaModelPlugin.class.getProtectionDomain().getCodeSource().getLocation().toURI());
     WebArchive war = createServletDeployment(true, "plugin.servlet.base");
+    war.addAsResource(new StringAsset("abc=def"), "bundle.properties");
     war.delete("WEB-INF/web.xml");
     war.addAsLibrary(f);
     return war;
@@ -42,9 +45,14 @@ public class ServletPluginTestCase extends AbstractWebTestCase {
   @Drone
   WebDriver driver;
 
+  /** . */
+  public static ResourceBundle bundle;
+
   @Test
   public void testBase() throws Exception {
     driver.get(applicationURL().toString());
     assertEquals("pass", driver.findElement(By.tagName("body")).getText());
+    assertNotNull(bundle);
+    assertEquals("def", bundle.getString("abc"));
   }
 }

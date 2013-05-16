@@ -77,6 +77,7 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
       PackageElement pkgElt = metaModel.processingContext.get(pkg);
       String urlPattern = (String)annotation.get("value");
       String simpleName = (String)annotation.get("name");
+      String resourceBundle = (String)annotation.get("resourceBundle");
       if (simpleName == null) {
         simpleName = metaModel.getBaseName() + "Servlet";
       }
@@ -88,7 +89,11 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
         writer.append("package ").append(pkg.getPackage()).append(";\n");
         writer.append("import javax.servlet.annotation.WebServlet;\n");
         writer.append("import javax.servlet.annotation.WebInitParam;\n");
-        writer.append("@WebServlet(name=\"").append(simpleName).append("\",urlPatterns=\"").append(urlPattern).append("\")\n");
+        writer.append("@WebServlet(name=\"").append(simpleName).append("\",urlPatterns=\"").append(urlPattern).append("\"");
+        if (resourceBundle != null) {
+          writer.append(",initParams=@WebInitParam(name=\"juzu.resource_bundle\",value=\"").append(resourceBundle).append("\")");
+        }
+        writer.append(")\n");
         writer.append("public class " ).append(simpleName).append(" extends juzu.bridge.servlet.JuzuServlet {\n");
         writer.append("@Override\n");
         writer.append("protected String getApplicationName(javax.servlet.ServletConfig config) {\n");

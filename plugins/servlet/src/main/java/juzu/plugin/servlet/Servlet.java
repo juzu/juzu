@@ -31,4 +31,9 @@ public @interface Servlet {
 
   String value();
 
+  /**
+   * @return an optional resource bundle for the application
+   */
+  String resourceBundle() default "";
+
 }

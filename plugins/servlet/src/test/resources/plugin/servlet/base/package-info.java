@@ -15,7 +15,7 @@
  */
 
 @Application
-@Servlet("/")
+@Servlet(value = "/", resourceBundle = "bundle")
 package plugin.servlet.base;
 
 import juzu.Application;
