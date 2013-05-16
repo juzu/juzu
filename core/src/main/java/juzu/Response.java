@@ -564,7 +564,7 @@ public abstract class Response {
   }
 
   public static Render content(int code, Streamable<Stream.Char> content) {
-    return new Render(code, content).withMimeType("text/html");
+    return new Render(code, content);
   }
 
   private static Render content(int code, String mimeType, CharSequence content) {

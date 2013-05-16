@@ -26,6 +26,6 @@ public class A {
   @Resource
   @Route("/foo")
   public Response.Content<?> foo() {
-    return Response.ok("pass");
+    return Response.ok("pass").withMimeType("text/html");
   }
 }

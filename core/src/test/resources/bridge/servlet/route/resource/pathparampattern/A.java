@@ -44,6 +44,6 @@ public class A {
   @Resource
   @Route("/foo/{juu}")
   public Response.Content<?> foo(@Param(pattern = "juu") String juu) {
-    return Response.ok("" + juu);
+    return Response.ok("" + juu).withMimeType("text/html");
   }
 }

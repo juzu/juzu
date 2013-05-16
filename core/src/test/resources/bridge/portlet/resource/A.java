@@ -24,6 +24,6 @@ public class A {
 
   @Resource
   public Response.Content<?> serve() {
-    return Response.ok("pass");
+    return Response.ok("pass").withMimeType("text/html");
   }
 }
