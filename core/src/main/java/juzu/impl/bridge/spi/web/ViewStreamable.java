@@ -35,6 +35,10 @@ class ViewStreamable implements Streamable<Stream.Char> {
     this.decorated = decorated;
   }
 
+  public Class<Stream.Char> getKind() {
+    return Stream.Char.class;
+  }
+
   public void send(final Stream.Char stream) throws IOException {
 
     Stream.Char our = new Stream.Char() {

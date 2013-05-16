@@ -31,6 +31,10 @@ public interface Streamable<S extends Stream> {
       this.s = s;
     }
 
+    public Class<Stream.Char> getKind() {
+      return Stream.Char.class;
+    }
+
     public void send(Stream.Char stream) throws IOException {
       try {
         stream.append(s);
@@ -50,6 +54,10 @@ public interface Streamable<S extends Stream> {
       this.in = in;
     }
 
+    public Class<Stream.Binary> getKind() {
+      return Stream.Binary.class;
+    }
+
     public void send(Stream.Binary stream) throws IOException {
       byte[] buffer = new byte[256];
       for (int l;(l = in.read(buffer)) != -1;) {
@@ -57,6 +65,8 @@ public interface Streamable<S extends Stream> {
       }
     }
   }
+
+  Class<S> getKind();
 
   void send(S stream) throws IOException;
 

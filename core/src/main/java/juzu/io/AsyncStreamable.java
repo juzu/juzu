@@ -42,6 +42,10 @@ public class AsyncStreamable implements Streamable<Stream.Char>, Appendable, Clo
   /** . */
   private Stream.Char stream = null;
 
+  public Class<Stream.Char> getKind() {
+    return Stream.Char.class;
+  }
+
   public void send(Stream.Char stream) throws IOException {
     synchronized (buffer) {
       if (this.stream != null) {

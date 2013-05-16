@@ -113,6 +113,11 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         //
         final Streamable<Stream.Char> decorated = render.getStreamable();
         Streamable<Stream.Char> decorator = new Streamable<Stream.Char>() {
+
+          public Class<Stream.Char> getKind() {
+            return Stream.Char.class;
+          }
+
           public void send(final Stream.Char stream) throws IOException {
             // FOR NOW WE DO WITH THE METHOD NAME
             // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD

@@ -55,7 +55,7 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
       sendProperties();
 
       // Send content
-      if (content.getKind() == Stream.Char.class) {
+      if (content.getStreamable().getKind() == Stream.Char.class) {
         ((Response.Content<Stream.Char>)content).send(Streams.closeable(this.resp.getWriter()));
       }
       else {

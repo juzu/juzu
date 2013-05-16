@@ -299,43 +299,32 @@ public abstract class Response {
     private int status;
 
     /** . */
-    private final Class<S> kind;
-
-    /** . */
     private Streamable<S> streamable;
 
-    protected Content(int status, Class<S> kind) {
+    protected Content(int status) {
       this.status = status;
-      this.kind = kind;
       this.streamable = null;
     }
 
-    protected Content(int status, Class<S> kind, PropertyMap properties) {
+    protected Content(int status, PropertyMap properties) {
       super(properties);
 
       //
       this.status = status;
-      this.kind = kind;
       this.streamable = null;
     }
 
-    protected Content(int status, Class<S> kind, Streamable<S> streamable) {
+    protected Content(int status, Streamable<S> streamable) {
       this.status = status;
-      this.kind = kind;
       this.streamable = streamable;
     }
 
-    protected Content(int status, Class<S> kind, PropertyMap properties, Streamable<S> streamable) {
+    protected Content(int status, PropertyMap properties, Streamable<S> streamable) {
       super(properties);
 
       //
       this.status = status;
-      this.kind = kind;
       this.streamable = streamable;
-    }
-
-    public Class<S> getKind() {
-      return kind;
     }
 
     public Streamable<S> getStreamable() {
@@ -419,23 +408,23 @@ public abstract class Response {
     }
 
     public Render() {
-      super(200, Stream.Char.class);
+      super(200);
     }
 
     public Render(int status, PropertyMap properties, Streamable<Stream.Char> streamable) {
-      super(status, Stream.Char.class, properties, streamable);
+      super(status, properties, streamable);
     }
 
     public Render(int status, Streamable<Stream.Char> streamable) {
-      super(status, Stream.Char.class, streamable);
+      super(status, streamable);
     }
 
     public Render(PropertyMap properties, Streamable<Stream.Char> streamable) {
-      super(200, Stream.Char.class, properties, streamable);
+      super(200, properties, streamable);
     }
 
     public Render(Streamable<Stream.Char> streamable) {
-      super(200, Stream.Char.class, streamable);
+      super(200, streamable);
     }
 
     @Override
@@ -584,7 +573,7 @@ public abstract class Response {
   }
 
   private static Content<Stream.Binary> content(int code, String mimeType, InputStream content) {
-    return new Content<Stream.Binary>(code, Stream.Binary.class, new Streamable.InputStream(content)).withMimeType(mimeType);
+    return new Content<Stream.Binary>(code, new Streamable.InputStream(content)).withMimeType(mimeType);
   }
 
   public static Error error(Throwable t) {

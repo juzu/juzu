@@ -45,7 +45,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
 
   public String assertStringResult() {
     Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
-    AbstractTestCase.assertEquals(Stream.Char.class, content.getKind());
+    AbstractTestCase.assertEquals(Stream.Char.class, content.getStreamable().getKind());
     try {
       StringBuilder builder = new StringBuilder();
       ((Response.Content<Stream.Char>)content).send(Streams.appendable(builder));
@@ -58,7 +58,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
 
   public byte[] assertBinaryResult() {
     Response.Content<?> content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
-    AbstractTestCase.assertEquals(Stream.Binary.class, content.getKind());
+    AbstractTestCase.assertEquals(Stream.Binary.class, content.getStreamable().getKind());
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       BinaryOutputStream bos = new BinaryOutputStream(baos);

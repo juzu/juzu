@@ -96,7 +96,7 @@ public abstract class WebBridge {
     }
 
     // Send response
-    if (content.getKind() == Stream.Char.class) {
+    if (content.getStreamable().getKind() == Stream.Char.class) {
       ViewStreamable vs = new ViewStreamable(content.getStreamable(), decorated);
       try {
         vs.send(stream);
