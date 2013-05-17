@@ -19,67 +19,54 @@ package juzu.io;
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 
 /**
- * Implementation of the {@link juzu.io.Stream.Char} interface that uses an appendable delegate.
+ * Implementation of the {@link juzu.io.Stream} interface that uses an appendable delegate.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 public class Streams {
 
-  private static class Appendable extends BaseCharStream {
-
-    /** . */
-    protected final java.lang.Appendable delegate;
-
-    private Appendable(java.lang.Appendable delegate) {
-      this.delegate = delegate;
-    }
-
-    public Char append(char c) throws IOException {
-      delegate.append(c);
-      return this;
-    }
-
-    public Char append(CharSequence s) throws IOException {
-      delegate.append(s);
-      return this;
-    }
-
-    public Char append(CharSequence csq, int start, int end) throws IOException {
-      delegate.append(csq, start, end);
-      return this;
-    }
-  }
-
-  public static Stream.Char empty() {
-    return BaseCharStream.INSTANCE;
-  }
-
-  public static Stream.Char appendable(java.lang.Appendable appendable) {
-    return new Appendable(appendable);
-  }
-
-  public static <A extends java.lang.Appendable & Flushable> Stream.Char flushable(final A appendable) {
-    return new Appendable(appendable) {
-      @Override
-      public void flush() throws IOException {
-        appendable.flush();
+  public static Stream empty() {
+    return new Stream() {
+      public Stream append(CharSequence csq) throws IOException {
+        return this;
       }
-    };
-  }
-
-  public static <A extends java.lang.Appendable & Flushable & Closeable> Stream.Char closeable(final A appendable) {
-    return new Appendable(appendable) {
-      @Override
-      public void flush() throws IOException {
-        appendable.flush();
+      public Stream append(CharSequence csq, int start, int end) throws IOException {
+        return this;
       }
-      @Override
+      public Stream append(char c) throws IOException {
+        return this;
+      }
+      public Stream append(byte[] data) throws IOException {
+        return this;
+      }
+      public Stream append(byte[] data, int off, int len) throws IOException {
+        return this;
+      }
       public void close() throws IOException {
-        appendable.close();
+      }
+      public void flush() throws IOException {
       }
     };
+  }
+
+  public static Stream appendable(Charset charset, Appendable appendable) {
+    return new AppendableStream(charset, appendable);
+  }
+
+  public static <A extends java.lang.Appendable & Flushable> Stream flushable(Charset charset, final A appendable) {
+    return new AppendableStream(charset, appendable, appendable, null);
+  }
+
+  public static <A extends java.lang.Appendable & Flushable & Closeable> Stream closeable(Charset charset, final A appendable) {
+    return new AppendableStream(charset, appendable, appendable, appendable);
+  }
+
+  public static <A extends OutputStream & Flushable & Closeable> Stream closeable(Charset charset, final A appendable) {
+    return new BinaryOutputStream(charset, appendable);
   }
 }

@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package bridge.servlet.route.view.pathparamencoding;
+package juzu.impl.bridge.response;
 
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
-import juzu.test.AbstractTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public class ResponseCharsetViewPortletTestCase extends AbstractResponseCharsetViewTestCase {
 
-  @View
-  public Response.Render index() {
-    return Response.ok("<a id='trigger' href='" + A_.foo(AbstractTestCase.EURO) + "'>click</div>");
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createPortletDeployment("bridge.response.charset.view");
   }
 
-  @View
-  @Route("/foo/{juu}")
-  public Response.Render foo(String juu) {
-    return Response.ok(AbstractTestCase.EURO.equals(juu) ? "pass" : "fail");
+  @Override
+  protected void testISO_8859_1() throws Exception {
+    // We cannot test it so we skip it
   }
 }

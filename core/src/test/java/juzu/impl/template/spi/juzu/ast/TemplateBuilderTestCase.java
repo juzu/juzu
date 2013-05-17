@@ -16,6 +16,7 @@
 
 package juzu.impl.template.spi.juzu.ast;
 
+import juzu.impl.common.Tools;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateStub;
 import juzu.io.Streams;
 import juzu.template.TemplateRenderContext;
@@ -32,7 +33,7 @@ public class TemplateBuilderTestCase extends AbstractTemplateTestCase {
     GroovyTemplateStub s = template("a<%=foo%>c");
     s.init(Thread.currentThread().getContextClassLoader());
     StringWriter out = new StringWriter();
-    new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(Streams.closeable(out));
+    new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(Streams.closeable(Tools.UTF_8, out));
     assertEquals("abc", out.toString());
   }
 
@@ -41,7 +42,7 @@ public class TemplateBuilderTestCase extends AbstractTemplateTestCase {
     GroovyTemplateStub s = template("a\r\nb");
     s.init(Thread.currentThread().getContextClassLoader());
     StringWriter out = new StringWriter();
-    new TemplateRenderContext(s, Collections.<String, Object>emptyMap()).render(Streams.closeable(out));
+    new TemplateRenderContext(s, Collections.<String, Object>emptyMap()).render(Streams.closeable(Tools.UTF_8, out));
     assertEquals("a\nb", out.toString());
   }
 }

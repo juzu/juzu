@@ -85,7 +85,7 @@ public class TemplateStubImpl extends TemplateStub {
   protected void doRender(TemplateRenderContext renderContext) throws TemplateExecutionException, IOException {
     StringWriter buffer = new StringWriter();
     mustache.execute(buffer, new Object[]{new ContextMap(renderContext)});
-    Stream.Char stream = renderContext.getPrinter();
+    Stream stream = renderContext.getPrinter();
     stream.append(buffer.getBuffer());
   }
 }

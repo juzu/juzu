@@ -37,6 +37,7 @@ import org.vertx.java.core.http.HttpServerRequest;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,7 +68,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   private final HttpServerRequest req;
 
   /** . */
-  private Stream.Char writer;
+  private Stream writer;
 
   /** . */
   private Map<String, RequestParameter> parameters;
@@ -180,7 +181,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     return APPLICATION_CONTEXT;
   }
 
-  public void setContentType(String contentType) {
+  public void setContentType(String mimeType, Charset charset) {
     req.response.headers().put("Content-Type", "text/html; charset=UTF-8");
   }
 
@@ -208,18 +209,9 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   }
 
   @Override
-  public Stream.Char getOutputStream() throws IOException {
+  public Stream getStream(Charset charset) throws IOException {
     if (writer == null) {
-      StringWriter buffer = new StringWriter() {
-        @Override
-        public void close() throws IOException {
-          super.close();
-          req.response.setChunked(true);
-          req.response.write(getBuffer().toString()).end();
-          req.response.close();
-        }
-      };
-      writer = Streams.closeable(buffer);
+      writer = new VertxStream(charset, req.response);
     }
     return writer;
   }

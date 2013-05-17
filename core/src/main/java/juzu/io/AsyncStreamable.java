@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class AsyncStreamable implements Streamable<Stream.Char>, Appendable, Closeable {
+public class AsyncStreamable implements Streamable, Appendable, Closeable {
 
   /** . */
   private final CharBuffer buffer = new CharBuffer(512);
@@ -40,13 +40,9 @@ public class AsyncStreamable implements Streamable<Stream.Char>, Appendable, Clo
   private boolean closed = false;
 
   /** . */
-  private Stream.Char stream = null;
+  private Stream stream = null;
 
-  public Class<Stream.Char> getKind() {
-    return Stream.Char.class;
-  }
-
-  public void send(Stream.Char stream) throws IOException {
+  public void send(Stream stream) throws IOException {
     synchronized (buffer) {
       if (this.stream != null) {
         throw new IllegalStateException("Already streaming");
@@ -61,7 +57,7 @@ public class AsyncStreamable implements Streamable<Stream.Char>, Appendable, Clo
   }
 
   private Appendable delegate() {
-    Stream.Char s = stream;
+    Stream s = stream;
     if (s != null) {
       return s;
     } else {

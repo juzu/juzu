@@ -38,7 +38,7 @@ public class ContextApplicationServletTestCase extends AbstractContextApplicatio
     WebArchive war = createServletDeployment(true, packageName);
     Node node = war.get("/WEB-INF/web.xml");
     ArchivePath path = node.getPath();
-    String s = Tools.read(node.getAsset().openStream(), "UTF-8");
+    String s = Tools.read(node.getAsset().openStream(), Tools.UTF_8);
     s = s.replace("<async-supported>true</async-supported>",
         "<init-param><param-name>juzu.resource_bundle</param-name><param-value>bundle</param-value></init-param>" +
             "<async-supported>true</async-supported>");

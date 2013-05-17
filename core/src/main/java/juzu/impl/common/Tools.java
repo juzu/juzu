@@ -41,6 +41,7 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -60,6 +61,15 @@ import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Tools {
+
+  /** . */
+  public static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+
+  /** . */
+  public static final Charset ISO_8859_2 = Charset.forName("ISO-8859-2");
+
+  /** . */
+  public static final Charset UTF_8 = Charset.forName("UTF-8");
 
   /** . */
   private static final Iterator EMPTY_ITERATOR = new Iterator() {
@@ -248,25 +258,26 @@ public class Tools {
   }
 
   public static String read(InputStream in) throws IOException {
-    return read(in, "UTF-8");
+    return read(in, Tools.UTF_8);
   }
 
-  public static String read(InputStream in, String charsetName) throws IOException {
+  public static String read(InputStream in, Charset charset) throws IOException {
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       copy(in, baos);
-      return baos.toString();
+      return new String(baos.toByteArray(), charset);
     }
     finally {
       safeClose(in);
     }
   }
 
-  public static void copy(InputStream in, OutputStream out) throws IOException {
+  public static <O extends OutputStream> O copy(InputStream in, O out) throws IOException {
     byte[] buffer = new byte[256];
     for (int l;(l = in.read(buffer)) != -1;) {
       out.write(buffer, 0, l);
     }
+    return out;
   }
 
   public static String unquote(String s) throws NullPointerException {

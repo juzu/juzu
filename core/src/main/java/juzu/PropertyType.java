@@ -16,6 +16,7 @@
 
 package juzu;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -50,6 +51,9 @@ public abstract class PropertyType<T> {
 
   /** Mime type. */
   public static PropertyType<String> MIME_TYPE = new PropertyType<String>(){};
+
+  /** Charset. */
+  public static PropertyType<Charset> CHARSET = new PropertyType<Charset>(){};
 
   /** Escape XML. */
   public static PropertyType<Boolean> ESCAPE_XML = new PropertyType<Boolean>(){};

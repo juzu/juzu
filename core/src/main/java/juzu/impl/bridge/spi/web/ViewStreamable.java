@@ -22,38 +22,44 @@ import juzu.io.Streamable;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class ViewStreamable implements Streamable<Stream.Char> {
+class ViewStreamable implements Streamable {
 
   /** . */
-  private final Streamable<Stream.Char> wrapped;
+  private final Streamable wrapped;
 
   /** . */
   private final boolean decorated;
 
-  ViewStreamable(Streamable<Stream.Char> wrapped, boolean decorated) {
+  ViewStreamable(Streamable wrapped, boolean decorated) {
     this.wrapped = wrapped;
     this.decorated = decorated;
   }
 
-  public Class<Stream.Char> getKind() {
-    return Stream.Char.class;
-  }
+  public void send(final Stream stream) throws IOException {
 
-  public void send(final Stream.Char stream) throws IOException {
-
-    Stream.Char our = new Stream.Char() {
-      public Char append(java.lang.CharSequence csq) throws IOException {
+    Stream our = new Stream() {
+      public Stream append(java.lang.CharSequence csq) throws IOException {
         stream.append(csq);
         return this;
       }
 
-      public Char append(java.lang.CharSequence csq, int start, int end) throws IOException {
+      public Stream append(java.lang.CharSequence csq, int start, int end) throws IOException {
         stream.append(csq, start, end);
         return this;
       }
 
-      public Char append(char c) throws IOException {
+      public Stream append(char c) throws IOException {
         stream.append(c);
+        return this;
+      }
+
+      public Stream append(byte[] data) throws IOException {
+        stream.append(data);
+        return this;
+      }
+
+      public Stream append(byte[] data, int off, int len) throws IOException {
+        stream.append(data, off, len);
         return this;
       }
 
@@ -77,7 +83,7 @@ class ViewStreamable implements Streamable<Stream.Char> {
     wrapped.send(our);
   }
 
-  private void sendFooter(Stream.Char writer) throws IOException {
+  private void sendFooter(Stream writer) throws IOException {
     writer.append("</body>\n");
     writer.append("</html>\n");
   }

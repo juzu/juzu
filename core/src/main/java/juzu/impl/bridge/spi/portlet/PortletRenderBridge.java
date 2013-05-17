@@ -25,6 +25,8 @@ import juzu.impl.common.Formatting;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.inject.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
+import juzu.io.Stream;
+import juzu.io.Streams;
 import juzu.request.Phase;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
@@ -37,6 +39,7 @@ import javax.portlet.ResourceURL;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -49,6 +52,18 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
   @Override
   protected Phase getPhase() {
     return Phase.VIEW;
+  }
+
+  @Override
+  public Stream createStream(String mimeType, Charset charset) throws IOException {
+    if (mimeType != null) {
+      this.resp.setContentType(mimeType);
+    }
+
+    // We use a writer during render phase as the developer may have set
+    // a charset that is not the portlet container provided charset
+    // and therefore it is safer to use the writer of the portlet container
+    return Streams.closeable(charset, this.resp.getWriter());
   }
 
   @Override

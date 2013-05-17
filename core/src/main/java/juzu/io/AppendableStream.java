@@ -19,39 +19,65 @@ package juzu.io;
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BinaryOutputStream extends BinaryStream {
+public class AppendableStream extends CharStream {
 
   /** . */
-  private final OutputStream out;
+  private final Appendable out;
 
-  public BinaryOutputStream(Charset charset, OutputStream out) {
+  /** . */
+  private final Flushable flushable;
+
+  /** . */
+  private final Closeable closeable;
+
+  public AppendableStream(Charset charset, Appendable out) {
     super(charset);
 
     //
     this.out = out;
+    this.flushable = null;
+    this.closeable = null;
+  }
+
+  public AppendableStream(Charset charset, Appendable out, Flushable flushable, Closeable closeable) {
+    super(charset);
+
+    //
+    this.out = out;
+    this.flushable = flushable;
+    this.closeable = closeable;
   }
 
   @Override
-  public BinaryStream append(byte[] data, int off, int len) throws IOException {
-    out.write(data, off, len);
+  public Stream append(CharSequence csq) throws IOException {
+    out.append(csq);
     return this;
   }
 
   @Override
-  public BinaryStream append(byte[] data) throws IOException {
-    out.write(data);
+  public Stream append(CharSequence csq, int start, int end) throws IOException {
+    out.append(csq, start, end);
     return this;
   }
 
-  public void flush() throws IOException {
-    out.flush();
+  @Override
+  public Stream append(char c) throws IOException {
+    out.append(c);
+    return this;
   }
 
   public void close() throws IOException {
-    out.close();
+    if (closeable != null) {
+      closeable.close();
+    }
+  }
+
+  public void flush() throws IOException {
+    if (flushable != null) {
+      flushable.flush();
+    }
   }
 }

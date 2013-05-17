@@ -19,6 +19,9 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.ResourceBridge;
+import juzu.impl.common.Tools;
+import juzu.io.Stream;
+import juzu.io.Streams;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
 
@@ -26,6 +29,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge {
@@ -38,6 +42,25 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
 
     //
     this.clientContext = new PortletClientContext(request);
+  }
+
+  @Override
+  public Stream createStream(String mimeType, Charset charset) throws IOException {
+    if (mimeType != null) {
+      resp.setContentType(mimeType);
+    }
+
+    //
+    if (charset == null) {
+      // We use ISO-8859-1 in case the the developer has not set a charset
+      // but it will send chars instead of bytes
+      charset = Tools.ISO_8859_1;
+    } else {
+      resp.setCharacterEncoding(charset.name());
+    }
+
+    //
+    return Streams.closeable(charset, this.resp.getPortletOutputStream());
   }
 
   @Override

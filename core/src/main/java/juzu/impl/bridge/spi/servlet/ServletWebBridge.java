@@ -23,6 +23,8 @@ import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
+import juzu.io.AppendableStream;
+import juzu.io.BinaryOutputStream;
 import juzu.request.ApplicationContext;
 import juzu.request.RequestParameter;
 import juzu.request.ClientContext;
@@ -31,6 +33,7 @@ import juzu.request.UserContext;
 import juzu.io.Stream;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +42,7 @@ import javax.servlet.http.HttpUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -188,19 +192,16 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   }
 
   @Override
-  public Stream.Char getOutputStream() throws IOException {
-    return new StreamImpl(resp.getWriter());
+  public Stream getStream(Charset charset) throws IOException {
+    return new StreamImpl(charset, resp.getOutputStream());
   }
 
   @Override
-  protected void end(Stream.Char stream) {
+  protected void end(Stream stream) {
     ((StreamImpl)stream).end();
   }
 
-  class StreamImpl implements Stream.Char {
-
-    /** . */
-    private final PrintWriter writer;
+  class StreamImpl extends BinaryOutputStream {
 
     /** . */
     private boolean closed;
@@ -208,27 +209,8 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     /** . */
     private AsyncContext context;
 
-    StreamImpl(PrintWriter writer) {
-      this.writer = writer;
-    }
-
-    public Char append(CharSequence csq) throws IOException {
-      writer.append(csq);
-      return this;
-    }
-
-    public Char append(CharSequence csq, int start, int end) throws IOException {
-      writer.append(csq, start, end);
-      return this;
-    }
-
-    public Char append(char c) throws IOException {
-      writer.append(c);
-      return this;
-    }
-
-    public void flush() throws IOException {
-      writer.flush();
+    StreamImpl(Charset charset, ServletOutputStream out) {
+      super(charset, out);
     }
 
     public void close() throws IOException {
@@ -313,8 +295,9 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     resp.sendRedirect(location);
   }
 
-  public void setContentType(String contentType) {
-    resp.setContentType(contentType);
+  public void setContentType(String mimeType, Charset charset) {
+    resp.setCharacterEncoding(charset.name());
+    resp.setContentType(mimeType);
   }
 
   public void setStatus(int status) {

@@ -18,6 +18,7 @@ package juzu.template;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.impl.common.Tools;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
 import juzu.io.Streams;
@@ -42,7 +43,7 @@ public class TemplateRenderContext {
   private PropertyMap properties;
 
   /** . */
-  protected Stream.Char printer;
+  protected Stream printer;
 
   /** . */
   private final TemplateStub stub;
@@ -74,7 +75,7 @@ public class TemplateRenderContext {
     return locale;
   }
 
-  public Stream.Char getPrinter() {
+  public Stream getPrinter() {
     return printer;
   }
 
@@ -98,11 +99,11 @@ public class TemplateRenderContext {
 
   public StringBuilder render() throws IOException {
     StringBuilder buffer = new StringBuilder();
-    render(Streams.appendable(buffer));
+    render(Streams.appendable(Tools.UTF_8, buffer));
     return buffer;
   }
 
-  public void render(Stream.Char printer) throws IOException {
+  public void render(Stream printer) throws IOException {
     if (this.printer != null) {
       throw new IllegalStateException("Already rendering");
     }

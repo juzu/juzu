@@ -18,6 +18,7 @@ package plugin.template.ioe;
 
 import juzu.Path;
 import juzu.Response;
+import juzu.impl.common.Tools;
 import juzu.io.UndeclaredIOException;
 import juzu.View;
 import juzu.io.Stream;
@@ -37,7 +38,7 @@ public class A {
   @View
   public Response.Content index() {
     String ret = "";
-    Stream.Char printer = Streams.appendable(new Appendable() {
+    Stream printer = Streams.appendable(Tools.UTF_8, new Appendable() {
       public Appendable append(CharSequence csq) throws IOException {
         throw new IOException();
       }

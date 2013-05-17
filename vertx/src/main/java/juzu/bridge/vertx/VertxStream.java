@@ -13,32 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.io;
+
+package juzu.bridge.vertx;
+
+import juzu.io.BinaryStream;
+import org.jboss.netty.buffer.ChannelBuffers;
+import org.vertx.java.core.buffer.Buffer;
+import org.vertx.java.core.http.HttpServerResponse;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class BaseCharStream implements Stream.Char {
+public class VertxStream extends BinaryStream {
 
   /** . */
-  static final BaseCharStream INSTANCE = new BaseCharStream();
+  private final HttpServerResponse resp;
 
-  BaseCharStream() {
+  public VertxStream(Charset charset, HttpServerResponse resp) {
+    super(charset);
+
+    //
+    resp.setChunked(true);
+
+    //
+    this.resp = resp;
   }
 
-  public Char append(CharSequence csq) throws IOException {
+  @Override
+  public BinaryStream append(byte[] data, int off, int len) throws IOException {
+    resp.write(new Buffer(ChannelBuffers.wrappedBuffer(data, off, len)));
     return this;
   }
 
-  public Char append(CharSequence csq, int start, int end) throws IOException {
-    return this;
-  }
-
-  public Char append(char c) throws IOException {
+  @Override
+  public BinaryStream append(byte[] data) throws IOException {
+    resp.write(new Buffer(ChannelBuffers.wrappedBuffer(data)));
     return this;
   }
 
   public void close() throws IOException {
+    resp.end();
+    resp.close();
   }
 
   public void flush() throws IOException {

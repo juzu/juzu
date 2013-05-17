@@ -19,11 +19,10 @@ package juzu.test.protocol.mock;
 import juzu.Response;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
-import juzu.io.Streamable;
 import juzu.io.Streams;
 import juzu.io.BinaryOutputStream;
-import juzu.io.Stream;
 import juzu.test.AbstractTestCase;
 import org.junit.Assert;
 
@@ -46,10 +45,9 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
 
   public String assertStringResult() {
     Response.Content content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
-    AbstractTestCase.assertEquals(Stream.Char.class, content.getStreamable().getKind());
     try {
       StringBuilder builder = new StringBuilder();
-      ((Streamable)content.getStreamable()).send(Streams.appendable(builder));
+      content.getStreamable().send(Streams.appendable(Tools.UTF_8, builder));
       return builder.toString();
     }
     catch (IOException e) {
@@ -59,11 +57,10 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
 
   public byte[] assertBinaryResult() {
     Response.Content content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
-    AbstractTestCase.assertEquals(Stream.Binary.class, content.getStreamable().getKind());
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      BinaryOutputStream bos = new BinaryOutputStream(baos);
-      ((Streamable)content.getStreamable()).send(bos);
+      BinaryOutputStream bos = new BinaryOutputStream(Tools.UTF_8, baos);
+      content.getStreamable().send(bos);
       return baos.toByteArray();
     }
     catch (IOException e) {

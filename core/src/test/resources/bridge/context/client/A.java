@@ -49,7 +49,7 @@ public class A {
 
   private void test(ClientContext client) throws IOException {
     InputStream in = client.getInputStream();
-    AbstractContextClientTestCase.content = Tools.read(in, " UTF-8");
+    AbstractContextClientTestCase.content = Tools.read(in, Tools.UTF_8);
     AbstractContextClientTestCase.contentLength = client.getContentLenth();
     AbstractContextClientTestCase.charset = client.getCharacterEncoding();
     AbstractContextClientTestCase.contentType = client.getContentType();

@@ -21,25 +21,18 @@ import java.io.Flushable;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Stream extends Flushable, Closeable {
+public interface Stream extends Flushable, Closeable, Appendable {
 
-  /** A stream that extends the appendable interface. */
-  interface Char extends Stream, Appendable {
+  /** . */
+  int BUFFER_SIZE = 512;
 
-    Char append(CharSequence csq) throws IOException;
+  Stream append(CharSequence csq) throws IOException;
 
-    Char append(CharSequence csq, int start, int end) throws IOException;
+  Stream append(CharSequence csq, int start, int end) throws IOException;
 
-    Char append(char c) throws IOException;
+  Stream append(char c) throws IOException;
 
-  }
+  Stream append(byte[] data) throws IOException;
 
-  /** A binary stream. */
-  interface Binary extends Stream {
-
-    Binary append(byte[] data) throws IOException;
-
-    Binary append(byte[] data, int off, int len) throws IOException;
-
-  }
+  Stream append(byte[] data, int off, int len) throws IOException;
 }

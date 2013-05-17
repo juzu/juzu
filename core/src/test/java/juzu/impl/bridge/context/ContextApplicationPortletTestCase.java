@@ -38,7 +38,7 @@ public class ContextApplicationPortletTestCase extends AbstractContextApplicatio
     WebArchive war = createPortletDeployment(packageName);
     Node node = war.get("WEB-INF/portlet.xml");
     ArchivePath path = node.getPath();
-    String s = Tools.read(node.getAsset().openStream(), "UTF-8");
+    String s = Tools.read(node.getAsset().openStream(), Tools.UTF_8);
     s = s.replace("<portlet-info>", "<resource-bundle>bundle</resource-bundle>" + "<portlet-info>");
     war.delete(path);
     war.add(new StringAsset(s), path);

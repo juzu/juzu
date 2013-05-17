@@ -18,6 +18,7 @@ package juzu.template;
 
 import juzu.PropertyMap;
 import juzu.Response;
+import juzu.impl.common.Tools;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Request;
@@ -263,7 +264,7 @@ public abstract class Template {
    * @throws TemplateExecutionException any execution exception
    * @throws UndeclaredIOException      any io exception
    */
-  public void renderTo(Stream.Char printer) throws TemplateExecutionException, UndeclaredIOException {
+  public void renderTo(Stream printer) throws TemplateExecutionException, UndeclaredIOException {
     with().renderTo(printer);
   }
 
@@ -276,7 +277,7 @@ public abstract class Template {
    * @throws UndeclaredIOException      any io exception
 
    */
-  public void renderTo(Stream.Char printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException {
+  public void renderTo(Stream printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException {
     with(locale).renderTo(printer);
   }
 
@@ -288,7 +289,7 @@ public abstract class Template {
    * @throws TemplateExecutionException any execution exception
    * @throws UndeclaredIOException      any io exception
    */
-  public void renderTo(Stream.Char printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
+  public void renderTo(Stream printer, Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
     with(parameters).renderTo(printer);
   }
 
@@ -349,7 +350,7 @@ public abstract class Template {
       }
     }
 
-    private void doRender(PropertyMap properties, Stream.Char stream) {
+    private void doRender(PropertyMap properties, Stream stream) {
       try {
 
         // Get the specified locale or the current user's one
@@ -484,7 +485,7 @@ public abstract class Template {
     public final Response.Render status(int status) {
       StringBuilder sb = new StringBuilder();
       PropertyMap properties = new PropertyMap();
-      doRender(properties, Streams.appendable(sb));
+      doRender(properties, Streams.appendable(Tools.UTF_8, sb));
       return new Response.Render(status, properties,  new Streamable.CharSequence(sb));
     }
 
@@ -496,7 +497,7 @@ public abstract class Template {
      * @throws UndeclaredIOException      any io exception
      */
     public <A extends Appendable> A renderTo(A appendable) throws TemplateExecutionException, UndeclaredIOException {
-      renderTo(Streams.appendable(appendable));
+      renderTo(Streams.appendable(Tools.UTF_8, appendable));
       return appendable;
     }
 
@@ -507,7 +508,7 @@ public abstract class Template {
      * @throws TemplateExecutionException any execution exception
      * @throws UndeclaredIOException      any io exception
      */
-    public void renderTo(Stream.Char printer) throws TemplateExecutionException, UndeclaredIOException {
+    public void renderTo(Stream printer) throws TemplateExecutionException, UndeclaredIOException {
       if (printer == null) {
         throw new NullPointerException("No null printe provided");
       }

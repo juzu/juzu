@@ -17,6 +17,7 @@
 package juzu.impl.template.spi.juzu.ast;
 
 import juzu.impl.common.Name;
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.ProcessContext;
@@ -112,6 +113,6 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
   public void render(String text, Map<String, ?> attributes, Locale locale, Appendable appendable) throws IOException, TemplateExecutionException {
     GroovyTemplateStub template = template(text);
     TemplateRenderContext renderContext = new TemplateRenderContext(template, null, attributes, locale);
-    renderContext.render(Streams.appendable(appendable));
+    renderContext.render(Streams.appendable(Tools.UTF_8, appendable));
   }
 }

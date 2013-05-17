@@ -111,14 +111,10 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         properties.addValues(PropertyType.SCRIPT, "juzu.ajax");
 
         //
-        final Streamable<Stream.Char> decorated = (Streamable<Stream.Char>)render.getStreamable();
-        Streamable<Stream.Char> decorator = new Streamable<Stream.Char>() {
+        final Streamable decorated = (Streamable)render.getStreamable();
+        Streamable decorator = new Streamable() {
 
-          public Class<Stream.Char> getKind() {
-            return Stream.Char.class;
-          }
-
-          public void send(final Stream.Char stream) throws IOException {
+          public void send(final Stream stream) throws IOException {
             // FOR NOW WE DO WITH THE METHOD NAME
             // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
 
@@ -137,19 +133,29 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
             }
 
             // The page
-            decorated.send(new Stream.Char() {
-              public Char append(java.lang.CharSequence csq) throws IOException {
+            decorated.send(new Stream() {
+              public Stream append(java.lang.CharSequence csq) throws IOException {
                 stream.append(csq);
                 return this;
               }
 
-              public Char append(java.lang.CharSequence csq, int start, int end) throws IOException {
+              public Stream append(java.lang.CharSequence csq, int start, int end) throws IOException {
                 stream.append(csq, start, end);
                 return this;
               }
 
-              public Char append(char c) throws IOException {
+              public Stream append(char c) throws IOException {
                 stream.append(c);
+                return this;
+              }
+
+              public Stream append(byte[] data) throws IOException {
+                stream.append(data);
+                return this;
+              }
+
+              public Stream append(byte[] data, int off, int len) throws IOException {
+                stream.append(data, off, len);
                 return this;
               }
 

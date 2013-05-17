@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package bridge.servlet.route.view.pathparamencoding;
+package bridge.response.charset.resource;
 
+import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
+import juzu.impl.bridge.response.AbstractResponseCharsetResourceTestCase;
 import juzu.test.AbstractTestCase;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
 public class A {
 
   @View
   public Response.Render index() {
-    return Response.ok("<a id='trigger' href='" + A_.foo(AbstractTestCase.EURO) + "'>click</div>");
+    AbstractResponseCharsetResourceTestCase.url = "" + A_.resource();
+    return Response.ok("");
   }
 
-  @View
-  @Route("/foo/{juu}")
-  public Response.Render foo(String juu) {
-    return Response.ok(AbstractTestCase.EURO.equals(juu) ? "pass" : "fail");
+  @Resource
+  @Route("/resource")
+  public Response.Content resource() {
+    return Response.ok("content[" + AbstractTestCase.EURO + "]").withCharset(AbstractResponseCharsetResourceTestCase.charset).withMimeType("text/html");
   }
 }

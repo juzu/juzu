@@ -45,6 +45,9 @@ import java.util.NoSuchElementException;
 //@RunWith(JUnit38ClassRunner.class)
 public abstract class AbstractTestCase extends Assert {
 
+  /** Encoding proof euro sign. */
+  public static final String EURO = "\u20AC";
+
   @Before
   public void setUp() throws Exception {
     Registry.clear();

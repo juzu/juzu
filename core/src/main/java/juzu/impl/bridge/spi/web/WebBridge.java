@@ -22,8 +22,8 @@ import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Formatting;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopedContext;
-import juzu.io.Streamable;
 import juzu.request.ApplicationContext;
 import juzu.request.RequestParameter;
 import juzu.io.Stream;
@@ -34,6 +34,7 @@ import juzu.request.UserContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -66,7 +67,7 @@ public abstract class WebBridge {
     }
   }
 
-  public final Stream.Char send(Response.Content content, boolean decorated) throws IOException {
+  public final Stream send(Response.Content content, boolean decorated) throws IOException {
 
     //
     PropertyMap properties = content.getProperties();
@@ -78,7 +79,13 @@ public abstract class WebBridge {
     }
 
     //
-    setContentType(content.getMimeType());
+    Charset charset = content.getCharset();
+    if (charset == null) {
+      charset = Tools.ISO_8859_1;
+    }
+
+    //
+    setContentType(content.getMimeType(), charset);
     Iterable<Map.Entry<String, String[]>> headers = properties.getValues(PropertyType.HEADER);
     if (headers != null) {
       for (Map.Entry<String, String[]> entry : headers) {
@@ -87,7 +94,7 @@ public abstract class WebBridge {
     }
 
     //
-    Stream.Char stream = getOutputStream();
+    Stream stream = getStream(charset);
 
     // Send page header
     if (decorated) {
@@ -95,28 +102,23 @@ public abstract class WebBridge {
     }
 
     // Send response
-    if (content.getStreamable().getKind() == Stream.Char.class) {
-      ViewStreamable vs = new ViewStreamable((Streamable)content.getStreamable(), decorated);
-      try {
-        vs.send(stream);
-      }
-      finally {
-        end(stream);
-      }
-    } else {
-      stream.close();
-      throw new UnsupportedOperationException("Not yet handled");
+    ViewStreamable vs = new ViewStreamable(content.getStreamable(), decorated);
+    try {
+      vs.send(stream);
+    }
+    finally {
+      end(stream);
     }
 
     //
     return stream;
   }
 
-  protected void end(Stream.Char stream) {
+  protected void end(Stream stream) {
     // Do nothing by default
   }
 
-  private void sendHeader(PropertyMap properties, Stream.Char writer) throws IOException {
+  private void sendHeader(PropertyMap properties, Stream writer) throws IOException {
     //
     writer.append("<!DOCTYPE html>\n");
     writer.append("<html>\n");
@@ -210,7 +212,7 @@ public abstract class WebBridge {
 
   //
 
-  public abstract void setContentType(String contentType);
+  public abstract void setContentType(String mimeType, Charset charset);
 
   public abstract void setStatus(int status);
 
@@ -218,7 +220,7 @@ public abstract class WebBridge {
 
   public abstract void sendRedirect(String location) throws IOException;
 
-  public abstract Stream.Char getOutputStream() throws IOException;
+  public abstract Stream getStream(Charset charset) throws IOException;
 
 
 

@@ -20,10 +20,8 @@ import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.Formatting;
-import juzu.io.Streamable;
-import juzu.io.Streams;
-import juzu.io.BinaryOutputStream;
 import juzu.io.Stream;
+import juzu.io.Streams;
 
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
@@ -31,6 +29,7 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge {
@@ -39,6 +38,8 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
     super(bridge, request, response, config);
   }
 
+  public abstract Stream createStream(String mimeType, Charset charset) throws IOException;
+
   @Override
   public void send() throws IOException, PortletException {
     if (response instanceof Response.Content) {
@@ -46,22 +47,14 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
       //
       Response.Content content = (Response.Content)response;
 
-      //
-      String mimeType = content.getMimeType();
-      if (mimeType != null) {
-        this.resp.setContentType(mimeType);
-      }
-
       // Send properties
       sendProperties();
 
+      //
+      Stream stream = createStream(content.getMimeType(), content.getCharset());
+
       // Send content
-      if (content.getStreamable().getKind() == Stream.Char.class) {
-        ((Streamable)content.getStreamable()).send(Streams.closeable(this.resp.getWriter()));
-      }
-      else {
-        ((Streamable)content.getStreamable()).send(new BinaryOutputStream(this.resp.getPortletOutputStream()));
-      }
+      content.getStreamable().send(stream);
     } else if (response instanceof Response.Error) {
       Response.Error error = (Response.Error)response;
       if (bridge.module.context.getRunMode().getPrettyFail()) {

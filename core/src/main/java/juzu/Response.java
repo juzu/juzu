@@ -17,11 +17,11 @@
 package juzu;
 
 import juzu.impl.common.Tools;
-import juzu.io.Stream;
 import juzu.io.Streamable;
 import juzu.request.Dispatch;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
@@ -298,7 +298,7 @@ public abstract class Response {
     private int status;
 
     /** . */
-    private Streamable<?> streamable;
+    private Streamable streamable;
 
     protected Content(int status) {
       this.status = status;
@@ -313,12 +313,12 @@ public abstract class Response {
       this.streamable = null;
     }
 
-    protected Content(int status, Streamable<?> streamable) {
+    protected Content(int status, Streamable streamable) {
       this.status = status;
       this.streamable = streamable;
     }
 
-    protected Content(int status, PropertyMap properties, Streamable<?> streamable) {
+    protected Content(int status, PropertyMap properties, Streamable streamable) {
       super(properties);
 
       //
@@ -326,12 +326,21 @@ public abstract class Response {
       this.streamable = streamable;
     }
 
-    public Streamable<?> getStreamable() {
+    public Streamable getStreamable() {
       return streamable;
     }
 
     public String getMimeType() {
       return properties.getValue(PropertyType.MIME_TYPE);
+    }
+
+    public Charset getCharset() {
+      return properties.getValue(PropertyType.CHARSET);
+    }
+
+    public Content withCharset(Charset charset) {
+      properties.setValue(PropertyType.CHARSET, charset);
+      return this;
     }
 
     public Content withMimeType(String mimeType) {
@@ -396,23 +405,28 @@ public abstract class Response {
       return (Render)super.withMimeType(mimeType);
     }
 
+    @Override
+    public Render withCharset(Charset charset) {
+      return (Render)super.withCharset(charset);
+    }
+
     public Render() {
       super(200);
     }
 
-    public Render(int status, PropertyMap properties, Streamable<Stream.Char> streamable) {
+    public Render(int status, PropertyMap properties, Streamable streamable) {
       super(status, properties, streamable);
     }
 
-    public Render(int status, Streamable<Stream.Char> streamable) {
+    public Render(int status, Streamable streamable) {
       super(status, streamable);
     }
 
-    public Render(PropertyMap properties, Streamable<Stream.Char> streamable) {
+    public Render(PropertyMap properties, Streamable streamable) {
       super(200, properties, streamable);
     }
 
-    public Render(Streamable<Stream.Char> streamable) {
+    public Render(Streamable streamable) {
       super(200, streamable);
     }
 
@@ -541,7 +555,7 @@ public abstract class Response {
     return content(code, new Streamable.CharSequence(content));
   }
 
-  public static Render content(int code, Streamable<Stream.Char> content) {
+  public static Render content(int code, Streamable content) {
     return new Render(code, content);
   }
 

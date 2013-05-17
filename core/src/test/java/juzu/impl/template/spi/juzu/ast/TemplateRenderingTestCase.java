@@ -16,6 +16,7 @@
 
 package juzu.impl.template.spi.juzu.ast;
 
+import juzu.impl.common.Tools;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateStub;
 import juzu.io.Streams;
 import juzu.template.TemplateExecutionException;
@@ -362,7 +363,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
     out = null;
     Writer writer = new StringWriter();
     GroovyTemplateStub template = template("<% " + TemplateRenderingTestCase.class.getName() + ".out = out; %>");
-    new TemplateRenderContext(template).render(Streams.closeable(writer));
+    new TemplateRenderContext(template).render(Streams.closeable(Tools.UTF_8, writer));
     assertNotNull(out);
   }
 

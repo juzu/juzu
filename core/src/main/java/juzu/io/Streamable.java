@@ -21,9 +21,9 @@ import juzu.impl.common.Tools;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Streamable<S extends Stream> {
+public interface Streamable {
 
-  public static class CharSequence implements Streamable<Stream.Char> {
+  public static class CharSequence implements Streamable {
 
     private final java.lang.CharSequence s;
 
@@ -31,11 +31,7 @@ public interface Streamable<S extends Stream> {
       this.s = s;
     }
 
-    public Class<Stream.Char> getKind() {
-      return Stream.Char.class;
-    }
-
-    public void send(Stream.Char stream) throws IOException {
+    public void send(Stream stream) throws IOException {
       try {
         stream.append(s);
       }
@@ -45,7 +41,7 @@ public interface Streamable<S extends Stream> {
     }
   }
 
-  public static class InputStream implements Streamable<Stream.Binary> {
+  public static class InputStream implements Streamable {
 
     /** . */
     private final java.io.InputStream in;
@@ -54,11 +50,7 @@ public interface Streamable<S extends Stream> {
       this.in = in;
     }
 
-    public Class<Stream.Binary> getKind() {
-      return Stream.Binary.class;
-    }
-
-    public void send(Stream.Binary stream) throws IOException {
+    public void send(Stream stream) throws IOException {
       byte[] buffer = new byte[256];
       for (int l;(l = in.read(buffer)) != -1;) {
         stream.append(buffer, 0, l);
@@ -66,8 +58,6 @@ public interface Streamable<S extends Stream> {
     }
   }
 
-  Class<S> getKind();
-
-  void send(S stream) throws IOException;
+  void send(Stream stream) throws IOException;
 
 }
