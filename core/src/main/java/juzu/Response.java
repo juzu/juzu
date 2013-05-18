@@ -18,6 +18,7 @@ package juzu;
 
 import juzu.impl.common.Tools;
 import juzu.io.Streamable;
+import juzu.io.Streams;
 import juzu.request.Dispatch;
 
 import java.io.InputStream;
@@ -543,12 +544,36 @@ public abstract class Response {
     return new Response.Redirect(location);
   }
 
+  public static Content ok(InputStream content) {
+    return content(200, content);
+  }
+
+  public static Render ok(Readable content) {
+    return content(200, content);
+  }
+
   public static Render ok(CharSequence content) {
     return content(200, content);
   }
 
+  public static Content notFound(InputStream content) {
+    return content(404, content);
+  }
+
+  public static Render notFound(Readable content) {
+    return content(404, content);
+  }
+
   public static Render notFound(CharSequence content) {
     return content(404, content);
+  }
+
+  public static Content content(int code, InputStream content) {
+    return content(code, new Streamable.InputStream(content));
+  }
+
+  public static Render content(int code, Readable content) {
+    return content(code, Streams.streamable(content));
   }
 
   public static Render content(int code, CharSequence content) {
@@ -557,26 +582,6 @@ public abstract class Response {
 
   public static Render content(int code, Streamable content) {
     return new Render(code, content);
-  }
-
-  private static Render content(int code, String mimeType, CharSequence content) {
-    return new Render(code, new Streamable.CharSequence(content)).withMimeType(mimeType);
-  }
-
-  public static Content ok(InputStream content) {
-    return content(200, null, content);
-  }
-
-  public static Content notFound(InputStream content) {
-    return content(404, null, content);
-  }
-
-  public static Content content(int code, InputStream content) {
-    return content(code, null, content);
-  }
-
-  private static Content content(int code, String mimeType, InputStream content) {
-    return new Content(code, new Streamable.InputStream(content)).withMimeType(mimeType);
   }
 
   public static Error error(Throwable t) {

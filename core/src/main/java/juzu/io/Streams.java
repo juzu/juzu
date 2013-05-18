@@ -62,6 +62,22 @@ public class Streams {
     };
   }
 
+  public static Streamable streamable(final Readable readable) {
+    return new Streamable() {
+      public void send(Stream stream) throws IOException {
+        CharBuffer buffer = CharBuffer.allocate(512);
+        for (int i = readable.read(buffer);i != -1;i = readable.read(buffer)) {
+          buffer.flip();
+          stream.append(buffer);
+          buffer.clear();
+        }
+        if (readable instanceof Closeable) {
+          ((Closeable)readable).close();
+        }
+      }
+    };
+  }
+
   public static Stream appendable(Charset charset, Appendable appendable) {
     return new AppendableStream(charset, appendable);
   }
