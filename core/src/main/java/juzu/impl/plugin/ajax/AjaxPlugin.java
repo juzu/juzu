@@ -39,6 +39,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -134,8 +136,18 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
             // The page
             decorated.send(new Stream() {
+              public Stream append(ByteBuffer buffer) throws IOException {
+                stream.append(buffer);
+                return this;
+              }
+
               public Stream append(java.lang.CharSequence csq) throws IOException {
                 stream.append(csq);
+                return this;
+              }
+
+              public Stream append(CharBuffer buffer) throws IOException {
+                stream.append(buffer);
                 return this;
               }
 

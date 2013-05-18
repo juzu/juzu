@@ -51,10 +51,10 @@ public abstract class CharStream implements Stream {
   }
 
   public Stream append(byte[] data, int off, int len) throws IOException {
-    return encode(ByteBuffer.wrap(data, off, len));
+    return append(ByteBuffer.wrap(data, off, len));
   }
 
-  private Stream encode(ByteBuffer buffer) throws IOException {
+  public Stream append(ByteBuffer buffer) throws IOException {
     if (buffer.hasRemaining()) {
       if (decoder == null) {
         decoder = charset.newDecoder().onUnmappableCharacter(CodingErrorAction.REPORT).onMalformedInput(CodingErrorAction.IGNORE);
@@ -68,7 +68,7 @@ public abstract class CharStream implements Stream {
         if (result.isUnderflow() || result.isOverflow()) {
           bb.flip();
           if (bb.hasRemaining()) {
-            append(bb, bb.arrayOffset() + bb.position(), bb.limit() - bb.arrayOffset());
+            append(bb);
           }
           bb.clear();
           if (result.isUnderflow()) {
@@ -87,6 +87,11 @@ public abstract class CharStream implements Stream {
         }
       }
     }
+    return this;
+  }
+
+  public Stream append(CharBuffer buffer) throws IOException {
+    append(buffer, buffer.arrayOffset() + buffer.position(), buffer.limit() - buffer.arrayOffset());
     return this;
   }
 }

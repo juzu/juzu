@@ -46,30 +46,7 @@ public abstract class BinaryStream implements Stream {
     this.charset = charset;
   }
 
-  public abstract BinaryStream append(byte[] data, int off, int len) throws IOException;
-
-  public abstract BinaryStream append(byte[] data) throws IOException;
-
-  public Stream append(CharSequence csq) throws IOException {
-    return append(csq, 0, csq.length());
-  }
-
-  public Stream append(CharSequence csq, int start, int end) throws IOException {
-    return encode(CharBuffer.wrap(csq, start, end));
-  }
-
-  public Stream append(char c) throws IOException {
-    if (single == null) {
-      single = CharBuffer.allocate(1);
-    } else {
-      single.compact();
-    }
-    single.put(c);
-    single.flip();
-    return encode(single);
-  }
-
-  private Stream encode(CharBuffer buffer) throws IOException {
+  public Stream append(CharBuffer buffer) throws IOException {
     if (buffer.hasRemaining()) {
       if (encoder == null) {
         encoder = charset.newEncoder().onUnmappableCharacter(CodingErrorAction.REPORT).onMalformedInput(CodingErrorAction.IGNORE);
@@ -83,7 +60,7 @@ public abstract class BinaryStream implements Stream {
         if (result.isUnderflow() || result.isOverflow()) {
           bb.flip();
           if (bb.hasRemaining()) {
-            append(bb.array(), bb.arrayOffset() + bb.position(), bb.limit() - bb.arrayOffset());
+            append(bb);
           }
           bb.clear();
           if (result.isUnderflow()) {
@@ -103,5 +80,33 @@ public abstract class BinaryStream implements Stream {
       }
     }
     return this;
+  }
+
+  public abstract BinaryStream append(byte[] data, int off, int len) throws IOException;
+
+  public abstract BinaryStream append(byte[] data) throws IOException;
+
+  public Stream append(ByteBuffer buffer) throws IOException {
+    append(bb.array(), bb.arrayOffset() + bb.position(), bb.limit() - bb.arrayOffset());
+    return this;
+  }
+
+  public Stream append(CharSequence csq) throws IOException {
+    return append(csq, 0, csq.length());
+  }
+
+  public Stream append(CharSequence csq, int start, int end) throws IOException {
+    return append(CharBuffer.wrap(csq, start, end));
+  }
+
+  public Stream append(char c) throws IOException {
+    if (single == null) {
+      single = CharBuffer.allocate(1);
+    } else {
+      single.compact();
+    }
+    single.put(c);
+    single.flip();
+    return append(single);
   }
 }

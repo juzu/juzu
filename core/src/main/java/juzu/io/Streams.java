@@ -20,6 +20,8 @@ import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
 
@@ -32,6 +34,12 @@ public class Streams {
 
   public static Stream empty() {
     return new Stream() {
+      public Stream append(ByteBuffer buffer) throws IOException {
+        return this;
+      }
+      public Stream append(CharBuffer buffer) throws IOException {
+        return this;
+      }
       public Stream append(CharSequence csq) throws IOException {
         return this;
       }

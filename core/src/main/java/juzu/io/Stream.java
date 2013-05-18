@@ -19,6 +19,8 @@ package juzu.io;
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface Stream extends Flushable, Closeable, Appendable {
@@ -26,9 +28,13 @@ public interface Stream extends Flushable, Closeable, Appendable {
   /** . */
   int BUFFER_SIZE = 512;
 
+  Stream append(CharBuffer buffer) throws IOException;
+
   Stream append(CharSequence csq) throws IOException;
 
   Stream append(CharSequence csq, int start, int end) throws IOException;
+
+  Stream append(ByteBuffer buffer) throws IOException;
 
   Stream append(char c) throws IOException;
 

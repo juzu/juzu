@@ -20,6 +20,8 @@ import juzu.io.Stream;
 import juzu.io.Streamable;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class ViewStreamable implements Streamable {
@@ -38,6 +40,17 @@ class ViewStreamable implements Streamable {
   public void send(final Stream stream) throws IOException {
 
     Stream our = new Stream() {
+
+      public Stream append(ByteBuffer buffer) throws IOException {
+        stream.append(buffer);
+        return this;
+      }
+
+      public Stream append(CharBuffer buffer) throws IOException {
+        stream.append(buffer);
+        return this;
+      }
+
       public Stream append(java.lang.CharSequence csq) throws IOException {
         stream.append(csq);
         return this;
