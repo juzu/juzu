@@ -30,7 +30,7 @@ public class A {
   ResourceBundle bundle;
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     AbstractBundleInjectionTestCase.bundle = bundle;
     return Response.ok("pass");
   }

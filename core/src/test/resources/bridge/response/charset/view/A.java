@@ -26,7 +26,7 @@ import juzu.test.AbstractTestCase;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("content[" + AbstractTestCase.EURO + "]").withCharset(AbstractResponseCharsetViewTestCase.charset).withMimeType("text/html");
   }
 }

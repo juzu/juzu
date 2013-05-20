@@ -37,12 +37,12 @@ public class A {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("<a id='trigger' href='" + A_.action() + "'>click</a>");
   }
 
   @View
-  public Response.Render done(String value) {
+  public Response.Content done(String value) {
     return Response.ok("done: " + value);
   }
 }

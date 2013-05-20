@@ -24,7 +24,7 @@ import juzu.View;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok(
         "<form id='form' action='" + A_.foo(null) + "' method='post'>" +
         "<input type='hidden' name='juu' value='bar'/>" +
@@ -34,7 +34,7 @@ public class A {
 
   @View
   @Route("/foo")
-  public Response.Render foo(String juu) {
+  public Response.Content foo(String juu) {
     return Response.ok("" + juu);
   }
 }

@@ -33,7 +33,7 @@ public class A {
 
   @View
   @Route("/view")
-  public Response.Render view() {
+  public Response.Content view() {
     return Response.ok("pass");
   }
 }

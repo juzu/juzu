@@ -39,16 +39,16 @@ public class A implements RequestLifeCycle {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Status index() {
     Phase.View.Dispatch dispatch = A_.foo();
     dispatch.setParameter(AbstractRequestQueryParamEncoding.CUSTOM, "encoded", "(:,)");
     AbstractRequestQueryParamEncoding.value = dispatch.toString();
-    return Response.ok("");
+    return Response.ok();
   }
 
   @View
   @Route("/foo")
-  public Response.Render foo() {
-    return Response.ok("");
+  public Response.Status foo() {
+    return Response.ok();
   }
 }

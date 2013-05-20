@@ -23,7 +23,7 @@ import juzu.Response;
 public class A {
 
   @juzu.View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("<a id='trigger' href='" + A_.action() + "'>click</a>");
   }
 
@@ -33,7 +33,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Render done() {
+  public Response.Content done() {
     return Response.ok("pass");
   }
 }

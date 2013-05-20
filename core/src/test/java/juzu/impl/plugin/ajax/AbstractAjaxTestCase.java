@@ -18,6 +18,7 @@ package juzu.impl.plugin.ajax;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.UserAgent;
 import juzu.test.protocol.servlet.JuzuServlet;
@@ -25,7 +26,9 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,6 +50,11 @@ public abstract class AbstractAjaxTestCase extends AbstractWebTestCase {
   public void testAjaxResource() throws Exception {
     UserAgent ua = assertInitialPage();
     HtmlPage page = ua.getHomePage();
+
+    HttpURLConnection conn = (HttpURLConnection)page.getUrl().openConnection();
+    assertEquals(200, conn.getResponseCode());
+    String s = Tools.read(conn.getInputStream());
+    System.out.println("s = " + s);
 
     //
     HtmlAnchor trigger1 = (HtmlAnchor)page.getElementById("trigger1");

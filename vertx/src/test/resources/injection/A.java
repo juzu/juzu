@@ -29,7 +29,7 @@ public class A {
   Vertx vertx;
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     InjectionTestCase.vertx = vertx;
     return Response.ok("pass");
   }

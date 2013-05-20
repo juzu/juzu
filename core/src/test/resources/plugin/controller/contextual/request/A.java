@@ -26,7 +26,7 @@ import java.io.IOException;
 public class A {
 
   @View
-  public Response.Content.Render index(RequestContext context) throws IOException {
+  public Response.Content index(RequestContext context) throws IOException {
     return Response.ok(context != null ? "pass" : "fail");
   }
 }

@@ -16,7 +16,6 @@
 
 package juzu;
 
-import juzu.impl.common.Tools;
 import juzu.io.Streamable;
 import juzu.io.Streams;
 import juzu.request.Dispatch;
@@ -89,7 +88,7 @@ import java.util.Map;
  *       &#064;Inject &#064;Path("index.gtmpl") {@link juzu.template.Template} index;
  *
  *       &#064;View
- *       public {@link juzu.Response.Render} myView() {
+ *       public {@link juzu.Response.Content} myView() {
  *          return index.render();
  *       }
  *
@@ -292,38 +291,75 @@ public abstract class Response {
       return "Response.Redirect[location" + location + "]";
     }
   }
-
-  public static class Content extends Response {
+  
+  public static class Status extends Response {
 
     /** . */
-    private int status;
+    private int code;
+
+    public Status(int code) {
+      this.code = code;
+    }
+
+    public Status(int code, PropertyMap properties) {
+      super(properties);
+      
+      //
+      this.code = code;
+    }
+
+    public final int getCode() {
+      return code;
+    }
+    
+    public Body body(Streamable s) {
+      return new Body(code, properties, s);
+    }
+
+    public Body body(CharSequence s) {
+      return body(new Streamable.CharSequence(s));
+    }
+
+    public Body body(InputStream s) {
+      return body(new Streamable.InputStream(s));
+    }
+
+    public Content content(Streamable s) {
+      return new Content(code, properties, s);
+    }
+
+    public Content content(CharSequence s) {
+      return content(new Streamable.CharSequence(s));
+    }
+
+    public Content content(InputStream s) {
+      return content(new Streamable.InputStream(s));
+    }
+  }
+
+  public static class Body extends Status {
 
     /** . */
     private Streamable streamable;
 
-    protected Content(int status) {
-      this.status = status;
-      this.streamable = null;
-    }
-
-    protected Content(int status, PropertyMap properties) {
-      super(properties);
+    protected Body(int status, PropertyMap properties) {
+      super(status, properties);
 
       //
-      this.status = status;
       this.streamable = null;
     }
 
-    protected Content(int status, Streamable streamable) {
-      this.status = status;
+    protected Body(int status, Streamable streamable) {
+      super(status);
+      
+      //
       this.streamable = streamable;
     }
 
-    protected Content(int status, PropertyMap properties, Streamable streamable) {
-      super(properties);
+    protected Body(int status, PropertyMap properties, Streamable streamable) {
+      super(status, properties);
 
       //
-      this.status = status;
       this.streamable = streamable;
     }
 
@@ -339,20 +375,43 @@ public abstract class Response {
       return properties.getValue(PropertyType.CHARSET);
     }
 
-    public Content withCharset(Charset charset) {
+    public Body withCharset(Charset charset) {
       properties.setValue(PropertyType.CHARSET, charset);
       return this;
     }
 
-    public Content withMimeType(String mimeType) {
+    public Body withMimeType(String mimeType) {
       properties.setValue(PropertyType.MIME_TYPE, mimeType);
       return this;
     }
 
     @Override
-    public Content withHeader(String name, String... value) {
-      return (Content)super.withHeader(name, value);
+    public Body withHeader(String name, String... value) {
+      return (Body)super.withHeader(name, value);
     }
+
+    @Override
+    public <T> Body with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (Body)super.with(propertyType, propertyValue);
+    }
+
+    @Override
+    public <T> Body without(PropertyType<T> propertyType) throws NullPointerException {
+      return (Body)super.without(propertyType);
+    }
+
+    @Override
+    public Body with(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Body)super.with(propertyType);
+    }
+
+    @Override
+    public Body withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Body)super.withNo(propertyType);
+    }
+  }
+
+  public static class Content extends Body {
 
     @Override
     public <T> Content with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
@@ -374,12 +433,99 @@ public abstract class Response {
       return (Content)super.withNo(propertyType);
     }
 
-    public Integer getStatus() {
-      return status;
+    @Override
+    public Content withMimeType(String mimeType) {
+      return (Content)super.withMimeType(mimeType);
+    }
+
+    @Override
+    public Content withCharset(Charset charset) {
+      return (Content)super.withCharset(charset);
+    }
+
+    public Content(int status, PropertyMap properties, Streamable streamable) {
+      super(status, properties, streamable);
+    }
+
+    public Content(int status, Streamable streamable) {
+      super(status, streamable);
+    }
+
+    public Content(PropertyMap properties, Streamable streamable) {
+      super(200, properties, streamable);
+    }
+
+    public Content(Streamable streamable) {
+      super(200, streamable);
+    }
+
+    @Override
+    public Content withHeader(String name, String... value) {
+      return (Render)super.withHeader(name, value);
+    }
+
+    public String getTitle() {
+      return properties.getValue(PropertyType.TITLE);
+    }
+
+    public Content withTitle(String title) {
+      properties.setValue(PropertyType.TITLE, title);
+      return this;
+    }
+
+    public Content withScripts(String... scripts) throws NullPointerException {
+      if (scripts == null) {
+        throw new NullPointerException("No null script accepted");
+      }
+      properties.addValues(PropertyType.SCRIPT, scripts);
+      return this;
+    }
+
+    public Content withStylesheets(String... stylesheets) throws NullPointerException {
+      if (stylesheets == null) {
+        throw new NullPointerException("No null stylesheet accepted");
+      }
+      properties.addValues(PropertyType.STYLESHEET, stylesheets);
+      return this;
+    }
+
+    public Content withMetaTag(String name, String value) {
+      Iterable<Map.Entry<String, String>> values = properties.getValues(PropertyType.META_TAG);
+      if (values != null) {
+        for (Map.Entry<String, String> meta : values) {
+          if (meta.getKey().equals(name)) {
+            meta.setValue(value);
+            return this;
+          }
+        }
+      }
+      properties.addValue(PropertyType.META_TAG, new AbstractMap.SimpleEntry<String, String>(name, value));
+      return this;
+    }
+
+    @Override
+    public String toString() {
+      return "Response.Content[]";
     }
   }
 
   public static class Render extends Content {
+
+    public Render(int status, PropertyMap properties, Streamable streamable) {
+      super(status, properties, streamable);
+    }
+
+    public Render(int status, Streamable streamable) {
+      super(status, streamable);
+    }
+
+    public Render(PropertyMap properties, Streamable streamable) {
+      super(properties, streamable);
+    }
+
+    public Render(Streamable streamable) {
+      super(streamable);
+    }
 
     @Override
     public <T> Render with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
@@ -411,89 +557,29 @@ public abstract class Response {
       return (Render)super.withCharset(charset);
     }
 
-    public Render() {
-      super(200);
-    }
-
-    public Render(int status, PropertyMap properties, Streamable streamable) {
-      super(status, properties, streamable);
-    }
-
-    public Render(int status, Streamable streamable) {
-      super(status, streamable);
-    }
-
-    public Render(PropertyMap properties, Streamable streamable) {
-      super(200, properties, streamable);
-    }
-
-    public Render(Streamable streamable) {
-      super(200, streamable);
-    }
-
     @Override
     public Render withHeader(String name, String... value) {
       return (Render)super.withHeader(name, value);
     }
 
-    public String getTitle() {
-      return properties.getValue(PropertyType.TITLE);
-    }
-
+    @Override
     public Render withTitle(String title) {
-      properties.setValue(PropertyType.TITLE, title);
-      return this;
-    }
-
-    public Iterable<String> getScripts() {
-      Iterable<String> scripts = properties.getValues(PropertyType.SCRIPT);
-      return scripts != null ? scripts : Tools.<String>emptyIterable();
-    }
-
-    public Render withScripts(String... scripts) throws NullPointerException {
-      if (scripts == null) {
-        throw new NullPointerException("No null script accepted");
-      }
-      properties.addValues(PropertyType.SCRIPT, scripts);
-      return this;
-    }
-
-    public Iterable<String> getStylesheets() {
-      Iterable<String> stylesheets = properties.getValues(PropertyType.STYLESHEET);
-      return stylesheets != null ? stylesheets : Tools.<String>emptyIterable();
-    }
-
-    public Render withStylesheets(String... stylesheets) throws NullPointerException {
-      if (stylesheets == null) {
-        throw new NullPointerException("No null stylesheet accepted");
-      }
-      properties.addValues(PropertyType.STYLESHEET, stylesheets);
-      return this;
-    }
-
-
-    public Iterable<Map.Entry<String, String>> getMetaTags() {
-      Iterable<Map.Entry<String, String>> metas = properties.getValues(PropertyType.META_TAG);
-      return metas != null ? metas : Tools.<Map.Entry<String, String>>emptyIterable();
-    }
-
-    public Render withMetaTag(String name, String value) {
-      Iterable<Map.Entry<String, String>> values = properties.getValues(PropertyType.META_TAG);
-      if (values != null) {
-        for (Map.Entry<String, String> meta : values) {
-          if (meta.getKey().equals(name)) {
-            meta.setValue(value);
-            return this;
-          }
-        }
-      }
-      properties.addValue(PropertyType.META_TAG, new AbstractMap.SimpleEntry<String, String>(name, value));
-      return this;
+      return (Render)super.withTitle(title);
     }
 
     @Override
-    public String toString() {
-      return "Response.Render[]";
+    public Render withScripts(String... scripts) throws NullPointerException {
+      return (Render)super.withScripts(scripts);
+    }
+
+    @Override
+    public Render withStylesheets(String... stylesheets) throws NullPointerException {
+      return (Render)super.withStylesheets(stylesheets);
+    }
+
+    @Override
+    public Render withMetaTag(String name, String value) {
+      return (Render)super.withMetaTag(name, value);
     }
   }
 
@@ -544,15 +630,27 @@ public abstract class Response {
     return new Response.Redirect(location);
   }
 
+  public static Status status(int code) {
+    return new Status(code);
+  }
+
+  public static Status ok() {
+    return status(200);
+  }
+
+  public static Status notFound() {
+    return status(404);
+  }
+
   public static Content ok(InputStream content) {
     return content(200, content);
   }
 
-  public static Render ok(Readable content) {
+  public static Content ok(Readable content) {
     return content(200, content);
   }
 
-  public static Render ok(CharSequence content) {
+  public static Content ok(CharSequence content) {
     return content(200, content);
   }
 
@@ -560,11 +658,11 @@ public abstract class Response {
     return content(404, content);
   }
 
-  public static Render notFound(Readable content) {
+  public static Content notFound(Readable content) {
     return content(404, content);
   }
 
-  public static Render notFound(CharSequence content) {
+  public static Content notFound(CharSequence content) {
     return content(404, content);
   }
 
@@ -572,15 +670,15 @@ public abstract class Response {
     return content(code, new Streamable.InputStream(content));
   }
 
-  public static Render content(int code, Readable content) {
+  public static Content content(int code, Readable content) {
     return content(code, Streams.streamable(content));
   }
 
-  public static Render content(int code, CharSequence content) {
+  public static Content content(int code, CharSequence content) {
     return content(code, new Streamable.CharSequence(content));
   }
 
-  public static Render content(int code, Streamable content) {
+  public static Content content(int code, Streamable content) {
     return new Render(code, content);
   }
 

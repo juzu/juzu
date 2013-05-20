@@ -21,6 +21,7 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.ViewStreamable;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.request.Method;
 import juzu.request.RequestParameter;
@@ -43,28 +44,30 @@ public abstract class WebMimeBridge extends WebRequestBridge implements MimeBrid
   boolean send() throws Exception {
     if (super.send()) {
       return true;
-    } else if (response instanceof Response.Content) {
+    } else if (response instanceof Response.Status) {
 
       // For now we hardcode this
-      Response.Content content = (Response.Content)response;
+      Response.Status status = (Response.Status)response;
+
+      //
       PropertyMap properties = response.getProperties();
 
       // Resolve stylesheets Asset -> Asset.Value
       Iterable<String> stylesheets = properties.getValues(PropertyType.STYLESHEET);
       if (stylesheets != null) {
         Iterable<Asset> stylesheetValues =  handler.getBridge().application.getStylesheetManager().resolveAssets(stylesheets);
-        properties.setValues(WebBridge.STYLESHEET, stylesheetValues);
+        properties.setValues(ViewStreamable.STYLESHEET_ASSET, stylesheetValues);
       }
 
       // Resolve scripts Asset -> Asset.Value
       Iterable<String> scripts = properties.getValues(PropertyType.SCRIPT);
       if (scripts != null) {
         Iterable<Asset> scriptValues = handler.getBridge().application.getScriptManager().resolveAssets(scripts);
-        properties.setValues(WebBridge.SCRIPT, scriptValues);
+        properties.setValues(ViewStreamable.SCRIPT_ASSET, scriptValues);
       }
 
       //
-      http.send(content, this instanceof WebRenderBridge);
+      http.send(status);
 
       //
       return true;

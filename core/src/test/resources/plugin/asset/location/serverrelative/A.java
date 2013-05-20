@@ -22,7 +22,7 @@ import juzu.View;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     String content = "" +
       "<script>\n" +
       "$(function() {\n" +

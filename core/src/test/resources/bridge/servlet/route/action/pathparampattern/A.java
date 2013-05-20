@@ -27,7 +27,7 @@ public class A {
 
   @juzu.View
   @Route("/")
-  public Response.Render index() {
+  public Response.Content index() {
 
     // First check when it does not match the pattern
     try {

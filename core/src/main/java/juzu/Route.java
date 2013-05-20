@@ -45,11 +45,11 @@ import java.lang.annotation.Target;
  *
  *       &#064;{@link Action}
  *       &#064;{@link Route}("/myaction/{value}")
- *       public {@link juzu.Response.Render} myAction(String value) { ... }
+ *       public {@link juzu.Response.Content} myAction(String value) { ... }
  *
  *       &#064;{@link View}
  *       &#064;{@link Route}("/myview")
- *       public {@link juzu.Response.Render} myView() { ... }
+ *       public {@link juzu.Response.Content} myView() { ... }
  *
  *       &#064;{@link Resource}
  *       &#064;{@link Route}("/myresource")

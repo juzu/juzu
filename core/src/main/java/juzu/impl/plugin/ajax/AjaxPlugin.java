@@ -103,8 +103,8 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
     //
     if (request.getContext() instanceof RenderContext) {
       Response response = request.getResponse();
-      if (response instanceof Response.Render) {
-        Response.Render render = (Response.Render)response;
+      if (response instanceof Response.Content) {
+        Response.Content render = (Response.Content)response;
 
         //
         PropertyMap properties = new PropertyMap(response.getProperties());
@@ -188,7 +188,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         };
 
         //
-        request.setResponse(new Response.Render(properties, decorator));
+        request.setResponse(new Response.Content(properties, decorator));
       }
     }
   }

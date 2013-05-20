@@ -37,7 +37,7 @@ public class A implements RequestLifeCycle {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("pass");
   }
 }

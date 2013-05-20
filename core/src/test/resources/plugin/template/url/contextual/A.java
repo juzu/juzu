@@ -31,12 +31,12 @@ public class A {
   Template index;
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return index.ok();
   }
 
   @View
-  public Response.Render contextual(Object contextual) {
+  public Response.Content contextual(Object contextual) {
     return Response.ok(contextual == null ? "pass" : "fail");
   }
 }

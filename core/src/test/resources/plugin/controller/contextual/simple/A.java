@@ -27,7 +27,7 @@ import java.io.InputStream;
 public class A {
 
   @View
-  public Response.Render index(InputStream in) throws IOException {
+  public Response.Content index(InputStream in) throws IOException {
     String s = Tools.read(in);
     return Response.ok(s);
   }

@@ -25,7 +25,7 @@ import juzu.plugin.ajax.Ajax;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     String content = "" +
 
       //
@@ -85,21 +85,21 @@ public class A {
   @Ajax
   @Resource
   @Route("/m1")
-  public Response.Render m1() {
-    return Response.ok("m1()");
+  public Response.Body m1() {
+    return Response.ok().body("m1()");
   }
 
   @Ajax
   @Resource
   @Route("/m2")
-  public Response.Render m2(String p) {
-    return Response.ok("m2(" + p + ")");
+  public Response.Body m2(String p) {
+    return Response.ok().body("m2(" + p + ")");
   }
 
   @Ajax
   @Resource
   @Route("/m3")
-  public Response.Render m3() {
-    return Response.ok("m3()");
+  public Response.Body m3() {
+    return Response.ok().body("m3()");
   }
 }

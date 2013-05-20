@@ -39,7 +39,7 @@ public class A implements RequestLifeCycle {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     Phase.View.Dispatch dispatch = A_.foo();
     dispatch.setParameter("detyped", "detyped_value");
     return Response.ok("<a id='trigger' href='" + dispatch + "'>click</div>");
@@ -47,8 +47,8 @@ public class A implements RequestLifeCycle {
 
   @View
   @Route("/foo")
-  public Response.Render foo() {
+  public Response.Status foo() {
     AbstractRequestDetypedParam.value = context.getParameters().get("detyped").toArray();
-    return Response.ok("");
+    return Response.ok();
   }
 }

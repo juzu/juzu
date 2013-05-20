@@ -40,7 +40,7 @@ public class A implements RequestLifeCycle {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     Phase.Action.Dispatch dispatch = A_.foo();
     dispatch.setParameter("detyped", "detyped_value");
     return Response.ok("<a id='trigger' href='" + dispatch + "'>click</div>");

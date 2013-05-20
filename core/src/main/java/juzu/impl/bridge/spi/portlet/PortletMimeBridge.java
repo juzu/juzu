@@ -27,6 +27,7 @@ import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
+import javax.portlet.ResourceResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
@@ -42,19 +43,25 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
 
   @Override
   public void send() throws IOException, PortletException {
-    if (response instanceof Response.Content) {
+    if (response instanceof Response.Status) {
 
       //
-      Response.Content content = (Response.Content)response;
+      Response.Status status = (Response.Status)response;
+
+      // Send http code
+      if (status.getCode() != 200) {
+        resp.addProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status.getCode()));
+      }
 
       // Send properties
       sendProperties();
 
       //
-      Stream stream = createStream(content.getMimeType(), content.getCharset());
-
-      // Send content
-      content.getStreamable().send(stream);
+      if (status instanceof Response.Body) {
+        Response.Body body = (Response.Body)response;
+        Stream stream = createStream(body.getMimeType(), body.getCharset());
+        body.getStreamable().send(stream);
+      }
     } else if (response instanceof Response.Error) {
       Response.Error error = (Response.Error)response;
       if (bridge.module.context.getRunMode().getPrettyFail()) {

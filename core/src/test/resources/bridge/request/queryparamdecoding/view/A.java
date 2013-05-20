@@ -38,14 +38,14 @@ public class A implements RequestLifeCycle {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("<a id='link' href='" + A_.foo("{") + "'>link</a>");
   }
 
   @View
   @Route("/foo")
-  public Response.Render foo(String s) {
+  public Response.Status foo(String s) {
     AbstractRequestQueryParamDecoding.value = context.getParameters().get("s");
-    return Response.ok("");
+    return Response.ok();
   }
 }

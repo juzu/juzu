@@ -39,14 +39,14 @@ public class A implements RequestLifeCycle {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("<a id='trigger' href='" + A_.foo("abc_value") + "'>click</div>");
   }
 
   @View
   @Route("/foo/{a.b.c}")
-  public Response.Render foo(@Param(name = "a.b.c") String abc) {
+  public Response.Status foo(@Param(name = "a.b.c") String abc) {
     AbstractRequestPathParamAliasing.value = abc;
-    return Response.ok("");
+    return Response.ok();
   }
 }

@@ -193,8 +193,8 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     //
     if (request.getContext().getPhase() == Phase.VIEW) {
       Response response = request.getResponse();
-      if (response instanceof Response.Render && (scripts.length > 0 || stylesheets.length > 0)) {
-        Response.Render render = (Response.Render)response;
+      if (response instanceof Response.Content && (scripts.length > 0 || stylesheets.length > 0)) {
+        Response.Content render = (Response.Content)response;
 
         // Add assets
         PropertyMap properties = new PropertyMap(render.getProperties());
@@ -202,7 +202,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         properties.addValues(PropertyType.SCRIPT, scripts);
 
         // Use a new response
-        request.setResponse(new Response.Render(properties, (Streamable)render.getStreamable()));
+        request.setResponse(new Response.Content(properties, render.getStreamable()));
       }
     }
   }

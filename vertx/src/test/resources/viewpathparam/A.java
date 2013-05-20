@@ -24,14 +24,14 @@ import juzu.bridge.vertx.ViewPathParamTestCase;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Status index() {
     ViewPathParamTestCase.view = "" + A_.view("foo");
-    return Response.ok("");
+    return Response.ok();
   }
 
   @View
   @Route("/view/{param}")
-  public Response.Render view(String param) {
+  public Response.Content view(String param) {
     return Response.ok("pass=" + param);
   }
 }

@@ -30,14 +30,14 @@ public class A {
 
   @Resource
   @Route("/resource")
-  public Response.Content resource(FileItem file, String text, Bean bean) throws IOException {
+  public Response.Status resource(FileItem file, String text, Bean bean) throws IOException {
     if (file != null) {
       AbstractUploadTestCase.contentType = file.getContentType();
       AbstractUploadTestCase.content = file.getString();
       AbstractUploadTestCase.text = text;
       AbstractUploadTestCase.field = bean != null ? bean.field : null;
     }
-    return Response.ok("");
+    return Response.ok();
   }
 
   @View

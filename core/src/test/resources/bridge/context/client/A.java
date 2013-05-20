@@ -41,10 +41,10 @@ public class A {
 
   @Resource
   @Route("/resource")
-  public Response.Content resource(ClientContext clientContext) throws IOException {
+  public Response.Status resource(ClientContext clientContext) throws IOException {
     test(clientContext);
     AbstractContextClientTestCase.kind = "resource";
-    return Response.ok("");
+    return Response.ok();
   }
 
   private void test(ClientContext client) throws IOException {

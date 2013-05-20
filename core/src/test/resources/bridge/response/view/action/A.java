@@ -25,9 +25,9 @@ import juzu.impl.bridge.response.AbstractResponseViewActionTestCase;
 public class A {
 
   @View
-  public Response.Content index() {
+  public Response.Status index() {
     AbstractResponseViewActionTestCase.url = A_.process().toString();
-    return Response.ok("");
+    return Response.ok();
   }
 
   @Action
@@ -38,8 +38,8 @@ public class A {
 
   @View
   @Route("/foo")
-  public Response.Content foo(String bar) {
+  public Response.Status foo(String bar) {
     AbstractResponseViewActionTestCase.bar = bar;
-    return Response.ok("");
+    return Response.ok();
   }
 }

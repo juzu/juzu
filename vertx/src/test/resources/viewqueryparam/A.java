@@ -25,14 +25,14 @@ import static juzu.Response.*;
 public class A {
 
   @View
-  public Render index() {
+  public Status index() {
     ViewQueryParamTestCase.view = "" + A_.view("foo");
-    return ok("");
+    return ok();
   }
 
   @View
   @Route("/view")
-  public Render view(String param) {
+  public Content view(String param) {
     return ok("pass=" + param);
   }
 }

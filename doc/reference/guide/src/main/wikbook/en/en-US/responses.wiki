@@ -31,8 +31,8 @@ A //render// response extends a //content// response, it specializes it for aggr
 
 {{java}}
 @View
-public Response.Render index() {
-  return Response.render("Hello World").withTitle("The Hello");
+public Response.Content index() {
+  return Response.ok("Hello World").withTitle("The Hello");
 }
 {{/java}}
 

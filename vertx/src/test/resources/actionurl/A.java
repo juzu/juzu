@@ -25,9 +25,9 @@ import juzu.bridge.vertx.ActionURLTestCase;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Status index() {
     ActionURLTestCase.action = "" + A_.action();
-    return Response.ok("");
+    return Response.ok();
   }
 
   @Action
@@ -38,7 +38,7 @@ public class A {
 
   @View
   @Route("/view")
-  public Response.Render view() {
+  public Response.Content view() {
     return Response.ok("pass");
   }
 }

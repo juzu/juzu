@@ -28,7 +28,7 @@ public class A {
 
   @View
   @Route("/foo")
-  public Response.Render index() {
+  public Response.Content index() {
     if (count == 0) {
       count = 1;
       String url = A_.index().toString();

@@ -32,13 +32,13 @@ public class A {
   Bean bean;
 
   @View
-  public Response.Content index() throws IOException {
+  public Response.Status index() throws IOException {
     if (bean != null) {
       serial = bean.getSerial();
       return Response.ok(A_.done().toString());
     }
     else {
-      return Response.ok("");
+      return Response.ok();
     }
   }
 

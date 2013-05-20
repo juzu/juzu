@@ -35,7 +35,7 @@ import java.lang.annotation.RetentionPolicy;
  *       &#064;Inject &#064;{@link Path}("index.gtmpl") {@link juzu.template.Template} index;
  *
  *       &#064;{@link View}
- *       public {@link juzu.Response.Render} myView() {
+ *       public {@link juzu.Response.Content} myView() {
  *          return index.render();
  *       }
  *    }

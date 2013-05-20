@@ -26,7 +26,7 @@ import juzu.test.AbstractTestCase;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
 
     // First check when it does not match the pattern
     try {

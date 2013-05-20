@@ -255,7 +255,7 @@ to more simple types such as number, etc..
 * Structured data types : todo
 
 View controller method should return a ##juzu.Response## object that is the content produced by the method. To be more precise
- it should return a ##Response.Content## or ##Response.Render## object (the latter being a subclass of the former) that contains
+ it should return a ##Response.Body## or ##Response.Content## object (the latter being a subclass of the former) that contains
  everything Juzu needs to display the application.
 
 ##Response.Content## is a base class for content, it defines the ##send## method. Juzu invokes this method when it needs

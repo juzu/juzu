@@ -147,7 +147,7 @@ public abstract class Template {
    *
    * @return the ok resource response
    */
-  public final Response.Render ok() {
+  public final Response.Content ok() {
     return with().ok();
   }
 
@@ -157,7 +157,7 @@ public abstract class Template {
    * @param locale     the locale
    * @return the ok resource response
    */
-  public final Response.Render ok(Locale locale) {
+  public final Response.Content ok(Locale locale) {
     return with(locale).ok();
   }
 
@@ -167,7 +167,7 @@ public abstract class Template {
    * @param parameters the parameters
    * @return the ok resource response
    */
-  public final Response.Render ok(Map<String, ?> parameters) {
+  public final Response.Content ok(Map<String, ?> parameters) {
     return with(parameters).ok();
   }
 
@@ -178,7 +178,7 @@ public abstract class Template {
    * @param locale     the locale
    * @return the ok resource response
    */
-  public final Response.Render ok(Map<String, ?> parameters, Locale locale) {
+  public final Response.Content ok(Map<String, ?> parameters, Locale locale) {
     return with(parameters).locale(locale).ok();
   }
 
@@ -187,7 +187,7 @@ public abstract class Template {
    *
    * @return the not found resource response
    */
-  public final Response.Render notFound() {
+  public final Response.Content notFound() {
     return notFound(null, null);
   }
 
@@ -197,7 +197,7 @@ public abstract class Template {
    * @param locale     the locale
    * @return the not found resource response
    */
-  public final Response.Render notFound(Locale locale) {
+  public final Response.Content notFound(Locale locale) {
     return notFound(null, locale);
   }
 
@@ -207,7 +207,7 @@ public abstract class Template {
    * @param parameters the parameters
    * @return the not found resource response
    */
-  public final Response.Render notFound(Map<String, ?> parameters) {
+  public final Response.Content notFound(Map<String, ?> parameters) {
     return notFound(parameters, null);
   }
 
@@ -218,7 +218,7 @@ public abstract class Template {
    * @param locale     the locale
    * @return the not found resource response
    */
-  public final Response.Render notFound(Map<String, ?> parameters, Locale locale) {
+  public final Response.Content notFound(Map<String, ?> parameters, Locale locale) {
     return with(parameters).locale(locale).notFound();
   }
 
@@ -464,7 +464,7 @@ public abstract class Template {
      *
      * @return the ok resource response
      */
-    public final Response.Render ok() {
+    public final Response.Content ok() {
       return status(200);
     }
 
@@ -473,7 +473,7 @@ public abstract class Template {
      *
      * @return the not found response
      */
-    public final Response.Render notFound() {
+    public final Response.Content notFound() {
       return status(404);
     }
 
@@ -482,11 +482,11 @@ public abstract class Template {
      *
      * @return the response
      */
-    public final Response.Render status(int status) {
+    public final Response.Content status(int status) {
       StringBuilder sb = new StringBuilder();
       PropertyMap properties = new PropertyMap();
       doRender(properties, Streams.appendable(Tools.UTF_8, sb));
-      return new Response.Render(status, properties,  new Streamable.CharSequence(sb));
+      return new Response.Content(status, properties,  new Streamable.CharSequence(sb));
     }
 
     /**
@@ -523,7 +523,7 @@ public abstract class Template {
         RequestContext context = Request.getCurrent().getContext();
         if (context instanceof MimeContext) {
           MimeContext mime = (MimeContext)context;
-          Response.Render render = status(200);
+          Response.Content render = status(200);
           mime.setResponse(render);
         }
         else {

@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * <p/>
  * <code><pre>
  *    public class Controller {
- *       &#064;{@link View} public {@link Response.Render} display(User user) { ...}
+ *       &#064;{@link View} public {@link Response.Content} display(User user) { ...}
  *    }
  * <p/>
  *    &#064;{@link Mapped}

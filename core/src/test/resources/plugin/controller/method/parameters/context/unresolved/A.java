@@ -24,7 +24,7 @@ import juzu.impl.plugin.controller.MethodParametersTestCase;
 public class A {
 
   @View(id = "index")
-  public Response.Render index(Object unresolved) {
+  public Response.Content index(Object unresolved) {
     if (unresolved == null) {
       MethodParametersTestCase.WAS_NULL = true;
     }

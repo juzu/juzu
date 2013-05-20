@@ -135,7 +135,7 @@ The ##@Assets## annotations will serve all the declared assets in ##scripts## an
 package my.application;
 {{/java}}
 
-When an application requires an asset, it adds the asset to the ##Response.Render## object:
+When an application requires an asset, it adds the asset to the ##Response.Content## object:
 
 {{java}}
 @Inject
@@ -143,8 +143,8 @@ When an application requires an asset, it adds the asset to the ##Response.Rende
 Template index;
 
 @View
-public Response.Render index() {
-  Response.Render render = index.render();
+public Response.Content index() {
+  Response.Content render = index.render();
   render.withScript("myscript");
   return render;
 }
@@ -158,7 +158,7 @@ The same with a fluent syntax:
 Template index;
 
 @View
-public Response.Render index() {
+public Response.Content index() {
   return index.render().withScript(myscript""));
 }
 {{/java}}

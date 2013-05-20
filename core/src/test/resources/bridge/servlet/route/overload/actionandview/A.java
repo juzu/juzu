@@ -27,7 +27,7 @@ public class A {
   static int count = 0;
 
   @juzu.View
-  public Response.Render index() {
+  public Response.Content index() {
     count = 0;
     return Response.ok("" + A_.fooAction());
   }

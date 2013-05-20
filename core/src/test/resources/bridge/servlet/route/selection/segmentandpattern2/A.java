@@ -25,13 +25,13 @@ public class A {
 
   @View
   @Route(value = "/foo/{bar}", priority = -1)
-  public Response.Render foo(String bar) {
+  public Response.Content foo(String bar) {
     return Response.ok("bar:" + bar);
   }
 
   @View
   @Route(value = "/foo/juu")
-  public Response.Render foo() {
+  public Response.Content foo() {
     return Response.ok("juu");
   }
 }

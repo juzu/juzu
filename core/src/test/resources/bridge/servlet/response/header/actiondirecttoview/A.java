@@ -25,7 +25,7 @@ import juzu.Route;
 public class A {
 
   @juzu.View()
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("" + A_.foo());
   }
 
@@ -37,7 +37,7 @@ public class A {
 
   @juzu.View
   @Route("/bar")
-  public Response.Render bar() {
+  public Response.Content bar() {
     return Response.ok("pass").withHeader("daa", "daa_value");
   }
 }

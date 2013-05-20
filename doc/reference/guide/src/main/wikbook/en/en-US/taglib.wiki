@@ -63,7 +63,7 @@ The //decorate// tag allows the content of the decorating template to wrap the c
 
 = Title tag =
 
-The //title// tag specifies a title to insert in the ##juzu.Response.Render## object the template will produce.
+The //title// tag specifies a title to insert in the ##juzu.Response.Content## object the template will produce.
 
 {{example title="Setting the title"}}
 {{code}}

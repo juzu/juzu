@@ -29,7 +29,7 @@ public class A {
   java.util.ResourceBundle bundle;
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     ServletPluginTestCase.bundle = bundle;
     return Response.ok("pass");
   }

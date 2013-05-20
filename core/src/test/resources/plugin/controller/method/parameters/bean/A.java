@@ -85,17 +85,17 @@ public class A {
   // ******************************************************************************************************************
 
   @juzu.View(id = "c")
-  public Response.Render c() {
+  public Response.Content c() {
     return Response.ok(A_.mC(bean).toString());
   }
 
   @juzu.View
-  public Response.Render mC(B foo) throws IOException {
+  public Response.Content mC(B foo) throws IOException {
     return Response.ok(foo.getC().toString());
   }
 
   @juzu.View(id = "cAction")
-  public Response.Render cAction() {
+  public Response.Content cAction() {
     return Response.ok(A_.mCAction(bean).toString());
   }
 

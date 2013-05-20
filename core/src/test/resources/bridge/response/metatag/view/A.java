@@ -23,7 +23,7 @@ import juzu.View;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("pass").withMetaTag("foo", "bar");
   }
 }

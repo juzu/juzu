@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  *
  *       &#064;{@link View}
  *       &#064;{@link Route}("/myview/{id}")
- *       public {@link juzu.Response.Render} myView(&#064;{@link Param}(pattern = "[0-9]+") String id) { ... }
+ *       public {@link juzu.Response.Content} myView(&#064;{@link Param}(pattern = "[0-9]+") String id) { ... }
  *    }
  * </pre></code>
  *

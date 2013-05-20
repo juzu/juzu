@@ -25,7 +25,7 @@ public class A {
 
   @View
   @Route("/view")
-  public Response.Render index(String param) {
+  public Response.Content index(String param) {
     ViewFormParamTestCase.view = param;
     return Response.ok("done");
   }

@@ -24,14 +24,14 @@ import juzu.bridge.vertx.ViewURLTestCase;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Status index() {
     ViewURLTestCase.view = "" + A_.view();
-    return Response.ok("");
+    return Response.ok();
   }
 
   @View
   @Route("/view")
-  public Response.Render view() {
+  public Response.Content view() {
     return Response.ok("pass");
   }
 }

@@ -31,7 +31,7 @@ public class A {
   Template index;
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return index.ok();
   }
 }

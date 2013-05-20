@@ -27,9 +27,9 @@ import juzu.test.AbstractTestCase;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Status index() {
     AbstractResponseCharsetResourceTestCase.url = "" + A_.resource();
-    return Response.ok("");
+    return Response.ok();
   }
 
   @Resource

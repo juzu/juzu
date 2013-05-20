@@ -33,7 +33,7 @@ public class A {
   Vertx vertx;
 
   @View
-  public Response.Render index() throws Exception {
+  public Response.Content index() throws Exception {
     final AsyncStreamable content = new AsyncStreamable();
     vertx.eventBus().send("foo", "ping", new Handler<Message<String>>() {
       public void handle(Message<String> event) {

@@ -31,8 +31,8 @@ public class MockRenderBridge extends MockMimeBridge implements RenderBridge {
   }
 
   public String getTitle() {
-    if (response instanceof Response.Content.Render) {
-      Response.Content.Render stream = (Response.Content.Render)response;
+    if (response instanceof Response.Content) {
+      Response.Content stream = (Response.Content)response;
       return stream.getTitle();
     } else {
       return null;

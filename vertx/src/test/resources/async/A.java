@@ -24,7 +24,7 @@ import juzu.io.AsyncStreamable;
 public class A {
 
   @View
-  public Response.Render index() throws Exception {
+  public Response.Content index() throws Exception {
     final AsyncStreamable content = new AsyncStreamable();
     new Thread() {
       @Override

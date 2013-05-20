@@ -25,7 +25,7 @@ import java.util.ConcurrentModificationException;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     throw new ConcurrentModificationException();
   }
 }

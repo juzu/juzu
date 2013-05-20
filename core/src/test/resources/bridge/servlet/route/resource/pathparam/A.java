@@ -25,13 +25,13 @@ import juzu.View;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("<a id='trigger' href='" + A_.foo("bar") + "'>click</div>");
   }
 
   @Resource
   @Route("/foo/{juu}")
-  public Response.Render foo(String juu) {
+  public Response.Content foo(String juu) {
     return Response.ok("" + juu).withMimeType("text/html");
   }
 }

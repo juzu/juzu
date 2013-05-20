@@ -31,8 +31,8 @@ public class A {
 
   @View
   @Route("/foo")
-  public Response.Content foo(String bar) {
+  public Response.Status foo(String bar) {
     AbstractResponseViewNoRedirectViewTestCase.bar = bar;
-    return Response.ok("");
+    return Response.ok();
   }
 }

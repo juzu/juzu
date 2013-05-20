@@ -24,7 +24,7 @@ import juzu.Route;
 public class A {
 
   @juzu.View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("<a id='trigger' href='" + A_.foo("bar") + "'>click</div>");
   }
 
@@ -36,7 +36,7 @@ public class A {
 
   @juzu.View
   @Route("/bar")
-  public Response.Render bar(String juu) {
+  public Response.Content bar(String juu) {
     return Response.ok("" + juu);
   }
 }

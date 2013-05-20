@@ -86,7 +86,7 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
 
   public void assertStatus(int status) {
     Response.Content content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
-    Assert.assertNotNull(content.getStatus());
-    Assert.assertEquals((Integer)status, content.getStatus());
+    Assert.assertNotNull(content.getCode());
+    Assert.assertEquals(status, content.getCode());
   }
 }

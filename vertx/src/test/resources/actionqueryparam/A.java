@@ -25,9 +25,9 @@ import juzu.bridge.vertx.ActionQueryParamTestCase;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Status index() {
     ActionQueryParamTestCase.action = "" + A_.action("foo");
-    return Response.ok("");
+    return Response.ok();
   }
 
   @Action
@@ -38,7 +38,7 @@ public class A {
 
   @View
   @Route("/view")
-  public Response.Render view(String param) {
+  public Response.Content view(String param) {
     return Response.ok("pass=" + param);
   }
 }

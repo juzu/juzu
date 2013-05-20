@@ -76,7 +76,7 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
   protected void sendProperties() throws IOException {
     if (response instanceof Response.Content) {
       Response.Content resource = (Response.Content)response;
-      int status = resource.getStatus();
+      int status = resource.getCode();
       if (status != 200) {
         resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
       }

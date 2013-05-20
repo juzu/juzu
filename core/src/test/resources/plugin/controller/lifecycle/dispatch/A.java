@@ -30,7 +30,7 @@ public class A implements RequestLifeCycle {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     Registry.compareAndSet("count", 0, 1);
     return Response.ok("index");
   }

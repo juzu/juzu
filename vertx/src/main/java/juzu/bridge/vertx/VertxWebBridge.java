@@ -105,6 +105,12 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   }
 
   @Override
+  protected void end() {
+    req.response.end();
+    req.response.close();
+  }
+
+  @Override
   public Map<String, RequestParameter> getParameters() {
     if (parameters == null) {
       if (req.query != null) {

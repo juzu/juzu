@@ -33,7 +33,7 @@ public class A {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return Response.ok("<a id='link' href='" + A_.process() + "'>link</a>");
   }
 }

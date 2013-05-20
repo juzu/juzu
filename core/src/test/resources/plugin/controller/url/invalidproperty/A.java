@@ -28,7 +28,7 @@ public class A {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     Dispatch builder = A_.index();
     try {
       builder.setProperty(new MyPropertyType(), "foo");

@@ -28,7 +28,7 @@ public class A {
 
   @Resource
   @Route("/")
-  public Response.Render index() throws IOException {
+  public Response.Content index() throws IOException {
     final AsyncStreamable content = new AsyncStreamable();
     content.append("pass");
     new Thread() {

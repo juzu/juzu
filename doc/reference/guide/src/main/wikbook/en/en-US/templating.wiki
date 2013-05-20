@@ -147,13 +147,13 @@ public class Controller {
 The ##juzu.Path## annotation is a qualifier annotation managed by the IOC container. It is very similar to the
 ##@javax.inject.Named## qualifier, but it has a special meaning for Juzu for declaring the template.
 
-The ##render## method of a template returns a ##juzu.Response.Render## response which can also be returned
+The ##render## method of a template returns a ##juzu.Response.Content## response which can also be returned
 by the controller method. This is equivalent to the previous example.
 
-{{example title="Returning the generated juzu.Response.Render"}}
+{{example title="Returning the generated juzu.Response.Content"}}
 {{java}}
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     return index.render();
   }
 {{/java}}

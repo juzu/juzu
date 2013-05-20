@@ -25,7 +25,7 @@ import juzu.View;
 public class A {
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     String content =
       "<script>\n" +
         "$(function() {\n" +
@@ -47,7 +47,7 @@ public class A {
 
   @Resource
   @Route("/resource")
-  public Response.Render resource() {
+  public Response.Content resource() {
     return Response.ok("bar");
   }
 }
