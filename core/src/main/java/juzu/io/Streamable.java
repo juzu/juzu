@@ -58,6 +58,24 @@ public interface Streamable {
     }
   }
 
+  public static class Bytes implements Streamable {
+
+    private final byte[] s;
+
+    public Bytes(byte[] s) {
+      this.s = s;
+    }
+
+    public void send(Stream stream) throws IOException {
+      try {
+        stream.append(s);
+      }
+      finally {
+        Tools.safeClose(stream);
+      }
+    }
+  }
+
   void send(Stream stream) throws IOException;
 
 }

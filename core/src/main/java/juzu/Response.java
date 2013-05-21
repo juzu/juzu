@@ -320,6 +320,10 @@ public abstract class Response {
       return body(new Streamable.CharSequence(s));
     }
 
+    public Body body(byte[] s) {
+      return body(new Streamable.Bytes(s));
+    }
+
     public Body body(InputStream s) {
       return body(new Streamable.InputStream(s));
     }
@@ -330,6 +334,10 @@ public abstract class Response {
 
     public Content content(CharSequence s) {
       return content(new Streamable.CharSequence(s));
+    }
+
+    public Content content(byte[] s) {
+      return content(new Streamable.Bytes(s));
     }
 
     public Content content(InputStream s) {
@@ -646,12 +654,20 @@ public abstract class Response {
     return content(200, content);
   }
 
+  public static Content ok(byte[] content) {
+    return content(200, content);
+  }
+
   public static Content ok(Readable content) {
     return content(200, content);
   }
 
   public static Content ok(CharSequence content) {
     return content(200, content);
+  }
+
+  public static Content notFound(byte[] content) {
+    return content(404, content);
   }
 
   public static Content notFound(InputStream content) {
@@ -664,6 +680,10 @@ public abstract class Response {
 
   public static Content notFound(CharSequence content) {
     return content(404, content);
+  }
+
+  public static Content content(int code, byte[] content) {
+    return content(code, new Streamable.Bytes(content));
   }
 
   public static Content content(int code, InputStream content) {
