@@ -52,8 +52,13 @@ public interface Streamable {
 
     public void send(Stream stream) throws IOException {
       byte[] buffer = new byte[256];
-      for (int l;(l = in.read(buffer)) != -1;) {
-        stream.append(buffer, 0, l);
+      try {
+        for (int l;(l = in.read(buffer)) != -1;) {
+          stream.append(buffer, 0, l);
+        }
+      }
+      finally {
+        Tools.safeClose(stream);
       }
     }
   }
