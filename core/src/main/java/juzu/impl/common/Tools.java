@@ -63,6 +63,9 @@ import java.util.regex.Pattern;
 public class Tools {
 
   /** . */
+  private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+  /** . */
   public static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
   /** . */
@@ -1047,13 +1050,17 @@ public class Tools {
       if (second != null) {
         String[] concat = new String[first.length + second.length];
         System.arraycopy(first, 0, concat, 0, first.length);
-        System.arraycopy(second, 0, concat, second.length, second.length);
+        System.arraycopy(second, 0, concat, first.length, second.length);
         return concat;
       } else {
         return first;
       }
     } else {
-      return second;
+      if (second != null) {
+        return second;
+      } else {
+        return EMPTY_STRING_ARRAY;
+      }
     }
   }
 }

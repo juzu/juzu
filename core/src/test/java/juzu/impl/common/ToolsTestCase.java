@@ -180,4 +180,15 @@ public class ToolsTestCase extends AbstractTestCase {
     assertEquals(Arrays.asList("a", "b"), Tools.list(Tools.iterable(a, 0, 2)));
     assertEquals(Arrays.asList("b"), Tools.list(Tools.iterable(a, 1, 2)));
   }
+
+  @Test
+  public void testSafeConcat() {
+    assertEquals(0, Tools.safeConcat(null, null).length);
+    assertEquals(Arrays.asList("a"), Arrays.asList(Tools.safeConcat(new String[]{"a"}, null)));
+    assertEquals(Arrays.asList("a"), Arrays.asList(Tools.safeConcat(null, new String[]{"a"})));
+    assertEquals(Arrays.asList("a", "b"), Arrays.asList(Tools.safeConcat(new String[]{"a"}, new String[]{"b"})));
+    assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(Tools.safeConcat(new String[]{"a", "b"}, new String[]{"c"})));
+    assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(Tools.safeConcat(new String[]{"a"}, new String[]{"b", "c"})));
+    assertEquals(Arrays.asList("a", "b", "c", "d"), Arrays.asList(Tools.safeConcat(new String[]{"a", "b"}, new String[]{"c","d"})));
+  }
 }
