@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>0.7.0-beta2-SNAPSHOT</version>
+    <version>0.7.0-beta2</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-doc-parent</artifactId>
-  <version>0.7.0-beta2-SNAPSHOT</version>
+  <version>0.7.0-beta2</version>
   <packaging>pom</packaging>
 
   <name>Juzu Documentation Aggregator</name>
