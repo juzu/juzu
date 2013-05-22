@@ -178,9 +178,6 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
         break;
       case APPLICATION:
         appendable.append(req.getContextPath()).append("/assets");
-        if (!uri.startsWith("/")) {
-          appendable.append('/');
-        }
         appendable.append(uri);
         break;
       case URL:

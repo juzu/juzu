@@ -200,7 +200,11 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     //
     final ResourceResolver applicationResolver = new ResourceResolver() {
       public URL resolve(String uri) {
-        return moduleLifeCycle.getClassLoader().getResource(uri.substring(1));
+        if (uri.startsWith("/")) {
+          return moduleLifeCycle.getClassLoader().getResource(uri.substring(1));
+        } else {
+          return null;
+        }
       }
     };
 

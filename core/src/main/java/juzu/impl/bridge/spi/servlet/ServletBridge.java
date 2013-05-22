@@ -74,6 +74,10 @@ public class ServletBridge extends HttpServlet {
   /** . */
   ServletApplicationContext applicationContext;
 
+  Bridge getBridge() {
+    return bridge;
+  }
+
   @Override
   public void init() throws ServletException {
 

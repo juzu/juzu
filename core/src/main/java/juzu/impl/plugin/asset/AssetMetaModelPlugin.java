@@ -149,7 +149,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       json.set("declaredScripts", build((List<Map<String, Object>>)annotation.get("declaredScripts")));
       json.set("stylesheets", build((List<Map<String, Object>>)annotation.get("stylesheets")));
       json.set("declaredStylesheets", build((List<Map<String, Object>>)annotation.get("declaredStylesheets")));
-      json.set("package", application.getName().append("assets").toString());
+      json.set("package", "assets");
       json.set("location", annotation.get("location"));
       return json;
     } else {

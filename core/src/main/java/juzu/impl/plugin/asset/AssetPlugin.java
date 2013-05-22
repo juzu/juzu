@@ -24,6 +24,7 @@ import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.PluginContext;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
@@ -129,7 +130,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         //
         String value = script.getString("src");
         if (!value.startsWith("/") && location == AssetLocation.APPLICATION) {
-          value = "/" + packageName.replace('.', '/') + "/" + value;
+          value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
         }
 
         //
