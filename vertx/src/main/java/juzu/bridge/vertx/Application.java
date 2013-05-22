@@ -39,11 +39,15 @@ import org.vertx.java.core.Vertx;
 import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.http.HttpServer;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.http.HttpServerResponse;
 import org.vertx.java.deploy.Container;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Application {
@@ -150,8 +154,6 @@ public class Application {
     final Bridge bridge = new Bridge(log, module, config, lifeCycle.getClasses(), null, new ClassLoaderResolver(lifeCycle.getClassLoader()));
 
     //
-
-    //
     HttpServer server = vertx.createHttpServer().requestHandler(new Handler<HttpServerRequest>() {
       juzu.impl.bridge.spi.web.Handler h;
 
@@ -169,16 +171,35 @@ public class Application {
           return;
         }
 
-        String contentType = req.headers().get("Content-Type");
-        if (contentType != null && contentType.startsWith("application/x-www-form-urlencoded")) {
-          req.bodyHandler(new Handler<Buffer>() {
-            public void handle(Buffer buffer) {
-              new VertxWebBridge(Application.this, req, buffer, log).handle(h);
-            }
-          });
+        //
+        HttpServerResponse response = req.response;
+        URL assetURL = bridge.application.getScriptManager().resolveAsset(req.path);
+        if (assetURL == null) {
+          assetURL = bridge.application.getStylesheetManager().resolveAsset(req.path);
         }
-        else {
-          new VertxWebBridge(Application.this, req, null, log).handle(h);
+        boolean served = false;
+        if (assetURL != null && "file".equals(assetURL.getProtocol())) {
+          try {
+            response.sendFile(new File(assetURL.toURI()).getAbsolutePath());
+            served = true;
+          }
+          catch (URISyntaxException ignore) {
+          }
+        }
+
+        // Send 404 code
+        if (!served) {
+          String contentType = req.headers().get("Content-Type");
+          if (contentType != null && contentType.startsWith("application/x-www-form-urlencoded")) {
+            req.bodyHandler(new Handler<Buffer>() {
+              public void handle(Buffer buffer) {
+                new VertxWebBridge(bridge, Application.this, req, buffer, log).handle(h);
+              }
+            });
+          }
+          else {
+            new VertxWebBridge(bridge, Application.this, req, null, log).handle(h);
+          }
         }
       }
     }).listen(port);

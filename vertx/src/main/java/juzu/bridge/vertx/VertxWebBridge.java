@@ -21,6 +21,7 @@ package juzu.bridge.vertx;
 
 import juzu.Method;
 import juzu.asset.AssetLocation;
+import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.web.WebBridge;
 import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
@@ -79,7 +80,10 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   /** . */
   private final Method method;
 
-  public VertxWebBridge(Application application, HttpServerRequest req, Buffer buffer, Logger log) {
+  /** . */
+  private final Bridge bridge;
+
+  public VertxWebBridge(Bridge bridge, Application application, HttpServerRequest req, Buffer buffer, Logger log) {
 
     //
     this.application = application;
@@ -90,6 +94,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     this.parameters = null;
     this.buffer = buffer;
     this.method = Method.valueOf(req.method);
+    this.bridge = bridge;
   }
 
   void handle(juzu.impl.bridge.spi.web.Handler handler) {
@@ -144,8 +149,21 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     appendable.append("http://localhost:8080");
   }
 
+  @Override
   public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws IOException {
-    throw new UnsupportedOperationException("todo");
+    switch (location) {
+      case APPLICATION:
+        if (!uri.startsWith("/")) {
+          appendable.append('/');
+        }
+        appendable.append(uri);
+        break;
+      case URL:
+        appendable.append(uri);
+        break;
+      default:
+        throw new UnsupportedOperationException("todo");
+    }
   }
 
   public ScopedContext getRequestScope(boolean create) {
