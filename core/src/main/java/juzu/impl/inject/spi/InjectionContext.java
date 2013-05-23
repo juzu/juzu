@@ -16,11 +16,15 @@
 
 package juzu.impl.inject.spi;
 
+import juzu.impl.inject.ScopeController;
+
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class InjectionContext<B, I> implements Closeable {
+
+  public abstract ScopeController getScopeController();
 
   /**
    * Returns the injector provider.

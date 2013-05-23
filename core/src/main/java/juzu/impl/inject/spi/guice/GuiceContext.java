@@ -60,7 +60,13 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
   /** . */
   private final Map<String, Key<?>> nameMap;
 
+  /** . */
+  private final ScopeController scopeController;
+
   public GuiceContext(final GuiceInjector bootstrap) {
+
+    //
+    this.scopeController = new ScopeController();
 
     AbstractModule module = new AbstractModule() {
       @Override
@@ -75,7 +81,7 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
         // Bind guice scopes
         for (Scope scope : bootstrap.scopes) {
           if (!scope.isBuiltIn()) {
-            bindScope(scope.getAnnotationType(), new GuiceScope(scope, ScopeController.INSTANCE));
+            bindScope(scope.getAnnotationType(), new GuiceScope(scope, scopeController));
           }
         }
 
@@ -172,6 +178,11 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
 
   public InjectorProvider getProvider() {
     return InjectorProvider.INJECT_GUICE;
+  }
+
+  @Override
+  public ScopeController getScopeController() {
+    return scopeController;
   }
 
   public ClassLoader getClassLoader() {

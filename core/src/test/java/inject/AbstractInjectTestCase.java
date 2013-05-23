@@ -18,7 +18,6 @@ package inject;
 
 import juzu.Scope;
 import juzu.impl.common.Filter;
-import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.Scoped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
@@ -117,14 +116,14 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
     if (scopingContext != null) {
       throw failure("Already scoping");
     }
-    ScopeController.begin(scopingContext = new ScopingContextImpl());
+    mgr.getScopeController().begin(scopingContext = new ScopingContextImpl());
   }
 
   protected final void endScoping() throws Exception {
     if (scopingContext == null) {
       throw failure("Not scoping");
     }
-    ScopeController.end();
+    mgr.getScopeController().end();
     for (Scoped scoped : scopingContext.getEntries().values()) {
       scoped.destroy();
     }

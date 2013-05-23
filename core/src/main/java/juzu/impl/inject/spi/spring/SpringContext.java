@@ -16,6 +16,7 @@
 
 package juzu.impl.inject.spi.spring;
 
+import juzu.impl.inject.ScopeController;
 import juzu.impl.plugin.controller.AmbiguousResolutionException;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectorProvider;
@@ -44,12 +45,21 @@ public class SpringContext extends InjectionContext<String, Object> {
   /** . */
   private final ClassLoader classLoader;
 
-  public SpringContext(DefaultListableBeanFactory factory, ClassLoader classLoader) {
+  /** . */
+  private final ScopeController scopeController;
+
+  public SpringContext(ScopeController scopeController, DefaultListableBeanFactory factory, ClassLoader classLoader) {
     factory.registerSingleton(Tools.nextUUID(), this);
 
     //
     this.factory = factory;
     this.classLoader = classLoader;
+    this.scopeController = scopeController;
+  }
+
+  @Override
+  public ScopeController getScopeController() {
+    return scopeController;
   }
 
   public InjectorProvider getProvider() {

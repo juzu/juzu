@@ -159,11 +159,14 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     Request request = new Request(this, method, parameters, bridge);
 
     //
+    ScopeController scopeController = injectionContext.getScopeController();
+
+    //
     ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
     try {
       ClassLoader classLoader = injectionContext.getClassLoader();
       Thread.currentThread().setContextClassLoader(classLoader);
-      ScopeController.begin(request);
+      scopeController.begin(request);
       bridge.begin(request);
       request.invoke();
       Response response = request.getResponse();
@@ -178,7 +181,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     }
     finally {
       bridge.end();
-      ScopeController.end();
+      scopeController.end();
       Thread.currentThread().setContextClassLoader(oldCL);
     }
   }

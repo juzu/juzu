@@ -46,11 +46,15 @@ public class CDIInjector extends Injector {
   /** . */
   private ArrayList<AbstractBean> boundBeans;
 
+  /** . */
+  private final ScopeController scopeController;
+
   public CDIInjector() {
     this.scopes = new HashSet<Scope>();
     this.classLoader = null;
     this.fileSystems = new ArrayList<ReadFileSystem<?>>();
     this.boundBeans = new ArrayList<AbstractBean>();
+    this.scopeController = new ScopeController();
   }
 
   public CDIInjector(CDIInjector that) {
@@ -58,6 +62,7 @@ public class CDIInjector extends Injector {
     this.classLoader = that.classLoader;
     this.fileSystems = new ArrayList<ReadFileSystem<?>>(that.fileSystems);
     this.boundBeans = new ArrayList<AbstractBean>(that.boundBeans);
+    this.scopeController = that.scopeController;
   }
 
   @Override
@@ -104,11 +109,11 @@ public class CDIInjector extends Injector {
 
   @Override
   public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
-    Container container = new WeldContainer(classLoader, ScopeController.INSTANCE, scopes);
+    Container container = new WeldContainer(classLoader, scopeController, scopes);
     for (ReadFileSystem<?> fs : fileSystems) {
       container.addFileSystem(fs);
     }
-    return new CDIContext(container, filter, boundBeans);
+    return new CDIContext(scopeController, container, filter, boundBeans);
   }
 
   @Override

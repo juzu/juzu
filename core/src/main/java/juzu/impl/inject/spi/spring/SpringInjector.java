@@ -65,6 +65,9 @@ public class SpringInjector extends Injector {
   /** . */
   final ScopeMetadataResolverImpl scopeResolver;
 
+  /** . */
+  final ScopeController scopeController;
+
   public SpringInjector() {
     this.classLoader = null;
     this.beans = new LinkedHashMap<String, AbstractBean>();
@@ -72,6 +75,7 @@ public class SpringInjector extends Injector {
     this.scopes = new LinkedHashSet<Scope>();
     this.configurationURL = null;
     this.scopeResolver = new ScopeMetadataResolverImpl(scopes);
+    this.scopeController = new ScopeController();
   }
 
   private SpringInjector(SpringInjector that) {
@@ -81,6 +85,7 @@ public class SpringInjector extends Injector {
     this.scopes = new LinkedHashSet<Scope>(that.scopes);
     this.configurationURL = that.configurationURL;
     this.scopeResolver = new ScopeMetadataResolverImpl(scopes);
+    this.scopeController = new ScopeController();
   }
 
   public URL getConfigurationURL() {
@@ -161,7 +166,7 @@ public class SpringInjector extends Injector {
     // Register scopes
     for (Scope scope : scopes) {
       if (!scope.isBuiltIn()) {
-        factory.registerScope(scope.name().toLowerCase(), new SpringScope(factory, scope, ScopeController.INSTANCE));
+        factory.registerScope(scope.name().toLowerCase(), new SpringScope(factory, scope, scopeController));
       }
     }
 
@@ -192,7 +197,7 @@ public class SpringInjector extends Injector {
     configurer.postProcessBeanFactory(factory);
 
     //
-    return new SpringContext(factory, classLoader);
+    return new SpringContext(scopeController, factory, classLoader);
   }
 
   @Override

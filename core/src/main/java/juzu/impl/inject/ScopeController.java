@@ -22,26 +22,23 @@ import juzu.Scope;
 public class ScopeController {
 
   /** . */
-  public static final ScopeController INSTANCE = new ScopeController();
-
-  /** . */
   final ThreadLocal<ScopingContext> currentContext = new ThreadLocal<ScopingContext>();
 
-  public static void begin(ScopingContext context) throws IllegalStateException {
+  public ScopeController() {
+  }
+
+  public void begin(ScopingContext context) throws IllegalStateException {
     if (context == null) {
       throw new NullPointerException();
     }
-    if (INSTANCE.currentContext.get() != null) {
+    if (currentContext.get() != null) {
       throw new IllegalStateException("Already started");
     }
-    INSTANCE.currentContext.set(context);
+    currentContext.set(context);
   }
 
-  public static void end() {
-    INSTANCE.currentContext.set(null);
-  }
-
-  private ScopeController() {
+  public void end() {
+    currentContext.set(null);
   }
 
   /**
