@@ -421,6 +421,22 @@ public abstract class Response {
 
   public static class Content extends Body {
 
+    public Content(int status, PropertyMap properties, Streamable streamable) {
+      super(status, properties, streamable);
+    }
+
+    public Content(int status, Streamable streamable) {
+      super(status, streamable);
+    }
+
+    public Content(PropertyMap properties, Streamable streamable) {
+      super(200, properties, streamable);
+    }
+
+    public Content(Streamable streamable) {
+      super(200, streamable);
+    }
+
     @Override
     public <T> Content with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
       return (Content)super.with(propertyType, propertyValue);
@@ -451,25 +467,9 @@ public abstract class Response {
       return (Content)super.withCharset(charset);
     }
 
-    public Content(int status, PropertyMap properties, Streamable streamable) {
-      super(status, properties, streamable);
-    }
-
-    public Content(int status, Streamable streamable) {
-      super(status, streamable);
-    }
-
-    public Content(PropertyMap properties, Streamable streamable) {
-      super(200, properties, streamable);
-    }
-
-    public Content(Streamable streamable) {
-      super(200, streamable);
-    }
-
     @Override
     public Content withHeader(String name, String... value) {
-      return (Render)super.withHeader(name, value);
+      return (Content)super.withHeader(name, value);
     }
 
     public String getTitle() {
@@ -514,80 +514,6 @@ public abstract class Response {
     @Override
     public String toString() {
       return "Response.Content[]";
-    }
-  }
-
-  public static class Render extends Content {
-
-    public Render(int status, PropertyMap properties, Streamable streamable) {
-      super(status, properties, streamable);
-    }
-
-    public Render(int status, Streamable streamable) {
-      super(status, streamable);
-    }
-
-    public Render(PropertyMap properties, Streamable streamable) {
-      super(properties, streamable);
-    }
-
-    public Render(Streamable streamable) {
-      super(streamable);
-    }
-
-    @Override
-    public <T> Render with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
-      return (Render)super.with(propertyType, propertyValue);
-    }
-
-    @Override
-    public <T> Render without(PropertyType<T> propertyType) throws NullPointerException {
-      return (Render)super.without(propertyType);
-    }
-
-    @Override
-    public Render with(PropertyType<Boolean> propertyType) throws NullPointerException {
-      return (Render)super.with(propertyType);
-    }
-
-    @Override
-    public Render withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
-      return (Render)super.withNo(propertyType);
-    }
-
-    @Override
-    public Render withMimeType(String mimeType) {
-      return (Render)super.withMimeType(mimeType);
-    }
-
-    @Override
-    public Render withCharset(Charset charset) {
-      return (Render)super.withCharset(charset);
-    }
-
-    @Override
-    public Render withHeader(String name, String... value) {
-      return (Render)super.withHeader(name, value);
-    }
-
-    @Override
-    public Render withTitle(String title) {
-      return (Render)super.withTitle(title);
-    }
-
-    @Override
-    public Render withScripts(String... scripts) throws NullPointerException {
-      return (Render)super.withScripts(scripts);
-    }
-
-    @Override
-    public Render withStylesheets(String... stylesheets) throws NullPointerException {
-      return (Render)super.withStylesheets(stylesheets);
-    }
-
-    @Override
-    public Render withMetaTag(String name, String value) {
-      return (Render)super.withMetaTag(name, value);
     }
   }
 
@@ -699,7 +625,7 @@ public abstract class Response {
   }
 
   public static Content content(int code, Streamable content) {
-    return new Render(code, content);
+    return new Content(code, content);
   }
 
   public static Error error(Throwable t) {
