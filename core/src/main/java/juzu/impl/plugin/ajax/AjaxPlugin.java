@@ -188,7 +188,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         };
 
         //
-        request.setResponse(new Response.Content(properties, decorator));
+        request.setResponse(new Response.Content(render.getCode(), properties, decorator));
       }
     }
   }

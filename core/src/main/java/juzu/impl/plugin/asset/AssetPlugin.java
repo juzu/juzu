@@ -203,7 +203,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         properties.addValues(PropertyType.SCRIPT, scripts);
 
         // Use a new response
-        request.setResponse(new Response.Content(properties, render.getStreamable()));
+        request.setResponse(new Response.Content(render.getCode(), properties, render.getStreamable()));
       }
     }
   }
