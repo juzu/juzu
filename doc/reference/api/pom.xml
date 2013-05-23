@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-doc-reference-parent</artifactId>
-    <version>0.7.0-beta5</version>
+    <version>0.7.0-beta6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-doc-reference-api</artifactId>
-  <version>0.7.0-beta5</version>
+  <version>0.7.0-beta6-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Juzu API documentation</name>
