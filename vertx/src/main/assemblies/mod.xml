@@ -23,6 +23,7 @@
         <include>javax.inject:javax.inject</include>
         <include>com.google.inject:guice</include>
         <include>aopalliance:aopalliance</include>
+        <include>org.codehaus.groovy:groovy-all</include>
       </includes>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <useTransitiveFiltering>true</useTransitiveFiltering>
