@@ -16,12 +16,13 @@
 
 package juzu.test.protocol.mock;
 
+import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
-import juzu.impl.inject.ScopedContext;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
@@ -112,7 +113,7 @@ public class MockClient implements UserContext {
 
     //
     this.application = application;
-    this.session = new ScopedContext(Logger.SYSTEM);
+    this.session = new ServletScopedContext(Logger.SYSTEM);
     this.flash = null;
     this.flashHistory = new LinkedList<List<Scoped>>();
     this.controllerPlugin = controllerPlugin;
@@ -159,7 +160,7 @@ public class MockClient implements UserContext {
 
   public void setFlashValue(Object key, Scoped value) {
     if (flash == null) {
-      flash = new ScopedContext(Logger.SYSTEM);
+      flash = new ServletScopedContext(Logger.SYSTEM);
     }
     flash.set(key, value);
   }
@@ -201,6 +202,6 @@ public class MockClient implements UserContext {
 
   public void invalidate() {
     session.close();
-    session = new ScopedContext(Logger.SYSTEM);
+    session = new ServletScopedContext(Logger.SYSTEM);
   }
 }

@@ -17,7 +17,7 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.inject.ScopedContext;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.request.Method;
 import juzu.request.RequestParameter;

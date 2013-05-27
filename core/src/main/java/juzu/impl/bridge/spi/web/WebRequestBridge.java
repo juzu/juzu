@@ -31,7 +31,7 @@ import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
-import juzu.impl.inject.ScopedContext;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Tools;

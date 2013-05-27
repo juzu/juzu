@@ -23,7 +23,7 @@ import juzu.asset.AssetLocation;
 import juzu.impl.bridge.ViewStreamable;
 import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
-import juzu.impl.inject.ScopedContext;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.request.ApplicationContext;
 import juzu.request.RequestParameter;
 import juzu.io.Stream;

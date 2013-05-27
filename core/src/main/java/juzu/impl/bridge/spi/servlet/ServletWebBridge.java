@@ -22,8 +22,7 @@ import juzu.impl.bridge.spi.web.WebBridge;
 import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Tools;
-import juzu.impl.inject.ScopedContext;
-import juzu.io.AppendableStream;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.io.BinaryOutputStream;
 import juzu.request.ApplicationContext;
 import juzu.request.RequestParameter;
@@ -41,7 +40,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUtils;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -246,7 +244,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   public ScopedContext getRequestScope(boolean create) {
     ScopedContext context = (ScopedContext)req.getAttribute("juzu.request_scope");
     if (context == null && create) {
-      req.setAttribute("juzu.request_scope", context = new ScopedContext(log));
+      req.setAttribute("juzu.request_scope", context = new ServletScopedContext(log));
     }
     return context;
   }
@@ -257,7 +255,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.flash_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.flash_scope", context = new ScopedContext(log));
+        session.setAttribute("juzu.flash_scope", context = new ServletScopedContext(log));
       }
     }
     return context;
@@ -269,7 +267,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.session_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.session_scope", context = new ScopedContext(log));
+        session.setAttribute("juzu.session_scope", context = new ServletScopedContext(log));
       }
     }
     return context;

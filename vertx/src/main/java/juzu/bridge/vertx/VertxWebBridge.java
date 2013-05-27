@@ -22,12 +22,12 @@ package juzu.bridge.vertx;
 import juzu.Method;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.bridge.spi.web.WebBridge;
 import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
-import juzu.impl.inject.ScopedContext;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.io.Stream;
-import juzu.io.Streams;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
@@ -37,7 +37,6 @@ import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.http.HttpServerRequest;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
@@ -168,7 +167,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
 
   public ScopedContext getRequestScope(boolean create) {
     if (requestScope == null && create) {
-      requestScope = new ScopedContext(log);
+      requestScope = new ServletScopedContext(log);
     }
     return requestScope;
   }

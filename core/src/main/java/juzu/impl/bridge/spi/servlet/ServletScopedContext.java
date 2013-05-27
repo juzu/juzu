@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package juzu.impl.inject;
+package juzu.impl.bridge.spi.servlet;
 
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.Logger;
+import juzu.impl.inject.Scoped;
 
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -25,14 +27,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- * <p></p>An helper class for managing scoped entries. It implements the {@link HttpSessionBindingListener} interface
+ * <p></p>An helper class for managing scoped entries. It implements the {@link javax.servlet.http.HttpSessionBindingListener} interface
  * which invokes the {@link #close()} method when the servlet container invokes the {@link
  * #valueUnbound(javax.servlet.http.HttpSessionBindingEvent)} callback.</p> <p/> <p>At the moment we do not support
  * serialization.</p>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class ScopedContext implements HttpSessionBindingListener, Iterable<Scoped> {
+public final class ServletScopedContext implements ScopedContext, HttpSessionBindingListener {
 
   /** . */
   private HashMap<Object, Scoped> state;
@@ -40,7 +42,7 @@ public final class ScopedContext implements HttpSessionBindingListener, Iterable
   /** . */
   private final Logger log;
 
-  public ScopedContext(Logger log) {
+  public ServletScopedContext(Logger log) {
     this.log = log;
   }
 

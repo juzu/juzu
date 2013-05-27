@@ -23,7 +23,7 @@ import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.compiler.CompilationException;
-import juzu.impl.inject.ScopedContext;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.io.Stream;
 import juzu.io.Streams;

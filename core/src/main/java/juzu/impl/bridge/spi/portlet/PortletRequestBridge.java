@@ -20,6 +20,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
@@ -31,7 +32,7 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
-import juzu.impl.inject.ScopedContext;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.bridge.portlet.JuzuPortlet;
@@ -298,7 +299,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected final ScopedContext getRequestContext(boolean create) {
     ScopedContext context = (ScopedContext)req.getAttribute("juzu.request_scope");
     if (context == null && create) {
-      req.setAttribute("juzu.request_scope", context = new ScopedContext(bridge.log));
+      req.setAttribute("juzu.request_scope", context = new ServletScopedContext(bridge.log));
     }
     return context;
   }
@@ -309,7 +310,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.flash_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.flash_scope", context = new ScopedContext(bridge.log));
+        session.setAttribute("juzu.flash_scope", context = new ServletScopedContext(bridge.log));
       }
     }
     return context;
@@ -321,7 +322,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.session_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.session_scope", context = new ScopedContext(bridge.log));
+        session.setAttribute("juzu.session_scope", context = new ServletScopedContext(bridge.log));
       }
     }
     return context;
