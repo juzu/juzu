@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ClassLoaderResolver implements ResourceResolver {
+public class ClassLoaderResolver implements ResourceResolver<URL> {
 
   /** . */
   private final AtomicReference<ClassLoader> loader;

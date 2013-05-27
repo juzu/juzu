@@ -47,7 +47,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Application {
@@ -117,7 +116,7 @@ public class Application {
     lifeCycle.refresh(true);
 
     //
-    final ResourceResolver r = new ClassLoaderResolver(loader);
+    final ResourceResolver<URL> r = new ClassLoaderResolver(loader);
     Module module = new Module(new ModuleContext() {
       public ClassLoader getClassLoader() {
         return loader;
@@ -127,7 +126,7 @@ public class Application {
         Content f = c.getContent(new String[]{"juzu", "config.json"}).getObject();
         return (JSON)JSON.parse(f.getCharSequence().toString());
       }
-      public ResourceResolver getServerResolver() {
+      public ResourceResolver<URL> getServerResolver() {
         return r;
       }
       public ReadFileSystem<?> getResourcePath() {

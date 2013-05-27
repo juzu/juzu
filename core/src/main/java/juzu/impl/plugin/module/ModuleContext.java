@@ -21,6 +21,8 @@ import juzu.impl.common.RunMode;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.resource.ResourceResolver;
 
+import java.net.URL;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface ModuleContext {
 
@@ -28,7 +30,7 @@ public interface ModuleContext {
 
   JSON getConfig() throws Exception;
 
-  ResourceResolver getServerResolver();
+  ResourceResolver<URL> getServerResolver();
 
   ReadFileSystem<?> getResourcePath();
 

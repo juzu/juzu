@@ -29,7 +29,6 @@ import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.inject.spi.Injector;
-import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.Plugin;
@@ -70,7 +69,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   private final ReadFileSystem<R> resources;
 
   /** Contextual: resoure resolver. */
-  private final ResourceResolver resourceResolver;
+  private final ResourceResolver<URL> resourceResolver;
 
   /** Contextual: asset server. */
   private final AssetServer assetServer;
@@ -109,7 +108,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
       Name name,
       ReadFileSystem<R> resources,
       AssetServer assetServer,
-      ResourceResolver resourceResolver) {
+      ResourceResolver<URL> resourceResolver) {
 
     //
     this.log = log;
@@ -198,7 +197,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
 
     //
-    final ResourceResolver applicationResolver = new ResourceResolver() {
+    final ResourceResolver<URL> applicationResolver = new ResourceResolver<URL>() {
       public URL resolve(String uri) {
         if (uri.startsWith("/")) {
           return moduleLifeCycle.getClassLoader().getResource(uri.substring(1));
@@ -219,10 +218,10 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
         public ClassLoader getClassLoader() {
           return moduleLifeCycle.getClassLoader();
         }
-        public ResourceResolver getServerResolver() {
+        public ResourceResolver<URL> getServerResolver() {
           return resourceResolver;
         }
-        public ResourceResolver getApplicationResolver() {
+        public ResourceResolver<URL> getApplicationResolver() {
           return applicationResolver;
         }
       };

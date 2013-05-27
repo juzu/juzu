@@ -26,6 +26,7 @@ import juzu.impl.plugin.module.Module;
 import juzu.impl.resource.ResourceResolver;
 
 import java.io.Closeable;
+import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Bridge implements Closeable {
@@ -43,7 +44,7 @@ public class Bridge implements Closeable {
   private final ReadFileSystem<?> resources;
 
   /** . */
-  private final ResourceResolver resolver;
+  private final ResourceResolver<URL> resolver;
 
   /** . */
   public final Module module;
@@ -51,7 +52,7 @@ public class Bridge implements Closeable {
   /** . */
   public ApplicationLifeCycle<?, ?> application;
 
-  public Bridge(Logger log, Module module, BridgeConfig config, ReadFileSystem<?> resources, AssetServer server, ResourceResolver resolver) {
+  public Bridge(Logger log, Module module, BridgeConfig config, ReadFileSystem<?> resources, AssetServer server, ResourceResolver<URL> resolver) {
     this.log = log;
     this.module = module;
     this.config = config;

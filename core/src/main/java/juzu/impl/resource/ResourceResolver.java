@@ -16,18 +16,15 @@
 
 package juzu.impl.resource;
 
-import java.net.URL;
-
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ResourceResolver {
+public interface ResourceResolver<R> {
 
   /**
-   * Resolve the uri are an {@link java.net.URL}, it returns null when resolution cannot be performed.
+   * Resolve the uri as a resource, it returns null when resolution cannot be performed.
    *
    * @param uri the uri
-   * @return the url
+   * @return the related resource
    */
-  URL resolve(String uri);
-
+  R resolve(String uri);
 
 }

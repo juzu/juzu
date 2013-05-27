@@ -74,7 +74,7 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
         name,
         classes,
         null,
-        new ResourceResolver() {
+        new ResourceResolver<URL>() {
           public URL resolve(String uri) {
             return null;
           }

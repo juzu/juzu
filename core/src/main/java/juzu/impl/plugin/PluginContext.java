@@ -19,6 +19,8 @@ package juzu.impl.plugin;
 import juzu.impl.common.JSON;
 import juzu.impl.resource.ResourceResolver;
 
+import java.net.URL;
+
 /**
  * The context of a plugin.
  *
@@ -45,13 +47,13 @@ public interface PluginContext {
    *
    * @return the server resolver
    */
-  ResourceResolver getServerResolver();
+  ResourceResolver<URL> getServerResolver();
 
   /**
    * Returns the resource resolver for applications resources.
    *
    * @return the application resolver
    */
-  ResourceResolver getApplicationResolver();
+  ResourceResolver<URL> getApplicationResolver();
 
 }

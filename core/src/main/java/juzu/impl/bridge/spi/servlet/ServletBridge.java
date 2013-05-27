@@ -200,7 +200,7 @@ public class ServletBridge extends HttpServlet {
           this.config,
           module.context.getResourcePath(),
           server,
-          new ResourceResolver() {
+          new ResourceResolver<URL>() {
             public URL resolve(String uri) {
               try {
                 return getServletConfig().getServletContext().getResource(uri);
