@@ -177,18 +177,19 @@ public class Application {
         }
 
         //
-        HttpServerResponse response = req.response;
-        URL assetURL = bridge.application.getScriptManager().resolveAsset(req.path);
-        if (assetURL == null) {
-          assetURL = bridge.application.getStylesheetManager().resolveAsset(req.path);
-        }
         boolean served = false;
-        if (assetURL != null && "file".equals(assetURL.getProtocol())) {
-          try {
-            response.sendFile(new File(assetURL.toURI()).getAbsolutePath());
-            served = true;
-          }
-          catch (URISyntaxException ignore) {
+        HttpServerResponse response = req.response;
+        Iterable<ResourceResolver> resolvers = bridge.application.resolveBeans(ResourceResolver.class);
+        for (ResourceResolver resolver : resolvers) {
+          URL assetURL = resolver.resolve(req.path);
+          if (assetURL != null && "file".equals(assetURL.getProtocol())) {
+            try {
+              response.sendFile(new File(assetURL.toURI()).getAbsolutePath());
+              served = true;
+              break;
+            }
+            catch (URISyntaxException ignore) {
+            }
           }
         }
 

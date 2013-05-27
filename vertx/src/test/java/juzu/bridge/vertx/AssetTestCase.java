@@ -40,18 +40,19 @@ public class AssetTestCase extends VertxTestCase {
     String result = Tools.read(conn.getInputStream());
     Assert.assertTrue(result.contains("src=\"/asset/assets/test.js\""));
     Assert.assertTrue(result.contains("src=\"http://localhost:8080/foo.js\""));
-    Assert.assertEquals("function relative() {}", assertResource(url, "/asset/assets/test.js"));
-    Assert.assertEquals("function absolute() {}", assertResource(url, "/asset/absolute/script.js"));
+    Assert.assertEquals("function relative() {}", assertResource(url, "/asset/assets/test.js", "application/javascript"));
+    Assert.assertEquals("function absolute() {}", assertResource(url, "/asset/absolute/script.js", "application/javascript"));
+    Assert.assertEquals("content_value", assertResource(url, "/asset/assets/content.txt", "text/plain"));
   }
 
-  private String assertResource(URL baseURL, String path) throws Exception {
+  private String assertResource(URL baseURL, String path, String expectedMimeType) throws Exception {
     HttpURLConnection conn = (HttpURLConnection)new URL(baseURL, path).openConnection();
     conn.connect();
     Assert.assertEquals(200, conn.getResponseCode());
     Map<String, String> headers = Tools.responseHeaders(conn);
     String contentType = headers.get("Content-Type");
     Assert.assertNotNull(contentType);
-    Assert.assertTrue(contentType.startsWith("application/javascript"));
+    Assert.assertTrue("Was expecting " + contentType + " to start with " + expectedMimeType, contentType.startsWith(expectedMimeType));
     return Tools.read(conn.getInputStream());
   }
 
