@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package juzu.impl.inject.spi.guice;
+package flashscope;
 
-import juzu.impl.inject.Scoped;
+import juzu.Response;
+import juzu.View;
+import juzu.bridge.vertx.FlashScopeTestCase;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceScoped implements Scoped {
+import javax.inject.Inject;
 
-  /** . */
-  final Object o;
+public class A {
 
-  public GuiceScoped(Object o) {
-    this.o = o;
-  }
+  @Inject
+  Flash flash;
 
-  public Object get() {
-    return o;
-  }
-
-  public void destroy() {
-    GuiceContext.invokePreDestroy(o);
+  @View
+  public Response.Content index() {
+    FlashScopeTestCase.VALUE = flash.value;
+    return Response.ok("pass");
   }
 }

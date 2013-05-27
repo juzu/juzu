@@ -344,11 +344,10 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       } else {
         String url = update.with(MimeType.PLAIN).with(update.getProperties()).toString();
         Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
-        if (headers != null) {
-          for (Map.Entry<String, String[]> entry : headers) {
-            http.setHeader(entry.getKey(), entry.getValue()[0]);
-          }
+        if (headers == null) {
+          headers = Tools.emptyIterable();
         }
+        http.setHeaders(headers);
         http.sendRedirect(url);
         return true;
       }

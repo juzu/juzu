@@ -27,6 +27,7 @@ import juzu.impl.bridge.spi.web.WebBridge;
 import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
 import juzu.impl.bridge.spi.ScopedContext;
+import juzu.impl.common.Tools;
 import juzu.io.Stream;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
@@ -36,9 +37,16 @@ import juzu.request.UserContext;
 import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.http.HttpServerRequest;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.HttpCookie;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -82,6 +90,9 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   /** . */
   private final Bridge bridge;
 
+  /** . */
+  CookieScopeContext[] cookieScopes;
+
   public VertxWebBridge(Bridge bridge, Application application, HttpServerRequest req, Buffer buffer, Logger log) {
 
     //
@@ -94,6 +105,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     this.buffer = buffer;
     this.method = Method.valueOf(req.method);
     this.bridge = bridge;
+    this.cookieScopes = new CookieScopeContext[2];
   }
 
   void handle(juzu.impl.bridge.spi.web.Handler handler) {
@@ -172,20 +184,19 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     return requestScope;
   }
 
-  public ScopedContext getFlashScope(boolean create) {
-    if (create) {
-      throw new UnsupportedOperationException("todo");
-    } else {
-      return null;
+  CookieScopeContext getCookieScopeContext(int type, boolean create) {
+    if (create && cookieScopes[type] == null) {
+      cookieScopes[type] = new CookieScopeContext();
     }
+    return cookieScopes[type];
+  }
+
+  public ScopedContext getFlashScope(boolean create) {
+    return getCookieScopeContext(CookieScopeContext.FLASH, create);
   }
 
   public ScopedContext getSessionScope(boolean create) {
-    if (create) {
-      throw new UnsupportedOperationException("todo");
-    } else {
-      return null;
-    }
+    return getCookieScopeContext(CookieScopeContext.SESSION, create);
   }
 
   public void purgeSession() {
@@ -212,8 +223,43 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     req.response.statusCode = status;
   }
 
-  public void setHeader(String name, String value) {
-    throw new UnsupportedOperationException("todo");
+  @Override
+  public void setHeaders(Iterable<Map.Entry<String, String[]>> headers) {
+    // Do nothing for now but send cookies if we have
+    setHeaders("flash", cookieScopes[CookieScopeContext.FLASH]);
+    setHeaders("session", cookieScopes[CookieScopeContext.SESSION]);
+  }
+
+  private void setHeaders(String scopeName, CookieScopeContext scope) {
+    DateFormat expiresFormat = new SimpleDateFormat("E, dd-MMM-yyyy k:m:s 'GMT'");
+    String expires = expiresFormat.format(new Date(System.currentTimeMillis() + 3600 * 1000));
+    if (scope != null && scope.size() > 0) {
+      for (Map.Entry<String, ScopedCookie> entry : scope.entries.entrySet()) {
+        ScopedCookie cookie = entry.getValue();
+        switch (cookie.status) {
+          case CookieScopeContext.RECEIVED:
+          case CookieScopeContext.TO_SEND: {
+            String name = entry.getKey();
+            try {
+              Serializable value = (Serializable)cookie.scoped.get();
+              ByteArrayOutputStream baos = new ByteArrayOutputStream();
+              Tools.serialize(value, baos);
+              baos.close();
+              String encoded = DatatypeConverter.printBase64Binary(baos.toByteArray());
+//              HttpCookie tmp = new HttpCookie(scopeName + "." + name, encoded);
+              req.response.putHeader("Set-Cookie", scopeName + "." + name + "=" + encoded + "; expires=" + expires + "; domain=localhost; path=/");
+            }
+            catch (Exception e) {
+              log.log("Could not encode cookie", e);
+            }
+            break;
+          }
+          case CookieScopeContext.TO_REMOVE:
+            req.response.putHeader("Set-Cookie", scopeName + "." + entry.getKey() + "=");
+            break;
+        }
+      }
+    }
   }
 
   public void sendRedirect(String location) throws IOException {

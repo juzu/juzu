@@ -87,11 +87,10 @@ public abstract class WebBridge {
 
       // Send headers
       Iterable<Map.Entry<String, String[]>> headers = properties.getValues(PropertyType.HEADER);
-      if (headers != null) {
-        for (Map.Entry<String, String[]> entry : headers) {
-          setHeader(entry.getKey(), entry.getValue()[0]);
-        }
+      if (headers == null) {
+        headers = Tools.emptyIterable();
       }
+      setHeaders(headers);
 
       //
       Stream stream = getStream(charset);
@@ -114,11 +113,10 @@ public abstract class WebBridge {
       try {
         // Send headers
         Iterable<Map.Entry<String, String[]>> headers = properties.getValues(PropertyType.HEADER);
-        if (headers != null) {
-          for (Map.Entry<String, String[]> entry : headers) {
-            setHeader(entry.getKey(), entry.getValue()[0]);
-          }
+        if (headers == null) {
+          headers = Tools.emptyIterable();
         }
+        setHeaders(headers);
       }
       finally {
         end();
@@ -174,7 +172,7 @@ public abstract class WebBridge {
 
   public abstract void setStatus(int status);
 
-  public abstract void setHeader(String name, String value);
+  public abstract void setHeaders(Iterable<Map.Entry<String, String[]>> headers);
 
   public abstract void sendRedirect(String location) throws IOException;
 

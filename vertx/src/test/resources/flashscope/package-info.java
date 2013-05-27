@@ -14,25 +14,7 @@
  * limitations under the License.
  */
 
-package juzu.impl.inject.spi.guice;
+@Application
+package flashscope;
 
-import juzu.impl.inject.Scoped;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceScoped implements Scoped {
-
-  /** . */
-  final Object o;
-
-  public GuiceScoped(Object o) {
-    this.o = o;
-  }
-
-  public Object get() {
-    return o;
-  }
-
-  public void destroy() {
-    GuiceContext.invokePreDestroy(o);
-  }
-}
+import juzu.Application;

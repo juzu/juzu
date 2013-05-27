@@ -282,7 +282,14 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     }
   }
 
-  public void setHeader(String name, String value) {
+  @Override
+  public void setHeaders(Iterable<Map.Entry<String, String[]>> headers) {
+    for (Map.Entry<String, String[]> header : headers) {
+      resp.setHeader(header.getKey(), header.getValue()[0]);
+    }
+  }
+
+  public void setHeaders(String name, String value) {
     resp.setHeader(name, value);
   }
 

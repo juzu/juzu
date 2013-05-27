@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package flashscope;
 
-package juzu.impl.inject.spi.guice;
+import juzu.FlashScoped;
 
-import juzu.impl.inject.Scoped;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.util.UUID;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceScoped implements Scoped {
+/** @author Julien Viet */
+@FlashScoped
+@Named("FOO")
+public class Flash implements Serializable {
 
   /** . */
-  final Object o;
+  String value = UUID.randomUUID().toString();
 
-  public GuiceScoped(Object o) {
-    this.o = o;
-  }
-
-  public Object get() {
-    return o;
-  }
-
-  public void destroy() {
-    GuiceContext.invokePreDestroy(o);
+  @Override
+  public String toString() {
+    return "Flash[" + value + "]";
   }
 }

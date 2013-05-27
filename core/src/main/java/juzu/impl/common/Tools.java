@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -820,8 +821,21 @@ public class Tools {
   }
 
   public static <S> S unserialize(Class<S> expectedType, InputStream in) throws IOException, ClassNotFoundException {
+    return unserialize(null, expectedType, in);
+  }
+
+  public static <S> S unserialize(final ClassLoader loader, Class<S> expectedType, InputStream in) throws IOException, ClassNotFoundException {
     try {
-      ObjectInputStream ois = new ObjectInputStream(in);
+      ObjectInputStream ois = new ObjectInputStream(in) {
+        @Override
+        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+          if (loader != null) {
+            return Class.forName(desc.getName(), true, loader);
+          } else {
+            return super.resolveClass(desc);
+          }
+        }
+      };
       Object o = ois.readObject();
       return expectedType.cast(o);
     }

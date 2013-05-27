@@ -26,9 +26,11 @@ import juzu.impl.common.JSON;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
 import juzu.impl.common.RunMode;
+import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
+import juzu.impl.inject.spi.guice.GuiceScoped;
 import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.module.ModuleContext;
 import juzu.impl.plugin.module.ModuleLifeCycle;
@@ -42,7 +44,11 @@ import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.HttpServerResponse;
 import org.vertx.java.deploy.Container;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.Serializable;
+import java.net.HttpCookie;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
@@ -197,7 +203,54 @@ public class Application {
             });
           }
           else {
-            new VertxWebBridge(bridge, Application.this, req, null, log).handle(h);
+
+            //
+            VertxWebBridge webBridge = new VertxWebBridge(bridge, Application.this, req, null, log);
+            String cookies = req.headers().get("cookie");
+            if (cookies != null) {
+              for (HttpCookie cookie : HttpCookie.parse(cookies)) {
+                String name = cookie.getName();
+                String value = cookie.getValue();
+                int type;
+                String prefix;
+                if (name.startsWith("flash.")) {
+                  type = CookieScopeContext.FLASH;
+                  prefix = "flash.";
+                }
+                else if (name.startsWith("session.")) {
+                  type = CookieScopeContext.SESSION;
+                  prefix = "session.";
+                }
+                else {
+                  type = -1;
+                  prefix = null;
+                }
+                if (prefix != null) {
+                  try {
+                    name = name.substring(prefix.length());
+                    if (value.length() > 0) {
+                      byte[] bytes = DatatypeConverter.parseBase64Binary(value);
+                      final Serializable object = Tools.unserialize(lifeCycle.getClassLoader(), Serializable.class, new ByteArrayInputStream(bytes));
+                      CookieScopeContext context = webBridge.getCookieScopeContext(type, true);
+                      if (context.entries == null) {
+                        context.entries = new HashMap<String, ScopedCookie>();
+                      }
+                      context.entries.put(name, new ScopedCookie(CookieScopeContext.RECEIVED, new GuiceScoped(object)));
+                    }
+                    else {
+                      // For now we consider we removed the value ...
+                      // We should handle proper cookie removal later
+                    }
+                  }
+                  catch (Exception e) {
+                    log.log("Could not parse cookie", e);
+                  }
+                }
+              }
+            }
+
+            //
+            webBridge.handle(h);
           }
         }
       }

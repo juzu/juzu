@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package sessionscope;
 
-package juzu.impl.inject.spi.guice;
+import juzu.SessionScoped;
 
-import juzu.impl.inject.Scoped;
+import javax.inject.Named;
+import java.io.Serializable;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class GuiceScoped implements Scoped {
+/** @author Julien Viet */
+@SessionScoped
+@Named("FOO")
+public class Session implements Serializable {
 
   /** . */
-  final Object o;
+  int value = 0;
 
-  public GuiceScoped(Object o) {
-    this.o = o;
-  }
-
-  public Object get() {
-    return o;
-  }
-
-  public void destroy() {
-    GuiceContext.invokePreDestroy(o);
+  @Override
+  public String toString() {
+    return "Session[" + value + "]";
   }
 }
