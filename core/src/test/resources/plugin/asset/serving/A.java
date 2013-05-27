@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package juzu.impl.resource;
+package plugin.asset.serving;
 
-import java.net.URL;
+import juzu.Response;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ResourceResolver {
-
-  /**
-   * Resolve the uri as a resource, it returns null when resolution cannot be performed.
-   *
-   * @param uri the uri
-   * @return the related resource
-   */
-  URL resolve(String uri);
-
+public class A {
+  @View
+  public Response.Status index() {
+    return Response.ok("content");
+  }
 }

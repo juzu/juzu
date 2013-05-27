@@ -116,7 +116,7 @@ public class Application {
     lifeCycle.refresh(true);
 
     //
-    final ResourceResolver<URL> r = new ClassLoaderResolver(loader);
+    final ResourceResolver r = new ClassLoaderResolver(loader);
     Module module = new Module(new ModuleContext() {
       public ClassLoader getClassLoader() {
         return loader;
@@ -126,7 +126,7 @@ public class Application {
         Content f = c.getContent(new String[]{"juzu", "config.json"}).getObject();
         return (JSON)JSON.parse(f.getCharSequence().toString());
       }
-      public ResourceResolver<URL> getServerResolver() {
+      public ResourceResolver getServerResolver() {
         return r;
       }
       public ReadFileSystem<?> getResourcePath() {

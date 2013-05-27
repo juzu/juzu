@@ -32,14 +32,14 @@ public class ServletModuleContext extends AbstractWarModuleContext {
   final ServletContext servletContext;
 
   /** . */
-  final ResourceResolver<URL> resolver;
+  final ResourceResolver resolver;
 
   public ServletModuleContext(ServletContext servletContext, Logger log) {
     super(log);
 
     //
     this.servletContext = servletContext;
-    this.resolver = new ResourceResolver<URL>() {
+    this.resolver = new ResourceResolver() {
       public URL resolve(String uri) {
         try {
           return ServletModuleContext.this.servletContext.getResource(uri);
@@ -55,7 +55,7 @@ public class ServletModuleContext extends AbstractWarModuleContext {
     return servletContext.getClassLoader();
   }
 
-  public ResourceResolver<URL> getServerResolver() {
+  public ResourceResolver getServerResolver() {
     return resolver;
   }
 

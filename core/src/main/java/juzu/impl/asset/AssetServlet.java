@@ -45,7 +45,9 @@ public class AssetServlet extends HttpServlet {
     if (path != null) {
       AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
       if (server != null) {
-        server.doGet(path, getServletContext(), resp);
+        if (!server.doGet(path, getServletContext(), resp)) {
+          resp.sendError(404, "No resource found " + path);
+        }
       }
       else {
         resp.sendError(500, "No asset server");

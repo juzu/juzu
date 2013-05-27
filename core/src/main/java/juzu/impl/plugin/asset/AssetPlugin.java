@@ -20,6 +20,7 @@ import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.AssetLocation;
+import juzu.impl.common.Name;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
@@ -59,6 +60,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   /** . */
   private PluginContext context;
 
+  /** The path to the assets dir. */
+  private String assetsPath;
+
   /** . */
   @Inject
   @Named("juzu.asset_manager.script")
@@ -81,6 +85,15 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     return stylesheetManager;
   }
 
+  /**
+   * Returns the plugin assets path.
+   *
+   * @return the assets path
+   */
+  public String getAssetsPath() {
+    return assetsPath;
+  }
+
   @Override
   public PluginDescriptor init(PluginContext context) throws Exception {
     JSON config = context.getConfig();
@@ -88,6 +101,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     List<AssetMetaData> declaredScripts;
     List<AssetMetaData> stylesheets;
     List<AssetMetaData> declaredStylesheets;
+    String assetsPath;
     if (config != null) {
       String packageName = config.getString("package");
       AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
@@ -98,14 +112,17 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       declaredScripts = load(packageName, location, config.getList("declaredScripts", JSON.class));
       stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
       declaredStylesheets = load(packageName, location, config.getList("declaredStylesheets", JSON.class));
+      assetsPath = "/" + Name.parse(application.getPackageName()).append(packageName).toString().replace('.', '/') + "/";
     } else {
       scripts = Collections.emptyList();
       declaredScripts = Collections.emptyList();
       stylesheets = Collections.emptyList();
       declaredStylesheets = Collections.emptyList();
+      assetsPath = null;
     }
     this.descriptor = new AssetDescriptor(scripts, declaredScripts, stylesheets, declaredStylesheets);
     this.context = context;
+    this.assetsPath = assetsPath;
     return descriptor;
   }
 
@@ -152,6 +169,17 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     this.declaredStylesheets = process(descriptor.getDeclaredStylesheets(), stylesheetManager);
   }
 
+  public URL resolve(AssetLocation location, String path) {
+    switch (location) {
+      case APPLICATION:
+        return context.getApplicationResolver().resolve(path);
+      case SERVER:
+        return context.getServerResolver().resolve(path);
+      default:
+        return null;
+    }
+  }
+
   private String[] process(List<AssetMetaData> data, AssetManager manager) throws Exception {
     ArrayList<String> assets = new ArrayList<String>();
     for (AssetMetaData script : data) {
@@ -160,13 +188,13 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       AssetLocation location = script.getLocation();
       URL url;
       if (location == AssetLocation.APPLICATION) {
-        url = context.getApplicationResolver().resolve(script.getValue());
+        url = resolve(AssetLocation.APPLICATION, script.getValue());
         if (url == null) {
           throw new Exception("Could not resolve application  " + script.getValue());
         }
       } else if (location == AssetLocation.SERVER) {
         if (!script.getValue().startsWith("/")) {
-          url = context.getServerResolver().resolve("/" + script.getValue());
+          url = resolve(AssetLocation.SERVER, "/" + script.getValue());
           if (url == null) {
             throw new Exception("Could not resolve server asset " + script.getValue());
           }

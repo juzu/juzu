@@ -50,7 +50,7 @@ public class Module {
     }
 
     //
-    final ResourceResolver<URL> classPathResolver = new ResourceResolver<URL>() {
+    final ResourceResolver classPathResolver = new ResourceResolver() {
       public URL resolve(String uri) {
         return context.getLifeCycle().getClassLoader().getResource(uri.substring(1));
       }
@@ -69,10 +69,10 @@ public class Module {
         public ClassLoader getClassLoader() {
           return context.getClassLoader();
         }
-        public ResourceResolver<URL> getServerResolver() {
+        public ResourceResolver getServerResolver() {
           return context.getServerResolver();
         }
-        public ResourceResolver<URL> getApplicationResolver() {
+        public ResourceResolver getApplicationResolver() {
           return classPathResolver;
         }
       };

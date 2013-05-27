@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package juzu.impl.resource;
+@Application()
+@Assets(scripts = @Script(src = "test.js"))
+package plugin.asset.serving;
 
-import java.net.URL;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface ResourceResolver {
-
-  /**
-   * Resolve the uri as a resource, it returns null when resolution cannot be performed.
-   *
-   * @param uri the uri
-   * @return the related resource
-   */
-  URL resolve(String uri);
-
-}
+import juzu.Application;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;

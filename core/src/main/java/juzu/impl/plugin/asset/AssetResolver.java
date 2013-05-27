@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.plugin.asset;
 
-package juzu.impl.resource;
+import juzu.asset.AssetLocation;
+import juzu.impl.resource.ResourceResolver;
 
+import javax.inject.Inject;
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicReference;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ClassLoaderResolver implements ResourceResolver {
+/** @author Julien Viet */
+public class AssetResolver implements ResourceResolver {
 
-  /** . */
-  private final AtomicReference<ClassLoader> loader;
-
-  public ClassLoaderResolver(ClassLoader loader) {
-    this.loader = new AtomicReference<ClassLoader>(loader);
-  }
+  @Inject AssetPlugin plugin;
 
   public URL resolve(String uri) {
-    return loader.get().getResource(uri.substring(1));
+    URL url = plugin.scriptManager.resolveAsset(uri);
+    if (url == null) {
+      url = plugin.stylesheetManager.resolveAsset(uri);
+      if (url == null) {
+        String assetsPath = plugin.getAssetsPath();
+        if (assetsPath != null && uri.startsWith(assetsPath)) {
+          url = plugin.resolve(AssetLocation.APPLICATION, uri);
+        }
+      }
+    }
+    return url;
   }
 }

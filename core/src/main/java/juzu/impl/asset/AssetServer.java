@@ -19,6 +19,7 @@ package juzu.impl.asset;
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.impl.resource.ResourceResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -48,42 +49,27 @@ public class AssetServer {
   public boolean doGet(String path, ServletContext ctx, HttpServletResponse resp) throws ServletException, IOException {
     if (path != null && path.length() > 0) {
       for (ApplicationLifeCycle<?, ?> runtime : runtimes) {
-        String contentType;
-        InputStream in;
-        URL url = runtime.getScriptManager().resolveAsset(path);
-        if (url != null) {
-          contentType = "text/javascript";
-          in = url.openStream();
-        } else {
-          contentType = null;
-          in = null;
-        }
-        if (in == null) {
-          url = runtime.getStylesheetManager().resolveAsset(path);
-          if (url != null) {
-            contentType = "text/css";
-            in = runtime.getApplication().getClassLoader().getResourceAsStream(path.substring(1));
+        Iterable<ResourceResolver> resolvers = runtime.resolveBeans(ResourceResolver.class);
+        for (ResourceResolver resolver : resolvers) {
+          // For now we only have resource of URL type ...
+          URL content = resolver.resolve(path);
+          InputStream in;
+          if (content != null) {
+            in = content.openStream();
+          } else {
+            // It could be a server resource like an image
+            in = ctx.getResourceAsStream(path);
           }
-        }
-
-        // It could be a server resource like an image
-        if (in == null) {
-          in = ctx.getResourceAsStream(path);
           if (in != null) {
             int pos = path.lastIndexOf('/');
             String name = pos == -1 ? path : path.substring(pos + 1);
-            contentType = ctx.getMimeType(name);
-          } else {
-            contentType = null;
-            in = null;
+            String contentType = ctx.getMimeType(name);
+            if (contentType != null) {
+              resp.setContentType(contentType);
+            }
+            Tools.copy(in, resp.getOutputStream());
+            return true;
           }
-        }
-        if (in != null) {
-          if (contentType != null) {
-            resp.setContentType(contentType);
-          }
-          Tools.copy(in, resp.getOutputStream());
-          return true;
         }
       }
     }

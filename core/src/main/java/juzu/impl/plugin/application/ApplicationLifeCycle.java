@@ -70,7 +70,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
   private final ReadFileSystem<R> resources;
 
   /** Contextual: resoure resolver. */
-  private final ResourceResolver<URL> resourceResolver;
+  private final ResourceResolver resourceResolver;
 
   /** Contextual: asset server. */
   private final AssetServer assetServer;
@@ -109,7 +109,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
       Name name,
       ReadFileSystem<R> resources,
       AssetServer assetServer,
-      ResourceResolver<URL> resourceResolver) {
+      ResourceResolver resourceResolver) {
 
     //
     this.log = log;
@@ -235,7 +235,7 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     }
 
     //
-    final ResourceResolver<URL> applicationResolver = new ResourceResolver<URL>() {
+    final ResourceResolver applicationResolver = new ResourceResolver() {
       public URL resolve(String uri) {
         if (uri.startsWith("/")) {
           return moduleLifeCycle.getClassLoader().getResource(uri.substring(1));
@@ -256,10 +256,10 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
         public ClassLoader getClassLoader() {
           return moduleLifeCycle.getClassLoader();
         }
-        public ResourceResolver<URL> getServerResolver() {
+        public ResourceResolver getServerResolver() {
           return resourceResolver;
         }
-        public ResourceResolver<URL> getApplicationResolver() {
+        public ResourceResolver getApplicationResolver() {
           return applicationResolver;
         }
       };

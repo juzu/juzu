@@ -158,7 +158,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
         bridgeConfig,
         WarFileSystem.create(config.getPortletContext(), "/WEB-INF/"),
         server,
-        new ResourceResolver<URL>() {
+        new ResourceResolver() {
           public URL resolve(String uri) {
             try {
               return context.getResource(uri);

@@ -35,7 +35,7 @@ public class PortletModuleContext extends AbstractWarModuleContext {
   private final ClassLoader classLoader;
 
   /** . */
-  private final ResourceResolver<URL> resolver;
+  private final ResourceResolver resolver;
 
   public PortletModuleContext(PortletContext portletContext, ClassLoader classLoader, Logger log) {
     super(log);
@@ -43,7 +43,7 @@ public class PortletModuleContext extends AbstractWarModuleContext {
     //
     this.portletContext = portletContext;
     this.classLoader = classLoader;
-    this.resolver = new ResourceResolver<URL>() {
+    this.resolver = new ResourceResolver() {
       public URL resolve(String uri) {
         try {
           return PortletModuleContext.this.portletContext.getResource(uri);
@@ -55,7 +55,7 @@ public class PortletModuleContext extends AbstractWarModuleContext {
     };
   }
 
-  public ResourceResolver<URL> getServerResolver() {
+  public ResourceResolver getServerResolver() {
     return resolver;
   }
 
