@@ -287,7 +287,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
 
   @Override
   public UserContext getUserContext() {
-    throw new UnsupportedOperationException();
+    return VertxUserContext.INSTANCE;
   }
 
   // HttpContext implementation ****************************************************************************************
