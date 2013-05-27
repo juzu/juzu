@@ -140,13 +140,14 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
     return descriptor;
   }
 
-  public <P extends Plugin> P getPlugin(Class<P> pluginType) {
+  public <T> T resolveBean(Class<T> beanType) {
     try {
-      BeanLifeCycle<P> pluginLifeCycle = injectionContext.get(pluginType);
+      BeanLifeCycle<T> pluginLifeCycle = injectionContext.get(beanType);
       return pluginLifeCycle != null ? pluginLifeCycle.get() : null;
     }
     catch (InvocationTargetException e) {
-      throw new UnsupportedOperationException("Handle me gracefully", e);
+      log.log("Could not retrieve bean of type " + beanType, e.getCause());
+      return null;
     }
   }
 

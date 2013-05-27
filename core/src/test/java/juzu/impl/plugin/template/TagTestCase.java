@@ -109,7 +109,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     // Manufacture a template
     // to be removed later when we improve this
     // but for now it will be enough
-    TemplateDescriptor desc = app.getLifeCycle().getPlugin(TemplatePlugin.class).getDescriptor().getTemplate("foo.gtmpl");
+    TemplateDescriptor desc = app.getLifeCycle().resolveBean(TemplatePlugin.class).getDescriptor().getTemplate("foo.gtmpl");
     assertNotNull(desc);
     Template<?> foo = new Template<ASTNode.Template>(
       (Path.Relative)Path.parse("index.gtmpl"),

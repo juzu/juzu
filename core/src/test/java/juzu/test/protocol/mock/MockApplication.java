@@ -104,7 +104,7 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
   }
 
   void invoke(RequestBridge bridge) {
-    lifeCycle.getPlugin(ControllerPlugin.class).invoke(bridge);
+    lifeCycle.resolveBean(ControllerPlugin.class).invoke(bridge);
   }
 
   public MockClient client() {

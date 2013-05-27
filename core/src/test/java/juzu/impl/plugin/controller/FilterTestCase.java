@@ -37,7 +37,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
   public void testLifeCycle() throws Exception {
     Registry.unset("request.filter.lifecycle");
     MockApplication<?> app = application("plugin.controller.filter.lifecycle").init();
-    app.getLifeCycle().getPlugin(ControllerPlugin.class).getFilters();
+    app.getLifeCycle().resolveBean(ControllerPlugin.class).getFilters();
     assertEquals("created", Registry.get("request.filter.lifecycle"));
     MockClient client = app.client();
     MockRenderBridge render = client.render();

@@ -69,7 +69,7 @@ public class Handler implements Closeable {
 
     //
     Route root;
-    RouterPlugin router = bridge.application.getPlugin(RouterPlugin.class);
+    RouterPlugin router = bridge.application.resolveBean(RouterPlugin.class);
     if (router != null) {
       RouteDescriptor route = router.getDescriptor();
       if (route != null) {
@@ -144,7 +144,7 @@ public class Handler implements Closeable {
         for (Phase phase : phases) {
           MethodHandle handle = m.get(phase);
           if (handle != null) {
-            requestMethod =  this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(handle);
+            requestMethod =  this.bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(handle);
             if (requestMatch.getMatched().size() > 0 || bridge.getParameters().size() > 0) {
               requestParameters = new HashMap<String, RequestParameter>();
               for (RequestParameter requestParameter : bridge.getParameters().values()) {
@@ -165,7 +165,7 @@ public class Handler implements Closeable {
     // or we look for the handler method
     if (requestMethod == null) {
       // If we have an handler we locate the index method
-      requestMethod = this.bridge.application.getPlugin(ControllerPlugin.class).getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+      requestMethod = this.bridge.application.resolveBean(ControllerPlugin.class).getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
     }
 
     // No method -> not found

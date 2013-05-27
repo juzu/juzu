@@ -108,7 +108,7 @@ public class MockClient implements UserContext {
 
     LinkedList<Locale> locales = new LinkedList<Locale>();
     locales.add(Locale.ENGLISH);
-    ControllerPlugin controllerPlugin = application.getLifeCycle().getPlugin(ControllerPlugin.class);
+    ControllerPlugin controllerPlugin = application.getLifeCycle().resolveBean(ControllerPlugin.class);
 
     //
     this.application = application;

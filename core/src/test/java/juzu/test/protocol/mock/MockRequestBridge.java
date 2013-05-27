@@ -95,7 +95,7 @@ public abstract class MockRequestBridge implements RequestBridge {
     }
 
     //
-    Method<?> descriptor = application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+    Method<?> descriptor = application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
     Map<ControlParameter, Object> arguments = descriptor.getArguments(requestParameters);
 
 
@@ -227,7 +227,7 @@ public abstract class MockRequestBridge implements RequestBridge {
 
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
         //
-        Method method = application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+        Method method = application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
         //
         JSON props = new JSON();

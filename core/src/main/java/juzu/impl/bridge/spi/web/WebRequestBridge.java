@@ -214,12 +214,12 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Map<String, ResponseParameter> parameters) {
-    Method method = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+    Method method = bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
     //
     Route route = handler.getRoute(method.getHandle());
     if (route == null) {
-      if (bridge.application.getPlugin(ControllerPlugin.class).getResolver().isIndex(method)) {
+      if (bridge.application.resolveBean(ControllerPlugin.class).getResolver().isIndex(method)) {
         route = handler.getRoot();
       }
     }
@@ -310,7 +310,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   void invoke() throws Exception {
     try {
-      bridge.application.getPlugin(ControllerPlugin.class).invoke(this);
+      bridge.application.resolveBean(ControllerPlugin.class).invoke(this);
     } finally {
       Tools.safeClose(this);
     }
@@ -329,7 +329,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       Phase.View.Dispatch update = (Phase.View.Dispatch)response;
       Boolean redirect = response.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
       if (redirect != null && !redirect) {
-        Method<?> desc = this.bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
+        Method<?> desc = this.bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
         Map<String, RequestParameter> rp = Collections.emptyMap();
         for (ResponseParameter parameter : update.getParameters().values()) {
           if (rp.isEmpty()) {

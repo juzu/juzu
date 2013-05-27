@@ -82,7 +82,7 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
       }
 
       //
-      Method method = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
+      Method method = bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
 
       // Method id
       super.resp.setRenderParameter("juzu.op", method.getId());

@@ -209,7 +209,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   }
 
   public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException {
-    ControllerResolver<Method> resolver = bridge.application.getPlugin(ControllerPlugin.class).getDescriptor().getResolver();
+    ControllerResolver<Method> resolver = bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getResolver();
     List<Method> methods = resolver.resolveMethods(Phase.EVENT, null, request.getParameterMap().keySet());
 
     //
