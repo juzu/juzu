@@ -42,6 +42,7 @@ public class AssetTestCase extends VertxTestCase {
     Assert.assertTrue(result.contains("src=\"http://localhost:8080/foo.js\""));
     Assert.assertEquals("function relative() {}", assertResource(url, "/asset/assets/test.js", "application/javascript"));
     Assert.assertEquals("function absolute() {}", assertResource(url, "/asset/absolute/script.js", "application/javascript"));
+    Assert.assertNotNull(assertResource(url, "/asset/juzu/impl/plugin/ajax/script.js", "application/javascript"));
     Assert.assertEquals("content_value", assertResource(url, "/asset/assets/content.txt", "text/plain"));
   }
 
@@ -51,6 +52,11 @@ public class AssetTestCase extends VertxTestCase {
     Assert.assertEquals(200, conn.getResponseCode());
     Map<String, String> headers = Tools.responseHeaders(conn);
     String contentType = headers.get("Content-Type");
+    if (contentType == null) {
+      // For some reason vertx change header to lower case....
+      // until we figure out we need this
+      contentType = headers.get("content-type");
+    }
     Assert.assertNotNull(contentType);
     Assert.assertTrue("Was expecting " + contentType + " to start with " + expectedMimeType, contentType.startsWith(expectedMimeType));
     return Tools.read(conn.getInputStream());

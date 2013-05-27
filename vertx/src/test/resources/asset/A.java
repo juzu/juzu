@@ -18,8 +18,33 @@ package asset;
 
 import juzu.Response;
 import juzu.View;
+import juzu.asset.AssetLocation;
+import juzu.impl.asset.AssetManager;
+import juzu.impl.asset.AssetMetaData;
+import juzu.impl.plugin.ajax.AjaxPlugin;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.net.URL;
 
 public class A {
+
+  @Inject
+  @Named("juzu.asset_manager.script")
+  AssetManager manager;
+
+  @PostConstruct
+  public void start() {
+    URL url = AjaxPlugin.class.getClassLoader().getResource("juzu/impl/plugin/ajax/script.js");
+    manager.addAsset(
+        new AssetMetaData(
+            "juzu.ajax",
+            AssetLocation.APPLICATION,
+            "/asset/juzu/impl/plugin/ajax/script.js",
+            "jquery"),
+        url);
+  }
 
   @View
   public Response.Content index() throws Exception {

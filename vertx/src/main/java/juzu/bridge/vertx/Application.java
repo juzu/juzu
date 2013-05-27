@@ -30,29 +30,34 @@ import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.inject.spi.guice.GuiceScoped;
 import juzu.impl.plugin.module.Module;
 import juzu.impl.plugin.module.ModuleContext;
 import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ClassLoaderResolver;
 import juzu.impl.resource.ResourceResolver;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.http.HttpServer;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.HttpServerResponse;
+import org.vertx.java.core.http.impl.MimeMapping;
 import org.vertx.java.deploy.Container;
 
-import javax.xml.bind.DatatypeConverter;
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.Serializable;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpCookie;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Application {
@@ -180,21 +185,52 @@ public class Application {
         boolean served = false;
         HttpServerResponse response = req.response;
         Iterable<ResourceResolver> resolvers = bridge.application.resolveBeans(ResourceResolver.class);
-        for (ResourceResolver resolver : resolvers) {
+        for (Iterator<ResourceResolver> i = resolvers.iterator();i.hasNext() && !served;) {
+          ResourceResolver resolver = i.next();
           URL assetURL = resolver.resolve(req.path);
-          if (assetURL != null && "file".equals(assetURL.getProtocol())) {
-            try {
-              response.sendFile(new File(assetURL.toURI()).getAbsolutePath());
-              served = true;
-              break;
+          if (assetURL != null) {
+            served = true;
+            if ("file".equals(assetURL.getProtocol())) {
+              try {
+                response.sendFile(new File(assetURL.toURI()).getAbsolutePath());
+                break;
+              }
+              catch (URISyntaxException ignore) {
+              }
             }
-            catch (URISyntaxException ignore) {
+            else {
+              // This is really not pretty code but for now it works
+              try {
+                InputStream in = assetURL.openStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                Tools.copy(in, baos);
+                byte[] bytes = baos.toByteArray();
+                String filename = assetURL.getPath();
+                int li = filename.lastIndexOf('.');
+                if (li != -1 && li != filename.length() - 1) {
+                  String ext = filename.substring(li + 1, filename.length());
+                  String contentType = MimeMapping.getMimeTypeForExtension(ext);
+                  if (contentType != null) {
+                    req.response.headers().put(HttpHeaders.Names.CONTENT_TYPE, contentType);
+                  }
+                }
+                req.response.headers().put(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(bytes.length));
+                req.response.writeBuffer(new Buffer(bytes));
+                req.response.end();
+              }
+              catch (IOException e) {
+                e.printStackTrace();
+              }
+              finally {
+                req.response.close();
+              }
             }
           }
         }
 
         // Send 404 code
         if (!served) {
+
           String contentType = req.headers().get("Content-Type");
           if (contentType != null && contentType.startsWith("application/x-www-form-urlencoded")) {
             req.bodyHandler(new Handler<Buffer>() {
@@ -207,56 +243,18 @@ public class Application {
 
             //
             VertxWebBridge webBridge = new VertxWebBridge(bridge, Application.this, req, null, log);
-            String cookies = req.headers().get("cookie");
-            if (cookies != null) {
-              for (HttpCookie cookie : HttpCookie.parse(cookies)) {
-                String name = cookie.getName();
-                String value = cookie.getValue();
-                int type;
-                String prefix;
-                if (name.startsWith("flash.")) {
-                  type = CookieScopeContext.FLASH;
-                  prefix = "flash.";
-                }
-                else if (name.startsWith("session.")) {
-                  type = CookieScopeContext.SESSION;
-                  prefix = "session.";
-                }
-                else {
-                  type = -1;
-                  prefix = null;
-                }
-                if (prefix != null) {
-                  try {
-                    name = name.substring(prefix.length());
-                    if (value.length() > 0) {
-                      byte[] bytes = DatatypeConverter.parseBase64Binary(value);
-                      final Serializable object = Tools.unserialize(lifeCycle.getClassLoader(), Serializable.class, new ByteArrayInputStream(bytes));
-                      CookieScopeContext context = webBridge.getCookieScopeContext(type, true);
-                      if (context.entries == null) {
-                        context.entries = new HashMap<String, ScopedCookie>();
-                      }
-                      context.entries.put(name, new ScopedCookie(CookieScopeContext.RECEIVED, new GuiceScoped(object)));
-                    }
-                    else {
-                      // For now we consider we removed the value ...
-                      // We should handle proper cookie removal later
-                    }
-                  }
-                  catch (Exception e) {
-                    log.log("Could not parse cookie", e);
-                  }
-                }
-              }
-            }
 
             //
             webBridge.handle(h);
           }
         }
       }
-    }).listen(port);
-  }
+    }
+
+    ).
+
+      listen(port);
+    }
 
   public void stop() throws Exception {
     lifeCycle = null;

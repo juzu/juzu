@@ -17,20 +17,14 @@
 package juzu.bridge.vertx;
 
 import junit.framework.Assert;
-import juzu.impl.common.Tools;
 import org.junit.Test;
 import org.vertx.java.test.TestModule;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @TestModule(
@@ -39,7 +33,10 @@ import java.util.concurrent.atomic.AtomicLong;
 public class FlashScopeTestCase extends VertxTestCase {
 
   /** . */
-  public static String VALUE;
+  public static String ACTION;
+
+  /** . */
+  public static String RENDER;
 
   @Test
   public void testFoo() throws Exception {
@@ -49,34 +46,26 @@ public class FlashScopeTestCase extends VertxTestCase {
     manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
     CookieHandler.setDefault(manager);
 
-    VALUE = null;
-    URL url = new URL("http://localhost:8080/");
+    URL url = new URL("http://localhost:8080/action");
+    RENDER = null;
+    ACTION = null;
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
     conn.connect();
     Assert.assertEquals(200, conn.getResponseCode());
-    Assert.assertNotNull(VALUE);
-    String req1 = VALUE;
+    Assert.assertNotNull(RENDER);
+    Assert.assertNotNull(ACTION);
+    Assert.assertEquals(ACTION, RENDER);
+    String req1 = RENDER;
 
     // Same request
-    VALUE = null;
+    url = new URL("http://localhost:8080/");
+    ACTION = null;
+    RENDER = null;
     conn = (HttpURLConnection)url.openConnection();
     conn.connect();
     Assert.assertEquals(200, conn.getResponseCode());
-    Assert.assertEquals(req1, VALUE);
-
-    // Same request
-    VALUE = null;
-    conn = (HttpURLConnection)url.openConnection();
-    conn.connect();
-    Assert.assertEquals(200, conn.getResponseCode());
-    String req2 = VALUE;
-    Assert.assertNotSame(req1, req2);
-
-    // Same request
-    VALUE = null;
-    conn = (HttpURLConnection)url.openConnection();
-    conn.connect();
-    Assert.assertEquals(200, conn.getResponseCode());
-    Assert.assertEquals(req2, VALUE);
+    Assert.assertNotNull(RENDER);
+    Assert.assertNull(ACTION);
+    Assert.assertNotSame(req1, RENDER);
   }
 }

@@ -32,4 +32,16 @@ public class Session implements Serializable {
   public String toString() {
     return "Session[" + value + "]";
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    } else if (obj instanceof Session) {
+      Session that = (Session)obj;
+      return value == that.value;
+    } else {
+      return false;
+    }
+  }
 }

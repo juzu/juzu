@@ -33,4 +33,16 @@ public class Flash implements Serializable {
   public String toString() {
     return "Flash[" + value + "]";
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    } else if (obj instanceof Flash) {
+      Flash that = (Flash)obj;
+      return value.equals(that.value);
+    } else {
+      return false;
+    }
+  }
 }

@@ -22,14 +22,18 @@ import com.google.inject.Key;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.Scoped;
+import juzu.impl.inject.spi.guice.GuiceScoped;
 import juzu.io.UndeclaredIOException;
 
 import javax.inject.Named;
+import javax.xml.bind.DatatypeConverter;
+import java.io.ByteArrayInputStream;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
 
 /** @author Julien Viet */
 public class CookieScopeContext implements ScopedContext {
@@ -40,27 +44,39 @@ public class CookieScopeContext implements ScopedContext {
   /** . */
   public static final int SESSION = 1;
 
-  /** . */
-  public static final int TO_SEND = 0;
+  /** The current value. */
+  HashMap<String, Scoped> values;
+
+  /** The object from the request. */
+  HashMap<String, String> request;
 
   /** . */
-  public static final int RECEIVED = 1;
-
-  /** . */
-  public static final int TO_REMOVE = 2;
-
-  /** . */
-  HashMap<String, ScopedCookie> entries;
+  boolean purged;
 
   public Scoped get(Object key) throws NullPointerException {
     String name = nameOf(key);
     if (name != null) {
-      if (entries != null) {
-        ScopedCookie lifeCycle = entries.get(name);
-        if (lifeCycle != null) {
-          return lifeCycle.scoped;
+      Scoped scoped = null;
+      if (values != null) {
+        scoped = values.get(name);
+      }
+      if (scoped == null && request != null) {
+        String encoded = request.get(name);
+        if (encoded != null) {
+          try {
+            byte[] bytes = DatatypeConverter.parseBase64Binary(encoded);
+            Object o = Tools.unserialize(Thread.currentThread().getContextClassLoader(), Serializable.class, new ByteArrayInputStream(bytes));
+            if (values == null) {
+              values = new HashMap<String, Scoped>();
+            }
+            values.put(name, scoped = new GuiceScoped(o));
+          }
+          catch (Exception e) {
+            e.printStackTrace();
+          }
         }
       }
+      return scoped;
     }
     return null;
   }
@@ -73,10 +89,10 @@ public class CookieScopeContext implements ScopedContext {
     if (!(scoped.get() instanceof Serializable)) {
       throw new UndeclaredIOException(new NotSerializableException("Could not serialize object"));
     }
-    if (entries == null) {
-      entries = new HashMap<String, ScopedCookie>();
+    if (values == null) {
+      values = new HashMap<String, Scoped>();
     }
-    entries.put(name, new ScopedCookie(TO_SEND, scoped));
+    values.put(name, scoped);
   }
 
   private String nameOf(Object key) {
@@ -87,18 +103,22 @@ public class CookieScopeContext implements ScopedContext {
   }
 
   public int size() {
-    return entries != null ? entries.size() : 0;
+    return getNames().size();
+  }
+
+  Set<String> getNames() {
+    HashSet<String> names = new HashSet<String>();
+    if (values != null) {
+      names.addAll(values.keySet());
+    }
+    if (request != null) {
+      names.addAll(request.keySet());
+    }
+    return names;
   }
 
   public void close() {
-    if (entries != null) {
-      for (Map.Entry<String, ScopedCookie> e : entries.entrySet()) {
-        ScopedCookie lifeCycle = e.getValue();
-        if (lifeCycle.status == RECEIVED) {
-          e.setValue(new ScopedCookie(TO_REMOVE, lifeCycle.scoped));
-        }
-      }
-    }
+    purged = true;
   }
 
   public Iterator<Scoped> iterator() {

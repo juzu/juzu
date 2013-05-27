@@ -16,7 +16,9 @@
 
 package flashscope;
 
+import juzu.Action;
 import juzu.Response;
+import juzu.Route;
 import juzu.View;
 import juzu.bridge.vertx.FlashScopeTestCase;
 
@@ -29,7 +31,14 @@ public class A {
 
   @View
   public Response.Content index() {
-    FlashScopeTestCase.VALUE = flash.value;
+    FlashScopeTestCase.RENDER = flash.value;
     return Response.ok("pass");
+  }
+
+  @Action
+  @Route("/action")
+  public Response.View action() {
+    FlashScopeTestCase.ACTION = flash.value;
+    return A_.index();
   }
 }
