@@ -110,4 +110,72 @@
     </plugins>
   </build>
 
+  <!-- Generates an executable jar with Tomcat -->
+  <profiles>
+    <profile>
+      <id>exe</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat7-maven-plugin</artifactId>
+            <version>2.1</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>exec-war-only</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <warRunDependencies>
+                    <warRunDependency>
+                      <dependency>
+                        <groupId>org.juzu</groupId>
+                        <artifactId>juzu-booking</artifactId>
+                        <version>${project.version}</version>
+                        <classifier>tomcat-guice</classifier>
+                        <type>war</type>
+                      </dependency>
+                      <contextPath>/</contextPath>
+                    </warRunDependency>
+<!--
+                    <warRunDependency>
+                      <dependency>
+                        <groupId>org.gatein.portal</groupId>
+                        <artifactId>portal.web</artifactId>
+                        <version>${project.version}</version>
+                        <classifier>tomcat</classifier>
+                        <type>war</type>
+                      </dependency>
+                      <contextPath>/portal</contextPath>
+                    </warRunDependency>
+                    <warRunDependency>
+                      <dependency>
+                        <groupId>org.gatein.portal</groupId>
+                        <artifactId>org.gatein.portal.examples.portlets</artifactId>
+                        <version>${project.version}</version>
+                        <type>war</type>
+                      </dependency>
+                      <contextPath>/samples</contextPath>
+                    </warRunDependency>
+-->
+                  </warRunDependencies>
+<!--
+                  <extraDependencies>
+                    <extraDependency>
+                      <groupId>javax.portlet</groupId>
+                      <artifactId>portlet-api</artifactId>
+                      <version>2.0</version>
+                    </extraDependency>
+                  </extraDependencies>
+-->
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

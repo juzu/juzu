@@ -20,19 +20,17 @@
 @Servlet("/")
 @Assets(
     scripts = {
-        @Script(id = "jquery", src = "public/javascripts/jquery-1.7.1.min.js"),
-        @Script(src = "public/javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
-        @Script(src = "public/javascripts/booking.js", depends = "juzu.ajax")
+        @Script(id = "jquery", src = "javascripts/jquery-1.7.1.min.js"),
+        @Script(src = "javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
+        @Script(src = "javascripts/booking.js", depends = "juzu.ajax")
     },
     stylesheets = {
-        @Stylesheet(src = "public/stylesheets/main.css"),
-        @Stylesheet(src = "public/ui-lightness/jquery-ui-1.7.2.custom.css")
-    },
-    location = AssetLocation.SERVER
+        @Stylesheet(src = "stylesheets/main.css"),
+        @Stylesheet(src = "ui-lightness/jquery-ui-1.7.2.custom.css")
+    }
 ) package org.sample.booking;
 
 import juzu.Application;
-import juzu.asset.AssetLocation;
 import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Stylesheet;

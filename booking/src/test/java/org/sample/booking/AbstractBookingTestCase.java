@@ -17,14 +17,21 @@
 package org.sample.booking;
 
 import juzu.arquillian.Helper;
+import juzu.impl.common.Name;
+import juzu.impl.common.Tools;
+import juzu.impl.fs.spi.url.URLFileSystem;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 import org.sample.booking.qualifier.Authentication;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
@@ -33,17 +40,44 @@ public abstract class AbstractBookingTestCase {
   public static WebArchive createDeployment() {
     WebArchive war = Helper.createBasePortletDeployment();
     war.addAsWebInfResource(new File("src/main/webapp/WEB-INF/portlet.xml"));
-    war.addAsWebResource(new File("src/main/webapp/public/javascripts/jquery-1.7.1.min.js"), "public/javascripts/jquery-1.7.1.min.js");
-    war.addAsWebResource(new File("src/main/webapp/public/javascripts/jquery-ui-1.7.2.custom.min.js"), "public/javascripts/jquery-ui-1.7.2.custom.min.js");
-    war.addAsWebResource(new File("src/main/webapp/public/javascripts/booking.js"), "public/javascripts/booking.js");
-    war.addAsWebResource(new File("src/main/webapp/public/stylesheets/main.css"), "public/stylesheets/main.css");
-    war.addAsWebResource(new File("src/main/webapp/public/ui-lightness/jquery-ui-1.7.2.custom.css"), "public/ui-lightness/jquery-ui-1.7.2.custom.css");
-    war.addPackages(true, Flash.class.getPackage());
+
+    //
+    try {
+      URL root = Flash.class.getClassLoader().getResource(Flash.class.getName().replace('.', '/') + ".class");
+      if (root != null) {
+        File f = new File(root.toURI()).getParentFile();
+        LinkedList<String> path = new LinkedList<String>();
+        for (String name : Name.create(Flash.class).getParent()) {
+          path.add(name);
+        }
+        add(war, f, path);
+      }
+    }
+    catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+
+    //
     return war;
   }
 
   @Drone
   @Authentication
   WebDriver driver;
+
+  private static void add(WebArchive war, File f, LinkedList<String> path) {
+    if (f.isDirectory()) {
+      File[] children = f.listFiles();
+      if (children != null) {
+        for (File child : children) {
+          path.addLast(child.getName());
+          add(war, child, path);
+          path.removeLast();
+        }
+      }
+    } else {
+      war.addAsResource(f, Tools.join('/', path));
+    }
+  }
 
 }
