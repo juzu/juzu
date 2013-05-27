@@ -24,12 +24,10 @@ import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
-import juzu.io.Streamable;
 import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;

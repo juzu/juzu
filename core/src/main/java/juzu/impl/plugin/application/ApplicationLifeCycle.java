@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 
 /**
@@ -149,6 +150,42 @@ public class ApplicationLifeCycle<P, R> implements Closeable {
       log.log("Could not retrieve bean of type " + beanType, e.getCause());
       return null;
     }
+  }
+
+  public <T> Iterable<T> resolveBeans(final Class<T> beanType) {
+    return new Iterable<T>() {
+      Iterable<BeanLifeCycle<T>> lifecycles = injectionContext.resolve(beanType);
+      public Iterator<T> iterator() {
+        return new Iterator<T>() {
+          Iterator<BeanLifeCycle<T>> iterator = lifecycles.iterator();
+          T next = null;
+          public boolean hasNext() {
+            while (next == null && iterator.hasNext()) {
+              try {
+                BeanLifeCycle<T> pluginLifeCycle = iterator.next();
+                next = pluginLifeCycle.get();
+              }
+              catch (InvocationTargetException e) {
+                log.log("Could not retrieve bean of type " + beanType.getName(), e);
+              }
+            }
+            return next != null;
+          }
+          public T next() {
+            if (!hasNext()) {
+              throw new NoSuchElementException();
+            } else {
+              T tmp = next;
+              next = null;
+              return tmp;
+            }
+          }
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
+      }
+    };
   }
 
   public boolean refresh() throws Exception {

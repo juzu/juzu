@@ -20,6 +20,7 @@ import juzu.impl.inject.ScopeController;
 
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class InjectionContext<B, I> implements Closeable {
@@ -109,4 +110,26 @@ public abstract class InjectionContext<B, I> implements Closeable {
       return new BeanLifeCycleImpl<B,I,T>(type, this, a);
     }
   }
+
+  public final <T> Iterable<BeanLifeCycle<T>> resolve(final Class<T> type) {
+    final Iterable<B> a = resolveBeans(type);
+    return new Iterable<BeanLifeCycle<T>>() {
+      public Iterator<BeanLifeCycle<T>> iterator() {
+        return new Iterator<BeanLifeCycle<T>>() {
+          final Iterator<B> i = a.iterator();
+          public boolean hasNext() {
+            return i.hasNext();
+          }
+          public BeanLifeCycle<T> next() {
+            B b = i.next();
+            return new BeanLifeCycleImpl<B,I,T>(type, InjectionContext.this, b);
+          }
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
+      }
+    };
+  }
+
 }

@@ -18,6 +18,7 @@ package juzu.impl.asset;
 
 import juzu.impl.plugin.application.ApplicationLifeCycle;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.asset.AssetPlugin;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
