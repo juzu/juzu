@@ -32,6 +32,7 @@ import com.google.inject.name.Named;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import juzu.Scope;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
@@ -221,7 +222,7 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
       return bean.binding.getProvider().get();
     }
     catch (ProvisionException e) {
-      throw new InvocationTargetException(e.getCause());
+      throw new InvocationTargetException(Tools.safeCause(e));
     }
   }
 

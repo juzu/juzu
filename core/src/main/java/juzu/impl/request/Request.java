@@ -20,6 +20,7 @@ import juzu.Response;
 import juzu.Scope;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.EventBridge;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
@@ -244,7 +245,7 @@ public class Request implements ScopingContext {
           controller = lifeCycle.get();
         }
         catch (InvocationTargetException e) {
-          request.response = Response.error(e.getCause());
+          request.response = Response.error(Tools.safeCause(e));
           controller = null;
         }
 

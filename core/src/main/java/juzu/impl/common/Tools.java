@@ -1063,4 +1063,17 @@ public class Tools {
       }
     }
   }
+
+  /**
+   * Returns the cause of the argument or the argument itself when its cause is null. So this method
+   * should never return null.
+   *
+   * @param throwable the throwable
+   * @return the cause
+   * @throws NullPointerException if the throwable argument is null
+   */
+  public static Throwable safeCause(Throwable throwable) throws NullPointerException {
+    Throwable cause = throwable.getCause();
+    return cause != null ? cause : throwable;
+  }
 }
