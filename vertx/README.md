@@ -19,8 +19,10 @@ The bridge is at an alpha stage, however it is functionnal enough for developing
 
 The booking demo can executed on top of Vert.x minor modifications, here are the steps:
 
-1. Instal juzu-mod: unzip the juzu `mod.zip` into your `$VERTX_MODS` directory 
-2. Get and unzip the sources jar of the booking application : `jar -xvf juzu-booking-sources.jar`
+1. Instal juzu-mod: unzip the juzu [mod](http://repository.exoplatform.org/service/local/repo_groups/public/content/org/juzu/juzu-vertx/0.7.0-beta6/juzu-vertx-0.7.0-beta6.zip
+) into your `$VERTX_MODS` directory 
+2. Get and unzip the [sources jar](http://repository.exoplatform.org/service/local/repo_groups/public/content/org/juzu/juzu-booking/0.7.0-beta6/juzu-booking-0.7.0-beta6-sources.jar
+) of the booking application : `jar -xvf juzu-booking-sources.jar`
 3. Edit the file `org/sample/booking/package-info.java` to remove the usage of the *Servlet* and *Portlet* plugins
     1. Remove `@Servlet("/")` and `import juzu.plugin.servlet.Servlet;`
     2. Remove `@Portlet()` and `import juzu.plugin.portlet.Portlet;`
