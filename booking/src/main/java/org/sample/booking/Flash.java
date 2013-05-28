@@ -19,11 +19,12 @@ package org.sample.booking;
 import juzu.FlashScoped;
 
 import javax.inject.Named;
+import java.io.Serializable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Named("flash")
 @FlashScoped
-public class Flash {
+public class Flash implements Serializable {
 
   private String success = "";
   private String error = "";
