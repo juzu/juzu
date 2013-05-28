@@ -37,7 +37,7 @@ public abstract class AbstractRoutePathParamEncodingTestCase extends AbstractWeb
     WebElement trigger = driver.findElement(By.id("trigger"));
     String href = trigger.getAttribute("href");
     URL url = new URL(href);
-    assertEquals(applicationURL("/foo/%E2%82%AC").getPath(), url.getPath());
+    assertEquals(applicationURL("/foo/%20%E2%82%AC").getPath(), url.getPath());
     assertNull(url.getQuery());
     trigger.click();
     String pass = driver.findElement(By.tagName("body")).getText();
