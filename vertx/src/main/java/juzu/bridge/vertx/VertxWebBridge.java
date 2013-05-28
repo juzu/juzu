@@ -100,7 +100,13 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   /** . */
   CookieScopeContext[] cookieScopes;
 
+  private final String requestPath;
+
   public VertxWebBridge(Bridge bridge, Application application, HttpServerRequest req, Buffer buffer, Logger log) {
+
+    // Compute path - we cannot use provided request path as it is already decoded
+    int index = req.uri.indexOf('?');
+    String requestPath = index == -1 ? req.uri : req.uri.substring(0, index);
 
     //
     this.application = application;
@@ -113,6 +119,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     this.method = Method.valueOf(req.method);
     this.bridge = bridge;
     this.cookieScopes = new CookieScopeContext[2];
+    this.requestPath = requestPath;
 
 
     // Parse cookies
@@ -212,7 +219,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   }
 
   public String getRequestPath() {
-    return req.path;
+    return requestPath;
   }
 
   public void renderRequestURL(Appendable appendable) throws IOException {
