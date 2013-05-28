@@ -26,13 +26,14 @@ public class A {
 
   @View
   public Status index() {
-    ViewQueryParamTestCase.view = "" + A_.view("foo");
+    ViewQueryParamTestCase.value = "" + A_.view(ViewQueryParamTestCase.value);
     return ok();
   }
 
   @View
   @Route("/view")
-  public Content view(String param) {
-    return ok("pass=" + param);
+  public Status view(String param) {
+    ViewQueryParamTestCase.value = param;
+    return ok();
   }
 }

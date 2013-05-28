@@ -31,19 +31,24 @@ import java.net.URL;
 public class ViewQueryParamTestCase extends VertxTestCase {
 
   /** . */
-  public static String view;
+  public static String value;
 
   @Test
   public void testFoo() throws Exception {
+    test("foo");
+    test(" ");
+  }
+
+  private void test(String test) throws Exception {
+    value = test;
     URL url = new URL("http://localhost:8080/");
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
     conn.connect();
     Assert.assertEquals(200, conn.getResponseCode());
-    url = new URL(view);
+    url = new URL(value);
     conn = (HttpURLConnection)url.openConnection();
     conn.connect();
     Assert.assertEquals(200, conn.getResponseCode());
-    String result = Tools.read(conn.getInputStream());
-    Assert.assertTrue(result.contains("pass=foo"));
+    Assert.assertEquals(test, value);
   }
 }

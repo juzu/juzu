@@ -100,13 +100,26 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   /** . */
   CookieScopeContext[] cookieScopes;
 
+  /** . */
   private final String requestPath;
+
+  /** . */
+  private final String query;
 
   public VertxWebBridge(Bridge bridge, Application application, HttpServerRequest req, Buffer buffer, Logger log) {
 
-    // Compute path - we cannot use provided request path as it is already decoded
-    int index = req.uri.indexOf('?');
-    String requestPath = index == -1 ? req.uri : req.uri.substring(0, index);
+    // Compute path/query from URI - we cannot use provided request path/query as it is already decoded
+    String uri = req.uri;
+    int index = uri.indexOf('?');
+    String requestPath;
+    String query;
+    if (index == -1) {
+      requestPath = uri;
+      query = null;
+    } else {
+      requestPath = uri.substring(0, index);
+      query = uri.substring(index + 1);
+    }
 
     //
     this.application = application;
@@ -120,7 +133,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     this.bridge = bridge;
     this.cookieScopes = new CookieScopeContext[2];
     this.requestPath = requestPath;
-
+    this.query = query;
 
     // Parse cookies
     String cookies = req.headers().get("cookie");
@@ -195,8 +208,8 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   @Override
   public Map<String, RequestParameter> getParameters() {
     if (parameters == null) {
-      if (req.query != null) {
-        parameters = Lexers.parseQuery(req.query);
+      if (query != null) {
+        parameters = Lexers.parseQuery(query);
       } else {
         parameters = buffer != null ? new HashMap<String, RequestParameter>() : Collections.<String, RequestParameter>emptyMap();
       }
