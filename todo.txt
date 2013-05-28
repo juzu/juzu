@@ -1,5 +1,7 @@
 Various things to do, not exhaustive that needs to go in the roadmap
 
+- Provide a template as a phase : @View @Route("/show/{id}") @Inject @Path("show.gtmpl") Template show;
+
 - servlet bridge : no response -> show index ???? or use referer ?
 
 - Improve CDI integration:
