@@ -124,50 +124,75 @@ public class Application {
     );
 
     //
-    lifeCycle.refresh(true);
-
-    //
-    final ResourceResolver r = new ClassLoaderResolver(loader);
-    Module module = new Module(new ModuleContext() {
-      public ClassLoader getClassLoader() {
-        return loader;
-      }
-      public JSON getConfig() throws Exception {
-        ReadFileSystem<String[]> c = lifeCycle.getClasses();
-        Content f = c.getContent(new String[]{"juzu", "config.json"}).getObject();
-        return (JSON)JSON.parse(f.getCharSequence().toString());
-      }
-      public ResourceResolver getServerResolver() {
-        return r;
-      }
-      public ReadFileSystem<?> getResourcePath() {
-        throw new UnsupportedOperationException("?");
-      }
-      public ModuleLifeCycle<?> getLifeCycle() {
-        return lifeCycle;
-      }
-      public RunMode getRunMode() {
-        return RunMode.DEV;
-      }
-    });
-
-    //
-    Map<String,String> cfg = new HashMap<String, String>();
-    cfg.put(BridgeConfig.INJECT, InjectorProvider.INJECT_GUICE.getValue());
-    cfg.put(BridgeConfig.APP_NAME, main.toString());
-    BridgeConfig config = new BridgeConfig(cfg);
-
-    // Bind vertx singleton
-    config.injectImpl.bindBean(Vertx.class, null, vertx);
-
-    //
-    final Bridge bridge = new Bridge(log, module, config, lifeCycle.getClasses(), null, new ClassLoaderResolver(lifeCycle.getClassLoader()));
 
     //
     HttpServer server = vertx.createHttpServer().requestHandler(new Handler<HttpServerRequest>() {
       juzu.impl.bridge.spi.web.Handler h;
 
+      /** . */
+      Module module = null;
+
+      /** . */
+      Bridge bridge = null;
+
       public void handle(final HttpServerRequest req) {
+
+        //
+        if (bridge == null) {
+          try {
+
+            //
+            lifeCycle.refresh(true);
+
+            //
+            final ResourceResolver r = new ClassLoaderResolver(loader);
+            Module module = new Module(new ModuleContext() {
+              public ClassLoader getClassLoader() {
+                return loader;
+              }
+              public JSON getConfig() throws Exception {
+                ReadFileSystem<String[]> c = lifeCycle.getClasses();
+                Content f = c.getContent(new String[]{"juzu", "config.json"}).getObject();
+                return (JSON)JSON.parse(f.getCharSequence().toString());
+              }
+              public ResourceResolver getServerResolver() {
+                return r;
+              }
+              public ReadFileSystem<?> getResourcePath() {
+                throw new UnsupportedOperationException("?");
+              }
+              public ModuleLifeCycle<?> getLifeCycle() {
+                return lifeCycle;
+              }
+              public RunMode getRunMode() {
+                return RunMode.DEV;
+              }
+            });
+
+            //
+            Map<String,String> cfg = new HashMap<String, String>();
+            cfg.put(BridgeConfig.INJECT, InjectorProvider.INJECT_GUICE.getValue());
+            cfg.put(BridgeConfig.APP_NAME, main.toString());
+            BridgeConfig config = new BridgeConfig(cfg);
+
+            // Bind vertx singleton
+            config.injectImpl.bindBean(Vertx.class, null, vertx);
+
+            //
+            Bridge bridge = new Bridge(log, module, config, lifeCycle.getClasses(), null, new ClassLoaderResolver(lifeCycle.getClassLoader()));
+
+            //
+            this.module = module;
+            this.bridge = bridge;
+          }
+          catch (Exception e) {
+            System.out.println("Could not start");
+            e.printStackTrace();
+            return;
+          }
+        }
+
+        //
         try {
           if (bridge.refresh(true)) {
             h = null;
