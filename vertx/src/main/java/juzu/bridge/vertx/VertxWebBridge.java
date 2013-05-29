@@ -20,10 +20,12 @@
 package juzu.bridge.vertx;
 
 import juzu.Method;
+import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.bridge.spi.web.WebBridge;
+import juzu.impl.bridge.spi.web.WebRequestContext;
 import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
 import juzu.impl.bridge.spi.ScopedContext;
@@ -61,9 +63,6 @@ import java.util.regex.Pattern;
 public class VertxWebBridge extends WebBridge implements HttpContext {
 
   /** . */
-  private static final Pattern cookiePattern = Pattern.compile("([^=]+)=([^\\;]*);?\\s?");
-
-  /** . */
   private static final ApplicationContext APPLICATION_CONTEXT = new ApplicationContext() {
     public ResourceBundle resolveBundle(Locale locale) {
       return null;
@@ -74,117 +73,22 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   private final Application application;
 
   /** . */
-  private final Logger log;
-
-  /** . */
   private ScopedContext requestScope;
-
-  /** . */
-  private final HttpServerRequest req;
-
-  /** . */
-  private Stream writer;
-
-  /** . */
-  private Map<String, RequestParameter> parameters;
-
-  /** . */
-  private Buffer buffer;
-
-  /** . */
-  private final Method method;
 
   /** . */
   private final Bridge bridge;
 
-  /** . */
-  CookieScopeContext[] cookieScopes;
+  final VertxRequestContext ctx;
 
-  /** . */
-  private final String requestPath;
+  public VertxWebBridge(Bridge bridge, VertxRequestContext ctx, Application application) {
 
-  /** . */
-  private final String query;
-
-  public VertxWebBridge(Bridge bridge, Application application, HttpServerRequest req, Buffer buffer, Logger log) {
-
-    // Compute path/query from URI - we cannot use provided request path/query as it is already decoded
-    String uri = req.uri;
-    int index = uri.indexOf('?');
-    String requestPath;
-    String query;
-    if (index == -1) {
-      requestPath = uri;
-      query = null;
-    } else {
-      requestPath = uri.substring(0, index);
-      query = uri.substring(index + 1);
-    }
 
     //
     this.application = application;
     this.requestScope = null;
-    this.req = req;
-    this.writer = null;
-    this.log = log;
-    this.parameters = null;
-    this.buffer = buffer;
-    this.method = Method.valueOf(req.method);
     this.bridge = bridge;
-    this.cookieScopes = new CookieScopeContext[2];
-    this.requestPath = requestPath;
-    this.query = query;
+    this.ctx = ctx;
 
-    // Parse cookies
-    String cookies = req.headers().get("cookie");
-    log.log("Got cookies " + cookies);
-    if (cookies != null) {
-      ArrayList<HttpCookie> parsed = new ArrayList<HttpCookie>();
-      Matcher matcher = cookiePattern.matcher(cookies);
-      while (matcher.find()) {
-        String cookieKey = matcher.group(1);
-        String cookieValue = matcher.group(2);
-        HttpCookie cookie = new HttpCookie(cookieKey, cookieValue);
-        parsed.add(cookie);
-      }
-      for (HttpCookie cookie : parsed) {
-        String name = cookie.getName();
-        String value = cookie.getValue();
-        int type;
-        String prefix;
-        if (name.startsWith("flash.")) {
-          type = CookieScopeContext.FLASH;
-          prefix = "flash.";
-        }
-        else if (name.startsWith("session.")) {
-          type = CookieScopeContext.SESSION;
-          prefix = "session.";
-        }
-        else {
-          type = -1;
-          prefix = null;
-        }
-        if (prefix != null) {
-          try {
-            name = name.substring(prefix.length());
-            if (value.length() > 0) {
-              CookieScopeContext context = getCookieScopeContext(type, true);
-              if (context.request == null) {
-                context.request = new HashMap<String, String>();
-              }
-              context.request.put(name, value);
-            }
-            else {
-              // For now we consider we removed the value ...
-              // We should handle proper cookie removal later
-            }
-          }
-          catch (Exception e) {
-            log.log("Could not parse cookie", e);
-          }
-        }
-      }
-    }
   }
 
   void handle(juzu.impl.bridge.spi.web.Handler handler) {
@@ -193,89 +97,38 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     }
     catch (Throwable throwable) {
       throwable.printStackTrace();
-      req.response.statusCode = 500;
-      req.response.end();
-      req.response.close();
+      try {
+        ctx.send(Response.status(500));
+      }
+      catch (IOException e) {
+        // Handle me somehow better
+        e.printStackTrace();
+      }
     }
   }
 
   @Override
-  protected void end() {
-    req.response.end();
-    req.response.close();
-  }
-
-  @Override
-  public Map<String, RequestParameter> getParameters() {
-    if (parameters == null) {
-      if (query != null) {
-        parameters = Lexers.parseQuery(query);
-      } else {
-        parameters = buffer != null ? new HashMap<String, RequestParameter>() : Collections.<String, RequestParameter>emptyMap();
-      }
-      if (buffer != null) {
-        for (Iterator<RequestParameter> i = Lexers.queryParser(buffer.toString());i.hasNext();) {
-          RequestParameter parameter = i.next();
-          parameter.appendTo(parameters);
-        }
-      }
-    }
-    return parameters;
-  }
-
-  public String getRequestURI() {
-    return "/";
-  }
-
-  public String getPath() {
-    return "/";
-  }
-
-  public String getRequestPath() {
-    return requestPath;
+  public WebRequestContext getRequestContext() {
+    return ctx;
   }
 
   public void renderRequestURL(Appendable appendable) throws IOException {
     appendable.append("http://localhost:8080");
   }
 
-  @Override
-  public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws IOException {
-    switch (location) {
-      case APPLICATION:
-        if (!uri.startsWith("/")) {
-          appendable.append('/');
-        }
-        appendable.append(uri);
-        break;
-      case URL:
-        appendable.append(uri);
-        break;
-      default:
-        throw new UnsupportedOperationException("todo");
-    }
-  }
-
   public ScopedContext getRequestScope(boolean create) {
     if (requestScope == null && create) {
-      requestScope = new ServletScopedContext(log);
+      requestScope = new ServletScopedContext(ctx.log);
     }
     return requestScope;
   }
 
-  CookieScopeContext getCookieScopeContext(int type, boolean create) {
-    if (create && cookieScopes[type] == null) {
-      cookieScopes[type] = new CookieScopeContext();
-    }
-    return cookieScopes[type];
-  }
-
   public ScopedContext getFlashScope(boolean create) {
-    return getCookieScopeContext(CookieScopeContext.FLASH, create);
+    return ctx.getCookieScopeContext(CookieScopeContext.FLASH, create);
   }
 
   public ScopedContext getSessionScope(boolean create) {
-    return getCookieScopeContext(CookieScopeContext.SESSION, create);
+    return ctx.getCookieScopeContext(CookieScopeContext.SESSION, create);
   }
 
   public void purgeSession() {
@@ -294,78 +147,6 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     return APPLICATION_CONTEXT;
   }
 
-  public void setContentType(String mimeType, Charset charset) {
-    req.response.headers().put("Content-Type", "text/html; charset=UTF-8");
-  }
-
-  public void setStatus(int status) {
-    req.response.statusCode = status;
-  }
-
-  @Override
-  public void setHeaders(Iterable<Map.Entry<String, String[]>> headers) {
-    // Do nothing for now but send cookies if we have
-    setHeaders("flash", cookieScopes[CookieScopeContext.FLASH]);
-    setHeaders("session", cookieScopes[CookieScopeContext.SESSION]);
-  }
-
-  private void setHeaders(String scopeName, CookieScopeContext scope) {
-    DateFormat expiresFormat = new SimpleDateFormat("E, dd-MMM-yyyy k:m:s 'GMT'");
-    String expires = expiresFormat.format(new Date(System.currentTimeMillis() + 3600 * 1000));
-    if (scope != null && scope.size() > 0) {
-      if (scope.purged) {
-        for (String name : scope.getNames()) {
-          log.log("Clearing cookie " + name);
-          req.response.putHeader("Set-Cookie", scopeName + "." + name + "=; Path=/");
-        }
-      } else if (scope.values != null) {
-        for (Map.Entry<String, Scoped> entry : scope.values.entrySet()) {
-          String name = entry.getKey();
-          Serializable value = (Serializable)entry.getValue().get();
-          try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Tools.serialize(value, baos);
-            baos.close();
-            String encoded = DatatypeConverter.printBase64Binary(baos.toByteArray());
-            String request = scope.request != null ? scope.request.get(name) : null;
-            if (encoded.equals(request)) {
-              // When they are equals we don't do anything
-            } else {
-//              HttpCookie tmp = new HttpCookie(scopeName + "." + name, encoded);
-              log.log("Sending cookie " + name + " = " + value + " as " + encoded);
-              req.response.putHeader("Set-Cookie", scopeName + "." + name + "=" + encoded + "; Path=/");
-            }
-          }
-          catch (Exception e) {
-            log.log("Could not encode cookie", e);
-          }
-        }
-      }
-    }
-  }
-
-  public void sendRedirect(String location) throws IOException {
-    switch (method) {
-      case GET:
-      case HEAD:
-        setStatus(302);
-        break;
-      default:
-        setStatus(303);
-        break;
-    }
-    req.response.headers().put("Location", location);
-    req.response.end();
-    req.response.close();
-  }
-
-  @Override
-  public Stream getStream(Charset charset) throws IOException {
-    if (writer == null) {
-      writer = new VertxStream(charset, req.response);
-    }
-    return writer;
-  }
 
   @Override
   public UserContext getUserContext() {
@@ -375,7 +156,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   // HttpContext implementation ****************************************************************************************
 
   public Method getMethod() {
-    return method;
+    return ctx.method;
   }
 
   public javax.servlet.http.Cookie[] getCookies() {

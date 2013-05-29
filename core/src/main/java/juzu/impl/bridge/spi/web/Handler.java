@@ -119,12 +119,12 @@ public class Handler implements Closeable {
   public void handle(WebBridge bridge) throws Throwable {
 
     //
-    String requestPath = bridge.getRequestPath();
+    String requestPath = bridge.getRequestContext().getRequestPath();
 
     // Determine first a possible match from the root route from the request path
     RouteMatch requestMatch = null;
-    if (requestPath.startsWith(bridge.getPath())) {
-      requestMatch = root.route(requestPath.substring(bridge.getPath().length()), Collections.<String, String[]>emptyMap());
+    if (requestPath.startsWith(bridge.getRequestContext().getPath())) {
+      requestMatch = root.route(requestPath.substring(bridge.getRequestContext().getPath().length()), Collections.<String, String[]>emptyMap());
     }
 
     // Determine a method + parameters if we have a match
@@ -145,9 +145,9 @@ public class Handler implements Closeable {
           MethodHandle handle = m.get(phase);
           if (handle != null) {
             requestMethod =  this.bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(handle);
-            if (requestMatch.getMatched().size() > 0 || bridge.getParameters().size() > 0) {
+            if (requestMatch.getMatched().size() > 0 || bridge.getRequestContext().getParameters().size() > 0) {
               requestParameters = new HashMap<String, RequestParameter>();
-              for (RequestParameter requestParameter : bridge.getParameters().values()) {
+              for (RequestParameter requestParameter : bridge.getRequestContext().getParameters().values()) {
                 requestParameters.put(requestParameter.getName(), requestParameter);
               }
               for (Map.Entry<PathParam, String> entry : requestMatch.getMatched().entrySet()) {
@@ -170,7 +170,7 @@ public class Handler implements Closeable {
 
     // No method -> not found
     if (requestMethod == null) {
-      bridge.setStatus(404);
+      bridge.getRequestContext().setStatus(404);
     } else {
       if (requestMatch == null) {
         Route requestRoute = getRoute(requestMethod.getHandle());
@@ -183,7 +183,7 @@ public class Handler implements Closeable {
               StringBuilder redirect = new StringBuilder();
               bridge.renderRequestURL(redirect);
               redirect.append(sb);
-              bridge.sendRedirect(redirect.toString());
+              bridge.getRequestContext().sendRedirect(redirect.toString());
               return;
             }
           }

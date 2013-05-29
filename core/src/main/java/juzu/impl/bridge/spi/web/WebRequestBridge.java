@@ -115,7 +115,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   public <T> T getProperty(PropertyType<T> propertyType) {
     if (PropertyType.PATH.equals(propertyType)) {
-      return propertyType.cast(http.getRequestURI());
+      return propertyType.cast(http.getRequestContext().getRequestURI());
     }
     return null;
   }
@@ -322,7 +322,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   boolean send() throws Exception {
     if (response instanceof Response.Error) {
       Response.Error error = (Response.Error)response;
-      http.send(error, bridge.module.context.getRunMode().getPrettyFail());
+      http.getRequestContext().send(error, bridge.module.context.getRunMode().getPrettyFail());
       return true;
     } else if (response instanceof Response.View) {
 
@@ -347,15 +347,15 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
         if (headers == null) {
           headers = Tools.emptyIterable();
         }
-        http.setHeaders(headers);
-        http.sendRedirect(url);
+        http.getRequestContext().setHeaders(headers);
+        http.getRequestContext().sendRedirect(url);
         return true;
       }
     }
     else if (response instanceof Response.Redirect) {
       Response.Redirect redirect = (Response.Redirect)response;
       String url = redirect.getLocation();
-      http.sendRedirect(url);
+      http.getRequestContext().sendRedirect(url);
       return true;
     } else {
       return false;
@@ -365,7 +365,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   private String getAssetURL(Asset asset) throws IOException {
     StringBuilder url = new StringBuilder();
     String uri = asset.getURI();
-    http.renderAssetURL(asset.getLocation(), uri, url);
+    http.getRequestContext().renderAssetURL(asset.getLocation(), uri, url);
     return url.toString();
   }
 }

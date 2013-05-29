@@ -19,6 +19,7 @@
 
 package juzu.bridge.vertx;
 
+import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.common.Content;
@@ -27,6 +28,7 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
 import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
+import juzu.impl.compiler.CompilationException;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
@@ -136,8 +138,22 @@ public class Application {
       Bridge bridge = null;
 
       public void handle(final HttpServerRequest req) {
+        String contentType = req.headers().get("Content-Type");
+        if (contentType != null && contentType.startsWith("application/x-www-form-urlencoded")) {
+          req.bodyHandler(new Handler<Buffer>() {
+            public void handle(Buffer buffer) {
+              VertxRequestContext ctx = new VertxRequestContext(req, buffer, log);
+              handle2(ctx);
+            }
+          });
+        }
+        else {
+          VertxRequestContext ctx = new VertxRequestContext(req, null, log);
+          handle2(ctx);
+        }
+      }
 
-        //
+      private void handle2(VertxRequestContext ctx) {
         if (bridge == null) {
           try {
 
@@ -150,27 +166,32 @@ public class Application {
               public ClassLoader getClassLoader() {
                 return loader;
               }
+
               public JSON getConfig() throws Exception {
                 ReadFileSystem<String[]> c = lifeCycle.getClasses();
                 Content f = c.getContent(new String[]{"juzu", "config.json"}).getObject();
                 return (JSON)JSON.parse(f.getCharSequence().toString());
               }
+
               public ResourceResolver getServerResolver() {
                 return r;
               }
+
               public ReadFileSystem<?> getResourcePath() {
                 throw new UnsupportedOperationException("?");
               }
+
               public ModuleLifeCycle<?> getLifeCycle() {
                 return lifeCycle;
               }
+
               public RunMode getRunMode() {
                 return RunMode.DEV;
               }
             });
 
             //
-            Map<String,String> cfg = new HashMap<String, String>();
+            Map<String, String> cfg = new HashMap<String, String>();
             cfg.put(BridgeConfig.INJECT, InjectorProvider.INJECT_GUICE.getValue());
             cfg.put(BridgeConfig.APP_NAME, main.toString());
             BridgeConfig config = new BridgeConfig(cfg);
@@ -185,9 +206,20 @@ public class Application {
             this.module = module;
             this.bridge = bridge;
           }
+          catch (CompilationException e) {
+            try {
+              ctx.send(e);
+            }
+            catch (IOException ignore) {
+            }
+            return;
+          }
           catch (Exception e) {
-            System.out.println("Could not start");
-            e.printStackTrace();
+            try {
+              ctx.send(Response.error(e), true);
+            }
+            catch (IOException ignore) {
+            }
             return;
           }
         }
@@ -201,18 +233,30 @@ public class Application {
             h = new juzu.impl.bridge.spi.web.Handler(bridge);
           }
         }
+        catch (CompilationException e) {
+          try {
+            ctx.send(e);
+          }
+          catch (IOException ignore) {
+          }
+          return;
+        }
         catch (Exception e) {
-          e.printStackTrace();
+          try {
+            ctx.send(Response.error(e), true);
+          }
+          catch (IOException ignore) {
+          }
           return;
         }
 
         //
         boolean served = false;
-        HttpServerResponse response = req.response;
+        HttpServerResponse response = ctx.req.response;
         Iterable<ResourceResolver> resolvers = bridge.application.resolveBeans(ResourceResolver.class);
         for (Iterator<ResourceResolver> i = resolvers.iterator();i.hasNext() && !served;) {
           ResourceResolver resolver = i.next();
-          URL assetURL = resolver.resolve(req.path);
+          URL assetURL = resolver.resolve(ctx.req.path);
           if (assetURL != null) {
             served = true;
             if ("file".equals(assetURL.getProtocol())) {
@@ -236,18 +280,18 @@ public class Application {
                   String ext = filename.substring(li + 1, filename.length());
                   String contentType = MimeMapping.getMimeTypeForExtension(ext);
                   if (contentType != null) {
-                    req.response.headers().put(HttpHeaders.Names.CONTENT_TYPE, contentType);
+                    ctx.req.response.headers().put(HttpHeaders.Names.CONTENT_TYPE, contentType);
                   }
                 }
-                req.response.headers().put(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(bytes.length));
-                req.response.writeBuffer(new Buffer(bytes));
-                req.response.end();
+                ctx.req.response.headers().put(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(bytes.length));
+                ctx.req.response.writeBuffer(new Buffer(bytes));
+                ctx.req.response.end();
               }
               catch (IOException e) {
                 e.printStackTrace();
               }
               finally {
-                req.response.close();
+                ctx.req.response.close();
               }
             }
           }
@@ -255,31 +299,12 @@ public class Application {
 
         // Send 404 code
         if (!served) {
-
-          String contentType = req.headers().get("Content-Type");
-          if (contentType != null && contentType.startsWith("application/x-www-form-urlencoded")) {
-            req.bodyHandler(new Handler<Buffer>() {
-              public void handle(Buffer buffer) {
-                new VertxWebBridge(bridge, Application.this, req, buffer, log).handle(h);
-              }
-            });
-          }
-          else {
-
-            //
-            VertxWebBridge webBridge = new VertxWebBridge(bridge, Application.this, req, null, log);
-
-            //
-            webBridge.handle(h);
-          }
+          VertxWebBridge webBridge = new VertxWebBridge(bridge, ctx, Application.this);
+          webBridge.handle(h);
         }
       }
-    }
-
-    ).
-
-      listen(port);
-    }
+    }).listen(port);
+  }
 
   public void stop() throws Exception {
     lifeCycle = null;

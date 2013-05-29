@@ -67,7 +67,7 @@ public abstract class WebMimeBridge extends WebRequestBridge implements MimeBrid
       }
 
       //
-      http.send(status);
+      http.getRequestContext().send(status);
 
       //
       return true;

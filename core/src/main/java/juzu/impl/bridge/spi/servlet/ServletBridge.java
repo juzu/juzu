@@ -16,12 +16,10 @@
 
 package juzu.impl.bridge.spi.servlet;
 
-import juzu.Response;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.spi.web.Handler;
-import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
@@ -38,8 +36,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -233,14 +229,17 @@ public class ServletBridge extends HttpServlet {
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
     //
-    ServletWebBridge bridge = new ServletWebBridge(this, req, resp, path, log);
+    ServletRequestContext ctx = new ServletRequestContext(req, resp, path);
+
+    //
+    ServletWebBridge bridge = new ServletWebBridge(this, ctx, log);
 
     // Do we need to send a server resource ?
-    if (bridge.getRequestPath().length() > 1 && !bridge.getRequestPath().startsWith("/WEB-INF/")) {
-      URL url = getServletContext().getResource(bridge.getRequestPath());
+    if (ctx.getRequestPath().length() > 1 && !ctx.getRequestPath().startsWith("/WEB-INF/")) {
+      URL url = getServletContext().getResource(ctx.getRequestPath());
       if (url != null) {
         RequestDispatcher dispatcher = getServletContext().getNamedDispatcher("default");
-        dispatcher.include(bridge.getRequest(), bridge.getResponse());
+        dispatcher.include(bridge.getRequestContext().req, bridge.getResponse());
         return;
       }
     }
@@ -250,10 +249,7 @@ public class ServletBridge extends HttpServlet {
       refresh();
     }
     catch (CompilationException e) {
-      StringWriter writer = new StringWriter();
-      PrintWriter printer = new PrintWriter(writer);
-      Formatting.renderErrors(printer, e.getErrors());
-      bridge.send(Response.error(writer.getBuffer().toString()), true);
+      ctx.send(e);
       return;
     }
     catch (Exception e) {
