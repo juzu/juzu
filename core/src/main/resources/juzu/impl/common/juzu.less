@@ -4,13 +4,22 @@
 .juzu {
   font-family: @sansFontFamily;
 
+  h1 {
+    margin: (@baseLineHeight / 2) 0;
+    font-size: @baseFontSize * 2.75;
+    font-weight: @headingsFontWeight;
+    line-height: @baseLineHeight * 2;
+    color: @errorText;
+    background-color: @errorBackground;
+    text-rendering: optimizelegibility; // Fix the character spacing for headings
+  }
+
   * {
     margin: 0;
     padding: 0;
     border: 0;
     font-weight: normal;
     font-style: normal;
-    font-size: 100%;
     line-height: 1;
   }
 

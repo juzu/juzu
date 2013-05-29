@@ -47,6 +47,7 @@ public abstract class WebRequestContext {
       PrintWriter writer = new PrintWriter(buffer);
       Formatting.renderStyleSheet(writer);
       writer.append("<div class=\"juzu\">");
+      writer.append("<h1>Oups something went wrong</h1>");
       Throwable cause = error.getCause();
       if (cause != null) {
         Formatting.renderThrowable(null, writer, cause);

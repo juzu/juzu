@@ -28,13 +28,21 @@
 .juzu {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+.juzu h1 {
+  margin: 10px 0;
+  font-size: 38.5px;
+  font-weight: bold;
+  line-height: 40px;
+  color: #bd4247;
+  background-color: #f2bdb1;
+  text-rendering: optimizelegibility;
+}
 .juzu * {
   margin: 0;
   padding: 0;
   border: 0;
   font-weight: normal;
   font-style: normal;
-  font-size: 100%;
   line-height: 1;
 }
 .juzu section {
@@ -57,7 +65,7 @@
   line-height: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
-  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   overflow: hidden;
   padding: 9px;
 }
@@ -89,5 +97,5 @@
 }
 .juzu .code ol li p.error,
 .juzu .code ul li p.error {
-  color: #b94a48;
+  color: #bd4247;
 }
