@@ -11,6 +11,13 @@ In addition of Juzu features (see [Juzu Web](http://juzuweb.org)) the bridge pro
 - Injection of Vert.x object in controllers
 - Asynchronous push of the response
 
+# Todo
+
+- Output files to a .tmp dir
+- better error reporting
+    - when it occurs before the bridge (like compilation failure)
+    - nested exception display
+
 # Status
 
 The bridge is at an alpha stage, however it is functionnal enough for developing small applications like the Booking application example.
