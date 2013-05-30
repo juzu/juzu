@@ -16,6 +16,7 @@
 package flashscope;
 
 import juzu.FlashScoped;
+import juzu.impl.common.Tools;
 
 import javax.inject.Named;
 import java.io.Serializable;
@@ -27,7 +28,7 @@ import java.util.UUID;
 public class Flash implements Serializable {
 
   /** . */
-  String value = UUID.randomUUID().toString();
+  public String value;
 
   @Override
   public String toString() {
@@ -40,7 +41,7 @@ public class Flash implements Serializable {
       return true;
     } else if (obj instanceof Flash) {
       Flash that = (Flash)obj;
-      return value.equals(that.value);
+      return Tools.safeEquals(value, that.value);
     } else {
       return false;
     }

@@ -28,6 +28,7 @@ import juzu.io.UndeclaredIOException;
 import javax.inject.Named;
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class CookieScopeContext implements ScopedContext {
   HashMap<String, Scoped> values;
 
   /** The object from the request. */
-  HashMap<String, String> request;
+  HashMap<String, String> snapshot;
 
   /** . */
   boolean purged;
@@ -60,8 +61,8 @@ public class CookieScopeContext implements ScopedContext {
       if (values != null) {
         scoped = values.get(name);
       }
-      if (scoped == null && request != null) {
-        String encoded = request.get(name);
+      if (scoped == null && snapshot != null) {
+        String encoded = snapshot.get(name);
         if (encoded != null) {
           try {
             byte[] bytes = DatatypeConverter.parseBase64Binary(encoded);
@@ -92,7 +93,26 @@ public class CookieScopeContext implements ScopedContext {
     if (values == null) {
       values = new HashMap<String, Scoped>();
     }
+    if (snapshot == null) {
+      snapshot = new HashMap<String, String>();
+    }
     values.put(name, scoped);
+    if (!snapshot.containsKey(name)) {
+      // We encode if so we can compare it with the actual value when sending cookies
+      snapshot.put(name, encode((Serializable)scoped.get()));
+    }
+  }
+
+  String encode(Serializable o) {
+    try {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      Tools.serialize(o, baos);
+      baos.close();
+      return DatatypeConverter.printBase64Binary(baos.toByteArray());
+    }
+    catch (Exception e) {
+      throw new RuntimeException("Could not serialize object " + o);
+    }
   }
 
   private String nameOf(Object key) {
@@ -111,8 +131,8 @@ public class CookieScopeContext implements ScopedContext {
     if (values != null) {
       names.addAll(values.keySet());
     }
-    if (request != null) {
-      names.addAll(request.keySet());
+    if (snapshot != null) {
+      names.addAll(snapshot.keySet());
     }
     return names;
   }

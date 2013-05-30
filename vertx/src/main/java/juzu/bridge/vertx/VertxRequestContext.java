@@ -139,10 +139,10 @@ public class VertxRequestContext extends WebRequestContext {
             name = name.substring(prefix.length());
             if (value.length() > 0) {
               CookieScopeContext context = getCookieScopeContext(type, true);
-              if (context.request == null) {
-                context.request = new HashMap<String, String>();
+              if (context.snapshot == null) {
+                context.snapshot = new HashMap<String, String>();
               }
-              context.request.put(name, value);
+              context.snapshot.put(name, value);
             }
             else {
               // For now we consider we removed the value ...
@@ -250,7 +250,7 @@ public class VertxRequestContext extends WebRequestContext {
             Tools.serialize(value, baos);
             baos.close();
             String encoded = DatatypeConverter.printBase64Binary(baos.toByteArray());
-            String request = scope.request != null ? scope.request.get(name) : null;
+            String request = scope.snapshot != null ? scope.snapshot.get(name) : null;
             if (encoded.equals(request)) {
               // When they are equals we don't do anything
             } else {

@@ -23,22 +23,30 @@ import juzu.View;
 import juzu.bridge.vertx.FlashScopeTestCase;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 public class A {
 
   @Inject
   Flash flash;
 
+  String flash() {
+    if (flash.value == null) {
+      flash.value = UUID.randomUUID().toString();
+    }
+    return flash.value;
+  }
+
   @View
   public Response.Content index() {
-    FlashScopeTestCase.RENDER = flash.value;
+    FlashScopeTestCase.RENDER = flash();
     return Response.ok("pass");
   }
 
   @Action
   @Route("/action")
   public Response.View action() {
-    FlashScopeTestCase.ACTION = flash.value;
+    FlashScopeTestCase.ACTION = flash();
     return A_.index();
   }
 }
