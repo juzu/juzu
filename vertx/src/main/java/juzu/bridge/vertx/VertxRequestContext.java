@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -227,19 +228,22 @@ public class VertxRequestContext extends WebRequestContext {
 
   @Override
   public void setHeaders(Iterable<Map.Entry<String, String[]>> headers) {
-    // Do nothing for now but send cookies if we have
-    setHeaders("flash", cookieScopes[CookieScopeContext.FLASH]);
-    setHeaders("session", cookieScopes[CookieScopeContext.SESSION]);
+    LinkedList<String> cookies = new LinkedList<String>();
+    setHeaders("flash", cookieScopes[CookieScopeContext.FLASH], cookies);
+    setHeaders("session", cookieScopes[CookieScopeContext.SESSION], cookies);
+    if (cookies.size() > 0) {
+      req.response.putHeader("Set-Cookie", cookies);
+    }
   }
 
-  private void setHeaders(String scopeName, CookieScopeContext scope) {
+  private void setHeaders(String scopeName, CookieScopeContext scope, LinkedList<String> cookies) {
     DateFormat expiresFormat = new SimpleDateFormat("E, dd-MMM-yyyy k:m:s 'GMT'");
     String expires = expiresFormat.format(new Date(System.currentTimeMillis() + 3600 * 1000));
     if (scope != null && scope.size() > 0) {
       if (scope.purged) {
         for (String name : scope.getNames()) {
           log.log("Clearing cookie " + name);
-          req.response.putHeader("Set-Cookie", scopeName + "." + name + "=; Path=/");
+          cookies.add(scopeName + "." + name + "=; Path=/");
         }
       } else if (scope.values != null) {
         for (Map.Entry<String, Scoped> entry : scope.values.entrySet()) {
@@ -256,7 +260,7 @@ public class VertxRequestContext extends WebRequestContext {
             } else {
 //              HttpCookie tmp = new HttpCookie(scopeName + "." + name, encoded);
               log.log("Sending cookie " + name + " = " + value + " as " + encoded);
-              req.response.putHeader("Set-Cookie", scopeName + "." + name + "=" + encoded + "; Path=/");
+              cookies.add(scopeName + "." + name + "=" + encoded + "; Path=/");
             }
           }
           catch (Exception e) {
