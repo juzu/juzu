@@ -20,6 +20,8 @@ import juzu.View;
 import juzu.impl.common.Tools;
 import juzu.io.AsyncStreamable;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -28,8 +30,10 @@ public class A {
   @View
   public Response.Content index() throws IOException {
     final AsyncStreamable content = new AsyncStreamable();
-    new Thread() {
-      @Override
+
+    HttpServletRequest req = CurrentRequest.req.get();
+    AsyncContext async = req.startAsync();
+    Runnable task = new Runnable() {
       public void run() {
         try {
           Thread.sleep(500);
@@ -42,7 +46,14 @@ public class A {
           Tools.safeClose(content);
         }
       }
-    }.start();
+    };
+    try {
+      async.start(task);
+    }
+    catch (RuntimeException e) {
+      e.printStackTrace();
+      throw e;
+    }
     return Response.content(200, content);
   }
 }

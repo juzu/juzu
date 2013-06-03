@@ -142,9 +142,14 @@ public class ServletRequestContext extends WebRequestContext {
     }
 
     void end() {
-      if (!closed) {
-        System.out.println("STARTING ASYNC");
-        context = req.startAsync();
+      if (req.isAsyncStarted()) {
+        System.out.println("DETECTED ASYNC ALREADY STARTED");
+        context = req.getAsyncContext();
+      } else {
+        if (!closed) {
+          System.out.println("STARTING ASYNC");
+          context = req.startAsync();
+        }
       }
     }
   }
