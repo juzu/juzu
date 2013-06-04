@@ -16,7 +16,9 @@
 
 package juzu.impl.plugin.controller;
 
+import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectorProvider;
+import juzu.impl.request.RequestFilter;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.Registry;
 import juzu.test.protocol.mock.MockApplication;
@@ -37,7 +39,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
   public void testLifeCycle() throws Exception {
     Registry.unset("request.filter.lifecycle");
     MockApplication<?> app = application("plugin.controller.filter.lifecycle").init();
-    app.getLifeCycle().resolveBean(ControllerPlugin.class).getFilters();
+    Tools.list(app.getLifeCycle().resolveBeans(RequestFilter.class));
     assertEquals("created", Registry.get("request.filter.lifecycle"));
     MockClient client = app.client();
     MockRenderBridge render = client.render();

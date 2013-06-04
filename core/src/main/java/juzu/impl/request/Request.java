@@ -44,6 +44,7 @@ import juzu.request.RequestParameter;
 import juzu.request.ResourceContext;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -200,7 +201,7 @@ public class Request implements ScopingContext {
       }
 
       //
-      List<RequestFilter> filters = controllerPlugin.getFilters();
+      List<RequestFilter> filters = getFilters();
 
       //
       if (index >= 0 && index < filters.size()) {
@@ -486,5 +487,26 @@ public class Request implements ScopingContext {
 
   public static Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
     return (Phase.Resource.Dispatch)safeCreateDispatch(method, args);
+  }
+
+  private List<RequestFilter> getFilters() {
+    try {
+      InjectionContext<?, ?> ic = controllerPlugin.getInjectionContext();
+      return getLifecycles(ic);
+    }
+    catch (Exception e) {
+      throw new UnsupportedOperationException("handle me cracefully", e);
+    }
+  }
+
+  // This is done lazyly to avoid circular references issues
+  private <B, I> ArrayList<RequestFilter> getLifecycles(InjectionContext<B, I> manager) throws Exception {
+    ArrayList<RequestFilter> filters = new ArrayList<RequestFilter>();
+    for (B lifeCycleBean : manager.resolveBeans(RequestFilter.class)) {
+      I lifeCycleInstance = manager.create(lifeCycleBean);
+      RequestFilter filter = (RequestFilter)manager.get(lifeCycleBean, lifeCycleInstance);
+      filters.add(filter);
+    }
+    return filters;
   }
 }

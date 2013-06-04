@@ -84,29 +84,6 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     return injectionContext;
   }
 
-  public List<RequestFilter> getFilters() {
-    try {
-      return getLifecycles(injectionContext);
-    }
-    catch (Exception e) {
-      throw new UnsupportedOperationException("handle me cracefully", e);
-    }
-  }
-
-  // This is done lazyly to avoid circular references issues
-  private <B, I> ArrayList<RequestFilter> getLifecycles(InjectionContext<B, I> manager) throws Exception {
-    if (filters == null) {
-      ArrayList<RequestFilter> filters = new ArrayList<RequestFilter>();
-      for (B lifeCycleBean : manager.resolveBeans(RequestFilter.class)) {
-        I lifeCycleInstance = manager.create(lifeCycleBean);
-        RequestFilter filter = (RequestFilter)manager.get(lifeCycleBean, lifeCycleInstance);
-        filters.add(filter);
-      }
-      this.filters = filters;
-    }
-    return filters;
-  }
-
   public void invoke(RequestBridge bridge) {
     Phase phase;
     if (bridge instanceof RenderBridge) {
