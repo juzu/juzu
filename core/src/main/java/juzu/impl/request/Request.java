@@ -22,6 +22,7 @@ import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.Tools;
+import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
@@ -57,7 +58,7 @@ public class Request implements ScopingContext {
   private static final ThreadLocal<Request> current = new ThreadLocal<Request>();
 
   /** . */
-  private final ControllerPlugin plugin;
+  private final ControllerPlugin controllerPlugin;
 
   /** . */
   private final RequestBridge bridge;
@@ -75,8 +76,7 @@ public class Request implements ScopingContext {
   private Response response;
 
   public Request(
-    ControllerPlugin plugin,
-//    Application application,
+    ControllerPlugin controllerPlugin,
     Method method,
     Map<String, RequestParameter> parameters,
     RequestBridge bridge) {
@@ -104,7 +104,7 @@ public class Request implements ScopingContext {
     this.bridge = bridge;
     this.parameters = parameters;
     this.arguments = arguments;
-    this.plugin = plugin;
+    this.controllerPlugin = controllerPlugin;
   }
 
   public RequestBridge getBridge() {
@@ -177,17 +177,43 @@ public class Request implements ScopingContext {
       }
 
       //
-      List<RequestFilter> filters = plugin.getFilters();
+      List<RequestFilter> filters = controllerPlugin.getFilters();
 
       //
       if (index >= 0 && index < filters.size()) {
+
+        //
+        if (index == 0) {
+          ScopeController scopeController = controllerPlugin.getInjectionContext().getScopeController();
+          scopeController.begin(this);
+        }
+
+        //
         RequestFilter plugin = filters.get(index);
         try {
           index++;
           plugin.invoke(this);
         }
         finally {
+
+          //
           index--;
+
+          // End scopes
+          ScopeController scopeController = controllerPlugin.getInjectionContext().getScopeController();
+          scopeController.end();
+          if (index == 0) {
+            if (context.getPhase() == Phase.VIEW) {
+              ScopedContext flashScope = bridge.getScopedContext(Scope.FLASH, false);
+              if (flashScope != null) {
+                Tools.safeClose(flashScope);
+              }
+            }
+            ScopedContext requestScope = bridge.getScopedContext(Scope.REQUEST, false);
+            if (requestScope != null) {
+              Tools.safeClose(requestScope);
+            }
+          }
         }
       }
       else if (index == filters.size()) {
@@ -200,8 +226,8 @@ public class Request implements ScopingContext {
           args[i] = arguments.get(parameter);
         }
 
-        // Invoke
-        doInvoke(this, args, plugin.getInjectionContext());
+        // Dispatch request
+        dispatch(this, args, controllerPlugin.getInjectionContext());
       }
       else {
         throw new AssertionError();
@@ -214,7 +240,7 @@ public class Request implements ScopingContext {
     }
   }
 
-  private static <B, I> void doInvoke(Request request, Object[] args, InjectionContext<B, I> manager) {
+  private static <B, I> void dispatch(Request request, Object[] args, InjectionContext<B, I> manager) {
     RequestContext context = request.getContext();
     Class<?> type = context.getMethod().getType();
 
@@ -286,7 +312,7 @@ public class Request implements ScopingContext {
   }
 
   public Dispatch createDispatch(Method<?> method, DispatchBridge spi) {
-    ControllersDescriptor desc = plugin.getDescriptor();
+    ControllersDescriptor desc = controllerPlugin.getDescriptor();
     Dispatch dispatch;
     if (method.getPhase() == Phase.ACTION) {
       dispatch = new Phase.Action.Dispatch(spi);

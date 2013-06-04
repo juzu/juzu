@@ -17,9 +17,6 @@
 package juzu.impl.plugin.controller;
 
 import juzu.Response;
-import juzu.Scope;
-import juzu.impl.bridge.spi.ScopedContext;
-import juzu.impl.common.Tools;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.ActionBridge;
@@ -28,7 +25,6 @@ import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
@@ -162,14 +158,12 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     Request request = new Request(this, method, parameters, bridge);
 
     //
-    ScopeController scopeController = injectionContext.getScopeController();
 
     //
     ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
     try {
       ClassLoader classLoader = injectionContext.getClassLoader();
       Thread.currentThread().setContextClassLoader(classLoader);
-      scopeController.begin(request);
       bridge.begin(request);
       request.invoke();
       Response response = request.getResponse();
@@ -183,22 +177,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
       }
     }
     finally {
-
-      // End scopes
-      if (phase == Phase.VIEW) {
-        ScopedContext flashScope = bridge.getScopedContext(Scope.FLASH, false);
-        if (flashScope != null) {
-          Tools.safeClose(flashScope);
-        }
-      }
-      ScopedContext requestScope = bridge.getScopedContext(Scope.REQUEST, false);
-      if (requestScope != null) {
-        Tools.safeClose(requestScope);
-      }
-
-      //
       bridge.end();
-      scopeController.end();
       Thread.currentThread().setContextClassLoader(oldCL);
     }
   }
