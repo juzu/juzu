@@ -19,6 +19,7 @@ package juzu.test.protocol.mock;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.Scope;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
@@ -133,38 +134,22 @@ public abstract class MockRequestBridge implements RequestBridge {
     return null;
   }
 
-  public Scoped getFlashValue(Object key) {
-    return client.getFlashValue(key);
-  }
-
-  public void setFlashValue(Object key, Scoped value) {
-    client.setFlashValue(key, value);
-  }
-
-  public Scoped getRequestValue(Object key) {
-    return attributes.get(key);
-  }
-
-  public void setRequestValue(Object key, Scoped value) {
-    if (value != null) {
-      attributes.set(key, value);
+  public ScopedContext getScopedContext(Scope scope, boolean create) {
+    ScopedContext context;
+    switch (scope) {
+      case REQUEST:
+        context = attributes;
+        break;
+      case FLASH:
+        context = client.getFlashContext(create);
+        break;
+      case SESSION:
+        context = client.getSession();
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported scope " + scope);
     }
-    else {
-      attributes.set(key, null);
-    }
-  }
-
-  public Scoped getSessionValue(Object key) {
-    return client.getSession().get(key);
-  }
-
-  public void setSessionValue(Object key, Scoped value) {
-    if (value != null) {
-      client.getSession().set(key, value);
-    }
-    else {
-      client.getSession().set(key, null);
-    }
+    return context;
   }
 
   public void purgeSession() {

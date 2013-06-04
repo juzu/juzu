@@ -19,6 +19,7 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.Scope;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.request.ControlParameter;
@@ -31,7 +32,6 @@ import juzu.impl.common.Tools;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.request.Method;
-import juzu.impl.inject.Scoped;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -226,64 +226,6 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     return applicationContext;
   }
 
-  public final Scoped getRequestValue(Object key) {
-    ScopedContext context = getRequestContext(false);
-    return context != null ? context.get(key) : null;
-  }
-
-  public final void setRequestValue(Object key, Scoped value) {
-    if (value != null) {
-      ScopedContext context = getRequestContext(false);
-      if (context != null) {
-        context.set(key, null);
-      }
-    }
-    else {
-      getRequestContext(true).set(key, value);
-    }
-  }
-
-  public final Scoped getFlashValue(Object key) {
-    ScopedContext context = getFlashContext(false);
-    return context != null ? context.get(key) : null;
-  }
-
-  public final void setFlashValue(Object key, Scoped value) {
-    if (value == null) {
-      ScopedContext context = getFlashContext(false);
-      if (context != null) {
-        context.set(key, null);
-      }
-    }
-    else {
-      getFlashContext(true).set(key, value);
-    }
-  }
-
-  public final Scoped getSessionValue(Object key) {
-    ScopedContext context = getSessionContext(false);
-    return context != null ? context.get(key) : null;
-  }
-
-  public final void setSessionValue(Object key, Scoped value) {
-    if (value == null) {
-      ScopedContext context = getSessionContext(false);
-      if (context != null) {
-        context.set(key, null);
-      }
-    }
-    else {
-      getSessionContext(true).set(key, value);
-    }
-  }
-
-  public final Scoped getIdentityValue(Object key) {
-    return null;
-  }
-
-  public final void setIdentityValue(Object key, Scoped value) {
-  }
-
   public void purgeSession() {
     PortletSession session = req.getPortletSession(false);
     if (session != null) {
@@ -296,34 +238,39 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   public void close() {
   }
 
-  protected final ScopedContext getRequestContext(boolean create) {
-    ScopedContext context = (ScopedContext)req.getAttribute("juzu.request_scope");
-    if (context == null && create) {
-      req.setAttribute("juzu.request_scope", context = new ServletScopedContext(bridge.log));
-    }
-    return context;
-  }
-
-  protected final ScopedContext getFlashContext(boolean create) {
-    ScopedContext context = null;
-    PortletSession session = req.getPortletSession(create);
-    if (session != null) {
-      context = (ScopedContext)session.getAttribute("juzu.flash_scope");
-      if (context == null && create) {
-        session.setAttribute("juzu.flash_scope", context = new ServletScopedContext(bridge.log));
-      }
-    }
-    return context;
-  }
-
-  protected final ScopedContext getSessionContext(boolean create) {
-    ScopedContext context = null;
-    PortletSession session = req.getPortletSession(create);
-    if (session != null) {
-      context = (ScopedContext)session.getAttribute("juzu.session_scope");
-      if (context == null && create) {
-        session.setAttribute("juzu.session_scope", context = new ServletScopedContext(bridge.log));
-      }
+  public final ScopedContext getScopedContext(Scope scope, boolean create) {
+    ScopedContext context;
+    switch (scope) {
+      case REQUEST:
+        context = (ScopedContext)req.getAttribute("juzu.request_scope");
+        if (context == null && create) {
+          req.setAttribute("juzu.request_scope", context = new ServletScopedContext(bridge.log));
+        }
+        break;
+      case FLASH:
+        PortletSession session = req.getPortletSession(create);
+        if (session != null) {
+          context = (ScopedContext)session.getAttribute("juzu.flash_scope");
+          if (context == null && create) {
+            session.setAttribute("juzu.flash_scope", context = new ServletScopedContext(bridge.log));
+          }
+        } else {
+          context = null;
+        }
+        break;
+      case SESSION:
+        session = req.getPortletSession(create);
+        if (session != null) {
+          context = (ScopedContext)session.getAttribute("juzu.session_scope");
+          if (context == null && create) {
+            session.setAttribute("juzu.session_scope", context = new ServletScopedContext(bridge.log));
+          }
+        } else {
+          context = null;
+        }
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported scope " + scope);
     }
     return context;
   }
@@ -340,7 +287,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.request = null;
 
     //
-    ScopedContext context = getRequestContext(false);
+    ScopedContext context = getScopedContext(Scope.REQUEST, false);
     if (context != null) {
       context.close();
     }

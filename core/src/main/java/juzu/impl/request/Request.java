@@ -20,6 +20,7 @@ import juzu.Response;
 import juzu.Scope;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.EventBridge;
+import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
@@ -140,36 +141,19 @@ public class Request implements ScopingContext {
   }
 
   public final Scoped getContextualValue(Scope scope, Object key) {
-    switch (scope) {
-      case FLASH:
-        return bridge.getFlashValue(key);
-      case REQUEST:
-        return bridge.getRequestValue(key);
-      case SESSION:
-        return bridge.getSessionValue(key);
-      case IDENTITY:
-        return bridge.getIdentityValue(key);
-      default:
-        throw new AssertionError();
-    }
+    ScopedContext context = bridge.getScopedContext(scope, false);
+    return context != null ? context.get(key) : null;
   }
 
   public final void setContextualValue(Scope scope, Object key, Scoped value) {
-    switch (scope) {
-      case FLASH:
-        bridge.setFlashValue(key, value);
-        break;
-      case REQUEST:
-        bridge.setRequestValue(key, value);
-        break;
-      case SESSION:
-        bridge.setSessionValue(key, value);
-        break;
-      case IDENTITY:
-        bridge.setIdentityValue(key, value);
-        break;
-      default:
-        throw new AssertionError();
+    if (value == null) {
+      ScopedContext context = bridge.getScopedContext(scope, false);
+      if (context != null) {
+        context.set(key, null);
+      }
+    }
+    else {
+      bridge.getScopedContext(scope, true).set(key, value);
     }
   }
 

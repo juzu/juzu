@@ -19,6 +19,7 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.Scope;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
@@ -194,7 +195,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     super.end();
 
     //
-    ScopedContext context = getFlashContext(false);
+    ScopedContext context = getScopedContext(Scope.FLASH, false);
     if (context != null) {
       context.close();
     }

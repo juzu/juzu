@@ -154,6 +154,13 @@ public class MockClient implements UserContext {
     return request;
   }
 
+  public ScopedContext getFlashContext(boolean create) {
+    if (flash == null && create) {
+      flash = new ServletScopedContext(Logger.SYSTEM);
+    }
+    return flash;
+  }
+
   public Scoped getFlashValue(Object key) {
     return flash != null ? flash.get(key) : null;
   }

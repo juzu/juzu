@@ -18,6 +18,7 @@ package juzu.impl.bridge.spi;
 
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.Scope;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
 import juzu.impl.common.MethodHandle;
@@ -61,21 +62,7 @@ public interface RequestBridge extends Closeable {
 
   <T> T getProperty(PropertyType<T> propertyType);
 
-  Scoped getFlashValue(Object key);
-
-  void setFlashValue(Object key, Scoped value);
-
-  Scoped getRequestValue(Object key);
-
-  void setRequestValue(Object key, Scoped value);
-
-  Scoped getSessionValue(Object key);
-
-  void setSessionValue(Object key, Scoped value);
-
-  Scoped getIdentityValue(Object key);
-
-  void setIdentityValue(Object key, Scoped value);
+  ScopedContext getScopedContext(Scope scope, boolean create);
 
   HttpContext getHttpContext();
 

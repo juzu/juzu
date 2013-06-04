@@ -19,6 +19,7 @@ package juzu.impl.bridge.spi.web;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
+import juzu.Scope;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.UriBuilder;
@@ -30,7 +31,6 @@ import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
-import juzu.impl.inject.Scoped;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -151,62 +151,22 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     return http.getApplicationContext();
   }
 
-  public final Scoped getRequestValue(Object key) {
-    ScopedContext context = http.getRequestScope(false);
-    return context != null ? context.get(key) : null;
-  }
-
-  public final void setRequestValue(Object key, Scoped value) {
-    if (value != null) {
-      ScopedContext context = http.getRequestScope(false);
-      if (context != null) {
-        context.set(key, null);
-      }
+  public final ScopedContext getScopedContext(Scope scope, boolean create) {
+    ScopedContext context;
+    switch (scope) {
+      case REQUEST:
+        context = http.getRequestScope(create);
+        break;
+      case FLASH:
+        context = http.getFlashScope(create);
+        break;
+      case SESSION:
+        context = http.getSessionScope(create);
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported scope " + scope);
     }
-    else {
-      http.getRequestScope(true).set(key, value);
-    }
-  }
-
-  public final Scoped getFlashValue(Object key) {
-    ScopedContext context = http.getFlashScope(false);
-    return context != null ? context.get(key) : null;
-  }
-
-  public final void setFlashValue(Object key, Scoped value) {
-    if (value == null) {
-      ScopedContext context = http.getFlashScope(false);
-      if (context != null) {
-        context.set(key, null);
-      }
-    }
-    else {
-      http.getFlashScope(true).set(key, value);
-    }
-  }
-
-  public final Scoped getSessionValue(Object key) {
-    ScopedContext context = http.getSessionScope(false);
-    return context != null ? context.get(key) : null;
-  }
-
-  public final void setSessionValue(Object key, Scoped value) {
-    if (value == null) {
-      ScopedContext context = http.getSessionScope(false);
-      if (context != null) {
-        context.set(key, null);
-      }
-    }
-    else {
-      http.getSessionScope(true).set(key, value);
-    }
-  }
-
-  public final Scoped getIdentityValue(Object key) {
-    return null;
-  }
-
-  public final void setIdentityValue(Object key, Scoped value) {
+    return context;
   }
 
   public void purgeSession() {
