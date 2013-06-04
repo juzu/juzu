@@ -169,10 +169,6 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     return context;
   }
 
-  public void purgeSession() {
-    http.purgeSession();
-  }
-
   public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Map<String, ResponseParameter> parameters) {
     Method method = bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 

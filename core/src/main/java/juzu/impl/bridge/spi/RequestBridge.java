@@ -75,11 +75,6 @@ public interface RequestBridge extends Closeable {
   ApplicationContext getApplicationContext();
 
   /**
-   * todo: see if we can remove that and instead do it from the session context directly.
-   */
-  void purgeSession();
-
-  /**
    * Set the specified response on the bridge.
    *
    * @param response the response

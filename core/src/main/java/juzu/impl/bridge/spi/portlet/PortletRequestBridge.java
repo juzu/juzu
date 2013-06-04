@@ -60,7 +60,6 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -224,15 +223,6 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   public final ApplicationContext getApplicationContext() {
     return applicationContext;
-  }
-
-  public void purgeSession() {
-    PortletSession session = req.getPortletSession(false);
-    if (session != null) {
-      for (String key : new HashSet<String>(session.getAttributeMap().keySet())) {
-        session.removeAttribute(key);
-      }
-    }
   }
 
   public void close() {
