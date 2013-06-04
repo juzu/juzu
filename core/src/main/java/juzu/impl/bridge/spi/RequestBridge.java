@@ -22,7 +22,6 @@ import juzu.Scope;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.inject.Scoped;
 import juzu.impl.request.Request;
 import juzu.request.ApplicationContext;
 import juzu.request.HttpContext;
@@ -35,6 +34,7 @@ import juzu.request.WindowContext;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface RequestBridge extends Closeable {
@@ -74,6 +74,7 @@ public interface RequestBridge extends Closeable {
 
   ApplicationContext getApplicationContext();
 
+
   /**
    * Set the specified response on the bridge.
    *
@@ -100,6 +101,14 @@ public interface RequestBridge extends Closeable {
    * Terminates the life cycle of the request bridge.
    */
   void close();
+
+  /**
+   * Execute the runnable in a thread.
+   *
+   * @param runnable the runnable to execute
+   * @throws RejectedExecutionException if the operation is not supported
+   */
+  void execute(Runnable runnable) throws RejectedExecutionException;
 
   /**
    * Create a dispatch for the specified phase, target and parameters.

@@ -41,6 +41,10 @@ public class ScopeController {
     currentContext.set(null);
   }
 
+  public boolean isActive() {
+    return currentContext.get() != null;
+  }
+
   /**
    * Obtain a scoped object.
    *
@@ -65,7 +69,7 @@ public class ScopeController {
    *
    * @param scope  the scope
    * @param key    the key
-   * @param scoped
+   * @param scoped the scoped object
    * @throws IllegalStateException if the scope is not active
    */
   public void put(Scope scope, Object key, Scoped scoped) throws IllegalStateException {

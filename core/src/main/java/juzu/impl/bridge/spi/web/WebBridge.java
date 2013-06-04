@@ -23,6 +23,7 @@ import juzu.request.HttpContext;
 import juzu.request.UserContext;
 
 import java.io.IOException;
+import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class WebBridge {
@@ -34,6 +35,8 @@ public abstract class WebBridge {
   public abstract void renderRequestURL(Appendable appendable) throws IOException;
 
   //
+
+  public abstract void execute(Runnable runnable) throws RejectedExecutionException;
 
   public abstract ScopedContext getRequestScope(boolean create);
 

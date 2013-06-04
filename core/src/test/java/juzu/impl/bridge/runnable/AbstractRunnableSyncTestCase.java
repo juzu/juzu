@@ -13,25 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package juzu.impl.bridge.response;
+package juzu.impl.bridge.runnable;
 
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
-public abstract class AbstractResponseAsyncViewTestCase extends AbstractWebTestCase {
+/** @author Julien Viet */
+public abstract class AbstractRunnableSyncTestCase extends AbstractWebTestCase {
 
   @Drone
   WebDriver driver;
+
+  /** . */
+  public static String requestURL;
+
+  /** . */
+  public static String runnableURL;
+
+  /** . */
+  public static Object requestObject;
+
+  /** . */
+  public static Object runnableObject;
+
+  /** . */
+  public static boolean runnableActive;
 
   @Test
   public void testPathParam() throws Exception {
     driver.get(applicationURL().toString());
     assertTrue(driver.getPageSource().contains("pass"));
+    assertNotSame(requestURL, runnableURL);
+    assertEquals("null", runnableURL);
+    assertSame(requestObject, runnableObject);
+    assertFalse(runnableActive);
   }
 }

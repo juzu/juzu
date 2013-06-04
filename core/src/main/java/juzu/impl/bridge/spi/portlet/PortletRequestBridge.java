@@ -62,6 +62,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends PortletResponse> implements RequestBridge {
@@ -223,6 +224,10 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   public final ApplicationContext getApplicationContext() {
     return applicationContext;
+  }
+
+  public void execute(Runnable runnable) throws RejectedExecutionException {
+    throw new RejectedExecutionException();
   }
 
   public void close() {

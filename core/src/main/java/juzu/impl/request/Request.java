@@ -18,6 +18,7 @@ package juzu.impl.request;
 
 import juzu.Response;
 import juzu.Scope;
+import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.bridge.spi.ScopedContext;
@@ -44,18 +45,27 @@ import juzu.request.ResourceContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Request implements ScopingContext {
 
+  /** . */
+  private static final Object[] EMPTY = new Object[0];
+
   public static Request getCurrent() {
-    return current.get();
+    ContextLifeCycle context = current.get();
+    return context != null ? context.getRequest() : null;
   }
 
   /** . */
-  private static final ThreadLocal<Request> current = new ThreadLocal<Request>();
+  private static final ThreadLocal<ContextLifeCycle> current = new ThreadLocal<ContextLifeCycle>();
+
+  /** . */
+  private final LinkedHashSet<ContextLifeCycle> contextLifeCycles = new LinkedHashSet<ContextLifeCycle>();
 
   /** . */
   private final ControllerPlugin controllerPlugin;
@@ -74,6 +84,9 @@ public class Request implements ScopingContext {
 
   /** The response. */
   private Response response;
+
+  /** The controller for this request. */
+  private BeanLifeCycle controllerLifeCycle = null;
 
   public Request(
     ControllerPlugin controllerPlugin,
@@ -105,6 +118,10 @@ public class Request implements ScopingContext {
     this.parameters = parameters;
     this.arguments = arguments;
     this.controllerPlugin = controllerPlugin;
+  }
+
+  public ScopeController getScopeController() {
+    return controllerPlugin.getInjectionContext().getScopeController();
   }
 
   public RequestBridge getBridge() {
@@ -169,11 +186,17 @@ public class Request implements ScopingContext {
   /** . */
   private int index = 0;
 
+  /** The main contextual for this request. */
+  private ContextLifeCycle contextLifeCycle;
+
   public void invoke() {
     boolean set = current.get() == null;
     try {
+
+      //
       if (set) {
-        current.set(this);
+        current.set(contextLifeCycle = new ContextLifeCycle());
+        getScopeController().begin(this);
       }
 
       //
@@ -182,38 +205,13 @@ public class Request implements ScopingContext {
       //
       if (index >= 0 && index < filters.size()) {
 
-        //
-        if (index == 0) {
-          ScopeController scopeController = controllerPlugin.getInjectionContext().getScopeController();
-          scopeController.begin(this);
-        }
-
-        //
         RequestFilter plugin = filters.get(index);
         try {
           index++;
           plugin.invoke(this);
         }
         finally {
-
-          //
           index--;
-
-          // End scopes
-          ScopeController scopeController = controllerPlugin.getInjectionContext().getScopeController();
-          scopeController.end();
-          if (index == 0) {
-            if (context.getPhase() == Phase.VIEW) {
-              ScopedContext flashScope = bridge.getScopedContext(Scope.FLASH, false);
-              if (flashScope != null) {
-                Tools.safeClose(flashScope);
-              }
-            }
-            ScopedContext requestScope = bridge.getScopedContext(Scope.REQUEST, false);
-            if (requestScope != null) {
-              Tools.safeClose(requestScope);
-            }
-          }
         }
       }
       else if (index == filters.size()) {
@@ -235,83 +233,186 @@ public class Request implements ScopingContext {
     }
     finally {
       if (set) {
+        contextLifeCycle.endContextual();
         current.set(null);
       }
     }
   }
 
-  private static <B, I> void dispatch(Request request, Object[] args, InjectionContext<B, I> manager) {
-    RequestContext context = request.getContext();
-    Class<?> type = context.getMethod().getType();
+  public void execute(final Runnable runnable, boolean contextual, boolean async) throws RejectedExecutionException {
+    if (async) {
+      if (contextual) {
 
-    BeanLifeCycle lifeCycle = manager.get(type);
+        // Create a new context - we add it here to keep a reference
+        final ContextLifeCycle contextLifeCycle = new ContextLifeCycle();
+        contextLifeCycles.add(contextLifeCycle);
 
-    if (lifeCycle != null) {
-      try {
+        // Our wrapper for cleanup
+        Runnable wrapper = new Runnable() {
+          public void run() {
+            try {
+              getScopeController().begin(Request.this);
+              current.set(contextLifeCycle);
+              runnable.run();
+            }
+            finally {
+              current.set(null);
+              contextLifeCycle.endContextual();
+            }
+          }
+        };
 
-        // Get controller
-        Object controller;
+        // In some case execute cannot honour the execution and we should do the cleanup
+        // otherwise it will never occur
+        boolean executed = false;
         try {
-          controller = lifeCycle.get();
+          bridge.execute(wrapper);
+          executed = true;
         }
-        catch (InvocationTargetException e) {
-          request.response = Response.error(Tools.safeCause(e));
-          controller = null;
-        }
-
-        //
-        if (controller != null) {
-
-          // Begin request callback
-          if (controller instanceof juzu.request.RequestLifeCycle) {
-            try {
-              ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
-            }
-            catch (Exception e) {
-              request.response = new Response.Error(e);
-            }
-          }
-
-          // If we have no response yet
-          if (request.getResponse() == null) {
-            // We invoke method on controller
-            try {
-              Object ret = context.getMethod().getMethod().invoke(controller, args);
-              if (ret instanceof Response) {
-                // We should check that it matches....
-                // btw we should try to enforce matching during compilation phase
-                // @Action -> Response.Action
-                // @View -> Response.Mime
-                // as we can do it
-                request.response = (Response)ret;
-              }
-            }
-            catch (InvocationTargetException e) {
-              request.response = Response.error(e.getCause());
-            }
-            catch (IllegalAccessException e) {
-              throw new UnsupportedOperationException("hanle me gracefully", e);
-            }
-
-            // End request callback
-            if (controller instanceof juzu.request.RequestLifeCycle) {
-              try {
-                ((juzu.request.RequestLifeCycle)controller).endRequest(context);
-              }
-              catch (Exception e) {
-                request.response = Response.error(e);
-              }
-            }
+        finally {
+          if (!executed) {
+            contextLifeCycle.endContextual();
           }
         }
+      } else {
+        bridge.execute(runnable);
       }
-      finally {
-        lifeCycle.close();
+    } else {
+      if (!contextual) {
+        ContextLifeCycle previous = current.get();
+        current.set(null);
+        getScopeController().end();
+        try {
+          safeRun(runnable);
+        }
+        finally {
+          getScopeController().begin(this);
+          current.set(previous);
+        }
+      } else {
+        safeRun(runnable);
       }
     }
   }
 
-  public Dispatch createDispatch(Method<?> method, DispatchBridge spi) {
+  class ContextLifeCycle {
+
+    Request getRequest() {
+      return Request.this;
+    }
+
+    /**
+     * End the current contextual, this method should not throw anything
+     */
+    private void endContextual() {
+
+      // Remove
+      contextLifeCycles.remove(this);
+
+      // Deassociate
+      getScopeController().end();
+
+      // We are done -> cleanup
+      if (contextLifeCycles.isEmpty()) {
+
+        // Dispose controller first
+        if (controllerLifeCycle != null) {
+          controllerLifeCycle.close();
+        }
+
+        // End scopes
+        if (context.getPhase() == Phase.VIEW) {
+          ScopedContext flashScope = bridge.getScopedContext(Scope.FLASH, false);
+          if (flashScope != null) {
+            Tools.safeClose(flashScope);
+          }
+        }
+        ScopedContext requestScope = bridge.getScopedContext(Scope.REQUEST, false);
+        if (requestScope != null) {
+          Tools.safeClose(requestScope);
+        }
+      }
+    }
+  }
+
+  void safeRun(Runnable runnable) {
+    try {
+      runnable.run();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private <B, I> void dispatch(Request request, Object[] args, InjectionContext<B, I> manager) {
+    RequestContext context = request.getContext();
+    Class<?> type = context.getMethod().getType();
+
+    //
+    controllerLifeCycle = manager.get(type);
+
+    //
+    if (controllerLifeCycle != null) {
+
+      // Get controller
+      Object controller;
+      try {
+        controller = controllerLifeCycle.get();
+      }
+      catch (InvocationTargetException e) {
+        request.response = Response.error(Tools.safeCause(e));
+        controller = null;
+      }
+
+      //
+      if (controller != null) {
+
+        // Begin request callback
+        if (controller instanceof juzu.request.RequestLifeCycle) {
+          try {
+            ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
+          }
+          catch (Exception e) {
+            request.response = new Response.Error(e);
+          }
+        }
+
+        // If we have no response yet
+        if (request.getResponse() == null) {
+          // We invoke method on controller
+          try {
+            Object ret = context.getMethod().getMethod().invoke(controller, args);
+            if (ret instanceof Response) {
+              // We should check that it matches....
+              // btw we should try to enforce matching during compilation phase
+              // @Action -> Response.Action
+              // @View -> Response.Mime
+              // as we can do it
+              request.response = (Response)ret;
+            }
+          }
+          catch (InvocationTargetException e) {
+            request.response = Response.error(e.getCause());
+          }
+          catch (IllegalAccessException e) {
+            throw new UnsupportedOperationException("hanle me gracefully", e);
+          }
+
+          // End request callback
+          if (controller instanceof juzu.request.RequestLifeCycle) {
+            try {
+              ((juzu.request.RequestLifeCycle)controller).endRequest(context);
+            }
+            catch (Exception e) {
+              request.response = Response.error(e);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private Dispatch createDispatch(Method<?> method, DispatchBridge spi) {
     ControllersDescriptor desc = controllerPlugin.getDescriptor();
     Dispatch dispatch;
     if (method.getPhase() == Phase.ACTION) {
@@ -327,5 +428,63 @@ public class Request implements ScopingContext {
     }
     dispatch.escapeXML(desc.getEscapeXML());
     return dispatch;
+  }
+
+  public Dispatch createDispatch(Method<?> method, Object[] args) {
+    Parameters parameters = new Parameters();
+    method.setArgs(args, parameters);
+    DispatchBridge spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
+    return createDispatch(method, spi);
+  }
+
+  public Dispatch createDispatch(Method<?> method) {
+    DispatchBridge spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), new Parameters());
+    return createDispatch(method, spi);
+  }
+
+  private static Dispatch safeCreateDispatch(Method<?> method, Object[] args) {
+    ContextLifeCycle context = current.get();
+    if (context != null) {
+      return context.getRequest().createDispatch(method, args);
+    } else {
+      // Should we output some warning ?
+      return null;
+    }
+  }
+
+  public static Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method) {
+    return (Phase.Action.Dispatch)safeCreateDispatch(method, EMPTY);
+  }
+
+  public static Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object arg) {
+    return (Phase.Action.Dispatch)safeCreateDispatch(method, new Object[]{arg});
+  }
+
+  public static Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object[] args) {
+    return (Phase.Action.Dispatch)safeCreateDispatch(method, args);
+  }
+
+  public static Phase.View.Dispatch createViewDispatch(Method<Phase.View> method) {
+    return (Phase.View.Dispatch)safeCreateDispatch(method, EMPTY);
+  }
+
+  public static Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object arg) {
+    return (Phase.View.Dispatch)safeCreateDispatch(method, new Object[]{arg});
+  }
+
+  public static Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object[] args) {
+    return (Phase.View.Dispatch)safeCreateDispatch(method, args);
+  }
+
+  public static Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method) {
+    return (Phase.Resource.Dispatch)safeCreateDispatch(method, EMPTY);
+  }
+
+  public static Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object arg) {
+    return (Phase.Resource.Dispatch)safeCreateDispatch(method, new Object[]{arg});
+  }
+
+  public static Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
+    return (Phase.Resource.Dispatch)safeCreateDispatch(method, args);
   }
 }

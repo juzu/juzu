@@ -18,13 +18,12 @@ package juzu.request;
 
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.impl.bridge.Parameters;
-import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class RequestContext {
@@ -71,6 +70,20 @@ public abstract class RequestContext {
     return getBridge().getProperty(propertyType);
   }
 
+  /**
+   * Provide an {@link Executor} the specified modes.
+   *
+   * @param contextual propagate the Juzu context or not
+   * @param async execute in an another thread or not
+   */
+  public Executor getExecutor(final boolean contextual, final boolean async) {
+    return new Executor() {
+      public void execute(Runnable command) {
+        request.execute(command, contextual, async);
+      }
+    };
+  }
+
   public abstract Phase getPhase();
 
   protected abstract RequestBridge getBridge();
@@ -82,44 +95,43 @@ public abstract class RequestContext {
    * @return the corresponding dispatch object
    */
   public Dispatch createDispatch(Method<?> method) {
-    DispatchBridge spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), new Parameters());
-    return request.createDispatch(method, spi);
+    return request.createDispatch(method);
   }
 
   public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method) {
-    return (Phase.Action.Dispatch)createDispatch(method, EMPTY);
+    return (Phase.Action.Dispatch)request.createDispatch(method, EMPTY);
   }
 
   public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object arg) {
-    return (Phase.Action.Dispatch)createDispatch(method, new Object[]{arg});
+    return (Phase.Action.Dispatch)request.createDispatch(method, new Object[]{arg});
   }
 
   public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object[] args) {
-    return (Phase.Action.Dispatch)createDispatch(method, args);
+    return (Phase.Action.Dispatch)request.createDispatch(method, args);
   }
 
   public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method) {
-    return (Phase.View.Dispatch)createDispatch(method, EMPTY);
+    return (Phase.View.Dispatch)request.createDispatch(method, EMPTY);
   }
 
   public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object arg) {
-    return (Phase.View.Dispatch)createDispatch(method, new Object[]{arg});
+    return (Phase.View.Dispatch)request.createDispatch(method, new Object[]{arg});
   }
 
   public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object[] args) {
-    return (Phase.View.Dispatch)createDispatch(method, args);
+    return (Phase.View.Dispatch)request.createDispatch(method, args);
   }
 
   public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method) {
-    return (Phase.Resource.Dispatch)createDispatch(method, EMPTY);
+    return (Phase.Resource.Dispatch)request.createDispatch(method, EMPTY);
   }
 
   public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object arg) {
-    return (Phase.Resource.Dispatch)createDispatch(method, new Object[]{arg});
+    return (Phase.Resource.Dispatch)request.createDispatch(method, new Object[]{arg});
   }
 
   public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
-    return (Phase.Resource.Dispatch)createDispatch(method, args);
+    return (Phase.Resource.Dispatch)request.createDispatch(method, args);
   }
 
   public Response getResponse() {
@@ -128,12 +140,5 @@ public abstract class RequestContext {
 
   public void setResponse(Response response) {
     request.setResponse(response);
-  }
-
-  private Dispatch createDispatch(Method<?> method, Object[] args) {
-    Parameters parameters = new Parameters();
-    method.setArgs(args, parameters);
-    DispatchBridge spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
-    return request.createDispatch(method, spi);
   }
 }

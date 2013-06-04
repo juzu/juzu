@@ -328,7 +328,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
             }
             writer.append(parameter.typeLiteral).append(" ").append(parameter.getName());
           }
-          writer.append(") { return Request.getCurrent().getContext().create").append(method.getPhase().getClass().getSimpleName()).append("Dispatch(").append(methodRef);
+          writer.append(") { return Request.create").append(method.getPhase().getClass().getSimpleName()).append("Dispatch(").append(methodRef);
           switch (parameters.size()) {
             case 0:
               break;

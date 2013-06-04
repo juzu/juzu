@@ -13,36 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bridge.response.async.resource;
 
-import juzu.Resource;
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
-import juzu.io.AsyncStreamable;
+package juzu.impl.bridge.runnable;
 
-import java.io.IOException;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
+public class RunnableSyncViewServletTestCase extends AbstractRunnableSyncTestCase {
 
-  @Resource
-  @Route("/")
-  public Response.Content index() throws IOException {
-    final AsyncStreamable content = new AsyncStreamable();
-    content.append("pass");
-    new Thread() {
-      @Override
-      public void run() {
-        try {
-          Thread.sleep(500);
-        }
-        catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-        content.close();
-      }
-    }.start();
-    return Response.content(200, content);
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.runnable.sync.view");
   }
 }

@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MockRequestBridge implements RequestBridge {
@@ -253,6 +254,10 @@ public abstract class MockRequestBridge implements RequestBridge {
   }
 
   public void begin(Request request) {
+  }
+
+  public void execute(Runnable runnable) throws RejectedExecutionException {
+    throw new RejectedExecutionException();
   }
 
   public void end() {

@@ -56,6 +56,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,6 +90,11 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     this.bridge = bridge;
     this.ctx = ctx;
 
+  }
+
+  @Override
+  public void execute(Runnable runnable) throws RejectedExecutionException {
+    throw new RejectedExecutionException("Not yet implemented");
   }
 
   void handle(juzu.impl.bridge.spi.web.Handler handler) {

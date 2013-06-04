@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class WebRequestBridge implements RequestBridge, WindowContext {
@@ -253,6 +254,10 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   public void end() {
     this.request = null;
+  }
+
+  public void execute(Runnable runnable) throws RejectedExecutionException {
+    http.execute(runnable);
   }
 
   public void close() {

@@ -26,6 +26,7 @@ import juzu.request.ClientContext;
 import juzu.request.HttpContext;
 import juzu.request.UserContext;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ServletWebBridge extends WebBridge implements HttpContext, ClientContext, UserContext {
@@ -69,6 +71,25 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
 
   public HttpServletResponse getResponse() {
     return ctx.resp;
+  }
+
+  @Override
+  public void execute(Runnable runnable) {
+    if (ctx.req.isAsyncSupported()) {
+
+      // Start async context if needed
+      AsyncContext context;
+      if (ctx.req.isAsyncStarted()) {
+        context = ctx.req.getAsyncContext();
+      } else {
+        context = ctx.req.startAsync();
+      }
+
+      // Start thread
+      context.start(runnable);
+    } else {
+      throw new RejectedExecutionException("Async not enabled currently for this servlet");
+    }
   }
 
   // HttpBridge implementation

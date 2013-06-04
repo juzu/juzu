@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.response;
+package juzu.impl.bridge.runnable;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
-public class ResponseAsyncResourceServletTestCase extends AbstractResponseAsyncResourceTestCase {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class RunnableContextualAsyncViewServletTestCase extends AbstractRunnableContextualAsyncTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.response.async.resource");
+    return createServletDeployment(true, "bridge.runnable.contextualasync.view");
   }
 }

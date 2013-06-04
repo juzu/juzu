@@ -165,6 +165,8 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
       ClassLoader classLoader = injectionContext.getClassLoader();
       Thread.currentThread().setContextClassLoader(classLoader);
       bridge.begin(request);
+
+
       request.invoke();
       Response response = request.getResponse();
       if (response != null) {
@@ -175,6 +177,8 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
           throw new UndeclaredIOException(e);
         }
       }
+
+
     }
     finally {
       bridge.end();

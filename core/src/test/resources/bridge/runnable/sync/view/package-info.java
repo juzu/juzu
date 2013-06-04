@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Application package bridge.response.async.resource;
+@Application package bridge.runnable.sync.view;
 
 import juzu.Application;
