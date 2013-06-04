@@ -21,6 +21,7 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.Scope;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
+import juzu.impl.common.Tools;
 import juzu.impl.request.ControlParameter;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
@@ -36,7 +37,6 @@ import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.JSON;
-import juzu.impl.common.Tools;
 import juzu.request.ApplicationContext;
 import juzu.request.Phase;
 import juzu.request.UserContext;
@@ -100,12 +100,20 @@ public abstract class MockRequestBridge implements RequestBridge {
     Method<?> descriptor = application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
     Map<ControlParameter, Object> arguments = descriptor.getArguments(requestParameters);
 
+    //
+    ServletScopedContext attributes = new ServletScopedContext(Logger.SYSTEM) {
+      @Override
+      public void close() {
+        attributesHistory.addAll(Tools.list(MockRequestBridge.this.attributes));
+        super.close();
+      }
+    };
 
     //
     this.application = application;
     this.client = client;
     this.target = target;
-    this.attributes = new ServletScopedContext(Logger.SYSTEM);
+    this.attributes = attributes;
     this.httpContext = new MockHttpContext();
     this.securityContext = new MockSecurityContext();
     this.windowContext = new MockWindowContext();
@@ -248,8 +256,6 @@ public abstract class MockRequestBridge implements RequestBridge {
   }
 
   public void end() {
-    attributesHistory.addAll(Tools.list(attributes));
-    attributes.close();
   }
 
   public void setResponse(Response response) throws IllegalStateException, IOException {

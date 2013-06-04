@@ -156,39 +156,19 @@ public class MockClient implements UserContext {
 
   public ScopedContext getFlashContext(boolean create) {
     if (flash == null && create) {
-      flash = new ServletScopedContext(Logger.SYSTEM);
+      flash = new ServletScopedContext(Logger.SYSTEM) {
+        @Override
+        public void close() {
+          flashHistory.addFirst(Tools.list(flash));
+          super.close();
+        }
+      };
     }
     return flash;
   }
 
-  public Scoped getFlashValue(Object key) {
-    return flash != null ? flash.get(key) : null;
-  }
-
-  public void setFlashValue(Object key, Scoped value) {
-    if (flash == null) {
-      flash = new ServletScopedContext(Logger.SYSTEM);
-    }
-    flash.set(key, value);
-  }
-
   private void invoke(MockRequestBridge request) {
-    try {
-      application.invoke(request);
-    }
-    finally {
-      request.close();
-      if (request instanceof MockRenderBridge) {
-        if (flash != null) {
-          flashHistory.addFirst(Tools.list(flash));
-          flash.close();
-          flash = null;
-        }
-        else {
-          flashHistory.addFirst(Collections.<Scoped>emptyList());
-        }
-      }
-    }
+    application.invoke(request);
   }
 
   public List<Scoped> getFlashHistory(int index) {

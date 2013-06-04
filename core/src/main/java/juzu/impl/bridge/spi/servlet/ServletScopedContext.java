@@ -34,7 +34,7 @@ import java.util.Iterator;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class ServletScopedContext implements ScopedContext, HttpSessionBindingListener {
+public class ServletScopedContext implements ScopedContext, HttpSessionBindingListener {
 
   /** . */
   private HashMap<Object, Scoped> state;

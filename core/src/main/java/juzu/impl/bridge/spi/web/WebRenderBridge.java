@@ -17,7 +17,6 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.request.Method;
 import juzu.request.RequestParameter;
@@ -34,16 +33,5 @@ public class WebRenderBridge extends WebMimeBridge implements RenderBridge {
       Method<?> target,
       Map<String, RequestParameter> parameters) {
     super(bridge, handler, http, target, parameters);
-  }
-
-  @Override
-  public void end() {
-    super.end();
-
-    //
-    ScopedContext context = http.getFlashScope(false);
-    if (context != null) {
-      context.close();
-    }
   }
 }

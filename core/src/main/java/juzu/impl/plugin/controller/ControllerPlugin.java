@@ -17,6 +17,9 @@
 package juzu.impl.plugin.controller;
 
 import juzu.Response;
+import juzu.Scope;
+import juzu.impl.bridge.spi.ScopedContext;
+import juzu.impl.common.Tools;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.ActionBridge;
@@ -180,6 +183,20 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
       }
     }
     finally {
+
+      // End scopes
+      if (phase == Phase.VIEW) {
+        ScopedContext flashScope = bridge.getScopedContext(Scope.FLASH, false);
+        if (flashScope != null) {
+          Tools.safeClose(flashScope);
+        }
+      }
+      ScopedContext requestScope = bridge.getScopedContext(Scope.REQUEST, false);
+      if (requestScope != null) {
+        Tools.safeClose(requestScope);
+      }
+
+      //
       bridge.end();
       scopeController.end();
       Thread.currentThread().setContextClassLoader(oldCL);

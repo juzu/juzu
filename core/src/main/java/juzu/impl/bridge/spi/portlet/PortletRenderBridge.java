@@ -19,12 +19,10 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.Scope;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.compiler.CompilationException;
-import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.io.Stream;
 import juzu.io.Streams;
@@ -188,16 +186,5 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
         throw new AssertionError();
     }
     return url;
-  }
-
-  @Override
-  public void end() {
-    super.end();
-
-    //
-    ScopedContext context = getScopedContext(Scope.FLASH, false);
-    if (context != null) {
-      context.close();
-    }
   }
 }

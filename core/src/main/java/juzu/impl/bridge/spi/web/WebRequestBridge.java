@@ -253,12 +253,6 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   public void end() {
     this.request = null;
-
-    //
-    ScopedContext context = http.getRequestScope(false);
-    if (context != null) {
-      context.close();
-    }
   }
 
   public void close() {

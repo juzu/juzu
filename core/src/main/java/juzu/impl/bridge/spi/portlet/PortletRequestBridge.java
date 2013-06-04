@@ -275,12 +275,6 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   public void end() {
     this.request = null;
-
-    //
-    ScopedContext context = getScopedContext(Scope.REQUEST, false);
-    if (context != null) {
-      context.close();
-    }
   }
 
   public void invoke() throws Exception {
