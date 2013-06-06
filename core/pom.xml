@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>0.7.0-beta9</version>
+    <version>0.7.0-beta10-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-core</artifactId>
-  <version>0.7.0-beta9</version>
+  <version>0.7.0-beta10-SNAPSHOT</version>
 
   <name>Juzu Core</name>
   <description>Where all the magic happens</description>
