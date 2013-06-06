@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package plugin.controller.filter.failure;
+package plugin.controller.requestfilter.failing;
 
-import juzu.View;
+import juzu.Response;
+import juzu.impl.request.Request;
+import juzu.impl.request.RequestFilter;
+
+import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public void index() {
-    throw new RuntimeException();
+public class FailingFilter implements RequestFilter {
+  public FailingFilter() {
+  }
+
+  public void invoke(Request request) {
+    throw new ConcurrentModificationException();
   }
 }

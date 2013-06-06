@@ -16,7 +16,7 @@
 
 @Bindings(@Binding(LifeCycleFilter.class))
 @Application
-package plugin.controller.filter.lifecycle;
+package plugin.controller.executionfilter.lifecycle;
 
 import juzu.Application;
 import juzu.plugin.binding.Binding;

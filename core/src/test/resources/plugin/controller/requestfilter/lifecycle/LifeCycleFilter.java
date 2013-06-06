@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package plugin.controller.filter.lifecycle;
+package plugin.controller.requestfilter.lifecycle;
 
-import juzu.View;
+import juzu.impl.request.Request;
+import juzu.impl.request.RequestFilter;
+import juzu.test.Registry;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public void index() {
+public class LifeCycleFilter implements RequestFilter {
+  public LifeCycleFilter() {
+    Registry.compareAndSet("request.filter.lifecycle", null, "created");
+  }
+
+  public void invoke(Request request) {
+    Registry.compareAndSet("request.filter.lifecycle", "created", "before");
+    request.invoke();
+    Registry.compareAndSet("request.filter.lifecycle", "before", "after");
   }
 }

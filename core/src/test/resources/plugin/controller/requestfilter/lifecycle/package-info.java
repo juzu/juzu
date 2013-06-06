@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package plugin.controller.filter.failing;
+@Bindings(@Binding(LifeCycleFilter.class))
+@Application
+package plugin.controller.requestfilter.lifecycle;
 
-import juzu.Response;
-import juzu.impl.request.Request;
-import juzu.impl.request.RequestFilter;
-
-import java.util.ConcurrentModificationException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FailingFilter implements RequestFilter {
-  public FailingFilter() {
-  }
-
-  public void invoke(Request request) {
-    throw new ConcurrentModificationException();
-  }
-}
+import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

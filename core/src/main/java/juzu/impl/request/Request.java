@@ -44,11 +44,11 @@ import juzu.request.RequestParameter;
 import juzu.request.ResourceContext;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -201,7 +201,7 @@ public class Request implements ScopingContext {
       }
 
       //
-      List<RequestFilter> filters = getFilters();
+      List<RequestFilter> filters = Tools.list(controllerPlugin.getInjectionContext().resolveInstances(RequestFilter.class));
 
       //
       if (index >= 0 && index < filters.size()) {
@@ -240,7 +240,19 @@ public class Request implements ScopingContext {
     }
   }
 
-  public void execute(final Runnable runnable, boolean contextual, boolean async) throws RejectedExecutionException {
+  public Executor getExecutor(final boolean contextual, final boolean async) {
+    final Iterable<ExecutionFilter> filters = controllerPlugin.getInjectionContext().resolveInstances(ExecutionFilter.class);
+    return new Executor() {
+      public void execute(Runnable command) {
+        for (ExecutionFilter filter : filters) {
+          command = filter.onCommand(command, contextual, async);
+        }
+        Request.this.execute(command, contextual, async);
+      }
+    };
+  }
+
+  void execute(final Runnable runnable, boolean contextual, boolean async) throws RejectedExecutionException {
     if (async) {
       if (contextual) {
 
@@ -487,26 +499,5 @@ public class Request implements ScopingContext {
 
   public static Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
     return (Phase.Resource.Dispatch)safeCreateDispatch(method, args);
-  }
-
-  private List<RequestFilter> getFilters() {
-    try {
-      InjectionContext<?, ?> ic = controllerPlugin.getInjectionContext();
-      return getLifecycles(ic);
-    }
-    catch (Exception e) {
-      throw new UnsupportedOperationException("handle me cracefully", e);
-    }
-  }
-
-  // This is done lazyly to avoid circular references issues
-  private <B, I> ArrayList<RequestFilter> getLifecycles(InjectionContext<B, I> manager) throws Exception {
-    ArrayList<RequestFilter> filters = new ArrayList<RequestFilter>();
-    for (B lifeCycleBean : manager.resolveBeans(RequestFilter.class)) {
-      I lifeCycleInstance = manager.create(lifeCycleBean);
-      RequestFilter filter = (RequestFilter)manager.get(lifeCycleBean, lifeCycleInstance);
-      filters.add(filter);
-    }
-    return filters;
   }
 }

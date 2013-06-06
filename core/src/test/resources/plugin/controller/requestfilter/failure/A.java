@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package plugin.controller.filter.failure;
+package plugin.controller.requestfilter.failure;
 
-import juzu.Response;
-import juzu.impl.request.Request;
-import juzu.impl.request.RequestFilter;
+import juzu.View;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FailureFilter implements RequestFilter {
-  public FailureFilter() {
-  }
-
-  public void invoke(Request request) {
-    request.invoke();
-    if (request.getResponse() instanceof Response.Error) {
-      request.setResponse(Response.ok("pass"));
-    }
+public class A {
+  @View
+  public void index() {
+    throw new RuntimeException();
   }
 }

@@ -76,12 +76,8 @@ public abstract class RequestContext {
    * @param contextual propagate the Juzu context or not
    * @param async execute in an another thread or not
    */
-  public Executor getExecutor(final boolean contextual, final boolean async) {
-    return new Executor() {
-      public void execute(Runnable command) {
-        request.execute(command, contextual, async);
-      }
-    };
+  public Executor getExecutor(boolean contextual, boolean async) {
+    return request.getExecutor(contextual, async);
   }
 
   public abstract Phase getPhase();

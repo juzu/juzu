@@ -80,7 +80,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     return descriptor = new ControllersDescriptor(context.getClassLoader(), context.getConfig());
   }
 
-  public InjectionContext getInjectionContext() {
+  public InjectionContext<?, ?> getInjectionContext() {
     return injectionContext;
   }
 

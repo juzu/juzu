@@ -29,16 +29,16 @@ import org.junit.Test;
 import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FilterTestCase extends AbstractInjectTestCase {
+public class RequestFilterTestCase extends AbstractInjectTestCase {
 
-  public FilterTestCase(InjectorProvider di) {
+  public RequestFilterTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testLifeCycle() throws Exception {
     Registry.unset("request.filter.lifecycle");
-    MockApplication<?> app = application("plugin.controller.filter.lifecycle").init();
+    MockApplication<?> app = application("plugin.controller.requestfilter.lifecycle").init();
     Tools.list(app.getLifeCycle().resolveBeans(RequestFilter.class));
     assertEquals("created", Registry.get("request.filter.lifecycle"));
     MockClient client = app.client();
@@ -48,7 +48,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testFailure() throws Exception {
-    MockApplication<?> app = application("plugin.controller.filter.failure").init();
+    MockApplication<?> app = application("plugin.controller.requestfilter.failure").init();
     MockClient client = app.client();
     MockRenderBridge render = client.render();
     assertEquals("pass", render.assertStringResult());
@@ -56,7 +56,7 @@ public class FilterTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testFailing() throws Exception {
-    MockApplication<?> app = application("plugin.controller.filter.failing").init();
+    MockApplication<?> app = application("plugin.controller.requestfilter.failing").init();
     MockClient client = app.client();
     MockRenderBridge render = null;
     try {

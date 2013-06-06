@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package plugin.controller.filter.failing;
+@Bindings(@Binding(FailureFilter.class))
+@Application
+package plugin.controller.requestfilter.failure;
 
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public void index() {
-  }
-}
+import juzu.Application;
+import juzu.plugin.binding.Binding;
+import juzu.plugin.binding.Bindings;

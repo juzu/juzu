@@ -21,6 +21,7 @@ import juzu.impl.inject.ScopeController;
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class InjectionContext<B, I> implements Closeable {
@@ -132,4 +133,50 @@ public abstract class InjectionContext<B, I> implements Closeable {
     };
   }
 
+  public final <T> T resolveInstance(Class<T> beanType) {
+    try {
+      BeanLifeCycle<T> pluginLifeCycle = get(beanType);
+      return pluginLifeCycle != null ? pluginLifeCycle.get() : null;
+    }
+    catch (InvocationTargetException e) {
+      // log.log("Could not retrieve bean of type " + beanType, e.getCause());
+      return null;
+    }
+  }
+
+  public final <T> Iterable<T> resolveInstances(final Class<T> beanType) {
+    return new Iterable<T>() {
+      Iterable<BeanLifeCycle<T>> lifecycles = resolve(beanType);
+      public Iterator<T> iterator() {
+        return new Iterator<T>() {
+          Iterator<BeanLifeCycle<T>> iterator = lifecycles.iterator();
+          T next = null;
+          public boolean hasNext() {
+            while (next == null && iterator.hasNext()) {
+              try {
+                BeanLifeCycle<T> pluginLifeCycle = iterator.next();
+                next = pluginLifeCycle.get();
+              }
+              catch (InvocationTargetException e) {
+                // log.log("Could not retrieve bean of type " + beanType.getName(), e);
+              }
+            }
+            return next != null;
+          }
+          public T next() {
+            if (!hasNext()) {
+              throw new NoSuchElementException();
+            } else {
+              T tmp = next;
+              next = null;
+              return tmp;
+            }
+          }
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
+      }
+    };
+  }
 }
