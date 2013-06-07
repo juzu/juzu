@@ -24,6 +24,7 @@ import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.protocol.portlet.JuzuPortlet;
 import juzu.test.protocol.servlet.JuzuServlet;
 import org.jboss.arquillian.junit.Arquillian;
@@ -159,22 +160,40 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   public static WebArchive createServletDeployment(String applicationName) {
     return createServletDeployment(false, applicationName);
   }
-
+  
+  public static WebArchive createServletDeployment(InjectorProvider injector, String applicationName) {
+    return createServletDeployment(injector, "/", false, applicationName);
+  }
+  
   public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
     return createServletDeployment(RunMode.PROD, asDefault, applicationNames);
   }
-
+  
   public static WebArchive createServletDeployment(String urlPattern, boolean asDefault, String... applicationNames) {
-    return createServletDeployment(RunMode.PROD, urlPattern, asDefault, applicationNames);
+    return createServletDeployment(InjectorProvider.INJECT_GUICE, RunMode.PROD, urlPattern, asDefault, applicationNames);
+  }
+  
+  public static WebArchive createServletDeployment(InjectorProvider injector, String urlPattern, boolean asDefault, String... applicationNames) {
+    return createServletDeployment(injector, RunMode.PROD, urlPattern, asDefault, applicationNames);
   }
 
   public static WebArchive createServletDeployment(
       RunMode runMode,
       boolean asDefault,
       String... applicationNames) {
-    return createServletDeployment(runMode, "/", asDefault, applicationNames);
+    return createServletDeployment(InjectorProvider.INJECT_GUICE, runMode, "/", asDefault, applicationNames);
   }
+  
   public static WebArchive createServletDeployment(
+    InjectorProvider injector,
+    RunMode runMode,
+    boolean asDefault,
+    String... applicationNames) {
+  return createServletDeployment(injector, runMode, "/", asDefault, applicationNames);
+}
+  
+  public static WebArchive createServletDeployment(
+      InjectorProvider injector,
       RunMode runMode,
       String urlPattern,
       boolean asDefault,
@@ -218,6 +237,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
         servlet,
         runMode.getValue(),
         sourcePath,
+        injector.getValue(),
         urlPattern);
 
     // Descriptor
@@ -228,10 +248,18 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public static WebArchive createPortletDeployment(String packageName) {
-    return createPortletDeployment(RunMode.PROD, packageName);
+    return createPortletDeployment(InjectorProvider.INJECT_GUICE, RunMode.PROD, packageName);
   }
-
+  
+  public static WebArchive createPortletDeployment(InjectorProvider injector, String packageName) {
+    return createPortletDeployment(injector, RunMode.PROD, packageName);
+  }
+  
   public static WebArchive createPortletDeployment(RunMode runMode, String packageName) {
+    return createPortletDeployment(InjectorProvider.INJECT_GUICE, runMode, packageName);
+  } 
+
+  public static WebArchive createPortletDeployment(InjectorProvider injector, RunMode runMode, String packageName) {
 
     //
     WebArchive war = createDeployment(asDefault, packageName);
@@ -257,7 +285,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     }
     portlet = String.format(
         portlet,
-        "weld");
+        injector.getValue());
 
     // web.xml descriptor
     String web;
