@@ -19,6 +19,7 @@ import juzu.Response;
 import juzu.View;
 import juzu.impl.bridge.runnable.AbstractRunnableAsyncTestCase;
 import juzu.impl.inject.ScopeController;
+import juzu.impl.request.ContextLifeCycle;
 import juzu.impl.request.Request;
 import juzu.io.AsyncStreamable;
 import juzu.request.RequestContext;
@@ -54,12 +55,14 @@ public class A implements RequestLifeCycle {
 
   @View
   public Response.Content index() throws IOException {
-    final ScopeController controller = Request.getCurrent().getScopeController();
+    final Request request = Request.getCurrent();
+    final ScopeController controller = request.getScopeController();
     AbstractRunnableAsyncTestCase.requestURL = "" + A_.index();
     AbstractRunnableAsyncTestCase.requestDestroyed = AbstractRunnableAsyncTestCase.destroyed.get();
     final AsyncStreamable content = new AsyncStreamable();
     Runnable task = new Runnable() {
       public void run() {
+        ContextLifeCycle lf = request.suspend();
         try {
           Thread.sleep(500);
           AbstractRunnableAsyncTestCase.runnableURL = "" + A_.index();
@@ -70,11 +73,12 @@ public class A implements RequestLifeCycle {
         catch (Exception e) {
           e.printStackTrace();
         } finally {
+          lf.resume();
           content.close();
         }
       }
     };
-    context.getExecutor(false, true).execute(task);
+    context.getExecutor().execute(task);
     return Response.content(200, content);
   }
 }

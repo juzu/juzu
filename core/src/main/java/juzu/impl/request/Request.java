@@ -62,20 +62,23 @@ public class Request implements ScopingContext {
     return context != null ? context.getRequest() : null;
   }
 
-  /** . */
-  private static final ThreadLocal<ContextLifeCycle> current = new ThreadLocal<ContextLifeCycle>();
+  /** The unique static thread local we should use. */
+  static final ThreadLocal<ContextLifeCycle> current = new ThreadLocal<ContextLifeCycle>();
 
   /** . */
-  private final LinkedHashSet<ContextLifeCycle> contextLifeCycles = new LinkedHashSet<ContextLifeCycle>();
+  final LinkedHashSet<ContextLifeCycle> contextLifeCycles = new LinkedHashSet<ContextLifeCycle>();
+
+  /** The controller for this request. */
+  BeanLifeCycle controllerLifeCycle = null;
+
+  /** . */
+  final RequestBridge bridge;
+
+  /** . */
+  final RequestContext context;
 
   /** . */
   private final ControllerPlugin controllerPlugin;
-
-  /** . */
-  private final RequestBridge bridge;
-
-  /** . */
-  private final RequestContext context;
 
   /** . */
   private final Map<String, RequestParameter> parameters;
@@ -85,9 +88,6 @@ public class Request implements ScopingContext {
 
   /** The response. */
   private Response response;
-
-  /** The controller for this request. */
-  private BeanLifeCycle controllerLifeCycle = null;
 
   public Request(
     ControllerPlugin controllerPlugin,
@@ -196,7 +196,7 @@ public class Request implements ScopingContext {
 
       //
       if (set) {
-        current.set(contextLifeCycle = new ContextLifeCycle());
+        current.set(contextLifeCycle = new ContextLifeCycle(this));
         getScopeController().begin(this);
       }
 
@@ -240,121 +240,67 @@ public class Request implements ScopingContext {
     }
   }
 
-  public Executor getExecutor(final boolean contextual, final boolean async) {
+  public Executor getExecutor() {
     final Iterable<ExecutionFilter> filters = controllerPlugin.getInjectionContext().resolveInstances(ExecutionFilter.class);
     return new Executor() {
       public void execute(Runnable command) {
         for (ExecutionFilter filter : filters) {
-          command = filter.onCommand(command, contextual, async);
+          command = filter.onCommand(command);
         }
-        Request.this.execute(command, contextual, async);
+        Request.this.execute(command);
       }
     };
   }
 
-  void execute(final Runnable runnable, boolean contextual, boolean async) throws RejectedExecutionException {
-    if (async) {
-      if (contextual) {
+  private void execute(final Runnable runnable) throws RejectedExecutionException {
+    // Create a new context - we add it here to keep a reference
+    final ContextLifeCycle contextLifeCycle = new ContextLifeCycle(this);
+    contextLifeCycles.add(contextLifeCycle);
 
-        // Create a new context - we add it here to keep a reference
-        final ContextLifeCycle contextLifeCycle = new ContextLifeCycle();
-        contextLifeCycles.add(contextLifeCycle);
-
-        // Our wrapper for cleanup
-        Runnable wrapper = new Runnable() {
-          public void run() {
-            try {
-              getScopeController().begin(Request.this);
-              current.set(contextLifeCycle);
-              runnable.run();
-            }
-            finally {
-              current.set(null);
-              contextLifeCycle.endContextual();
-            }
-          }
-        };
-
-        // In some case execute cannot honour the execution and we should do the cleanup
-        // otherwise it will never occur
-        boolean executed = false;
+    // Our wrapper for cleanup
+    Runnable wrapper = new Runnable() {
+      public void run() {
         try {
-          bridge.execute(wrapper);
-          executed = true;
+          getScopeController().begin(Request.this);
+          current.set(contextLifeCycle);
+          runnable.run();
         }
         finally {
-          if (!executed) {
-            contextLifeCycle.endContextual();
-          }
-        }
-      } else {
-        bridge.execute(runnable);
-      }
-    } else {
-      if (!contextual) {
-        ContextLifeCycle previous = current.get();
-        current.set(null);
-        getScopeController().end();
-        try {
-          safeRun(runnable);
-        }
-        finally {
-          getScopeController().begin(this);
-          current.set(previous);
-        }
-      } else {
-        safeRun(runnable);
-      }
-    }
-  }
-
-  class ContextLifeCycle {
-
-    Request getRequest() {
-      return Request.this;
-    }
-
-    /**
-     * End the current contextual, this method should not throw anything
-     */
-    private void endContextual() {
-
-      // Remove
-      contextLifeCycles.remove(this);
-
-      // Deassociate
-      getScopeController().end();
-
-      // We are done -> cleanup
-      if (contextLifeCycles.isEmpty()) {
-
-        // Dispose controller first
-        if (controllerLifeCycle != null) {
-          controllerLifeCycle.close();
-        }
-
-        // End scopes
-        if (context.getPhase() == Phase.VIEW) {
-          ScopedContext flashScope = bridge.getScopedContext(Scope.FLASH, false);
-          if (flashScope != null) {
-            Tools.safeClose(flashScope);
-          }
-        }
-        ScopedContext requestScope = bridge.getScopedContext(Scope.REQUEST, false);
-        if (requestScope != null) {
-          Tools.safeClose(requestScope);
+          current.set(null);
+          contextLifeCycle.endContextual();
         }
       }
-    }
-  }
+    };
 
-  void safeRun(Runnable runnable) {
+    // In some case execute cannot honour the execution and we should do the cleanup
+    // otherwise it will never occur
+    boolean executed = false;
     try {
-      runnable.run();
+      bridge.execute(wrapper);
+      executed = true;
     }
-    catch (Exception e) {
-      e.printStackTrace();
+    finally {
+      if (!executed) {
+        contextLifeCycle.endContextual();
+      }
     }
+  }
+
+  public ContextLifeCycle suspend() {
+
+    //
+    ContextLifeCycle lifeCycle = current.get();
+    if (lifeCycle == null) {
+      throw new IllegalStateException("No current active request");
+    } else if (lifeCycle.getRequest() != this) {
+      throw new IllegalStateException("Current request is not active");
+    }
+
+    //
+    current.set(null);
+
+    //
+    return lifeCycle;
   }
 
   private <B, I> void dispatch(Request request, Object[] args, InjectionContext<B, I> manager) {

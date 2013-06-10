@@ -48,6 +48,6 @@ public abstract class AbstractRunnableSyncTestCase extends AbstractWebTestCase {
     assertNotSame(requestURL, runnableURL);
     assertEquals("null", runnableURL);
     assertSame(requestObject, runnableObject);
-    assertFalse(runnableActive);
+    assertTrue(runnableActive);
   }
 }

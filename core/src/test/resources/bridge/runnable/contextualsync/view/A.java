@@ -57,7 +57,7 @@ public class A implements RequestLifeCycle {
 
       }
     };
-    context.getExecutor(true, false).execute(task);
+    task.run();
     return Response.ok("pass");
   }
 }

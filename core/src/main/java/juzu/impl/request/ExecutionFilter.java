@@ -26,11 +26,10 @@ public interface ExecutionFilter {
    * Provide the opportunity to wrap a command within a new command. If the filter does not want to
    * perform any task, it can merely return the provided command.
    *
+   *
    * @param command the command to wrap
-   * @param contextual propagate the context or not
-   * @param async async or sync
    * @return the wrapped command
    */
-  Runnable onCommand(Runnable command, boolean contextual, boolean async);
+  Runnable onCommand(Runnable command);
 
 }

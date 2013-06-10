@@ -19,10 +19,7 @@ package plugin.controller.executionfilter.lifecycle;
 import juzu.impl.plugin.controller.ExecutionFilterTestCase;
 import juzu.impl.request.ExecutionFilter;
 import juzu.impl.request.Request;
-import juzu.impl.request.RequestFilter;
 import juzu.test.Registry;
-
-import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LifeCycleFilter implements ExecutionFilter {
@@ -37,7 +34,7 @@ public class LifeCycleFilter implements ExecutionFilter {
     Registry.compareAndSet("request.filter.lifecycle", "before", "after");
   }
 
-  public Runnable onCommand(final Runnable command, boolean contextual, boolean async) {
+  public Runnable onCommand(final Runnable command) {
     ExecutionFilterTestCase.events.add("onCommand");
     return new Runnable() {
       public void run() {

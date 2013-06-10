@@ -48,7 +48,7 @@ public class ExecutionFilterTestCase extends AbstractInjectTestCase {
     Tools.list(app.getLifeCycle().resolveBeans(RequestFilter.class));
     MockClient client = app.client();
     MockRenderBridge render = client.render();
-    assertEquals((Object)Arrays.asList("beforeExecute", "onCommand", "beforeRun", "run", "afterRun", "afterExecute", "hello"), events);
+    assertEquals((Object)Arrays.asList("execute", "onCommand", "beforeRun", "run", "afterRun", "hello"), events);
   }
 
 }

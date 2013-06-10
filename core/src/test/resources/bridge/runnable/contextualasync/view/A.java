@@ -72,7 +72,7 @@ public class A implements RequestLifeCycle {
         }
       }
     };
-    context.getExecutor(true, true).execute(task);
+    context.getExecutor().execute(task);
     return Response.content(200, content);
   }
 }

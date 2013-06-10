@@ -19,7 +19,6 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.impl.bridge.runnable.AbstractRunnableContextualAsyncTestCase;
-import juzu.impl.inject.ScopeController;
 import juzu.impl.request.Request;
 import juzu.io.AsyncStreamable;
 import juzu.request.RequestContext;
@@ -75,7 +74,7 @@ public class A implements RequestLifeCycle {
         }
       }
     };
-    context.getExecutor(true, true).execute(task);
+    context.getExecutor().execute(task);
     return Response.content(200, content);
   }
 }

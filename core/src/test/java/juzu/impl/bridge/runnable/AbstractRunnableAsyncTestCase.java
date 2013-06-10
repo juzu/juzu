@@ -55,11 +55,8 @@ public abstract class AbstractRunnableAsyncTestCase extends AbstractWebTestCase 
     assertNotSame(requestURL, runnableURL);
     assertEquals("null", runnableURL);
     assertFalse(requestDestroyed);
-    assertFalse(runnableActive);
-
-    // This is a bit random-ish as we assume that the 500mn are enough for destroying the
-    // controller bean
-    assertTrue(runnableDestroyed);
+    assertTrue(runnableActive);
+    assertFalse(runnableDestroyed);
     assertTrue(destroyed.get());
   }
 }

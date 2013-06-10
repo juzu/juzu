@@ -257,7 +257,7 @@ public abstract class MockRequestBridge implements RequestBridge {
   }
 
   public void execute(Runnable runnable) throws RejectedExecutionException {
-    throw new RejectedExecutionException();
+    new Thread(runnable).start();
   }
 
   public void end() {

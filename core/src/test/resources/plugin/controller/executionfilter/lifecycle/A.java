@@ -46,10 +46,9 @@ public class A implements RequestLifeCycle {
         ExecutionFilterTestCase.events.add("run");
       }
     }, "hello");
-    Executor executor = context.getExecutor(true, false);
-    ExecutionFilterTestCase.events.add("beforeExecute");
+    Executor executor = context.getExecutor();
+    ExecutionFilterTestCase.events.add("execute");
     executor.execute(task);
-    ExecutionFilterTestCase.events.add("afterExecute");
     String s = task.get();
     ExecutionFilterTestCase.events.add(s);
     return Response.ok("foo");
