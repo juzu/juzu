@@ -23,6 +23,7 @@ import juzu.impl.common.Tools;
 import juzu.request.Phase;
 import juzu.request.RequestParameter;
 
+import java.beans.Introspector;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -119,8 +120,7 @@ public final class Method<P extends Phase> {
                 methodName.startsWith("get") &&
                 beanMethod.getParameterTypes().length == 0 &&
                 beanMethod.getReturnType() != Void.class) {
-              String foo = methodName.substring(3);
-              String name = Character.toLowerCase(methodName.charAt(0)) + foo.substring(1);
+              String name = Introspector.decapitalize(methodName.substring("get".length()));
               if (!set.add(name)) {
                 requiresPrefix = true;
                 break;
