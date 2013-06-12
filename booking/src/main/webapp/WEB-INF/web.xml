@@ -5,7 +5,7 @@
          version="3.0">
   <context-param>
     <param-name>juzu.inject</param-name>
-    <param-value>guice</param-value>
+    <param-value>weld</param-value>
 <!--
     <param-value>spring</param-value>
 -->
