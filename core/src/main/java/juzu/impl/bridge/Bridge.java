@@ -17,45 +17,42 @@
 package juzu.impl.bridge;
 
 import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.impl.common.RunMode;
 import juzu.impl.asset.AssetServer;
-import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.common.Logger;
-import juzu.impl.common.Tools;
-import juzu.impl.plugin.module.Module;
 import juzu.impl.resource.ResourceResolver;
 
 import java.io.Closeable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bridge implements Closeable {
+public abstract class Bridge implements Closeable {
+
+  /** . */
+  public final BridgeContext context;
 
   /** . */
   public final Logger log;
 
   /** . */
-  private final AssetServer server;
+  protected final AssetServer server;
 
   /** . */
-  private final BridgeConfig config;
+  protected final BridgeConfig config;
 
   /** . */
-  private final ReadFileSystem<?> resources;
+  protected final ResourceResolver resolver;
 
-  /** . */
-  private final ResourceResolver resolver;
+  public Bridge(
+      BridgeContext context,
+      Logger log,
+      BridgeConfig config,
+      AssetServer server,
+      ResourceResolver resolver) {
 
-  /** . */
-  public final Module module;
-
-  /** . */
-  public ApplicationLifeCycle<?, ?> application;
-
-  public Bridge(Logger log, Module module, BridgeConfig config, ReadFileSystem<?> resources, AssetServer server, ResourceResolver resolver) {
+    //
+    this.context = context;
     this.log = log;
-    this.module = module;
     this.config = config;
-    this.resources = resources;
     this.server = server;
     this.resolver = resolver;
   }
@@ -68,32 +65,10 @@ public class Bridge implements Closeable {
     return refresh(true);
   }
 
-  public boolean refresh(boolean recompile) throws Exception {
+  public abstract RunMode getRunMode();
 
-    // For now refresh module first
-    module.context.getLifeCycle().refresh(recompile);
+  public abstract boolean refresh(boolean recompile) throws Exception;
 
-    //
-    if (application == null) {
-      application = new ApplicationLifeCycle(
-          log,
-          module.context.getLifeCycle(),
-          config.injectImpl,
-          config.name,
-          resources,
-          server,
-          resolver);
-    }
+  public abstract Application getApplication();
 
-    //
-    return application.refresh();
-  }
-
-  public Application getApplication() {
-    return application.getApplication();
-  }
-
-  public void close() {
-    Tools.safeClose(application);
-  }
 }

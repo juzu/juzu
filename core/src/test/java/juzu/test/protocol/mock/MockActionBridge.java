@@ -21,7 +21,7 @@ import juzu.Response;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.impl.runtime.ApplicationRuntime;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
@@ -33,7 +33,7 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockActionBridge extends MockRequestBridge implements ActionBridge {
 
-  public MockActionBridge(ApplicationLifeCycle<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockActionBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
 

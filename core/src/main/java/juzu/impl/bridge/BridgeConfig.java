@@ -17,7 +17,6 @@
 package juzu.impl.bridge;
 
 import juzu.impl.common.Name;
-import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.Tools;
 
@@ -47,7 +46,7 @@ public class BridgeConfig {
   public final Name name;
 
   /** . */
-  public final Injector injectImpl;
+  public final InjectorProvider injectorProvider;
 
   public static Name getApplicationName(Map<String, String> config) {
     String applicationName = config.get("juzu.app_name");
@@ -61,13 +60,8 @@ public class BridgeConfig {
       implementation = InjectorProvider.INJECT_GUICE;
     } else {
       inject = inject.trim().toLowerCase();
-      if ("weld".equals(inject)) {
-        implementation = InjectorProvider.CDI_WELD;
-      } else if ("spring".equals(inject)) {
-        implementation = InjectorProvider.INJECT_SPRING;
-      } else if ("guice".equals(inject)) {
-        implementation = InjectorProvider.INJECT_GUICE;
-      } else {
+      implementation = InjectorProvider.find(inject);
+      if (implementation == null) {
         throw new Exception("unrecognized inject vendor " + inject);
       }
     }
@@ -76,6 +70,6 @@ public class BridgeConfig {
 
   public BridgeConfig(Map<String, String> config) throws Exception {
     this.name = getApplicationName(config);
-    this.injectImpl = getInjectImplementation(config).get();
+    this.injectorProvider = getInjectImplementation(config);
   }
 }

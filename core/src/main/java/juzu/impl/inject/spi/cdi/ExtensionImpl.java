@@ -17,8 +17,14 @@
 package juzu.impl.inject.spi.cdi;
 
 import juzu.Scope;
+import juzu.impl.plugin.application.Application;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Name;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.common.Tools;
+import juzu.impl.inject.spi.cdi.provided.ProvidedCDIInjector;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
+import juzu.impl.resource.ResourceResolver;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
@@ -26,11 +32,14 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.inject.Singleton;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,14 +51,65 @@ import java.util.List;
 public class ExtensionImpl implements Extension {
 
   /** . */
-  private final CDIContext manager;
+  private CDIContext context;
 
   /** The singletons to shut down. */
-  private List<Bean<?>> singletons;
+  private final List<Bean<?>> singletons;
 
   public ExtensionImpl() {
-    this.manager = CDIContext.boot.get();
+    this.context = CDIContext.boot.get();
     this.singletons = new ArrayList<Bean<?>>();
+  }
+
+  void beforeBeanDiscovery(@Observes BeforeBeanDiscovery event, final BeanManager beanManager) {
+
+    // We are in provided mode
+    if (this.context == null) {
+
+      // This is not really clean : it couples the inject to the application notion
+      // but avoiding that would mean to introduce more complex stuff and so
+      // it's fine for the moment
+
+      try {
+        final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        InputStream in = cl.getResourceAsStream("juzu/config.json");
+        String serializedConfig = Tools.read(in);
+        JSON config = (JSON)JSON.parse(serializedConfig);
+        JSON applications = config.getJSON("application");
+        if (applications.names().size() != 1) {
+          throw new RuntimeException("Was expecting application size to be 1 instead of " + applications);
+        }
+        String packageFQN = applications.names().iterator().next();
+        Name applicationFQN = Name.parse(packageFQN).append("Application");
+        Class<?> clazz = cl.loadClass(applicationFQN.toString());
+        ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
+        // For now we don't resolve anything...
+        ResourceResolver resourceResolver = new ResourceResolver() {
+          public URL resolve(String uri) {
+            return null;
+          }
+        };
+
+        //
+        ProvidedCDIInjector injector = new ProvidedCDIInjector(cl, beanManager, descriptor, resourceResolver);
+
+        // We start the application
+        // it should:
+        // - instantiate the plugins
+        // - bind the beans from the plugins in the container
+        // we rely on the lazy nature of the beans for not really starting...
+        Application application = injector.getApplication();
+        application.start();
+
+        // At this point the application is not really started
+        // we must go through the other CDI phases for effectively registering
+        // the beans in the container
+        this.context = (CDIContext)application.getInjectionContext();
+      }
+      catch (Exception e) {
+        throw new UnsupportedOperationException(e);
+      }
+    }
   }
 
   <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat) {
@@ -58,9 +118,9 @@ public class ExtensionImpl implements Extension {
     Class<T> type = annotatedType.getJavaClass();
 
     // Determine if bean should be processed
-    boolean veto = !manager.filter.accept(type);
+    boolean veto = !context.filter.accept(type);
     if (!veto) {
-      for (AbstractBean boundBean : manager.boundBeans) {
+      for (AbstractBean boundBean : context.injector.boundBeans) {
         Class<?> beanType = boundBean.getBeanClass();
         if (beanType.isAssignableFrom(type)) {
           veto = true;
@@ -76,20 +136,17 @@ public class ExtensionImpl implements Extension {
   }
 
   void afterBeanDiscovery(@Observes AfterBeanDiscovery event, BeanManager beanManager) {
-    Container container = Container.boot.get();
-
-    //
-    for (Scope scope : container.scopes) {
+    for (Scope scope : context.injector.scopes) {
       if (!scope.isBuiltIn()) {
-        event.addContext(new ContextImpl(container.scopeController, scope, scope.getAnnotationType()));
+        event.addContext(new ContextImpl(context.injector.scopeController, scope, scope.getAnnotationType()));
       }
     }
 
     // Add the manager
-    event.addBean(new SingletonBean(InjectionContext.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), manager));
+    event.addBean(new SingletonBean(InjectionContext.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), context));
 
     // Add bound beans
-    for (AbstractBean bean : manager.boundBeans) {
+    for (AbstractBean bean : context.injector.boundBeans) {
       bean.register(beanManager);
       event.addBean(bean);
     }
@@ -97,7 +154,7 @@ public class ExtensionImpl implements Extension {
 
   void processBean(@Observes ProcessBean event, BeanManager beanManager) {
     Bean bean = event.getBean();
-    manager.beans.add(bean);
+    context.beans.add(bean);
 
     //
     if (bean.getScope() == Singleton.class) {

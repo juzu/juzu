@@ -33,22 +33,13 @@ import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> {
+public abstract class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> {
 
   /** . */
-  static final ThreadLocal<CDIContext> boot = new ThreadLocal<CDIContext>();
+  public static final ThreadLocal<CDIContext> boot = new ThreadLocal<CDIContext>();
 
   /** . */
-  private final Container container;
-
-  /** . */
-  private BeanManager manager;
-
-  /** . */
-  final ArrayList<AbstractBean> boundBeans;
-
-  /** . */
-  final ClassLoader classLoader;
+  final CDIInjector injector;
 
   /** . */
   final ArrayList<Bean> beans;
@@ -56,48 +47,29 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
   /** . */
   final Filter<Class<?>> filter;
 
-  /** . */
-  final ScopeController scopeController;
-
-  public CDIContext(
-      ScopeController scopeController,
-      Container container,
-      Filter<Class<?>> filter,
-      ArrayList<AbstractBean> boundBeans) throws Exception {
-    this.boundBeans = boundBeans;
+  public CDIContext(CDIInjector injector, Filter<Class<?>> filter) throws Exception {
     this.beans = new ArrayList<Bean>();
     this.filter = filter;
 
     //
-    boot.set(this);
-    try {
-      container.start();
-    }
-    finally {
-      boot.set(null);
-    }
-
-    //
-    this.scopeController = scopeController;
-    this.classLoader = container.getClassLoader();
-    this.manager = container.getManager();
-    this.container = container;
+    this.injector = injector;
   }
 
   @Override
   public ScopeController getScopeController() {
-    return scopeController;
+    return injector.scopeController;
   }
 
   public InjectorProvider getProvider() {
     return InjectorProvider.CDI_WELD;
   }
 
-  public ClassLoader getClassLoader() {
-    return classLoader;
-  }
+  public abstract ClassLoader getClassLoader();
+
+  protected abstract BeanManager getBeanManager();
 
   public Bean<?> resolveBean(Class<?> type) {
+    BeanManager manager = getBeanManager();
     Set<Bean<?>> beans = manager.getBeans(type);
     switch (beans.size()) {
       case 0:
@@ -111,8 +83,7 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
 
   public Iterable<Bean<?>> resolveBeans(Class<?> type) {
     List<Bean<?>> resolved = Collections.emptyList();
-    for (int i = 0;i < beans.size();i++) {
-      Bean bean = beans.get(i);
+    for (Bean bean : beans) {
       if (type.isAssignableFrom(bean.getBeanClass())) {
         if (resolved.isEmpty()) {
           resolved = new ArrayList<Bean<?>>();
@@ -120,10 +91,12 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
         resolved.add(bean);
       }
     }
+    BeanManager manager = getBeanManager();
     return manager.getBeans(type);
   }
 
   public Bean<?> resolveBean(String name) {
+    BeanManager manager = getBeanManager();
     Set<Bean<?>> beans = manager.getBeans(name);
     switch (beans.size()) {
       case 0:
@@ -136,6 +109,7 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
   }
 
   public CreationalContext<?> create(Bean<?> bean) {
+    BeanManager manager = getBeanManager();
     return manager.createCreationalContext(bean);
   }
 
@@ -145,6 +119,7 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
 
   public Object get(Bean<?> bean, CreationalContext<?> instance) throws InvocationTargetException {
     try {
+      BeanManager manager = getBeanManager();
       return manager.getReference(bean, bean.getBeanClass(), instance);
     }
     catch (CreationException e) {
@@ -157,6 +132,5 @@ public class CDIContext extends InjectionContext<Bean<?>, CreationalContext<?>> 
   }
 
   public void close() {
-    container.stop();
   }
 }

@@ -24,13 +24,9 @@ import juzu.impl.resource.ResourceResolver;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ServiceLoader;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Module {
-
-  /** . */
-  final AtomicInteger leases;
 
   /** . */
   public final ModuleContext context;
@@ -52,7 +48,7 @@ public class Module {
     //
     final ResourceResolver classPathResolver = new ResourceResolver() {
       public URL resolve(String uri) {
-        return context.getLifeCycle().getClassLoader().getResource(uri.substring(1));
+        return context.getClassLoader().getResource(uri.substring(1));
       }
     };
 
@@ -88,7 +84,6 @@ public class Module {
     this.plugins = plugins;
     this.descriptors = descriptors;
     this.context = context;
-    this.leases = new AtomicInteger();
   }
 
   public ModulePlugin getPlugin(String name) {
@@ -102,19 +97,5 @@ public class Module {
       }
     }
     return null;
-  }
-
-  public synchronized void lease() {
-    leases.incrementAndGet();
-  }
-
-
-  /**
-   * Return true if the module has no references pointing to it.
-   *
-   * @return true when the module is not referenced anymore
-   */
-  public synchronized boolean release() {
-    return leases.decrementAndGet() == 0;
   }
 }

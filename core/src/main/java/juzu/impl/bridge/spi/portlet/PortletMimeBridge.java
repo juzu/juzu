@@ -21,7 +21,6 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.Formatting;
 import juzu.io.Stream;
-import juzu.io.Streams;
 
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
@@ -64,7 +63,7 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
       }
     } else if (response instanceof Response.Error) {
       Response.Error error = (Response.Error)response;
-      if (bridge.module.context.getRunMode().getPrettyFail()) {
+      if (bridge.getRunMode().getPrettyFail()) {
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();
         writer.append("<div class=\"juzu\">");

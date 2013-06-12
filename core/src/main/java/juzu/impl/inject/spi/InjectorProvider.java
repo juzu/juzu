@@ -16,32 +16,49 @@
 
 package juzu.impl.inject.spi;
 
-import juzu.impl.inject.spi.cdi.CDIInjector;
+import juzu.impl.inject.spi.cdi.provided.ProvidedCDIInjector;
+import juzu.impl.inject.spi.cdi.weld.WeldInjector;
 import juzu.impl.inject.spi.guice.GuiceInjector;
 import juzu.impl.inject.spi.spring.SpringInjector;
 
-import javax.inject.Provider;
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public enum InjectorProvider implements Provider<Injector> {
+public enum InjectorProvider {
 
   CDI_WELD("weld") {
-    public Injector get() {
-      return new CDIInjector();
+    public Injector get(boolean provided) {
+      if (provided) {
+        ClassLoader key = Thread.currentThread().getContextClassLoader();
+        return ProvidedCDIInjector.get(key);
+      } else {
+        return new WeldInjector();
+      }
     }
   },
 
   INJECT_GUICE("guice") {
-    public Injector get() {
-      return new GuiceInjector();
+    public Injector get(boolean provided) {
+      if (provided) {
+        throw new UnsupportedOperationException("No provided mode for Guice");
+      } else {
+        return new GuiceInjector();
+      }
     }
   },
 
   INJECT_SPRING("spring") {
-    public Injector get() {
-      return new SpringInjector();
+    public Injector get(boolean provided) {
+      if (provided) {
+        throw new UnsupportedOperationException("No provided mode for Spring");
+      } else {
+        return new SpringInjector();
+      }
     }
   };
+
+  public abstract Injector get(boolean provided);
 
   /** . */
   final String value;
@@ -52,5 +69,18 @@ public enum InjectorProvider implements Provider<Injector> {
 
   public String getValue() {
     return value;
+  }
+
+  /** . */
+  private static final Map<String, InjectorProvider> LOOKUP = new HashMap<String, InjectorProvider>();
+
+  static {
+    for (InjectorProvider injectorProvider : values()) {
+      LOOKUP.put(injectorProvider.getValue(), injectorProvider);
+    }
+  }
+
+  public static InjectorProvider find(String value) {
+    return LOOKUP.get(value);
   }
 }

@@ -21,9 +21,12 @@ import juzu.PropertyType;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.bridge.BridgeContext;
+import juzu.impl.bridge.module.ApplicationBridge;
 import juzu.impl.bridge.spi.portlet.PortletEventBridge;
 import juzu.impl.bridge.spi.portlet.PortletLogger;
-import juzu.impl.bridge.spi.portlet.PortletModuleContext;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.bridge.spi.portlet.PortletActionBridge;
 import juzu.impl.bridge.spi.portlet.PortletRenderBridge;
@@ -31,10 +34,9 @@ import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
-import juzu.impl.plugin.module.Module;
-import juzu.impl.plugin.module.ModuleContext;
 import juzu.impl.request.Method;
 import juzu.impl.resource.ResourceResolver;
 import juzu.request.Phase;
@@ -55,6 +57,7 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceServingPortlet;
 import javax.portlet.WindowState;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -79,9 +82,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
 
   /** . */
   private PortletConfig config;
-
-  /** . */
-  private Module module;
 
   public void init(final PortletConfig config) throws PortletException {
 
@@ -139,24 +139,50 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     }
 
     //
-    Module module = (Module)config.getPortletContext().getAttribute("juzu.module");
-    if (module == null) {
-      try {
-        ModuleContext moduleContext = new PortletModuleContext(config.getPortletContext(), Thread.currentThread().getContextClassLoader(), log);
-        config.getPortletContext().setAttribute("juzu.module", module = new Module(moduleContext));
+    final BridgeContext bridgeContext = new BridgeContext() {
+      final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      final ResourceResolver resolver = new ResourceResolver() {
+        public URL resolve(String uri) {
+          try {
+            return context.getResource(uri);
+          }
+          catch (MalformedURLException e) {
+            return null;
+          }
+        }
+      };
+      public ReadFileSystem<?> getResourcePath() {
+        return WarFileSystem.create(context, "/WEB-INF/");
       }
-      catch (Exception e) {
-        throw new PortletException(e);
+      public ReadFileSystem<?> getSourcePath() {
+        String srcPath = context.getInitParameter("juzu.src_path");
+        return srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(context, "/WEB-INF/src/");
       }
-    }
-    module.lease();
+      public ReadFileSystem<?> getClassPath() {
+        return WarFileSystem.create(context, "/WEB-INF/classes/");
+      }
+      public ClassLoader getClassLoader() {
+        return classLoader;
+      }
+      public String getInitParameter(String name) {
+        return context.getInitParameter(name);
+      }
+      public ResourceResolver getResolver() {
+        return resolver;
+      }
+      public Object getAttribute(String key) {
+        return context.getAttribute(key);
+      }
+      public void setAttribute(String key, Object value) {
+        context.setAttribute(key, value);
+      }
+    };
 
     //
-    Bridge bridge = new Bridge(
+    Bridge bridge = new ApplicationBridge(
+        bridgeContext,
         log,
-        module,
         bridgeConfig,
-        WarFileSystem.create(config.getPortletContext(), "/WEB-INF/"),
         server,
         new ResourceResolver() {
           public URL resolve(String uri) {
@@ -173,7 +199,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     this.config = config;
     this.bridge = bridge;
     this.context = config.getPortletContext();
-    this.module = module;
   }
 
   /**
@@ -209,7 +234,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   }
 
   public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException {
-    ControllerResolver<Method> resolver = bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getResolver();
+    ControllerResolver<Method> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getResolver();
     List<Method> methods = resolver.resolveMethods(Phase.EVENT, null, request.getParameterMap().keySet());
 
     //
@@ -313,12 +338,12 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     boolean assetRequest = "assets".equals(req.getParameter("juzu.request"));
 
     //
-    if (assetRequest && !module.context.getRunMode().isStatic()) {
+    if (assetRequest && !bridge.getRunMode().isStatic()) {
       String path = req.getResourceID();
-
+      AssetPlugin assetPlugin = (AssetPlugin)bridge.getApplication().getPlugin("asset");
       String contentType;
       InputStream in;
-      URL url = bridge.application.getScriptManager().resolveAsset(path);
+      URL url = assetPlugin.getScriptManager().resolveAsset(path);
       if (url != null) {
         contentType = "text/javascript";
         in = url.openStream();
@@ -327,10 +352,10 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
         in = null;
       }
       if (in == null) {
-        url = bridge.application.getStylesheetManager().resolveAsset(path);
+        url = assetPlugin.getStylesheetManager().resolveAsset(path);
         if (url != null) {
           contentType = "text/css";
-          in = bridge.application.getApplication().getClassLoader().getResourceAsStream(path.substring(1));
+          in = bridge.getApplication().getClassLoader().getResourceAsStream(path.substring(1));
         }
       }
       if (in != null) {

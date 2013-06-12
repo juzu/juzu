@@ -29,7 +29,7 @@ import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.impl.runtime.ApplicationRuntime;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.inject.Scoped;
@@ -54,7 +54,7 @@ import java.util.concurrent.RejectedExecutionException;
 public abstract class MockRequestBridge implements RequestBridge {
 
   /** . */
-  protected final ApplicationLifeCycle<?, ?> application;
+  protected final ApplicationRuntime<?, ?> application;
 
   /** . */
   protected final MockClient client;
@@ -86,7 +86,7 @@ public abstract class MockRequestBridge implements RequestBridge {
   /** . */
   protected Response response;
 
-  public MockRequestBridge(ApplicationLifeCycle<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockRequestBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
 
     //
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();

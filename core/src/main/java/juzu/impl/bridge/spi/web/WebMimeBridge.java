@@ -23,6 +23,7 @@ import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.ViewStreamable;
 import juzu.impl.bridge.spi.MimeBridge;
+import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.request.Method;
 import juzu.request.RequestParameter;
 
@@ -51,18 +52,19 @@ public abstract class WebMimeBridge extends WebRequestBridge implements MimeBrid
 
       //
       PropertyMap properties = response.getProperties();
+      AssetPlugin assetPlugin = (AssetPlugin)handler.getBridge().getApplication().getPlugin("asset");
 
       // Resolve stylesheets Asset -> Asset.Value
       Iterable<String> stylesheets = properties.getValues(PropertyType.STYLESHEET);
       if (stylesheets != null) {
-        Iterable<Asset> stylesheetValues =  handler.getBridge().application.getStylesheetManager().resolveAssets(stylesheets);
+        Iterable<Asset> stylesheetValues =  assetPlugin.getStylesheetManager().resolveAssets(stylesheets);
         properties.setValues(ViewStreamable.STYLESHEET_ASSET, stylesheetValues);
       }
 
       // Resolve scripts Asset -> Asset.Value
       Iterable<String> scripts = properties.getValues(PropertyType.SCRIPT);
       if (scripts != null) {
-        Iterable<Asset> scriptValues = handler.getBridge().application.getScriptManager().resolveAssets(scripts);
+        Iterable<Asset> scriptValues = assetPlugin.getScriptManager().resolveAssets(scripts);
         properties.setValues(ViewStreamable.SCRIPT_ASSET, scriptValues);
       }
 

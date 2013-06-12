@@ -21,12 +21,12 @@ import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.impl.runtime.ApplicationRuntime;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.plugin.module.ModuleLifeCycle;
+import juzu.impl.runtime.ModuleRuntime;
 import juzu.impl.resource.ResourceResolver;
 import juzu.request.ApplicationContext;
 
@@ -52,7 +52,7 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
   final ClassLoader classLoader;
 
   /** . */
-  private final ApplicationLifeCycle<P, ?> lifeCycle;
+  private final ApplicationRuntime<P, ?> lifeCycle;
 
   /** . */
   private final ReadWriteFileSystem<P> classes;
@@ -64,13 +64,13 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
       Name name) throws Exception {
 
     //
-    ModuleLifeCycle<P> module = new ModuleLifeCycle.Static<P>(Logger.SYSTEM, classLoader, classes);
+    ModuleRuntime<P> module = new ModuleRuntime.Static<P>(Logger.SYSTEM, classLoader, classes);
 
     //
-    ApplicationLifeCycle<P, P> lifeCycle = new ApplicationLifeCycle<P, P>(
+    ApplicationRuntime<P, P> lifeCycle = new ApplicationRuntime<P, P>(
         Logger.SYSTEM,
         module,
-        implementation,
+        implementation.get(false),
         name,
         classes,
         null,
@@ -95,7 +95,7 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
     return this;
   }
 
-  public ApplicationLifeCycle<P, ?> getLifeCycle() {
+  public ApplicationRuntime<P, ?> getLifeCycle() {
     return lifeCycle;
   }
 

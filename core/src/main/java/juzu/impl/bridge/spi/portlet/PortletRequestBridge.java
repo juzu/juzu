@@ -128,7 +128,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
     //
     Phase phase = getPhase();
-    ControllerResolver<Method> resolver = bridge.application.resolveBean(ControllerPlugin.class).getResolver();
+    ControllerResolver<Method> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver();
     Method<?> target;
     if (methodId != null) {
       target = resolver.resolveMethod(phase, methodId, parameters.keySet());
@@ -284,7 +284,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   public void invoke() throws Exception {
     try {
-      bridge.application.resolveBean(ControllerPlugin.class).invoke(this);
+      bridge.getApplication().resolveBean(ControllerPlugin.class).invoke(this);
     } finally {
       Tools.safeClose(this);
     }
@@ -355,7 +355,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           MimeResponse mimeResp = (MimeResponse)resp;
 
           //
-          Method method = bridge.application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+          Method method = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
           //
           BaseURL url;

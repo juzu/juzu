@@ -22,19 +22,16 @@ package juzu.bridge.vertx;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
-import juzu.impl.common.Content;
-import juzu.impl.common.JSON;
+import juzu.impl.bridge.BridgeContext;
+import juzu.impl.bridge.module.ApplicationBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
-import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.plugin.module.Module;
-import juzu.impl.plugin.module.ModuleContext;
-import juzu.impl.plugin.module.ModuleLifeCycle;
 import juzu.impl.resource.ClassLoaderResolver;
 import juzu.impl.resource.ResourceResolver;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -51,15 +48,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpCookie;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Application {
@@ -80,9 +73,6 @@ public class Application {
   private final Name main;
 
   /** . */
-  private ModuleLifeCycle.Dynamic<File> lifeCycle;
-
-  /** . */
   final int port;
 
   Application(
@@ -99,7 +89,6 @@ public class Application {
     this.loader = loader;
     this.sourcePath = sourcePath;
     this.main = main;
-    this.lifeCycle = null;
     this.port = port;
   }
 
@@ -119,20 +108,8 @@ public class Application {
     };
 
     //
-    lifeCycle = new ModuleLifeCycle.Dynamic<File>(
-        log,
-        loader,
-        sourcePath
-    );
-
-    //
-
-    //
     HttpServer server = vertx.createHttpServer().requestHandler(new Handler<HttpServerRequest>() {
       juzu.impl.bridge.spi.web.Handler h;
-
-      /** . */
-      Module module = null;
 
       /** . */
       Bridge bridge = null;
@@ -158,10 +135,8 @@ public class Application {
           try {
 
             //
-            lifeCycle.refresh(true);
-
-            //
             final ResourceResolver r = new ClassLoaderResolver(loader);
+/*
             Module module = new Module(new ModuleContext() {
               public ClassLoader getClassLoader() {
                 return loader;
@@ -181,7 +156,7 @@ public class Application {
                 throw new UnsupportedOperationException("?");
               }
 
-              public ModuleLifeCycle<?> getLifeCycle() {
+              public ModuleRuntime<?> getLifeCycle() {
                 return lifeCycle;
               }
 
@@ -189,6 +164,7 @@ public class Application {
                 return RunMode.DEV;
               }
             });
+*/
 
             //
             Map<String, String> cfg = new HashMap<String, String>();
@@ -196,14 +172,75 @@ public class Application {
             cfg.put(BridgeConfig.APP_NAME, main.toString());
             BridgeConfig config = new BridgeConfig(cfg);
 
-            // Bind vertx singleton
-            config.injectImpl.bindBean(Vertx.class, null, vertx);
+            //
+            BridgeContext context = new BridgeContext() {
+
+              /** . */
+              final ResourceResolver resolver = new ClassLoaderResolver(loader);
+
+              /** . */
+              final HashMap<String, Object> attributes = new HashMap<String, Object>();
+
+              public ClassLoader getClassLoader() {
+                return loader;
+              }
+
+              public String getInitParameter(String name) {
+                if ("juzu.run_mode".equals(name)) {
+                  return "live";
+                }
+                else {
+                  return null;
+                }
+              }
+
+              public ResourceResolver getResolver() {
+                return resolver;
+              }
+
+              public Object getAttribute(String key) {
+                return attributes.get(key);
+              }
+
+              public void setAttribute(String key, Object value) {
+                if (value != null) {
+                  attributes.put(key, value);
+                }
+                else {
+                  attributes.remove(key);
+                }
+              }
+
+              public ReadFileSystem<?> getClassPath() {
+                throw new UnsupportedOperationException("Not supported");
+              }
+
+              public ReadFileSystem<?> getSourcePath() {
+                return sourcePath;
+              }
+
+              public ReadFileSystem<?> getResourcePath() {
+                return sourcePath;
+              }
+            };
 
             //
-            Bridge bridge = new Bridge(log, module, config, lifeCycle.getClasses(), null, new ClassLoaderResolver(lifeCycle.getClassLoader()));
+            Bridge bridge = new ApplicationBridge(
+                context,
+                log,
+                config,
+                null,
+                r) {
+              @Override
+              protected Injector createInjector(InjectorProvider provider) {
+                Injector injector = super.createInjector(provider);
+                // Bind vertx singleton
+                injector.bindBean(Vertx.class, null, vertx);
+                return injector;
+              }
+            };
 
             //
-            this.module = module;
             this.bridge = bridge;
           }
           catch (CompilationException e) {
@@ -242,6 +279,7 @@ public class Application {
           return;
         }
         catch (Exception e) {
+          e.printStackTrace();
           try {
             ctx.send(Response.error(e), true);
           }
@@ -253,7 +291,7 @@ public class Application {
         //
         boolean served = false;
         HttpServerResponse response = ctx.req.response;
-        Iterable<ResourceResolver> resolvers = bridge.application.resolveBeans(ResourceResolver.class);
+        Iterable<ResourceResolver> resolvers = bridge.getApplication().resolveBeans(ResourceResolver.class);
         for (Iterator<ResourceResolver> i = resolvers.iterator();i.hasNext() && !served;) {
           ResourceResolver resolver = i.next();
           URL assetURL = resolver.resolve(ctx.req.path);
@@ -307,6 +345,6 @@ public class Application {
   }
 
   public void stop() throws Exception {
-    lifeCycle = null;
+//    lifeCycle = null;
   }
 }

@@ -24,6 +24,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.bridge.spi.RenderBridge;
+import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.io.Stream;
 import juzu.io.Streams;
 import juzu.request.Phase;
@@ -115,8 +116,11 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       }
 
       //
+      AssetPlugin assetPlugin = (AssetPlugin)bridge.getApplication().getPlugin("asset");
+
+      //
       if (stylesheetsProp != null) {
-        Iterable<Asset> stylesheets = bridge.application.getStylesheetManager().resolveAssets(stylesheetsProp);
+        Iterable<Asset> stylesheets = assetPlugin.getStylesheetManager().resolveAssets(stylesheetsProp);
         for (Asset stylesheet : stylesheets) {
           int pos = stylesheet.getURI().lastIndexOf('.');
           String ext = pos == -1 ? "css" : stylesheet.getURI().substring(pos + 1);
@@ -131,7 +135,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
       //
       if (scriptsProp != null) {
-        Iterable<Asset> scripts = bridge.application.getScriptManager().resolveAssets(scriptsProp);
+        Iterable<Asset> scripts = assetPlugin.getScriptManager().resolveAssets(scriptsProp);
         for (Asset script : scripts) {
           String url = getAssetURL(script);
           Element elt = this.resp.createElement("script");
@@ -139,7 +143,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           elt.setAttribute("src", url);
           // This comment is needed for liferay to make the script pass the minifier
           // it forces to have a <script></script> tag
-          String data = bridge.application.getName() + " script ";
+          String data = bridge.getApplication().getName() + " script ";
           Comment comment = elt.getOwnerDocument().createComment(data);
           elt.appendChild(comment);
           resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
@@ -163,7 +167,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
         url = sb.toString();
         break;
       case APPLICATION:
-        if (bridge.module.context.getRunMode().isStatic()) {
+        if (bridge.getRunMode().isStatic()) {
           sb = new StringBuilder();
           sb.append(req.getContextPath()).append("/assets");
           if (!uri.startsWith("/")) {

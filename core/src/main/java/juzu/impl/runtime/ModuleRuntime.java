@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.module;
+package juzu.impl.runtime;
 
 import juzu.impl.common.DevClassLoader;
 import juzu.impl.common.Logger;
@@ -37,12 +37,12 @@ import java.net.URLClassLoader;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class ModuleLifeCycle<C> {
+public abstract class ModuleRuntime<C> {
 
   /** . */
   protected final Logger logger;
 
-  protected ModuleLifeCycle(Logger logger) {
+  protected ModuleRuntime(Logger logger) {
     this.logger = logger;
   }
 
@@ -70,7 +70,7 @@ public abstract class ModuleLifeCycle<C> {
    */
   public abstract ReadFileSystem<C> getClasses();
 
-  public static class Dynamic<S> extends ModuleLifeCycle<String[]> {
+  public static class Dynamic<S> extends ModuleRuntime<String[]> {
 
     /** . */
     private final ClassLoader baseClassLoader;
@@ -179,7 +179,7 @@ public abstract class ModuleLifeCycle<C> {
     }
   }
 
-  public static class Static<P> extends ModuleLifeCycle<P> {
+  public static class Static<P> extends ModuleRuntime<P> {
 
     /** . */
     private final ClassLoader classLoader;

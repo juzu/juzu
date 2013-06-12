@@ -20,7 +20,7 @@ import juzu.Response;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.impl.runtime.ApplicationRuntime;
 import juzu.io.Streams;
 import juzu.io.BinaryOutputStream;
 import juzu.test.AbstractTestCase;
@@ -33,7 +33,7 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge {
 
-  public MockMimeBridge(ApplicationLifeCycle<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockMimeBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
     super(application, client, target, parameters);
   }
 

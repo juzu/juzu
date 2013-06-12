@@ -19,15 +19,22 @@ package juzu.impl.bridge.spi.servlet;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
+import juzu.impl.bridge.BridgeContext;
+import juzu.impl.bridge.module.ApplicationBridge;
+import juzu.impl.bridge.provided.ProvidedBridge;
 import juzu.impl.bridge.spi.web.Handler;
 import juzu.impl.common.Tools;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.compiler.CompilationException;
-import juzu.impl.plugin.module.Module;
-import juzu.impl.plugin.module.ModuleContext;
+import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.war.WarFileSystem;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.resource.ResourceResolver;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -35,6 +42,7 @@ import javax.servlet.ServletRegistration;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,9 +53,6 @@ public class ServletBridge extends HttpServlet {
 
   /** The resource bundle name. */
   public static final String BUNDLE_NAME = "juzu.resource_bundle";
-
-  /** . */
-  Module module;
 
   /** . */
   Logger log;
@@ -164,48 +169,83 @@ public class ServletBridge extends HttpServlet {
   }
 
   private void refresh() throws Exception {
+    if (bridge == null) {
 
-    //
-    if (module == null) {
-      module = (Module)getServletContext().getAttribute("juzu.module");
-      if (module == null) {
-        try {
-          ModuleContext moduleContext = new ServletModuleContext(getServletContext(), log);
-          getServletContext().setAttribute("juzu.module", module = new Module(moduleContext));
+      // Get asset server
+      AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
+      if (server == null) {
+        server = new AssetServer();
+        getServletContext().setAttribute("asset.server", server);
+      }
+
+      //
+      BridgeContext bridgeContext = new BridgeContext() {
+        final ResourceResolver resolver = new ResourceResolver() {
+          public URL resolve(String uri) {
+            try {
+              return getServletContext().getResource(uri);
+            }
+            catch (MalformedURLException e) {
+              return null;
+            }
+          }
+        };
+        public ReadFileSystem<?> getResourcePath() {
+          return WarFileSystem.create(getServletContext(), "/WEB-INF/");
         }
-        catch (Exception e) {
-          throw wrap(e);
+        public ReadFileSystem<?> getClassPath() {
+          return WarFileSystem.create(getServletContext(), "/WEB-INF/classes/");
+        }
+        public ReadFileSystem<?> getSourcePath() {
+          String srcPath = getServletContext().getInitParameter("juzu.src_path");
+          return srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(getServletContext(), "/WEB-INF/src/");
+        }
+        public ClassLoader getClassLoader() {
+          return getServletContext().getClassLoader();
+        }
+        public String getInitParameter(String name) {
+          return getServletContext().getInitParameter(name);
+        }
+        public ResourceResolver getResolver() {
+          return resolver;
+        }
+        public Object getAttribute(String key) {
+          return getServletContext().getAttribute(key);
+        }
+        public void setAttribute(String key, Object value) {
+          getServletContext().setAttribute(key, value);
+        }
+      };
+
+      //
+      boolean provided = false;
+      if (config.injectorProvider == InjectorProvider.CDI_WELD) {
+        try {
+          provided = new InitialContext().lookup("java:comp/BeanManager") != null;
+        }
+        catch (NamingException e) {
+          // Not found
         }
       }
-      module.lease();
-    }
 
-    // Get asset server
-    AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
-    if (server == null) {
-      server = new AssetServer();
-      getServletContext().setAttribute("asset.server", server);
-    }
+      //
+      ResourceResolver resolver = new ResourceResolver() {
+        public URL resolve(String uri) {
+          try {
+            return getServletConfig().getServletContext().getResource(uri);
+          }
+          catch (MalformedURLException e) {
+            return null;
+          }
+        }
+      };
 
-    //
-    if (bridge == null) {
       // Create and configure bridge
-      bridge = new Bridge(
-          log,
-          module,
-          this.config,
-          module.context.getResourcePath(),
-          server,
-          new ResourceResolver() {
-            public URL resolve(String uri) {
-              try {
-                return getServletConfig().getServletContext().getResource(uri);
-              }
-              catch (MalformedURLException e) {
-                return null;
-              }
-            }
-          });
+      if (provided) {
+        bridge = new ProvidedBridge(bridgeContext, log, this.config, server, resolver);
+      } else {
+        bridge = new ApplicationBridge(bridgeContext, log, this.config, server, resolver);
+      }
     }
 
     //
@@ -267,11 +307,13 @@ public class ServletBridge extends HttpServlet {
 
   @Override
   public void destroy() {
+/*
     if (module != null) {
       if (module.release()) {
         // Should dispose module (todo later)
       }
     }
+*/
     if (handler != null) {
       Tools.safeClose(handler);
       this.handler = null;

@@ -13,29 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.bridge;
 
-package juzu.impl.plugin.module;
-
-import juzu.impl.common.JSON;
-import juzu.impl.common.RunMode;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.resource.ResourceResolver;
 
-/**
- * The context of a module.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public interface ModuleContext {
+/** @author Julien Viet */
+public interface BridgeContext {
 
-  ClassLoader getClassLoader();
+  ReadFileSystem<?> getClassPath();
 
-  JSON getConfig() throws Exception;
-
-  ResourceResolver getServerResolver();
+  ReadFileSystem<?> getSourcePath();
 
   ReadFileSystem<?> getResourcePath();
 
-  RunMode getRunMode();
+  ClassLoader getClassLoader();
+
+  String getInitParameter(String name);
+
+  ResourceResolver getResolver();
+
+  Object getAttribute(String key);
+
+  void setAttribute(String key, Object value);
 
 }

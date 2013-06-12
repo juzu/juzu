@@ -16,9 +16,8 @@
 
 package juzu.impl.asset;
 
-import juzu.impl.plugin.application.ApplicationLifeCycle;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.resource.ResourceResolver;
 
 import javax.servlet.ServletContext;
@@ -33,22 +32,22 @@ import java.util.HashSet;
 public class AssetServer {
 
   /** . */
-  HashSet<ApplicationLifeCycle<?, ?>> runtimes = new HashSet<ApplicationLifeCycle<?, ?>>();
+  HashSet<Application> runtimes = new HashSet<Application>();
 
   public AssetServer() {
   }
 
-  public void register(ApplicationLifeCycle<?, ?> assetManager) {
+  public void register(Application assetManager) {
     runtimes.add(assetManager);
   }
 
-  public void unregister(ApplicationLifeCycle<?, ?> assetManager) {
+  public void unregister(Application assetManager) {
     runtimes.remove(assetManager);
   }
 
   public boolean doGet(String path, ServletContext ctx, HttpServletResponse resp) throws ServletException, IOException {
     if (path != null && path.length() > 0) {
-      for (ApplicationLifeCycle<?, ?> runtime : runtimes) {
+      for (Application runtime : runtimes) {
         Iterable<ResourceResolver> resolvers = runtime.resolveBeans(ResourceResolver.class);
         for (ResourceResolver resolver : resolvers) {
           // For now we only have resource of URL type ...
