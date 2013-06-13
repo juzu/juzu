@@ -18,7 +18,13 @@ package juzu.impl.common;
 
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -190,5 +196,48 @@ public class ToolsTestCase extends AbstractTestCase {
     assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(Tools.safeConcat(new String[]{"a", "b"}, new String[]{"c"})));
     assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(Tools.safeConcat(new String[]{"a"}, new String[]{"b", "c"})));
     assertEquals(Arrays.asList("a", "b", "c", "d"), Arrays.asList(Tools.safeConcat(new String[]{"a", "b"}, new String[]{"c","d"})));
+  }
+
+  @Test
+  public void testToHex() throws IOException {
+    assertEquals("0", Tools.toHex(0, new StringBuilder()).toString());
+    assertEquals("1", Tools.toHex(1, new StringBuilder()).toString());
+    assertEquals("a", Tools.toHex(10, new StringBuilder()).toString());
+    assertEquals("f", Tools.toHex(15, new StringBuilder()).toString());
+    assertEquals("10", Tools.toHex(16, new StringBuilder()).toString());
+    assertEquals("f0000000", Tools.toHex(0xF0000000, new StringBuilder()).toString());
+  }
+  
+  @Test
+  public void testScriptNoAttributes() throws Exception {
+    assertSerialization("<script></script>", "<script/>");
+  }
+
+  @Test
+  public void testScriptWithAttribute() throws Exception {
+    assertSerialization("<script type=\"text/javascript\"></script>", "<script type='text/javascript'/>");
+  }
+
+  @Test
+  public void testMetaNoAttributes() throws Exception {
+    assertSerialization("<meta/>", "<meta/>");
+  }
+
+  @Test
+  public void testMetaWithAttribute() throws Exception {
+    assertSerialization("<meta http-equiv=\"Content-Type\"/>", "<meta http-equiv='Content-Type'></meta>");
+  }
+
+  @Test
+  public void testOrdinaryTextElement() throws Exception {
+    assertSerialization("<div>Blah Blah</div>", "<div>Blah Blah</div>");
+  }
+
+  private void assertSerialization(String expectedMarkup, String markup) throws Exception {
+    Element elt = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        .parse(new InputSource(new StringReader(markup))).getDocumentElement();
+    StringWriter writer = new StringWriter();
+    Tools.encodeHtml(elt, writer);
+    assertEquals(expectedMarkup, writer.toString());
   }
 }

@@ -22,6 +22,7 @@ import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.plugin.asset.AssetPlugin;
@@ -30,6 +31,8 @@ import juzu.io.Streams;
 import juzu.request.Phase;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
@@ -104,6 +107,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       Iterable<String> scriptsProp = properties.getValues(PropertyType.SCRIPT);
       Iterable<String> stylesheetsProp = properties.getValues(PropertyType.STYLESHEET);
       Iterable<Map.Entry<String, String>> metas = properties.getValues(PropertyType.META_TAG);
+      Iterable<Element> headers = properties.getValues(PropertyType.HEADER_TAG);
 
       //
       if (metas != null) {
@@ -147,6 +151,18 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
           Comment comment = elt.getOwnerDocument().createComment(data);
           elt.appendChild(comment);
           resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+        }
+      }
+
+      //
+      if (headers != null) {
+        for (Element header : headers) {
+          Element elt = resp.createElement(header.getTagName());
+          for (Node child : Tools.children(header)) {
+            child = elt.getOwnerDocument().importNode(header, true);
+            elt.appendChild(child);
+          }
+          resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, header);
         }
       }
     }

@@ -23,6 +23,7 @@ import juzu.impl.asset.Asset;
 import juzu.impl.common.Tools;
 import juzu.io.Stream;
 import juzu.io.Streamable;
+import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -161,6 +162,14 @@ public abstract class ViewStreamable implements Streamable {
         writer.append("<script type=\"text/javascript\" src=\"");
         renderAssetURL(script.getLocation(), script.getURI(), writer);
         writer.append("\"></script>\n");
+      }
+    }
+
+    // Encode header tag
+    Iterable<Element> headers = properties.getValues(PropertyType.HEADER_TAG);
+    if (headers != null) {
+      for (Element header : headers) {
+        Tools.encodeHtml(header, writer);
       }
     }
 

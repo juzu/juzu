@@ -16,6 +16,8 @@
 
 package juzu;
 
+import org.w3c.dom.Element;
+
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -43,10 +45,13 @@ public abstract class PropertyType<T> {
   /** Redirect after action. */
   public static final PropertyType<Boolean> REDIRECT_AFTER_ACTION = new PropertyType<Boolean>(){};
 
-  /** Header. */
+  /** Header response. */
   public static final PropertyType<Map.Entry<String, String[]>> HEADER = new PropertyType<Map.Entry<String, String[]>>(){};
 
-  /** Header. */
+  /** Header tag. */
+  public static final PropertyType<Element> HEADER_TAG = new PropertyType<Element>(){};
+
+  /** Meta tag. */
   public static final PropertyType<Map.Entry<String, String>> META_TAG = new PropertyType<Map.Entry<String, String>>(){};
 
   /** Mime type. */

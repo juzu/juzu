@@ -19,6 +19,7 @@ package juzu.impl.common;
 import juzu.io.UndeclaredIOException;
 import juzu.request.ResponseParameter;
 import juzu.impl.bridge.Parameters;
+import org.w3c.dom.*;
 
 import javax.annotation.processing.Completion;
 import javax.lang.model.element.AnnotationMirror;
@@ -1089,5 +1090,451 @@ public class Tools {
   public static Throwable safeCause(Throwable throwable) throws NullPointerException {
     Throwable cause = throwable.getCause();
     return cause != null ? cause : throwable;
+  }
+
+  /** Char to entity, we use 256x256 instead of 65536 for compressing space. */
+  private static final String[][] HTML_ESCAPES = new String[256][];
+
+  private static void addNamedHtmlEntity(int c, String entity) {
+    addHtmlEscape(c, "&" + entity + ";");
+  }
+
+  private static void addHtmlEscape(int c, String entity) {
+    int i1 = c >> 8;
+    String[] table = HTML_ESCAPES[i1];
+    if (table == null) {
+      HTML_ESCAPES[i1] = table = new String[256];
+    }
+    table[c & 0xFF] = entity;
+  }
+
+  /**
+   * Lookup an html escape for the specified char.
+   *
+   * @param c the char to lookup
+   * @return the corresponding html escape or null if it does not exist
+   */
+  public static String getHtmlEscape(char c) {
+    int lookup = (c >> 8);
+    if (lookup < 256) {
+      String[] table = HTML_ESCAPES[lookup];
+      int pointer = c & 0xFF;
+      return table[pointer];
+    }
+    return null;
+  }
+
+  static {
+
+    // Common html entities
+    addNamedHtmlEntity(160, "nbsp");
+    addNamedHtmlEntity(161, "iexcl");
+    addNamedHtmlEntity(162, "cent");
+    addNamedHtmlEntity(163, "pound");
+    addNamedHtmlEntity(164, "curren");
+    addNamedHtmlEntity(165, "yen");
+    addNamedHtmlEntity(166, "brvbar");
+    addNamedHtmlEntity(167, "sect");
+    addNamedHtmlEntity(168, "uml");
+    addNamedHtmlEntity(169, "copy");
+    addNamedHtmlEntity(170, "ordf");
+    addNamedHtmlEntity(171, "laquo");
+    addNamedHtmlEntity(172, "not");
+    addNamedHtmlEntity(173, "shy");
+    addNamedHtmlEntity(174, "reg");
+    addNamedHtmlEntity(175, "macr");
+    addNamedHtmlEntity(176, "deg");
+    addNamedHtmlEntity(177, "plusmn");
+    addNamedHtmlEntity(178, "sup2");
+    addNamedHtmlEntity(179, "sup3");
+    addNamedHtmlEntity(180, "acute");
+    addNamedHtmlEntity(181, "micro");
+    addNamedHtmlEntity(182, "para");
+    addNamedHtmlEntity(183, "middot");
+    addNamedHtmlEntity(184, "cedil");
+    addNamedHtmlEntity(185, "sup1");
+    addNamedHtmlEntity(186, "ordm");
+    addNamedHtmlEntity(187, "raquo");
+    addNamedHtmlEntity(188, "frac14");
+    addNamedHtmlEntity(189, "frac12");
+    addNamedHtmlEntity(190, "frac34");
+    addNamedHtmlEntity(191, "iquest");
+    addNamedHtmlEntity(192, "Agrave");
+    addNamedHtmlEntity(193, "Aacute");
+    addNamedHtmlEntity(194, "Acirc");
+    addNamedHtmlEntity(195, "Atilde");
+    addNamedHtmlEntity(196, "Auml");
+    addNamedHtmlEntity(197, "Aring");
+    addNamedHtmlEntity(198, "AElig");
+    addNamedHtmlEntity(199, "Ccedil");
+    addNamedHtmlEntity(200, "Egrave");
+    addNamedHtmlEntity(201, "Eacute");
+    addNamedHtmlEntity(202, "Ecirc");
+    addNamedHtmlEntity(203, "Euml");
+    addNamedHtmlEntity(204, "Igrave");
+    addNamedHtmlEntity(205, "Iacute");
+    addNamedHtmlEntity(206, "Icirc");
+    addNamedHtmlEntity(207, "Iuml");
+    addNamedHtmlEntity(208, "ETH");
+    addNamedHtmlEntity(209, "Ntilde");
+    addNamedHtmlEntity(210, "Ograve");
+    addNamedHtmlEntity(211, "Oacute");
+    addNamedHtmlEntity(212, "Ocirc");
+    addNamedHtmlEntity(213, "Otilde");
+    addNamedHtmlEntity(214, "Ouml");
+    addNamedHtmlEntity(215, "times");
+    addNamedHtmlEntity(216, "Oslash");
+    addNamedHtmlEntity(217, "Ugrave");
+    addNamedHtmlEntity(218, "Uacute");
+    addNamedHtmlEntity(219, "Ucirc");
+    addNamedHtmlEntity(220, "Uuml");
+    addNamedHtmlEntity(221, "Yacute");
+    addNamedHtmlEntity(222, "THORN");
+    addNamedHtmlEntity(223, "szlig");
+    addNamedHtmlEntity(224, "agrave");
+    addNamedHtmlEntity(225, "aacute");
+    addNamedHtmlEntity(226, "acirc");
+    addNamedHtmlEntity(227, "atilde");
+    addNamedHtmlEntity(228, "auml");
+    addNamedHtmlEntity(229, "aring");
+    addNamedHtmlEntity(230, "aelig");
+    addNamedHtmlEntity(231, "ccedil");
+    addNamedHtmlEntity(232, "egrave");
+    addNamedHtmlEntity(233, "eacute");
+    addNamedHtmlEntity(234, "ecirc");
+    addNamedHtmlEntity(235, "euml");
+    addNamedHtmlEntity(236, "igrave");
+    addNamedHtmlEntity(237, "iacute");
+    addNamedHtmlEntity(238, "icirc");
+    addNamedHtmlEntity(239, "iuml");
+    addNamedHtmlEntity(240, "eth");
+    addNamedHtmlEntity(241, "ntilde");
+    addNamedHtmlEntity(242, "ograve");
+    addNamedHtmlEntity(243, "oacute");
+    addNamedHtmlEntity(244, "ocirc");
+    addNamedHtmlEntity(245, "otilde");
+    addNamedHtmlEntity(246, "ouml");
+    addNamedHtmlEntity(247, "divide");
+    addNamedHtmlEntity(248, "oslash");
+    addNamedHtmlEntity(249, "ugrave");
+    addNamedHtmlEntity(250, "uacute");
+    addNamedHtmlEntity(251, "ucirc");
+    addNamedHtmlEntity(252, "uuml");
+    addNamedHtmlEntity(253, "yacute");
+    addNamedHtmlEntity(254, "thorn");
+    addNamedHtmlEntity(255, "yuml");
+    addNamedHtmlEntity(402, "fnof");
+    addNamedHtmlEntity(913, "Alpha");
+    addNamedHtmlEntity(914, "Beta");
+    addNamedHtmlEntity(915, "Gamma");
+    addNamedHtmlEntity(916, "Delta");
+    addNamedHtmlEntity(917, "Epsilon");
+    addNamedHtmlEntity(918, "Zeta");
+    addNamedHtmlEntity(919, "Eta");
+    addNamedHtmlEntity(920, "Theta");
+    addNamedHtmlEntity(921, "Iota");
+    addNamedHtmlEntity(922, "Kappa");
+    addNamedHtmlEntity(923, "Lambda");
+    addNamedHtmlEntity(924, "Mu");
+    addNamedHtmlEntity(925, "Nu");
+    addNamedHtmlEntity(926, "Xi");
+    addNamedHtmlEntity(927, "Omicron");
+    addNamedHtmlEntity(928, "Pi");
+    addNamedHtmlEntity(929, "Rho");
+    addNamedHtmlEntity(931, "Sigma");
+    addNamedHtmlEntity(932, "Tau");
+    addNamedHtmlEntity(933, "Upsilon");
+    addNamedHtmlEntity(934, "Phi");
+    addNamedHtmlEntity(935, "Chi");
+    addNamedHtmlEntity(936, "Psi");
+    addNamedHtmlEntity(937, "Omega");
+    addNamedHtmlEntity(945, "alpha");
+    addNamedHtmlEntity(946, "beta");
+    addNamedHtmlEntity(947, "gamma");
+    addNamedHtmlEntity(948, "delta");
+    addNamedHtmlEntity(949, "epsilon");
+    addNamedHtmlEntity(950, "zeta");
+    addNamedHtmlEntity(951, "eta");
+    addNamedHtmlEntity(952, "theta");
+    addNamedHtmlEntity(953, "iota");
+    addNamedHtmlEntity(954, "kappa");
+    addNamedHtmlEntity(955, "lambda");
+    addNamedHtmlEntity(956, "mu");
+    addNamedHtmlEntity(957, "nu");
+    addNamedHtmlEntity(958, "xi");
+    addNamedHtmlEntity(959, "omicron");
+    addNamedHtmlEntity(960, "pi");
+    addNamedHtmlEntity(961, "rho");
+    addNamedHtmlEntity(962, "sigmaf");
+    addNamedHtmlEntity(963, "sigma");
+    addNamedHtmlEntity(964, "tau");
+    addNamedHtmlEntity(965, "upsilon");
+    addNamedHtmlEntity(966, "phi");
+    addNamedHtmlEntity(967, "chi");
+    addNamedHtmlEntity(968, "psi");
+    addNamedHtmlEntity(969, "omega");
+    addNamedHtmlEntity(977, "thetasym");
+    addNamedHtmlEntity(978, "upsih");
+    addNamedHtmlEntity(982, "piv");
+    addNamedHtmlEntity(8226, "bull");
+    addNamedHtmlEntity(8230, "hellip");
+    addNamedHtmlEntity(8242, "prime");
+    addNamedHtmlEntity(8243, "Prime");
+    addNamedHtmlEntity(8254, "oline");
+    addNamedHtmlEntity(8260, "frasl");
+    addNamedHtmlEntity(8472, "weierp");
+    addNamedHtmlEntity(8465, "image");
+    addNamedHtmlEntity(8476, "real");
+    addNamedHtmlEntity(8482, "trade");
+    addNamedHtmlEntity(8501, "alefsym");
+    addNamedHtmlEntity(8592, "larr");
+    addNamedHtmlEntity(8593, "uarr");
+    addNamedHtmlEntity(8594, "rarr");
+    addNamedHtmlEntity(8595, "darr");
+    addNamedHtmlEntity(8596, "harr");
+    addNamedHtmlEntity(8629, "crarr");
+    addNamedHtmlEntity(8656, "lArr");
+    addNamedHtmlEntity(8657, "uArr");
+    addNamedHtmlEntity(8658, "rArr");
+    addNamedHtmlEntity(8659, "dArr");
+    addNamedHtmlEntity(8660, "hArr");
+    addNamedHtmlEntity(8704, "forall");
+    addNamedHtmlEntity(8706, "part");
+    addNamedHtmlEntity(8707, "exist");
+    addNamedHtmlEntity(8709, "empty");
+    addNamedHtmlEntity(8711, "nabla");
+    addNamedHtmlEntity(8712, "isin");
+    addNamedHtmlEntity(8713, "notin");
+    addNamedHtmlEntity(8715, "ni");
+    addNamedHtmlEntity(8719, "prod");
+    addNamedHtmlEntity(8721, "sum");
+    addNamedHtmlEntity(8722, "minus");
+    addNamedHtmlEntity(8727, "lowast");
+    addNamedHtmlEntity(8730, "radic");
+    addNamedHtmlEntity(8733, "prop");
+    addNamedHtmlEntity(8734, "infin");
+    addNamedHtmlEntity(8736, "ang");
+    addNamedHtmlEntity(8743, "and");
+    addNamedHtmlEntity(8744, "or");
+    addNamedHtmlEntity(8745, "cap");
+    addNamedHtmlEntity(8746, "cup");
+    addNamedHtmlEntity(8747, "int");
+    addNamedHtmlEntity(8756, "there4");
+    addNamedHtmlEntity(8764, "sim");
+    addNamedHtmlEntity(8773, "cong");
+    addNamedHtmlEntity(8776, "asymp");
+    addNamedHtmlEntity(8800, "ne");
+    addNamedHtmlEntity(8801, "equiv");
+    addNamedHtmlEntity(8804, "le");
+    addNamedHtmlEntity(8805, "ge");
+    addNamedHtmlEntity(8834, "sub");
+    addNamedHtmlEntity(8835, "sup");
+    addNamedHtmlEntity(8836, "nsub");
+    addNamedHtmlEntity(8838, "sube");
+    addNamedHtmlEntity(8839, "supe");
+    addNamedHtmlEntity(8853, "oplus");
+    addNamedHtmlEntity(8855, "otimes");
+    addNamedHtmlEntity(8869, "perp");
+    addNamedHtmlEntity(8901, "sdot");
+    addNamedHtmlEntity(8968, "lceil");
+    addNamedHtmlEntity(8969, "rceil");
+    addNamedHtmlEntity(8970, "lfloor");
+    addNamedHtmlEntity(8971, "rfloor");
+    addNamedHtmlEntity(9001, "lang");
+    addNamedHtmlEntity(9002, "rang");
+    addNamedHtmlEntity(9674, "loz");
+    addNamedHtmlEntity(9824, "spades");
+    addNamedHtmlEntity(9827, "clubs");
+    addNamedHtmlEntity(9829, "hearts");
+    addNamedHtmlEntity(9830, "diams");
+    addNamedHtmlEntity(34, "quot");
+    addNamedHtmlEntity(38, "amp");
+    addNamedHtmlEntity(60, "lt");
+    addNamedHtmlEntity(62, "gt");
+    addNamedHtmlEntity(338, "OElig");
+    addNamedHtmlEntity(339, "oelig");
+    addNamedHtmlEntity(352, "Scaron");
+    addNamedHtmlEntity(353, "scaron");
+    addNamedHtmlEntity(376, "Yuml");
+    addNamedHtmlEntity(710, "circ");
+    addNamedHtmlEntity(732, "tilde");
+    addNamedHtmlEntity(8194, "ensp");
+    addNamedHtmlEntity(8195, "emsp");
+    addNamedHtmlEntity(8201, "thinsp");
+    addNamedHtmlEntity(8204, "zwnj");
+    addNamedHtmlEntity(8205, "zwj");
+    addNamedHtmlEntity(8206, "lrm");
+    addNamedHtmlEntity(8207, "rlm");
+    addNamedHtmlEntity(8211, "ndash");
+    addNamedHtmlEntity(8212, "mdash");
+    addNamedHtmlEntity(8216, "lsquo");
+    addNamedHtmlEntity(8217, "rsquo");
+    addNamedHtmlEntity(8218, "sbquo");
+    addNamedHtmlEntity(8220, "ldquo");
+    addNamedHtmlEntity(8221, "rdquo");
+    addNamedHtmlEntity(8222, "bdquo");
+    addNamedHtmlEntity(8224, "dagger");
+    addNamedHtmlEntity(8225, "Dagger");
+    addNamedHtmlEntity(8240, "permil");
+    addNamedHtmlEntity(8249, "lsaquo");
+    addNamedHtmlEntity(8250, "rsaquo");
+    addNamedHtmlEntity(8364, "euro");
+  }
+
+  public static void encodeHtmlText(CharSequence src, int from, int end, Appendable dst) throws IOException, IllegalArgumentException {
+    encodeHtml(src, from, end, dst);
+  }
+
+  public static void encodeHtmlAttribute(CharSequence src, int from, int end, Appendable dst) throws IOException, IllegalArgumentException {
+    encodeHtml(src, from, end, dst);
+  }
+
+  private static void encodeHtml(CharSequence src, int from, int to, Appendable dst) throws IOException, IllegalArgumentException {
+    if (from < 0) {
+      throw new IllegalArgumentException("From bound cannot be negative");
+    }
+    if (to > src.length()) {
+      throw new IllegalArgumentException("To bound cannot be greater than source length");
+    }
+    if (from > to) {
+      throw new IllegalArgumentException("From bound cannot be greater than to bound");
+    }
+    while (from < to) {
+      char c = src.charAt(from++);
+      String escape = getHtmlEscape(c);
+      if (escape != null) {
+        dst.append(escape);
+      } else {
+        dst.append(c);
+      }
+    }
+  }
+
+  /** . */
+  private static final char[] HEX = "0123456789abcdef".toCharArray();
+
+  /** . */
+  private static final int[] MASKS_AND_SHIFTS = {
+      0xF0000000, 7 * 4,
+      0x0F000000, 6 * 4,
+      0x00F00000, 5 * 4,
+      0x000F0000, 4 * 4,
+      0x0000F000, 3 * 4,
+      0x00000F00, 2 * 4,
+      0x000000F0, 1 * 4,
+      0x0000000F, 0 * 4,
+  };
+
+  public static <A extends Appendable> A toHex(int value, A appendable) throws IOException {
+    boolean foo = false;
+    for (int i = 0;i < MASKS_AND_SHIFTS.length;i += 2) {
+      int tmp = value & MASKS_AND_SHIFTS[i];
+      if (tmp != 0) {
+        tmp >>>= MASKS_AND_SHIFTS[i + 1];
+        char cc = HEX[tmp];
+        appendable.append(cc);
+        foo= true;
+      } else if (foo || i == MASKS_AND_SHIFTS.length - 2) {
+        appendable.append("0");
+      }
+    }
+    return appendable;
+  }
+
+  public static <A extends Appendable> A encodeHtml(org.w3c.dom.Element element, A dst) throws IOException {
+    String tagName = element.getTagName();
+
+    // Determine if empty
+    // Note that we won't accumulate the elements that would be serialized for performance reason
+    // we will just reiterate later before ending the element
+    boolean empty;
+    if (tagName.equalsIgnoreCase("script")) {
+      empty = false;
+    } else {
+      empty = true;
+      NodeList children = element.getChildNodes();
+      int length = children.getLength();
+      for (int i = 0; i < length && empty; i++) {
+        Node child = children.item(i);
+        if (child instanceof CharacterData) {
+          empty = false;
+        } else if (child instanceof org.w3c.dom.Element) {
+          empty = false;
+        }
+      }
+    }
+
+    //
+    dst.append('<');
+    dst.append(tagName);
+
+    // Write attributes
+    if (element.hasAttributes()) {
+      NamedNodeMap attrs = element.getAttributes();
+      int length = attrs.getLength();
+      for (int i = 0; i < length; i++) {
+        Attr attr = (Attr) attrs.item(i);
+        dst.append(' ');
+        dst.append(attr.getName());
+        dst.append("=\"");
+        encodeHtmlAttribute(attr.getValue(), 0, attr.getValue().length(), dst);
+        dst.append("\"");
+      }
+    }
+
+    //
+    if (!empty) {
+
+      //
+      dst.append(">");
+
+      // Serialize children that are worth to be
+      NodeList children = element.getChildNodes();
+      int length = children.getLength();
+      for (int i = 0; i < length; i++) {
+        Node child = children.item(i);
+        if (child instanceof CDATASection) {
+          // writer.writeCData(((CDATASection) child).getData());
+          throw new UnsupportedOperationException("Encoding CDATA not yet supported");
+        } else if (child instanceof CharacterData) {
+          String data = ((CharacterData)child).getData();
+          encodeHtmlText(data, 0, data.length(), dst);
+        } else if (child instanceof org.w3c.dom.Element) {
+          encodeHtml((org.w3c.dom.Element)child, dst);
+        }
+      }
+
+      //
+      dst.append("</").append(tagName).append('>');
+    } else {
+      dst.append("/>");
+    }
+
+    //
+    return dst;
+  }
+
+  public static Iterable<Node> children(final Node node) {
+    return new Iterable<Node>() {
+      public Iterator<Node> iterator() {
+        return new Iterator<Node>() {
+          int i = 0;
+          NodeList children = node.getChildNodes();
+          public boolean hasNext() {
+            return i < children.getLength();
+          }
+          public Node next() {
+            if (hasNext()) {
+              return children.item(i++);
+            } else {
+              throw new NoSuchElementException();
+            }
+          }
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
+      }
+    };
   }
 }

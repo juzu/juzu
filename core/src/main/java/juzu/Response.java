@@ -18,9 +18,19 @@ package juzu;
 
 import juzu.io.Streamable;
 import juzu.io.Streams;
+import juzu.io.UndeclaredIOException;
 import juzu.request.Dispatch;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -508,6 +518,41 @@ public abstract class Response {
         }
       }
       properties.addValue(PropertyType.META_TAG, new AbstractMap.SimpleEntry<String, String>(name, value));
+      return this;
+    }
+
+    /**
+     * Parse the header into an {@link Element} and set it on the response as an header tag. This method
+     * expects well formed XML, the parsed Element will be translated into markup according to the
+     * response content type when the response will be written to the document.
+     *
+     * @param header the header string to parse
+     * @return this object
+     * @throws ParserConfigurationException any ParserConfigurationException
+     * @throws SAXException any SAXException
+     */
+    public Content withHeaderTag(String header) throws ParserConfigurationException, SAXException {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = dbf.newDocumentBuilder();
+      try {
+        Document doc = builder.parse(new InputSource(new StringReader(header)));
+        Element elt =  doc.getDocumentElement();
+        return withHeaderTag(elt);
+      }
+      catch (IOException e) {
+        // Let's save user from IOException at least
+        throw new UndeclaredIOException(e);
+      }
+    }
+
+    /**
+     * Set the provided element on the response as an HTML header.
+     *
+     * @param header the header
+     * @return this object
+     */
+    public Content withHeaderTag(Element header) {
+      properties.addValue(PropertyType.HEADER_TAG, header);
       return this;
     }
 
