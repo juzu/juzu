@@ -30,10 +30,9 @@ public class StreamsTestCase extends AbstractTestCase {
   public void testFoo() throws IOException {
 
     StringReader readable = new StringReader("HELLO");
-    Streamable streamable = Streams.streamable(readable);
     StringBuilder buffer = new StringBuilder();
-    AppendableStream appendable = new AppendableStream(Tools.UTF_8, buffer);
-    streamable.send(appendable);
+    OutputStream appendable = OutputStream.create(Tools.UTF_8, buffer);
+    appendable.provide(Chunk.create(readable));
     assertEquals("HELLO", buffer.toString());
     try {
       readable.ready();

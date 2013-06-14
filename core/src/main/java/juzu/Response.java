@@ -16,9 +16,10 @@
 
 package juzu;
 
+import juzu.io.ChunkBuffer;
 import juzu.io.Streamable;
-import juzu.io.Streams;
 import juzu.io.UndeclaredIOException;
+import juzu.io.Chunk;
 import juzu.request.Dispatch;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,7 +30,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.AbstractMap;
@@ -301,11 +301,14 @@ public abstract class Response {
       return "Response.Redirect[location" + location + "]";
     }
   }
-  
+
   public static class Status extends Response {
 
     /** . */
     private int code;
+
+    /** . */
+    private ChunkBuffer buffer;
 
     public Status(int code) {
       this.code = code;
@@ -313,7 +316,7 @@ public abstract class Response {
 
     public Status(int code, PropertyMap properties) {
       super(properties);
-      
+
       //
       this.code = code;
     }
@@ -321,21 +324,21 @@ public abstract class Response {
     public final int getCode() {
       return code;
     }
-    
-    public Body body(Streamable s) {
+
+    public Body body(ChunkBuffer s) {
       return new Body(code, properties, s);
     }
 
     public Body body(CharSequence s) {
-      return body(new Streamable.CharSequence(s));
+      return body(new ChunkBuffer().append(Chunk.create(s)).close());
     }
 
     public Body body(byte[] s) {
-      return body(new Streamable.Bytes(s));
+      return body(new ChunkBuffer().append(Chunk.create(s)).close());
     }
 
-    public Body body(InputStream s) {
-      return body(new Streamable.InputStream(s));
+    public Body body(java.io.InputStream s) {
+      return body(new ChunkBuffer().append(Chunk.create(s)).close());
     }
 
     public Content content(Streamable s) {
@@ -343,15 +346,15 @@ public abstract class Response {
     }
 
     public Content content(CharSequence s) {
-      return content(new Streamable.CharSequence(s));
+      return content(new ChunkBuffer().append(Chunk.create(s)).close());
     }
 
     public Content content(byte[] s) {
-      return content(new Streamable.Bytes(s));
+      return content(new ChunkBuffer().append(Chunk.create(s)).close());
     }
 
-    public Content content(InputStream s) {
-      return content(new Streamable.InputStream(s));
+    public Content content(java.io.InputStream s) {
+      return content(new ChunkBuffer().append(Chunk.create(s)).close());
     }
   }
 
@@ -369,7 +372,7 @@ public abstract class Response {
 
     protected Body(int status, Streamable streamable) {
       super(status);
-      
+
       //
       this.streamable = streamable;
     }
@@ -621,7 +624,7 @@ public abstract class Response {
     return status(404);
   }
 
-  public static Content ok(InputStream content) {
+  public static Content ok(java.io.InputStream content) {
     return content(200, content);
   }
 
@@ -641,7 +644,7 @@ public abstract class Response {
     return content(404, content);
   }
 
-  public static Content notFound(InputStream content) {
+  public static Content notFound(java.io.InputStream content) {
     return content(404, content);
   }
 
@@ -654,19 +657,19 @@ public abstract class Response {
   }
 
   public static Content content(int code, byte[] content) {
-    return content(code, new Streamable.Bytes(content));
+    return content(code, new ChunkBuffer().append(Chunk.create(content)).close());
   }
 
-  public static Content content(int code, InputStream content) {
-    return content(code, new Streamable.InputStream(content));
+  public static Content content(int code, java.io.InputStream content) {
+    return content(code, new ChunkBuffer().append(Chunk.create(content)).close());
   }
 
   public static Content content(int code, Readable content) {
-    return content(code, Streams.streamable(content));
+    return content(code, new ChunkBuffer().append(Chunk.create(content)).close());
   }
 
   public static Content content(int code, CharSequence content) {
-    return content(code, new Streamable.CharSequence(content));
+    return content(code, new ChunkBuffer().append(Chunk.create(content)).close());
   }
 
   public static Content content(int code, Streamable content) {
@@ -680,4 +683,5 @@ public abstract class Response {
   public static Error error(String msg) {
     return new Error(msg);
   }
+
 }

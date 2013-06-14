@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.io;
 
-package juzu.io;
+import juzu.impl.common.Tools;
 
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/** @author Julien Viet */
 public class AppendableStream extends CharStream {
 
   /** . */
@@ -52,32 +53,25 @@ public class AppendableStream extends CharStream {
   }
 
   @Override
-  public Stream append(CharSequence csq) throws IOException {
+  public void append(CharSequence csq) throws IOException {
     out.append(csq);
-    return this;
   }
 
   @Override
-  public Stream append(CharSequence csq, int start, int end) throws IOException {
+  public void append(CharSequence csq, int start, int end) throws IOException {
     out.append(csq, start, end);
-    return this;
   }
 
   @Override
-  public Stream append(char c) throws IOException {
+  public void append(char c) throws IOException {
     out.append(c);
-    return this;
   }
 
-  public void close() throws IOException {
-    if (closeable != null) {
-      closeable.close();
-    }
+  public void close() {
+    Tools.safeClose(closeable);
   }
 
   public void flush() throws IOException {
-    if (flushable != null) {
-      flushable.flush();
-    }
+    Tools.safeFlush(flushable);
   }
 }

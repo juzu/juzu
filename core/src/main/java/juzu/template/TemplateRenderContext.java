@@ -21,7 +21,7 @@ import juzu.PropertyType;
 import juzu.impl.common.Tools;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
-import juzu.io.Streams;
+import juzu.io.OutputStream;
 import juzu.io.Stream;
 
 import java.io.IOException;
@@ -99,7 +99,8 @@ public class TemplateRenderContext {
 
   public StringBuilder render() throws IOException {
     StringBuilder buffer = new StringBuilder();
-    render(Streams.appendable(Tools.UTF_8, buffer));
+    OutputStream consumer = OutputStream.create(Tools.UTF_8, buffer);
+    render(consumer);
     return buffer;
   }
 

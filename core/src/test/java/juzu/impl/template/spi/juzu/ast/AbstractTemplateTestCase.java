@@ -28,7 +28,7 @@ import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateStub;
 import juzu.impl.template.spi.juzu.compiler.EmitPhase;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
-import juzu.io.Streams;
+import juzu.io.OutputStream;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
 import juzu.test.AbstractTestCase;
@@ -39,6 +39,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractTemplateTestCase extends AbstractTestCase {
@@ -113,6 +114,18 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
   public void render(String text, Map<String, ?> attributes, Locale locale, Appendable appendable) throws IOException, TemplateExecutionException {
     GroovyTemplateStub template = template(text);
     TemplateRenderContext renderContext = new TemplateRenderContext(template, null, attributes, locale);
-    renderContext.render(Streams.appendable(Tools.UTF_8, appendable));
+    OutputStream adapter = OutputStream.create(Tools.UTF_8, appendable);
+    renderContext.render(adapter);
+    final AtomicReference<IOException> ios = new AtomicReference<IOException>();
+    adapter.close(new Thread.UncaughtExceptionHandler() {
+      public void uncaughtException(Thread t, Throwable e) {
+        if (e instanceof IOException) {
+          ios.set((IOException)e);
+        }
+      }
+    });
+    if (ios.get() != null) {
+      throw ios.get();
+    }
   }
 }

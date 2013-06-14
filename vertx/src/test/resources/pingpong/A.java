@@ -18,14 +18,13 @@ package pingpong;
 
 import juzu.Response;
 import juzu.View;
-import juzu.impl.common.Tools;
-import juzu.io.AsyncStreamable;
+import juzu.io.Chunk;
+import juzu.io.ChunkBuffer;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.eventbus.Message;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 public class A {
 
@@ -34,17 +33,14 @@ public class A {
 
   @View
   public Response.Content index() throws Exception {
-    final AsyncStreamable content = new AsyncStreamable();
+    final ChunkBuffer content = new ChunkBuffer();
     vertx.eventBus().send("foo", "ping", new Handler<Message<String>>() {
       public void handle(Message<String> event) {
         try {
-          content.append(event.body);
-        }
-        catch (IOException e) {
-          e.printStackTrace();
+          content.append(Chunk.create(event.body));
         }
         finally {
-          Tools.safeClose(content);
+          content.close();
         }
       }
     });

@@ -26,13 +26,12 @@ import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.io.OutputStream;
 import juzu.io.Stream;
-import juzu.io.Streams;
 import juzu.request.Phase;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
@@ -66,7 +65,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     // We use a writer during render phase as the developer may have set
     // a charset that is not the portlet container provided charset
     // and therefore it is safer to use the writer of the portlet container
-    return Streams.closeable(charset, this.resp.getWriter());
+    return OutputStream.create(charset, this.resp.getWriter());
   }
 
   @Override

@@ -20,8 +20,8 @@ import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.Tools;
+import juzu.io.OutputStream;
 import juzu.io.Stream;
-import juzu.io.Streams;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
 
@@ -60,7 +60,7 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
     }
 
     //
-    return Streams.closeable(charset, this.resp.getPortletOutputStream());
+    return OutputStream.create(charset, this.resp.getPortletOutputStream());
   }
 
   @Override

@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.io;
+package juzu.impl.io;
 
-/**
- * A streamable is a produce of chunks.
- *
- * @author Julien Viet
- */
-public interface Streamable {
+import juzu.io.Chunk;
+import juzu.io.Stream;
 
+/** @author Julien Viet */
+public class SinkStream implements Stream {
 
-  /**
-   * Send the chunks to the stream.
-   *
-   * @param stream the stream
-   * @throws IllegalStateException
-   */
-  void send(Stream stream) throws IllegalStateException;
+  /** . */
+  public static final SinkStream INSTANCE = new SinkStream();
 
+  private SinkStream() {
+  }
+
+  public void provide(Chunk chunk) {
+  }
+
+  public void close() {
+  }
+
+  public void close(Thread.UncaughtExceptionHandler errorHandler) {
+  }
 }

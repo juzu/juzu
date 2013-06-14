@@ -31,6 +31,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -177,6 +178,16 @@ public class Tools {
     if (closeable != null) {
       try {
         closeable.close();
+      }
+      catch (IOException ignore) {
+      }
+    }
+  }
+
+  public static void safeFlush(Flushable flushable) {
+    if (flushable != null) {
+      try {
+        flushable.flush();
       }
       catch (IOException ignore) {
       }

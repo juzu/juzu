@@ -21,13 +21,12 @@ import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.impl.runtime.ApplicationRuntime;
-import juzu.io.Streams;
-import juzu.io.BinaryOutputStream;
+import juzu.io.OutputStream;
+import juzu.io.Stream;
 import juzu.test.AbstractTestCase;
 import org.junit.Assert;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -45,27 +44,29 @@ public abstract class MockMimeBridge extends MockRequestBridge implements MimeBr
 
   public String assertStringResult() {
     Response.Content content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
-    try {
-      StringBuilder builder = new StringBuilder();
-      content.getStreamable().send(Streams.appendable(Tools.UTF_8, builder));
-      return builder.toString();
-    }
-    catch (IOException e) {
-      throw AbstractTestCase.failure(e);
-    }
+    StringBuilder builder = new StringBuilder();
+    content.getStreamable().send(OutputStream.create(Tools.UTF_8, builder));
+    return builder.toString();
+    // Replace by error check
+//    try {
+//    }
+//    catch (IOException e) {
+//      throw AbstractTestCase.failure(e);
+//    }
   }
 
   public byte[] assertBinaryResult() {
     Response.Content content = AbstractTestCase.assertInstanceOf(Response.Content.class, response);
-    try {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      BinaryOutputStream bos = new BinaryOutputStream(Tools.UTF_8, baos);
-      content.getStreamable().send(bos);
-      return baos.toByteArray();
-    }
-    catch (IOException e) {
-      throw AbstractTestCase.failure(e);
-    }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    Stream bos = OutputStream.create(Tools.UTF_8, baos);
+    content.getStreamable().send(bos);
+    return baos.toByteArray();
+    // Replace by error check
+//    try {
+//    }
+//    catch (IOException e) {
+//      throw AbstractTestCase.failure(e);
+//    }
   }
 
   public String getMimeType() {

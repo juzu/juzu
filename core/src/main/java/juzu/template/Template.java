@@ -19,6 +19,10 @@ package juzu.template;
 import juzu.PropertyMap;
 import juzu.Response;
 import juzu.impl.common.Tools;
+import juzu.io.Chunk;
+import juzu.io.ChunkBuffer;
+import juzu.io.OutputStream;
+import juzu.io.Stream;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Request;
@@ -26,9 +30,6 @@ import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.common.Path;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
-import juzu.io.Streams;
-import juzu.io.Stream;
-import juzu.io.Streamable;
 import juzu.request.ApplicationContext;
 import juzu.request.MimeContext;
 import juzu.request.RequestContext;
@@ -41,6 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * <p></p>A template as seen by an application. A template is identified by its {@link #path} and can used to produce markup.
@@ -350,6 +352,22 @@ public abstract class Template {
       }
     }
 
+    private void doRender(PropertyMap properties, Appendable appendable) throws UndeclaredIOException {
+      OutputStream out = OutputStream.create(Tools.UTF_8, appendable);
+      doRender(properties, out);
+      final AtomicReference<IOException> ios = new AtomicReference<IOException>();
+      out.close(new Thread.UncaughtExceptionHandler() {
+        public void uncaughtException(Thread t, Throwable e) {
+          if (e instanceof IOException) {
+            ios.set((IOException)e);
+          }
+        }
+      });
+      if (ios.get() != null) {
+        throw new UndeclaredIOException(ios.get());
+      }
+    }
+
     private void doRender(PropertyMap properties, Stream stream) {
       try {
 
@@ -464,7 +482,7 @@ public abstract class Template {
      *
      * @return the ok resource response
      */
-    public final Response.Content ok() {
+    public final Response.Content ok() throws UndeclaredIOException {
       return status(200);
     }
 
@@ -473,7 +491,7 @@ public abstract class Template {
      *
      * @return the not found response
      */
-    public final Response.Content notFound() {
+    public final Response.Content notFound() throws UndeclaredIOException {
       return status(404);
     }
 
@@ -482,11 +500,12 @@ public abstract class Template {
      *
      * @return the response
      */
-    public final Response.Content status(int status) {
+    public final Response.Content status(int status) throws UndeclaredIOException {
       StringBuilder sb = new StringBuilder();
       PropertyMap properties = new PropertyMap();
-      doRender(properties, Streams.appendable(Tools.UTF_8, sb));
-      return new Response.Content(status, properties,  new Streamable.CharSequence(sb));
+      doRender(properties, sb);
+      ChunkBuffer buffer = new ChunkBuffer().append(Chunk.create(sb)).close();
+      return new Response.Content(status, properties, buffer);
     }
 
     /**
@@ -497,7 +516,7 @@ public abstract class Template {
      * @throws UndeclaredIOException      any io exception
      */
     public <A extends Appendable> A renderTo(A appendable) throws TemplateExecutionException, UndeclaredIOException {
-      renderTo(Streams.appendable(Tools.UTF_8, appendable));
+      doRender(null, appendable);
       return appendable;
     }
 

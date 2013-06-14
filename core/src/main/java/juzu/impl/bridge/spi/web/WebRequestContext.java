@@ -23,6 +23,7 @@ import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationException;
 import juzu.io.Stream;
+import juzu.io.Streamable;
 import juzu.request.RequestParameter;
 
 import java.io.IOException;
@@ -98,17 +99,26 @@ public abstract class WebRequestContext {
       Stream stream = getStream(charset);
 
       // Send response
-      juzu.impl.bridge.ViewStreamable vs = new juzu.impl.bridge.ViewStreamable(body) {
-        @Override
-        public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws IOException {
-          WebRequestContext.this.renderAssetURL(location, uri, appendable);
+      if (body instanceof Response.Content) {
+        juzu.impl.bridge.ViewStreamable vs = new juzu.impl.bridge.ViewStreamable((Response.Content)body) {
+          @Override
+          public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws IOException {
+            WebRequestContext.this.renderAssetURL(location, uri, appendable);
+          }
+        };
+        try {
+          vs.send(stream);
         }
-      };
-      try {
-        vs.send(stream);
-      }
-      finally {
-        end(stream);
+        finally {
+          end(stream);
+        }
+      } else {
+        try {
+          Streamable streamable = body.getStreamable();
+          streamable.send(stream);
+        } finally {
+          end(stream);
+        }
       }
     } else {
 

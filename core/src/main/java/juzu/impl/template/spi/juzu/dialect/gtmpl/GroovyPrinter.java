@@ -19,6 +19,7 @@ package juzu.impl.template.spi.juzu.dialect.gtmpl;
 import groovy.lang.GString;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
+import juzu.io.Chunk;
 import juzu.template.TemplateRenderContext;
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 
@@ -81,7 +82,7 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
   }
 
   public final void println() throws IOException {
-    renderContext.getPrinter().append('\n');
+    renderContext.getPrinter().provide(Chunk.create("\n"));
   }
 
   /**
@@ -126,10 +127,10 @@ public class GroovyPrinter extends GroovyObjectSupport implements GroovyIntercep
       for (int i = 0;i < values.length;i++) {
         values[i] = format(values[i]);
       }
-      renderContext.getPrinter().append(o.toString());
+      renderContext.getPrinter().provide(Chunk.create(o.toString()));
     }
     else {
-      renderContext.getPrinter().append(toString(o));
+      renderContext.getPrinter().provide(Chunk.create(toString(o)));
     }
   }
 }

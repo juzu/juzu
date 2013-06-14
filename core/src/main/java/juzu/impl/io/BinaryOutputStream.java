@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.io;
 
-package juzu.io;
+import juzu.impl.common.Tools;
 
-import java.io.Closeable;
-import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/** @author Julien Viet */
 public class BinaryOutputStream extends BinaryStream {
 
   /** . */
@@ -36,22 +35,20 @@ public class BinaryOutputStream extends BinaryStream {
   }
 
   @Override
-  public BinaryStream append(byte[] data, int off, int len) throws IOException {
+  public void append(byte[] data, int off, int len) throws IOException {
     out.write(data, off, len);
-    return this;
   }
 
   @Override
-  public BinaryStream append(byte[] data) throws IOException {
+  public void append(byte[] data) throws IOException {
     out.write(data);
-    return this;
   }
 
-  public void flush() throws IOException {
-    out.flush();
+  public void flush() {
+    Tools.safeFlush(out);
   }
 
-  public void close() throws IOException {
-    out.close();
+  public void close() {
+    Tools.safeClose(out);
   }
 }

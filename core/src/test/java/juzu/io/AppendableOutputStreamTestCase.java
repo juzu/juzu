@@ -25,12 +25,12 @@ import java.io.IOException;
 import static juzu.impl.common.Tools.UTF_8;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AppendableStreamTestCase extends AbstractTestCase {
+public class AppendableOutputStreamTestCase extends AbstractTestCase {
 
   @Test
   public void testSimple() throws IOException {
     StringBuilder buffer = new StringBuilder();
-    AppendableStream bos = new AppendableStream(UTF_8, buffer);
+    OutputStream bos = OutputStream.create(UTF_8, buffer);
     bos.append("HELLO".getBytes(UTF_8));
     assertEquals("HELLO", buffer.toString());
   }
@@ -38,9 +38,9 @@ public class AppendableStreamTestCase extends AbstractTestCase {
   @Test
   public void testGreaterThanBuffer() throws IOException {
     StringBuilder buffer = new StringBuilder();
-    AppendableStream bos = new AppendableStream(UTF_8, buffer);
+    OutputStream bos = OutputStream.create(UTF_8, buffer);
     ByteArrayOutputStream sb = new ByteArrayOutputStream();
-    while (sb.size() <= BinaryStream.BUFFER_SIZE) {
+    while (sb.size() <= OutputStream.BUFFER_SIZE) {
       sb.write("A".getBytes(UTF_8));
     }
     bos.append(sb.toByteArray());
@@ -50,7 +50,7 @@ public class AppendableStreamTestCase extends AbstractTestCase {
   @Test
   public void testAllChars() throws IOException {
     StringBuilder buffer = new StringBuilder();
-    AppendableStream bos = new AppendableStream(UTF_8, buffer);
+    OutputStream bos = OutputStream.create(UTF_8, buffer);
     for (char c = Character.MIN_VALUE;c < Character.MAX_VALUE;c++) {
       try {
         bos.append(Character.toString(c));

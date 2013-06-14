@@ -19,14 +19,14 @@ package plugin.template.ioe;
 import juzu.Path;
 import juzu.Response;
 import juzu.impl.common.Tools;
-import juzu.io.UndeclaredIOException;
+import juzu.io.OutputStream;
 import juzu.View;
 import juzu.io.Stream;
-import juzu.io.Streams;
 import juzu.template.Template;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
@@ -37,8 +37,7 @@ public class A {
 
   @View
   public Response.Content index() {
-    String ret = "";
-    Stream printer = Streams.appendable(Tools.UTF_8, new Appendable() {
+    Stream printer = OutputStream.create(Tools.UTF_8, new Appendable() {
       public Appendable append(CharSequence csq) throws IOException {
         throw new IOException();
       }
@@ -51,11 +50,18 @@ public class A {
         throw new IOException();
       }
     });
-    try {
-      index.renderTo(printer);
-    }
-    catch (UndeclaredIOException expected) {
+    index.renderTo(printer);
+    final LinkedList<Throwable> errors = new LinkedList<Throwable>();
+    printer.close(new Thread.UncaughtExceptionHandler() {
+      public void uncaughtException(Thread t, Throwable e) {
+        errors.add(e);
+      }
+    });
+    String ret;
+    if (errors.size() == 1 && errors.get(0) instanceof IOException) {
       ret = "pass";
+    } else {
+      ret = "fail";
     }
     return Response.ok(ret);
   }

@@ -36,14 +36,8 @@ public class ActionPathParamTestCase extends VertxTestCase {
   @Test
   public void testFoo() throws Exception {
     URL url = new URL("http://localhost:8080/");
-    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-    conn.connect();
-    Assert.assertEquals(200, conn.getResponseCode());
-    url = new URL(action);
-    conn = (HttpURLConnection)url.openConnection();
-    conn.connect();
-    Assert.assertEquals(200, conn.getResponseCode());
-    String result = Tools.read(conn.getInputStream());
+    assertOK(url);
+    String result = assertOK(new URL(action));
     Assert.assertTrue(result.contains("pass=barfoo"));
   }
 }

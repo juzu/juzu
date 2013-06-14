@@ -18,26 +18,26 @@ package async;
 
 import juzu.Response;
 import juzu.View;
-import juzu.impl.common.Tools;
-import juzu.io.AsyncStreamable;
+import juzu.io.Chunk;
+import juzu.io.ChunkBuffer;
 
 public class A {
 
   @View
   public Response.Content index() throws Exception {
-    final AsyncStreamable content = new AsyncStreamable();
+    final ChunkBuffer content = new ChunkBuffer();
     new Thread() {
       @Override
       public void run() {
         try {
           Thread.sleep(500);
-          content.append("pass");
+          content.append(Chunk.create("pass"));
         }
         catch (Exception e) {
           e.printStackTrace();
         }
         finally {
-          Tools.safeClose(content);
+          content.close();
         }
       }
     }.start();

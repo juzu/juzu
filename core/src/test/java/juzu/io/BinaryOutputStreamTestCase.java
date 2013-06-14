@@ -31,7 +31,7 @@ public class BinaryOutputStreamTestCase extends AbstractTestCase {
   @Test
   public void testFoo() throws IOException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    BinaryOutputStream bos = new BinaryOutputStream(UTF_8, buffer);
+    OutputStream bos = OutputStream.create(UTF_8, buffer);
     bos.append("content[" + EURO + "]");
     assertEquals("content[" + EURO + "]", new String(buffer.toByteArray(), UTF_8));
   }
@@ -39,7 +39,7 @@ public class BinaryOutputStreamTestCase extends AbstractTestCase {
   @Test
   public void testSingle() throws IOException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    BinaryOutputStream bos = new BinaryOutputStream(UTF_8, buffer);
+    OutputStream bos = OutputStream.create(UTF_8, buffer);
     bos.append('H');
     bos.append('E');
     bos.append('L');
@@ -51,7 +51,7 @@ public class BinaryOutputStreamTestCase extends AbstractTestCase {
   @Test
   public void testSimple() throws IOException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    BinaryOutputStream bos = new BinaryOutputStream(UTF_8, buffer);
+    OutputStream bos = OutputStream.create(UTF_8, buffer);
     bos.append("HELLO");
     assertEquals("HELLO", new String(buffer.toByteArray(), UTF_8));
   }
@@ -59,9 +59,9 @@ public class BinaryOutputStreamTestCase extends AbstractTestCase {
   @Test
   public void testGreaterThanBuffer() throws IOException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    BinaryOutputStream bos = new BinaryOutputStream(UTF_8, buffer);
+    OutputStream bos = OutputStream.create(UTF_8, buffer);
     StringBuilder sb = new StringBuilder();
-    while (sb.length() <= BinaryStream.BUFFER_SIZE) {
+    while (sb.length() <= OutputStream.BUFFER_SIZE) {
       sb.append('a');
     }
     bos.append(sb);
@@ -73,7 +73,7 @@ public class BinaryOutputStreamTestCase extends AbstractTestCase {
     for (char c = Character.MIN_VALUE;c < Character.MAX_VALUE;c++) {
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        BinaryOutputStream bos = new BinaryOutputStream(UTF_8, buffer);
+        OutputStream bos = OutputStream.create(UTF_8, buffer);
         bos.append(Character.toString(c));
       }
       catch (UnsupportedOperationException e) {
@@ -86,7 +86,7 @@ public class BinaryOutputStreamTestCase extends AbstractTestCase {
   @Test
   public void testUnmappable() throws IOException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    BinaryOutputStream bos = new BinaryOutputStream(Tools.ISO_8859_1, buffer);
+    OutputStream bos = OutputStream.create(Tools.ISO_8859_1, buffer);
     bos.append("a" + EURO + "b");
     assertEquals("ab", buffer.toString());
   }

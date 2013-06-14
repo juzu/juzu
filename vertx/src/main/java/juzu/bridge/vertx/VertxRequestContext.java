@@ -73,7 +73,7 @@ public class VertxRequestContext extends WebRequestContext {
   final Method method;
 
   /** . */
-  private Stream writer;
+  private VertxStream writer;
 
   /** . */
   final Logger log;

@@ -16,7 +16,7 @@
 
 package juzu.bridge.vertx;
 
-import juzu.io.BinaryStream;
+import juzu.impl.io.BinaryStream;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.http.HttpServerResponse;
@@ -41,22 +41,17 @@ public class VertxStream extends BinaryStream {
   }
 
   @Override
-  public BinaryStream append(byte[] data, int off, int len) throws IOException {
+  public void append(byte[] data, int off, int len) throws IOException {
     resp.write(new Buffer(ChannelBuffers.wrappedBuffer(data, off, len)));
-    return this;
   }
 
   @Override
-  public BinaryStream append(byte[] data) throws IOException {
+  public void append(byte[] data) throws IOException {
     resp.write(new Buffer(ChannelBuffers.wrappedBuffer(data)));
-    return this;
   }
 
-  public void close() throws IOException {
+  public void close() {
     resp.end();
     resp.close();
-  }
-
-  public void flush() throws IOException {
   }
 }

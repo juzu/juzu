@@ -22,6 +22,7 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheVisitor;
 import com.github.mustachejava.TemplateContext;
 import juzu.impl.template.spi.TemplateStub;
+import juzu.io.Chunk;
 import juzu.io.Stream;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
@@ -86,6 +87,6 @@ public class TemplateStubImpl extends TemplateStub {
     StringWriter buffer = new StringWriter();
     mustache.execute(buffer, new Object[]{new ContextMap(renderContext)});
     Stream stream = renderContext.getPrinter();
-    stream.append(buffer.getBuffer());
+    stream.provide(Chunk.create(buffer.getBuffer()));
   }
 }

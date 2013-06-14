@@ -13,58 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.io;
 
-package juzu.io;
+import juzu.io.OutputStream;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class CharStream implements Stream {
+/** @author Julien Viet */
+public abstract class BinaryStream extends OutputStream {
 
   /** Charset. */
-  private Charset charset;
+  private final Charset charset;
 
-  /** Decoder. */
-  private CharsetDecoder decoder;
+  /** Encoder. */
+  private CharsetEncoder encoder;
 
   /** . */
-  private CharBuffer bb;
+  private ByteBuffer bb;
 
-  public CharStream(Charset charset) {
+  /** The cached buffer for single char conversion. */
+  private CharBuffer single;
+
+  protected BinaryStream(Charset charset) {
     this.charset = charset;
   }
 
-  public abstract Stream append(CharSequence csq) throws IOException;
-
-  public abstract Stream append(CharSequence csq, int start, int end) throws IOException;
-
-  public abstract Stream append(char c) throws IOException;
-
-  public Stream append(byte[] data) throws IOException {
-    return append(data, 0, data.length);
-  }
-
-  public Stream append(byte[] data, int off, int len) throws IOException {
-    return append(ByteBuffer.wrap(data, off, len));
-  }
-
-  public Stream append(ByteBuffer buffer) throws IOException {
+  public void append(CharBuffer buffer) throws IOException {
     if (buffer.hasRemaining()) {
-      if (decoder == null) {
-        decoder = charset.newDecoder().onUnmappableCharacter(CodingErrorAction.REPORT).onMalformedInput(CodingErrorAction.IGNORE);
-        bb = CharBuffer.allocate(BUFFER_SIZE);
+      if (encoder == null) {
+        encoder = charset.newEncoder().onUnmappableCharacter(CodingErrorAction.REPORT).onMalformedInput(CodingErrorAction.IGNORE);
+        bb = ByteBuffer.allocate(BUFFER_SIZE);
       } else {
-        decoder.reset();
+        encoder.reset();
       }
       while (true) {
         CoderResult result ;
-        result = buffer.hasRemaining() ? decoder.decode(buffer, bb, true) : decoder.flush(bb);
+        result = buffer.hasRemaining() ? encoder.encode(buffer, bb, true) : encoder.flush(bb);
         if (result.isUnderflow() || result.isOverflow()) {
           bb.flip();
           if (bb.hasRemaining()) {
@@ -87,11 +77,28 @@ public abstract class CharStream implements Stream {
         }
       }
     }
-    return this;
   }
 
-  public Stream append(CharBuffer buffer) throws IOException {
-    append(buffer, buffer.arrayOffset() + buffer.position(), buffer.limit() - buffer.arrayOffset());
-    return this;
+  public void append(ByteBuffer buffer) throws IOException {
+    append(bb.array(), bb.arrayOffset() + bb.position(), bb.limit() - bb.arrayOffset());
+  }
+
+  public void append(CharSequence csq) throws IOException {
+    append(csq, 0, csq.length());
+  }
+
+  public void append(CharSequence csq, int start, int end) throws IOException {
+    append(CharBuffer.wrap(csq, start, end));
+  }
+
+  public void append(char c) throws IOException {
+    if (single == null) {
+      single = CharBuffer.allocate(1);
+    } else {
+      single.compact();
+    }
+    single.put(c);
+    single.flip();
+    append(single);
   }
 }

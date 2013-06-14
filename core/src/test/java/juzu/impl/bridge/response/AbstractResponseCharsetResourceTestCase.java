@@ -69,6 +69,8 @@ public abstract class AbstractResponseCharsetResourceTestCase extends AbstractWe
     assertTrue(m2.matches());
     assertEquals(charset, Charset.forName(m2.group(1)));
     String s = Tools.read(conn.getInputStream(), charset);
+    System.out.println(charset);
+    System.out.println("s = " + s);
     Pattern p = Pattern.compile("content\\[(.*)\\]");
     Matcher m = p.matcher(s);
     assertTrue(m.find());

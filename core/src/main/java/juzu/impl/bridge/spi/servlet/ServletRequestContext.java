@@ -18,7 +18,7 @@ package juzu.impl.bridge.spi.servlet;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.web.WebRequestContext;
 import juzu.impl.common.Lexers;
-import juzu.io.BinaryOutputStream;
+import juzu.impl.io.BinaryOutputStream;
 import juzu.io.Stream;
 import juzu.request.RequestParameter;
 
@@ -113,15 +113,15 @@ public class ServletRequestContext extends WebRequestContext {
 
   @Override
   public Stream getStream(Charset charset) throws IOException {
-    return new StreamImpl(charset, resp.getOutputStream());
+    return new ServletBinaryOutputStream(charset, resp.getOutputStream());
   }
 
   @Override
   protected void end(Stream stream) {
-    ((StreamImpl)stream).end();
+    ((ServletBinaryOutputStream)stream).end();
   }
 
-  class StreamImpl extends BinaryOutputStream {
+  class ServletBinaryOutputStream extends BinaryOutputStream {
 
     /** . */
     private boolean closed;
@@ -129,11 +129,11 @@ public class ServletRequestContext extends WebRequestContext {
     /** . */
     private AsyncContext context;
 
-    StreamImpl(Charset charset, ServletOutputStream out) {
+    ServletBinaryOutputStream(Charset charset, ServletOutputStream out) {
       super(charset, out);
     }
 
-    public void close() throws IOException {
+    public void close() {
       closed = true;
       if (context != null) {
         System.out.println("COMPLETING ASYNC");

@@ -22,16 +22,15 @@ package juzu.bridge.vertx;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.config.RedirectConfig;
 import com.jayway.restassured.config.RestAssuredConfig;
-import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 import juzu.impl.common.Tools;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.vertx.java.deploy.impl.VerticleManager;
-import org.vertx.java.test.TestModule;
 import org.vertx.java.test.VertxConfiguration;
 import org.vertx.java.test.VertxTestBase;
 import org.vertx.java.test.junit.VertxJUnit4ClassRunner;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -42,6 +41,36 @@ public abstract class VertxTestCase extends VertxTestBase {
 
   static {
     RestAssured.config = new RestAssuredConfig().redirect(new RedirectConfig().followRedirects(true));
+  }
+
+  protected String assertOK(URL url) {
+    return assertStatus(200, url);
+  }
+
+  protected String assertStatus(int expectedStatus, URL url) {
+    try {
+      HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+      conn.connect();
+      int responseCode = conn.getResponseCode();
+      InputStream in;
+      if (responseCode >= 200 && responseCode < 300) {
+        in = conn.getInputStream();
+      } else {
+        in = conn.getErrorStream();
+      }
+      String content = Tools.read(in);
+      if (responseCode != 200) {
+        throw new AssertionFailedError("Was expecting 200 code instead of " +
+            responseCode + " with content " + content);
+      } else {
+        return content;
+      }
+    }
+    catch (IOException e) {
+      AssertionFailedError afe = new AssertionFailedError();
+      afe.initCause(e);
+      throw afe;
+    }
   }
 
 }

@@ -29,18 +29,16 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
+import juzu.io.Chunk;
 import juzu.io.Stream;
-import juzu.io.Streamable;
+import juzu.io.StreamableDecorator;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.RenderContext;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,6 +111,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         properties.addValues(PropertyType.SCRIPT, "juzu.ajax");
 
         //
+/*
         final Streamable decorated = (Streamable)render.getStreamable();
         Streamable decorator = new Streamable() {
 
@@ -189,6 +188,38 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
         //
         request.setResponse(new Response.Content(render.getCode(), properties, decorator));
+*/
+
+        StreamableDecorator decorator = new StreamableDecorator(render.getStreamable()) {
+          @Override
+          protected void sendHeader(Stream consumer) {
+            // FOR NOW WE DO WITH THE METHOD NAME
+            // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
+
+            StringBuilder sb = new StringBuilder();
+
+            //
+            sb.append("<div class=\"jz\">\n");
+
+            //
+            for (Map.Entry<String, Method> entry : table.entrySet()) {
+              String baseURL = request.getContext().createDispatch(entry.getValue()).toString();
+              sb.append("<div data-method-id=\"");
+              sb.append(entry.getValue().getId());
+              sb.append("\" data-url=\"");
+              sb.append(baseURL);
+              sb.append("\"/>");
+              sb.append("</div>");
+            }
+
+            //
+            consumer.provide(Chunk.create(sb));
+          }
+        };
+
+        request.setResponse(new Response.Content(render.getCode(), properties, decorator));
+
+
       }
     }
   }

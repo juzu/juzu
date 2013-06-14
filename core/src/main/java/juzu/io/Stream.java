@@ -13,32 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package juzu.io;
 
 import java.io.Closeable;
-import java.io.Flushable;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
+import java.util.concurrent.Future;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public interface Stream extends Flushable, Closeable, Appendable {
+/**
+ * A stream is a consumer of chunk.
+ *
+ * @author Julien Viet
+ */
+public interface Stream extends Closeable {
 
-  /** . */
-  int BUFFER_SIZE = 512;
+  /**
+   * Provide a chunk.
+   *
+   * @param chunk the chunk
+   */
+  void provide(Chunk chunk);
 
-  Stream append(CharBuffer buffer) throws IOException;
+  /**
+   * Signal the work is done.
+   */
+  void close();
 
-  Stream append(CharSequence csq) throws IOException;
+  /**
+   * Signal the work is done, the caller can be aware of error that were not caught. The <code>errorHandler</code>
+   * argument can be null.
+   *
+   * @param errorHandler the optional error handler
+   */
+  void close(Thread.UncaughtExceptionHandler errorHandler);
 
-  Stream append(CharSequence csq, int start, int end) throws IOException;
-
-  Stream append(ByteBuffer buffer) throws IOException;
-
-  Stream append(char c) throws IOException;
-
-  Stream append(byte[] data) throws IOException;
-
-  Stream append(byte[] data, int off, int len) throws IOException;
 }

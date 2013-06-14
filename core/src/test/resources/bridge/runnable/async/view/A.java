@@ -21,7 +21,8 @@ import juzu.impl.bridge.runnable.AbstractRunnableAsyncTestCase;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.request.ContextLifeCycle;
 import juzu.impl.request.Request;
-import juzu.io.AsyncStreamable;
+import juzu.io.Chunk;
+import juzu.io.ChunkBuffer;
 import juzu.request.RequestContext;
 import juzu.request.RequestLifeCycle;
 
@@ -59,7 +60,7 @@ public class A implements RequestLifeCycle {
     final ScopeController controller = request.getScopeController();
     AbstractRunnableAsyncTestCase.requestURL = "" + A_.index();
     AbstractRunnableAsyncTestCase.requestDestroyed = AbstractRunnableAsyncTestCase.destroyed.get();
-    final AsyncStreamable content = new AsyncStreamable();
+    final ChunkBuffer content = new ChunkBuffer();
     Runnable task = new Runnable() {
       public void run() {
         ContextLifeCycle lf = request.suspend();
@@ -68,7 +69,7 @@ public class A implements RequestLifeCycle {
           AbstractRunnableAsyncTestCase.runnableURL = "" + A_.index();
           AbstractRunnableAsyncTestCase.runnableDestroyed = AbstractRunnableAsyncTestCase.destroyed.get();
           AbstractRunnableAsyncTestCase.runnableActive = controller.isActive();
-          content.append("pass");
+          content.append(Chunk.create("pass"));
         }
         catch (Exception e) {
           e.printStackTrace();
