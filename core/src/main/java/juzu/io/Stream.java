@@ -16,7 +16,6 @@
 package juzu.io;
 
 import java.io.Closeable;
-import java.util.concurrent.Future;
 
 /**
  * A stream is a consumer of chunk.

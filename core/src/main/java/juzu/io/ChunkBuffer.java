@@ -15,8 +15,6 @@
  */
 package juzu.io;
 
-import juzu.impl.common.Tools;
-
 import java.util.LinkedList;
 
 /** @author Julien Viet */

@@ -151,8 +151,12 @@ public abstract class Response {
     if (propertyType == null) {
       throw new NullPointerException("No null property type allowed");
     }
-    properties.setValue(propertyType, propertyValue);
+    properties.addValue(propertyType, propertyValue);
     return this;
+  }
+
+  protected <T> void _with(PropertyType<T> propertyType, T propertyValue) {
+    properties.addValue(propertyType, propertyValue);
   }
 
   /**
@@ -190,23 +194,7 @@ public abstract class Response {
   }
 
   public Response withHeader(String name, String... value) {
-    Iterable<Map.Entry<String, String[]>> values = properties.getValues(PropertyType.HEADER);
-    if (values != null) {
-      for (Map.Entry<String, String[]> header : values) {
-        if (header.getKey().equals(name)) {
-          header.setValue(value);
-          return this;
-        }
-      }
-    }
-    properties.addValue(PropertyType.HEADER, new AbstractMap.SimpleEntry<String, String[]>(name, value));
-    return this;
-  }
-
-  public static abstract class Action extends Response {
-
-    public abstract Map<String, String[]> getParameters();
-
+    return with(PropertyType.HEADER, new AbstractMap.SimpleEntry<String, String[]>(name, value));
   }
 
   /**
@@ -307,9 +295,6 @@ public abstract class Response {
     /** . */
     private int code;
 
-    /** . */
-    private ChunkBuffer buffer;
-
     public Status(int code) {
       this.code = code;
     }
@@ -384,6 +369,15 @@ public abstract class Response {
       this.streamable = streamable;
     }
 
+    @Override
+    protected <T> void _with(PropertyType<T> propertyType, T propertyValue) {
+//      if (propertyType == PropertyType.TITLE) {
+//        streamable.a
+//      } else {
+//      }
+      super._with(propertyType, propertyValue);
+    }
+
     public Streamable getStreamable() {
       return streamable;
     }
@@ -397,13 +391,11 @@ public abstract class Response {
     }
 
     public Body withCharset(Charset charset) {
-      properties.setValue(PropertyType.CHARSET, charset);
-      return this;
+      return with(PropertyType.CHARSET, charset);
     }
 
     public Body withMimeType(String mimeType) {
-      properties.setValue(PropertyType.MIME_TYPE, mimeType);
-      return this;
+      return with(PropertyType.MIME_TYPE, mimeType);
     }
 
     @Override
@@ -490,15 +482,16 @@ public abstract class Response {
     }
 
     public Content withTitle(String title) {
-      properties.setValue(PropertyType.TITLE, title);
-      return this;
+      return with(PropertyType.TITLE, title);
     }
 
     public Content withScripts(String... scripts) throws NullPointerException {
       if (scripts == null) {
         throw new NullPointerException("No null script accepted");
       }
-      properties.addValues(PropertyType.SCRIPT, scripts);
+      for (String script : scripts) {
+        with(PropertyType.SCRIPT, script);
+      }
       return this;
     }
 
@@ -506,21 +499,14 @@ public abstract class Response {
       if (stylesheets == null) {
         throw new NullPointerException("No null stylesheet accepted");
       }
-      properties.addValues(PropertyType.STYLESHEET, stylesheets);
+      for (String stylesheet : stylesheets) {
+        with(PropertyType.STYLESHEET, stylesheet);
+      }
       return this;
     }
 
     public Content withMetaTag(String name, String value) {
-      Iterable<Map.Entry<String, String>> values = properties.getValues(PropertyType.META_TAG);
-      if (values != null) {
-        for (Map.Entry<String, String> meta : values) {
-          if (meta.getKey().equals(name)) {
-            meta.setValue(value);
-            return this;
-          }
-        }
-      }
-      properties.addValue(PropertyType.META_TAG, new AbstractMap.SimpleEntry<String, String>(name, value));
+      with(PropertyType.META_TAG, new AbstractMap.SimpleEntry<String, String>(name, value));
       return this;
     }
 
@@ -555,8 +541,7 @@ public abstract class Response {
      * @return this object
      */
     public Content withHeaderTag(Element header) {
-      properties.addValue(PropertyType.HEADER_TAG, header);
-      return this;
+      return with(PropertyType.HEADER_TAG, header);
     }
 
     @Override
