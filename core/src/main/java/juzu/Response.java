@@ -17,10 +17,12 @@
 package juzu;
 
 import juzu.io.ChunkBuffer;
+import juzu.io.Stream;
 import juzu.io.Streamable;
 import juzu.io.UndeclaredIOException;
 import juzu.io.Chunk;
 import juzu.request.Dispatch;
+import juzu.request.Result;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -36,11 +38,10 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
- * <p>A response object signalling to the portal the action to take after an interaction. This object is usually
- * returned after the invocation of a controller method and instructs Juzu the action to take.</p>
+ * <p>A response object signalling to the framework the action to take after an interaction. This object is usually
+ * returned after the invocation of a controller method and instructs the action to perform.</p>
  *
  * <h2>Action response</h2>
  *
@@ -65,11 +66,11 @@ import java.util.Map;
  *
  *       &#064;Action
  *       public {@link juzu.Response.View} myAction() {
- *          return MyController_.myRender("hello");
+ *          return MyController_.myView("hello");
  *       }
  *
  *       &#064;View
- *       public void myRender(String param) {
+ *       public void myView(String param) {
  *       }
  *    }
  * </pre></code>
@@ -155,10 +156,6 @@ public abstract class Response {
     return this;
   }
 
-  protected <T> void _with(PropertyType<T> propertyType, T propertyValue) {
-    properties.addValue(propertyType, propertyValue);
-  }
-
   /**
    * Removes a property.
    *
@@ -197,6 +194,8 @@ public abstract class Response {
     return with(PropertyType.HEADER, new AbstractMap.SimpleEntry<String, String[]>(name, value));
   }
 
+  public abstract Result result();
+
   /**
    * A response instructing to execute a render phase of a controller method after the current interaction.
    */
@@ -229,6 +228,10 @@ public abstract class Response {
 
     public abstract boolean equals(Object obj);
 
+    @Override
+    public final Result.View result() {
+      return new Result.View(properties, this);
+    }
   }
 
   /**
@@ -282,6 +285,11 @@ public abstract class Response {
         return location.equals(that.location);
       }
       return false;
+    }
+
+    @Override
+    public final Result.Redirect result() {
+      return new Result.Redirect(properties, location);
     }
 
     @Override
@@ -341,6 +349,65 @@ public abstract class Response {
     public Content content(java.io.InputStream s) {
       return content(new ChunkBuffer().append(Chunk.create(s)).close());
     }
+
+    @Override
+    public Status withHeader(String name, String... value) {
+      return (Status)super.withHeader(name, value);
+    }
+
+    @Override
+    public Status withNo(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Status)super.withNo(propertyType);
+    }
+
+    @Override
+    public Status with(PropertyType<Boolean> propertyType) throws NullPointerException {
+      return (Status)super.with(propertyType);
+    }
+
+    @Override
+    public <T> Status without(PropertyType<T> propertyType) throws NullPointerException {
+      return (Status)super.without(propertyType);
+    }
+
+    @Override
+    public <T> Status with(PropertyType<T> propertyType, T propertyValue) throws NullPointerException {
+      return (Status)super.with(propertyType, propertyValue);
+    }
+
+    @Override
+    public Result.Status result() {
+      Streamable foo = new Streamable() {
+        public void send(Stream stream) throws IllegalStateException {
+
+          // Send properties
+          for (PropertyType<?> propertyType : properties) {
+            Iterable<?> values = properties.getValues(propertyType);
+            if (values != null) {
+              for (Object o : values) {
+                stream.provide(new Chunk.Property(o, propertyType));
+              }
+            }
+          }
+
+          // Send real stream
+          if (Status.this instanceof Response.Body) {
+            ((Response.Body)Status.this).getStreamable().send(stream);
+          } else {
+            stream.close(null);
+          }
+        }
+      };
+
+      //
+      if (Status.this instanceof Response.Content) {
+        return new Result.Status(code, true, foo);
+      } else if (Status.this instanceof Response.Body) {
+        return new Result.Status(code, false, foo);
+      } else {
+        return new Result.Status(code, false, foo);
+      }
+    }
   }
 
   public static class Body extends Status {
@@ -367,15 +434,6 @@ public abstract class Response {
 
       //
       this.streamable = streamable;
-    }
-
-    @Override
-    protected <T> void _with(PropertyType<T> propertyType, T propertyValue) {
-//      if (propertyType == PropertyType.TITLE) {
-//        streamable.a
-//      } else {
-//      }
-      super._with(propertyType, propertyValue);
     }
 
     public Streamable getStreamable() {
@@ -591,6 +649,11 @@ public abstract class Response {
     public String toString() {
       return "Response.Error[" + (cause != null ? cause.getMessage() : "") + "]";
     }
+
+    @Override
+    public Result.Error result() {
+      return new Result.Error(properties, at, cause, msg);
+    }
   }
 
   public static Response.Redirect redirect(String location) {
@@ -668,5 +731,4 @@ public abstract class Response {
   public static Error error(String msg) {
     return new Error(msg);
   }
-
 }

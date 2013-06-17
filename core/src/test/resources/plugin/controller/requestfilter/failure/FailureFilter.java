@@ -19,6 +19,7 @@ package plugin.controller.requestfilter.failure;
 import juzu.Response;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
+import juzu.request.Result;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FailureFilter implements RequestFilter {
@@ -27,7 +28,7 @@ public class FailureFilter implements RequestFilter {
 
   public void invoke(Request request) {
     request.invoke();
-    if (request.getResponse() instanceof Response.Error) {
+    if (request.getResult() instanceof Result.Error) {
       request.setResponse(Response.ok("pass"));
     }
   }

@@ -15,14 +15,12 @@
  */
 package juzu.io;
 
-import java.io.Closeable;
-
 /**
  * A stream is a consumer of chunk.
  *
  * @author Julien Viet
  */
-public interface Stream extends Closeable {
+public interface Stream {
 
   /**
    * Provide a chunk.
@@ -30,11 +28,6 @@ public interface Stream extends Closeable {
    * @param chunk the chunk
    */
   void provide(Chunk chunk);
-
-  /**
-   * Signal the work is done.
-   */
-  void close();
 
   /**
    * Signal the work is done, the caller can be aware of error that were not caught. The <code>errorHandler</code>

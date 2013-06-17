@@ -13,23 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.impl.io;
 
-import juzu.io.Chunk;
-import juzu.io.Stream;
+@Application package bridge.response.header.resource;
 
-/** @author Julien Viet */
-public class SinkStream implements Stream {
-
-  /** . */
-  public static final SinkStream INSTANCE = new SinkStream();
-
-  private SinkStream() {
-  }
-
-  public void provide(Chunk chunk) {
-  }
-
-  public void close(Thread.UncaughtExceptionHandler errorHandler) {
-  }
-}
+import juzu.Application;

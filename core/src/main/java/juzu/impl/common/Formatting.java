@@ -15,8 +15,8 @@
  */
 package juzu.impl.common;
 
-import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.compiler.CompilationError;
+import juzu.io.UndeclaredIOException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,41 +38,68 @@ public class Formatting {
    * Append a script section that will add a <code>stylesheet</code> element in the head section of
    * the document.
    *
-   * @param writer the writer
+   * @param buffer the buffer
+   */
+  public static void renderStyleSheet(StringBuilder buffer) {
+    try {
+      renderStyleSheet((Appendable)buffer);
+    }
+    catch (IOException e) {
+      throw new UndeclaredIOException(e);
+    }
+  }
+
+  /**
+   * Append a script section that will add a <code>stylesheet</code> element in the head section of
+   * the document.
+   *
+   * @param appendable the appendable
    * @throws IOException any io exception
    */
-  public static void renderStyleSheet(Writer writer) throws IOException {
-    // Get CSS
+  public static void renderStyleSheet(Appendable appendable) throws IOException {
     URL cssURL = Formatting.class.getResource("juzu.css");
     String css = Tools.read(cssURL);
     css = css.replace("\"", "\\\"");
     css = css.replace("'", "\\'");
     css = css.replace("\n", "\\n");
-
-    //
-    writer.append("<script type='text/javascript'>\n");
-    writer.append("var styleElement = document.createElement('style');\n");
-    writer.append("var css = '");
-    writer.append(css);
-    writer.append("';\n");
-    writer.append("styleElement.type = 'text/css';\n");
-    writer.append("if (styleElement.styleSheet) {;\n");
-    writer.append("styleElement.styleSheet.cssText = css;\n");
-    writer.append("} else {\n");
-    writer.append("styleElement.appendChild(document.createTextNode(css));\n");
-    writer.append("}\n");
-    writer.append("document.getElementsByTagName(\"head\")[0].appendChild(styleElement);\n");
-    writer.append("</script>\n");
+    appendable.append("<script type='text/javascript'>\n");
+    appendable.append("var styleElement = document.createElement('style');\n");
+    appendable.append("var css = '");
+    appendable.append(css);
+    appendable.append("';\n");
+    appendable.append("styleElement.type = 'text/css';\n");
+    appendable.append("if (styleElement.styleSheet) {;\n");
+    appendable.append("styleElement.styleSheet.cssText = css;\n");
+    appendable.append("} else {\n");
+    appendable.append("styleElement.appendChild(document.createTextNode(css));\n");
+    appendable.append("}\n");
+    appendable.append("document.getElementsByTagName(\"head\")[0].appendChild(styleElement);\n");
+    appendable.append("</script>\n");
   }
 
   /**
    * Renders the throwable in the specified writer.
    *
-   * @param writer the writer
+   * @param buffer the writer
+   * @param t the throwable
+   */
+  public static void renderThrowable(Class<?> stop, StringBuilder buffer, Throwable t) {
+    try {
+      renderThrowable(stop, (Appendable)buffer, t);
+    }
+    catch (IOException e) {
+      throw new UndeclaredIOException(e);
+    }
+  }
+
+  /**
+   * Renders the throwable in the specified writer.
+   *
+   * @param appendable the writer
    * @param t the throwable
    * @throws IOException any io exception
    */
-  public static void renderThrowable(Class<?> stop, Writer writer, Throwable t) throws IOException {
+  public static void renderThrowable(Class<?> stop, Appendable appendable, Throwable t) throws IOException {
     // Trim the stack trace to remove stuff we don't want to see
     int size = 0;
     StackTraceElement[] trace = t.getStackTrace();
@@ -90,7 +117,7 @@ public class Formatting {
 
     // We hack a bit
     final AtomicBoolean open = new AtomicBoolean(false);
-    PrintWriter formatter = new PrintWriter(writer) {
+    PrintWriter formatter = new PrintWriter(new AppendableWriter(appendable)) {
       @Override
       public void println(Object x) {
         if (open.get()) {
@@ -120,18 +147,18 @@ public class Formatting {
     };
 
     //
-    writer.append("<section>");
+    appendable.append("<section>");
 
     // We hack a bit with our formatter
     t.printStackTrace(formatter);
 
     //
     if (open.get()) {
-      writer.append("</ul></div>");
+      appendable.append("</ul></div>");
     }
 
     //
-    writer.append("</section>");
+    appendable.append("</section>");
   }
 
   /**

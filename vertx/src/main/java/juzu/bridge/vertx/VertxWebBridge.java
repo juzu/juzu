@@ -21,44 +21,20 @@ package juzu.bridge.vertx;
 
 import juzu.Method;
 import juzu.Response;
-import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.bridge.spi.web.WebBridge;
 import juzu.impl.bridge.spi.web.WebRequestContext;
-import juzu.impl.common.Lexers;
-import juzu.impl.common.Logger;
 import juzu.impl.bridge.spi.ScopedContext;
-import juzu.impl.common.Tools;
-import juzu.impl.inject.Scoped;
-import juzu.io.Stream;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
-import juzu.request.RequestParameter;
 import juzu.request.UserContext;
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.http.HttpServerRequest;
 
-import javax.xml.bind.DatatypeConverter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
-import java.net.HttpCookie;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class VertxWebBridge extends WebBridge implements HttpContext {
@@ -104,7 +80,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     catch (Throwable throwable) {
       throwable.printStackTrace();
       try {
-        ctx.send(Response.status(500));
+        ctx.send(Response.error(throwable).result(), true);
       }
       catch (IOException e) {
         // Handle me somehow better

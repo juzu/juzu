@@ -17,9 +17,9 @@
 package juzu.impl.bridge.spi;
 
 import juzu.PropertyType;
-import juzu.Response;
 import juzu.Scope;
 import juzu.impl.request.ControlParameter;
+import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.request.Request;
@@ -78,11 +78,12 @@ public interface RequestBridge extends Closeable {
   /**
    * Set the specified response on the bridge.
    *
-   * @param response the response
+   *
+   * @param result the response
    * @throws IllegalArgumentException if the response cannot be honoured
    * @throws IOException              any io exception
    */
-  void setResponse(Response response) throws IllegalArgumentException, IOException;
+  void setResult(Result result) throws IllegalArgumentException, IOException;
 
   /**
    * Signals the beginning of a request.

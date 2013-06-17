@@ -18,11 +18,11 @@ package juzu.impl.bridge.spi.portlet;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.Response;
 import juzu.Scope;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.request.ControlParameter;
+import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
@@ -104,7 +104,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected Request request;
 
   /** . */
-  protected Response response;
+  protected Result result;
 
   PortletRequestBridge(Bridge bridge, Rq req, Rs resp, PortletConfig config) {
     String methodId = null;
@@ -270,8 +270,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     return context;
   }
 
-  public final void setResponse(Response response) throws IllegalArgumentException, IOException {
-    this.response = response;
+  public final void setResult(Result result) throws IllegalArgumentException, IOException {
+    this.result = result;
   }
 
   public void begin(Request request) {
@@ -291,15 +291,6 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   }
 
   public abstract void send() throws IOException, PortletException;
-
-  protected void sendProperties() throws IOException {
-    Iterable<Map.Entry<String, String[]>> headers = response.getProperties().getValues(PropertyType.HEADER);
-    if (headers != null) {
-      for (Map.Entry<String, String[]> entry : headers) {
-        resp.addProperty(entry.getKey(), entry.getValue()[0]);
-      }
-    }
-  }
 
   private <T> String _checkPropertyValidity(Phase phase, PropertyType<T> propertyType, T propertyValue) {
     if (propertyType == JuzuPortlet.PORTLET_MODE) {

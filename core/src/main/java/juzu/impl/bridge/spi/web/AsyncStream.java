@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.impl.io;
 
-import juzu.io.Chunk;
+package juzu.impl.bridge.spi.web;
+
 import juzu.io.Stream;
 
-/** @author Julien Viet */
-public class SinkStream implements Stream {
+/**
+ * Extends the stream with asynchronous capabilities.
+ *
+ * @author Julien Viet
+ */
+public interface AsyncStream extends Stream {
 
-  /** . */
-  public static final SinkStream INSTANCE = new SinkStream();
+  /**
+   * Signal the stream we are done from the perspective of the server. When this method is called
+   * and the stream is not closed, the stream becomes asynchronous.
+   */
+  void end();
 
-  private SinkStream() {
-  }
-
-  public void provide(Chunk chunk) {
-  }
-
-  public void close(Thread.UncaughtExceptionHandler errorHandler) {
-  }
 }

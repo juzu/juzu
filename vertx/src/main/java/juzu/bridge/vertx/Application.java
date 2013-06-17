@@ -253,7 +253,7 @@ public class Application {
           }
           catch (Exception e) {
             try {
-              ctx.send(Response.error(e), true);
+              ctx.send(Response.error(e).result(), true);
             }
             catch (IOException ignore) {
             }
@@ -281,7 +281,7 @@ public class Application {
         catch (Exception e) {
           e.printStackTrace();
           try {
-            ctx.send(Response.error(e), true);
+            ctx.send(Response.error(e).result(), true);
           }
           catch (IOException ignore) {
           }

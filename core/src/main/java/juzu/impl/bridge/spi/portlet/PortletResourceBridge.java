@@ -16,7 +16,6 @@
 
 package juzu.impl.bridge.spi.portlet;
 
-import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.Tools;
@@ -70,17 +69,5 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
 
   public ClientContext getClientContext() {
     return clientContext;
-  }
-
-  @Override
-  protected void sendProperties() throws IOException {
-    if (response instanceof Response.Content) {
-      Response.Content resource = (Response.Content)response;
-      int status = resource.getCode();
-      if (status != 200) {
-        resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
-      }
-      super.setResponse(response);
-    }
   }
 }

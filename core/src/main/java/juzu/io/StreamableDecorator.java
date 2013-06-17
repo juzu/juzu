@@ -39,10 +39,6 @@ public class StreamableDecorator implements Streamable {
       public void provide(Chunk chunk) {
         stream.provide(chunk);
       }
-      public void close() {
-        close(null);
-      }
-
       public void close(Thread.UncaughtExceptionHandler errorHandler) {
         try {
           sendFooter(stream);

@@ -15,20 +15,15 @@
  */
 package juzu.impl.bridge.spi.web;
 
-import juzu.PropertyMap;
-import juzu.PropertyType;
-import juzu.Response;
 import juzu.asset.AssetLocation;
-import juzu.impl.common.Formatting;
-import juzu.impl.common.Tools;
+import juzu.impl.asset.AssetManager;
 import juzu.impl.compiler.CompilationException;
-import juzu.io.Stream;
-import juzu.io.Streamable;
+import juzu.impl.io.SafeStream;
+import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.request.Result;
 import juzu.request.RequestParameter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -36,112 +31,55 @@ import java.util.Map;
 public abstract class WebRequestContext {
 
   public final void send(CompilationException e) throws IOException {
-    StringWriter writer = new StringWriter();
-    PrintWriter printer = new PrintWriter(writer);
-    Formatting.renderErrors(printer, e.getErrors());
-    send(Response.error(writer.getBuffer().toString()), true);
+    send(e.result(), true);
   }
 
-  public final void send(Response.Error error, boolean verbose) throws IOException {
-    if (verbose) {
-      StringWriter buffer = new StringWriter();
-      PrintWriter writer = new PrintWriter(buffer);
-      Formatting.renderStyleSheet(writer);
-      writer.append("<div class=\"juzu\">");
-      writer.append("<h1>Oups something went wrong</h1>");
-      Throwable cause = error.getCause();
-      if (cause != null) {
-        Formatting.renderThrowable(null, writer, cause);
+  public final void send(Result.Error error, boolean verbose) throws IOException {
+    send(null, error.asStatus(verbose));
+  }
+
+  public final void send(AssetPlugin assetPlugin, Result.Status response) throws IOException {
+
+    //
+    AsyncStream stream = getStream(response.code);
+
+    //
+    if (response.decorated) {
+
+      //
+      AssetManager stylesheetManager;
+      AssetManager scriptManager;
+      if (assetPlugin != null) {
+        stylesheetManager = assetPlugin.getStylesheetManager();
+        scriptManager = assetPlugin.getScriptManager();
       } else {
-        writer.append(error.getMessage());
+        stylesheetManager = null;
+        scriptManager = null;
       }
-      writer.append("</div>");
-      writer.close();
-      send(Response.content(500, buffer.getBuffer()).withMimeType("text/html"));
-    } else {
-      // For now only that
-      setStatus(500);
-    }
-  }
-
-  public final void send(Response.Status response) throws IOException {
-
-    //
-    PropertyMap properties = response.getProperties();
-
-    //
-    Integer status = response.getCode();
-    if (status != null) {
-      setStatus(status);
-    }
-
-    //
-    if (response instanceof Response.Body) {
 
       //
-      Response.Body body = (Response.Body)response;
-
-      //
-      Charset charset = body.getCharset();
-      if (charset == null) {
-        charset = Tools.ISO_8859_1;
-      }
-      setContentType(body.getMimeType(), charset);
-
-      // Send headers
-      Iterable<Map.Entry<String, String[]>> headers = properties.getValues(PropertyType.HEADER);
-      if (headers == null) {
-        headers = Tools.emptyIterable();
-      }
-      setHeaders(headers);
-
-      //
-      Stream stream = getStream(charset);
-
-      // Send response
-      if (body instanceof Response.Content) {
-        juzu.impl.bridge.ViewStreamable vs = new juzu.impl.bridge.ViewStreamable((Response.Content)body) {
-          @Override
-          public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws IOException {
-            WebRequestContext.this.renderAssetURL(location, uri, appendable);
+      stream = new WebStream((HttpStream)stream, stylesheetManager, scriptManager) {
+        @Override
+        public String renderAssetURL(AssetLocation location, String uri) {
+          try {
+            StringBuilder sb = new StringBuilder();
+            WebRequestContext.this.renderAssetURL(location, uri, sb);
+            return sb.toString();
           }
-        };
-        try {
-          vs.send(stream);
+          catch (IOException e) {
+            e.printStackTrace();
+            throw new UnsupportedOperationException("handle me ", e);
+          }
         }
-        finally {
-          end(stream);
-        }
-      } else {
-        try {
-          Streamable streamable = body.getStreamable();
-          streamable.send(stream);
-        } finally {
-          end(stream);
-        }
-      }
-    } else {
-
-      try {
-        // Send headers
-        Iterable<Map.Entry<String, String[]>> headers = properties.getValues(PropertyType.HEADER);
-        if (headers == null) {
-          headers = Tools.emptyIterable();
-        }
-        setHeaders(headers);
-      }
-      finally {
-        end();
-      }
+      };
     }
-  }
 
-  protected void end(Stream stream) {
-    // Do nothing by default
-  }
-
-  protected void end() {
-    // Do nothing by default
+    //
+    try {
+      response.streamable.send(new SafeStream(stream));
+    } finally {
+      stream.end();
+    }
   }
 
   public abstract Map<String, RequestParameter> getParameters();
@@ -160,7 +98,7 @@ public abstract class WebRequestContext {
 
   public abstract void sendRedirect(String location) throws IOException;
 
-  public abstract Stream getStream(Charset charset) throws IOException;
+  public abstract HttpStream getStream(int status);
 
   public abstract void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws IOException;
 }

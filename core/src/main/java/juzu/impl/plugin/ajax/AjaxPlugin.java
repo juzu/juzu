@@ -16,9 +16,7 @@
 
 package juzu.impl.plugin.ajax;
 
-import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
@@ -29,9 +27,10 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
+import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
-import juzu.io.StreamableDecorator;
+import juzu.io.Streamable;
 import juzu.plugin.ajax.Ajax;
 import juzu.request.Phase;
 
@@ -100,126 +99,45 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
     //
     if (request.getPhase() == Phase.VIEW) {
-      Response response = request.getResponse();
-      if (response instanceof Response.Content) {
-        Response.Content render = (Response.Content)response;
-
-        //
-        PropertyMap properties = new PropertyMap(response.getProperties());
-
-        //
-        properties.addValues(PropertyType.SCRIPT, "juzu.ajax");
-
-        //
-/*
-        final Streamable decorated = (Streamable)render.getStreamable();
-        Streamable decorator = new Streamable() {
-
-          public void send(final Stream stream) throws IOException {
-            // FOR NOW WE DO WITH THE METHOD NAME
-            // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
-
-            //
-            stream.append("<div class=\"jz\">\n");
-
-            //
-            for (Map.Entry<String, Method> entry : table.entrySet()) {
-              String baseURL = request.getContext().createDispatch(entry.getValue()).toString();
-              stream.append("<div data-method-id=\"");
-              stream.append(entry.getValue().getId());
-              stream.append("\" data-url=\"");
-              stream.append(baseURL);
-              stream.append("\"/>");
-              stream.append("</div>");
-            }
-
-            // The page
-            decorated.send(new Stream() {
-              public Stream append(ByteBuffer buffer) throws IOException {
-                stream.append(buffer);
-                return this;
-              }
-
-              public Stream append(java.lang.CharSequence csq) throws IOException {
-                stream.append(csq);
-                return this;
-              }
-
-              public Stream append(CharBuffer buffer) throws IOException {
-                stream.append(buffer);
-                return this;
-              }
-
-              public Stream append(java.lang.CharSequence csq, int start, int end) throws IOException {
-                stream.append(csq, start, end);
-                return this;
-              }
-
-              public Stream append(char c) throws IOException {
-                stream.append(c);
-                return this;
-              }
-
-              public Stream append(byte[] data) throws IOException {
-                stream.append(data);
-                return this;
-              }
-
-              public Stream append(byte[] data, int off, int len) throws IOException {
-                stream.append(data, off, len);
-                return this;
-              }
-
-              public void flush() throws IOException {
-                stream.flush();
-              }
-
-              public void close() throws IOException {
-                try {
-                  stream.append("</div>");
+      Result result = request.getResult();
+      if (result instanceof Result.Status) {
+        Result.Status status = (Result.Status)result;
+        if (status.decorated) {
+          final Streamable wrapped = status.streamable;
+          Streamable wrapper = new Streamable() {
+            public void send(final Stream stream) throws IllegalStateException {
+              Stream our = new Stream() {
+                boolean done = false;
+                public void provide(Chunk chunk) {
+                  if (chunk instanceof Chunk.Data && !done) {
+                    done = true;
+                    stream.provide(new Chunk.Property<String>("juzu.ajax", PropertyType.SCRIPT));
+                    // FOR NOW WE DO WITH THE METHOD NAME
+                    // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<div class=\"jz\">\n");
+                    for (Map.Entry<String, Method> entry : table.entrySet()) {
+                      String baseURL = request.createDispatch(entry.getValue()).toString();
+                      sb.append("<div data-method-id=\"");
+                      sb.append(entry.getValue().getId());
+                      sb.append("\" data-url=\"");
+                      sb.append(baseURL);
+                      sb.append("\"/>");
+                      sb.append("</div>");
+                    }
+                    stream.provide(Chunk.create(sb));
+                  }
+                  stream.provide(chunk);
                 }
-                finally {
-                  stream.close();
+                public void close(Thread.UncaughtExceptionHandler errorHandler) {
+                  stream.close(errorHandler);
                 }
-              }
-            });
-          }
-        };
-
-        //
-        request.setResponse(new Response.Content(render.getCode(), properties, decorator));
-*/
-
-        StreamableDecorator decorator = new StreamableDecorator(render.getStreamable()) {
-          @Override
-          protected void sendHeader(Stream consumer) {
-            // FOR NOW WE DO WITH THE METHOD NAME
-            // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
-
-            StringBuilder sb = new StringBuilder();
-
-            //
-            sb.append("<div class=\"jz\">\n");
-
-            //
-            for (Map.Entry<String, Method> entry : table.entrySet()) {
-              String baseURL = request.createDispatch(entry.getValue()).toString();
-              sb.append("<div data-method-id=\"");
-              sb.append(entry.getValue().getId());
-              sb.append("\" data-url=\"");
-              sb.append(baseURL);
-              sb.append("\"/>");
-              sb.append("</div>");
+              };
+              wrapped.send(our);
             }
-
-            //
-            consumer.provide(Chunk.create(sb));
-          }
-        };
-
-        request.setResponse(new Response.Content(render.getCode(), properties, decorator));
-
-
+          };
+          request.setResult(new Result.Status(status.code, true, wrapper));
+        }
       }
     }
   }

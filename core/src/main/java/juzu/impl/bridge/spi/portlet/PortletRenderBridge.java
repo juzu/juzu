@@ -16,24 +16,16 @@
 
 package juzu.impl.bridge.spi.portlet;
 
-import juzu.PropertyMap;
-import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
-import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.bridge.spi.RenderBridge;
-import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.io.OutputStream;
 import juzu.io.Stream;
 import juzu.request.Phase;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -42,7 +34,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge {
@@ -77,7 +68,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
       StringWriter buffer = new StringWriter();
       PrintWriter printer = new PrintWriter(buffer);
       Formatting.renderErrors(printer, e.getErrors());
-      setResponse(Response.error(buffer.toString()));
+      setResult(Response.error(buffer.toString()).result());
       return;
     }
 
@@ -85,89 +76,7 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     super.invoke();
   }
 
-  @Override
-  protected void sendProperties() throws IOException {
-    if (response instanceof Response.Content) {
-      Response.Content content = (Response.Content)response;
-
-      // Http headers
-      super.sendProperties();
-
-      //
-      PropertyMap properties = content.getProperties();
-
-      //
-      String title = properties.getValue(PropertyType.TITLE);
-      if (title != null) {
-        resp.setTitle(title);
-      }
-
-      //
-      Iterable<String> scriptsProp = properties.getValues(PropertyType.SCRIPT);
-      Iterable<String> stylesheetsProp = properties.getValues(PropertyType.STYLESHEET);
-      Iterable<Map.Entry<String, String>> metas = properties.getValues(PropertyType.META_TAG);
-      Iterable<Element> headers = properties.getValues(PropertyType.HEADER_TAG);
-
-      //
-      if (metas != null) {
-        for (Map.Entry<String, String> entry : metas) {
-          Element elt = this.resp.createElement("meta");
-          elt.setAttribute("name", entry.getKey());
-          elt.setAttribute("content", entry.getValue());
-          resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-        }
-      }
-
-      //
-      AssetPlugin assetPlugin = (AssetPlugin)bridge.getApplication().getPlugin("asset");
-
-      //
-      if (stylesheetsProp != null) {
-        Iterable<Asset> stylesheets = assetPlugin.getStylesheetManager().resolveAssets(stylesheetsProp);
-        for (Asset stylesheet : stylesheets) {
-          int pos = stylesheet.getURI().lastIndexOf('.');
-          String ext = pos == -1 ? "css" : stylesheet.getURI().substring(pos + 1);
-          Element elt = this.resp.createElement("link");
-          elt.setAttribute("media", "screen");
-          elt.setAttribute("rel", "stylesheet");
-          elt.setAttribute("type", "text/" + ext);
-          elt.setAttribute("href", getAssetURL(stylesheet));
-          resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-        }
-      }
-
-      //
-      if (scriptsProp != null) {
-        Iterable<Asset> scripts = assetPlugin.getScriptManager().resolveAssets(scriptsProp);
-        for (Asset script : scripts) {
-          String url = getAssetURL(script);
-          Element elt = this.resp.createElement("script");
-          elt.setAttribute("type", "text/javascript");
-          elt.setAttribute("src", url);
-          // This comment is needed for liferay to make the script pass the minifier
-          // it forces to have a <script></script> tag
-          String data = bridge.getApplication().getName() + " script ";
-          Comment comment = elt.getOwnerDocument().createComment(data);
-          elt.appendChild(comment);
-          resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-        }
-      }
-
-      //
-      if (headers != null) {
-        for (Element header : headers) {
-          Element elt = resp.createElement(header.getTagName());
-          for (Node child : Tools.children(header)) {
-            child = elt.getOwnerDocument().importNode(header, true);
-            elt.appendChild(child);
-          }
-          resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, header);
-        }
-      }
-    }
-  }
-
-  private String getAssetURL(Asset asset) {
+  String getAssetURL(Asset asset) {
     StringBuilder sb;
     String url;
     String uri = asset.getURI();

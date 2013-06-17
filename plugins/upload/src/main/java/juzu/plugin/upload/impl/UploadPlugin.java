@@ -24,11 +24,8 @@ import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
-import juzu.request.ActionContext;
 import juzu.request.ClientContext;
-import juzu.request.RequestContext;
 import juzu.request.RequestParameter;
-import juzu.request.ResourceContext;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
@@ -57,17 +54,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
   public void invoke(Request request) {
 
     //
-    RequestContext context = request.getContext();
-
-    //
-    final ClientContext clientContext;
-    if (context instanceof ActionContext) {
-      clientContext = ((ActionContext)context).getClientContext();
-    } else if (context instanceof ResourceContext) {
-      clientContext = ((ResourceContext)context).getClientContext();
-    } else {
-      clientContext = null;
-    }
+    final ClientContext clientContext = request.getClientContext();
 
     //
     if (clientContext != null) {
@@ -109,7 +96,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
                 }
                 parameter.appendTo(parameters);
               } else {
-                ControlParameter parameter = request.getContext().getMethod().getParameter(name);
+                ControlParameter parameter = request.getMethod().getParameter(name);
                 if (parameter instanceof ContextualParameter && FileItem.class.isAssignableFrom(parameter.getType())) {
                   request.setArgument(parameter, file);
                 }
@@ -124,7 +111,7 @@ public class UploadPlugin extends ApplicationPlugin implements RequestFilter {
             }
 
             // Redecode phase arguments from updated request
-            Method<?> method = request.getContext().getMethod();
+            Method<?> method = request.getMethod();
             Map<ControlParameter, Object> arguments = method.getArguments(parameters);
 
             // Update with existing contextual arguments

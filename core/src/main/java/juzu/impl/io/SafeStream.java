@@ -13,23 +13,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package juzu.impl.io;
 
 import juzu.io.Chunk;
 import juzu.io.Stream;
 
-/** @author Julien Viet */
-public class SinkStream implements Stream {
+import java.util.LinkedList;
+
+/**
+ * An stream that handles error logging.
+ *
+ * @author Julien Viet
+ */
+public final class SafeStream implements Stream {
 
   /** . */
-  public static final SinkStream INSTANCE = new SinkStream();
+  private LinkedList<Exception> errors;
 
-  private SinkStream() {
+  /** . */
+  private final Stream delegate;
+
+  public SafeStream(Stream delegate) {
+    this.delegate = delegate;
+  }
+
+  private void log(Exception error) {
+    if (errors == null) {
+      errors = new LinkedList<Exception>();
+    }
+    errors.add(error);
   }
 
   public void provide(Chunk chunk) {
+    try {
+      delegate.provide(chunk);
+    }
+    catch (Exception e) {
+      log(e);
+    }
   }
 
   public void close(Thread.UncaughtExceptionHandler errorHandler) {
+    try {
+      delegate.close(errorHandler);
+    }
+    catch (Exception e) {
+      log(e);
+    }
+    if (errorHandler != null && errors != null) {
+      for (Exception error : errors) {
+        errorHandler.uncaughtException(null, error);
+      }
+    }
   }
 }

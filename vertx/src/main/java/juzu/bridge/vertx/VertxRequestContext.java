@@ -20,6 +20,7 @@ package juzu.bridge.vertx;
 
 import juzu.Method;
 import juzu.asset.AssetLocation;
+import juzu.impl.bridge.spi.web.HttpStream;
 import juzu.impl.bridge.spi.web.WebRequestContext;
 import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
@@ -73,7 +74,7 @@ public class VertxRequestContext extends WebRequestContext {
   final Method method;
 
   /** . */
-  private VertxStream writer;
+  private HttpStream writer;
 
   /** . */
   final Logger log;
@@ -163,12 +164,6 @@ public class VertxRequestContext extends WebRequestContext {
       cookieScopes[type] = new CookieScopeContext();
     }
     return cookieScopes[type];
-  }
-
-  @Override
-  protected void end() {
-    req.response.end();
-    req.response.close();
   }
 
   @Override
@@ -287,9 +282,36 @@ public class VertxRequestContext extends WebRequestContext {
   }
 
   @Override
-  public Stream getStream(Charset charset) throws IOException {
+  public HttpStream getStream(int status) {
     if (writer == null) {
-      writer = new VertxStream(charset, req.response);
+      writer = new HttpStream(this, status) {
+
+        /** . */
+        private VertxStream stream;
+
+        @Override
+        public void setStatusCode(int status) {
+          VertxRequestContext.this.setStatus(status);
+        }
+
+        @Override
+        protected Stream getDataStream(boolean create) {
+          if (stream == null && create) {
+            stream = new VertxStream(charset, req.response);
+          }
+          return stream;
+        }
+
+        @Override
+        protected void endAsync() {
+          req.response.end();
+          req.response.close();
+        }
+
+        @Override
+        protected void beginAsync() {
+        }
+      };
     }
     return writer;
   }

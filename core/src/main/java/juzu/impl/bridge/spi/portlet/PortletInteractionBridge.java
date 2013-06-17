@@ -17,10 +17,10 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.EventQueue;
-import juzu.Response;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.request.ControlParameter;
+import juzu.request.Result;
 import juzu.request.ResponseParameter;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.ContextualParameter;
@@ -72,8 +72,11 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
 
   @Override
   public void send() throws IOException, PortletException {
-    if (response instanceof Response.View) {
-      Phase.View.Dispatch update = (Phase.View.Dispatch)response;
+    if (result instanceof Result.View) {
+
+      //
+      Result.View view = (Result.View)result;
+      Phase.View.Dispatch update = (Phase.View.Dispatch)view.dispatch;
 
       //
       Map<String, ResponseParameter> parameters = update.getParameters();
@@ -108,9 +111,9 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
           throw new IllegalArgumentException(e);
         }
       }
-    } else if (response instanceof Response.Error) {
-      Response.Error error = (Response.Error)response;
-      throw new PortletException(error.getCause());
+    } else if (result instanceof Result.Error) {
+      Result.Error error = (Result.Error)result;
+      throw new PortletException(error.cause);
     }
   }
 }

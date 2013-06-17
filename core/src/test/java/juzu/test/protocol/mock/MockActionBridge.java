@@ -21,6 +21,7 @@ import juzu.Response;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
+import juzu.request.Result;
 import juzu.impl.runtime.ApplicationRuntime;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.request.ClientContext;
@@ -42,14 +43,15 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   }
 
   public String assertUpdate() {
-    if (response instanceof Response.View) {
-      Phase.View.Dispatch update = (Phase.View.Dispatch)response;
+    if (result instanceof Result.View) {
+      Result.View view = (Result.View)result;
+      Phase.View.Dispatch update = (Phase.View.Dispatch)view.dispatch;
       DispatchBridge spi = createDispatch(Phase.VIEW, update.getTarget(), update.getParameters());
       Phase.View.Dispatch dispatch = new Phase.View.Dispatch(spi);
       return dispatch.with(update.getProperties()).toString();
     }
     else {
-      throw AbstractTestCase.failure("Was expecting an update instead of " + response);
+      throw AbstractTestCase.failure("Was expecting an update instead of " + result);
     }
   }
 
@@ -62,8 +64,8 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
   }
 
   public void assertRender(final MethodHandle expectedTarget, Map<String, String> expectedArguments) {
-    Assert.assertEquals(expectedTarget, ((Phase.View.Dispatch)response).getTarget());
-    Map<String, ResponseParameter> parameters = ((Phase.View.Dispatch)response).getParameters();
+    Assert.assertEquals(expectedTarget, ((Phase.View.Dispatch)((Result.View)result).dispatch).getTarget());
+    Map<String, ResponseParameter> parameters = ((Phase.View.Dispatch)((Result.View)result).dispatch).getParameters();
     Assert.assertEquals(expectedArguments.keySet(), parameters.keySet());
     for (Map.Entry<String, String> argument : expectedArguments.entrySet()) {
       Assert.assertEquals(1, parameters.get(argument.getKey()).size());
@@ -80,9 +82,9 @@ public class MockActionBridge extends MockRequestBridge implements ActionBridge 
       throw new UnsupportedOperationException("fixme");
     }
     else {
-      AbstractTestCase.assertEquals("Was expecting a response " + expectedResponse + " instead of  " + response,
-        expectedResponse,
-        response);
+      AbstractTestCase.assertEquals("Was expecting a response " + expectedResponse + " instead of  " + result,
+        expectedResponse != null ? expectedResponse.result() : null,
+          result);
     }
   }
 }

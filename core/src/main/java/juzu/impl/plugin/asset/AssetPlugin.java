@@ -16,9 +16,7 @@
 
 package juzu.impl.plugin.asset;
 
-import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Name;
 import juzu.impl.plugin.PluginDescriptor;
@@ -29,6 +27,10 @@ import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
+import juzu.request.Result;
+import juzu.io.Chunk;
+import juzu.io.Stream;
+import juzu.io.StreamableDecorator;
 import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
@@ -219,17 +221,23 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
     //
     if (request.getPhase() == Phase.VIEW) {
-      Response response = request.getResponse();
-      if (response instanceof Response.Content && (scripts.length > 0 || stylesheets.length > 0)) {
-        Response.Content render = (Response.Content)response;
-
-        // Add assets
-        PropertyMap properties = new PropertyMap(render.getProperties());
-        properties.addValues(PropertyType.STYLESHEET, stylesheets);
-        properties.addValues(PropertyType.SCRIPT, scripts);
-
-        // Use a new response
-        request.setResponse(new Response.Content(render.getCode(), properties, render.getStreamable()));
+      Result result = request.getResult();
+      if (result instanceof Result.Status) {
+        Result.Status status = (Result.Status)result;
+        if (status.decorated && (scripts.length > 0 || stylesheets.length > 0)) {
+          status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {
+            @Override
+            protected void sendHeader(Stream consumer) {
+              for (String stylesheet : stylesheets) {
+                consumer.provide(new Chunk.Property<String>(stylesheet, PropertyType.STYLESHEET));
+              }
+              for (String script : scripts) {
+                consumer.provide(new Chunk.Property<String>(script, PropertyType.SCRIPT));
+              }
+            }
+          });
+          request.setResult(status);
+        }
       }
     }
   }

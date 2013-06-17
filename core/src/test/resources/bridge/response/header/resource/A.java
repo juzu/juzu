@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.impl.io;
 
-import juzu.io.Chunk;
-import juzu.io.Stream;
+package bridge.response.header.resource;
 
-/** @author Julien Viet */
-public class SinkStream implements Stream {
+import juzu.Resource;
+import juzu.Response;
+import juzu.Route;
+import juzu.View;
 
-  /** . */
-  public static final SinkStream INSTANCE = new SinkStream();
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public class A {
 
-  private SinkStream() {
-  }
-
-  public void provide(Chunk chunk) {
-  }
-
-  public void close(Thread.UncaughtExceptionHandler errorHandler) {
+  @Resource
+  @Route("/status")
+  public Response.Status index() throws Exception {
+    return Response.status(200).withHeader("X-Powered-By", "Juzu/1.0.0");
   }
 }

@@ -15,10 +15,11 @@
  */
 package juzu.io;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 /** @author Julien Viet */
-public class ChunkBuffer implements Streamable {
+public class ChunkBuffer implements Streamable, Appendable {
 
 
   /** . */
@@ -50,6 +51,25 @@ public class ChunkBuffer implements Streamable {
 
   public ChunkBuffer(Thread.UncaughtExceptionHandler errorHandler) {
     this.errorHandler = errorHandler;
+  }
+
+  public Appendable append(CharSequence csq) throws IOException {
+    return append(Chunk.create(csq));
+  }
+
+  public Appendable append(CharSequence csq, int start, int end) throws IOException {
+    return append(Chunk.create(csq));
+  }
+
+  public Appendable append(char c) throws IOException {
+    return append(Chunk.create(c));
+  }
+
+  public ChunkBuffer append(Iterable<Chunk> chunks) {
+    for (Chunk chunk : chunks) {
+      append(chunk);
+    }
+    return this;
   }
 
   public ChunkBuffer append(Chunk chunk) {

@@ -59,6 +59,9 @@ public class PropertyMap implements Iterable<PropertyType<?>> {
     }
 
     void addValue(Object value) {
+      if (value == null) {
+        throw new NullPointerException("Value can't be null");
+      }
       if (size >= objects.length) {
         Object[] copy = new Object[size + 4];
         System.arraycopy(objects, 0, copy, 0, objects.length);

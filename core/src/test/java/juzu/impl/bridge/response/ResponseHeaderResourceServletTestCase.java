@@ -13,23 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.impl.io;
 
-import juzu.io.Chunk;
-import juzu.io.Stream;
+package juzu.impl.bridge.response;
 
-/** @author Julien Viet */
-public class SinkStream implements Stream {
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-  /** . */
-  public static final SinkStream INSTANCE = new SinkStream();
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public class ResponseHeaderResourceServletTestCase extends AbstractResponseHeaderTestCase {
 
-  private SinkStream() {
-  }
-
-  public void provide(Chunk chunk) {
-  }
-
-  public void close(Thread.UncaughtExceptionHandler errorHandler) {
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.response.header.resource");
   }
 }

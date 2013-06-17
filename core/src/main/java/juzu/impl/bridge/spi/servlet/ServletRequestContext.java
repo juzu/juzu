@@ -16,6 +16,7 @@
 package juzu.impl.bridge.spi.servlet;
 
 import juzu.asset.AssetLocation;
+import juzu.impl.bridge.spi.web.HttpStream;
 import juzu.impl.bridge.spi.web.WebRequestContext;
 import juzu.impl.common.Lexers;
 import juzu.impl.io.BinaryOutputStream;
@@ -23,7 +24,6 @@ import juzu.io.Stream;
 import juzu.request.RequestParameter;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
@@ -112,44 +112,56 @@ public class ServletRequestContext extends WebRequestContext {
   }
 
   @Override
-  public Stream getStream(Charset charset) throws IOException {
-    return new ServletBinaryOutputStream(charset, resp.getOutputStream());
+  public HttpStream getStream(int status) {
+    return new ServletStream(status);
   }
 
-  @Override
-  protected void end(Stream stream) {
-    ((ServletBinaryOutputStream)stream).end();
-  }
-
-  class ServletBinaryOutputStream extends BinaryOutputStream {
+  public class ServletStream extends HttpStream {
 
     /** . */
-    private boolean closed;
+    private Stream dataStream;
 
     /** . */
     private AsyncContext context;
 
-    ServletBinaryOutputStream(Charset charset, ServletOutputStream out) {
-      super(charset, out);
+    ServletStream(int status) {
+      super(ServletRequestContext.this, status);
     }
 
-    public void close() {
-      closed = true;
+    @Override
+    public void setStatusCode(int status) {
+      resp.setStatus(status);
+    }
+
+    @Override
+    protected Stream getDataStream(boolean create) {
+      if (dataStream == null && create) {
+        try {
+          dataStream = new BinaryOutputStream(charset, resp.getOutputStream());
+        }
+        catch (IOException e) {
+          throw new UnsupportedOperationException("Handle me gracefully", e);
+        }
+      }
+      return dataStream;
+    }
+
+    @Override
+    protected void endAsync() {
       if (context != null) {
         System.out.println("COMPLETING ASYNC");
         context.complete();
       }
     }
 
-    void end() {
+    @Override
+    protected void beginAsync() {
       if (req.isAsyncStarted()) {
         System.out.println("DETECTED ASYNC ALREADY STARTED");
         context = req.getAsyncContext();
       } else {
-        if (!closed) {
-          System.out.println("STARTING ASYNC");
-          context = req.startAsync();
-        }
+        System.out.println("STARTING ASYNC");
+        context = req.startAsync();
       }
     }
   }
@@ -161,16 +173,13 @@ public class ServletRequestContext extends WebRequestContext {
     }
   }
 
-  public void setHeaders(String name, String value) {
-    resp.setHeader(name, value);
-  }
-
   public void sendRedirect(String location) throws IOException {
     resp.sendRedirect(location);
   }
 
   public void setContentType(String mimeType, Charset charset) {
-    resp.setCharacterEncoding(charset.name());
+    String name = charset.name();
+    resp.setCharacterEncoding(name);
     resp.setContentType(mimeType);
   }
 

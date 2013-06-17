@@ -24,8 +24,16 @@ import juzu.PropertyType;
  */
 public abstract class Chunk {
 
+  public static Data.Char create(char c) {
+    return new Data.Char(c);
+  }
+
   public static Data.CharSequence create(CharSequence data) {
-    return new Data.CharSequence(data);
+    return create(data, 0, data.length());
+  }
+
+  public static Data.CharSequence create(CharSequence data, int start, int end) {
+    return new Data.CharSequence(data, start, end);
   }
 
   public static Data.InputStream create(java.io.InputStream data) {
@@ -51,12 +59,18 @@ public abstract class Chunk {
   public static class Property<T> extends Chunk {
 
     /** . */
-    private final T value;
+    public final T value;
 
     /** . */
-    private final PropertyType<T> type;
+    public final PropertyType<T> type;
 
     public Property(T value, PropertyType<T> type) {
+      if (type == null) {
+        throw new NullPointerException("Property type cannot be null for value " + value);
+      }
+      if (value == null) {
+        throw new NullPointerException("Property value cannot be null for type " + type);
+      }
       this.value = value;
       this.type = type;
     }
@@ -96,13 +110,34 @@ public abstract class Chunk {
     /**
      * A chars chunk.
      */
+    public static class Char extends Data {
+
+      /** . */
+      public final char value;
+
+      public Char(char value) {
+        this.value = value;
+      }
+    }
+
+    /**
+     * A chars chunk.
+     */
     public static class CharSequence extends Data {
 
       /** . */
       public final java.lang.CharSequence data;
 
-      private CharSequence(java.lang.CharSequence data) {
+      /** . */
+      public final int start;
+
+      /** . */
+      public final int end;
+
+      private CharSequence(java.lang.CharSequence data, int start, int end) {
         this.data = data;
+        this.start = start;
+        this.end = end;
       }
     }
 

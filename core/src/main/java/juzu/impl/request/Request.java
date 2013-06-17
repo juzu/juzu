@@ -45,6 +45,7 @@ import juzu.request.RenderContext;
 import juzu.request.RequestContext;
 import juzu.request.RequestParameter;
 import juzu.request.ResourceContext;
+import juzu.request.Result;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
@@ -92,7 +93,7 @@ public class Request implements ScopingContext {
   private final Method<?> method;
 
   /** The response. */
-  private Response response;
+  private Result result;
 
   public Request(
     ControllerPlugin controllerPlugin,
@@ -110,6 +111,17 @@ public class Request implements ScopingContext {
     this.arguments = arguments;
     this.controllerPlugin = controllerPlugin;
     this.method = method;
+  }
+
+  public ClientContext getClientContext() {
+    RequestBridge bridge = getBridge();
+    if (bridge instanceof ActionBridge) {
+      return ((ActionBridge)bridge).getClientContext();
+    } else if (bridge instanceof ResourceBridge) {
+      return ((ResourceBridge)bridge).getClientContext();
+    } else {
+      return null;
+    }
   }
 
   public HttpContext getHttpContext() {
@@ -144,12 +156,20 @@ public class Request implements ScopingContext {
     return bridge;
   }
 
-  public Response getResponse() {
-    return response;
+  public Result getResult() {
+    return result;
+  }
+
+  public void setResult(Result result) {
+    this.result = result;
   }
 
   public void setResponse(Response response) {
-    this.response = response;
+    if (response == null) {
+      result = null;
+    } else {
+      result = response.result();
+    }
   }
 
   public Map<String, RequestParameter> getParameters() {
@@ -231,7 +251,7 @@ public class Request implements ScopingContext {
         // Dispatch request
         Response response = dispatch(this, controllerPlugin.getInjectionContext());
         if (response != null) {
-          this.response = response;
+          setResponse(response);
         }
       }
       else {

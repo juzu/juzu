@@ -16,15 +16,11 @@
 
 package juzu.impl.bridge.spi.web;
 
-import juzu.PropertyMap;
-import juzu.PropertyType;
-import juzu.Response;
-import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.ViewStreamable;
 import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.request.Method;
+import juzu.request.Result;
 import juzu.request.RequestParameter;
 
 import java.util.Map;
@@ -45,31 +41,16 @@ public abstract class WebMimeBridge extends WebRequestBridge implements MimeBrid
   boolean send() throws Exception {
     if (super.send()) {
       return true;
-    } else if (response instanceof Response.Status) {
+    } else if (response instanceof Result.Status) {
 
       // For now we hardcode this
-      Response.Status status = (Response.Status)response;
+      Result.Status status = (Result.Status)response;
 
       //
-      PropertyMap properties = response.getProperties();
       AssetPlugin assetPlugin = (AssetPlugin)handler.getBridge().getApplication().getPlugin("asset");
 
-      // Resolve stylesheets Asset -> Asset.Value
-      Iterable<String> stylesheets = properties.getValues(PropertyType.STYLESHEET);
-      if (stylesheets != null) {
-        Iterable<Asset> stylesheetValues =  assetPlugin.getStylesheetManager().resolveAssets(stylesheets);
-        properties.setValues(ViewStreamable.STYLESHEET_ASSET, stylesheetValues);
-      }
-
-      // Resolve scripts Asset -> Asset.Value
-      Iterable<String> scripts = properties.getValues(PropertyType.SCRIPT);
-      if (scripts != null) {
-        Iterable<Asset> scriptValues = assetPlugin.getScriptManager().resolveAssets(scripts);
-        properties.setValues(ViewStreamable.SCRIPT_ASSET, scriptValues);
-      }
-
       //
-      http.getRequestContext().send(status);
+      http.getRequestContext().send(assetPlugin, status);
 
       //
       return true;

@@ -16,8 +16,8 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.Response;
 import juzu.impl.plugin.PluginDescriptor;
+import juzu.request.Result;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.EventBridge;
@@ -30,25 +30,15 @@ import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.ContextualParameter;
-import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.RequestParameter;
-import juzu.request.ActionContext;
-import juzu.request.ApplicationContext;
-import juzu.request.ClientContext;
-import juzu.request.HttpContext;
 import juzu.request.Phase;
-import juzu.request.RequestContext;
-import juzu.request.ResourceContext;
-import juzu.request.SecurityContext;
-import juzu.request.UserContext;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -135,8 +125,6 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     Request request = new Request(this, method, parameters, bridge);
 
     //
-
-    //
     ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
     try {
       ClassLoader classLoader = injectionContext.getClassLoader();
@@ -145,10 +133,10 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
 
 
       request.invoke();
-      Response response = request.getResponse();
-      if (response != null) {
+      Result result = request.getResult();
+      if (result != null) {
         try {
-          bridge.setResponse(response);
+          bridge.setResult(result);
         }
         catch (IOException e) {
           throw new UndeclaredIOException(e);

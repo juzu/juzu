@@ -30,7 +30,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 
 /** @author Julien Viet */
-public abstract class OutputStream implements Stream {
+public abstract class OutputStream implements Stream, Closeable {
 
   /** . */
   public static final int BUFFER_SIZE = 512;
@@ -54,7 +54,7 @@ public abstract class OutputStream implements Stream {
     return SinkStream.INSTANCE;
   }
 
-  public final void provide(Chunk chunk) {
+  public void provide(Chunk chunk) {
     try {
       if (chunk instanceof Chunk.Data) {
         Chunk.Data data = (Chunk.Data)chunk;
@@ -63,7 +63,11 @@ public abstract class OutputStream implements Stream {
         } else if (data instanceof Chunk.Data.Chars) {
           append(CharBuffer.wrap(((Chunk.Data.Chars)data).data));
         } else if (data instanceof Chunk.Data.CharSequence) {
-          append(((Chunk.Data.CharSequence)data).data);
+          Chunk.Data.CharSequence cs = (Chunk.Data.CharSequence)data;
+          append(cs.data, cs.start, cs.end);
+        } else if (data instanceof Chunk.Data.Char) {
+          Chunk.Data.Char cs = (Chunk.Data.Char)data;
+          append(cs.value);
         } else if (data instanceof Chunk.Data.InputStream) {
           ByteArrayOutputStream baos = Tools.copy(((Chunk.Data.InputStream)data).data, new ByteArrayOutputStream());
           append(baos.toByteArray());

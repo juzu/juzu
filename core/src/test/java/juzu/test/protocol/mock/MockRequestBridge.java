@@ -18,11 +18,15 @@ package juzu.test.protocol.mock;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.Response;
 import juzu.Scope;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.Tools;
+import juzu.impl.io.BinaryOutputStream;
+import juzu.impl.io.BinaryStream;
 import juzu.impl.request.ControlParameter;
+import juzu.request.Result;
+import juzu.io.Chunk;
+import juzu.io.Stream;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
@@ -42,7 +46,9 @@ import juzu.request.Phase;
 import juzu.request.UserContext;
 import juzu.test.AbstractTestCase;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,7 +90,19 @@ public abstract class MockRequestBridge implements RequestBridge {
   protected Map<String, RequestParameter> requestParameters;
 
   /** . */
-  protected Response response;
+  protected Result result;
+
+  /** . */
+  protected ByteArrayOutputStream buffer = null;
+
+  /** . */
+  protected Charset charset = Tools.ISO_8859_1;
+
+  /** . */
+  protected String mimeType;
+
+  /** . */
+  protected String title;
 
   public MockRequestBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
 
@@ -263,12 +281,39 @@ public abstract class MockRequestBridge implements RequestBridge {
   public void end() {
   }
 
-  public void setResponse(Response response) throws IllegalStateException, IOException {
-    this.response = response;
+  public void setResult(Result result) throws IllegalArgumentException, IOException {
+    if (result instanceof Result.Status) {
+      Result.Status body = (Result.Status)result;
+      body.streamable.send(new Stream() {
+        BinaryStream dataStream = null;
+        public void provide(Chunk chunk) {
+          if (chunk instanceof Chunk.Property) {
+            Chunk.Property property = (Chunk.Property)chunk;
+            if (property.type == PropertyType.CHARSET) {
+              charset = (Charset)property.value;
+            } else if (property.type == PropertyType.MIME_TYPE) {
+              mimeType = (String)property.value;
+            } else if (property.type == PropertyType.TITLE) {
+              title = (String)property.value;
+            }
+          } else if (chunk instanceof Chunk.Data) {
+            Chunk.Data data = (Chunk.Data)chunk;
+            if (dataStream == null) {
+              dataStream = new BinaryOutputStream(charset, buffer = new ByteArrayOutputStream());
+            }
+            dataStream.provide(data);
+          }
+        }
+        public void close(Thread.UncaughtExceptionHandler errorHandler) {
+          dataStream.close(errorHandler);
+        }
+      });
+    }
+    this.result = result;
   }
 
   public <T extends Throwable> T assertFailure(Class<T> expected) {
-    Response.Error error = AbstractTestCase.assertInstanceOf(Response.Error.class, response);
-    return AbstractTestCase.assertInstanceOf(expected, error.getCause());
+    Result.Error error = AbstractTestCase.assertInstanceOf(Result.Error.class, result);
+    return AbstractTestCase.assertInstanceOf(expected, error.cause);
   }
 }
