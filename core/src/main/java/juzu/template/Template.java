@@ -32,7 +32,7 @@ import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
 import juzu.request.ApplicationContext;
 import juzu.request.MimeContext;
-import juzu.request.RequestContext;
+import juzu.request.Phase;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -346,7 +346,7 @@ public abstract class Template {
 
     private Locale computeLocale() {
       if (locale == null) {
-        return Request.getCurrent().getContext().getUserContext().getLocale();
+        return Request.getCurrent().getUserContext().getLocale();
       } else {
         return locale;
       }
@@ -411,7 +411,7 @@ public abstract class Template {
             if (!bundleLoaded) {
               bundleLoaded = true;
               if (locale != null) {
-                ApplicationContext applicationContext = Request.getCurrent().getContext().getApplicationContext();
+                ApplicationContext applicationContext = Request.getCurrent().getApplicationContext();
                 if (applicationContext != null) {
                   bundle = applicationContext.resolveBundle(locale);
                 }
@@ -538,19 +538,13 @@ public abstract class Template {
      * Renders the template and set the response on the current {@link MimeContext}
      */
     public void render() throws TemplateExecutionException, UndeclaredIOException {
-      try {
-        RequestContext context = Request.getCurrent().getContext();
-        if (context instanceof MimeContext) {
-          MimeContext mime = (MimeContext)context;
-          Response.Content render = status(200);
-          mime.setResponse(render);
-        }
-        else {
-          throw new AssertionError("does not make sense");
-        }
+      Request context = Request.getCurrent();
+      if (context.getPhase() == Phase.VIEW ||context.getPhase() == Phase.RESOURCE) {
+        Response.Content render = status(200);
+        context.setResponse(render);
       }
-      catch (IOException e) {
-        throw new UndeclaredIOException(e);
+      else {
+        throw new AssertionError("does not make sense");
       }
     }
   }

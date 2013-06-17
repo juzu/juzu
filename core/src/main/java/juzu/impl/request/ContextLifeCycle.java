@@ -68,7 +68,7 @@ public class ContextLifeCycle {
       }
 
       // End scopes
-      if (request.context.getPhase() == Phase.VIEW) {
+      if (request.getPhase() == Phase.VIEW) {
         ScopedContext flashScope = request.bridge.getScopedContext(Scope.FLASH, false);
         if (flashScope != null) {
           Tools.safeClose(flashScope);

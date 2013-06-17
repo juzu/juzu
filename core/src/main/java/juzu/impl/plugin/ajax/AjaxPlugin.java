@@ -33,7 +33,7 @@ import juzu.io.Chunk;
 import juzu.io.Stream;
 import juzu.io.StreamableDecorator;
 import juzu.plugin.ajax.Ajax;
-import juzu.request.RenderContext;
+import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -99,7 +99,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
     request.invoke();
 
     //
-    if (request.getContext() instanceof RenderContext) {
+    if (request.getPhase() == Phase.VIEW) {
       Response response = request.getResponse();
       if (response instanceof Response.Content) {
         Response.Content render = (Response.Content)response;
@@ -203,7 +203,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
             //
             for (Map.Entry<String, Method> entry : table.entrySet()) {
-              String baseURL = request.getContext().createDispatch(entry.getValue()).toString();
+              String baseURL = request.createDispatch(entry.getValue()).toString();
               sb.append("<div data-method-id=\"");
               sb.append(entry.getValue().getId());
               sb.append("\" data-url=\"");

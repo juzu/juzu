@@ -35,13 +35,18 @@ import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.request.ActionContext;
+import juzu.request.ApplicationContext;
+import juzu.request.ClientContext;
 import juzu.request.Dispatch;
 import juzu.request.EventContext;
+import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.RenderContext;
 import juzu.request.RequestContext;
 import juzu.request.RequestParameter;
 import juzu.request.ResourceContext;
+import juzu.request.SecurityContext;
+import juzu.request.UserContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -75,9 +80,6 @@ public class Request implements ScopingContext {
   final RequestBridge bridge;
 
   /** . */
-  final RequestContext context;
-
-  /** . */
   private final ControllerPlugin controllerPlugin;
 
   /** . */
@@ -85,6 +87,9 @@ public class Request implements ScopingContext {
 
   /** . */
   private final Map<ControlParameter, Object> arguments;
+
+  /** . */
+  private final Method<?> method;
 
   /** The response. */
   private Response response;
@@ -100,25 +105,35 @@ public class Request implements ScopingContext {
     Map<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(bridge.getArguments());
 
     //
-    if (bridge instanceof RenderBridge) {
-      context = new RenderContext(this, method, (RenderBridge)bridge);
-    }
-    else if (bridge instanceof ActionBridge) {
-      context = new ActionContext(this, method, (ActionBridge)bridge);
-    }
-    else if (bridge instanceof EventBridge) {
-      context = new EventContext(this, method, (EventBridge)bridge);
-    }
-    else {
-      context = new ResourceContext(this, method, (ResourceBridge)bridge);
-    }
-
-    //
-    this.context = context;
     this.bridge = bridge;
     this.parameters = parameters;
     this.arguments = arguments;
     this.controllerPlugin = controllerPlugin;
+    this.method = method;
+  }
+
+  public HttpContext getHttpContext() {
+    return getBridge().getHttpContext();
+  }
+
+  public SecurityContext getSecurityContext() {
+    return getBridge().getSecurityContext();
+  }
+
+  public UserContext getUserContext() {
+    return getBridge().getUserContext();
+  }
+
+  public ApplicationContext getApplicationContext() {
+    return getBridge().getApplicationContext();
+  }
+
+  public Method<?> getMethod() {
+    return method;
+  }
+
+  public Phase getPhase() {
+    return method.getPhase();
   }
 
   public ScopeController getScopeController() {
@@ -139,10 +154,6 @@ public class Request implements ScopingContext {
 
   public Map<String, RequestParameter> getParameters() {
     return parameters;
-  }
-
-  public RequestContext getContext() {
-    return context;
   }
 
   public Map<ControlParameter, Object> getArguments() {
@@ -217,16 +228,11 @@ public class Request implements ScopingContext {
       }
       else if (index == filters.size()) {
 
-        // Get arguments
-        Method<?> method = context.getMethod();
-        Object[] args = new Object[method.getParameters().size()];
-        for (int i = 0;i < args.length;i++) {
-          ControlParameter parameter = method.getParameters().get(i);
-          args[i] = arguments.get(parameter);
-        }
-
         // Dispatch request
-        dispatch(this, args, controllerPlugin.getInjectionContext());
+        Response response = dispatch(this, controllerPlugin.getInjectionContext());
+        if (response != null) {
+          this.response = response;
+        }
       }
       else {
         throw new AssertionError();
@@ -303,8 +309,56 @@ public class Request implements ScopingContext {
     return lifeCycle;
   }
 
-  private <B, I> void dispatch(Request request, Object[] args, InjectionContext<B, I> manager) {
-    RequestContext context = request.getContext();
+  private <T> void tryInject(Request request, ContextualParameter parameter, Class<T> type, T instance) {
+    if (instance != null && type.isAssignableFrom(parameter.getType())) {
+      request.setArgument(parameter, instance);
+    }
+  }
+
+  private <B, I> Response dispatch(Request request, InjectionContext<B, I> manager) {
+
+    // Create context
+    RequestContext context;
+    if (bridge instanceof RenderBridge) {
+      context = new RenderContext(this, method, (RenderBridge)bridge);
+    }
+    else if (bridge instanceof ActionBridge) {
+      context = new ActionContext(this, method, (ActionBridge)bridge);
+    }
+    else if (bridge instanceof EventBridge) {
+      context = new EventContext(this, method, (EventBridge)bridge);
+    }
+    else {
+      context = new ResourceContext(this, method, (ResourceBridge)bridge);
+    }
+
+    //
+    for (ControlParameter parameter : method.getParameters()) {
+      if (parameter instanceof ContextualParameter) {
+        ContextualParameter contextualParameter = (ContextualParameter)parameter;
+        tryInject(request, contextualParameter, RequestContext.class, context);
+        tryInject(request, contextualParameter, HttpContext.class, request.getHttpContext());
+        tryInject(request, contextualParameter, SecurityContext.class, request.getSecurityContext());
+        tryInject(request, contextualParameter, ApplicationContext.class, request.getApplicationContext());
+        tryInject(request, contextualParameter, UserContext.class, request.getUserContext());
+        if (context instanceof ResourceContext) {
+          ResourceContext resourceContext = (ResourceContext)context;
+          tryInject(request, contextualParameter, ClientContext.class, resourceContext.getClientContext());
+        } else if (context instanceof ActionContext) {
+          ActionContext actionContext = (ActionContext)context;
+          tryInject(request, contextualParameter, ClientContext.class, actionContext.getClientContext());
+        }
+      }
+    }
+
+    // Get arguments
+    Object[] args = new Object[method.getParameters().size()];
+    for (int i = 0;i < args.length;i++) {
+      ControlParameter parameter = method.getParameters().get(i);
+      args[i] = arguments.get(parameter);
+    }
+
+    //
     Class<?> type = context.getMethod().getType();
 
     //
@@ -319,7 +373,7 @@ public class Request implements ScopingContext {
         controller = controllerLifeCycle.get();
       }
       catch (InvocationTargetException e) {
-        request.response = Response.error(Tools.safeCause(e));
+        context.setResponse(Response.error(Tools.safeCause(e)));
         controller = null;
       }
 
@@ -332,12 +386,12 @@ public class Request implements ScopingContext {
             ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
           }
           catch (Exception e) {
-            request.response = new Response.Error(e);
+            context.setResponse(new Response.Error(e));
           }
         }
 
         // If we have no response yet
-        if (request.getResponse() == null) {
+        if (context.getResponse() == null) {
           // We invoke method on controller
           try {
             Object ret = context.getMethod().getMethod().invoke(controller, args);
@@ -347,11 +401,11 @@ public class Request implements ScopingContext {
               // @Action -> Response.Action
               // @View -> Response.Mime
               // as we can do it
-              request.response = (Response)ret;
+              context.setResponse((Response)ret);
             }
           }
           catch (InvocationTargetException e) {
-            request.response = Response.error(e.getCause());
+             context.setResponse(Response.error(e.getCause()));
           }
           catch (IllegalAccessException e) {
             throw new UnsupportedOperationException("hanle me gracefully", e);
@@ -363,12 +417,15 @@ public class Request implements ScopingContext {
               ((juzu.request.RequestLifeCycle)controller).endRequest(context);
             }
             catch (Exception e) {
-              request.response = Response.error(e);
+              context.setResponse(Response.error(e));
             }
           }
         }
       }
     }
+
+    //
+    return context.getResponse();
   }
 
   private Dispatch createDispatch(Method<?> method, DispatchBridge spi) {

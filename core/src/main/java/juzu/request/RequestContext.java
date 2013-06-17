@@ -37,6 +37,9 @@ public abstract class RequestContext {
   /** . */
   protected final Request request;
 
+  /** . */
+  protected Response response;
+
   public RequestContext(Request request, Method method) {
     this.request = request;
     this.method = method;
@@ -129,10 +132,10 @@ public abstract class RequestContext {
   }
 
   public Response getResponse() {
-    return request.getResponse();
+    return response;
   }
 
   public void setResponse(Response response) {
-    request.setResponse(response);
+    this.response = response;
   }
 }

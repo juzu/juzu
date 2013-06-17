@@ -27,7 +27,7 @@ public class BundleProvider implements Provider<ResourceBundle> {
 
   public ResourceBundle get() {
     Request request = Request.getCurrent();
-    Locale locale = request.getContext().getUserContext().getLocale();
-    return request.getContext().getApplicationContext().resolveBundle(locale);
+    Locale locale = request.getUserContext().getLocale();
+    return request.getApplicationContext().resolveBundle(locale);
   }
 }

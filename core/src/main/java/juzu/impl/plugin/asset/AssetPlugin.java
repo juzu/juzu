@@ -218,7 +218,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     request.invoke();
 
     //
-    if (request.getContext().getPhase() == Phase.VIEW) {
+    if (request.getPhase() == Phase.VIEW) {
       Response response = request.getResponse();
       if (response instanceof Response.Content && (scripts.length > 0 || stylesheets.length > 0)) {
         Response.Content render = (Response.Content)response;

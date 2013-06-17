@@ -164,26 +164,6 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
   }
 
   public void invoke(Request request) {
-    // Inject RequestContext in the arguments
-    RequestContext context = request.getContext();
-    Method<?> method = context.getMethod();
-    for (ControlParameter parameter : method.getParameters()) {
-      if (parameter instanceof ContextualParameter) {
-        ContextualParameter contextualParameter = (ContextualParameter)parameter;
-        tryInject(request, contextualParameter, RequestContext.class, context);
-        tryInject(request, contextualParameter, HttpContext.class, context.getHttpContext());
-        tryInject(request, contextualParameter, SecurityContext.class, context.getSecurityContext());
-        tryInject(request, contextualParameter, ApplicationContext.class, context.getApplicationContext());
-        tryInject(request, contextualParameter, UserContext.class, context.getUserContext());
-        if (context instanceof ResourceContext) {
-          ResourceContext resourceContext = (ResourceContext)context;
-          tryInject(request, contextualParameter, ClientContext.class, resourceContext.getClientContext());
-        } else if (context instanceof ActionContext) {
-          ActionContext actionContext = (ActionContext)context;
-          tryInject(request, contextualParameter, ClientContext.class, actionContext.getClientContext());
-        }
-      }
-    }
     request.invoke();
   }
 
