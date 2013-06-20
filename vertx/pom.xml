@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>0.7.0-beta11</version>
+    <version>0.7.0-beta12-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-vertx</artifactId>
-  <version>0.7.0-beta11</version>
+  <version>0.7.0-beta12-SNAPSHOT</version>
 
   <name>Juzu Vert.x</name>
   <description>Integrate Juzu with Vert.x</description>
