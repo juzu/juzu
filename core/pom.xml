@@ -140,6 +140,11 @@
       <artifactId>operadriver</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.detro.ghostdriver</groupId>
+      <artifactId>phantomjsdriver</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- -->
     <dependency>

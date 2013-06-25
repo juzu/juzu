@@ -16,8 +16,9 @@
 
 package juzu.impl.plugin.asset;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlLink;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.AbstractWebTestCase;
@@ -57,7 +58,7 @@ public class MimeTypeTestCase extends AbstractWebTestCase {
     assertEquals(Arrays.asList("OK MEN"), alerts);
 
     // CSS
-    List<HtmlElement> links = page.getElementsByTagName("link");
+    DomNodeList<DomElement> links = page.getElementsByTagName("link");
     assertEquals(2, links.size());
     HtmlLink link1 = (HtmlLink)links.get(0);
     assertEquals("stylesheet", link1.getRelAttribute());

@@ -16,9 +16,9 @@
 
 package juzu.impl.plugin.asset;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlLink;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.AbstractWebTestCase;
@@ -59,7 +59,7 @@ public abstract class AbstractLocationTestCase extends AbstractWebTestCase {
     assertEquals(Arrays.asList("OK MEN"), alerts);
 
     // CSS
-    DomNodeList<HtmlElement> links = page.getElementsByTagName("link");
+    DomNodeList<DomElement> links = page.getElementsByTagName("link");
     assertEquals(1, links.size());
     HtmlLink link = (HtmlLink)links.get(0);
     assertTrue(link.getHrefAttribute().endsWith("main.css"));
