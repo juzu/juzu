@@ -1,0 +1,6 @@
+<script type="text/javascript">
+	require(["Bar"], function(bar) {
+		alert(bar.text);		
+	});
+</script>
+<a id="trigger" href="@{A.foo()}">jump to foo</a>

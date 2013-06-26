@@ -5,3 +5,4 @@ juzu.impl.plugin.ajax.AjaxPlugin
 juzu.impl.plugin.asset.AssetPlugin
 juzu.impl.plugin.router.RouterPlugin
 juzu.impl.plugin.bundle.BundlePlugin
+juzu.impl.plugin.amd.AMDPlugin
