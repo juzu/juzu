@@ -50,10 +50,10 @@ import juzu.request.Result;
 public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
-  private String[] defines;
+  private Module[] defines;
 
   /** . */
-  private String[] requires;
+  private Module[] requires;
 
   /** . */
   private AMDDescriptor descriptor;
@@ -180,8 +180,8 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     this.requires = process(descriptor.getRequires(), manager);
   }
 
-  private String[] process(List<AMDMetaData> modules, AMDManager manager) throws Exception {
-    ArrayList<String> assets = new ArrayList<String>();
+  private Module[] process(List<AMDMetaData> modules, AMDManager manager) throws Exception {
+    ArrayList<Module> assets = new ArrayList<Module>();
     for (AMDMetaData module : modules) {
 
       // Validate assets
@@ -207,12 +207,12 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
       }
 
       //
-      String id = manager.addAMD(module, url);
+      Module id = manager.addAMD(module, url);
       assets.add(id);
     }
 
     //
-    return assets.toArray(new String[assets.size()]);
+    return assets.toArray(new Module[assets.size()]);
   }
 
   public void invoke(Request request) {
@@ -229,11 +229,11 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
             protected void sendHeader(Stream consumer) {
               consumer.provide(new Chunk.Property<String>("juzu.amd", PropertyType.SCRIPT));
               consumer.provide(new Chunk.Property<String>("juzu.amd.wrapper", PropertyType.SCRIPT));
-              for (String define : defines) {
-                consumer.provide(new Chunk.Property<String>(define, PropertyType.AMD));
+              for (Module define : defines) {
+                consumer.provide(new Chunk.Property<Module>(define, Module.TYPE));
               }
-              for (String require : requires) {
-                consumer.provide(new Chunk.Property<String>(require, PropertyType.AMD));
+              for (Module require : requires) {
+                consumer.provide(new Chunk.Property<Module>(require, Module.TYPE));
               }
             }
           });

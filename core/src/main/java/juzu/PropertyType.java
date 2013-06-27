@@ -30,9 +30,6 @@ import java.util.Map;
  */
 public abstract class PropertyType<T> {
 
-  /** AMD. */
-  public static PropertyType<String> AMD = new PropertyType<String>(){};
-  
   /** Script. */
   public static PropertyType<String> SCRIPT = new PropertyType<String>(){};
 

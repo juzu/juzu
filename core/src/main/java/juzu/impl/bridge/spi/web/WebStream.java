@@ -22,6 +22,7 @@ import juzu.impl.asset.Asset;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.plugin.amd.AMDManager;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.amd.Module;
 import juzu.io.Chunk;
 import juzu.io.Stream;
 import org.w3c.dom.Element;
@@ -86,8 +87,8 @@ public abstract class WebStream implements AsyncStream {
           page.stylesheets.add(((String)property.value));
         } else if (property.type == PropertyType.SCRIPT) {
           page.scripts.add(((String)property.value));
-        } else if (property.type == PropertyType.AMD) {
-          page.amds.add(((String)property.value));
+        } else if (property.type == Module.TYPE) {
+          page.modules.add(((Module)property.value));
         } else if (property.type == PropertyType.HEADER_TAG) {
           page.headerTags.add(((Element)property.value));
         } else {
@@ -102,10 +103,6 @@ public abstract class WebStream implements AsyncStream {
           if (page.scripts.size() > 0 && scriptManager != null) {
             Iterable<Asset> scriptAssets =  scriptManager.resolveAssets(page.scripts);
             Tools.addAll(page.scriptAssets, scriptAssets);
-          }
-          if (page.amds.size() > 0 && amdManager != null) {
-            Iterable<Asset> amdAssets = amdManager.resolveAssets(page.amds);
-            Tools.addAll(page.amdAssets, amdAssets);
           }
           status = STREAMING;
           page.sendHeader(stream);
@@ -178,9 +175,6 @@ public abstract class WebStream implements AsyncStream {
 
     /** . */
     private final LinkedList<String> scripts = new LinkedList<String>();
-    
-    /** . */
-    private final LinkedList<String> amds = new LinkedList<String>();
 
     /** . */
     private final LinkedList<Element> headerTags = new LinkedList<Element>();
@@ -192,7 +186,7 @@ public abstract class WebStream implements AsyncStream {
     private final LinkedList<Asset> stylesheetAssets = new LinkedList<Asset>();
     
     /** .*/
-    private final LinkedList<Asset> amdAssets = new LinkedList<Asset>();
+    private final LinkedList<Module> modules = new LinkedList<Module>();
 
     void clear() {
       this.title = null;
@@ -200,7 +194,7 @@ public abstract class WebStream implements AsyncStream {
       this.stylesheetAssets.clear();
       this.scriptAssets.clear();
       this.headerTags.clear();
-      this.amdAssets.clear();
+      this.modules.clear();
     }
 
     void sendHeader(Stream stream) {
@@ -231,8 +225,8 @@ public abstract class WebStream implements AsyncStream {
         stream.provide(Chunk.create(url));
         stream.provide(Chunk.create("\"></link>\n"));
       }
-      if (!amdAssets.isEmpty()) {
-        renderAMD(amdAssets, stream);
+      if (!modules.isEmpty()) {
+        renderAMD(modules, stream);
       }
       for (Asset asset : scriptAssets) {
         String url = renderAssetURL(asset.getLocation(), asset.getURI());
@@ -262,15 +256,15 @@ public abstract class WebStream implements AsyncStream {
               "</html>\n"));
     }
     
-    private void renderAMD(Iterable<Asset> modules, Stream stream) {
+    private void renderAMD(Iterable<Module> modules, Stream stream) {
       StringBuilder buffer = new StringBuilder();
       buffer.append("<script type=\"text/javascript\">");
       buffer.append(" var require={");
       buffer.append("\"paths\":{");
-      for (Iterator<Asset> i = modules.iterator(); i.hasNext();) {
-        Asset path = i.next();
-        buffer.append("\"").append(path.getId()).append("\":\"");
-        String uri = path.getURI();
+      for (Iterator<Module> i = modules.iterator(); i.hasNext();) {
+        Module path = i.next();
+        buffer.append("\"").append(path.getName()).append("\":\"");
+        String uri = path.getUri();
         uri = uri.substring(0, uri.lastIndexOf(".js"));
         buffer.append(renderAssetURL(path.getLocation(), uri));
         buffer.append("\"");

@@ -26,14 +26,11 @@ import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-import juzu.impl.asset.Asset;
-import juzu.impl.asset.AssetNode;
 import juzu.impl.common.CompositeReader;
 
 /**
@@ -44,12 +41,12 @@ import juzu.impl.common.CompositeReader;
 public class AMDManager {
 
   /** . */
-  protected final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
+  protected final LinkedHashMap<String, Module> assets = new LinkedHashMap<String, Module>();
 
   /** . */
   protected final HashMap<String, URL> resources = new HashMap<String, URL>();
 
-  public String addAMD(AMDMetaData data, URL url) throws NullPointerException, IllegalArgumentException, IOException {
+  public Module addAMD(AMDMetaData data, URL url) throws NullPointerException, IllegalArgumentException, IOException {
     String name = data.name;
 
     // Use value hashcode if no id is provided
@@ -58,9 +55,9 @@ public class AMDManager {
     }
 
     //
-    if (!assets.keySet().contains(name)) {
-      AssetNode asset = new AssetNode(name, data.location, data.path, Collections.<String> emptySet());
-      assets.put(name, asset);
+    Module module = assets.get(name);
+    if (module == null) {
+      assets.put(name, module = new Module(name, data.location, data.path));
 
       //
       switch (data.location) {
@@ -82,20 +79,11 @@ public class AMDManager {
     }
 
     //
-    return name;
+    return module;
   }
 
   public URL resolveAsset(String path) {
     return resources.get(path);
-  }
-
-  public Iterable<Asset> resolveAssets(Iterable<String> foo) {
-    LinkedList<Asset> resolved = new LinkedList<Asset>();
-    for (String s : foo) {
-      AssetNode asset = assets.get(s);
-      resolved.addLast(Asset.of(asset.getId(), asset.getLocation(), asset.getValue()));
-    }
-    return resolved;
   }
 
   private void joinDepenencies(StringBuilder sb, AMDMetaData data) {
