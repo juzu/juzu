@@ -231,18 +231,16 @@ public abstract class WebStream implements AsyncStream {
         stream.provide(Chunk.create(url));
         stream.provide(Chunk.create("\"></link>\n"));
       }
+      if (!amdAssets.isEmpty()) {
+        renderAMD(amdAssets, stream);
+      }
       for (Asset asset : scriptAssets) {
         String url = renderAssetURL(asset.getLocation(), asset.getURI());
         stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
         stream.provide(Chunk.create(url));
         stream.provide(Chunk.create("\"></script>\n"));
       }
-      
-      //
-      if (!amdAssets.isEmpty()) {
-        renderAMD(amdAssets, stream);
-      }
-      
+
       for (Element headerTag : headerTags) {
         try {
           StringBuilder buffer = new StringBuilder();
@@ -265,23 +263,11 @@ public abstract class WebStream implements AsyncStream {
     }
     
     private void renderAMD(Iterable<Asset> modules, Stream stream) {
-      Asset require = null;
-      Asset wrapper = null;
-      ArrayList<Asset> paths = new ArrayList<Asset>();
       StringBuilder buffer = new StringBuilder();
-      for (Asset module : modules) {
-        if (module.getId().equals("juzu.amd")) {
-          require = module;
-        } else if (module.getId().equals("juzu.amd.wrapper")) {
-          wrapper = module;
-        } else {
-          paths.add(module);
-        }
-      }
       buffer.append("<script type=\"text/javascript\">");
       buffer.append(" var require={");
       buffer.append("\"paths\":{");
-      for (Iterator<Asset> i = paths.iterator(); i.hasNext();) {
+      for (Iterator<Asset> i = modules.iterator(); i.hasNext();) {
         Asset path = i.next();
         buffer.append("\"").append(path.getId()).append("\":\"");
         String uri = path.getURI();
@@ -295,14 +281,6 @@ public abstract class WebStream implements AsyncStream {
       buffer.append("}");
       buffer.append("};");
       buffer.append("</script>");
-
-      buffer.append("<script type=\"text/javascript\" src=\"");
-      buffer.append(renderAssetURL(require.getLocation(), require.getURI()));
-      buffer.append("\"></script>\n");
-
-      buffer.append("<script type=\"text/javascript\" src=\"");
-      buffer.append(renderAssetURL(wrapper.getLocation(), wrapper.getURI()));
-      buffer.append("\"></script>\n");
       stream.provide(Chunk.create(buffer));
     }
   }

@@ -31,6 +31,7 @@ import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.asset.AssetMetaData;
 import juzu.impl.asset.amd.AMDDependency;
 import juzu.impl.asset.amd.AMDMetaData;
 import juzu.impl.asset.amd.AMDScriptManager;
@@ -64,6 +65,11 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   private PluginContext context;
+
+  /** . */
+  @Inject
+  @Named("juzu.asset_manager.script")
+  AssetManager manager2;
 
   /** . */
   @Inject
@@ -164,18 +170,18 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    manager.addAMD(new AMDMetaData("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js"),
-      requirejsURL);
-
     URL wrapperjsURL = AMDPlugin.class.getClassLoader().getResource("juzu/impl/plugin/amd/wrapper.js");
     if (wrapperjsURL == null) {
       throw new Exception("Not found wrapper.js");
     }
 
     //
-    manager.addAMD(new AMDMetaData("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js"),
+    manager2.addAsset(new AssetMetaData("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js"),
+        requirejsURL);
+    manager2.addAsset(new AssetMetaData("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js"),
       wrapperjsURL);
 
+    //
     this.defines = process(descriptor.getDefines(), manager);
     this.requires = process(descriptor.getRequires(), manager);
   }
@@ -227,8 +233,8 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
           status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {
             @Override
             protected void sendHeader(Stream consumer) {
-              consumer.provide(new Chunk.Property<String>("juzu.amd", PropertyType.AMD));
-              consumer.provide(new Chunk.Property<String>("juzu.amd.wrapper", PropertyType.AMD));
+              consumer.provide(new Chunk.Property<String>("juzu.amd", PropertyType.SCRIPT));
+              consumer.provide(new Chunk.Property<String>("juzu.amd.wrapper", PropertyType.SCRIPT));
               for (String define : defines) {
                 consumer.provide(new Chunk.Property<String>(define, PropertyType.AMD));
               }

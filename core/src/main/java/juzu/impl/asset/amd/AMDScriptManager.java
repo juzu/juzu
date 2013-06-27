@@ -63,7 +63,7 @@ public class AMDScriptManager extends AssetManager {
       //
       switch (data.location) {
         case APPLICATION :
-          if ("juzu.amd".equals(data.name) || "juzu.amd.wrapper".equals(data.name) || data.isRequire) {
+          if (data.isRequire) {
             resources.put(data.path, url);
           } else {
             String content = wrap(data, url);
