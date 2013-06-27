@@ -4,3 +4,4 @@ juzu.impl.plugin.ajax.AjaxMetaModelPlugin
 juzu.impl.plugin.asset.AssetMetaModelPlugin
 juzu.impl.plugin.binding.BindingMetaModelPlugin
 juzu.impl.plugin.router.metamodel.RouterApplicationMetaModelPlugin
+juzu.impl.plugin.amd.AMDMetaModelPlugin

@@ -1,0 +1,91 @@
+= Juzu WebJars Plugin =
+
+[[WebJars>>http://www.webjars.org/]] are client-side web libraries (e.g. jQuery & Bootstrap) packaged into jar files.
+WebJars allow to declaratively set the version, use a consistent version across an application, and easily deal with transitive dependencies.
+
+Juzu provides a WebJars plugin that copy resources in jar libraries to application assets and then served by Asset plugin or AMD plugin
+
+
+== Usage ==
+
+{{example title="Annotating an application package for declaring WebJars"}}
+{{java}}
+@Application
+@WebJars("foo.js")
+package myapp;
+
+import juzu.Application;
+import juzu.plugin.webjars.WebJars;
+{{/java}}
+{{xml}}
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>foo</artifactId>
+  <version>1.0</version>
+</dependency>
+{{/xml}}
+{{/example}}
+
+The //foo.js// file will be located in the ##myapp.assets## package.
+
+If we want this file to be served with the application we simply add the corresponding ##@Assets## annotation:
+
+{{example title="WebJars and Asset plugin in action"}}
+{{java}}
+@Application
+@WebJars("foo.js")
+@Assets(scripts = { 
+  @Script(
+    id = "foo", 
+    src="foo.js"
+  ) 
+})
+package myapp;
+
+import juzu.Application;
+import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.webjars.WebJars;
+{{/java}}
+{{/example}}
+
+Or in AMD:
+
+{{example title="WebJars and AMD plugin in action"}}
+{{java}}
+@Application
+@WebJars("foo.js")
+@Defines({
+  @Define(
+    name = "Foo", 
+    path="foo.js"
+  ),
+  @Define(
+    name = "Bar", 
+    path="bar.js",
+    dependencies = {@Dependency(name = "Foo")}
+  )
+})  
+package myapp;
+
+import juzu.Application;
+import juzu.plugin.amd.Define;
+import juzu.plugin.amd.Defines;
+import juzu.plugin.amd.Dependency;
+import juzu.plugin.webjars.WebJars;
+{{/java}}
+{{/example}}
+
+== Building ==
+
+Add the WebJars plugin jar to your compilation classpath.
+
+In Maven it can achieved by adding the WebJars plugin dependency to your POM:
+
+{{xml}}
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugins-webjars</artifactId>
+  <version>$[juzu.version]</version>
+</dependency>
+{{/xml}}

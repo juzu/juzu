@@ -97,7 +97,8 @@
     <module>servlet</module>
     <module>portlet</module>
     <module>less</module>
-    <module>upload</module>
+		<module>upload</module>
+		<module>webjars</module>
   </modules>
 
   <profiles>

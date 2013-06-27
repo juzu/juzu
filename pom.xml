@@ -612,12 +612,17 @@
         <version>2.2</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.wikbook</groupId>
-        <artifactId>wikbook.docbkxstyle</artifactId>
-        <version>${wikbook.version}</version>
-      </dependency>
+			<dependency>
+				<groupId>org.wikbook</groupId>
+				<artifactId>wikbook.docbkxstyle</artifactId>
+				<version>${wikbook.version}</version>
+			</dependency>
 
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>webjars-locator</artifactId>
+				<version>0.4</version>
+			</dependency>
     </dependencies>
   </dependencyManagement>
 

@@ -130,4 +130,8 @@ public class UserAgent {
   public List<String> getAlerts(Page page) {
     return alerts.get(page);
   }
+  
+  public void waitForBackgroundJavaScript(long delay) {
+    client.waitForBackgroundJavaScript(delay);
+  }
 }
