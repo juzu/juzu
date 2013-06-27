@@ -14,16 +14,30 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.response;
+package bridge.response.header.actiondirecttoview;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import juzu.Action;
+import juzu.PropertyType;
+import juzu.Response;
+import juzu.Route;
 
-/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
-public class PortletResponseMetaTagViewTestCase extends AbstractMetaTagViewTestCase {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
 
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createPortletDeployment("bridge.response.metatag.view");
+  @juzu.View()
+  public Response.Render index() {
+    return Response.ok("" + A_.foo());
+  }
+
+  @Action
+  @Route("/foo")
+  public Response.View foo() {
+    return A_.bar().withHeader("juu", "juu_value").withNo(PropertyType.REDIRECT_AFTER_ACTION);
+  }
+
+  @juzu.View
+  @Route("/bar")
+  public Response.Render bar() {
+    return Response.ok("pass").withHeader("daa", "daa_value");
   }
 }

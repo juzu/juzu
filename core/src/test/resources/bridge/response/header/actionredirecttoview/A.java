@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package bridge.servlet.response.header.actiondirecttoview;
+package bridge.response.header.actionredirecttoview;
 
 import juzu.Action;
-import juzu.PropertyType;
 import juzu.Response;
 import juzu.Route;
 
@@ -32,7 +31,7 @@ public class A {
   @Action
   @Route("/foo")
   public Response.View foo() {
-    return A_.bar().withHeader("juu", "juu_value").withNo(PropertyType.REDIRECT_AFTER_ACTION);
+    return A_.bar().withHeader("juu", "juu_value");
   }
 
   @juzu.View

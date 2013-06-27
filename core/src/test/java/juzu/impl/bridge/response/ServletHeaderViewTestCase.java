@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.bridge.response;
 
-package bridge.servlet.response.header.view;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import juzu.Response;
-import juzu.View;
+/** @author Julien Viet */
+public class ServletHeaderViewTestCase extends AbstractHeaderViewTestCase {
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @View
-  public Response.Render index() {
-    return Response.ok("pass").withHeader("foo", "bar");
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "bridge.response.header.view");
   }
+
 }

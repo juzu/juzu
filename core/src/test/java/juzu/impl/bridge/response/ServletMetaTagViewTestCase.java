@@ -20,7 +20,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
-public class ServletResponseMetaTagViewTestCase extends AbstractResponseMetaTagViewTestCase {
+public class ServletMetaTagViewTestCase extends AbstractMetaTagViewTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {

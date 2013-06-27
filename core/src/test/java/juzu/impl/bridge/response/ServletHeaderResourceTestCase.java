@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package juzu.impl.bridge.response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
-public class PortletResponseMetaTagViewTestCase extends AbstractMetaTagViewTestCase {
+/** @author Julien Viet */
+public class ServletHeaderResourceTestCase extends AbstractHeaderResourceTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createPortletDeployment("bridge.response.metatag.view");
+    return createServletDeployment(true, "bridge.response.header.resource");
   }
 }

@@ -16,6 +16,7 @@
 
 package juzu.impl.bridge.spi.portlet;
 
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.ResourceBridge;
@@ -26,6 +27,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge {
@@ -56,6 +58,15 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
       int status = resource.getStatus();
       if (status != 200) {
         resp.setProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status));
+      }
+      Iterable<Map.Entry<String, String[]>> headers = resource.getProperties().getValues(PropertyType.HEADER);
+      if (headers != null) {
+        for (Map.Entry<String, String[]> header : headers) {
+          String[] values = header.getValue();
+          if (values.length > 0) {
+            resp.setProperty(header.getKey(), values[0]);
+          }
+        }
       }
       super.setResponse(response);
     }

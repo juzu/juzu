@@ -14,36 +14,28 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.servlet;
+package juzu.impl.bridge.response;
 
-import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
-import java.net.HttpURLConnection;
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseHeaderViewTestCase extends AbstractWebTestCase {
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.servlet.response.header.view");
-  }
+/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
+public abstract class AbstractMetaTagViewTestCase extends AbstractWebTestCase {
 
   @Drone
   WebDriver driver;
 
   @Test
   public void testPathParam() throws Exception {
-    HttpURLConnection conn = (HttpURLConnection)applicationURL().openConnection();
-    conn.connect();
-    Map<String, String> headers = Tools.responseHeaders(conn);
-    assertTrue(headers.containsKey("foo"));
-    assertEquals("bar", headers.get("foo"));
+
+    driver.get(applicationURL().toString());
+    WebElement trigger = driver.findElement(By.tagName("meta"));
+
+    assertEquals("foo", trigger.getAttribute("name"));
+    assertEquals("bar", trigger.getAttribute("content"));
   }
 }

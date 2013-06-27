@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Application package bridge.servlet.response.header.view;
+@Application package bridge.response.header.actiondirecttoview;
 
 import juzu.Application;

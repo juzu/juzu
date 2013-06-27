@@ -16,26 +16,22 @@
 
 package juzu.impl.bridge.response;
 
+import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
-import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
-/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
-public abstract class AbstractResponseMetaTagViewTestCase extends AbstractWebTestCase {
+import java.net.HttpURLConnection;
+import java.util.Map;
 
-  @Drone
-  WebDriver driver;
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public abstract class AbstractHeaderViewTestCase extends AbstractWebTestCase {
 
   @Test
   public void testPathParam() throws Exception {
-
-    driver.get(applicationURL().toString());
-    WebElement trigger = driver.findElement(By.tagName("meta"));
-
-    assertEquals("foo", trigger.getAttribute("name"));
-    assertEquals("bar", trigger.getAttribute("content"));
+    HttpURLConnection conn = (HttpURLConnection)applicationURL().openConnection();
+    conn.connect();
+    Map<String, String> headers = Tools.responseHeaders(conn);
+    assertTrue(headers.containsKey("foo"));
+    assertEquals("bar", headers.get("foo"));
   }
 }

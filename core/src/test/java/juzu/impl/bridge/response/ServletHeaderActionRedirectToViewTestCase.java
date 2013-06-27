@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.servlet;
+package juzu.impl.bridge.response;
 
 import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
@@ -31,11 +31,11 @@ import java.net.URL;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseActionRedirectToViewTestCase extends AbstractWebTestCase {
+public class ServletHeaderActionRedirectToViewTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.servlet.response.header.actionredirecttoview");
+    return createServletDeployment(true, "bridge.response.header.actionredirecttoview");
   }
 
   @Drone

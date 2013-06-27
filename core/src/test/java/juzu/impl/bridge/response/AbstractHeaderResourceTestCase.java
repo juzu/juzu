@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.servlet;
+package juzu.impl.bridge.response;
 
 import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -31,12 +29,7 @@ import java.net.URL;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseResourceTestCase extends AbstractWebTestCase {
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.servlet.response.header.resource");
-  }
+public abstract class AbstractHeaderResourceTestCase extends AbstractWebTestCase {
 
   @Drone
   WebDriver driver;

@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.response;
+@Application package bridge.response.header.view;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-
-/** @author <a href="mailto:benjamin.paillereau@exoplatform.com">Benjamin Paillereau</a> */
-public class PortletResponseMetaTagViewTestCase extends AbstractMetaTagViewTestCase {
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createPortletDeployment("bridge.response.metatag.view");
-  }
-}
+import juzu.Application;

@@ -14,29 +14,6 @@
  * limitations under the License.
  */
 
-package bridge.servlet.response.header.actionredirecttoview;
+@Application package bridge.response.header.actionredirecttoview;
 
-import juzu.Action;
-import juzu.Response;
-import juzu.Route;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @juzu.View()
-  public Response.Render index() {
-    return Response.ok("" + A_.foo());
-  }
-
-  @Action
-  @Route("/foo")
-  public Response.View foo() {
-    return A_.bar().withHeader("juu", "juu_value");
-  }
-
-  @juzu.View
-  @Route("/bar")
-  public Response.Render bar() {
-    return Response.ok("pass").withHeader("daa", "daa_value");
-  }
-}
+import juzu.Application;

@@ -13,7 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.bridge.response;
 
-@Application package bridge.servlet.response.header.actionredirecttoview;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import juzu.Application;
+/** @author Julien Viet */
+public class PortletHeaderViewTestCase extends AbstractHeaderViewTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createPortletDeployment("bridge.response.header.view");
+  }
+
+}

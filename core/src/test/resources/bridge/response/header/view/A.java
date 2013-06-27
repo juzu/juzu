@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-@Application package bridge.servlet.response.header.resource;
+package bridge.response.header.view;
 
-import juzu.Application;
+import juzu.Response;
+import juzu.View;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @View
+  public Response.Render index() {
+    return Response.ok("pass").withHeader("foo", "bar");
+  }
+}
