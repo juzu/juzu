@@ -263,7 +263,7 @@ public abstract class WebStream implements AsyncStream {
       buffer.append("\"paths\":{");
       for (Iterator<Module> i = modules.iterator(); i.hasNext();) {
         Module path = i.next();
-        buffer.append("\"").append(path.getName()).append("\":\"");
+        buffer.append("\"").append(path.getId()).append("\":\"");
         String uri = path.getUri();
         uri = uri.substring(0, uri.lastIndexOf(".js"));
         buffer.append(renderAssetURL(path.getLocation(), uri));

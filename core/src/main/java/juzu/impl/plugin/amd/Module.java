@@ -20,6 +20,8 @@ import juzu.PropertyType;
 import juzu.asset.AssetLocation;
 
 /**
+ * A module exposed by the plugin.
+ *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 public class Module {
@@ -27,23 +29,23 @@ public class Module {
   /** AMD. */
   public static PropertyType<Module> TYPE = new PropertyType<Module>(){};
 
-  /** . */
-  final String name;
+  /** The module id. */
+  final String id;
 
-  /** . */
+  /** The module location. */
   final AssetLocation location;
 
-  /** . */
+  /** The module URI. */
   final String uri;
 
-  public Module(String name, AssetLocation location, String uri) {
-    this.name = name;
+  public Module(String id, AssetLocation location, String uri) {
+    this.id = id;
     this.location = location;
     this.uri = uri;
   }
 
-  public String getName() {
-    return name;
+  public String getId() {
+    return id;
   }
 
   public AssetLocation getLocation() {
