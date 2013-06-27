@@ -15,7 +15,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package juzu.impl.asset.amd;
+package juzu.impl.plugin.amd;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -27,10 +27,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
-import juzu.impl.asset.AssetManager;
-import juzu.impl.asset.AssetMetaData;
+import juzu.impl.asset.Asset;
 import juzu.impl.asset.AssetNode;
 import juzu.impl.common.CompositeReader;
 
@@ -39,13 +41,13 @@ import juzu.impl.common.CompositeReader;
  * @version $Id$
  * 
  */
-public class AMDScriptManager extends AssetManager {
+public class AMDManager {
 
-  @Override
-  public String addAsset(AssetMetaData data, URL url) throws NullPointerException, IllegalArgumentException,
-    UnsupportedOperationException {
-    throw new UnsupportedOperationException("The AMD script manager support only to add amd metadata");
-  }
+  /** . */
+  protected final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
+
+  /** . */
+  protected final HashMap<String, URL> resources = new HashMap<String, URL>();
 
   public String addAMD(AMDMetaData data, URL url) throws NullPointerException, IllegalArgumentException, IOException {
     String name = data.name;
@@ -81,6 +83,19 @@ public class AMDScriptManager extends AssetManager {
 
     //
     return name;
+  }
+
+  public URL resolveAsset(String path) {
+    return resources.get(path);
+  }
+
+  public Iterable<Asset> resolveAssets(Iterable<String> foo) {
+    LinkedList<Asset> resolved = new LinkedList<Asset>();
+    for (String s : foo) {
+      AssetNode asset = assets.get(s);
+      resolved.addLast(Asset.of(asset.getId(), asset.getLocation(), asset.getValue()));
+    }
+    return resolved;
   }
 
   private void joinDepenencies(StringBuilder sb, AMDMetaData data) {

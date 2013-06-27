@@ -26,15 +26,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import juzu.PropertyMap;
 import juzu.PropertyType;
-import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
-import juzu.impl.asset.amd.AMDDependency;
-import juzu.impl.asset.amd.AMDMetaData;
-import juzu.impl.asset.amd.AMDScriptManager;
 import juzu.impl.common.JSON;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.PluginDescriptor;
@@ -69,18 +64,17 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
   /** . */
   @Inject
   @Named("juzu.asset_manager.script")
-  AssetManager manager2;
+  AssetManager scriptManager;
 
   /** . */
   @Inject
-  @Named("juzu.asset_manager.amd")
-  AMDScriptManager manager;
+  AMDManager manager;
 
   public AMDPlugin() {
     super("amd");
   }
 
-  public AssetManager getAMDManager() {
+  public AMDManager getAMDManager() {
     return manager;
   }
 
@@ -176,17 +170,17 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    manager2.addAsset(new AssetMetaData("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js"),
+    scriptManager.addAsset(new AssetMetaData("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js"),
         requirejsURL);
-    manager2.addAsset(new AssetMetaData("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js"),
-      wrapperjsURL);
+    scriptManager.addAsset(new AssetMetaData("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js"),
+        wrapperjsURL);
 
     //
     this.defines = process(descriptor.getDefines(), manager);
     this.requires = process(descriptor.getRequires(), manager);
   }
 
-  private String[] process(List<AMDMetaData> modules, AMDScriptManager manager) throws Exception {
+  private String[] process(List<AMDMetaData> modules, AMDManager manager) throws Exception {
     ArrayList<String> assets = new ArrayList<String>();
     for (AMDMetaData module : modules) {
 

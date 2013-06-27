@@ -22,8 +22,6 @@ import java.util.Collections;
 import java.util.List;
 
 import juzu.Scope;
-import juzu.impl.asset.amd.AMDMetaData;
-import juzu.impl.asset.amd.AMDScriptManager;
 import juzu.impl.common.NameLiteral;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
@@ -58,7 +56,7 @@ public class AMDDescriptor extends PluginDescriptor {
   public Iterable<BeanDescriptor> getBeans() {
     return Tools.list(
       BeanDescriptor.createFromBean(
-        AMDScriptManager.class,
+        AMDManager.class,
         Scope.SINGLETON,
         Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.amd"))),
         BeanDescriptor.createFromImpl(ResourceResolver.class, Scope.SINGLETON, null, AMDResolver.class));

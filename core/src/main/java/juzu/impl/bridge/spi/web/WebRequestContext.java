@@ -17,6 +17,7 @@ package juzu.impl.bridge.spi.web;
 
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.plugin.amd.AMDManager;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.io.SafeStream;
 import juzu.impl.plugin.amd.AMDPlugin;
@@ -50,7 +51,7 @@ public abstract class WebRequestContext {
       //
       AssetManager stylesheetManager;
       AssetManager scriptManager;
-      AssetManager amdManager;
+      AMDManager amdManager;
       if (assetPlugin != null) {
         stylesheetManager = assetPlugin.getStylesheetManager();
         scriptManager = assetPlugin.getScriptManager();
