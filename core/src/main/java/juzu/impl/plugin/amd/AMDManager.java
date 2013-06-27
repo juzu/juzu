@@ -61,7 +61,7 @@ public class AMDManager {
             resources.put(data.path, url);
           } else {
             String content = wrap(data, url);
-            resources.put(data.path, new URL("adm", null, 0, "/", new AMDURLStreamHandler(content)));
+            resources.put(data.path, new URL("amd", null, 0, "/", new AMDURLStreamHandler(content)));
           }
           break;
         case SERVER :
