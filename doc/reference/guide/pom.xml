@@ -51,7 +51,18 @@
                   <classifier>wikbook</classifier>
                   <type>zip</type>
                   <outputDirectory>${wikbook.target}/src</outputDirectory>
-                </artifactItem>
+				</artifactItem>
+
+				<!-- WebJars -->
+
+                <artifactItem>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-plugins-webjars</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>wikbook</classifier>
+                  <type>zip</type>
+                  <outputDirectory>${wikbook.target}/src</outputDirectory>
+				</artifactItem>
 
                 <!-- Servlet -->
                 <artifactItem>
@@ -97,6 +108,7 @@
           <xi:include href="juzu-plugins-portlet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
           <xi:include href="juzu-plugins-upload.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
           <xi:include href="juzu-plugins-less.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+          <xi:include href="juzu-plugins-webjars.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
           ]]>
           </afterBookBodyXML>
         </configuration>

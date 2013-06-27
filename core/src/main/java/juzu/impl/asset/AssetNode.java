@@ -42,7 +42,7 @@ public class AssetNode {
   /** . */
   Set<String> iDependOn;
 
-  AssetNode(String id, AssetLocation location, String value, Set<String> iDependOn) {
+  public AssetNode(String id, AssetLocation location, String value, Set<String> iDependOn) {
     this.id = id;
     this.location = location;
     this.value = value;

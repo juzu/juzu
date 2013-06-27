@@ -59,6 +59,7 @@ public class AssetServer {
             // It could be a server resource like an image
             in = ctx.getResourceAsStream(path);
           }
+          
           if (in != null) {
             int pos = path.lastIndexOf('/');
             String name = pos == -1 ? path : path.substring(pos + 1);
