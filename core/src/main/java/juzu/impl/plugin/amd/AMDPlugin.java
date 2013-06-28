@@ -81,8 +81,8 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
   @Override
   public PluginDescriptor init(PluginContext context) throws Exception {
     JSON config = context.getConfig();
-    List<AMDMetaData> defines = Collections.emptyList();
-    List<AMDMetaData> requires = Collections.emptyList();
+    List<ModuleMetaData.Define> defines = Collections.emptyList();
+    List<ModuleMetaData.Require> requires = Collections.emptyList();
 
     if (config != null) {
       String packageName = config.getString("package");
@@ -94,7 +94,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
         if (defineLocation == null) {
           defineLocation = AssetLocation.APPLICATION;
         }
-        defines = load(packageName, defineLocation, definesJSON.getList("value", JSON.class), false);
+        defines = loadDefines(packageName, defineLocation, definesJSON.getList("value", JSON.class));
       }
 
       if (requiresJSON != null) {
@@ -102,7 +102,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
         if (requireLocation == null) {
           requireLocation = AssetLocation.APPLICATION;
         }
-        requires = load(packageName, requireLocation, requiresJSON.getList("value", JSON.class), true);
+        requires = loadRequires(packageName, requireLocation, requiresJSON.getList("value", JSON.class));
       }
     }
 
@@ -111,24 +111,51 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     return descriptor;
   }
 
-  private List<AMDMetaData> load(String packageName, AssetLocation defaultLocation, List<? extends JSON> modules,
-    boolean isRequire) throws Exception {
-    List<AMDMetaData> abc = Collections.emptyList();
+  private List<ModuleMetaData.Define> loadDefines(String packageName, AssetLocation defaultLocation, List<? extends JSON> modules) throws Exception {
+    List<ModuleMetaData.Define> defines = Collections.emptyList();
     if (modules != null && modules.size() > 0) {
-      abc = new ArrayList<AMDMetaData>();
+      defines = new ArrayList<ModuleMetaData.Define>();
+      for (JSON module : modules) {
+        String name = module.getString("id");
+        List<JSON> dependencies = (List<JSON>)module.getList("dependencies");
+
+        //
+        String value = module.getString("path");
+        if (!value.startsWith("/")) {
+          value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
+        }
+
+        //
+        String adapter = module.getString("adapter");
+
+        //
+        ModuleMetaData.Define descriptor = new ModuleMetaData.Define(name, value, adapter);
+        if (dependencies != null && !dependencies.isEmpty()) {
+          for (JSON dependency : dependencies) {
+            String depName = dependency.getString("id");
+            String depAlias = dependency.getString("alias");
+            descriptor.addDependency(new AMDDependency(depName, depAlias));
+          }
+        }
+
+        defines.add(descriptor);
+      }
+    }
+    return defines;
+  }
+
+  private List<ModuleMetaData.Require> loadRequires(String packageName, AssetLocation defaultLocation, List<? extends JSON> modules) throws Exception {
+    List<ModuleMetaData.Require> defines = Collections.emptyList();
+    if (modules != null && modules.size() > 0) {
+      defines = new ArrayList<ModuleMetaData.Require>();
       for (JSON module : modules) {
         String name = module.getString("id");
         AssetLocation location = AssetLocation.safeValueOf(module.getString("location"));
-        List<JSON> dependencies = (List<JSON>)module.getList("dependencies");
 
         // We handle here location / perhaps we could handle it at compile time
         // instead?
         if (location == null) {
           location = defaultLocation;
-        }
-
-        if (location == AssetLocation.SERVER && dependencies != null) {
-          throw new UnsupportedOperationException("The AMD wrapping supports only for script is located at APPLICATION");
         }
 
         //
@@ -138,22 +165,10 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
         }
 
         //
-        String adapter = module.getString("adapter");
-
-        //
-        AMDMetaData descriptor = new AMDMetaData(name, location, value, adapter, isRequire);
-        if (dependencies != null && !dependencies.isEmpty()) {
-          for (JSON dependency : dependencies) {
-            String depName = dependency.getString("id");
-            String depAlias = dependency.getString("alias");
-            descriptor.addDependency(new AMDDependency(depName, depAlias));
-          }
-        }
-
-        abc.add(descriptor);
+        defines.add(new ModuleMetaData.Require(name, value, location));
       }
     }
-    return abc;
+    return defines;
   }
 
   @PostConstruct
@@ -180,9 +195,9 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     this.requires = process(descriptor.getRequires(), manager);
   }
 
-  private Module[] process(List<AMDMetaData> modules, ModuleManager manager) throws Exception {
+  private Module[] process(List<? extends ModuleMetaData> modules, ModuleManager manager) throws Exception {
     ArrayList<Module> assets = new ArrayList<Module>();
-    for (AMDMetaData module : modules) {
+    for (ModuleMetaData module : modules) {
 
       // Validate assets
       AssetLocation location = module.getLocation();

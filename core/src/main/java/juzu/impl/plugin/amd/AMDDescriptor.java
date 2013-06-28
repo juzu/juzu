@@ -35,20 +35,20 @@ import juzu.impl.resource.ResourceResolver;
  */
 public class AMDDescriptor extends PluginDescriptor {
   
-  private final List<AMDMetaData> defines;
+  private final List<ModuleMetaData.Define> defines;
   
-  private final List<AMDMetaData> requires;
+  private final List<ModuleMetaData.Require> requires;
   
-  public AMDDescriptor(List<AMDMetaData> defines, List<AMDMetaData> requires) {
+  public AMDDescriptor(List<ModuleMetaData.Define> defines, List<ModuleMetaData.Require> requires) {
     this.defines = defines;
     this.requires = requires;
   }
   
-  public List<AMDMetaData> getDefines() {
+  public List<ModuleMetaData.Define> getDefines() {
     return defines;
   }
   
-  public List<AMDMetaData> getRequires() {
+  public List<ModuleMetaData.Require> getRequires() {
     return requires;
   }
   

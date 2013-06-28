@@ -41,8 +41,8 @@ public class ModuleManager {
   /** . */
   protected final HashMap<String, URL> resources = new HashMap<String, URL>();
 
-  public Module addAMD(AMDMetaData data, URL url) throws NullPointerException, IllegalArgumentException, IOException {
-    String name = data.name;
+  public Module addAMD(ModuleMetaData data, URL url) throws NullPointerException, IllegalArgumentException, IOException {
+    String name = data.getId();
 
     // Use value hashcode if no id is provided
     if (name == null) {
@@ -52,19 +52,19 @@ public class ModuleManager {
     //
     Module module = assets.get(name);
     if (module == null) {
-      assets.put(name, module = new Module(name, data.location, data.path));
+      assets.put(name, module = new Module(name, data.getLocation(), data.getPath()));
 
       //
-      switch (data.location) {
+      switch (data.getLocation()) {
         case APPLICATION :
-          if (data.isRequire) {
-            resources.put(data.path, url);
+          if (data instanceof ModuleMetaData.Require) {
+            resources.put(data.getPath(), url);
           } else {
-            resources.put(data.path, new URL("amd", null, 0, "/", new AMDURLStreamHandler(data, url)));
+            resources.put(data.getPath(), new URL("amd", null, 0, "/", new AMDURLStreamHandler((ModuleMetaData.Define)data, url)));
           }
           break;
         case SERVER :
-          resources.put(data.path, url);
+          resources.put(data.getPath(), url);
           break;
         default :
           // Nothing to do
@@ -85,10 +85,10 @@ public class ModuleManager {
     /** . */
     private final byte[] data;
 
-    public AMDURLStreamHandler(AMDMetaData data, URL url) throws IOException {
+    public AMDURLStreamHandler(ModuleMetaData.Define data, URL url) throws IOException {
 
       StringBuilder sb = new StringBuilder();
-      sb.append("\ndefine('").append(data.name).append("', [");
+      sb.append("\ndefine('").append(data.getId()).append("', [");
       joinDependencies(sb, data);
 
       sb.append("], function(");
@@ -138,8 +138,8 @@ public class ModuleManager {
       this.data = sb.toString().getBytes("UTF-8");
     }
 
-    private void joinDependencies(StringBuilder sb, AMDMetaData data) {
-      for (Iterator<AMDDependency> i = data.dependencies.values().iterator(); i.hasNext();) {
+    private void joinDependencies(StringBuilder sb, ModuleMetaData.Define data) {
+      for (Iterator<AMDDependency> i = data.getDependencies().iterator(); i.hasNext();) {
         AMDDependency dependency = i.next();
         sb.append("'").append(dependency.name).append("'");
         if (i.hasNext())
@@ -147,8 +147,8 @@ public class ModuleManager {
       }
     }
 
-    private void joinParams(StringBuilder sb, AMDMetaData data) {
-      for (Iterator<AMDDependency> i = data.dependencies.values().iterator(); i.hasNext();) {
+    private void joinParams(StringBuilder sb, ModuleMetaData.Define data) {
+      for (Iterator<AMDDependency> i = data.getDependencies().iterator(); i.hasNext();) {
         AMDDependency dependency = i.next();
         if (dependency.alias != null && !dependency.alias.isEmpty()) {
           sb.append(dependency.alias);
