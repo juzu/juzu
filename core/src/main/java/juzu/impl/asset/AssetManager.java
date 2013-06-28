@@ -125,7 +125,7 @@ public class AssetManager {
         if (entry.getValue().isEmpty()) {
           i.remove();
           AssetNode asset = assets.get(entry.getKey());
-          resolved.addLast(Asset.of(asset.getId(), asset.getLocation(), asset.getValue()));
+          resolved.addLast(Asset.of(asset.getLocation(), asset.getValue()));
           for (String dependency : asset.dependsOnMe) {
             HashSet<String> foo = sub.get(dependency);
             if (foo != null) {
