@@ -3,7 +3,8 @@
 [[WebJars>>http://www.webjars.org/]] are client-side web libraries (e.g. jQuery & Bootstrap) packaged into jar files.
 WebJars allow to declaratively set the version, use a consistent version across an application, and easily deal with transitive dependencies.
 
-Juzu provides a WebJars plugin that copy resources in jar libraries to application assets and then served by Asset plugin or AMD plugin
+Juzu provides a WebJars plugin that copies resources in jar libraries to application assets and then served by the //Asset//
+plugin or the //AMD// plugin.
 
 
 == Usage ==
@@ -49,7 +50,7 @@ import juzu.plugin.webjars.WebJars;
 {{/java}}
 {{/example}}
 
-Or in AMD:
+It can also be used as a JavaScript module with the //AMD// plugin:
 
 {{example title="WebJars and AMD plugin in action"}}
 {{java}}
