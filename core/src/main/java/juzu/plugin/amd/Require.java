@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 @Target({})
 public @interface Require {
 
-  String name();
+  String id();
   
   String path();
 }

@@ -117,7 +117,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     if (modules != null && modules.size() > 0) {
       abc = new ArrayList<AMDMetaData>();
       for (JSON module : modules) {
-        String name = module.getString("name");
+        String name = module.getString("id");
         AssetLocation location = AssetLocation.safeValueOf(module.getString("location"));
         List<JSON> dependencies = (List<JSON>)module.getList("dependencies");
 
@@ -144,7 +144,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
         AMDMetaData descriptor = new AMDMetaData(name, location, value, adapter, isRequire);
         if (dependencies != null && !dependencies.isEmpty()) {
           for (JSON dependency : dependencies) {
-            String depName = dependency.getString("name");
+            String depName = dependency.getString("id");
             String depAlias = dependency.getString("alias");
             descriptor.addDependency(new AMDDependency(depName, depAlias));
           }

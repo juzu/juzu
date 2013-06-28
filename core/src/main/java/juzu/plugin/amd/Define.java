@@ -32,13 +32,12 @@ import juzu.asset.AssetLocation;
 @Target({})
 public @interface Define {
 
-  String name();
+  String id();
   
   String path();
   
   String adapter() default "";
   
   Dependency[] dependencies() default {};
-  
-  AssetLocation location() default AssetLocation.APPLICATION;
+
 }

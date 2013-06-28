@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 @Target({})
 public @interface Dependency {
   
-  String name();
+  String id();
   
   String alias() default "";
 }

@@ -2,11 +2,11 @@
 @WebJars("jquery.js")
 
 @Defines({
-  @Define(name = "jquery", path="jquery.js", adapter="(function() { @{include} return jQuery.noConflict(true);})();"),
+  @Define(id = "jquery", path="jquery.js", adapter="(function() { @{include} return jQuery.noConflict(true);})();"),
   @Define(
-    name = "foo",
+    id = "foo",
     path="foo.js",
-    dependencies = {@Dependency(name = "jquery", alias = "$")}
+    dependencies = {@Dependency(id = "jquery", alias = "$")}
   )
 })
 package juzu.amd.webjars;
