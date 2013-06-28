@@ -30,11 +30,11 @@ import juzu.impl.resource.ResourceResolver;
  *
  */
 @Named("amd")
-public class AMDResolver implements ResourceResolver {
+public class ModuleResolver implements ResourceResolver {
 
   @Inject AMDPlugin plugin;
   
   public URL resolve(String uri) {
-    return plugin.getAMDManager().resolveAsset(uri);
+    return plugin.getModuleManager().resolveAsset(uri);
   }
 }

@@ -33,7 +33,7 @@ import java.util.LinkedHashMap;
  * @version $Id$
  * 
  */
-public class AMDManager {
+public class ModuleManager {
 
   /** . */
   protected final LinkedHashMap<String, Module> assets = new LinkedHashMap<String, Module>();

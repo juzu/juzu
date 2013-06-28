@@ -20,7 +20,7 @@ import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.Asset;
 import juzu.impl.asset.AssetManager;
-import juzu.impl.plugin.amd.AMDManager;
+import juzu.impl.plugin.amd.ModuleManager;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.amd.Module;
 import juzu.io.Chunk;
@@ -60,16 +60,16 @@ public abstract class WebStream implements AsyncStream {
   private final AssetManager scriptManager;
   
   /** .*/
-  private final AMDManager amdManager;
+  private final ModuleManager moduleManager;
 
   /** The current document being assembled. */
   private final Page page;
 
-  public WebStream(HttpStream stream, AssetManager stylesheetManager, AssetManager scriptManager, AMDManager amdManager) {
+  public WebStream(HttpStream stream, AssetManager stylesheetManager, AssetManager scriptManager, ModuleManager moduleManager) {
     this.stream = stream;
     this.stylesheetManager = stylesheetManager;
     this.scriptManager = scriptManager;
-    this.amdManager = amdManager;
+    this.moduleManager = moduleManager;
     this.page = new Page();
   }
 

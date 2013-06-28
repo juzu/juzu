@@ -56,9 +56,9 @@ public class AMDDescriptor extends PluginDescriptor {
   public Iterable<BeanDescriptor> getBeans() {
     return Tools.list(
       BeanDescriptor.createFromBean(
-        AMDManager.class,
+        ModuleManager.class,
         Scope.SINGLETON,
         Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.amd"))),
-        BeanDescriptor.createFromImpl(ResourceResolver.class, Scope.SINGLETON, null, AMDResolver.class));
+        BeanDescriptor.createFromImpl(ResourceResolver.class, Scope.SINGLETON, null, ModuleResolver.class));
   }
 }

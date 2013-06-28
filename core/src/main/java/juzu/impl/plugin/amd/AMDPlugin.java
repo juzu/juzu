@@ -68,13 +68,13 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   @Inject
-  AMDManager manager;
+  ModuleManager manager;
 
   public AMDPlugin() {
     super("amd");
   }
 
-  public AMDManager getAMDManager() {
+  public ModuleManager getModuleManager() {
     return manager;
   }
 
@@ -180,7 +180,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     this.requires = process(descriptor.getRequires(), manager);
   }
 
-  private Module[] process(List<AMDMetaData> modules, AMDManager manager) throws Exception {
+  private Module[] process(List<AMDMetaData> modules, ModuleManager manager) throws Exception {
     ArrayList<Module> assets = new ArrayList<Module>();
     for (AMDMetaData module : modules) {
 
