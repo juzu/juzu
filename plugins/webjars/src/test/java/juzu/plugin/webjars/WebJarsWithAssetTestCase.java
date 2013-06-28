@@ -36,7 +36,7 @@ import org.openqa.selenium.WebElement;
  * @version $Id$
  *
  */
-public class WebJarsTestCase extends AbstractWebTestCase {
+public class WebJarsWithAssetTestCase extends AbstractWebTestCase {
   
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
