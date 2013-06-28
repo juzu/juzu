@@ -133,7 +133,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
         //
         String value = module.getString("path");
-        if (!value.startsWith("/") && !value.startsWith("webjars!") && location == AssetLocation.APPLICATION) {
+        if (!value.startsWith("/") && location == AssetLocation.APPLICATION) {
           value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
         }
 
