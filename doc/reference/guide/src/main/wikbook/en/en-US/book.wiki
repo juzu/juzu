@@ -42,3 +42,7 @@ open source project developed on GitHub [[project>>https://github.com/juzu/juzu]
 = Assets {{anchor id=assets /}} =
 
 {{include document=assets.wiki/}}
+
+= Javascript modularity {{anchor id=amd /}} =
+
+{{include document=amd.wiki/}}

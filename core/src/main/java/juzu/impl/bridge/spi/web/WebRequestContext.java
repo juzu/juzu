@@ -17,8 +17,10 @@ package juzu.impl.bridge.spi.web;
 
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.plugin.amd.ModuleManager;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.io.SafeStream;
+import juzu.impl.plugin.amd.AMDPlugin;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
@@ -35,10 +37,10 @@ public abstract class WebRequestContext {
   }
 
   public final void send(Result.Error error, boolean verbose) throws IOException {
-    send(null, error.asStatus(verbose));
+    send(null, null, error.asStatus(verbose));
   }
 
-  public final void send(AssetPlugin assetPlugin, Result.Status response) throws IOException {
+  public final void send(AssetPlugin assetPlugin, AMDPlugin amdPlugin, Result.Status response) throws IOException {
 
     //
     AsyncStream stream = getStream(response.code);
@@ -49,6 +51,7 @@ public abstract class WebRequestContext {
       //
       AssetManager stylesheetManager;
       AssetManager scriptManager;
+      ModuleManager moduleManager;
       if (assetPlugin != null) {
         stylesheetManager = assetPlugin.getStylesheetManager();
         scriptManager = assetPlugin.getScriptManager();
@@ -56,9 +59,15 @@ public abstract class WebRequestContext {
         stylesheetManager = null;
         scriptManager = null;
       }
+      
+      if (amdPlugin != null) {
+        moduleManager = amdPlugin.getModuleManager();
+      } else {
+        moduleManager = null;
+      }
 
       //
-      stream = new WebStream((HttpStream)stream, stylesheetManager, scriptManager) {
+      stream = new WebStream((HttpStream)stream, stylesheetManager, scriptManager, moduleManager) {
         @Override
         public String renderAssetURL(AssetLocation location, String uri) {
           try {

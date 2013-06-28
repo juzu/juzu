@@ -20,12 +20,15 @@ import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.Asset;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.plugin.amd.ModuleManager;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.amd.Module;
 import juzu.io.Chunk;
 import juzu.io.Stream;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -55,14 +58,18 @@ public abstract class WebStream implements AsyncStream {
 
   /** . */
   private final AssetManager scriptManager;
+  
+  /** .*/
+  private final ModuleManager moduleManager;
 
   /** The current document being assembled. */
   private final Page page;
 
-  public WebStream(HttpStream stream, AssetManager stylesheetManager, AssetManager scriptManager) {
+  public WebStream(HttpStream stream, AssetManager stylesheetManager, AssetManager scriptManager, ModuleManager moduleManager) {
     this.stream = stream;
     this.stylesheetManager = stylesheetManager;
     this.scriptManager = scriptManager;
+    this.moduleManager = moduleManager;
     this.page = new Page();
   }
 
@@ -80,6 +87,8 @@ public abstract class WebStream implements AsyncStream {
           page.stylesheets.add(((String)property.value));
         } else if (property.type == PropertyType.SCRIPT) {
           page.scripts.add(((String)property.value));
+        } else if (property.type == Module.TYPE) {
+          page.modules.add(((Module)property.value));
         } else if (property.type == PropertyType.HEADER_TAG) {
           page.headerTags.add(((Element)property.value));
         } else {
@@ -175,6 +184,9 @@ public abstract class WebStream implements AsyncStream {
 
     /** . */
     private final LinkedList<Asset> stylesheetAssets = new LinkedList<Asset>();
+    
+    /** .*/
+    private final LinkedList<Module> modules = new LinkedList<Module>();
 
     void clear() {
       this.title = null;
@@ -182,6 +194,7 @@ public abstract class WebStream implements AsyncStream {
       this.stylesheetAssets.clear();
       this.scriptAssets.clear();
       this.headerTags.clear();
+      this.modules.clear();
     }
 
     void sendHeader(Stream stream) {
@@ -212,12 +225,16 @@ public abstract class WebStream implements AsyncStream {
         stream.provide(Chunk.create(url));
         stream.provide(Chunk.create("\"></link>\n"));
       }
+      if (!modules.isEmpty()) {
+        renderAMD(modules, stream);
+      }
       for (Asset asset : scriptAssets) {
         String url = renderAssetURL(asset.getLocation(), asset.getURI());
         stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
         stream.provide(Chunk.create(url));
         stream.provide(Chunk.create("\"></script>\n"));
       }
+
       for (Element headerTag : headerTags) {
         try {
           StringBuilder buffer = new StringBuilder();
@@ -237,6 +254,28 @@ public abstract class WebStream implements AsyncStream {
       stream.provide(Chunk.create(
           "</body>\n" +
               "</html>\n"));
+    }
+    
+    private void renderAMD(Iterable<Module> modules, Stream stream) {
+      StringBuilder buffer = new StringBuilder();
+      buffer.append("<script type=\"text/javascript\">");
+      buffer.append(" var require={");
+      buffer.append("\"paths\":{");
+      for (Iterator<Module> i = modules.iterator(); i.hasNext();) {
+        Module path = i.next();
+        buffer.append("\"").append(path.getId()).append("\":\"");
+        String uri = path.getUri();
+        uri = uri.substring(0, uri.lastIndexOf(".js"));
+        buffer.append(renderAssetURL(path.getLocation(), uri));
+        buffer.append("\"");
+        if (i.hasNext()) {
+          buffer.append(",");
+        }
+      }
+      buffer.append("}");
+      buffer.append("};");
+      buffer.append("</script>");
+      stream.provide(Chunk.create(buffer));
     }
   }
 }

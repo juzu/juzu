@@ -35,7 +35,7 @@ public class Asset {
 
   /** . */
   private final String uri;
-
+  
   public Asset(AssetLocation location, String uri) {
     this.location = location;
     this.uri = uri;
@@ -63,16 +63,17 @@ public class Asset {
 
   /**
    * Wraps an URI as an absolute uri.
-   *
+   * @param id the id of asset (only used by AMD for now)
    * @param uri the asset uri
    * @return the asset
    */
-  public static Asset url(String uri) {
+  public static Asset url(String id, String uri) {
     return of(AssetLocation.URL, uri);
   }
 
   /**
    * Returns an asset.
+   *
    *
    * @param location the asset location
    * @param uri the asset uri
