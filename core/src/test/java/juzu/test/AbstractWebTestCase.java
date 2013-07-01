@@ -162,7 +162,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
   
   public static WebArchive createServletDeployment(InjectorProvider injector, String applicationName) {
-    return createServletDeployment(injector, "/", false, applicationName);
+    return createServletDeployment(new TestConfig().injector(injector), false, applicationName);
   }
   
   public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
@@ -170,18 +170,18 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
   
   public static WebArchive createServletDeployment(String urlPattern, boolean asDefault, String... applicationNames) {
-    return createServletDeployment(InjectorProvider.INJECT_GUICE, RunMode.PROD, urlPattern, asDefault, applicationNames);
+    return createServletDeployment(new TestConfig().urlPattern(urlPattern), asDefault, applicationNames);
   }
   
   public static WebArchive createServletDeployment(InjectorProvider injector, String urlPattern, boolean asDefault, String... applicationNames) {
-    return createServletDeployment(injector, RunMode.PROD, urlPattern, asDefault, applicationNames);
+    return createServletDeployment(new TestConfig().injector(injector).urlPattern(urlPattern), asDefault, applicationNames);
   }
 
   public static WebArchive createServletDeployment(
       RunMode runMode,
       boolean asDefault,
       String... applicationNames) {
-    return createServletDeployment(InjectorProvider.INJECT_GUICE, runMode, "/", asDefault, applicationNames);
+    return createServletDeployment(new TestConfig().runMode(runMode), asDefault, applicationNames);
   }
   
   public static WebArchive createServletDeployment(
@@ -189,15 +189,18 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     RunMode runMode,
     boolean asDefault,
     String... applicationNames) {
-  return createServletDeployment(injector, runMode, "/", asDefault, applicationNames);
+  return createServletDeployment(new TestConfig().runMode(runMode).injector(injector), asDefault, applicationNames);
 }
   
   public static WebArchive createServletDeployment(
-      InjectorProvider injector,
-      RunMode runMode,
-      String urlPattern,
+      TestConfig config,
       boolean asDefault,
       String... applicationNames) {
+
+    //
+    String urlPattern = config.getURLPattern();
+    RunMode runMode = config.getRunMode();
+    InjectorProvider injector = config.getInjector();
 
     // Create war
     String path;
