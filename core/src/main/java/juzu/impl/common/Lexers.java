@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 /**
@@ -207,63 +206,16 @@ public class Lexers {
 
   public static Iterator<RequestParameter> queryParser(final CharSequence s, final int from, final int to) {
 
-
-    return new Iterator<RequestParameter>() {
-
-      int current = from;
-      RequestParameter next = null;
-
-      private RequestParameter parse(int from, int to) {
-        int pos = Tools.indexOf(s, '=', from, to);
-        if (pos == -1) {
-          String name = s.subSequence(from, to).toString();
-          String decodeName = PercentCodec.RFC3986_QUERY_PARAM_NAME.safeDecode(name);
-          if (decodeName != null) {
-            return RequestParameter.create(decodeName, "");
-          }
-        } else if (pos > 0) {
-          String value = s.subSequence(pos + 1, to).toString();
-          String decodedValue = PercentCodec.RFC3986_QUERY_PARAM_VALUE.safeDecode(value);
-          if (decodedValue != null) {
-            String name = s.subSequence(from, pos).toString();
-            String decodedName = PercentCodec.RFC3986_QUERY_PARAM_NAME.safeDecode(name);
-            if (decodedName != null) {
-              return RequestParameter.create(decodedName, value, decodedValue);
-            }
-          }
-        }
-        return null;
+    return new AbstractParameterParser(s, from, to) {
+      @Override
+      protected String safeDecodeName(String s) {
+        return PercentCodec.RFC3986_QUERY_PARAM_NAME.safeDecode(s);
       }
 
-      public boolean hasNext() {
-        while (next == null && current < to) {
-          int pos = Tools.indexOf(s, '&', current, to);
-          if (pos == 0) {
-            throw new UnsupportedOperationException("todo");
-          } else if (pos == -1) {
-            next = parse(current, to);
-            current = to;
-          } else {
-            next = parse(current, pos);
-            current = pos + 1;
-          }
-        }
-        return next != null;
+      @Override
+      protected String safeDecodeValue(String s) {
+        return PercentCodec.RFC3986_QUERY_PARAM_VALUE.safeDecode(s);
       }
-
-      public RequestParameter next() {
-        if (!hasNext()) {
-          throw new NoSuchElementException();
-        }
-        RequestParameter tmp = next;
-        next = null;
-        return tmp;
-      }
-
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
-    };
+    }.iterator();
   }
-
 }

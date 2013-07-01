@@ -445,11 +445,11 @@ public abstract class Response {
     }
 
     public Charset getCharset() {
-      return properties.getValue(PropertyType.CHARSET);
+      return properties.getValue(PropertyType.ENCODING);
     }
 
     public Body withCharset(Charset charset) {
-      return with(PropertyType.CHARSET, charset);
+      return with(PropertyType.ENCODING, charset);
     }
 
     public Body withMimeType(String mimeType) {

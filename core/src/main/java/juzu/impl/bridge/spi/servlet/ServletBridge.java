@@ -126,8 +126,8 @@ public class ServletBridge extends HttpServlet {
               inject = servletConfig.getServletContext().getInitParameter((String)key);
             }
             return inject;
-          } else if (BridgeConfig.NAMES.contains(key)) {
-            return servletConfig.getInitParameter((String)key);
+          } else if (BridgeConfig.REQUEST_ENCODING.equals(key)) {
+            return servletConfig.getServletContext().getInitParameter((String)key);
           } else {
             return null;
           }
@@ -197,7 +197,7 @@ public class ServletBridge extends HttpServlet {
           return WarFileSystem.create(getServletContext(), "/WEB-INF/classes/");
         }
         public ReadFileSystem<?> getSourcePath() {
-          String srcPath = getServletContext().getInitParameter("juzu.src_path");
+          String srcPath = getServletContext().getInitParameter(BridgeConfig.SOURCE_PATH);
           return srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(getServletContext(), "/WEB-INF/src/");
         }
         public ClassLoader getClassLoader() {
@@ -269,7 +269,7 @@ public class ServletBridge extends HttpServlet {
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
     //
-    ServletRequestContext ctx = new ServletRequestContext(req, resp, path);
+    ServletRequestContext ctx = new ServletRequestContext(config.requestEncoding, req, resp, path);
 
     //
     ServletWebBridge bridge = new ServletWebBridge(this, ctx, log);

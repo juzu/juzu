@@ -18,7 +18,9 @@ package juzu.impl.bridge.spi.servlet;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.web.HttpStream;
 import juzu.impl.bridge.spi.web.WebRequestContext;
+import juzu.impl.common.FormURLEncodedParser;
 import juzu.impl.common.Lexers;
+import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
 import juzu.io.Stream;
 import juzu.request.RequestParameter;
@@ -27,6 +29,7 @@ import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -52,7 +55,14 @@ public class ServletRequestContext extends WebRequestContext {
   /** . */
   final Map<String, RequestParameter> requestParameters;
 
-  public ServletRequestContext(HttpServletRequest req, HttpServletResponse resp, String path) {
+  /** . */
+  final Charset defaultEncoding;
+
+  public ServletRequestContext(
+      Charset defaultEncoding,
+      HttpServletRequest req,
+      HttpServletResponse resp,
+      String path) {
 
     //
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
@@ -70,17 +80,14 @@ public class ServletRequestContext extends WebRequestContext {
     //
     if ("POST".equals(req.getMethod()) && "application/x-www-form-urlencoded".equals(req.getContentType())) {
       try {
-        for (Map.Entry<String, String[]> parameter : HttpUtils.parsePostData(req.getContentLength(), req.getInputStream()).entrySet()) {
+        byte[] bytes = Tools.copy(req.getInputStream(), new ByteArrayOutputStream()).toByteArray();
+        String form = new String(bytes, defaultEncoding);
+        FormURLEncodedParser parser = new FormURLEncodedParser(defaultEncoding, form, 0, form.length());
+        for (RequestParameter parameter : parser) {
           if (requestParameters.isEmpty()) {
             requestParameters = new HashMap<String, RequestParameter>();
           }
-          RequestParameter requestParameter = requestParameters.get(parameter.getKey());
-          if (requestParameter != null) {
-            requestParameter = requestParameter.append(parameter.getValue());
-          } else {
-            requestParameter = RequestParameter.create(parameter);
-          }
-          requestParameter.appendTo(requestParameters);
+          parameter.appendTo(requestParameters);
         }
       }
       catch (IOException e) {
@@ -88,6 +95,8 @@ public class ServletRequestContext extends WebRequestContext {
       }
     }
 
+    //
+    this.defaultEncoding = defaultEncoding;
     this.requestPath = req.getRequestURI().substring(req.getContextPath().length());
     this.requestParameters = requestParameters;
     this.req = req;
@@ -113,7 +122,7 @@ public class ServletRequestContext extends WebRequestContext {
 
   @Override
   public HttpStream getStream(int status) {
-    return new ServletStream(status);
+    return new ServletStream(status, defaultEncoding);
   }
 
   public class ServletStream extends HttpStream {
@@ -124,8 +133,8 @@ public class ServletRequestContext extends WebRequestContext {
     /** . */
     private AsyncContext context;
 
-    ServletStream(int status) {
-      super(ServletRequestContext.this, status);
+    ServletStream(int status, Charset encoding) {
+      super(ServletRequestContext.this, status, encoding);
     }
 
     @Override
@@ -137,7 +146,7 @@ public class ServletRequestContext extends WebRequestContext {
     protected Stream getDataStream(boolean create) {
       if (dataStream == null && create) {
         try {
-          dataStream = new BinaryOutputStream(charset, resp.getOutputStream());
+          dataStream = new BinaryOutputStream(encoding, resp.getOutputStream());
         }
         catch (IOException e) {
           throw new UnsupportedOperationException("Handle me gracefully", e);

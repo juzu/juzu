@@ -20,6 +20,7 @@ import juzu.impl.common.Name;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.Tools;
 
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +40,11 @@ public class BridgeConfig {
   /** . */
   public static final String SOURCE_PATH = "juzu.src_path";
 
+  /** The default request encoding charset. */
+  public static final String REQUEST_ENCODING = "juzu.request_encoding";
+
   /** . */
-  public static final Set<String> NAMES = Collections.unmodifiableSet(Tools.set(RUN_MODE, INJECT, APP_NAME));
+  public static final Set<String> NAMES = Collections.unmodifiableSet(Tools.set(INJECT, APP_NAME, REQUEST_ENCODING));
 
   /** . */
   public final Name name;
@@ -48,13 +52,16 @@ public class BridgeConfig {
   /** . */
   public final InjectorProvider injectorProvider;
 
+  /** . */
+  public final Charset requestEncoding;
+
   public static Name getApplicationName(Map<String, String> config) {
-    String applicationName = config.get("juzu.app_name");
+    String applicationName = config.get(APP_NAME);
     return applicationName != null ? Name.parse(applicationName) : null;
   }
 
   public static InjectorProvider getInjectImplementation(Map<String, String> config) throws Exception {
-    String inject = config.get("juzu.inject");
+    String inject = config.get(INJECT);
     InjectorProvider implementation;
     if (inject == null) {
       implementation = InjectorProvider.INJECT_GUICE;
@@ -68,8 +75,14 @@ public class BridgeConfig {
     return implementation;
   }
 
+  public static Charset getRequestEncoding(Map<String, String> config) {
+    String requestEncodingParam = config.get(REQUEST_ENCODING);
+    return requestEncodingParam != null ? Charset.forName(requestEncodingParam) : Tools.ISO_8859_1;
+  }
+
   public BridgeConfig(Map<String, String> config) throws Exception {
     this.name = getApplicationName(config);
     this.injectorProvider = getInjectImplementation(config);
+    this.requestEncoding = getRequestEncoding(config);
   }
 }

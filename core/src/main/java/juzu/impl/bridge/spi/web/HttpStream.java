@@ -16,7 +16,6 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.PropertyType;
-import juzu.impl.common.Tools;
 import juzu.io.Chunk;
 import juzu.io.Stream;
 
@@ -37,7 +36,7 @@ public abstract class HttpStream implements AsyncStream {
   private static final int STATUS_CLOSED = 2;
 
   /** . */
-  protected Charset charset;
+  protected Charset encoding;
 
   /** . */
   protected String mimeType;
@@ -51,14 +50,14 @@ public abstract class HttpStream implements AsyncStream {
   /** . */
   private final WebRequestContext context;
 
-  public HttpStream(WebRequestContext context, int statusCode) {
+  public HttpStream(WebRequestContext context, int statusCode, Charset encoding) {
 
     //
     this.context = context;
     this.status = STATUS_BUFFERING;
     this.headers = new LinkedList<Map.Entry<String, String[]>>();
     this.mimeType = null;
-    this.charset = Tools.ISO_8859_1;
+    this.encoding = encoding;
 
     //
     setStatusCode(statusCode);
@@ -70,8 +69,8 @@ public abstract class HttpStream implements AsyncStream {
     if (status == STATUS_BUFFERING) {
       if (chunk instanceof Chunk.Property<?>) {
         Chunk.Property<?> property = (Chunk.Property<?>)chunk;
-        if (property.type == PropertyType.CHARSET) {
-          charset = (Charset)property.value;
+        if (property.type == PropertyType.ENCODING) {
+          encoding = (Charset)property.value;
         } else if (property.type == PropertyType.MIME_TYPE) {
           mimeType = (String)property.value;
         } else if (property.type == PropertyType.HEADER) {
@@ -93,7 +92,7 @@ public abstract class HttpStream implements AsyncStream {
 
   private void sendHeaders() {
     if (mimeType != null) {
-      context.setContentType(mimeType, charset);
+      context.setContentType(mimeType, encoding);
     }
     context.setHeaders(headers);
   }

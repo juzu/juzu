@@ -197,7 +197,7 @@ public abstract class WebStream implements AsyncStream {
       this.modules.clear();
     }
 
-    void sendHeader(Stream stream) {
+    void sendHeader(HttpStream stream) {
       stream.provide(Chunk.create(
           "<!DOCTYPE html>\n" +
               "<html>\n" +
@@ -206,6 +206,13 @@ public abstract class WebStream implements AsyncStream {
         stream.provide(Chunk.create("<title>\n"));
         stream.provide(Chunk.create(title));
         stream.provide(Chunk.create("</title>\n"));
+      }
+      if (stream.mimeType != null) {
+        stream.provide(Chunk.create("<meta http-equiv=\"content-type\" content=\""));
+        stream.provide(Chunk.create(stream.mimeType));
+        stream.provide(Chunk.create("; charset="));
+        stream.provide(Chunk.create(stream.encoding.name()));
+        stream.provide(Chunk.create("\">\n"));
       }
       for (Map.Entry<String, String> metaTag : metaTags) {
         stream.provide(Chunk.create("<meta name=\""));

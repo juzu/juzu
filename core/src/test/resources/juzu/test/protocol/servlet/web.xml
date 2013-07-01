@@ -15,6 +15,10 @@
     <param-name>juzu.inject</param-name>
     <param-value>%s</param-value>
   </context-param>
+  <context-param>
+    <param-name>juzu.request_encoding</param-name>
+    <param-value>%s</param-value>
+  </context-param>
   <servlet>
     <servlet-name>JuzuServlet</servlet-name>
     <servlet-class>juzu.test.protocol.servlet.JuzuServlet</servlet-class>

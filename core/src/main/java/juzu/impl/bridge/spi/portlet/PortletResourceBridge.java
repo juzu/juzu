@@ -53,7 +53,7 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
     if (charset == null) {
       // We use ISO-8859-1 in case the the developer has not set a charset
       // but it will send chars instead of bytes
-      charset = Tools.ISO_8859_1;
+      charset = bridge.getConfig().requestEncoding;
     } else {
       resp.setCharacterEncoding(charset.name());
     }

@@ -58,7 +58,7 @@ public abstract class PropertyType<T> {
   public static PropertyType<String> MIME_TYPE = new PropertyType<String>(){};
 
   /** Charset. */
-  public static PropertyType<Charset> CHARSET = new PropertyType<Charset>(){};
+  public static PropertyType<Charset> ENCODING = new PropertyType<Charset>(){};
 
   /** Escape XML. */
   public static PropertyType<Boolean> ESCAPE_XML = new PropertyType<Boolean>(){};

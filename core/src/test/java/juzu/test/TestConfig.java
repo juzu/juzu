@@ -16,7 +16,10 @@
 package juzu.test;
 
 import juzu.impl.common.RunMode;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectorProvider;
+
+import java.nio.charset.Charset;
 
 /** @author Julien Viet */
 public class TestConfig {
@@ -29,6 +32,9 @@ public class TestConfig {
 
   /** . */
   private String urlPattern = "/";
+
+  /** . */
+  private Charset requestEncoding = Tools.ISO_8859_1;
 
   public TestConfig runMode(RunMode runMode) {
     this.runMode = runMode;
@@ -45,6 +51,11 @@ public class TestConfig {
     return this;
   }
 
+  public TestConfig requestEncoding(Charset requestEncoding) {
+    this.requestEncoding = requestEncoding;
+    return this;
+  }
+
   public RunMode getRunMode() {
     return runMode;
   }
@@ -55,5 +66,9 @@ public class TestConfig {
 
   public String getURLPattern() {
     return urlPattern;
+  }
+
+  public Charset getRequestEncoding() {
+    return requestEncoding;
   }
 }

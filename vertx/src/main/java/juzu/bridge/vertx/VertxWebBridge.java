@@ -55,6 +55,7 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
   /** . */
   private final Bridge bridge;
 
+  /** . */
   final VertxRequestContext ctx;
 
   public VertxWebBridge(Bridge bridge, VertxRequestContext ctx, Application application) {

@@ -114,7 +114,6 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
       classOutput.traverse(new Visitor.Default<File>() {
 
         /** . */
-//        LinkedList<String> path = new LinkedList<String>();
         StringBuffer path = new StringBuffer();
 
         @Override
@@ -241,6 +240,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
         runMode.getValue(),
         sourcePath,
         injector.getValue(),
+        config.getRequestEncoding().name(),
         urlPattern);
 
     // Descriptor

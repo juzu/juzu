@@ -155,7 +155,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
         return WarFileSystem.create(context, "/WEB-INF/");
       }
       public ReadFileSystem<?> getSourcePath() {
-        String srcPath = context.getInitParameter("juzu.src_path");
+        String srcPath = context.getInitParameter(BridgeConfig.SOURCE_PATH);
         return srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(context, "/WEB-INF/src/");
       }
       public ReadFileSystem<?> getClassPath() {

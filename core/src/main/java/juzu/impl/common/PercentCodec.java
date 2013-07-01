@@ -269,7 +269,7 @@ public class PercentCodec extends BigInteger {
     return prev - len;
   }
 
-  private int hex(char c) throws IOException {
+  public static int hex(char c) {
     if (c >= '0' && c <= '9') {
       return c - '0';
     }

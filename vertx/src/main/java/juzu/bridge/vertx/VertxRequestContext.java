@@ -284,7 +284,7 @@ public class VertxRequestContext extends WebRequestContext {
   @Override
   public HttpStream getStream(int status) {
     if (writer == null) {
-      writer = new HttpStream(this, status) {
+      writer = new HttpStream(this, status, Tools.UTF_8) {
 
         /** . */
         private VertxStream stream;
@@ -297,7 +297,7 @@ public class VertxRequestContext extends WebRequestContext {
         @Override
         protected Stream getDataStream(boolean create) {
           if (stream == null && create) {
-            stream = new VertxStream(charset, req.response);
+            stream = new VertxStream(encoding, req.response);
           }
           return stream;
         }

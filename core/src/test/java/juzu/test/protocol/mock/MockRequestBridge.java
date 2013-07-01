@@ -289,7 +289,7 @@ public abstract class MockRequestBridge implements RequestBridge {
         public void provide(Chunk chunk) {
           if (chunk instanceof Chunk.Property) {
             Chunk.Property property = (Chunk.Property)chunk;
-            if (property.type == PropertyType.CHARSET) {
+            if (property.type == PropertyType.ENCODING) {
               charset = (Charset)property.value;
             } else if (property.type == PropertyType.MIME_TYPE) {
               mimeType = (String)property.value;
