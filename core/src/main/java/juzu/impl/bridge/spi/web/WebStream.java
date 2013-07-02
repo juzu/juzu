@@ -83,6 +83,8 @@ public abstract class WebStream implements AsyncStream {
           page.title = (String)property.value;
         } else if (property.type == PropertyType.META_TAG) {
           page.metaTags.add(((Map.Entry<String, String>)property.value));
+        } else if (property.type == PropertyType.META_HTTP_EQUIV) {
+          page.metaHttpEquivs.add(((Map.Entry<String, String>)property.value));
         } else if (property.type == PropertyType.STYLESHEET) {
           page.stylesheets.add(((String)property.value));
         } else if (property.type == PropertyType.SCRIPT) {
@@ -171,6 +173,9 @@ public abstract class WebStream implements AsyncStream {
     private final LinkedList<Map.Entry<String, String>> metaTags = new LinkedList<Map.Entry<String, String>>();
 
     /** . */
+    private final LinkedList<Map.Entry<String, String>> metaHttpEquivs = new LinkedList<Map.Entry<String, String>>();
+
+    /** . */
     private final LinkedList<String> stylesheets = new LinkedList<String>();
 
     /** . */
@@ -212,6 +217,13 @@ public abstract class WebStream implements AsyncStream {
         stream.provide(Chunk.create(stream.mimeType));
         stream.provide(Chunk.create("; charset="));
         stream.provide(Chunk.create(stream.encoding.name()));
+        stream.provide(Chunk.create("\">\n"));
+      }
+      for (Map.Entry<String, String> metaTag : metaHttpEquivs) {
+        stream.provide(Chunk.create("<meta http-equiv=\""));
+        stream.provide(Chunk.create(metaTag.getKey()));
+        stream.provide(Chunk.create("\" content=\""));
+        stream.provide(Chunk.create(metaTag.getValue()));
         stream.provide(Chunk.create("\">\n"));
       }
       for (Map.Entry<String, String> metaTag : metaTags) {

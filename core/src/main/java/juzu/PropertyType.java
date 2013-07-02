@@ -51,8 +51,11 @@ public abstract class PropertyType<T> {
   /** Header tag. */
   public static final PropertyType<Element> HEADER_TAG = new PropertyType<Element>(){};
 
-  /** Meta tag. */
+  /** Named meta tag . */
   public static final PropertyType<Map.Entry<String, String>> META_TAG = new PropertyType<Map.Entry<String, String>>(){};
+
+  /** Http-equiv meta tag. */
+  public static final PropertyType<Map.Entry<String, String>> META_HTTP_EQUIV = new PropertyType<Map.Entry<String, String>>(){};
 
   /** Mime type. */
   public static PropertyType<String> MIME_TYPE = new PropertyType<String>(){};

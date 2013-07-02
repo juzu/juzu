@@ -568,6 +568,11 @@ public abstract class Response {
       return this;
     }
 
+    public Content withMetaHttpEquiv(String name, String value) {
+      with(PropertyType.META_HTTP_EQUIV, new AbstractMap.SimpleEntry<String, String>(name, value));
+      return this;
+    }
+
     /**
      * Parse the header into an {@link Element} and set it on the response as an header tag. This method
      * expects well formed XML, the parsed Element will be translated into markup according to the
