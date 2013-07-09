@@ -96,7 +96,8 @@ public class PercentCodec extends BigInteger {
   public static final PercentCodec RFC3986_QUERY_PARAM_VALUE;
 
   static {
-    RFC3986_QUERY_PARAM_NAME = PercentCodec.create(RFC3986_QUERY.clearBit('='));
+    RFC3986_QUERY_PARAM_NAME = PercentCodec.create(RFC3986_QUERY.clearBit('&').clearBit('='));
+    // We accept '=' in query param value as Servlet Container does
     RFC3986_QUERY_PARAM_VALUE = PercentCodec.create(RFC3986_QUERY.clearBit('&'));
   }
 

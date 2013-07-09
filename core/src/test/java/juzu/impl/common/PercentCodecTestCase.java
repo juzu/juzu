@@ -31,6 +31,7 @@ public class PercentCodecTestCase extends AbstractTestCase {
     assertEquals("A", codec.encode("A"));
     assertEquals("0", codec.encode("0"));
     assertEquals("%25", codec.encode("%"));
+    assertEquals("%26", codec.encode("&"));
     assertEquals("%5B", codec.encode("["));
     assertEquals("%7F", codec.encode(Character.toString(((char)127))));
     assertEquals("%C3%A7", codec.encode("ç"));
@@ -44,6 +45,7 @@ public class PercentCodecTestCase extends AbstractTestCase {
     assertEquals("A", codec.decode("A"));
     assertEquals("0", codec.decode("0"));
     assertEquals("%", codec.decode("%25"));
+    assertEquals("&", codec.decode("%26"));
     assertEquals("[", codec.decode("%5B"));
     assertEquals(Character.toString(((char)127)), codec.decode("%7F"));
     assertEquals("ç", codec.decode("%C3%A7"));
