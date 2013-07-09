@@ -41,6 +41,8 @@ public class RouteMatchTestCase extends AbstractControllerTestCase {
     catch (IOException e) {
       throw new UndeclaredIOException(e);
     }
+
+    assertEquals(expected, sb.toString());
   }
 
   @Test
@@ -50,6 +52,8 @@ public class RouteMatchTestCase extends AbstractControllerTestCase {
     RouteMatch match = a.matches(Collections.<String, String>emptyMap());
     assertNotNull(match);
     assertMatch("/a?a=foo", a, Collections.<String, String>singletonMap(Names.A, "foo"));
+    assertMatch("/a?a=foo%26bar", a, Collections.<String, String>singletonMap(Names.A, "foo&bar"));
+    assertMatch("/a?a%26b=foo", a, Collections.<String, String>singletonMap("a&b", "foo"));
   }
 
   @Test
