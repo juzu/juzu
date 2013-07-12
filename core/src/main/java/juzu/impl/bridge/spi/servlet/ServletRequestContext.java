@@ -78,7 +78,7 @@ public class ServletRequestContext extends WebRequestContext {
     }
 
     //
-    if ("POST".equals(req.getMethod()) && req.getContentType().contains("application/x-www-form-urlencoded")) {
+    if ("POST".equals(req.getMethod()) && req.getContentType()!=null && req.getContentType().contains("application/x-www-form-urlencoded")) {
       try {
         byte[] bytes = Tools.copy(req.getInputStream(), new ByteArrayOutputStream()).toByteArray();
         String form = new String(bytes, defaultEncoding);
