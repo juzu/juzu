@@ -59,6 +59,10 @@ public class FormURLEncodedParser extends AbstractParameterParser {
           return null;
         }
       } else {
+        // change + character to recover space character
+        if(c == '+'){
+          c = ' ';
+        }
         if (baos.size() > 0) {
           sb.append(new String(baos.toByteArray(), encoding));
           baos.reset();
