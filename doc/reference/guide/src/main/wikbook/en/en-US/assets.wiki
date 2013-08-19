@@ -117,7 +117,7 @@ External assets declares an opaque URL for Juzu.
 {{java}}
 @Assets(scripts = @Script(
   src = "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js",
-  location = AssetLocation.CLASSPATH))
+  location = AssetLocation.URL))
 package my.application;
 {{/java}}
 {{/example}}
