@@ -159,6 +159,6 @@ Template index;
 
 @View
 public Response.Content index() {
-  return index.render().withScript(myscript""));
+  return index.render().withScript("myscript"));
 }
 {{/java}}
