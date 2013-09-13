@@ -50,9 +50,6 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
   public static final MessageCode CANNOT_WRITE_CONTROLLER_COMPANION = new MessageCode("CANNOT_WRITE_CONTROLLER_COMPANION", "The controller companion %1$s cannot be written");
 
   /** . */
-  public static final MessageCode CONTROLLER_METHOD_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_NOT_RESOLVED", "The controller method cannot be resolved %1$s");
-
-  /** . */
   public static final MessageCode CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED", "The method parameter type %1s should be a string or annotated with @juzu.Param");
 
   /** A flag for handling modified event. */

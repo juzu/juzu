@@ -99,13 +99,13 @@ public class CompilationTestCase extends AbstractTestCase {
   }
 
   private void asserNotMatch(String test) {
-    Matcher matcher = Compiler.PATTERN.matcher(test);
-    assertFalse("Was not expecting " + Compiler.PATTERN + " to match " + test, matcher.matches());
+    Matcher matcher = Message.PATTERN.matcher(test);
+    assertFalse("Was not expecting " + Message.PATTERN + " to match " + test, matcher.matches());
   }
 
   private void asserMatch(String test, String expectedCode, String expectedArguments) {
-    Matcher matcher = Compiler.PATTERN.matcher(test);
-    assertTrue("Was expecting " + Compiler.PATTERN + " to match " + test, matcher.matches());
+    Matcher matcher = Message.PATTERN.matcher(test);
+    assertTrue("Was expecting " + Message.PATTERN + " to match " + test, matcher.matches());
     assertEquals(expectedCode, matcher.group(1));
     assertEquals(expectedArguments, matcher.group(2));
   }

@@ -41,14 +41,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Compiler {
@@ -170,9 +169,6 @@ public class Compiler {
       return compiler;
     }
   }
-
-  /** . */
-  static final Pattern PATTERN = Pattern.compile("\\[" + "([^\\]]+)" + "\\]\\(" + "([^\\)]*)" + "\\)");
 
   /** . */
   private JavaCompiler javaCompiler;
@@ -371,24 +367,10 @@ public class Compiler {
           Location location = (columnNumber > 0 && lineNumber > 0) ? new Location(columnNumber, lineNumber) : null;
 
           // We pass the default locale instead of null as ECJ has issues with null
-          String message = diagnostic.getMessage(Locale.getDefault());
+          String s = diagnostic.getMessage(Locale.getDefault());
 
           //
-          MessageCode code = null;
-          List<String> arguments = Collections.emptyList();
-          Matcher matcher = PATTERN.matcher(message);
-          if (matcher.find()) {
-            String codeKey = matcher.group(1);
-            code = MessageCode.decode(codeKey);
-
-            //
-            if (matcher.group(2).length() > 0) {
-              arguments = new ArrayList<String>();
-              for (String argument : Spliterator.split(matcher.group(2), ',')) {
-                arguments.add(argument.trim());
-              }
-            }
-          }
+          Message message = Message.parse(s);
 
           // Best effort to get a java.io.File
           JavaFileObject obj = diagnostic.getSource();
@@ -413,7 +395,10 @@ public class Compiler {
           }
 
           //
-          errors.add(new CompilationError(code, arguments, source, resolvedFile, location, message));
+          errors.add(new CompilationError(
+              message != null ? message.getCode() : null,
+              message != null ? Arrays.asList(message.getArguments()): Collections.<String>emptyList(),
+              source, resolvedFile, location, s));
         }
       }
     };

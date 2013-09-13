@@ -17,10 +17,12 @@
 package juzu.impl.plugin.template;
 
 import juzu.impl.common.Content;
+import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
+import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
@@ -30,6 +32,8 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -65,6 +69,17 @@ public class TemplateTestCase extends AbstractInjectTestCase {
       template.render(new TemplateRenderContext(new WriterPrinter(out)));
       assertEquals("hello", out.toString());
 */
+  }
+
+  @Test
+  public void testControllerNotFound() throws Exception {
+    CompilerAssert<File, File> compiler = compiler("plugin.template.controllerNotFound");
+    compiler.formalErrorReporting(true);
+    List<CompilationError> errors = compiler.failCompile();
+    assertEquals(1, errors.size());
+    CompilationError error = errors.get(0);
+    assertEquals(TemplateMetaModel.CONTROLLER_NOT_RESOLVED, error.getCode());
+    assertEquals(Arrays.asList("Foo.bar({})", "index.gtmpl", "2", "4"), error.getArguments());
   }
 
   @Test
