@@ -47,18 +47,18 @@ public class Weather {
   Template index;
 
   @juzu.View
-  public void index() {
-    index("marseille");
+  public Response.Content index() {
+    return index("marseille");
   }
 
   @juzu.View
   @Route("/show/{location}")
-  public void index(String location) {
+  public Response.Content index(String location) {
     Map<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("location", location);
     parameters.put("temperature", weatherService.getTemperature(location));
     parameters.put("locations", locations);
-    index.render(parameters);
+    return index.with(parameters).ok();
   }
 
   @Action

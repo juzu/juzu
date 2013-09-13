@@ -75,16 +75,16 @@ public class Hotels // extends Application
   @Path("hotels/confirmBooking.gtmpl")
   org.sample.booking.templates.hotels.confirmBooking confirmBooking;
 
-  public void index() {
+  public Response.Content index() {
     String username = login.getUserName();
     List<Booking> bookings = Booking.findByUser(username);
-    index.with().bookings(bookings).render();
+    return index.with().bookings(bookings).ok();
   }
 
   @Ajax
   @Resource
   @Route("/hotels")
-  public void list(String search, String size, String page) {
+  public Response.Content list(String search, String size, String page) {
     int _size = size != null ? Integer.parseInt(size) : 5;
     int _page = page != null ? Integer.parseInt(page) : 0;
     List<Hotel> hotels;
@@ -96,24 +96,24 @@ public class Hotels // extends Application
       pattern = Pattern.compile(".*");
     }
     hotels = Hotel.find(pattern, pattern, _size, _page);
-    list.with().hotels(hotels).page(_page).render();
+    return list.with().hotels(hotels).page(_page).ok();
   }
 
   @View
   @Route("/hotels/{id}")
-  public void show(String id) {
+  public Response.Content show(String id) {
     Hotel hotel = Hotel.findById(id);
-    show.with().hotel(hotel).render();
+    return show.with().hotel(hotel).ok();
   }
 
   @View
   @Route("/hotels/{id}/booking")
-  public void book(String id, Booking booking) {
+  public Response.Content book(String id, Booking booking) {
     Hotel hotel = Hotel.findById(id);
     if (booking == null) {
       booking = new Booking();
     }
-    book.with().hotel(hotel).booking(booking).render();
+    return book.with().hotel(hotel).booking(booking).ok();
   }
 
   @Action
@@ -145,9 +145,9 @@ public class Hotels // extends Application
 
   @View
   @Route("/hotels/{id}/confirm")
-  public void confirmBooking(String id, Booking booking) {
+  public Response.Content confirmBooking(String id, Booking booking) {
     Hotel hotel = Hotel.findById(id);
-    confirmBooking.with().total(0).hotel(hotel).booking(booking).render();
+    return confirmBooking.with().total(0).hotel(hotel).booking(booking).ok();
   }
 
   @Action

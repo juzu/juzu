@@ -17,6 +17,7 @@
 package examples.tutorial.weather1;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 
@@ -30,7 +31,7 @@ public class Weather {
   Template index;
 
   @View
-  public void index() {
-    index.render();
+  public Response.Content index() {
+    return index.ok();
   }
 }

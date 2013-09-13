@@ -17,6 +17,7 @@
 package plugin.template.printer;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 
@@ -34,7 +35,7 @@ public class A {
   Template explicit;
 
   @View(id = "implicit")
-  public void implicit() {
-    implicit.render();
+  public Response.Content implicit() {
+    return implicit.ok();
   }
 }

@@ -18,6 +18,7 @@ package examples.tutorial.weather3;
 
 import examples.tutorial.WeatherService;
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 
@@ -36,10 +37,10 @@ public class Weather {
   Template index;
 
   @View
-  public void index() {
+  public Response.Content index() {
     Map<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("location", "marseille");
     parameters.put("temperature", weatherService.getTemperature("marseille"));
-    index.render(parameters);
+    return index.with(parameters).ok();
   }
 }

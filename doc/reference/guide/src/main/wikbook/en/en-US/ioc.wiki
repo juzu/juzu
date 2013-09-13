@@ -92,10 +92,10 @@ Beans are simply the objects managed by the IOC engine. In a Juzu applications w
 == Template beans ==
 
 Every template has a corresponding ##juzu.template.Template## class at runtime. The template class allows
-applications to interact with templates, most of the time for rendering purpose:
+applications to interact with templates, most of the time for creating a controller ok response:
 
 {{java}}
-template.render();
+template.ok();
 {{/java}}
 
 A template bean is always qualified by the ##@Path## qualifier. The path qualifier is simply the value of the path
@@ -132,12 +132,12 @@ Injecting a template bean into a controller bean is probably the most common Juz
 Template index;
 {{/java}}
 
-The template can then be used for rendering purposes:
+The template can then be used for creating a response:
 
 {{java}}
 @View
-public void index() {
-   index.render();
+public Response.Content index() {
+   return index.ok();
 }
 {{/java}}
 

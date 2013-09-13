@@ -19,21 +19,14 @@ import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
-import java.util.regex.Pattern;
-
 /** @author Julien Viet */
 public class MessageTestCase extends AbstractTestCase {
 
   @Test
-  public void testFoo() {
-
-
-    Pattern a = null;
+  public void testLineTerminator() {
     Message msg = new Message(TemplateMetaModel.CANNOT_WRITE_APPLICATION, "a\nb");
     String s = msg.format();
     msg = Message.parse(s);
     assertNotNull(msg);
-
   }
-
 }

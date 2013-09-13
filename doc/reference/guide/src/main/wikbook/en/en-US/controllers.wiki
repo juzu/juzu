@@ -21,7 +21,7 @@ Controller methods can declare parameters for receiving request parameters:
 {{java}}
 public class Controller {
   @View public Response.Content index(String person) {
-     return Response.render("Hello " + person == null ? "world" : person);
+     return Response.ok("Hello " + person == null ? "world" : person);
   }
 }
 {{/java}}
@@ -49,7 +49,7 @@ the ##toString()## method is invoked. When parameters are provided they will be 
 
 {{java}}
 @View public Response.Content index() {
-  return Response.render("Hello word. <a href='" + Controller_.index("Juzu") + "'>Say hello to Juzu</a>";
+  return Response.ok("Hello word. <a href='" + Controller_.index("Juzu") + "'>Say hello to Juzu</a>";
 }
 {{/java}}
 
