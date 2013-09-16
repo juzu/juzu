@@ -36,7 +36,7 @@ import java.util.LinkedHashMap;
 public class ModuleManager {
 
   /** . */
-  protected final LinkedHashMap<String, Module> assets = new LinkedHashMap<String, Module>();
+  protected final LinkedHashMap<String, Module> modules = new LinkedHashMap<String, Module>();
 
   /** . */
   protected final HashMap<String, URL> resources = new HashMap<String, URL>();
@@ -50,9 +50,9 @@ public class ModuleManager {
     }
 
     //
-    Module module = assets.get(name);
+    Module module = modules.get(name);
     if (module == null) {
-      assets.put(name, module = new Module(name, data.getLocation(), data.getPath()));
+      modules.put(name, module = new Module(name, data.getLocation(), data.getPath()));
 
       //
       switch (data.getLocation()) {
@@ -64,7 +64,10 @@ public class ModuleManager {
           }
           break;
         case SERVER :
-          resources.put(data.getPath(), url);
+        case URL:
+          if (data instanceof ModuleMetaData.Require) {
+            resources.put(data.getPath(), url);
+          }
           break;
         default :
           // Nothing to do
