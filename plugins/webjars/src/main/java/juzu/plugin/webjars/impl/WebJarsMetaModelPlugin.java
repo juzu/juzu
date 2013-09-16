@@ -110,7 +110,9 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
         for(String resource : resources) {
           log.log("Processing declared webjars " + resource);
           
-          URL url = Thread.currentThread().getContextClassLoader().getResource( new WebJarAssetLocator().getFullPath(resource));
+          String resourcePath = new WebJarAssetLocator().getFullPath(resource);
+          URL url = WebJarAssetLocator.class.getClassLoader().getResource(resourcePath);
+          
           if (url != null) {
             Path.Absolute to = assetPkg.resolve(resource).as("js");
             try {
@@ -127,7 +129,7 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
               log.log("Resource " + to + " could not be written on disk", e);
             }
           } else {
-            log.log("Could not resolve WebJars asset " + resource);
+            log.log("Could not resolve WebJars asset " + resource + " with resource path " + resourcePath);
           }
         }
       }
