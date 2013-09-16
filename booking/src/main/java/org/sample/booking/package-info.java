@@ -19,21 +19,21 @@
 @Portlet
 @Servlet("/")
 @Assets(
-    scripts = {
-        @Script(id = "jquery", src = "javascripts/jquery-1.7.1.min.js"),
-        @Script(src = "javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
-        @Script(src = "javascripts/booking.js", depends = "juzu.ajax")
-    },
-    stylesheets = {
-        @Stylesheet(src = "stylesheets/main.css"),
-        @Stylesheet(src = "ui-lightness/jquery-ui-1.7.2.custom.css")
+    {
+        @Asset(id = "jquery", value = "javascripts/jquery-1.7.1.min.js"),
+        @Asset(value = "javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
+        @Asset(value = "javascripts/booking.js", depends = "juzu.ajax"),
+        @Asset("stylesheets/main.css"),
+        @Asset("ui-lightness/jquery-ui-1.7.2.custom.css")
     }
-) package org.sample.booking;
+)
+@WithAssets
+package org.sample.booking;
 
 import juzu.Application;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.WithAssets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.portlet.Portlet;

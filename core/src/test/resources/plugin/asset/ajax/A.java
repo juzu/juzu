@@ -42,7 +42,7 @@ public class A {
         "</script>\n" +
         "<a id='trigger' href='#'>click</a>\n" +
         "<div id='foo'>foo</div>";
-    return Response.ok(content).withScripts("jquery");
+    return Response.ok(content).withAssets("jquery");
   }
 
   @Resource

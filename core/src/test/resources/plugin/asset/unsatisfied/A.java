@@ -23,6 +23,6 @@ import juzu.View;
 public class A {
   @View
   public Response.Content index() {
-    return Response.ok("nothing");
+    return Response.ok("nothing").withAssets("jquery");
   }
 }

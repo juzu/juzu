@@ -15,10 +15,12 @@
  */
 
 @Application()
-@Assets(scripts = @Script(src = "test.js"), stylesheets =  @Stylesheet(src = "main.css"))
+@Assets(value = {
+    @Asset(id = "test.js", value = "test.js"),
+    @Asset(id = "main.css", value = "main.css")
+})
 package plugin.asset.location.defaultrelative;
 
 import juzu.Application;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;

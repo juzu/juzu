@@ -25,13 +25,11 @@ import juzu.impl.plugin.ajax.AjaxPlugin;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.net.URL;
 
 public class A {
 
   @Inject
-  @Named("juzu.asset_manager.script")
   AssetManager manager;
 
   @PostConstruct

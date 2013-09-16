@@ -74,10 +74,7 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
         private Stream dataStream = null;
 
         /** . */
-        private final LinkedList<String> stylesheetAssets = new LinkedList<String>();
-
-        /** . */
-        private final LinkedList<String> scriptAssets = new LinkedList<String>();
+        private final LinkedList<String> assets = new LinkedList<String>();
 
         public void provide(Chunk chunk) {
           if (chunk instanceof Chunk.Property) {
@@ -101,10 +98,8 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
               elt.setAttribute("name", metaTag.getKey());
               elt.setAttribute("content", metaTag.getValue());
               resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-            } else if (property.type == PropertyType.STYLESHEET) {
-              stylesheetAssets.add(((String)property.value));
-            } else if (property.type == PropertyType.SCRIPT) {
-              scriptAssets.add(((String)property.value));
+            } else if (property.type == PropertyType.ASSET) {
+              assets.add(((String)property.value));
             } else if (property.type == PropertyType.HEADER_TAG) {
               Element headerTag = (Element)property.value;
               Element responseTag = resp.createElement(headerTag.getTagName());
@@ -117,29 +112,33 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
           } else if (chunk instanceof Chunk.Data) {
             Chunk.Data data = (Chunk.Data)chunk;
             if (dataStream == null) {
-              Iterable<Asset> stylesheets = assetPlugin.getStylesheetManager().resolveAssets(stylesheetAssets);
-              for (Asset stylesheet : stylesheets) {
-                int pos = stylesheet.getURI().lastIndexOf('.');
-                String ext = pos == -1 ? "css" : stylesheet.getURI().substring(pos + 1);
-                Element elt = resp.createElement("link");
-                elt.setAttribute("media", "screen");
-                elt.setAttribute("rel", "stylesheet");
-                elt.setAttribute("type", "text/" + ext);
-                elt.setAttribute("href", ((PortletRenderBridge)PortletMimeBridge.this).getAssetURL(stylesheet));
-                resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
-              }
-              Iterable<Asset> scripts = assetPlugin.getScriptManager().resolveAssets(scriptAssets);
-              for (Asset script : scripts) {
-                String url = ((PortletRenderBridge)PortletMimeBridge.this).getAssetURL(script);
-                Element elt = resp.createElement("script");
-                elt.setAttribute("type", "text/javascript");
-                elt.setAttribute("src", url);
-                // This comment is needed for liferay to make the script pass the minifier
-                // it forces to have a <script></script> tag
-                String dummy = bridge.getApplication().getName() + " script ";
-                Comment comment = elt.getOwnerDocument().createComment(dummy);
-                elt.appendChild(comment);
-                resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+              Iterable<Asset> resolvedAssets = assetPlugin.getAssetManager().resolveAssets(assets);
+              for (Asset resolvedAsset : resolvedAssets) {
+                Element elt;
+                if (resolvedAsset.isStylesheet()) {
+                  int pos = resolvedAsset.getURI().lastIndexOf('.');
+                  String ext = pos == -1 ? "css" : resolvedAsset.getURI().substring(pos + 1);
+                  elt = resp.createElement("link");
+                  elt.setAttribute("media", "screen");
+                  elt.setAttribute("rel", "stylesheet");
+                  elt.setAttribute("type", "text/" + ext);
+                  elt.setAttribute("href", ((PortletRenderBridge)PortletMimeBridge.this).getAssetURL(resolvedAsset));
+                } else if (resolvedAsset.isScript()) {
+                  String url = ((PortletRenderBridge)PortletMimeBridge.this).getAssetURL(resolvedAsset);
+                  elt = resp.createElement("script");
+                  elt.setAttribute("type", "text/javascript");
+                  elt.setAttribute("src", url);
+                  // This comment is needed for liferay to make the script pass the minifier
+                  // it forces to have a <script></script> tag
+                  String dummy = bridge.getApplication().getName() + " script ";
+                  Comment comment = elt.getOwnerDocument().createComment(dummy);
+                  elt.appendChild(comment);
+                } else {
+                  elt = null;
+                }
+                if (elt != null) {
+                  resp.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, elt);
+                }
               }
               try {
                 dataStream = createStream(mimeType, charset);

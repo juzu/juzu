@@ -27,14 +27,11 @@ public class AssetResolver implements ResourceResolver {
   @Inject AssetPlugin plugin;
 
   public URL resolve(String uri) {
-    URL url = plugin.scriptManager.resolveAsset(uri);
+    URL url = plugin.assetManager.resolveAsset(uri);
     if (url == null) {
-      url = plugin.stylesheetManager.resolveAsset(uri);
-      if (url == null) {
-        String assetsPath = plugin.getAssetsPath();
-        if (assetsPath != null && uri.startsWith(assetsPath)) {
-          url = plugin.resolve(AssetLocation.APPLICATION, uri);
-        }
+      String assetsPath = plugin.getAssetsPath();
+      if (assetsPath != null && uri.startsWith(assetsPath)) {
+        url = plugin.resolve(AssetLocation.APPLICATION, uri);
       }
     }
     return url;

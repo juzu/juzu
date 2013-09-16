@@ -15,17 +15,15 @@
  */
 
 @Application()
-@Assets(
-  scripts = @Script(src = "jquery.js", location = AssetLocation.SERVER),
-  stylesheets = {
-    @Stylesheet(src = "main.css", location = AssetLocation.SERVER),
-    @Stylesheet(src = "main.less", location = AssetLocation.SERVER)
+@Assets({
+    @Asset(id = "jquery.js", value = "jquery.js", location = AssetLocation.SERVER),
+    @Asset(id = "main.css", value = "main.css", location = AssetLocation.SERVER),
+    @Asset(id = "main.less", value = "main.less", location = AssetLocation.SERVER)
   }
 )
 package plugin.asset.mimetype;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;

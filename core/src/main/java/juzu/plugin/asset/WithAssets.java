@@ -16,49 +16,27 @@
 
 package juzu.plugin.asset;
 
-import juzu.asset.AssetLocation;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A stylesheet asset.
+ * Declares assets to use.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({})
-public @interface Stylesheet {
+@Target({ElementType.PACKAGE,ElementType.TYPE,ElementType.METHOD})
+@Inherited
+public @interface WithAssets {
 
   /**
-   * Returns the stylesheet id, the value is optional and has meaning when this stylesheet must be referenced (for
-   * instance as a dependency of another stylesheet).
+   * The asset ids to match, the default value is <code>*</code>.
    *
-   * @return the script id
+   * @return the asset ids to match
    */
-  String id() default "";
-
-  /**
-   * Return the stylesheet dependencies, i.e the stylesheet that should be executed before the stylesheet determined by
-   * this annotation.
-   *
-   * @return the dependencies
-   */
-  String[] depends() default {};
-
-  /**
-   * The stylesheet location.
-   *
-   * @return the location
-   */
-  AssetLocation location() default AssetLocation.APPLICATION;
-
-  /**
-   * The stylesheet source.
-   *
-   * @return the source
-   */
-  String src();
+  String[] value() default {"*"};
 
 }

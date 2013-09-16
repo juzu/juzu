@@ -1,1 +1,0 @@
-foo = "OK MEN";

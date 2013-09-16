@@ -19,7 +19,6 @@ package juzu.impl.plugin.asset;
 import juzu.Scope;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
-import juzu.impl.common.NameLiteral;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
@@ -33,42 +32,14 @@ import java.util.List;
 public class AssetDescriptor extends PluginDescriptor {
 
   /** . */
-  private final List<AssetMetaData> scripts;
+  private final List<AssetMetaData> assets;
 
-  /** . */
-  private final List<AssetMetaData> stylesheets;
-
-  /** . */
-  private final List<AssetMetaData> declaredScripts;
-
-  /** . */
-  private final List<AssetMetaData> declaredStylesheets;
-
-  AssetDescriptor(
-      List<AssetMetaData> scripts,
-      List<AssetMetaData> declaredScripts,
-      List<AssetMetaData> stylesheets,
-      List<AssetMetaData> declaredStylesheets) {
-    this.scripts = scripts;
-    this.stylesheets = stylesheets;
-    this.declaredScripts = declaredScripts;
-    this.declaredStylesheets = declaredStylesheets;
+  AssetDescriptor(List<AssetMetaData> assets) {
+    this.assets = assets;
   }
 
-  public List<AssetMetaData> getScripts() {
-    return scripts;
-  }
-
-  public List<AssetMetaData> getStylesheets() {
-    return stylesheets;
-  }
-
-  public List<AssetMetaData> getDeclaredScripts() {
-    return declaredScripts;
-  }
-
-  public List<AssetMetaData> getDeclaredStylesheets() {
-    return declaredStylesheets;
+  public List<AssetMetaData> getAssets() {
+    return assets;
   }
 
   @Override
@@ -77,11 +48,7 @@ public class AssetDescriptor extends PluginDescriptor {
         BeanDescriptor.createFromBean(
             AssetManager.class,
             Scope.SINGLETON,
-            Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.script"))),
-        BeanDescriptor.createFromBean(
-            AssetManager.class,
-            Scope.SINGLETON,
-            Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.stylesheet"))),
+            Collections.<Annotation>emptyList()),
         BeanDescriptor.createFromImpl(ResourceResolver.class, Scope.SINGLETON, null, AssetResolver.class));
   }
 }

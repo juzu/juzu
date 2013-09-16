@@ -90,4 +90,12 @@ public class Asset {
   public String getURI() {
     return uri;
   }
+
+  public boolean isStylesheet() {
+    return uri.endsWith(".css") || uri.endsWith(".less");
+  }
+
+  public boolean isScript() {
+    return uri.endsWith(".js");
+  }
 }

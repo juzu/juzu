@@ -26,43 +26,41 @@ JQuery library is loaded.
 We extend the ##@Asset## annotation to add our scripts:
 
 {{java}}
-@Assets(
-   scripts = {
-      @Script(
-         id = "jquery", // <1>
-         src = "jquery-1.7.1.min.js",
-         location = AssetLocation.CLASSPATH),
-      @Script(
-         id = "transition",
-         src = "bootstrap-transition.js", // <2>
-         location = AssetLocation.CLASSPATH,
-         depends = "jquery"), // <1>
-      @Script(
-         id = "collapse",
-         src = "bootstrap-collapse.js",
-         location = AssetLocation.CLASSPATH,
-         depends = {
-            "jquery", // 1
-            "transition"}), // <2>
-      @Script(
-         src = "weather.js",
-         location = AssetLocation.CLASSPATH,
-         depends = {
-            "jquery",  // <1>
-            "collapse"}) // <3>
-   },
-   stylesheets = @Stylesheet(src = "/examples/tutorial/assets/bootstrap.css", location = AssetLocation.CLASSPATH)
-)
+@Assets({
+  @Asset(
+    id = "jquery", // <1>
+    value = "jquery-1.7.1.min.js",
+    location = AssetLocation.CLASSPATH),
+  @Asset(
+    id = "transition",
+    value = "bootstrap-transition.js", // <2>
+    location = AssetLocation.CLASSPATH,
+    depends = "jquery"), // <1>
+  @Asset(
+    id = "collapse",
+    value = "bootstrap-collapse.js",
+    location = AssetLocation.CLASSPATH,
+    depends = {
+      "jquery", // 1
+      "transition"}), // <2>
+  @Asset(
+    value = "weather.js",
+    location = AssetLocation.CLASSPATH,
+    depends = {
+      "jquery",  // <1>
+      "collapse"}), // <3>
+  @Asset(value = "/examples/tutorial/assets/bootstrap.css", location = AssetLocation.CLASSPATH)
+})
 package examples.tutorial.weather8;
 // =1= All other scripts than JQuery depends on JQuery
 // =2= The //collapse// JQuery plugin depends on the //transition// script
 // =3= Our //weather// script depends also on the JQuery //collapse// plugin
 {{/java}}
 
-The declaration is straightforward, any ##@Script## annotation may configure
+The declaration is straightforward, any ##@Asset## annotation may configure
 
-* an optional ##id## used for creating dependencies between scripts
-* a mandatory ##src## for the script name
+* an optional ##id## used for creating dependencies between script assets
+* a mandatory ##value## for the script name
 * an optional ##location## for resolving the script
 * an optional ##depends## that declares the ids a script depends on
 

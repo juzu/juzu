@@ -15,9 +15,9 @@
  */
 
 @Application()
-@Assets(scripts = @Script(src = "test.js"))
+@Assets(value = @Asset(id = "test.js", value = "test.js"))
 package plugin.asset.serving;
 
 import juzu.Application;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;

@@ -15,10 +15,10 @@
  */
 
 @Application()
-@Assets(scripts = @Script(id = "jquery", src = "/juzu/jquery.js", depends = "foo", location = AssetLocation.SERVER))
+@Assets(value = @Asset(id = "jquery", value = "/juzu/jquery.js", depends = "foo", location = AssetLocation.SERVER))
 package plugin.asset.unsatisfied;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;

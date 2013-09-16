@@ -24,6 +24,6 @@ public class A {
   @View
   public Response.Content index() {
     String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
-    return Response.ok(content);
+    return Response.ok(content).withAssets("main.css").withAssets("test.js");
   }
 }
