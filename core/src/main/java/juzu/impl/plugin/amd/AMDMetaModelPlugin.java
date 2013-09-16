@@ -171,7 +171,6 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
       JSON definesJSON = new JSON();
       List<Map<String, Object>> defines = (List<Map<String, Object>>)definesState.get("value");
       definesJSON.set("value", build(defines));
-      definesJSON.set("location", definesState.get("location"));
       config.set("defines", definesJSON);
     }
     if (requiresState != null) {

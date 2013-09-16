@@ -17,12 +17,10 @@
  */
 package juzu.impl.plugin.amd;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import juzu.asset.AssetLocation;
-import juzu.impl.common.Tools;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>

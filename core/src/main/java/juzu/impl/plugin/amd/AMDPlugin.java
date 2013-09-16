@@ -90,19 +90,15 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
       JSON requiresJSON = config.getJSON("requires");
 
       if (definesJSON != null) {
-        AssetLocation defineLocation = AssetLocation.safeValueOf(definesJSON.getString("location"));
-        if (defineLocation == null) {
-          defineLocation = AssetLocation.APPLICATION;
-        }
-        defines = loadDefines(packageName, defineLocation, definesJSON.getList("value", JSON.class));
+        defines = loadDefines(packageName, definesJSON.getList("value", JSON.class));
       }
 
       if (requiresJSON != null) {
-        AssetLocation requireLocation = AssetLocation.safeValueOf(requiresJSON.getString("location"));
-        if (requireLocation == null) {
-          requireLocation = AssetLocation.APPLICATION;
+        AssetLocation defaultLocation = AssetLocation.safeValueOf(requiresJSON.getString("location"));
+        if (defaultLocation == null) {
+          defaultLocation = AssetLocation.APPLICATION;
         }
-        requires = loadRequires(packageName, requireLocation, requiresJSON.getList("value", JSON.class));
+        requires = loadRequires(packageName, defaultLocation, requiresJSON.getList("value", JSON.class));
       }
     }
 
@@ -111,7 +107,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     return descriptor;
   }
 
-  private List<ModuleMetaData.Define> loadDefines(String packageName, AssetLocation defaultLocation, List<? extends JSON> modules) throws Exception {
+  private List<ModuleMetaData.Define> loadDefines(String packageName, List<? extends JSON> modules) throws Exception {
     List<ModuleMetaData.Define> defines = Collections.emptyList();
     if (modules != null && modules.size() > 0) {
       defines = new ArrayList<ModuleMetaData.Define>();
