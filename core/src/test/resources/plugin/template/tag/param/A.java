@@ -17,6 +17,7 @@
 package plugin.template.tag.param;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
 
 import javax.inject.Inject;
@@ -29,7 +30,7 @@ public class A {
   plugin.template.tag.param.templates.index index;
 
   @View
-  public void index() {
-    index.with().foo("foo_value").render();
+  public Response.Content index() {
+    return index.with().foo("foo_value").ok();
   }
 }

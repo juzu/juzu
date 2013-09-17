@@ -206,8 +206,8 @@ public class Controller {
   Template index;
 
   @View
-  public void index() {
-    index.with().color("red").render();
+  public Response.Content index() {
+    return index.with().color("red").ok();
   }
 }
 {{/java}}

@@ -17,6 +17,7 @@
 package resolvebean;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 
@@ -30,7 +31,7 @@ public class A {
   Template index;
 
   @View
-  public void index() {
-    index.with().render();
+  public Response.Content index() {
+    return index.ok();
   }
 }

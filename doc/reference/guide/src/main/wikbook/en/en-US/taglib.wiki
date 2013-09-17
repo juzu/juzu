@@ -88,8 +88,8 @@ value of the parameter:
 @Inject my.templates.index index;
 
 @View
-public void index() {
-  index.with().color("red").render();
+public Content.Response index() {
+  return index.with().color("red").ok();
 }
 {{/java}}
 {{/example}}

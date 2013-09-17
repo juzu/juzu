@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -180,19 +181,12 @@ public abstract class BaseProcessor extends AbstractProcessor {
         for (Message cm : ce) {
           msg.setLength(0);
           MessageCode code = cm.getCode();
-          Object[] args = cm.getArguments();
+          String[] args = cm.getArguments();
           if (formalErrorReporting) {
-            msg = msg.append("[").append(code.getKey()).append("](");
-            for (int i = 0;i < args.length;i++) {
-              if (i > 0) {
-                msg.append(',');
-              }
-              msg.append(String.valueOf(args[i]));
-            }
-            msg.append(")");
+            cm.format(msg, true);
           }
           else {
-            new Formatter(msg).format(Locale.getDefault(), code.getMessage(), args).flush();
+            new Formatter(msg).format(Locale.getDefault(), code.getMessage(), (Object[])args).flush();
           }
 
           // Log error

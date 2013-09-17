@@ -17,6 +17,7 @@
 package resolveparameter;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 
@@ -30,7 +31,7 @@ public class A {
   Template index;
 
   @View
-  public void index() {
-    index.with().set("foo", "bar").render();
+  public Response.Content index() {
+    return index.with().set("foo", "bar").ok();
   }
 }

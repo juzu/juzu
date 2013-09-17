@@ -18,6 +18,7 @@ package plugin.template.message;
 
 import juzu.Path;
 import juzu.RequestScoped;
+import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 
@@ -34,7 +35,7 @@ public class A {
   Template index;
 
   @View
-  public void index() {
-    index.render();
+  public Response.Content index() {
+    return index.ok();
   }
 }

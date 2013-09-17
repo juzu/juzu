@@ -16,6 +16,7 @@
 
 package plugin.template.simple;
 
+import juzu.Response;
 import juzu.View;
 
 import javax.inject.Inject;
@@ -28,7 +29,7 @@ public class A {
   juzu.template.Template template;
 
   @View
-  public void index() {
-    template.render();
+  public Response.Content index() {
+    return template.ok();
   }
 }

@@ -17,6 +17,7 @@
 package plugin.template.tag.title;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 
@@ -35,12 +36,12 @@ public class A {
   Template dynamic;
 
   @View
-  public void index() {
-    index.render();
+  public Response.Content index() {
+    return index.ok();
   }
 
   @View
-  public void dynamic() {
-    dynamic.render(Collections.singletonMap("expression", "4"));
+  public Response.Content dynamic() {
+    return dynamic.with(Collections.singletonMap("expression", "4")).ok();
   }
 }

@@ -100,7 +100,7 @@ import java.util.List;
  *
  *       &#064;View
  *       public {@link juzu.Response.Content} myView() {
- *          return index.render();
+ *          return index.ok();
  *       }
  *
  *       &#064;Inject &#064;Path("error.gtmpl")  {@link juzu.template.Template} error;
@@ -121,7 +121,7 @@ import java.util.List;
  *
  *       &#064;View
  *       public {@link juzu.Response.Content} myView() {
- *          return index.with().label("hello").render();
+ *          return index.with().label("hello").ok();
  *       }
  *    }
  * </pre></code>

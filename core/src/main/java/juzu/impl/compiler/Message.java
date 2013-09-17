@@ -16,28 +16,74 @@
 
 package juzu.impl.compiler;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Message {
 
   /** . */
+  static final Pattern PATTERN = Pattern.compile("\\[" + "([^\\]]+)" + "\\]\\(" + "(.*)" + "\\)", Pattern.DOTALL);
+
+  /** . */
+  static final Pattern SPLIT_PATTERN = Pattern.compile("(?<!\\\\),");
+
+  public static Message parse(String s) {
+    List<String> arguments = Collections.emptyList();
+    Matcher matcher = PATTERN.matcher(s);
+    if (matcher.matches()) {
+      String codeKey = matcher.group(1);
+      MessageCode code = MessageCode.decode(codeKey);
+      if (matcher.group(2).length() > 0) {
+        arguments = new ArrayList<String>();
+        for (String argument : SPLIT_PATTERN.split(matcher.group(2), 0)) {
+          int prev = 0;
+          while (true) {
+            int pos = argument.indexOf('\\', prev);
+            if (pos == -1) {
+              break;
+            } else {
+              argument = argument.substring(0, pos) + argument.charAt(pos + 1) + argument.substring(pos + 2);
+              prev = pos + 2;
+            }
+          }
+          arguments.add(argument);
+        }
+      }
+      return new Message(code, arguments.toArray());
+    } else {
+      return null;
+    }
+  }
+
+  /** . */
   private final MessageCode code;
 
   /** . */
-  private final Object[] arguments;
+  private final String[] arguments;
 
   public Message(MessageCode code, Object... arguments) {
+
+    String[] array = new String[arguments.length];
+    for (int i = 0;i < arguments.length;i++) {
+      array[i] = String.valueOf(arguments[i]);
+    }
+
+    //
     this.code = code;
-    this.arguments = arguments;
+    this.arguments = array;
   }
 
   public MessageCode getCode() {
     return code;
   }
 
-  public Object[] getArguments() {
+  public String[] getArguments() {
     return arguments;
   }
 
@@ -48,17 +94,28 @@ public class Message {
         if (i > 0) {
           sb.append(',');
         }
-        sb.append(String.valueOf(arguments[i]));
+        String value = String.valueOf(arguments[i]);
+        for (int j = 0;j < value.length();j++) {
+          char c = value.charAt(j);
+          switch (c) {
+            case ',':
+            case ')':
+            case '\\':
+              sb.append('\\');
+            default:
+              sb.append(c);
+          }
+        }
       }
       sb.append(")");
     }
     else {
-      new Formatter(sb).format(Locale.getDefault(), code.getMessage(), arguments).flush();
+      new Formatter(sb).format(Locale.getDefault(), code.getMessage(), (Object[])arguments).flush();
     }
     return sb;
   }
 
-  public String toFormalString() {
+  public String format() {
     return format(new StringBuilder(), true).toString();
   }
 

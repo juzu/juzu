@@ -87,7 +87,7 @@ class ModelTemplateProcessContext extends ProcessContext {
 
     //
     if (method == null) {
-      throw ControllerMetaModel.CONTROLLER_METHOD_NOT_RESOLVED.failure(methodName + "(" + parameterMap + ")");
+      return null;
     }
 
     //

@@ -45,18 +45,18 @@ public class Weather {
   examples.tutorial.weather6.templates.index index;
 
   @View
-  public void index() {
-    index("marseille");
+  public Response.Content index() {
+    return index("marseille");
   }
 
   @View
-  public void index(String location) {
-    index.
+  public Response.Content index(String location) {
+    return index.
       with().
       location(location).
       temperature(weatherService.getTemperature(location)).
       locations(locations).
-      render();
+      ok();
   }
 
   @Action

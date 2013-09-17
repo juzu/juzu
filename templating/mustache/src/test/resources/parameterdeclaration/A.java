@@ -17,6 +17,7 @@
 package parameterdeclaration;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
 import juzu.template.Template;
 
@@ -30,7 +31,7 @@ public class A {
   parameterdeclaration.templates.index index;
 
   @View
-  public void index() {
-    index.with().foo("bar").render();
+  public Response.Content index() {
+    return index.with().foo("bar").ok();
   }
 }

@@ -51,19 +51,19 @@ public class Weather {
   examples.tutorial.weather8.templates.fragment fragment;
 
   @View
-  public void index() {
-    index("marseille");
+  public Response.Content index() {
+    return index("marseille");
   }
 
   @View
   @Route("/show/{location}")
-  public void index(String location) {
-    index.
+  public Response.Content index(String location) {
+    return index.
       with().
       location(location).
       temperature(weatherService.getTemperature(location)).
       locations(locations).
-      render();
+      ok();
   }
 
   @Action
@@ -78,11 +78,11 @@ public class Weather {
   @Ajax
   @Resource
   @Route("/fragment")
-  public void getFragment(String location) {
-    fragment.
+  public Response.Content getFragment(String location) {
+    return fragment.
       with().
       location(location).
       temperature(weatherService.getTemperature(location)).
-      render();
+      ok();
   }
 }

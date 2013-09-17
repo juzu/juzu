@@ -72,19 +72,19 @@ public class Application {
 
   @View
   @Route("/")
-  public void index() {
+  public Response.Content index() {
     if (login.isConnected()) {
-      hotels.index();
+      return hotels.index();
     }
     else {
-      index.render();
+      return index.ok();
     }
   }
 
   @View
   @Route("/register")
-  public void register() {
-    register.render();
+  public Response.Content register() {
+    return register.ok();
   }
 
   @Action

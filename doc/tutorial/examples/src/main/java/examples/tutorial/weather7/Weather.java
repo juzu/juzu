@@ -45,24 +45,24 @@ public class Weather {
   examples.tutorial.weather7.templates.index index;
 
   @View
-  public void index() {
-    index("marseille");
+  public Response.Content index() {
+    return index("marseille");
   }
 
   @View
   @Route("/show/{location}")
-  public void index(String location) {
-    index.
+  public Response.Content index(String location) {
+    return index.
       with().
       location(location).
       temperature(weatherService.getTemperature(location)).
       locations(locations).
-      render();
+      ok();
   }
 
   @Action
   @Route("/add")
-  public Response add(String location) {
+  public Response.View add(String location) {
     locations.add(location);
     return Weather_.index(location);
   }

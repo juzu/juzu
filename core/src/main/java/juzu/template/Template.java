@@ -32,7 +32,6 @@ import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
 import juzu.request.ApplicationContext;
 import juzu.request.MimeContext;
-import juzu.request.Phase;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -48,26 +47,39 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p></p>A template as seen by an application. A template is identified by its {@link #path} and can used to produce markup.
  * Templates perform rendering using a parameter map and a locale as inputs and produces a markup response.</p>
  *
- * <p>Template can be rendered with many methods that will affect the current execution. Those methods will implicitly set
- * the produced markup response on the {@link MimeContext} using the {@link MimeContext#setResponse(juzu.Response.Content)}
- * method: {@link #render()}, {@link #render(java.util.Locale)}, {@link #render(java.util.Map)}, {@link #render(java.util.Map, java.util.Locale)},
- * {@link #notFound()}, {@link #notFound(java.util.Locale)}, {@link #notFound(java.util.Map)}, {@link #notFound(java.util.Map, java.util.Locale)},
- * {@link #ok()}, {@link #ok(java.util.Locale)}, {@link #ok(java.util.Map)}, {@link #ok(java.util.Map, java.util.Locale)}.</p>
+ * <p>Templates can be used to produce a controller response using the API like</p>
+ *
+ * <code><pre>
+ *   public Response.Content index() {
+ *     return template.ok();
+ *   }
+ * </pre></code>
+ *
+ * <p>The template API offers also methods for returning other response status:</p>
+ *
+ * <ul>
+ *   <li><code>template.notFound()</code></li>
+ *   <li><code>template.status(code)</code></li>
+ * </ul>
+ *
+ * <p>Template rendering can also be parameterized with a parameter map:</p>
+ *
+ * <code><pre>
+ *   public Response.Content index() {
+ *     return template.with(parameters).ok();
+ *   }
+ * </pre></code>
  *
  * <p>Template can be parameterized using a fluent API with the {@link Builder} object provided by the {@link #with()}
- * method:
- * <br/>
- * <br/>
- * <code>template.with().set("date", new java.util.Date()).render()</code>
- * <br/>
- * <br/>
- * The template compiler produces also a subclass of the template that can be used instead of this base template class.
+ * method:</p>
+ *
+ * <code><pre>return template.with().set("date", new java.util.Date()).ok()</pre></code>
+ *
+ * <p>The template compiler produces also a subclass of the template that can be used instead of this base template class.
  * This sub class overrides the {@link #with()} method to return a builder that provides typed methods when the
- * template declares parameters:
- * <br/>
- * <br/>
- * <code>template.with().date(new java.util.Date()).render()</code>
- * </p>
+ * template declares parameters:</p>
+ *
+ * <code><pre>return template.with().date(new java.util.Date()).ok()</pre></code>
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
@@ -110,41 +122,6 @@ public abstract class Template {
   }
 
   /**
-   * Renders the template and set the response on the current {@link MimeContext}
-   */
-  public void render() throws TemplateExecutionException, UndeclaredIOException {
-    with().render();
-  }
-
-  /**
-   * Renders the template and set a the response on the current {@link MimeContext}.
-   *
-   * @param locale     the locale
-   */
-  public void render(Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    with(locale).render();
-  }
-
-  /**
-   * Renders the template and set a the response on the current {@link MimeContext}.
-   *
-   * @param parameters the parameters
-   */
-  public void render(Map<String, ?> parameters) throws TemplateExecutionException, UndeclaredIOException {
-    with(parameters).render();
-  }
-
-  /**
-   * Renders the template and set a the response on the current {@link MimeContext}.
-   *
-   * @param parameters the parameters
-   * @param locale     the locale
-   */
-  public void render(final Map<String, ?> parameters, final Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    with(parameters).locale(locale).render();
-  }
-
-  /**
    * Renders the template.
    *
    * @return the ok resource response
@@ -160,7 +137,7 @@ public abstract class Template {
    * @return the ok resource response
    */
   public final Response.Content ok(Locale locale) {
-    return with(locale).ok();
+    return with().with(locale).ok();
   }
 
   /**
@@ -181,7 +158,7 @@ public abstract class Template {
    * @return the ok resource response
    */
   public final Response.Content ok(Map<String, ?> parameters, Locale locale) {
-    return with(parameters).locale(locale).ok();
+    return with(parameters).with(locale).ok();
   }
 
   /**
@@ -221,7 +198,7 @@ public abstract class Template {
    * @return the not found resource response
    */
   public final Response.Content notFound(Map<String, ?> parameters, Locale locale) {
-    return with(parameters).locale(locale).notFound();
+    return with(parameters).with(locale).notFound();
   }
 
   /**
@@ -244,7 +221,7 @@ public abstract class Template {
    * @throws UndeclaredIOException      any io exception
    */
   public <A extends Appendable> A renderTo(A appendable, Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    return with(locale).renderTo(appendable);
+    return with().with(locale).renderTo(appendable);
   }
 
   /**
@@ -280,7 +257,7 @@ public abstract class Template {
 
    */
   public void renderTo(Stream printer, Locale locale) throws TemplateExecutionException, UndeclaredIOException {
-    with(locale).renderTo(printer);
+    with().with(locale).renderTo(printer);
   }
 
   /**
@@ -446,7 +423,7 @@ public abstract class Template {
      * @param locale the new locale
      * @return this builder
      */
-    public Builder locale(Locale locale) {
+    public Builder with(Locale locale) {
       this.locale = locale;
       return this;
     }
@@ -532,20 +509,6 @@ public abstract class Template {
         throw new NullPointerException("No null printe provided");
       }
       doRender(null, printer);
-    }
-
-    /**
-     * Renders the template and set the response on the current {@link MimeContext}
-     */
-    public void render() throws TemplateExecutionException, UndeclaredIOException {
-      Request context = Request.getCurrent();
-      if (context.getPhase() == Phase.VIEW ||context.getPhase() == Phase.RESOURCE) {
-        Response.Content render = status(200);
-        context.setResponse(render);
-      }
-      else {
-        throw new AssertionError("does not make sense");
-      }
     }
   }
 }

@@ -20,6 +20,7 @@ package plugin.amd.adapter;
 import javax.inject.Inject;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.Route;
 import juzu.View;
 import juzu.template.Template;
@@ -36,7 +37,7 @@ public class A {
   Template index;
   
   @View  @Route("/")
-  public void index() {
-    index.render();
+  public Response.Content index() {
+    return index.ok();
   }
 }

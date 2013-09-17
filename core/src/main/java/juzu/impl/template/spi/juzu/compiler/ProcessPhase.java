@@ -16,13 +16,17 @@
 
 package juzu.impl.template.spi.juzu.compiler;
 
+import juzu.impl.common.Location;
 import juzu.impl.compiler.ProcessingException;
+import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
 import juzu.template.TagHandler;
+
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ProcessPhase extends CompilationPhase {
@@ -75,12 +79,25 @@ public class ProcessPhase extends CompilationPhase {
       // Do nothing
     }
     else if (node instanceof ASTNode.URL) {
-      ASTNode.URL url = (ASTNode.URL)node;
-      MethodInvocation mi = context.resolveMethodInvocation(url.getTypeName(), url.getMethodName(), url.getArgs());
+      ASTNode.URL urlNode = (ASTNode.URL)node;
+      String typeName = urlNode.getTypeName();
+      String methodName = urlNode.getMethodName();
+      Map<String,String> parameters = urlNode.getArgs();
+      MethodInvocation mi = context.resolveMethodInvocation(typeName, methodName, parameters);
       if (mi == null) {
-        throw new UnsupportedOperationException("handle me gracefully");
+        StringBuilder controller = new StringBuilder();
+        if (typeName != null && typeName.length() > 0) {
+          controller.append(typeName).append('.');
+        }
+        controller.append(methodName).append('(').append(parameters).append(')');
+        Location location = urlNode.getBegin().getPosition();
+        throw TemplateMetaModel.CONTROLLER_NOT_RESOLVED.failure(
+            controller,
+            template.getRelativePath().getCanonical(),
+            location.getLine(),
+            location.getCol());
       } else {
-        url.setInvocation(mi);
+        urlNode.setInvocation(mi);
       }
     }
     else if (node instanceof ASTNode.Tag) {

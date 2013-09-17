@@ -22,8 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import juzu.asset.AssetLocation;
-
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
  * @version $Id$
@@ -39,12 +37,4 @@ public @interface Defines {
    * @return the declared amd modules
    */
   Define[] value() default {};
-  
-  /**
-   * The default asset location used by the contained assets when no location
-   * is explicitly defined.
-   *
-   * @return the default asset location
-   */
-  AssetLocation location() default AssetLocation.APPLICATION;
 }
