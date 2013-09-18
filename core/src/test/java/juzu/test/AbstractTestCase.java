@@ -359,20 +359,30 @@ public abstract class AbstractTestCase extends Assert {
           E testNext = testIterator.next();
           if (!Tools.safeEquals(expectedNext, testNext)) {
             throw failure("Elements at index " + index + " are not equals: " + expectedNext + "!=" + testNext);
-          }
-          else {
+          } else {
             index++;
           }
+        } else {
+          StringBuilder buffer = new StringBuilder("Expected iterable has more elements (");
+          while (expectedIterator.hasNext()) {
+            buffer.append(expectedIterator.next());
+            buffer.append(',');
+          }
+          buffer.setCharAt(buffer.length() - 1, ')');
+          buffer.append(" than the tested iterable at index ").append(index);
+          throw failure(buffer.toString());
         }
-        else {
-          throw failure("Tested iterable has more elements than the expected iterable at index " + index);
-        }
-      }
-      else {
+      } else {
         if (testIterator.hasNext()) {
-          throw failure("Expected iterable has more elements than the tested iterable at index " + index);
-        }
-        else {
+          StringBuilder buffer = new StringBuilder("Tested iterable has more elements (");
+          while (testIterator.hasNext()) {
+            buffer.append(testIterator.next());
+            buffer.append(',');
+          }
+          buffer.setCharAt(buffer.length() - 1, ')');
+          buffer.append(" than the expected iterable at index ").append(index);
+          throw failure(buffer.toString());
+        } else {
           break;
         }
       }
